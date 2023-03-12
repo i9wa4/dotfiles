@@ -39,8 +39,7 @@ fi
 sudo add-apt-repository -y ppa:git-core/ppa
 sudo apt update
 sudo apt upgrade -y
-cd "$(dirname "$0")"
-bash git_config.sh
+bash "${HOME}"/dotfies/etc/init/git_config.sh
 
 # Node.js/npm
 # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
@@ -106,12 +105,11 @@ if [ ! -d ./cpython/ ]; then
 fi
 
 # Script
-cd "$(dirname "$0")"
-bash vim_build.sh
-bash nvim_build.sh
-bash python_build.sh
-bash python_venv_myenv.sh
-bash win_update.sh
+bash "${HOME}"/dotfies/etc/init/vim_build.sh
+bash "${HOME}"/dotfies/etc/init/nvim_build.sh
+bash "${HOME}"/dotfies/etc/init/python_build.sh
+bash "${HOME}"/dotfies/etc/init/python_venv_myenv.sh
+bash "${HOME}"/dotfies/etc/init/win_update.sh
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
