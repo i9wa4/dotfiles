@@ -14,15 +14,39 @@ endif
 " --------------------------------------
 " Variable
 "
+" let g:clipboard = {
+"  \   'name': 'WslClipboard',
+"  \   'copy': {
+"  \      '+': 'clip.exe',
+"  \      '*': 'clip.exe',
+"  \    },
+"  \   'paste': {
+"  \      '+': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+"  \      '*': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+"  \   },
+"  \   'cache_enabled': 1,
+"  \ }
+" let g:clipboard = {
+"  \   'name': 'WslClipboard',
+"  \   'copy': {
+"  \      '+': 'powershell.exe -NoProfile -c Read-Host | Set-Clipboard',
+"  \      '*': 'powershell.exe -NoProfile -c Read-Host | Set-Clipboard',
+"  \    },
+"  \   'paste': {
+"  \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+"  \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+"  \   },
+"  \   'cache_enabled': 1,
+"  \ }
 let g:clipboard = {
   \   'name': 'WslClipboard',
   \   'copy': {
-  \      '+': 'clip.exe',
-  \      '*': 'clip.exe',
+  \      '+': 'win32yank.exe -i',
+  \      '*': 'win32yank.exe -i',
   \    },
   \   'paste': {
-  \      '+': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-  \      '*': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+  \      '+': 'win32yank.exe -o',
+  \      '*': 'win32yank.exe -o',
   \   },
   \   'cache_enabled': 1,
   \ }
@@ -34,15 +58,6 @@ let g:netrw_home = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME)
 "
 " set pumblend=10
 set laststatus=3
-
-
-" --------------------------------------
-" Autocommand
-"
-augroup MyTextYank
-  autocmd!
-  autocmd TextYankPost * let @+ = @"
-augroup END
 
 
 " --------------------------------------
