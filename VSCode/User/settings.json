@@ -1,0 +1,20 @@
+{
+    "[markdown]":  {
+        "editor.quickSuggestions": {
+            "comments": "on",
+            "strings": "on",
+            "other": "on"
+        }
+    },
+    "breadcrumbs.enabled": false,
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.fontFamily": "'MyricaM M', monospace",
+    "editor.fontSize": 18,
+    "editor.minimap.enabled": false,
+    "editor.mouseWheelZoom": true,
+    "editor.renderWhitespace": "all",
+    "extensions.ignoreRecommendations": true,
+    "files.autoGuessEncoding": true,
+    "http.proxyStrictSSL": false,
+    "vim.useSystemClipboard": true
+}

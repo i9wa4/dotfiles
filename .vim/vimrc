@@ -1,0 +1,268 @@
+" https://rbtnn.hateblo.jp/entry/2014/11/30/174749
+set encoding=utf-8
+scriptencoding utf-8
+
+
+" --------------------------------------
+" Variable
+"
+let g:netrw_banner = 0
+let g:netrw_dirhistmax = 1
+let g:netrw_hide = 0
+let g:netrw_home = expand('~/.vim/')
+let g:netrw_liststyle = 0
+let g:vim_indent_cont = 0
+let g:auto_reload = timer_start(
+  \   1000,
+  \   {-> execute('silent! checktime')},
+  \   {'repeat': -1}
+  \ )
+
+
+" --------------------------------------
+" Option
+"
+" System
+if has('unix') || has('mac')
+  language messages C
+else
+  language messages en
+endif
+set autoread
+set clipboard=unnamedplus
+set nobackup
+set noerrorbells
+set noswapfile
+set noundofile
+set novisualbell
+set nowritebackup
+
+" Edit
+" set binary noeol
+" set isfname-=|
+set backspace=indent,eol,start
+set fileencodings=utf-8,euc-jp,cp932
+set fileformat=unix
+set fileformats=unix,dos,mac
+set hidden
+set nrformats=unsigned
+set virtualedit=block
+
+" Search
+if executable('rg')
+  let &grepprg = 'rg --vimgrep --no-heading'
+  set grepformat=%f:%l:%c:%m
+endif
+set hlsearch
+set ignorecase
+set incsearch
+set shortmess+=S
+set smartcase
+set wrapscan
+
+" View
+set ambiwidth=double
+set number
+set relativenumber
+
+" Window
+set noequalalways
+set pumheight=10
+set splitbelow
+set splitright
+set wildmenu wildmode=list:longest
+
+" CommandLine
+set cmdheight=1
+set noshowcmd
+
+" StatusLine
+" set fillchars+=stl:\ ,stlnc:\_
+set laststatus=2
+set noshowmode
+set statusline=%!vimrc#statusline()
+
+" TabLine
+set showtabline=2
+set tabline=%!vimrc#tabline()
+
+" Highlight
+set colorcolumn=80
+" set cursorcolumn
+set cursorline
+set showmatch matchtime=1 matchpairs+=\<:\>
+" space:\\u2423,extends:\\u00BB,precedes:\\u00AB
+set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
+if &diff
+  set nospell
+else
+  set spelllang+=cjk spell
+endif
+
+" Color
+if has('termguicolors')
+  set termguicolors
+endif
+
+" Abbreviation
+" :w'
+cnoreabbrev w' w
+
+
+" --------------------------------------
+" Command
+"
+command! -nargs=1 P execute 'let @+ = @' . <args>
+
+
+" --------------------------------------
+" Keymap
+"
+nnoremap <silent> j gj
+nnoremap <silent> k gk
+vnoremap <silent> j gj
+vnoremap <silent> k gk
+
+" nnoremap <silent> Y y$
+" nnoremap <silent> gf gF
+" nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR>
+
+" Insert Mode
+" i_CTRL-T Insert one indent
+" i_CTRL-D Delete one indent
+" inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
+
+" QuickFix
+nnoremap <silent> <C-g>g <Cmd>cfirst<CR>
+nnoremap <silent> <C-n> <Cmd>cnext<CR>
+nnoremap <silent> <C-p> <Cmd>cprevious<CR>
+
+" Resize Window
+nnoremap <silent> <S-Down> <C-w>1-
+nnoremap <silent> <S-Up> <C-w>1+
+nnoremap <silent> <S-Right> <C-w>10>
+nnoremap <silent> <S-Left> <C-w>10<
+
+" https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
+" Switch
+nnoremap <Plug>(my-switch) <Nop>
+nmap <Space>s <Plug>(my-switch)
+nnoremap <silent> <Plug>(my-switch)b
+  \ <Cmd>setlocal scrollbind! scrollbind?<CR>
+nnoremap <silent> <Plug>(my-switch)n
+  \ <Cmd>setlocal number! number?<CR>
+nnoremap <silent> <Plug>(my-switch)p
+  \ <Cmd>setlocal paste! paste?<CR>
+nnoremap <silent> <Plug>(my-switch)r
+  \ <Cmd>setlocal relativenumber! relativenumber?<CR>
+nnoremap <silent> <Plug>(my-switch)s
+  \ <Cmd>setlocal spell! spell?<CR>
+nnoremap <silent> <Plug>(my-switch)t
+  \ <Cmd>setlocal expandtab! expandtab?<CR>
+nnoremap <silent> <Plug>(my-switch)w
+  \ <Cmd>setlocal wrap! wrap?<CR>
+
+" Edit
+nnoremap <Plug>(my-edit) <Nop>
+nmap <Space>e <Plug>(my-edit)
+nnoremap <silent> <Plug>(my-edit)ec
+  \ <Cmd>edit ++encoding=cp932<CR>
+nnoremap <silent> <Plug>(my-edit)ee
+  \ <Cmd>edit ++encoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-edit)eu
+  \ <Cmd>edit ++encoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-edit)fc
+  \ <Cmd>setlocal fileencoding=cp932<CR>
+nnoremap <silent> <Plug>(my-edit)fe
+  \ <Cmd>setlocal fileencoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-edit)fu
+  \ <Cmd>setlocal fileencoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-edit)ld
+  \ <Cmd>edit ++fileformat=dos<CR>
+nnoremap <silent> <Plug>(my-edit)lu
+  \ <Cmd>edit ++fileformat=unix<CR>
+nnoremap <silent> <Plug>(my-edit)t
+  \ <Cmd>%s/\s\+$//e<CR>
+nnoremap <silent> <Plug>(my-edit)v
+  \ <Cmd>execute 'edit' expand('~/.vim/vimrc')<CR>
+
+" Filer
+nnoremap <Plug>(my-filer) <Nop>
+nmap <Space>f <Plug>(my-filer)
+nnoremap <silent> <Plug>(my-filer)b
+  \ <Cmd>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <silent> <Plug>(my-filer)o
+  \ <Cmd>execute '15Lexplore' expand('%:p:h')<CR>
+nnoremap <silent> <Plug>(my-filer)c
+  \ <Cmd>15Lexplore<CR>
+
+" Terminal
+if exists('&termwinkey')
+  set termwinkey=<C-g>
+  tnoremap <Esc> <C-g>n
+endif
+nnoremap <Plug>(my-terminal) <Nop>
+nmap <Space>t <Plug>(my-terminal)
+nnoremap <silent> <Plug>(my-terminal)h
+  \ <Cmd>call vimrc#split(v:count)<CR>
+nnoremap <silent> <Plug>(my-terminal)v
+  \ <Cmd>call vimrc#vsplit()<CR>
+nnoremap <silent> <Plug>(my-terminal)r
+  \ <Cmd>call vimrc#send_cell(v:count, expand('%:p'))<CR>
+nnoremap <silent> <Plug>(my-terminal)s
+  \ <Cmd>call vimrc#send_cmd(v:count, expand('%:p'))<CR>
+
+
+" --------------------------------------
+" Autocommand
+"
+augroup MyVimrc
+  autocmd!
+  " Autoread
+  autocmd WinEnter * checktime
+
+  " FileType (order-sensitive)
+  autocmd FileType * call vimrc#ft_common()
+  autocmd FileType
+    \ css,mermaid,plantuml,sh,toml,vim,yaml
+    \ setlocal shiftwidth=2 softtabstop=2 tabstop=2
+
+  " Local Setting
+  " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
+  " autocmd BufEnter *
+  autocmd BufNewFile,BufReadPost,BufEnter *
+    \ call vimrc#source_local_vimrc(expand('<afile>:p'))
+
+  " Mark
+  autocmd BufReadPost *
+    \ if (line("'\"") >= 1) && (line("'\"") <= line("$"))
+    \|  execute "normal! g'\""
+    \|endif
+  autocmd BufReadPost * delmarks a-z
+  autocmd VimLeavePre * delmarks a-z0-9[]^.<>
+
+  " Register
+  autocmd BufEnter * call vimrc#set_register()
+  autocmd VimLeavePre * call vimrc#clear_register()
+
+  " Syntax
+  autocmd BufEnter * call vimrc#highlight()
+
+  " Terminal
+  autocmd BufWritePost *.py
+    \ call vimrc#jupytext_sync(expand('<afile>:p'))
+  autocmd BufEnter *
+    \ call vimrc#update_terminal_number()
+augroup END
+
+augroup MyTextYank
+  autocmd!
+  autocmd TextYankPost * call system('clip.exe', @")
+augroup END
+
+
+if !has('nvim')
+  filetype plugin indent on
+  syntax enable
+  colorscheme slate
+endif
