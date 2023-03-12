@@ -39,7 +39,7 @@ fi
 sudo add-apt-repository -y ppa:git-core/ppa
 sudo apt update
 sudo apt upgrade -y
-bash "${HOME}"/dotfies/etc/init/git_config.sh
+bash "${HOME}"/dotfiles/etc/init/git_config.sh
 
 # Node.js/npm
 # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
@@ -105,11 +105,11 @@ if [ ! -d ./cpython/ ]; then
 fi
 
 # Script
-bash "${HOME}"/dotfies/etc/init/vim_build.sh
-bash "${HOME}"/dotfies/etc/init/nvim_build.sh
-bash "${HOME}"/dotfies/etc/init/python_build.sh
-bash "${HOME}"/dotfies/etc/init/python_venv_myenv.sh
-bash "${HOME}"/dotfies/etc/init/win_update.sh
+bash "${HOME}"/dotfiles/etc/init/vim_build.sh
+bash "${HOME}"/dotfiles/etc/init/nvim_build.sh
+bash "${HOME}"/dotfiles/etc/init/python_build.sh
+bash "${HOME}"/dotfiles/etc/init/python_venv_myenv.sh
+bash "${HOME}"/dotfiles/etc/init/win_update.sh
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
