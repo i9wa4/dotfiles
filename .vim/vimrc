@@ -255,10 +255,12 @@ augroup MyVimrc
     \ call vimrc#update_terminal_number()
 augroup END
 
-augroup MyTextYank
-  autocmd!
-  autocmd TextYankPost * call system('clip.exe', @")
-augroup END
+if !has('nvim') && system('uname -r') =~ "microsoft"
+  augroup MyTextYank
+    autocmd!
+    autocmd TextYankPost * call system('clip.exe', @")
+  augroup END
+endif
 
 
 if !has('nvim')
