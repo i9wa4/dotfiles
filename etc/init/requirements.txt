@@ -1,0 +1,13 @@
+autopep8
+charset-normalizer<3,>=2
+flake8
+ipykernel
+japanize-matplotlib
+jupyterlab
+jupytext
+matplotlib
+numpy
+pandas
+pynvim
+python-lsp-server
+scikit-learn

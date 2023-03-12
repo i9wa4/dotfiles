@@ -1,0 +1,5 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'vim-denops/denops.vim'

@@ -1,0 +1,63 @@
+body {
+  font-family: "Meiryo", sans-serif;
+  /* background-color: White; */
+  /* color: Black; */
+}
+
+h1 {
+  border-bottom: 1px solid !important;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+  padding-top: 0.5em;
+  padding-left: 5px;
+}
+
+h2 {
+  border-bottom: 1px solid RoyalBlue;
+  border-left: 8px solid RoyalBlue;
+  font-size: 22px;
+}
+
+h3 {
+  border-bottom: 1px solid RoyalBlue;
+  border-left: 2px solid RoyalBlue;
+  font-size: 18px;
+  margin-left: 6px;
+}
+
+h4,
+h5,
+h6 {
+  font-size: 18px;
+  margin-left: 8px;
+  text-decoration: underline;
+}
+
+pre {
+  border: 1px solid;
+  font-family: "MyricaM M", monospace;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+table {
+  border: solid 2px;
+}
+
+table th {
+  border: solid 0.5px !important;
+  border-bottom: double 3px !important;
+}
+
+table td {
+  border: solid 0.5px !important;
+}

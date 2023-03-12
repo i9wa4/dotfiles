@@ -1,0 +1,7 @@
+.ipynb_checkpoints/
+node_modules/
+*.log
+.DS_Store
+.netrwbook
+.netrwhist
+local.vim

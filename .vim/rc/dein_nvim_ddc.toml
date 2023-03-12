@@ -1,0 +1,127 @@
+# --------------------------------------
+# ddc.vim
+#
+[[plugins]]
+repo = 'Shougo/ddc.vim'
+on_event = ['InsertEnter']
+depends = ['denops.vim']
+hook_source = '''
+call ddc#custom#patch_global('ui', 'pum')
+call ddc#custom#patch_global('sources', [
+  \   'around',
+  \   'vsnip',
+  \   'nvim-lsp',
+  \   'skkeleton',
+  \ ])
+call ddc#custom#patch_global('sourceOptions', {
+  \   '_': {
+  \     'matchers': ['matcher_head'],
+  \     'sorters': ['sorter_rank'],
+  \     'converters': ['converter_remove_overlap'],
+  \   },
+  \   'around': {
+  \     'mark': 'Around',
+  \   },
+  \   'vsnip': {
+  \     'mark': 'Snippet',
+  \   },
+  \   'nvim-lsp': {
+  \     'mark': 'LSP',
+  \     'forceCompletionPattern': '\.\w*|:\w*|->\w*',
+  \   },
+  \   'skkeleton': {
+  \     'mark': 'SKK',
+  \     'matchers': ['skkeleton'],
+  \     'sorters': [],
+  \     'minAutoCompleteLength': 2,
+  \     'isVolatile': v:true,
+  \   },
+  \ })
+call ddc#custom#patch_global('autoCompleteEvents', [
+  \   'InsertEnter',
+  \   'TextChangedI',
+  \   'TextChangedP',
+  \ ])
+
+inoremap <C-n>  <Cmd>call pum#map#insert_relative(+1)<CR>
+inoremap <C-p>  <Cmd>call pum#map#insert_relative(-1)<CR>
+inoremap <C-y>  <Cmd>call pum#map#confirm()<CR>
+inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
+
+call ddc#enable()
+'''
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-native'
+if = 0
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/pum.vim'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-pum'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-around'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-converter_remove_overlap'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-matcher_head'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-sorter_rank'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'Shougo/ddc-source-nvim-lsp'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'matsui54/denops-popup-preview.vim'
+on_source = ['ddc.vim']
+hook_source = '''
+call popup_preview#enable()
+'''
+
+[[plugins]]
+repo = 'matsui54/denops-signature_help'
+on_source = ['ddc.vim']
+hook_source = '''
+call signature_help#enable()
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_source = ['ddc.vim']
+hook_source = '''
+let g:vsnip_snippet_dir = expand('~/.vim/vsnip')
+imap <expr> <C-k> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-k>'
+smap <expr> <C-k> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-k>'
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'vim-skk/skkeleton'
+on_source = ['ddc.vim']
+hook_source = '''
+call skkeleton#config({
+  \   'eggLikeNewline': v:true,
+  \   'globalDictionaries': [
+  \     '~/.skk/SKK-JISYO.L',
+  \     '~/.skk/SKK-JISYO.jinmei',
+  \   ]
+  \ })
+imap <C-j> <Plug>(skkeleton-enable)
+cmap <C-j> <Plug>(skkeleton-enable)
+'''
