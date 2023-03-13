@@ -2,6 +2,7 @@
 set -euo pipefail
 export LC_ALL=C
 cd "$(dirname "$0")"
+start_time=$(date +%s.%N)
 
 . "${HOME}"/.my_bashrc
 
@@ -17,3 +18,8 @@ python"${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel
 python"${PY_VER_MINOR}" -m pip install -r "${HOME}"/dotfiles/etc/init/requirements.txt
 python"${PY_VER_MINOR}" -m pip check
 deactivate
+
+end_time=$(date +%s.%N)
+wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
+cd "$(dirname "$0")"
+echo ["$(realpath "$0")"] WallTime: "${wall_time}" [s]

@@ -29,24 +29,24 @@ endif
 " let g:clipboard = {
 "  \   'name': 'WslClipboard',
 "  \   'copy': {
-"  \      '+': 'powershell.exe -NoProfile -c Read-Host | Set-Clipboard',
-"  \      '*': 'powershell.exe -NoProfile -c Read-Host | Set-Clipboard',
+"  \      '+': 'win32yank.exe -i',
+"  \      '*': 'win32yank.exe -i',
 "  \    },
 "  \   'paste': {
-"  \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-"  \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+"  \      '+': 'win32yank.exe -o',
+"  \      '*': 'win32yank.exe -o',
 "  \   },
 "  \   'cache_enabled': 1,
 "  \ }
 let g:clipboard = {
   \   'name': 'WslClipboard',
   \   'copy': {
-  \      '+': 'win32yank.exe -i',
-  \      '*': 'win32yank.exe -i',
+  \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
+  \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
   \    },
   \   'paste': {
-  \      '+': 'win32yank.exe -o',
-  \      '*': 'win32yank.exe -o',
+  \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+  \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
   \   },
   \   'cache_enabled': 1,
   \ }

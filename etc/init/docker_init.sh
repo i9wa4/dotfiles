@@ -26,6 +26,10 @@ sudo apt-get install -y \
 # sudo groupadd docker
 sudo usermod -aG docker "${USER}"
 
+# hadolint
+sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
+sudo chmod 755 /usr/local/bin/hadolint
+
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
 cd "$(dirname "$0")"
