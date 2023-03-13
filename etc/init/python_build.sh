@@ -2,6 +2,7 @@
 set -euo pipefail
 export LC_ALL=C
 cd "$(dirname "$0")"
+start_time=$(date +%s.%N)
 
 . "${HOME}"/.my_bashrc
 
@@ -14,3 +15,8 @@ sudo ./configure
 sudo make
 sudo make altinstall
 python"${PY_VER_MINOR}" --version
+
+end_time=$(date +%s.%N)
+wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
+cd "$(dirname "$0")"
+echo ["$(realpath "$0")"] WallTime: "${wall_time}" [s]

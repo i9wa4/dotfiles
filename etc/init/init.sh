@@ -10,7 +10,6 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install -y \
   bc \
-  ripgrep \
   unzip \
   zip
 
@@ -27,6 +26,8 @@ ln -s "${HOME}"/dotfiles/etc/markdown_style.css "${HOME}"/markdown_style.css
 ln -s "${HOME}"/dotfiles/jupytext.yaml    "${HOME}"/jupytext.yaml
 if [ -n "$(which wslpath)" ]; then
   sudo ln -s "${HOME}"/dotfiles/wsl.conf /etc/wsl.conf
+  mkdir -p "/mnt/c/work/"
+  ln -s "/mnt/c/work/" "${HOME}"/work
 fi
 {
   echo "if [ -f ""${HOME}""/.my_bashrc ]; then"
@@ -39,22 +40,14 @@ fi
 sudo add-apt-repository -y ppa:git-core/ppa
 sudo apt update
 sudo apt upgrade -y
-bash "${HOME}"/dotfiles/etc/init/git_config.sh
-
-# Node.js/npm
-# https://github.com/nodesource/distributions/blob/master/README.md#debinstall
-# https://github.com/nodesource/distributions/issues/1157
-cd /etc/apt/sources.list.d
-sudo rm -f nodesource.list
-curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
-sudo apt update
-sudo apt install -y nodejs
+cd "$(dirname "$0")"
+bash git_config.sh
 
 # Vim
 # sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 # sudo apt update
 sudo apt build-dep -y vim
-# sudo apt install -y ripgrep
+sudo apt install -y ripgrep
 cd /usr/local/src/
 if [ ! -d ./vim/ ]; then
   sudo git clone https://github.com/vim/vim.git
@@ -63,14 +56,23 @@ fi
 # Neovim
 # https://github.com/neovim/neovim/wiki/Building-Neovim
 # sudo apt update
-sudo apt install -y gcc cmake
 sudo apt install -y \
-  ninja-build gettext libtool libtool-bin autoconf automake cmake g++ \
-  pkg-config unzip curl doxygen
+  autoconf \
+  automake \
+  cmake \
+  cmake \
+  curl \
+  doxygen \
+  g++ \
+  gcc \
+  gettext \
+  libtool \
+  libtool-bin \
+  ninja-build \
+  pkg-config \
+  unzip \
+sudo apt install -y nkf
 sudo apt install -y shellcheck
-sudo npm install -g markdownlint-cli
-sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
-sudo chmod 755 /usr/local/bin/hadolint
 cd /usr/local/src/
 if [ ! -d ./neovim/ ]; then
   sudo git clone https://github.com/neovim/neovim.git
@@ -89,27 +91,11 @@ gzip -d SKK-JISYO.L.gz
 wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz
 gzip -d SKK-JISYO.jinmei.gz
 
-# Python
-# https://devguide.python.org/getting-started/setup-building/#build-dependencies
-# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-# sudo apt update
-sudo apt build-dep -y python3
-sudo apt install -y \
-  build-essential gdb lcov pkg-config \
-  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
-  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
-cd /usr/local/src/
-if [ ! -d ./cpython/ ]; then
-  sudo git clone https://github.com/python/cpython.git
-fi
-
 # Script
-bash "${HOME}"/dotfiles/etc/init/vim_build.sh
-bash "${HOME}"/dotfiles/etc/init/nvim_build.sh
-bash "${HOME}"/dotfiles/etc/init/python_build.sh
-bash "${HOME}"/dotfiles/etc/init/python_venv_myenv.sh
-bash "${HOME}"/dotfiles/etc/init/win_update.sh
+cd "$(dirname "$0")"
+bash vim_build.sh
+bash nvim_build.sh
+bash win_update.sh
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
