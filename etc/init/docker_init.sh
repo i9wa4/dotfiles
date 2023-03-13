@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LC_ALL=C
-cd "$(dirname "$0")"
-start_time=$(date +%s.%N)
 
 # https://docs.docker.com/engine/install/ubuntu/
 sudo apt-get remove docker docker.io containerd runc
@@ -29,8 +27,3 @@ sudo usermod -aG docker "${USER}"
 # hadolint
 sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 sudo chmod 755 /usr/local/bin/hadolint
-
-end_time=$(date +%s.%N)
-wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
-cd "$(dirname "$0")"
-echo ["$(realpath "$0")"] WallTime: "${wall_time}" [s]

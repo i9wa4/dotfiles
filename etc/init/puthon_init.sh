@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LC_ALL=C
-cd "$(dirname "$0")"
-start_time=$(date +%s.%N)
 
 # https://devguide.python.org/getting-started/setup-building/#build-dependencies
 # sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
@@ -17,8 +15,3 @@ cd /usr/local/src/
 if [ ! -d ./cpython/ ]; then
   sudo git clone https://github.com/python/cpython.git
 fi
-
-end_time=$(date +%s.%N)
-wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
-cd "$(dirname "$0")"
-echo ["$(realpath "$0")"] WallTime: "${wall_time}" [s]
