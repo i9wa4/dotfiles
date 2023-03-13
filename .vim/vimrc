@@ -112,7 +112,7 @@ cnoreabbrev w' w
 " --------------------------------------
 " Command
 "
-command! -nargs=1 P execute 'let @+ = @' . <args>
+command! -nargs=1 P execute 'let @+ = @' . <q-args>
 
 
 " --------------------------------------
