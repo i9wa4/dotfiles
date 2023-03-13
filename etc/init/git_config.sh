@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LC_ALL=C
-cd "$(dirname "$0")"
 
 git config --global commit.verbose true
 git config --global core.autocrlf input

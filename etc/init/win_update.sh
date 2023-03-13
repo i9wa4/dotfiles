@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LC_ALL=C
-cd "$(dirname "$0")"
+script_basename="$(basename "$0")"
+script_dir="$(cd "$(dirname "$0")"; pwd)"
+script_path="${script_dir}"/"${script_basename}"
+cd "${script_dir}"
+start_time=$(date +%s.%N)
 
 WIN_UTIL_DIR=/mnt/c/work/util/
 rm -rf "${WIN_UTIL_DIR}"
@@ -15,3 +19,7 @@ cp -rf "${HOME}"/dotfiles/.wslconfig        "${WIN_UTIL_DIR}"
 cp -rf "${HOME}"/dotfiles/VSCode/           "${WIN_UTIL_DIR}"
 cp -rf "${HOME}"/dotfiles/.vim/vsnip/       "${WIN_UTIL_DIR}"
 cp -rf "${HOME}"/dotfiles/WindowsTerminal/  "${WIN_UTIL_DIR}"
+
+end_time=$(date +%s.%N)
+wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
+echo ["${script_path}"] WallTime: "${wall_time}" [s]

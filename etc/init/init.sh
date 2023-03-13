@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export LC_ALL=C
-cd "$(dirname "$0")"
+script_basename="$(basename "$0")"
+script_dir="$(cd "$(dirname "$0")"; pwd)"
+script_path="${script_dir}"/"${script_basename}"
+cd "${script_dir}"
 start_time=$(date +%s.%N)
 
 # General
@@ -40,7 +43,6 @@ fi
 sudo add-apt-repository -y ppa:git-core/ppa
 sudo apt update
 sudo apt upgrade -y
-cd "$(dirname "$0")"
 bash git_config.sh
 
 # Vim
@@ -52,6 +54,7 @@ cd /usr/local/src/
 if [ ! -d ./vim/ ]; then
   sudo git clone https://github.com/vim/vim.git
 fi
+cd -
 
 # Neovim
 # https://github.com/neovim/neovim/wiki/Building-Neovim
@@ -77,6 +80,7 @@ cd /usr/local/src/
 if [ ! -d ./neovim/ ]; then
   sudo git clone https://github.com/neovim/neovim.git
 fi
+cd -
 
 # Deno
 if [ -z "$(which deno)" ]; then
@@ -90,14 +94,13 @@ wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz
 gzip -d SKK-JISYO.L.gz
 wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz
 gzip -d SKK-JISYO.jinmei.gz
+cd -
 
 # Script
-cd "$(dirname "$0")"
 bash vim_build.sh
 bash nvim_build.sh
 bash win_update.sh
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)
-cd "$(dirname "$0")"
-echo ["$(realpath "$0")"] WallTime: "${wall_time}" [s]
+echo ["${script_path}"] WallTime: "${wall_time}" [s]
