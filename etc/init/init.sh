@@ -73,7 +73,7 @@ sudo apt install -y \
   libtool-bin \
   ninja-build \
   pkg-config \
-  unzip \
+  unzip
 sudo apt install -y nkf
 sudo apt install -y shellcheck
 cd /usr/local/src/
