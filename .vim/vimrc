@@ -258,7 +258,8 @@ augroup END
 if !has('nvim') && system('uname -r') =~ "microsoft"
   augroup MyTextYank
     autocmd!
-    autocmd TextYankPost * call system('clip.exe', @")
+    " autocmd TextYankPost * call system('clip.exe', @")
+    autocmd TextYankPost * let @+ = @"
   augroup END
 endif
 
