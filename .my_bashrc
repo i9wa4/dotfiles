@@ -11,7 +11,7 @@ export XDG_CONFIG_HOME="${HOME}"/.config
 # Editor
 export EDITOR=vim
 # set -o vi
-export NVIM_APPNAME=nvim
+export NVIM_APPNAME=my_nvim
 
 # deno
 export DENO_TLS_CA_STORE="system"

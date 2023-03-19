@@ -14,19 +14,20 @@ mkdir -p "${HOME}"/.config
 ln -s "${HOME}"/dotfiles/.gitignore       "${HOME}"/.gitignore
 ln -s "${HOME}"/dotfiles/.markdownlintrc  "${HOME}"/.markdownlintrc
 ln -s "${HOME}"/dotfiles/.my_bashrc       "${HOME}"/.my_bashrc
-ln -s "${HOME}"/dotfiles/.nvim             "${HOME}"/.config/nvim
+ln -s "${HOME}"/dotfiles/.nvim/my_nvim    "${HOME}"/.config/my_nvim
 ln -s "${HOME}"/dotfiles/.vim             "${HOME}"/.vim
 ln -s "${HOME}"/dotfiles/etc/markdown_style.css "${HOME}"/markdown_style.css
 ln -s "${HOME}"/dotfiles/jupytext.yaml    "${HOME}"/jupytext.yaml
 sudo ln -s "${HOME}"/dotfiles/wsl.conf /etc/wsl.conf
 mkdir -p "/mnt/c/work/"
 ln -s "/mnt/c/work/" "${HOME}"/work
+
+# .bashrc
 {
   echo "if [ -f ""${HOME}""/.my_bashrc ]; then"
   echo "  . ""${HOME}""/.my_bashrc"
   echo "fi"
 } >> "${HOME}"/.bashrc
-. "${HOME}"/.my_bashrc
 
 # General
 sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list

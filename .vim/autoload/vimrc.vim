@@ -97,16 +97,11 @@ endfunction
 
 function! vimrc#set_register() abort
   if empty(&buftype)
-    let @a = "@b = expand('%:p:~')"
-    let @b = expand('%:p:~')
-    let @c = "@d = expand('%:p:~:h')"
-    let @d = expand('%:p:~:h')
-    let @e = "@f = expand('%:t')"
-    let @f = expand('%:t')
-    let @g = "@h = expand('%:t:r')"
-    let @h = expand('%:t:r')
-    let @i = "@j = fnamemodify(getcwd(), ':~')"
-    let @j = fnamemodify(getcwd(), ':~')
+    let @a = expand('%:p:~')
+    let @b = expand('%:p:~:h')
+    let @c = expand('%:t')
+    let @d = expand('%:t:r')
+    let @e = fnamemodify(getcwd(), ':~')
   endif
 endfunction
 
