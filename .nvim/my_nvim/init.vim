@@ -43,6 +43,7 @@ set pumblend=30
 " Keymap
 "
 tnoremap <Esc> <C-\><C-n>
+nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/init.vim')<CR>
 
 
 " --------------------------------------
