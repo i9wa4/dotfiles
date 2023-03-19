@@ -2,12 +2,12 @@
     "func": {
         "prefix": "func",
         "body": [
-            "def $1(",
-            "\t$2: str",
-            "\t$3: str='test'",
-            "):",
-            "\t$0",
-            "\treturn 'ok'"
+            "def ${0: func_name}(",
+            "\targ0: str,",
+            "\targ1='correct',",
+            "\targ2: str='correct',",
+            ") -> int:",
+            "\treturn 0"
         ]
     }
 }
