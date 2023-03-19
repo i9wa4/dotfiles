@@ -14,15 +14,13 @@ mkdir -p "${HOME}"/.config
 ln -s "${HOME}"/dotfiles/.gitignore       "${HOME}"/.gitignore
 ln -s "${HOME}"/dotfiles/.markdownlintrc  "${HOME}"/.markdownlintrc
 ln -s "${HOME}"/dotfiles/.my_bashrc       "${HOME}"/.my_bashrc
-ln -s "${HOME}"/dotfiles/.vim             "${HOME}"/.config/nvim
+ln -s "${HOME}"/dotfiles/.nvim             "${HOME}"/.config/nvim
 ln -s "${HOME}"/dotfiles/.vim             "${HOME}"/.vim
 ln -s "${HOME}"/dotfiles/etc/markdown_style.css "${HOME}"/markdown_style.css
 ln -s "${HOME}"/dotfiles/jupytext.yaml    "${HOME}"/jupytext.yaml
-if [ -n "$(which wslpath)" ]; then
-  sudo ln -s "${HOME}"/dotfiles/wsl.conf /etc/wsl.conf
-  mkdir -p "/mnt/c/work/"
-  ln -s "/mnt/c/work/" "${HOME}"/work
-fi
+sudo ln -s "${HOME}"/dotfiles/wsl.conf /etc/wsl.conf
+mkdir -p "/mnt/c/work/"
+ln -s "/mnt/c/work/" "${HOME}"/work
 {
   echo "if [ -f ""${HOME}""/.my_bashrc ]; then"
   echo "  . ""${HOME}""/.my_bashrc"
