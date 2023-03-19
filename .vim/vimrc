@@ -147,54 +147,34 @@ nnoremap <silent> <S-Left> <C-w>10<
 " Switch
 nnoremap <Plug>(my-switch) <Nop>
 nmap <Space>s <Plug>(my-switch)
-nnoremap <silent> <Plug>(my-switch)b
-  \ <Cmd>setlocal scrollbind! scrollbind?<CR>
-nnoremap <silent> <Plug>(my-switch)n
-  \ <Cmd>setlocal number! number?<CR>
-nnoremap <silent> <Plug>(my-switch)p
-  \ <Cmd>setlocal paste! paste?<CR>
-nnoremap <silent> <Plug>(my-switch)r
-  \ <Cmd>setlocal relativenumber! relativenumber?<CR>
-nnoremap <silent> <Plug>(my-switch)s
-  \ <Cmd>setlocal spell! spell?<CR>
-nnoremap <silent> <Plug>(my-switch)t
-  \ <Cmd>setlocal expandtab! expandtab?<CR>
-nnoremap <silent> <Plug>(my-switch)w
-  \ <Cmd>setlocal wrap! wrap?<CR>
+nnoremap <silent> <Plug>(my-switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
+nnoremap <silent> <Plug>(my-switch)n <Cmd>setlocal number! number?<CR>
+nnoremap <silent> <Plug>(my-switch)p <Cmd>setlocal paste! paste?<CR>
+nnoremap <silent> <Plug>(my-switch)r <Cmd>setlocal relativenumber! relativenumber?<CR>
+nnoremap <silent> <Plug>(my-switch)s <Cmd>setlocal spell! spell?<CR>
+nnoremap <silent> <Plug>(my-switch)t <Cmd>setlocal expandtab! expandtab?<CR>
+nnoremap <silent> <Plug>(my-switch)w <Cmd>setlocal wrap! wrap?<CR>
 
 " Edit
 nnoremap <Plug>(my-edit) <Nop>
 nmap <Space>e <Plug>(my-edit)
-nnoremap <silent> <Plug>(my-edit)ec
-  \ <Cmd>edit ++encoding=cp932<CR>
-nnoremap <silent> <Plug>(my-edit)ee
-  \ <Cmd>edit ++encoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-edit)eu
-  \ <Cmd>edit ++encoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-edit)fc
-  \ <Cmd>setlocal fileencoding=cp932<CR>
-nnoremap <silent> <Plug>(my-edit)fe
-  \ <Cmd>setlocal fileencoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-edit)fu
-  \ <Cmd>setlocal fileencoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-edit)ld
-  \ <Cmd>edit ++fileformat=dos<CR>
-nnoremap <silent> <Plug>(my-edit)lu
-  \ <Cmd>edit ++fileformat=unix<CR>
-nnoremap <silent> <Plug>(my-edit)t
-  \ <Cmd>%s/\s\+$//e<CR>
-nnoremap <silent> <Plug>(my-edit)v
-  \ <Cmd>execute 'edit' expand('~/.vim/vimrc')<CR>
+nnoremap <silent> <Plug>(my-edit)ec <Cmd>edit ++encoding=cp932<CR>
+nnoremap <silent> <Plug>(my-edit)ee <Cmd>edit ++encoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-edit)eu <Cmd>edit ++encoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-edit)fc <Cmd>setlocal fileencoding=cp932<CR>
+nnoremap <silent> <Plug>(my-edit)fe <Cmd>setlocal fileencoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-edit)fu <Cmd>setlocal fileencoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-edit)ld <Cmd>edit ++fileformat=dos<CR>
+nnoremap <silent> <Plug>(my-edit)lu <Cmd>edit ++fileformat=unix<CR>
+nnoremap <silent> <Plug>(my-edit)t <Cmd>%s/\s\+$//e<CR>
+nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' expand('~/.vim/vimrc')<CR>
 
 " Filer
 nnoremap <Plug>(my-filer) <Nop>
 nmap <Space>f <Plug>(my-filer)
-nnoremap <silent> <Plug>(my-filer)b
-  \ <Cmd>execute 'edit' g:my_bookmark_path<CR>
-nnoremap <silent> <Plug>(my-filer)o
-  \ <Cmd>execute '15Lexplore' expand('%:p:h')<CR>
-nnoremap <silent> <Plug>(my-filer)c
-  \ <Cmd>15Lexplore<CR>
+nnoremap <silent> <Plug>(my-filer)b <Cmd>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <silent> <Plug>(my-filer)o <Cmd>execute '15Lexplore' expand('%:p:h')<CR>
+nnoremap <silent> <Plug>(my-filer)c <Cmd>15Lexplore<CR>
 
 " Terminal
 if exists('&termwinkey')
@@ -203,14 +183,10 @@ if exists('&termwinkey')
 endif
 nnoremap <Plug>(my-terminal) <Nop>
 nmap <Space>t <Plug>(my-terminal)
-nnoremap <silent> <Plug>(my-terminal)h
-  \ <Cmd>call vimrc#split(v:count)<CR>
-nnoremap <silent> <Plug>(my-terminal)v
-  \ <Cmd>call vimrc#vsplit()<CR>
-nnoremap <silent> <Plug>(my-terminal)r
-  \ <Cmd>call vimrc#send_cell(v:count, expand('%:p'))<CR>
-nnoremap <silent> <Plug>(my-terminal)s
-  \ <Cmd>call vimrc#send_cmd(v:count, expand('%:p'))<CR>
+nnoremap <silent> <Plug>(my-terminal)h <Cmd>call vimrc#split(v:count)<CR>
+nnoremap <silent> <Plug>(my-terminal)v <Cmd>call vimrc#vsplit()<CR>
+nnoremap <silent> <Plug>(my-terminal)r <Cmd>call vimrc#send_cell(v:count, expand('%:p'))<CR>
+nnoremap <silent> <Plug>(my-terminal)s <Cmd>call vimrc#send_cmd(v:count, expand('%:p'))<CR>
 
 
 " --------------------------------------

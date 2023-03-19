@@ -3,7 +3,6 @@
 #
 [[plugins]]
 repo = 'sainnhe/gruvbox-material'
-if = 1
 on_event = ['VimEnter']
 hook_source = '''
 let g:gruvbox_material_better_performance = 1
@@ -100,10 +99,10 @@ require("mason-lspconfig").setup_handlers({
   end,
 })
 
+-- null-ls & mason
 local mason_package = require("mason-core.package")
 local mason_registry = require("mason-registry")
 local null_ls = require("null-ls")
-
 local null_sources = {}
 table.insert(null_sources, null_ls.builtins.diagnostics["hadolint"])
 table.insert(null_sources, null_ls.builtins.diagnostics["markdownlint"])
