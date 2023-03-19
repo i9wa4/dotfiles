@@ -37,6 +37,7 @@ sudo apt install -y \
   nkf \
   ripgrep \
   unzip \
+  vim \
   zip
 
 # Git
