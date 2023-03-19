@@ -29,7 +29,7 @@ if system('uname -r') =~ "microsoft"
     \   'cache_enabled': 1,
     \ }
 endif
-let g:netrw_home = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME)
+" let g:netrw_home = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME)
 
 
 " --------------------------------------
@@ -48,7 +48,8 @@ tnoremap <Esc> <C-\><C-n>
 " --------------------------------------
 " dein.vim
 "
-let s:dein_dir = expand('~/.cache/dein/')
+let s:dein_dir = expand('~/.cache/dein')
+let s:dein_dir .= '/' . $NVIM_APPNAME
 if &runtimepath !~# '/dein.vim'
   let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
   if !isdirectory(s:dein_repo_dir)
