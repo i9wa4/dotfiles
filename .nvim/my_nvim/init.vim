@@ -76,5 +76,5 @@ endif
 filetype plugin indent on
 syntax enable
 if !exists('g:colors_name')
-  colorscheme slate
+  colorscheme habamax
 endif
