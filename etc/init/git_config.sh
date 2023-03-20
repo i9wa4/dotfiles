@@ -15,6 +15,7 @@ git config --global difftool.prompt false
 git config --global difftool.vimdiff.path vim
 git config --global grep.lineNumber true
 git config --global http.sslVerify false
+git config --global init.defaultBranch main
 git config --global merge.conflictstyle diff3
 git config --global merge.tool vimdiff
 git config --global mergetool.prompt false
