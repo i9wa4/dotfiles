@@ -242,5 +242,5 @@ endif
 if !has('nvim')
   filetype plugin indent on
   syntax enable
-  colorscheme slate
+  colorscheme habamax
 endif
