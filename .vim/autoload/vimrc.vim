@@ -105,7 +105,7 @@ function! vimrc#set_register() abort
   endif
 endfunction
 
-function! vimrc#clear_regisger() abort
+function! vimrc#clear_register() abort
   let l:reg_list = split(
     \   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-"',
     \   '\zs'

@@ -2,34 +2,40 @@
 set encoding=utf-8
 scriptencoding utf-8
 
+filetype off
+filetype plugin indent off
+syntax off
+
 
 " --------------------------------------
 " Variable
 "
+let g:auto_reload = timer_start(
+  \   1000,
+  \   {-> execute('silent! checktime')},
+  \   {'repeat': -1}
+  \ )
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
 let g:netrw_hide = 0
 let g:netrw_home = expand('~/.vim/')
 let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
-let g:auto_reload = timer_start(
-  \   1000,
-  \   {-> execute('silent! checktime')},
-  \   {'repeat': -1}
-  \ )
 
 
 " --------------------------------------
 " Option
 "
 " System
-if has('unix') || has('mac')
+if has('unix')
   language messages C
 else
   language messages en
 endif
+if has('unix')
+  set clipboard=unnamedplus
+endif
 set autoread
-set clipboard=unnamedplus
 set nobackup
 set noerrorbells
 set noswapfile
@@ -88,7 +94,6 @@ set tabline=%!vimrc#tabline()
 
 " Highlight
 set colorcolumn=80
-" set cursorcolumn
 set cursorline
 set showmatch matchtime=1 matchpairs+=\<:\>
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
@@ -105,7 +110,7 @@ if has('termguicolors')
 endif
 
 " Abbreviation
-" :w'
+" :w' --> :w
 cnoreabbrev w' w
 
 
@@ -133,7 +138,6 @@ vnoremap <silent> k gk
 " inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
 " QuickFix
-nnoremap <silent> <C-g>g <Cmd>cfirst<CR>
 nnoremap <silent> <C-n> <Cmd>cnext<CR>
 nnoremap <silent> <C-p> <Cmd>cprevious<CR>
 
@@ -166,8 +170,8 @@ nnoremap <silent> <Plug>(my-edit)fe <Cmd>setlocal fileencoding=euc-jp<CR>
 nnoremap <silent> <Plug>(my-edit)fu <Cmd>setlocal fileencoding=utf-8<CR>
 nnoremap <silent> <Plug>(my-edit)ld <Cmd>edit ++fileformat=dos<CR>
 nnoremap <silent> <Plug>(my-edit)lu <Cmd>edit ++fileformat=unix<CR>
-nnoremap <silent> <Plug>(my-edit)t <Cmd>%s/\s\+$//e<CR>
-nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' $MYVIMRC<CR>
+nnoremap <silent> <Plug>(my-edit)t  <Cmd>%s/\s\+$//e<CR>
+nnoremap <silent> <Plug>(my-edit)v  <Cmd>execute 'edit' $MYVIMRC<CR>
 
 " Filer
 nnoremap <Plug>(my-filer) <Nop>

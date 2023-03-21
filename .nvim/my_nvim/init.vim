@@ -11,6 +11,7 @@ set runtimepath+=~/.vim/after
 set packpath^=~/.vim
 execute 'source' expand('~/.vim/vimrc')
 
+
 " --------------------------------------
 " Variable
 "
@@ -47,8 +48,7 @@ tnoremap <Esc> <C-\><C-n>
 " --------------------------------------
 " dein.vim
 "
-let s:dein_dir = expand('~/.cache/dein')
-let s:dein_dir .= '/' . $NVIM_APPNAME
+let s:dein_dir = expand('~/.cache/dein/') . $NVIM_APPNAME
 if &runtimepath !~# '/dein.vim'
   let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
   if !isdirectory(s:dein_repo_dir)
