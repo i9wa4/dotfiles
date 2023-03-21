@@ -167,7 +167,7 @@ nnoremap <silent> <Plug>(my-edit)fu <Cmd>setlocal fileencoding=utf-8<CR>
 nnoremap <silent> <Plug>(my-edit)ld <Cmd>edit ++fileformat=dos<CR>
 nnoremap <silent> <Plug>(my-edit)lu <Cmd>edit ++fileformat=unix<CR>
 nnoremap <silent> <Plug>(my-edit)t <Cmd>%s/\s\+$//e<CR>
-nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' expand('~/.vim/vimrc')<CR>
+nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' $MYVIMRC<CR>
 
 " Filer
 nnoremap <Plug>(my-filer) <Nop>

@@ -29,7 +29,6 @@ if system('uname -r') =~ "microsoft"
     \   'cache_enabled': 1,
     \ }
 endif
-" let g:netrw_home = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME)
 
 
 " --------------------------------------
@@ -43,7 +42,6 @@ set pumblend=30
 " Keymap
 "
 tnoremap <Esc> <C-\><C-n>
-nnoremap <silent> <Plug>(my-edit)v <Cmd>execute 'edit' expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/init.vim')<CR>
 
 
 " --------------------------------------
@@ -61,7 +59,7 @@ endif
 
 if dein#min#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
-  let s:rc_dir = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/rc') . '/'
+  let s:rc_dir = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/rc/')
   call dein#load_toml(s:rc_dir . 'dein_nolazy.toml', {'lazy': 0})
   call dein#load_toml(s:rc_dir . 'dein_lazy.toml', {'lazy': 1})
   call dein#load_toml(s:rc_dir . 'dein_ddc.toml', {'lazy': 1})
