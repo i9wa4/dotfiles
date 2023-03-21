@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 
 " --------------------------------------
-" StatusLine/TabLine
+" StatusLine
 "
 function! my_looking#last_search_count() abort
   " :help searchcount()
@@ -58,6 +58,10 @@ function! my_looking#statusline() abort
   return l:ret
 endfunction
 
+
+" --------------------------------------
+" TabLine
+"
 function! my_looking#tabline() abort
   " https://qiita.com/wadako111/items/755e753677dd72d8036d
   let l:ret = ''
@@ -95,14 +99,19 @@ endfunction
 " Highlight
 "
 function! my_looking#highlight() abort
-  highlight ColorColumn term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
-  highlight Error       term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
-  highlight ErrorMsg    term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
-  highlight SpellBad    term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=NONE
-  highlight VertSplit   term=NONE cterm=NONE ctermfg=White ctermbg=NONE gui=NONE guifg=White guibg=NONE
-  highlight MyEmphasis  term=NONE cterm=NONE ctermfg=Black ctermbg=DarkYellow gui=NONE guifg=Black guibg=DarkYellow
-  highlight MyError     term=NONE cterm=NONE ctermfg=Black ctermbg=Red gui=NONE guifg=Black guibg=Red
-  highlight MySpecial   term=NONE cterm=NONE ctermfg=Red ctermbg=NONE gui=NONE guifg=Red guibg=NONE
+  highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
+  highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
+  highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
+  highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=NONE
+  highlight VertSplit     term=NONE cterm=NONE ctermfg=DarkGray ctermbg=NONE gui=NONE guifg=DarkGray guibg=NONE
+  highlight StatusLine    term=NONE cterm=NONE ctermfg=Gray ctermbg=Black gui=NONE guifg=Gray guibg=Black
+  highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
+  highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
+  highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
+  highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=DarkGray gui=NONE guifg=Black guibg=DarkGray
+  highlight MyEmphasis    term=NONE cterm=NONE ctermfg=Black ctermbg=DarkYellow gui=NONE guifg=Black guibg=DarkYellow
+  highlight MyError       term=NONE cterm=NONE ctermfg=Black ctermbg=Red gui=NONE guifg=Black guibg=Red
+  highlight MySpecial     term=NONE cterm=NONE ctermfg=Red ctermbg=NONE gui=NONE guifg=Red guibg=NONE
   call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%')
   call matchadd('MyError', '　\|\[ \]')
   call matchadd('MySpecial', '\t\|\s\+$') " [		] 

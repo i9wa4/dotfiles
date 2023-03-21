@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
 
-function! my_async#my_jobstart(cmd, ...) abort
+function! my_async#my_jobstart(cmd) abort
   let s:cmd = a:cmd
   let s:line_no = 0
   let s:result = []
