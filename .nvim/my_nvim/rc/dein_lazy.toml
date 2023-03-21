@@ -10,7 +10,6 @@ on_event = ['BufNewFile', 'BufRead']
 #
 [[plugins]]
 repo = 'preservim/vim-markdown'
-if = 0
 on_ft = ['markdown']
 hook_source = '''
 let g:tex_conceal = ""
@@ -22,11 +21,6 @@ let g:vim_markdown_math = 1
 let g:vim_markdown_no_default_key_mappings = 1
 let g:vim_markdown_strikethrough = 1
 '''
-
-[[plugins]]
-repo = 'godlygeek/tabular'
-if = 0
-on_source = ['vim-markdown']
 
 # --------------------------------------
 # LSP/Linter/Formatter
