@@ -16,6 +16,7 @@ curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
 sudo apt update
 sudo apt install -y nodejs
 sudo npm install -g markdownlint-cli
+sudo npm install -g prettier
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)

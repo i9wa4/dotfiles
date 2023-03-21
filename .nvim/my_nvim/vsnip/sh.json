@@ -6,7 +6,7 @@
             "set -euo pipefail",
             "export LC_ALL=C",
             "",
-            "$0",
+            "$0"
         ]
     }
 }
