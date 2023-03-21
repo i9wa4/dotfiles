@@ -1,22 +1,4 @@
 # --------------------------------------
-# Colorscheme
-#
-[[plugins]]
-repo = 'sainnhe/gruvbox-material'
-if = 0
-on_event = ['VimEnter']
-hook_source = '''
-let g:gruvbox_material_better_performance = 1
-let g:gruvbox_material_disable_italic_comment = 1
-let g:gruvbox_material_spell_foreground = 'colored'
-if has('termguicolors')
-  set termguicolors
-endif
-set background=dark
-colorscheme gruvbox-material
-'''
-
-# --------------------------------------
 # Edit
 #
 [[plugins]]
@@ -28,6 +10,7 @@ on_event = ['BufNewFile', 'BufRead']
 #
 [[plugins]]
 repo = 'preservim/vim-markdown'
+if = 0
 on_ft = ['markdown']
 hook_source = '''
 let g:tex_conceal = ""
@@ -42,36 +25,18 @@ let g:vim_markdown_strikethrough = 1
 
 [[plugins]]
 repo = 'godlygeek/tabular'
+if = 0
 on_source = ['vim-markdown']
 
 # --------------------------------------
 # LSP/Linter/Formatter
 #
 [[plugins]]
-repo = 'williamboman/mason.nvim'
-on_source = ['nvim-lspconfig']
-
-[[plugins]]
-repo = 'williamboman/mason-lspconfig.nvim'
-on_source = ['nvim-lspconfig']
-
-[[plugins]]
-repo = 'jose-elias-alvarez/null-ls.nvim'
-on_source = ['nvim-lspconfig']
-
-[[plugins]]
-repo = 'nvim-lua/plenary.nvim'
-on_source = ['nvim-lspconfig']
-
-[[plugins]]
-# https://zenn.dev/matcha1024/articles/1a972c6e161ad4
 repo = 'neovim/nvim-lspconfig'
 on_event = ['BufNewFile', 'BufRead']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap=true, silent=true }
+local opts = {noremap=true, silent=true}
 vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
 vim.keymap.set('n', '<space>dc', vim.lsp.buf.declaration, opts)
 vim.keymap.set('n', '<space>de', vim.diagnostic.open_float, opts)
@@ -80,45 +45,25 @@ vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 -- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 -- vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 
-local lsp_flags = {
-  -- This is the default in Nvim 0.7+
-  debounce_text_changes = 150,
-}
+require("lspconfig")["pylsp"].setup()
+'''
 
-require("lspconfig")["pylsp"].setup{
-  flags = lsp_flags,
-}
-
--- mason
-require("mason").setup()
-require("mason-lspconfig").setup()
-require("mason-lspconfig").setup_handlers({
-  function(server_name)
-    require("lspconfig")[server_name].setup{
-      flags = lsp_flags,
-    }
-  end,
-})
-
--- null-ls & mason
-local mason_package = require("mason-core.package")
-local mason_registry = require("mason-registry")
+[[plugins]]
+repo = 'jose-elias-alvarez/null-ls.nvim'
+on_event = ['BufNewFile', 'BufRead']
+lua_source = '''
 local null_ls = require("null-ls")
+
 local null_sources = {}
 table.insert(null_sources, null_ls.builtins.diagnostics["hadolint"])
 table.insert(null_sources, null_ls.builtins.diagnostics["markdownlint"])
 table.insert(null_sources, null_ls.builtins.diagnostics["shellcheck"])
-for _, package in ipairs(mason_registry.get_installed_packages()) do
-  local package_categories = package.spec.categories[1]
-  if package_categories == mason_package.Cat.Formatter then
-    table.insert(null_sources, null_ls.builtins.formatting[package.name])
-  end
-  if package_categories == mason_package.Cat.Linter then
-    table.insert(null_sources, null_ls.builtins.diagnostics[package.name])
-  end
-end
 
 null_ls.setup({
   sources = null_sources,
 })
 '''
+
+[[plugins]]
+repo = 'nvim-lua/plenary.nvim'
+on_source = ['null-ls.nvim']

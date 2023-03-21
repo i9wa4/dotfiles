@@ -38,24 +38,25 @@ call ddc#custom#patch_global('sourceOptions', {
   \   },
   \ })
 call ddc#custom#patch_global('autoCompleteEvents', [
+  \   'CmdlineChanged',
   \   'InsertEnter',
   \   'TextChangedI',
   \   'TextChangedP',
-  \   'CmdlineChanged',
   \ ])
 
 inoremap <C-n>  <Cmd>call pum#map#insert_relative(+1)<CR>
 inoremap <C-p>  <Cmd>call pum#map#insert_relative(-1)<CR>
 inoremap <C-y>  <Cmd>call pum#map#confirm()<CR>
 inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
+nnoremap :      <Cmd>call CommandlinePre()<CR>:
 
 function! CommandlinePre() abort
-  cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
-  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
-  cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
-  cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
-  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
-  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+  cnoremap <Tab>    <Cmd>call pum#map#insert_relative(+1)<CR>
+  cnoremap <S-Tab>  <Cmd>call pum#map#insert_relative(-1)<CR>
+  cnoremap <C-n>    <Cmd>call pum#map#insert_relative(+1)<CR>
+  cnoremap <C-p>    <Cmd>call pum#map#insert_relative(-1)<CR>
+  cnoremap <C-y>    <Cmd>call pum#map#confirm()<CR>
+  cnoremap <C-e>    <Cmd>call pum#map#cancel()<CR>
 
   " Overwrite sources
   if !exists('b:prev_buffer_config')
@@ -92,11 +93,6 @@ call ddc#enable()
 '''
 
 [[plugins]]
-repo = 'Shougo/ddc-ui-native'
-if = 0
-on_source = ['ddc.vim']
-
-[[plugins]]
 repo = 'Shougo/pum.vim'
 on_source = ['ddc.vim']
 
@@ -126,6 +122,7 @@ on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'matsui54/denops-popup-preview.vim'
+if = 0
 on_source = ['ddc.vim']
 hook_source = '''
 call popup_preview#enable()
@@ -133,6 +130,7 @@ call popup_preview#enable()
 
 [[plugins]]
 repo = 'matsui54/denops-signature_help'
+if = 0
 on_source = ['ddc.vim']
 hook_source = '''
 call signature_help#enable()
@@ -143,12 +141,12 @@ repo = 'hrsh7th/vim-vsnip'
 on_source = ['ddc.vim']
 hook_source = '''
 let g:vsnip_snippet_dir = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/vsnip')
-imap <expr> <C-x> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-x>'
-smap <expr> <C-x> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-x>'
-imap <expr> <Tab> vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'
-smap <expr> <Tab> vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+imap <expr> <C-x>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'    : '<C-x>'
+smap <expr> <C-x>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'    : '<C-x>'
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)' : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)' : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
 '''
 
 [[plugins]]
