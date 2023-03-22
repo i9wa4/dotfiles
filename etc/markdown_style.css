@@ -1,7 +1,8 @@
 body {
   font-family: "Meiryo", sans-serif;
-  /* background-color: White; */
-  /* color: Black; */
+  background-color: Black;
+  color: White;
+  font-size: 18px;
 }
 
 h1 {
