@@ -39,11 +39,11 @@ if has('unix')
   set clipboard=unnamedplus
 endif
 set autoread
+set belloff=all
 set nobackup
 set noerrorbells
 set noswapfile
 set noundofile
-set novisualbell
 set nowritebackup
 
 " Edit
