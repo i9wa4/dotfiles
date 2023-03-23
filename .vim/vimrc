@@ -6,9 +6,6 @@ filetype off
 filetype plugin indent off
 syntax off
 
-if filereadable(expand('~/.vim/rc/local_sample.vim'))
-  execute 'source' expand('~/.vim/rc/local_sample.vim')
-endif
 
 " --------------------------------------
 " Variable
