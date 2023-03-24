@@ -2,7 +2,7 @@
 set -euo pipefail
 export LC_ALL=C
 
-. "${HOME}"/.bashrc
+. "${HOME}"/dotfiles/etc/.bashrc
 
 if [ -d "${VENV_MYENV}" ]; then
   python"${PY_VER_MINOR}" -m venv "${VENV_MYENV}" --upgrade
