@@ -39,7 +39,7 @@ function! my_looking#statusline() abort
     \ }
 
   let l:ret = ' '
-  " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
+  let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
   let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
   " let l:ret .= '%t '
   let l:ret .= '%f '
@@ -47,10 +47,10 @@ function! my_looking#statusline() abort
   let l:ret .= '%<'
   let l:ret .= "%="
   let l:ret .= (v:hlsearch ? my_looking#last_search_count() . ' ' : '')
-  let l:ret .= '  ' . '%l/%L:%-2c'
-  " let l:ret .= '  ' . 'Ln:%l/%L, Col:%-2c'
+  " let l:ret .= '  ' . '%l/%L:%-2c'
+  let l:ret .= '  ' . 'Ln:%l/%L, Col:%-2c'
   " let l:ret .= '  ' . '%2p' . "%{'\%'}"
-  " let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
+  let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
   let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
