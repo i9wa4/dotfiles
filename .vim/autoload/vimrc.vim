@@ -46,7 +46,7 @@ endfunction
 "
 function! vimrc#add_path(path_list) abort
   " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-  if has('unix') || has('mac')
+  if has('unix')
     let l:separator = ":"
   else
     let l:separator = ";"

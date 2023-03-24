@@ -13,7 +13,6 @@ rm -rf "{HOME}"/.vim
 mkdir -p "${HOME}"/.config
 ln -s "${HOME}"/dotfiles/.gitignore       "${HOME}"/.gitignore
 ln -s "${HOME}"/dotfiles/.markdownlintrc  "${HOME}"/.markdownlintrc
-ln -s "${HOME}"/dotfiles/.my_bashrc       "${HOME}"/.my_bashrc
 ln -s "${HOME}"/dotfiles/.nvim/my_nvim    "${HOME}"/.config/my_nvim
 ln -s "${HOME}"/dotfiles/.vim             "${HOME}"/.vim
 ln -s "${HOME}"/dotfiles/etc/markdown_style.css "${HOME}"/markdown_style.css
@@ -23,13 +22,14 @@ mkdir -p "/mnt/c/work/"
 ln -s "/mnt/c/work/" "${HOME}"/work
 
 # .bashrc
-{
-  echo "if [ -f ""${HOME}""/.my_bashrc ]; then"
-  echo "  . ""${HOME}""/.my_bashrc"
-  echo "fi"
-} >> "${HOME}"/.bashrc
+cat << EOT >> "${HOME}"/.bashrc
+if [ -f "${HOME}"/dotfiles/.bashrc ]; then
+  . "${HOME}"/dotfiles/.bashrc
+fi
+EOT
 
 # General
+sudo add-apt-repository -y ppa:git-core/ppa
 sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 sudo apt update
 sudo apt upgrade -y
@@ -42,9 +42,6 @@ sudo apt install -y \
   zip
 
 # Git
-sudo add-apt-repository -y ppa:git-core/ppa
-sudo apt update
-sudo apt upgrade -y
 bash git_config.sh
 
 end_time=$(date +%s.%N)
