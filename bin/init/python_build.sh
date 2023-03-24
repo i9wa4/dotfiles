@@ -2,7 +2,7 @@
 set -euo pipefail
 export LC_ALL=C
 
-. "${HOME}"/.bashrc
+. "${HOME}"/dotfiles/etc/.bashrc
 
 cd /usr/local/src/cpython/
 sudo git checkout main
