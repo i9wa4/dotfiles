@@ -8,23 +8,19 @@ cd "${script_dir}"
 start_time=$(date +%s.%N)
 
 # Symbolic Link
-rm -rf "{HOME}"/.config
+rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
 rm -rf "{HOME}"/.vim
-mkdir -p "${HOME}"/.config
-ln -s "${HOME}"/dotfiles/.gitignore       "${HOME}"/.gitignore
-ln -s "${HOME}"/dotfiles/.markdownlintrc  "${HOME}"/.markdownlintrc
-ln -s "${HOME}"/dotfiles/.nvim/my_nvim    "${HOME}"/.config/my_nvim
-ln -s "${HOME}"/dotfiles/.vim             "${HOME}"/.vim
-ln -s "${HOME}"/dotfiles/etc/markdown_style.css "${HOME}"/markdown_style.css
-ln -s "${HOME}"/dotfiles/jupytext.yaml    "${HOME}"/jupytext.yaml
-sudo ln -s "${HOME}"/dotfiles/wsl.conf /etc/wsl.conf
+ln -s "${HOME}"/dotfiles/etc/home/*   "${HOME}"
+ln -s "${HOME}"/dotfiles/.nvim/*      "${HOME}"/.config
+ln -s "${HOME}"/dotfiles/.vim         "${HOME}"/.vim
+sudo ln -s "${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 mkdir -p "/mnt/c/work/"
 ln -s "/mnt/c/work/" "${HOME}"/work
 
 # .bashrc
 cat << EOT >> "${HOME}"/.bashrc
-if [ -f "${HOME}"/dotfiles/.bashrc ]; then
-  . "${HOME}"/dotfiles/.bashrc
+if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
+  . "${HOME}"/dotfiles/etc/.bashrc
 fi
 EOT
 

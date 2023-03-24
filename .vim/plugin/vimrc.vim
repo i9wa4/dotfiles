@@ -15,6 +15,9 @@ augroup MyVimrc
   autocmd FileType
     \ css,mermaid,plantuml,sh,toml,vim,yaml
     \ setlocal shiftwidth=2 softtabstop=2 tabstop=2
+  autocmd FileType
+    \ make
+    \ setlocal noexpandtab
 
   " Local Setting
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html

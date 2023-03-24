@@ -38,7 +38,6 @@ endif
 set autoread
 set belloff=all
 set nobackup
-set noerrorbells
 set noswapfile
 set noundofile
 set nowritebackup
