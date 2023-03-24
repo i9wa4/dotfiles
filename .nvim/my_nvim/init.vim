@@ -18,7 +18,7 @@ endif
 " Variable
 "
 "
-if system('uname -r') =~ "microsoft"
+if has('linux') && exists('$WSLENV')
   let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {

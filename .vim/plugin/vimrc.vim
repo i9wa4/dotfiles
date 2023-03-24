@@ -30,7 +30,7 @@ augroup MyVimrc
   " Leaving Vim
   autocmd VimLeavePre * call vimrc#clean_viminfo()
 
-  " if !has('nvim') && system('uname -r') =~ "microsoft"
+  " if !has('nvim') && has('unix') && exists('$WSLENV')
   "   autocmd TextYankPost * call system('clip.exe', system('nkf -sc', @"))
   " endif
 augroup END

@@ -76,7 +76,6 @@ on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'matsui54/denops-popup-preview.vim'
-if = 0
 on_source = ['ddc.vim']
 hook_source = '''
 call popup_preview#enable()
@@ -84,7 +83,6 @@ call popup_preview#enable()
 
 [[plugins]]
 repo = 'matsui54/denops-signature_help'
-if = 0
 on_source = ['ddc.vim']
 hook_source = '''
 call signature_help#enable()
