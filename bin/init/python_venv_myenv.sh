@@ -13,6 +13,6 @@ fi
 . "${VENV_MYENV}"/bin/activate
 python"${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org"
 python"${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel
-python"${PY_VER_MINOR}" -m pip install -r "${HOME}"/dotfiles/etc/init/requirements.txt
+python"${PY_VER_MINOR}" -m pip install -r "${HOME}"/dotfiles/bin/init/requirements.txt
 python"${PY_VER_MINOR}" -m pip check
 deactivate
