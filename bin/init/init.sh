@@ -10,8 +10,8 @@ start_time=$(date +%s.%N)
 # Symbolic Link
 rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
 rm -rf "{HOME}"/.vim
-ln -s "${HOME}"/dotfiles/etc/home/*   "${HOME}"
-ln -s "${HOME}"/dotfiles/.nvim/*      "${HOME}"/.config
+ln -s "${HOME}"/dotfiles/etc/home/.   "${HOME}"
+ln -s "${HOME}"/dotfiles/.nvim/.      "${HOME}"/.config
 ln -s "${HOME}"/dotfiles/.vim         "${HOME}"/.vim
 sudo ln -s "${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 mkdir -p "/mnt/c/work/"
