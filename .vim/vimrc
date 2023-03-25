@@ -112,52 +112,6 @@ cnoreabbrev w' w
 
 
 " --------------------------------------
-" Function
-"
-function! MyFileType() abort
-  if empty(&filetype)
-    return
-  endif
-
-  setlocal nofoldenable autoindent expandtab
-  setlocal shiftwidth=4 softtabstop=4 tabstop=4
-
-  if index([
-  \   'css',
-  \   'mermaid',
-  \   'plantuml',
-  \   'sh',
-  \   'toml',
-  \   'vim',
-  \   'yaml',
-  \ ], &filetype) >= 0
-    setlocal shiftwidth=2 softtabstop=2 tabstop=2
-  elseif index([
-  \   'make',
-  \ ], &filetype) >= 0
-    setlocal noexpandtab
-  else
-    " Do nothing.
-  endif
-endfunction
-
-function! MyAsyncJobOnSave() abort
-  if &filetype == 'python'
-    let l:ipynb_path = expand('%:p:r') . '.ipynb'
-    if executable('jupytext') && filereadable(l:ipynb_path)
-      call my_async#my_jobstart('jupytext --sync ' . l:ipynb_path)
-    endif
-  elseif &filetype == 'markdown'
-    if executable('prettier')
-      call my_async#my_jobstart('prettier --write ' . expand('%:p'))
-    endif
-  else
-    " Do nothing.
-  endif
-endfunction
-
-
-" --------------------------------------
 " Command
 "
 function s:copy2clip(...) abort
@@ -240,16 +194,58 @@ nnoremap <silent> <Plug>(my-filer)c <Cmd>15Lexplore<CR>
 " --------------------------------------
 " Aucocommand
 "
+function! s:my_filetype() abort
+  if empty(&filetype)
+    return
+  endif
+
+  setlocal nofoldenable autoindent expandtab
+  setlocal shiftwidth=4 softtabstop=4 tabstop=4
+
+  if index([
+  \   'css',
+  \   'mermaid',
+  \   'plantuml',
+  \   'sh',
+  \   'toml',
+  \   'vim',
+  \   'yaml',
+  \ ], &filetype) >= 0
+    setlocal shiftwidth=2 softtabstop=2 tabstop=2
+  elseif index([
+  \   'make',
+  \ ], &filetype) >= 0
+    setlocal noexpandtab
+  else
+    " Do nothing.
+  endif
+endfunction
+
+function! s:my_asyncjob_on_save() abort
+  if &filetype == 'python'
+    let l:ipynb_path = expand('%:p:r') . '.ipynb'
+    if executable('jupytext') && filereadable(l:ipynb_path)
+      call my_async#my_jobstart('jupytext --sync ' . l:ipynb_path)
+    endif
+  elseif &filetype == 'markdown'
+    if executable('prettier')
+      call my_async#my_jobstart('prettier --write ' . expand('%:p'))
+    endif
+  else
+    " Do nothing.
+  endif
+endfunction
+
 augroup MyAutocmd
   autocmd!
   " Auto Reload
   autocmd WinEnter * checktime
 
   " FileType
-  autocmd FileType * call MyFileType()
+  autocmd FileType * call s:my_filetype()
 
   " Asynchrohous Job
-  autocmd BufWritePost *.md,*.py call MyAsyncJobOnSave()
+  autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
 augroup END
 
 

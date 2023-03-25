@@ -10,7 +10,7 @@ start_time=$(date +%s.%N)
 # Symbolic Link
 rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
 rm -rf "{HOME}"/.vim
-cp -rfs "${HOME}"/dotfiles/etc/home/.	"${HOME}"
+cp -rfs "${HOME}"/dotfiles/etc/home/.   "${HOME}"
 cp -rfs "${HOME}"/dotfiles/.nvim/.      "${HOME}"/.config
 ln -fs  "${HOME}"/dotfiles/.vim         "${HOME}"/.vim
 sudo ln -fs "${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
@@ -33,6 +33,7 @@ sudo apt install -y \
   bc \
   nkf \
   ripgrep \
+  tmux \
   unzip \
   vim \
   zip
