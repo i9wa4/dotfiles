@@ -1,2 +1,8 @@
 {
+    "func": {
+        "prefix": "func",
+        "body": [
+            "$0"
+        ]
+    }
 }

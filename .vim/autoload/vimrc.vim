@@ -72,10 +72,6 @@ function! vimrc#source_local_vimrc(path) abort
     call add(l:vimrc_path_list, fnamemodify(expand(l:i), ':p'))
   endfor
 
-  if filereadable(expand('~/.vim/rc/local_sample.vim'))
-    execute 'source' expand('~/.vim/rc/local_sample.vim')
-  endif
-
   for l:i in l:vimrc_path_list
     execute 'source' l:i
   endfor
