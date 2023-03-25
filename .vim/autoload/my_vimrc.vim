@@ -3,13 +3,13 @@ scriptencoding utf-8
 " --------------------------------------
 " Viminfo
 "
-function! vimrc#restore_cursor() abort
+function! my_vimrc#restore_cursor() abort
   if (line("'\"") >= 1) && (line("'\"") <= line("$"))
     execute "normal! g'\""
   endif
 endfunction
 
-function! vimrc#set_register() abort
+function! my_vimrc#set_register() abort
   if empty(&buftype)
     let @a = expand('%:p:~')
     let @b = expand('%:p:~:h')
@@ -19,7 +19,7 @@ function! vimrc#set_register() abort
   endif
 endfunction
 
-function! vimrc#clean_viminfo() abort
+function! my_vimrc#clean_viminfo() abort
   " delete marks
   delmarks a-z0-9[]^.<>
 
@@ -44,7 +44,7 @@ endfunction
 " --------------------------------------
 " Environment
 "
-function! vimrc#add_path(path_list) abort
+function! my_vimrc#add_path(path_list) abort
   " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
   if has('unix')
     let l:separator = ":"
@@ -65,12 +65,17 @@ function! vimrc#add_path(path_list) abort
   let $PATH = join(l:path_list, l:separator)
 endfunction
 
-function! vimrc#source_local_vimrc(path) abort
+function! my_vimrc#source_local_vimrc(path) abort
+  " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " https://github.com/vim-jp/issues/issues/1176
   let l:vimrc_path_list = []
   for l:i in reverse(findfile('local.vim', escape(a:path, ' ') . ';', -1))
     call add(l:vimrc_path_list, fnamemodify(expand(l:i), ':p'))
   endfor
+
+  if filereadable(expand('~/.vim/rc/local_sample.vim'))
+    execute 'source' expand('~/.vim/rc/local_sample.vim')
+  endif
 
   for l:i in l:vimrc_path_list
     execute 'source' l:i

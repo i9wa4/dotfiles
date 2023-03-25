@@ -8,14 +8,6 @@ syntax off
 
 
 " --------------------------------------
-" Local setting
-"
-if filereadable(expand('~/.vim/rc/local_sample.vim'))
-  execute 'source' expand('~/.vim/rc/local_sample.vim')
-endif
-
-
-" --------------------------------------
 " Variable
 "
 let g:auto_reload = timer_start(
@@ -120,10 +112,71 @@ cnoreabbrev w' w
 
 
 " --------------------------------------
+" Function
+"
+function! MyFileType() abort
+  if empty(&filetype)
+    return
+  endif
+
+  setlocal nofoldenable autoindent expandtab
+  setlocal shiftwidth=4 softtabstop=4 tabstop=4
+
+  if index([
+  \   'css',
+  \   'mermaid',
+  \   'plantuml',
+  \   'sh',
+  \   'toml',
+  \   'vim',
+  \   'yaml',
+  \ ], &filetype) >= 0
+    setlocal shiftwidth=2 softtabstop=2 tabstop=2
+  elseif index([
+  \   'make',
+  \ ], &filetype) >= 0
+    setlocal noexpandtab
+  else
+    " Do nothing.
+  endif
+endfunction
+
+function! MyAsyncJobOnSave() abort
+  if &filetype == 'python'
+    let l:ipynb_path = expand('%:p:r') . '.ipynb'
+    if executable('jupytext') && filereadable(l:ipynb_path)
+      call my_async#my_jobstart('jupytext --sync ' . l:ipynb_path)
+    endif
+  elseif &filetype == 'markdown'
+    if executable('prettier')
+      call my_async#my_jobstart('prettier --write ' . expand('%:p'))
+    endif
+  else
+    " Do nothing.
+  endif
+endfunction
+
+
+" --------------------------------------
 " Command
 "
-command! -nargs=1 P execute 'let @+ = @' . <q-args>
-command! -nargs=1 PW call system('clip.exe', system('nkf -sc', getreg(<q-args>)))
+function s:copy2clip(...) abort
+  if a:0 >= 1
+    let @+ = getreg(a:1)
+  else
+    let @+ = @"
+  endif
+endfunction
+command! -nargs=? C call s:copy2clip(<q-args>)
+
+function s:copy2clip_win(...) abort
+  if a:0 >= 1
+    call system('clip.exe', system('nkf -sc', getreg(a:1)))
+  else
+    call system('clip.exe', system('nkf -sc', @"))
+  endif
+endfunction
+command! -nargs=? CW call s:copy2clip_win(<q-args>)
 
 
 " --------------------------------------
@@ -134,24 +187,20 @@ nnoremap <silent> k gk
 vnoremap <silent> j gj
 vnoremap <silent> k gk
 
-" nnoremap <silent> Y y$
-" nnoremap <silent> gf gF
-" nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR>
-
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
-" inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
+inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
 " QuickFix
 nnoremap <silent> <C-n> <Cmd>cnext<CR>
 nnoremap <silent> <C-p> <Cmd>cprevious<CR>
 
 " Resize Window
-nnoremap <silent> <S-Down> <C-w>1-
-nnoremap <silent> <S-Up> <C-w>1+
+nnoremap <silent> <S-Down>  <C-w>1-
+nnoremap <silent> <S-Up>    <C-w>1+
 nnoremap <silent> <S-Right> <C-w>10>
-nnoremap <silent> <S-Left> <C-w>10<
+nnoremap <silent> <S-Left>  <C-w>10<
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Switch
@@ -191,17 +240,16 @@ nnoremap <silent> <Plug>(my-filer)c <Cmd>15Lexplore<CR>
 " --------------------------------------
 " Aucocommand
 "
-augroup MyAsyncJob
+augroup MyAutocmd
   autocmd!
-  autocmd BufWritePost *.py
-    \ let s:ipynb_path = expand('%:p:r') . '.ipynb'
-    \|if executable('jupytext') && filereadable(s:ipynb_path)
-    \|  call my_async#my_jobstart('jupytext --sync ' . s:ipynb_path)
-    \|endif
-  autocmd BufWritePost *.md
-    \ if executable('prettier')
-    \|  call my_async#my_jobstart('prettier --write ' . expand('%:p'))
-    \|endif
+  " Auto Reload
+  autocmd WinEnter * checktime
+
+  " FileType
+  autocmd FileType * call MyFileType()
+
+  " Asynchrohous Job
+  autocmd BufWritePost *.md,*.py call MyAsyncJobOnSave()
 augroup END
 
 
