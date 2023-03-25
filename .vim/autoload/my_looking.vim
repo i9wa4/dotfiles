@@ -110,9 +110,9 @@ function! my_looking#highlight() abort
   highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=DarkGray gui=NONE guifg=Black guibg=DarkGray
   highlight MyEmphasis    term=NONE cterm=NONE ctermfg=Black ctermbg=DarkYellow gui=NONE guifg=Black guibg=DarkYellow
-  highlight MyError       term=NONE cterm=NONE ctermfg=Black ctermbg=Red gui=NONE guifg=Black guibg=Red
+  highlight MyError       term=NONE cterm=NONE ctermfg=Black ctermbg=DarkRed gui=NONE guifg=Black guibg=DarkRed
   highlight MySpecial     term=NONE cterm=NONE ctermfg=Red ctermbg=NONE gui=NONE guifg=Red guibg=NONE
-  call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%')
-  call matchadd('MyError', '　\|\[ \]')
-  call matchadd('MySpecial', '\t\|\s\+$') " [		] 
+  call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
+  call matchadd('MyError', '　\|\s\+$') " 
+  call matchadd('MySpecial', '\t') " [		]
 endfunction

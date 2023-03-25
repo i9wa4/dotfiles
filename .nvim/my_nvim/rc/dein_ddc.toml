@@ -1,58 +1,48 @@
-# --------------------------------------
-# ddc.vim
-#
 [[plugins]]
 repo = 'Shougo/ddc.vim'
 on_event = ['InsertEnter']
 depends = ['denops.vim']
 hook_source = '''
-call ddc#custom#patch_global('ui', 'pum')
-call ddc#custom#patch_global('sources', [
-  \   'around',
-  \   'vsnip',
-  \   'nvim-lsp',
-  \   'skkeleton',
-  \ ])
-call ddc#custom#patch_global('sourceOptions', {
-  \   '_': {
-  \     'matchers': ['matcher_head'],
-  \     'sorters': ['sorter_rank'],
-  \     'converters': ['converter_remove_overlap'],
-  \   },
-  \   'around': {
-  \     'mark': 'Around',
-  \   },
-  \   'vsnip': {
-  \     'mark': 'Snippet',
-  \   },
-  \   'nvim-lsp': {
-  \     'mark': 'LSP',
-  \     'forceCompletionPattern': '\.\w*|:\w*|->\w*',
-  \   },
-  \   'skkeleton': {
-  \     'mark': 'SKK',
-  \     'matchers': ['skkeleton'],
-  \     'sorters': [],
-  \     'minAutoCompleteLength': 2,
-  \     'isVolatile': v:true,
+inoremap <C-n> <Cmd>call pum#map#insert_relative(+1)<CR>
+inoremap <C-p> <Cmd>call pum#map#insert_relative(-1)<CR>
+inoremap <C-y> <Cmd>call pum#map#confirm()<CR>
+inoremap <C-e> <Cmd>call pum#map#cancel()<CR>
+
+call ddc#custom#patch_global({
+  \   'ui': 'pum',
+  \   'sources': [
+  \     'around',
+  \     'vsnip',
+  \     'nvim-lsp',
+  \     'skkeleton',
+  \   ],
+  \   'sourceOptions': {
+  \     '_': {
+  \       'matchers': ['matcher_head'],
+  \       'sorters': ['sorter_rank'],
+  \       'converters': ['converter_remove_overlap'],
+  \     },
+  \     'around': {
+  \       'mark': 'Around',
+  \     },
+  \     'vsnip': {
+  \       'mark': 'Snippet',
+  \     },
+  \     'nvim-lsp': {
+  \       'mark': 'LSP',
+  \       'forceCompletionPattern': '\.\w*|:\w*|->\w*',
+  \     },
+  \     'skkeleton': {
+  \       'mark': 'SKK',
+  \       'matchers': ['skkeleton'],
+  \       'sorters': [],
+  \       'minAutoCompleteLength': 2,
+  \       'isVolatile': v:true,
+  \     },
   \   },
   \ })
-
-inoremap <C-n>  <Cmd>call pum#map#insert_relative(+1)<CR>
-inoremap <C-p>  <Cmd>call pum#map#insert_relative(-1)<CR>
-inoremap <C-y>  <Cmd>call pum#map#confirm()<CR>
-inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
-
 call ddc#enable()
 '''
-
-[[plugins]]
-repo = 'Shougo/pum.vim'
-on_source = ['ddc.vim']
-
-[[plugins]]
-repo = 'Shougo/ddc-ui-pum'
-on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'Shougo/ddc-around'
@@ -67,26 +57,20 @@ repo = 'Shougo/ddc-matcher_head'
 on_source = ['ddc.vim']
 
 [[plugins]]
-repo = 'Shougo/ddc-sorter_rank'
-on_source = ['ddc.vim']
-
-[[plugins]]
 repo = 'Shougo/ddc-source-nvim-lsp'
 on_source = ['ddc.vim']
 
 [[plugins]]
-repo = 'matsui54/denops-popup-preview.vim'
+repo = 'Shougo/ddc-sorter_rank'
 on_source = ['ddc.vim']
-hook_source = '''
-call popup_preview#enable()
-'''
 
 [[plugins]]
-repo = 'matsui54/denops-signature_help'
+repo = 'Shougo/ddc-ui-pum'
 on_source = ['ddc.vim']
-hook_source = '''
-call signature_help#enable()
-'''
+
+[[plugins]]
+repo = 'Shougo/pum.vim'
+on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'

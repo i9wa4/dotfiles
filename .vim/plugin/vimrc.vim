@@ -21,7 +21,7 @@ augroup MyVimrc
 
   " Local Setting
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
-  autocmd VimEnter,DirChanged * call vimrc#source_local_vimrc(expand('<afile>:p'))
+  autocmd DirChanged * call vimrc#source_local_vimrc(expand('<afile>:p'))
 
   " Mark
   autocmd BufReadPost * call vimrc#restore_cursor()
