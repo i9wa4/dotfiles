@@ -3,9 +3,7 @@ all: link apt git vim-init vim-build nvim-init nvim-build win-update
 
 .PHONY: link
 define SOURCE_BASHRC
-if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
-  . "${HOME}"/dotfiles/etc/.bashrc
-fi
+if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then . "${HOME}"/dotfiles/etc/.bashrc; fi
 endef
 export SOURCE_BASHRC
 link:
@@ -20,13 +18,8 @@ link:
 	cat << "$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
 
 .PHONY: test
-define TESTDESU
-if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
-  . "${HOME}"/dotfiles/etc/.bashrc
-fi
-endef
 test:
-	echo "$${TESTDESU}" >> ${HOME}/.bashrc
+	echo "if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then . "${HOME}"/dotfiles/etc/.bashrc; fi" >> ${HOME}/.bashrc
 
 
 .PHONY: apt
