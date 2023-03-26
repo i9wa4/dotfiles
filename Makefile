@@ -2,6 +2,12 @@
 all: link apt git vim-init vim-build nvim-init nvim-build win-update
 
 .PHONY: link
+define SOURCE_BASHRC
+if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
+  . "${HOME}"/dotfiles/etc/.bashrc
+fi
+endef
+export SOURCE_BASHRC
 link:
 	rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
 	rm -rf "{HOME}"/.vim
@@ -11,11 +17,7 @@ link:
 	sudo ln -fs "${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	mkdir -p "/mnt/c/work/"
 	ln -s "/mnt/c/work/" "${HOME}"/work
-	cat << EOT >> "${HOME}"/.bashrc \
-	if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then \
-	  . "${HOME}"/dotfiles/etc/.bashrc \
-	fi \
-	EOT
+	cat << "$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
 
 .PHONY: apt
 apt:
