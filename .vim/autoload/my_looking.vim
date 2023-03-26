@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-
 " --------------------------------------
 " StatusLine
 "

@@ -13,36 +13,10 @@ endif
 
 
 " --------------------------------------
-" Variable
-"
-"
-if has('linux') && exists('$WSLENV')
-  let g:clipboard = {
-    \   'name': 'WslClipboard',
-    \   'copy': {
-    \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
-    \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
-    \    },
-    \   'paste': {
-    \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \   },
-    \   'cache_enabled': 1,
-    \ }
-endif
-
-
-" --------------------------------------
 " Option
 "
 set laststatus=3
 set pumblend=30
-
-
-" --------------------------------------
-" Keymap
-"
-tnoremap <Esc> <C-\><C-n>
 
 
 " --------------------------------------

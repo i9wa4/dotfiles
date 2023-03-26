@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-
 augroup MyVimrc
   autocmd!
   autocmd BufEnter * call my_vimrc#set_register()

@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-
 let s:dein_dir = expand('~/.cache/dein/') . $NVIM_APPNAME
 if &runtimepath !~# '/dein.vim'
   let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
