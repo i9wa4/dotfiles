@@ -62,9 +62,7 @@ vim-init:
 	# sudo apt update
 	sudo apt build-dep -y vim
 	cd /usr/local/src/
-	if [ ! -d ./vim/ ]; then \
-	  sudo git clone https://github.com/vim/vim.git \
-	fi
+	if [ ! -d ./vim/ ]; then sudo git clone https://github.com/vim/vim.git; fi
 
 .PHONY: vim-build
 vim-build:
@@ -104,13 +102,9 @@ nvim-init:
 	  unzip
 	sudo apt install -y shellcheck
 	cd /usr/local/src/
-	if [ ! -d ./neovim/ ]; then \
-	  sudo git clone https://github.com/neovim/neovim.git \
-	fi
+	if [ ! -d ./neovim/ ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 	# Deno
-	if [ -z "$(which deno)" ]; then \
-	  curl -fsSL https://deno.land/install.sh | bash \
-	fi
+	if [ -z "$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
 	# SKK
 	mkdir -p "${HOME}"/.skk/
 	cd "${HOME}"/.skk/
