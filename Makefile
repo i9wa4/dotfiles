@@ -1,6 +1,9 @@
 .PHONY: all
 all: link apt git vim-init vim-build nvim-init nvim-build win-update
 
+.PHONY: minimal
+minimal: link apt git win-update
+
 .PHONY: link
 link:
 	rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
@@ -128,6 +131,7 @@ python-build:
 python-venv-myenv:
 
 .PHONY: win-update
+# TODO: def WIN_UTIL_DIR
 win-update:
 	WIN_UTIL_DIR=/mnt/c/work/util/
 	rm -rf "${WIN_UTIL_DIR}"
