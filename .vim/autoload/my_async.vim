@@ -1,7 +1,6 @@
 scriptencoding utf-8
 
-
-function! my_async#my_jobstart(cmd) abort
+function! my_async#jobstart(cmd) abort
   let s:cmd = a:cmd
   let s:line_no = 0
   let s:result = []
@@ -26,12 +25,10 @@ endfunction
 function! s:get_msg(ch, msg) abort
   if has('nvim')
     if len(a:msg) > 1
-      for l:i in a:msg[:-2]
-        let s:line_no += 1
-        let l:msg = '[' . s:line_no . '] ' . a:msg[l:i]
-        echomsg l:msg
-        call add(s:result, l:msg)
-      endfor
+      let s:line_no += len(a:msg[:-2])
+      let l:msg = '[' . s:line_no . '] ' . a:msg[-2]
+      echomsg l:msg
+      call add(s:result, l:msg)
     endif
   else
     let s:line_no += 1

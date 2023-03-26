@@ -66,9 +66,9 @@ set smartcase
 set wrapscan
 
 " View
+" set number
+" set relativenumber
 set ambiwidth=double
-set number
-set relativenumber
 
 " Window
 set noequalalways
@@ -203,18 +203,18 @@ function! s:my_filetype() abort
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
 
   if index([
-  \   'css',
-  \   'mermaid',
-  \   'plantuml',
-  \   'sh',
-  \   'toml',
-  \   'vim',
-  \   'yaml',
-  \ ], &filetype) >= 0
+    \   'css',
+    \   'mermaid',
+    \   'plantuml',
+    \   'sh',
+    \   'toml',
+    \   'vim',
+    \   'yaml',
+    \ ], &filetype) >= 0
     setlocal shiftwidth=2 softtabstop=2 tabstop=2
   elseif index([
-  \   'make',
-  \ ], &filetype) >= 0
+    \   'make',
+    \ ], &filetype) >= 0
     setlocal noexpandtab
   else
     " Do nothing.
@@ -225,11 +225,11 @@ function! s:my_asyncjob_on_save() abort
   if &filetype == 'python'
     let l:ipynb_path = expand('%:p:r') . '.ipynb'
     if executable('jupytext') && filereadable(l:ipynb_path)
-      call my_async#my_jobstart('jupytext --sync ' . l:ipynb_path)
+      call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
     if executable('prettier')
-      call my_async#my_jobstart('prettier --write ' . expand('%:p'))
+      call my_async#jobstart('prettier --write ' . expand('%:p'))
     endif
   else
     " Do nothing.
