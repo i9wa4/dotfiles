@@ -20,8 +20,13 @@ link:
 	cat << "$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
 
 .PHONY: test
+define TESTDESU
+if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
+  . "${HOME}"/dotfiles/etc/.bashrc
+fi
+endef
 test:
-	"$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
+	"$${TESTDESU}" >> ${HOME}/.bashrc
 
 
 .PHONY: apt
