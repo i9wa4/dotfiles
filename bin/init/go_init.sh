@@ -2,6 +2,8 @@
 set -euo pipefail
 export LC_ALL=C
 
+. "${HOME}"/dotfiles/etc/.bashrc
+
 # Go
 sudo add-apt-repository -y ppa:longsleep/golang-backports
 sudo apt update
