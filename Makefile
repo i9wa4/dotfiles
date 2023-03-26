@@ -26,7 +26,7 @@ if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
 fi
 endef
 test:
-	"$${TESTDESU}" >> ${HOME}/.bashrc
+	echo "$${TESTDESU}" >> ${HOME}/.bashrc
 
 
 .PHONY: apt
