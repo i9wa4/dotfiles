@@ -139,3 +139,61 @@ win-update:
 	cp -rf "${HOME}"/dotfiles/bin/windows/          "${WIN_UTIL_DIR}"/bin/
 	cp -rf "${HOME}"/dotfiles/etc/home/.            "${WIN_UTIL_DIR}"/etc/
 	cp -rf "${HOME}"/dotfiles/etc/windows/.         "${WIN_UTIL_DIR}"/etc/
+
+.PHONY: docker-init
+docker-init:
+	# https://docs.docker.com/engine/install/ubuntu/
+	sudo apt-get remove docker docker.io containerd runc
+	# sudo apt-get remove docker-engine
+	sudo apt-get update
+	sudo apt-get install -y ca-certificates curl gnupg lsb-release
+	sudo mkdir -p /etc/apt/keyrings
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+	  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	echo \
+	  "deb [arch=$(dpkg --print-architecture) \
+	  signed-by=/etc/apt/keyrings/docker.gpg] \
+	  https://download.docker.com/linux/ubuntu \
+	  $(lsb_release -cs) stable" \
+	  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	sudo apt-get update
+	sudo apt-get install -y \
+	  docker-ce docker-ce-cli containerd.io docker-compose-plugin
+	# https://docs.docker.com/engine/install/linux-postinstall/
+	# sudo groupadd docker
+	sudo usermod -aG docker "${USER}"
+	# hadolint
+	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
+	sudo chmod 755 /usr/local/bin/hadolint
+
+.PHONY: go-init
+go-init:
+	sudo add-apt-repository -y ppa:longsleep/golang-backports
+	sudo apt update
+	sudo apt install -y golang-go
+	go install github.com/rhysd/vim-startuptime@latest
+	# $ vim-startuptime -vimpath nvim -count 1000
+	# $ vim-startuptime -vimpath vim -count 1000
+
+.PHONY: psql-init
+psql-init:
+	sudo apt install -y postgresql postgresql-contrib
+
+.PHONY: r-init
+r-init:
+	# sudo apt update
+	sudo apt install -y --no-install-recommends \
+	  software-properties-common dirmngr
+	wget -qO- \
+	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+	sudo add-apt-repository -y \
+	  "deb https://cloud.r-project.org/bin/linux/ubuntu \
+	  $(lsb_release -cs)-cran40/"
+	sudo apt install -y --no-install-recommends r-base
+	sudo apt install -y pandoc
+	sudo R -e "install.packages('rmarkdown')"
+	sudo R -e "install.packages('IRkernel')"
+	# $ activate venv
+	# $ R
+	# $ IRkernel::installspec()

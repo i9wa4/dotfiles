@@ -15,6 +15,7 @@ export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
 # Go
 export GOPATH="${HOME}"/go
+mkdir -p "${GOPATH}"
 export PATH="${GOPATH}"/bin:"${PATH}"
 
 # Python
