@@ -19,6 +19,11 @@ link:
 	ln -s "/mnt/c/work/" "${HOME}"/work
 	cat << "$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
 
+.PHONY test
+test:
+	"$${SOURCE_BASHRC}" >> "${HOME}"/.bashrc
+
+
 .PHONY: apt
 apt:
 	sudo add-apt-repository -y ppa:git-core/ppa
