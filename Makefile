@@ -11,10 +11,10 @@ link:
 	sudo ln -fs "${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	mkdir -p "/mnt/c/work/"
 	ln -s "/mnt/c/work/" "${HOME}"/work
-	cat << EOT >> "${HOME}"/.bashrc
-	if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
-	  . "${HOME}"/dotfiles/etc/.bashrc
-	fi
+	cat << EOT >> "${HOME}"/.bashrc \
+	if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then \
+	  . "${HOME}"/dotfiles/etc/.bashrc \
+	fi \
 	EOT
 
 .PHONY: apt
@@ -60,8 +60,8 @@ vim-init:
 	# sudo apt update
 	sudo apt build-dep -y vim
 	cd /usr/local/src/
-	if [ ! -d ./vim/ ]; then
-	  sudo git clone https://github.com/vim/vim.git
+	if [ ! -d ./vim/ ]; then \
+	  sudo git clone https://github.com/vim/vim.git \
 	fi
 
 .PHONY: vim-build
@@ -102,12 +102,12 @@ nvim-init:
 	  unzip
 	sudo apt install -y shellcheck
 	cd /usr/local/src/
-	if [ ! -d ./neovim/ ]; then
-	  sudo git clone https://github.com/neovim/neovim.git
+	if [ ! -d ./neovim/ ]; then \
+	  sudo git clone https://github.com/neovim/neovim.git \
 	fi
 	# Deno
-	if [ -z "$(which deno)" ]; then
-	  curl -fsSL https://deno.land/install.sh | bash
+	if [ -z "$(which deno)" ]; then \
+	  curl -fsSL https://deno.land/install.sh | bash \
 	fi
 	# SKK
 	mkdir -p "${HOME}"/.skk/
