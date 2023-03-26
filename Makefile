@@ -55,25 +55,25 @@ vim-init:
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	# sudo apt update
 	sudo apt build-dep -y vim
-	cd /usr/local/src/
-	if [ ! -d ./vim/ ]; then sudo git clone https://github.com/vim/vim.git; fi
+	cd /usr/local/src/ \
+	&& if [ ! -d ./vim/ ]; then sudo git clone https://github.com/vim/vim.git; fi
 
 .PHONY: vim-build
 vim-build:
-	cd /usr/local/src/vim/
-	sudo git checkout master
-	sudo git pull
-	cd ./src/
-	sudo ./configure \
+	cd /usr/local/src/vim/ \
+	&& sudo git checkout master \
+	&& sudo git pull \
+	&& cd ./src/ \
+	&& sudo ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
 	  --enable-python3interp=dynamic \
 	  --prefix=/usr/local \
 	  --with-features=huge \
-	  --with-x
-	sudo make
-	sudo make install
-	hash -r
+	  --with-x \
+	&& sudo make \
+	&& sudo make install \
+	&& hash -r
 
 .PHONY: nvim-init
 nvim-init:
@@ -95,25 +95,25 @@ nvim-init:
 	  pkg-config \
 	  unzip
 	sudo apt install -y shellcheck
-	cd /usr/local/src/
-	if [ ! -d ./neovim/ ]; then sudo git clone https://github.com/neovim/neovim.git; fi
+	cd /usr/local/src/ \
+	&& if [ ! -d ./neovim/ ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 	# Deno
 	if [ -z "$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
 	# SKK
 	mkdir -p "${HOME}"/.skk/
-	cd "${HOME}"/.skk/
-	wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz
-	gzip -d SKK-JISYO.L.gz
-	wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz
-	gzip -d SKK-JISYO.jinmei.gz
+	cd "${HOME}"/.skk/ \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
+	&& gzip -d SKK-JISYO.L.gz \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
+	&& gzip -d SKK-JISYO.jinmei.gz
 
 .PHONY: nvim-build
 nvim-build:
-	cd /usr/local/src/neovim/
-	sudo git checkout master
-	sudo git pull
-	sudo make CMAKE_BUILD_TYPE=Release
-	sudo make install
+	cd /usr/local/src/neovim/ \
+	&& sudo git checkout master \
+	&& sudo git pull \
+	&& sudo make CMAKE_BUILD_TYPE=Release \
+	&& sudo make install
 
 .PHONY: nodejs-init
 nodejs-init:
