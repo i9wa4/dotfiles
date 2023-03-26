@@ -13,7 +13,7 @@ link:
 	ln -s "/mnt/c/work/" "${HOME}"/work
 	cat << EOT >> "${HOME}"/.bashrc
 	if [ -f "${HOME}"/dotfiles/etc/.bashrc ]; then
-		. "${HOME}"/dotfiles/etc/.bashrc
+	  . "${HOME}"/dotfiles/etc/.bashrc
 	fi
 	EOT
 
@@ -24,13 +24,13 @@ apt:
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y \
-		bc \
-		nkf \
-		ripgrep \
-		tmux \
-		unzip \
-		vim \
-		zip
+	  bc \
+	  nkf \
+	  ripgrep \
+	  tmux \
+	  unzip \
+	  vim \
+	  zip
 
 .PHONY: git
 git:
@@ -61,7 +61,7 @@ vim-init:
 	sudo apt build-dep -y vim
 	cd /usr/local/src/
 	if [ ! -d ./vim/ ]; then
-		sudo git clone https://github.com/vim/vim.git
+	  sudo git clone https://github.com/vim/vim.git
 	fi
 
 .PHONY: vim-build
@@ -71,12 +71,12 @@ vim-build:
 	sudo git pull
 	cd ./src/
 	sudo ./configure \
-		--disable-gui \
-		--enable-fail-if-missing \
-		--enable-python3interp=dynamic \
-		--prefix=/usr/local \
-		--with-features=huge \
-		--with-x
+	  --disable-gui \
+	  --enable-fail-if-missing \
+	  --enable-python3interp=dynamic \
+	  --prefix=/usr/local \
+	  --with-features=huge \
+	  --with-x
 	sudo make
 	sudo make install
 	hash -r
@@ -86,28 +86,28 @@ nvim-init:
 	# https://github.com/neovim/neovim/wiki/Building-Neovim
 	# sudo apt update
 	sudo apt install -y \
-		autoconf \
-		automake \
-		cmake \
-		cmake \
-		curl \
-		doxygen \
-		g++ \
-		gcc \
-		gettext \
-		libtool \
-		libtool-bin \
-		ninja-build \
-		pkg-config \
-		unzip
+	  autoconf \
+	  automake \
+	  cmake \
+	  cmake \
+	  curl \
+	  doxygen \
+	  g++ \
+	  gcc \
+	  gettext \
+	  libtool \
+	  libtool-bin \
+	  ninja-build \
+	  pkg-config \
+	  unzip
 	sudo apt install -y shellcheck
 	cd /usr/local/src/
 	if [ ! -d ./neovim/ ]; then
-		sudo git clone https://github.com/neovim/neovim.git
+	  sudo git clone https://github.com/neovim/neovim.git
 	fi
 	# Deno
 	if [ -z "$(which deno)" ]; then
-		curl -fsSL https://deno.land/install.sh | bash
+	  curl -fsSL https://deno.land/install.sh | bash
 	fi
 	# SKK
 	mkdir -p "${HOME}"/.skk/
