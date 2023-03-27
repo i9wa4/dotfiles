@@ -1,3 +1,5 @@
+WIN_UTIL_DIR := /mnt/c/work/util/
+
 .PHONY: all
 all: link apt git vim-init vim-build nvim-init nvim-build win-update
 
@@ -136,7 +138,6 @@ python-venv-myenv:
 
 .PHONY: win-update
 # TODO: def WIN_UTIL_DIR
-WIN_UTIL_DIR = /mnt/c/work/util/
 win-update
 	rm -rf $(WIN_UTIL_DIR)
 	mkdir -p $(WIN_UTIL_DIR)
