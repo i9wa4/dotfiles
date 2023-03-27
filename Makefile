@@ -138,7 +138,7 @@ python-venv-myenv:
 
 .PHONY: win-update
 # TODO: def WIN_UTIL_DIR
-win-update
+win-update:
 	rm -rf $(WIN_UTIL_DIR)
 	mkdir -p $(WIN_UTIL_DIR)
 	cp -rf "${HOME}"/dotfiles/.jupyter/             $(WIN_UTIL_DIR)
