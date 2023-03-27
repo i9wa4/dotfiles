@@ -23,7 +23,7 @@ set pumblend=30
 " --------------------------------------
 " dein.vim
 "
-let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim')
+let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim'
 if filereadable(s:dein_path)
   execute 'source' s:dein_path
 endif
