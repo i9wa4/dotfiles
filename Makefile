@@ -4,10 +4,14 @@ all: link apt git vim-init vim-build nvim-init nvim-build win-update
 .PHONY: minimal
 minimal: link apt git win-update
 
+.PHONY: test1
+test1:
+	echo test1 "${HOME}"
+
 .PHONY: link
 link:
-	rm -rf "{HOME}"/.config && mkdir -p "${HOME}"/.config
-	rm -rf "{HOME}"/.vim
+	rm -rf "${HOME}"/.config && mkdir -p "${HOME}"/.config
+	rm -rf "${HOME}"/.vim
 	cp -rfs "${HOME}"/dotfiles/etc/home/.   "${HOME}"
 	cp -rfs "${HOME}"/dotfiles/.nvim/.      "${HOME}"/.config
 	ln -fs  "${HOME}"/dotfiles/.vim         "${HOME}"/.vim
