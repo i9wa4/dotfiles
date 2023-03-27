@@ -137,16 +137,16 @@ python-venv-myenv:
 .PHONY: win-update
 # TODO: def WIN_UTIL_DIR
 win-update:
-	WIN_UTIL_DIR=/mnt/c/work/util/
-	rm -rf "${WIN_UTIL_DIR}"
-	mkdir -p "${WIN_UTIL_DIR}"
-	cp -rf "${HOME}"/dotfiles/.jupyter/             "${WIN_UTIL_DIR}"
-	cp -rf "${HOME}"/dotfiles/.nvim/my_nvim/vsnip/  "${WIN_UTIL_DIR}"
-	cp -rf "${HOME}"/dotfiles/VSCode/               "${WIN_UTIL_DIR}"
-	cp -rf "${HOME}"/dotfiles/WindowsTerminal/      "${WIN_UTIL_DIR}"
-	cp -rf "${HOME}"/dotfiles/bin/windows/          "${WIN_UTIL_DIR}"/bin/
-	cp -rf "${HOME}"/dotfiles/etc/home/.            "${WIN_UTIL_DIR}"/etc/
-	cp -rf "${HOME}"/dotfiles/etc/windows/.         "${WIN_UTIL_DIR}"/etc/
+	WIN_UTIL_DIR=/mnt/c/work/util/ \
+	&& rm -rf "${WIN_UTIL_DIR}" \
+	&& mkdir -p "${WIN_UTIL_DIR}" \
+	&& cp -rf "${HOME}"/dotfiles/.jupyter/             "${WIN_UTIL_DIR}" \
+	&& cp -rf "${HOME}"/dotfiles/.nvim/my_nvim/vsnip/  "${WIN_UTIL_DIR}" \
+	&& cp -rf "${HOME}"/dotfiles/VSCode/               "${WIN_UTIL_DIR}" \
+	&& cp -rf "${HOME}"/dotfiles/WindowsTerminal/      "${WIN_UTIL_DIR}" \
+	&& cp -rf "${HOME}"/dotfiles/bin/windows/          "${WIN_UTIL_DIR}"/bin/ \
+	&& cp -rf "${HOME}"/dotfiles/etc/home/.            "${WIN_UTIL_DIR}"/etc/ \
+	&& cp -rf "${HOME}"/dotfiles/etc/windows/.         "${WIN_UTIL_DIR}"/etc/
 
 .PHONY: docker-init
 docker-init:
