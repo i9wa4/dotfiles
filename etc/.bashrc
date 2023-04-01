@@ -36,23 +36,14 @@ fi
 
 
 # .bash_aliases
-# alias win-update='bash "${HOME}"/dotfiles/etc/init/win_update.sh'
-# alias vim-build='bash "${HOME}"/dotfiles/etc/init/vim_build.sh'
-# alias nvim-build='bash "${HOME}"/dotfiles/etc/init/nvim_build.sh'
-# alias py-build='bash "${HOME}"/dotfiles/etc/init/python_build.sh'
-# alias py-tag='
-# sudo git -C /usr/local/src/cpython/ fetch \
-# && sudo git -C /usr/local/src/cpython/ tag | grep v"${PY_VER_MINOR}"
-# '
-# alias py-vmu='bash "${HOME}"/dotfiles/etc/init/python_venv_myenv.sh'
 alias py-vma='. "${VENV_MYENV}"/bin/activate'
 alias jl='
-rm -rf "${HOME}"/.ipynb_checkpoints/ \
-&& cp -rf "${HOME}"/dotfiles/.jupyter/* "${VENV_MYENV}"/share/jupyter/ \
+rm -rf "${HOME}"/.ipynb_checkpoints \
+&& cp -rf "${HOME}"/dotfiles/.jupyter/* "${VENV_MYENV}"/share/jupyter \
 && jupyter-lab \
   --no-browser \
   --ServerApp.use_redirect_file=False \
-  --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints/ \
+  --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 '
 alias rmarkdown-render='
 find . -name "*.md" -type f -printf "%f\n" \
