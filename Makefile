@@ -154,7 +154,7 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	. "$${HOME}"/dotiles/etc/.bash_profile \
+	. "$${HOME}"/.bash_profile \
 	&& cd /usr/local/src/cpython \
 	&& sudo git checkout main \
 	&& sudo git fetch \
@@ -167,25 +167,27 @@ py-build:
 
 .PHONY: py-vmu
 py-vmu:
-	. "$${HOME}"/dotfiles/etc/.bashrc \
-	&& if [ -d "$${VENV_MYENV}" ]; then \
-	  python"$${PY_VER_MINOR}" -m venv "$${VENV_MYENV}" --upgrade; \
+	. "$${HOME}"/.bash_profile \
+	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
-	  python"$${PY_VER_MINOR}" -m venv "$${VENV_MYENV}"; \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
 	fi
-	&& . "$${VENV_MYENV}"/bin/activate \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
-	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/venv_myenv_requirements.txt \
+	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
 	&& python"$${PY_VER_MINOR}" -m pip check \
 	&& deactivate
 
 .PHONY: py-vma
 py-vma:
+	. "$${HOME}"/.bash_profile \
+	&& . "$${PY_VENV_MYENV}"/bin/activate
 
 .PHONY: py-tag
 py-tag:
-	. "$${HOME}"/dotfiles/etc/.bashrc \
+	. "$${HOME}"/.bash_profile \
 	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
@@ -254,7 +256,7 @@ r-init:
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
 	sudo R -e "install.packages('IRkernel')"
-	. "$${VENV_MYENV}"/bin/activate && R -e "IRkernel::installspec()"
+	. "$${PY_VENV_MYENV}"/bin/activate && R -e "IRkernel::installspec()"
 
 .PHONY: win-update
 WIN_UTIL_DIR := /mnt/c/work/util
