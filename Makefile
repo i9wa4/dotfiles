@@ -1,6 +1,5 @@
 .PHONY: all
-all: link apt git vim-init vim-build nodejs-init nvim-init nvim-build py-init \
-	py-build py-venv-myenv r-init go-init win-update
+all: link apt git vim-init vim-build nodejs-init nvim-init nvim-build py-init py-build py-venv-myenv r-init go-init win-update
 
 .PHONY: minimal
 minimal: link apt git win-update
@@ -155,7 +154,8 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	cd /usr/local/src/cpython \
+	. "$${HOME}"/dotiles/etc/.bash_profile \
+	&& cd /usr/local/src/cpython \
 	&& sudo git checkout main \
 	&& sudo git fetch \
 	&& sudo git merge \
@@ -165,23 +165,28 @@ py-build:
 	&& sudo make altinstall \
 	&& python"$${PY_VER_MINOR}" --version
 
-.PHONY: py-venv-myenv
-py-venv-myenv:
-	if [ -d "$${VENV_MYENV}" ]; then \
+.PHONY: py-vmu
+py-vmu:
+	. "$${HOME}"/dotfiles/etc/.bashrc \
+	&& if [ -d "$${VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${VENV_MYENV}" --upgrade; \
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${VENV_MYENV}"; \
 	fi
-	. "$${VENV_MYENV}"/bin/activate \
+	&& . "$${VENV_MYENV}"/bin/activate \
 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
 	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/venv_myenv_requirements.txt \
 	&& python"$${PY_VER_MINOR}" -m pip check \
 	&& deactivate
 
+.PHONY: py-vma
+py-vma:
+
 .PHONY: py-tag
 py-tag:
-	sudo git -C /usr/local/src/cpython fetch \
+	. "$${HOME}"/dotfiles/etc/.bashrc \
+	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 .PHONY: anaconda-init
