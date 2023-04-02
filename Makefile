@@ -2,7 +2,6 @@
 all: link apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
-	go-init \
 	nodejs-init \
 	r-init \
 	win-update
@@ -12,11 +11,13 @@ minimal: link apt git win-update
 
 .PHONY: test
 test:
-	echo test1 "${HOME}"
-	echo test2 "$${HOME}"
-	echo test3 "${GOPATH}"
-	echo test4 "$${GOPATH}"
-	echo test5 "$$(which deno)"
+	echo 1 "${HOME}"
+	echo 2 "$${HOME}"
+	echo 3 "${GOPATH}"
+	echo 4 "$${GOPATH}"
+	echo 5 "$$(which deno)"
+	echo 6 "$(lsb_release -cs)"
+	echo 7 "test1""test2"
 
 .PHONY: link
 link:
@@ -27,8 +28,8 @@ link:
 	ln -fs  "$${HOME}"/dotfiles/.vim         "$${HOME}"/.vim
 	sudo ln -fs "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	mkdir -p "/mnt/c/work/" && ln -s "/mnt/c/work/" "$${HOME}"/work
-	echo "if [ -f "$${HOME}"/.bash_profile ]; then . "$${HOME}"/.bash_profile; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
+	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
 
 .PHONY: apt
 apt:
@@ -148,7 +149,7 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	. "$${HOME}"/.bash_profile \
+	. "$${HOME}"/.profile \
 	&& cd /usr/local/src/cpython \
 	&& sudo git checkout main \
 	&& sudo git fetch \
@@ -161,7 +162,7 @@ py-build:
 
 .PHONY: py-vmu
 py-vmu:
-	. "$${HOME}"/.bash_profile \
+	. "$${HOME}"/.profile \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
@@ -176,7 +177,7 @@ py-vmu:
 
 .PHONY: py-tag
 py-tag:
-	. "$${HOME}"/.bash_profile \
+	. "$${HOME}"/.profile \
 	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
@@ -220,6 +221,8 @@ docker-init:
 
 .PHONY: go-init
 go-init:
+	. "$${HOME}"/.profile \
+	&& mkdir -p "${GOPATH}"
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
@@ -252,12 +255,14 @@ r-init:
 	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
 	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 	sudo add-apt-repository -y \
-	  "deb https://cloud.r-project.org/bin/linux/ubuntu"$$(lsb_release -cs)"-cran40/"
+	  "deb https://cloud.r-project.org/bin/linux/ubuntu ""$$(lsb_release -cs)""-cran40/"
 	sudo apt install -y --no-install-recommends r-base
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
 	sudo R -e "install.packages('IRkernel')"
-	. "$${PY_VENV_MYENV}"/bin/activate && R -e "IRkernel::installspec()"
+	. "$${HOME}"/.profile \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	&& R -e "IRkernel::installspec()"
 
 .PHONY: win-update
 WIN_UTIL_DIR := /mnt/c/work/util

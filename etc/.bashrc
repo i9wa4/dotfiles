@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -o vi
+export EDITOR=vim
+export VISUAL=vim
 
 # display git branch
 if [ -f /etc/bash_completion ]; then
