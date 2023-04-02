@@ -1,8 +1,7 @@
-#!/usr/bin/env bash
 export LC_ALL=C.UTF-8
 export XDG_CONFIG_HOME="${HOME}"/.config
 
-# Editor
+# Neovim
 export NVIM_APPNAME=my_nvim
 
 # Deno
