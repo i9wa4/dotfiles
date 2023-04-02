@@ -2,7 +2,9 @@
 all: link apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
-	nodejs-init r-init go-init \
+	go-init \
+	nodejs-init \
+	r-init \
 	win-update
 
 .PHONY: minimal
@@ -250,7 +252,7 @@ r-init:
 	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
 	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 	sudo add-apt-repository -y \
-	  "deb https://cloud.r-project.org/bin/linux/ubuntu$$(lsb_release -cs)-cran40/"
+	  "deb https://cloud.r-project.org/bin/linux/ubuntu"$$(lsb_release -cs)"-cran40/"
 	sudo apt install -y --no-install-recommends r-base
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
