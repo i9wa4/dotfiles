@@ -7,7 +7,7 @@ all: link apt git \
 	win-update
 
 .PHONY: minimal
-minimal: link apt git win-update
+minimal: link apt git vim-init vim-build win-update
 
 .PHONY: test
 test:
