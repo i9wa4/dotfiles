@@ -1,5 +1,9 @@
 .PHONY: all
-all: link apt git vim-init vim-build nodejs-init nvim-init nvim-build py-init py-build py-vmu r-init go-init win-update
+all: link apt git \
+	vim-init vim-build nvim-init nvim-build \
+	py-init py-build py-vmu \
+	nodejs-init r-init go-init \
+	win-update
 
 .PHONY: minimal
 minimal: link apt git win-update
@@ -20,8 +24,8 @@ link:
 	cp -rfs "$${HOME}"/dotfiles/.nvim/.      "$${HOME}"/.config
 	ln -fs  "$${HOME}"/dotfiles/.vim         "$${HOME}"/.vim
 	sudo ln -fs "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
-	mkdir -p "/mnt/c/work/"
-	ln -s "/mnt/c/work/" "$${HOME}"/work
+	mkdir -p "/mnt/c/work/" && ln -s "/mnt/c/work/" "$${HOME}"/work
+	echo "if [ -f "$${HOME}"/.bash_profile ]; then . "$${HOME}"/.bash_profile; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 
 .PHONY: apt
@@ -126,18 +130,6 @@ nvim-build:
 	&& sudo make CMAKE_BUILD_TYPE=Release \
 	&& sudo make install
 
-.PHONY: nodejs-init
-nodejs-init:
-	# Node.js/npm
-	# https://github.com/nodesource/distributions/blob/master/README.md#debinstall
-	# https://github.com/nodesource/distributions/issues/1157
-	sudo rm -f /etc/apt/sources.list.d/nodesource.list
-	curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
-	sudo apt update
-	sudo apt install -y nodejs
-	sudo npm install -g markdownlint-cli
-	sudo npm install -g prettier
-
 .PHONY: py-init
 py-init:
 	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
@@ -232,6 +224,18 @@ go-init:
 	go install github.com/rhysd/vim-startuptime@latest
 	# $$ vim-startuptime -vimpath nvim -count 1000
 	# $$ vim-startuptime -vimpath vim -count 1000
+
+.PHONY: nodejs-init
+nodejs-init:
+	# Node.js/npm
+	# https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+	# https://github.com/nodesource/distributions/issues/1157
+	sudo rm -f /etc/apt/sources.list.d/nodesource.list
+	curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
+	sudo apt update
+	sudo apt install -y nodejs
+	sudo npm install -g markdownlint-cli
+	sudo npm install -g prettier
 
 .PHONY: psql-init
 psql-init:
