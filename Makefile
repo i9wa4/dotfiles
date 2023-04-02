@@ -1,5 +1,5 @@
 .PHONY: all
-all: link apt git vim-init vim-build nodejs-init nvim-init nvim-build py-init py-build py-venv-myenv r-init go-init win-update
+all: link apt git vim-init vim-build nodejs-init nvim-init nvim-build py-init py-build py-vmu r-init go-init win-update
 
 .PHONY: minimal
 minimal: link apt git win-update
@@ -172,18 +172,13 @@ py-vmu:
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
-	fi
+	fi \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
 	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
 	&& python"$${PY_VER_MINOR}" -m pip check \
 	&& deactivate
-
-.PHONY: py-vma
-py-vma:
-	. "$${HOME}"/.bash_profile \
-	&& . "$${PY_VENV_MYENV}"/bin/activate
 
 .PHONY: py-tag
 py-tag:
