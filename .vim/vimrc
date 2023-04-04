@@ -151,8 +151,6 @@ vnoremap <silent> k gk
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
 " QuickFix
-" nnoremap <silent> <C-n> <Cmd>cnext<CR>
-" nnoremap <silent> <C-p> <Cmd>cprevious<CR>
 nnoremap <silent> <C-n> :<C-u>cnext<CR>
 nnoremap <silent> <C-p> :<C-u>cprevious<CR>
 
