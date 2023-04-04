@@ -6,5 +6,6 @@ set tabline=%!my_looking#tabline()
 augroup MyLooking
   autocmd!
   " Highlight
-  autocmd BufEnter * call my_looking#highlight()
+  " autocmd BufEnter * call my_looking#highlight()
+  autocmd BufNewFile,BufRead * call my_looking#highlight()
 augroup END
