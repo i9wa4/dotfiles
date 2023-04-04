@@ -11,13 +11,8 @@ minimal: link apt git win-update
 
 .PHONY: test
 test:
-	echo 1 "${HOME}"
-	echo 2 "$${HOME}"
-	echo 3 "${GOPATH}"
-	echo 4 "$${GOPATH}"
-	echo 5 "$$(which deno)"
-	echo 6 "$(lsb_release -cs)"
-	echo 7 "test1""test2"
+	echo "${PY_VENV_MYENV}" "$${PY_VENV_MYENV}"
+	echo "$$(which deno)" "$(lsb_release -cs)"
 
 .PHONY: link
 link:
@@ -149,8 +144,7 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	. "$${HOME}"/.profile \
-	&& cd /usr/local/src/cpython \
+	cd /usr/local/src/cpython \
 	&& sudo git checkout main \
 	&& sudo git fetch \
 	&& sudo git merge \
@@ -162,8 +156,7 @@ py-build:
 
 .PHONY: py-vmu
 py-vmu:
-	. "$${HOME}"/.profile \
-	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+	if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
@@ -177,8 +170,7 @@ py-vmu:
 
 .PHONY: py-tag
 py-tag:
-	. "$${HOME}"/.profile \
-	&& sudo git -C /usr/local/src/cpython fetch \
+	sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 .PHONY: anaconda-init
@@ -221,8 +213,7 @@ docker-init:
 
 .PHONY: go-init
 go-init:
-	. "$${HOME}"/.profile \
-	&& mkdir -p "${GOPATH}"
+	mkdir -p "${GOPATH}"
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
@@ -261,8 +252,7 @@ r-init:
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
 	sudo R -e "install.packages('IRkernel')"
-	. "$${HOME}"/.profile \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	. "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
 .PHONY: win-update

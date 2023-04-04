@@ -45,12 +45,16 @@ set nowritebackup
 " Edit
 " set binary noeol
 " set isfname-=|
+if has('nvim') || has('patch-8.2.0860')
+  set nrformats=unsigned
+else
+  set nrformats=
+endif
 set backspace=indent,eol,start
 set fileencodings=utf-8,euc-jp,cp932
 set fileformat=unix
 set fileformats=unix,dos,mac
 set hidden
-set nrformats=unsigned
 set virtualedit=block
 
 " Search
