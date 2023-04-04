@@ -256,5 +256,9 @@ augroup END
 if !has('nvim')
   filetype plugin indent on
   syntax enable
-  colorscheme habamax
+  if has('patch-9.0.133')
+    colorscheme habamax
+  else
+    colorscheme desert
+  endif
 endif
