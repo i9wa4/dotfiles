@@ -204,6 +204,7 @@ function! s:my_filetype() abort
 
   if index([
     \   'css',
+    \   'markdown',
     \   'mermaid',
     \   'plantuml',
     \   'sh',
