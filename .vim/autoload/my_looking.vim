@@ -5,6 +5,10 @@ scriptencoding utf-8
 "
 function! my_looking#last_search_count() abort
   " :help searchcount()
+  if !exists('*searchcount')
+    return '*'
+  endif
+
   let l:result = searchcount(#{recompute: 1, maxcount: 100000})
   if empty(l:result)
     return ''
