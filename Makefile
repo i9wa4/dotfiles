@@ -241,6 +241,7 @@ nodejs-init:
 	sudo apt install -y nodejs
 	sudo npm install -g markdownlint-cli
 	sudo npm install -g prettier
+	sudo npm install -g prettier-plugin-md-nocjsp
 
 .PHONY: psql-init
 psql-init:
