@@ -10,13 +10,6 @@ set packpath^=~/.vim
 
 
 " --------------------------------------
-" Option
-"
-set laststatus=3
-set pumblend=30
-
-
-" --------------------------------------
 " dein.vim
 "
 let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim'
@@ -32,3 +25,10 @@ let s:vimrc_path = expand('~/.vim/vimrc')
 if filereadable(s:vimrc_path)
   execute 'source' s:vimrc_path
 endif
+
+
+" --------------------------------------
+" Option
+"
+set laststatus=3
+set pumblend=30
