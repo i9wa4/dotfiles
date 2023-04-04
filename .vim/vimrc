@@ -254,7 +254,7 @@ augroup MyAutocmd
 
   " Clipboard
   if !has('nvim') && !has('clipboard')
-    call s:copy2clip_win()
+    autocmd TextYankPost * call s:copy2clip_win()
   endif
 augroup END
 
