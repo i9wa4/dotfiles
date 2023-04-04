@@ -4,7 +4,7 @@ if has('nvim')
   tnoremap <Esc> <C-\><C-n>
 else
   set termwinkey=<C-g>
-  tnoremap <Esc> <C-g>n
+  tnoremap <Esc> <C-g>N
 endif
 nnoremap <Plug>(my-terminal) <Nop>
 nmap <Space>t <Plug>(my-terminal)
