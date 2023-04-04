@@ -7,10 +7,6 @@ syntax off
 set runtimepath^=~/.vim
 set runtimepath+=~/.vim/after
 set packpath^=~/.vim
-let s:vimrc_path = expand('~/.vim/vimrc')
-if filereadable(s:vimrc_path)
-  execute 'source' s:vimrc_path
-endif
 
 
 " --------------------------------------
@@ -30,10 +26,9 @@ endif
 
 
 " --------------------------------------
-" End of setting
+" vimrc
 "
-filetype plugin indent on
-syntax enable
-if !exists('g:colors_name')
-  colorscheme habamax
+let s:vimrc_path = expand('~/.vim/vimrc')
+if filereadable(s:vimrc_path)
+  execute 'source' s:vimrc_path
 endif
