@@ -262,12 +262,10 @@ augroup END
 " --------------------------------------
 " End of setting
 "
-if !has('nvim')
-  filetype plugin indent on
-  syntax enable
-  if has('patch-9.0.133')
-    colorscheme habamax
-  else
-    colorscheme desert
-  endif
+filetype plugin indent on
+syntax enable
+if has('nvim') || has('patch-9.0.133')
+  colorscheme habamax
+else
+  colorscheme desert
 endif
