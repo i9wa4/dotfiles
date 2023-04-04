@@ -251,6 +251,11 @@ augroup MyAutocmd
 
   " Asynchrohous Job
   autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
+
+  " Clipboard
+  if !has('nvim') && !has('clipboard')
+    call s:copy2clip_win()
+  endif
 augroup END
 
 
