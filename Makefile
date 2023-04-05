@@ -34,13 +34,14 @@ copy:
 	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Windows
 	rm -rf "$(WIN_UTIL_DIR)" && mkdir -p "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/.jupyter                 "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip      "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/VSCode                   "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WSL                      "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WindowsTerminal          "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/bin                      "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/etc                      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.jupyter                     "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip          "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/VSCode                       "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WSL                          "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WindowsTerminal              "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin                          "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin/windows/my_copy.bat      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/etc                          "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
 apt:
