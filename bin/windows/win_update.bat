@@ -13,7 +13,7 @@ exit /b
 
     @REM %USERPROFILE%
     copy /y "..\..\etc\home\.gitignore" "%USERPROFILE%"
-    copy /y "..\..\etc\home\.wslconfig" "%USERPROFILE%"
+    copy /y "..\..\WSL\.wslconfig" "%USERPROFILE%"
 
     @REM C:\work
     copy /y "..\..\etc\home\.markdownlintrc" "C:\work"
