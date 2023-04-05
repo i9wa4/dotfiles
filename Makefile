@@ -12,13 +12,14 @@ init:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
-	# Windows
-	mkdir -p "/mnt/c/work/"
-	ln -s "/mnt/c/work/" "$${HOME}"/work
 
 .PHONY: copy
 WIN_UTIL_DIR := /mnt/c/work/util
 copy:
+	# Windows
+	mkdir -p /mnt/c/work/
+	rm -rf "$${HOME}"/work
+	ln -s /mnt/c/work/ "$${HOME}"/work
 	# Vim (symbolic link)
 	rm -rf "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
