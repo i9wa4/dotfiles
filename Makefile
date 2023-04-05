@@ -12,6 +12,8 @@ init:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
+	# WSL
+	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 
 .PHONY: copy
 WIN_UTIL_DIR := /mnt/c/work/util
@@ -30,7 +32,6 @@ copy:
 	&& cp -rfs "$${HOME}"/dotfiles/.nvim/.  "$${XDG_CONFIG_HOME}"
 	# WSL
 	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
-	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows
 	rm -rf "$(WIN_UTIL_DIR)" && mkdir -p "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/.jupyter                 "$(WIN_UTIL_DIR)"
