@@ -1,7 +1,7 @@
 @echo off
 @REM Run as user.
 
-set CODESNIP_DIR="%APPDATA%\Code\User\snippets"
+set CODE_DIR="%APPDATA%\Code\User"
 set WINTERM_DIR="%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 
 call :main
@@ -20,9 +20,8 @@ exit /b
     copy /y ".\etc\home\.jupytext" "C:\work"
 
     @REM VSCode
-    rmdir /q /s "%CODESNIP_DIR:"=%"
-    xcopy /e /i /y ".\vsnip\*" "%CODESNIP_DIR:"=%"
-    xcopy /e /i /y ".\VSCode\User\*" "%APPDATA%\Code\User"
+    rmdir /q /s "%CODE_DIR:"=%"
+    xcopy /e /i /y ".\VSCode\User\*" "%CODE_DIR:"=%"
 
     @REM Windows Terminal
     rmdir /q /s "%WINTERM_DIR:"=%"
