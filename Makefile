@@ -1,17 +1,11 @@
-.PHONY: all
-all: link copy apt git \
-	vim-init vim-build nvim-init nvim-build \
-	py-init py-build py-vmu \
-	nodejs-init \
-	r-init
-
 .PHONY: minimal
 minimal: link copy apt git
 
-.PHONY: test
-test:
-	echo "${PY_VENV_MYENV}" "$${PY_VENV_MYENV}"
-	echo "$$(which deno)" "$(lsb_release -cs)"
+.PHONY: all
+all: vim-init vim-build nvim-init nvim-build \
+	py-init py-build py-vmu \
+	nodejs-init \
+	r-init
 
 .PHONY: link
 link:
