@@ -1,13 +1,12 @@
 .PHONY: all
-all: link apt git \
+all: link copy apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
 	nodejs-init \
-	r-init \
-	win-update
+	r-init
 
 .PHONY: minimal
-minimal: link apt git win-update
+minimal: link copy apt git
 
 .PHONY: test
 test:
@@ -15,16 +14,35 @@ test:
 	echo "$$(which deno)" "$(lsb_release -cs)"
 
 .PHONY: link
-link:
-	rm -rf "$${HOME}"/.config && mkdir -p "$${HOME}"/.config
+	# Vim
 	rm -rf "$${HOME}"/.vim
-	cp -rfs "$${HOME}"/dotfiles/etc/home/.   "$${HOME}"
-	cp -rfs "$${HOME}"/dotfiles/.nvim/.      "$${HOME}"/.config
-	ln -fs  "$${HOME}"/dotfiles/.vim         "$${HOME}"/.vim
-	sudo ln -fs "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
-	mkdir -p "/mnt/c/work/" && ln -s "/mnt/c/work/" "$${HOME}"/work
+	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
+	# Neovim
+	rm -rf "$${HOME}"/.config
+	mkdir -p "$${HOME}"/.config
+	cp -rfs "$${HOME}"/dotfiles/.nvim/. "$${HOME}"/.config
+	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
+	# Windows
+	mkdir -p "/mnt/c/work/"
+	ln -s "/mnt/c/work/" "$${HOME}"/work
+
+.PHONY: copy
+WIN_UTIL_DIR := /mnt/c/work/util
+copy:
+	# copy to WSL
+	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
+	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
+	# copy to Windows
+	rm -rf "$(WIN_UTIL_DIR)" && mkdir -p "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.jupyter                 "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/VSCode                   "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WindowsTerminal          "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WSL                      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin                      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/etc                      "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
 apt:
@@ -128,51 +146,6 @@ nvim-build:
 	&& sudo make CMAKE_BUILD_TYPE=Release \
 	&& sudo make install
 
-.PHONY: py-init
-py-init:
-	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
-	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-	# sudo apt update
-	sudo apt build-dep -y python3
-	sudo apt install -y \
-	  build-essential gdb lcov pkg-config \
-	  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
-	  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-	  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
-	cd /usr/local/src \
-	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
-
-.PHONY: py-build
-py-build:
-	cd /usr/local/src/cpython \
-	&& sudo git checkout main \
-	&& sudo git fetch \
-	&& sudo git merge \
-	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-	&& sudo ./configure \
-	&& sudo make \
-	&& sudo make altinstall \
-	&& python"$${PY_VER_MINOR}" --version
-
-.PHONY: py-vmu
-py-vmu:
-	if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
-	else \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
-	fi \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
-	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
-	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-	&& python"$${PY_VER_MINOR}" -m pip check \
-	&& deactivate
-
-.PHONY: py-tag
-py-tag:
-	sudo git -C /usr/local/src/cpython fetch \
-	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
-
 .PHONY: anaconda-init
 anaconda-init:
 	cd \
@@ -238,6 +211,51 @@ nodejs-init:
 psql-init:
 	sudo apt install -y postgresql postgresql-contrib
 
+.PHONY: py-init
+py-init:
+	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
+	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
+	# sudo apt update
+	sudo apt build-dep -y python3
+	sudo apt install -y \
+	  build-essential gdb lcov pkg-config \
+	  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
+	  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
+	  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
+	cd /usr/local/src \
+	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
+
+.PHONY: py-build
+py-build:
+	cd /usr/local/src/cpython \
+	&& sudo git checkout main \
+	&& sudo git fetch \
+	&& sudo git merge \
+	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
+	&& sudo ./configure \
+	&& sudo make \
+	&& sudo make altinstall \
+	&& python"$${PY_VER_MINOR}" --version
+
+.PHONY: py-vmu
+py-vmu:
+	if [ -d "$${PY_VENV_MYENV}" ]; then \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
+	else \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
+	fi \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
+	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python"$${PY_VER_MINOR}" -m pip check \
+	&& deactivate
+
+.PHONY: py-tag
+py-tag:
+	sudo git -C /usr/local/src/cpython fetch \
+	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
+
 .PHONY: r-init
 r-init:
 	# sudo apt update
@@ -254,16 +272,3 @@ r-init:
 	sudo R -e "install.packages('IRkernel')"
 	. "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
-
-.PHONY: win-update
-WIN_UTIL_DIR := /mnt/c/work/util
-win-update:
-	rm -rf "$(WIN_UTIL_DIR)"
-	mkdir -p "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/.jupyter                 "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip      "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/VSCode                   "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WindowsTerminal          "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/bin/windows              "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/etc/home/.               "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/etc/windows/.            "$(WIN_UTIL_DIR)"
