@@ -27,4 +27,7 @@ exit /b
     @REM Windows Terminal
     rmdir /q /s "%WINTERM_DIR:"=%"
     xcopy /e /i /y "..\..\WindowsTerminal\LocalState" "%WINTERM_DIR:"=%"
+
+    echo Done.
+    pause
 exit /b
