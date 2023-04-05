@@ -1,5 +1,5 @@
 .PHONY: minimal
-minimal: link copy apt git
+minimal: init copy apt git
 
 .PHONY: all
 all: vim-init vim-build nvim-init nvim-build \
@@ -7,15 +7,8 @@ all: vim-init vim-build nvim-init nvim-build \
 	nodejs-init \
 	r-init
 
-.PHONY: link
-link:
-	# Vim
-	rm -rf "$${HOME}"/.vim
-	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
-	# Neovim
-	rm -rf "$${HOME}"/.config
-	mkdir -p "$${HOME}"/.config
-	cp -rfs "$${HOME}"/dotfiles/.nvim/. "$${HOME}"/.config
+.PHONY: init
+init:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
@@ -26,16 +19,24 @@ link:
 .PHONY: copy
 WIN_UTIL_DIR := /mnt/c/work/util
 copy:
-	# copy to WSL
-	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
+	# Vim (symbolic link)
+	rm -rf "$${HOME}"/.vim
+	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
+	# Neovim (symbolic link)
+	. "$${HOME}"/.profile \
+	&& rm -rf "$${XDG_CONFIG_HOME}" \
+	&& mkdir -p "$${XDG_CONFIG_HOME}" \
+	&& cp -rfs "$${HOME}"/dotfiles/.nvim/.  "$${XDG_CONFIG_HOME}"
+	# WSL
+	cp -f "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
-	# copy to Windows
+	# Windows
 	rm -rf "$(WIN_UTIL_DIR)" && mkdir -p "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/.jupyter                 "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip      "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/VSCode                   "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WindowsTerminal          "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/WSL                      "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WindowsTerminal          "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/bin                      "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/etc                      "$(WIN_UTIL_DIR)"
 
@@ -181,7 +182,8 @@ docker-init:
 
 .PHONY: go-init
 go-init:
-	mkdir -p "$${GOPATH}"
+	. "$${HOME}"/.profile \
+	&& mkdir -p "$${GOPATH}"
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
@@ -222,7 +224,8 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	cd /usr/local/src/cpython \
+	. "$${HOME}"/.profile \
+	&& cd /usr/local/src/cpython \
 	&& sudo git checkout main \
 	&& sudo git fetch \
 	&& sudo git merge \
@@ -234,7 +237,8 @@ py-build:
 
 .PHONY: py-vmu
 py-vmu:
-	if [ -d "$${PY_VENV_MYENV}" ]; then \
+	. "$${HOME}"/.profile \
+	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
@@ -248,7 +252,8 @@ py-vmu:
 
 .PHONY: py-tag
 py-tag:
-	sudo git -C /usr/local/src/cpython fetch \
+	. "$${HOME}"/.profile \
+	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 .PHONY: r-init
@@ -265,5 +270,6 @@ r-init:
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
 	sudo R -e "install.packages('IRkernel')"
-	. "$${PY_VENV_MYENV}"/bin/activate \
+	. "$${HOME}"/.profile \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
