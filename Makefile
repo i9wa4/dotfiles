@@ -14,6 +14,7 @@ test:
 	echo "$$(which deno)" "$(lsb_release -cs)"
 
 .PHONY: link
+link:
 	# Vim
 	rm -rf "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
