@@ -203,7 +203,7 @@ jekyll-init:
 	# https://github.com/github/pages-gem
 	sudo apt update
 	sudo apt upgrade -y
-	sudo apt install ruby ruby-bundler
+	sudo apt install -y ruby ruby-bundler
 	. "$${HOME}"/.profile \
 	&& gem install bundler --user-install
 
