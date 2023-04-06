@@ -197,6 +197,16 @@ go-init:
 	# $$ vim-startuptime -vimpath nvim -count 1000
 	# $$ vim-startuptime -vimpath vim -count 1000
 
+.PHONY: jekyll-init
+jekyll-init:
+	# https://maeda577.github.io/2019/11/04/new-jekyll.html
+	# https://github.com/github/pages-gem
+	sudo apt update
+	sudo apt upgrade -y
+	sudo apt install ruby ruby-bundler
+	. "$${HOME}"/.profile \
+	&& gem install bundler --user-install
+
 .PHONY: nodejs-init
 nodejs-init:
 	# Node.js/npm
