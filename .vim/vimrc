@@ -218,6 +218,7 @@ function! s:my_filetype() abort
     \ ], &filetype) >= 0
     setlocal shiftwidth=2 softtabstop=2 tabstop=2
   elseif index([
+    \   'go',
     \   'make',
     \ ], &filetype) >= 0
     setlocal noexpandtab
