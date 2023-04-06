@@ -18,8 +18,8 @@ init:
 .PHONY: copy
 WIN_UTIL_DIR := /mnt/c/work/util
 copy:
-	# Windows
-	mkdir -p /mnt/c/work/
+	# Windows (symbolic link)
+	mkdir -p /mnt/c/work
 	rm -rf "$${HOME}"/work
 	ln -s /mnt/c/work/ "$${HOME}"/work
 	# Vim (symbolic link)
