@@ -188,8 +188,6 @@ docker-init:
 
 .PHONY: go-init
 go-init:
-	. "$${HOME}"/.profile \
-	&& mkdir -p "$${GOPATH}"
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go

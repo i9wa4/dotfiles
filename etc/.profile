@@ -10,8 +10,7 @@ export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
 # Go
-export GOPATH="${HOME}"/go
-export PATH="${GOPATH}"/bin:"${PATH}"
+export PATH="${HOME}"/go/bin:"${PATH}"
 
 # Python
 export PY_VER_MINOR=3.11
