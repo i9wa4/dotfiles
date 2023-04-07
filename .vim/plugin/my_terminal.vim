@@ -15,5 +15,5 @@ nnoremap <silent> <Plug>(my-terminal)s :<C-u>call my_terminal#send_cmd(v:count, 
 
 augroup MyTerminal
   autocmd!
-  autocmd BufWinEnter * call my_terminal#update_terminal_number()
+  autocmd BufEnter * call my_terminal#update_terminal_number()
 augroup END
