@@ -106,9 +106,9 @@ else
 endif
 
 " Color
-if has('termguicolors')
-  set termguicolors
-endif
+" if has('termguicolors')
+"   set termguicolors
+" endif
 
 " Abbreviation
 " :w' --> :w
