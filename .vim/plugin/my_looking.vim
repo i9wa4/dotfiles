@@ -7,5 +7,5 @@ augroup MyLooking
   autocmd!
   " Highlight
   " autocmd BufEnter * call my_looking#highlight()
-  autocmd VimEnter,BufNewFile,BufRead * call my_looking#highlight()
+  autocmd VimEnter,BufEnter * call my_looking#highlight()
 augroup END
