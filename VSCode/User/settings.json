@@ -20,6 +20,7 @@
     "editor.renderWhitespace": "all",
     "extensions.ignoreRecommendations": true,
     "files.autoGuessEncoding": true,
+    "git.ignoreMissingGitWarning": true,
     "http.proxyStrictSSL": false,
     "vim.useSystemClipboard": true
 }
