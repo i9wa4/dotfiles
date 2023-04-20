@@ -14,5 +14,5 @@ export PATH="${HOME}"/go/bin:"${PATH}"
 
 # Python
 export PY_VER_MINOR=3.11
-export PY_VER_PATCH=3.11.2
+export PY_VER_PATCH=3.11.3
 export PY_VENV_MYENV="${HOME}"/venv/myenv
