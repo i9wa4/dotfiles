@@ -46,7 +46,7 @@ set nowritebackup
 " Edit
 " set binary noeol
 " set isfname-=|
-if has('nvim') || has('patch-8.2.0860')
+if has('patch-8.2.0860')
   set nrformats=unsigned
 else
   set nrformats=
@@ -266,7 +266,7 @@ augroup END
 filetype plugin indent on
 syntax enable
 if has('nvim') || has('patch-9.0.133')
-  colorscheme habamax
+  execute 'colorscheme' get(g:, 'colors_name', 'habamax')
 else
-  colorscheme desert
+  execute 'colorscheme' get(g:, 'colors_name', 'desert')
 endif

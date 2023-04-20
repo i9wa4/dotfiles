@@ -32,3 +32,4 @@ endif
 "
 set laststatus=3
 set pumblend=30
+set nrformats=unsigned
