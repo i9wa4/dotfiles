@@ -248,7 +248,7 @@ augroup MyAutocmd
   autocmd WinEnter * checktime
 
   " FileType
-  autocmd FileType * call s:my_filetype()
+  autocmd FileType,BufEnter * call s:my_filetype()
 
   " Asynchrohous Job
   autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
