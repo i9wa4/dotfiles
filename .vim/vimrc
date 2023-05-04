@@ -252,9 +252,12 @@ augroup MyAutocmd
 
   " Asynchrohous Job
   autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
+augroup END
 
+augroup MyYank
+  autocmd!
   " Clipboard
-  if !has('nvim') && !has('clipboard')
+  if !has('clipboard')
     autocmd TextYankPost * call s:copy2clip_win()
   endif
 augroup END
@@ -265,7 +268,10 @@ augroup END
 "
 filetype plugin indent on
 syntax enable
-if has('nvim') || has('patch-9.0.133')
+if has('termguicolors') && v:version >= 900
+  set termguicolors
+endif
+if has('patch-9.0.133')
   execute 'colorscheme' get(g:, 'colors_name', 'habamax')
 else
   execute 'colorscheme' get(g:, 'colors_name', 'desert')

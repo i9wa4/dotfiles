@@ -31,5 +31,19 @@ endif
 " Option
 "
 set laststatus=3
-set pumblend=30
 set nrformats=unsigned
+set pumblend=30
+
+
+" --------------------------------------
+" Autocmd
+"
+augroup MyYank
+  autocmd!
+augroup END
+
+
+" --------------------------------------
+" End of setting
+"
+colorscheme habamax
