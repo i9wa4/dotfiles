@@ -1,9 +1,5 @@
 scriptencoding utf-8
 
-filetype off
-filetype plugin indent off
-syntax off
-
 set runtimepath^=~/.vim
 set runtimepath+=~/.vim/after
 set packpath^=~/.vim

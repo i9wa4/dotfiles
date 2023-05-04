@@ -1,6 +1,10 @@
 .PHONY: minimal
 minimal: init copy apt git
 
+.PHONY: normal
+normal: init copy apt git \
+	nodejs-init \
+
 .PHONY: all
 all: vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
