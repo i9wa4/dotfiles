@@ -41,8 +41,9 @@ function! my_looking#statusline() abort
     \ 't': 'TERMINAL',
     \ }
 
-  let l:ret = ' '
-  let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
+  " let l:ret = ' '
+  let l:ret = ''
+  " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
   let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
   " let l:ret .= '%t '
   let l:ret .= '%f '
@@ -57,7 +58,7 @@ function! my_looking#statusline() abort
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
   let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
-  let l:ret .= ' '
+  " let l:ret .= ' '
   return l:ret
 endfunction
 
@@ -87,13 +88,16 @@ function! my_looking#tabline() abort
   endfor
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret .= fnamemodify(getcwd(), ':~:.')
+  let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:.')
   if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
     " let l:ret .= ' ' . fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
-    let l:ret .= ' (' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
+    let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
   endif
-  let l:ret .= ' ' . (has('nvim') ? '[N]' : '[V]')
-  let l:ret .= ' '
+  if exists('g:local_vim_dir')
+    let l:ret .= '  ' . 'Conf:' . g:local_vim_dir
+  endif
+  " let l:ret .= ' ' . (has('nvim') ? '[N]' : '[V]')
+  " let l:ret .= ' '
   return l:ret
 endfunction
 
@@ -115,7 +119,7 @@ function! my_looking#highlight() abort
   highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
-  highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=DarkGray gui=NONE guifg=Black guibg=DarkGray
+  highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=Gray gui=NONE guifg=Black guibg=DarkGray
   highlight VertSplit     term=NONE cterm=NONE ctermfg=DarkGray ctermbg=NONE gui=NONE guifg=DarkGray guibg=NONE
 
   " [ ]
