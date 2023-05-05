@@ -96,7 +96,7 @@ function! my_looking#tabline() abort
   if exists('g:local_vim_dir')
     let l:ret .= '  ' . 'Conf:' . g:local_vim_dir
   endif
-  " let l:ret .= ' ' . (has('nvim') ? '[N]' : '[V]')
+  let l:ret .= '  ' . (has('nvim') ? '[N]' : '[V]')
   " let l:ret .= ' '
   return l:ret
 endfunction
