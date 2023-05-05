@@ -58,6 +58,7 @@ function! my_looking#statusline() abort
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
   let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
+  let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
   " let l:ret .= ' '
   return l:ret
 endfunction
@@ -96,7 +97,6 @@ function! my_looking#tabline() abort
   if exists('g:local_vim_dir')
     let l:ret .= '  ' . 'Conf:' . g:local_vim_dir
   endif
-  let l:ret .= '  ' . (has('nvim') ? '[N]' : '[V]')
   " let l:ret .= ' '
   return l:ret
 endfunction
