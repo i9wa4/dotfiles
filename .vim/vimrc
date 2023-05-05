@@ -268,7 +268,7 @@ augroup END
 "
 filetype plugin indent on
 syntax enable
-if has('termguicolors') && v:version >= 900
+if has('termguicolors') && (v:version >= 900 || has('nvim-0.10.0'))
   set termguicolors
 endif
 if has('patch-9.0.133')
