@@ -27,19 +27,19 @@ function! my_looking#last_search_count() abort
 endfunction
 
 function! my_looking#statusline() abort
-  let l:mode_dict = {
-    \ 'n': 'NORMAL',
-    \ 'i': 'INSERT',
-    \ 'R': 'REPLACE',
-    \ 'v': 'VISUAL',
-    \ 'V': 'V-LINE',
-    \ "\<C-v>": 'V-BLOCK',
-    \ 'S': 'S-LINE',
-    \ "\<C-s>": 'S-BLOCK',
-    \ 's': 'SELECT',
-    \ 'c': 'COMMAND',
-    \ 't': 'TERMINAL',
-    \ }
+  " let l:mode_dict = {
+  "  \ 'n': 'NORMAL',
+  "  \ 'i': 'INSERT',
+  "  \ 'R': 'REPLACE',
+  "  \ 'v': 'VISUAL',
+  "  \ 'V': 'V-LINE',
+  "  \ "\<C-v>": 'V-BLOCK',
+  "  \ 'S': 'S-LINE',
+  "  \ "\<C-s>": 'S-BLOCK',
+  "  \ 's': 'SELECT',
+  "  \ 'c': 'COMMAND',
+  "  \ 't': 'TERMINAL',
+  "  \ }
 
   " let l:ret = ' '
   let l:ret = ''
@@ -95,7 +95,7 @@ function! my_looking#tabline() abort
     let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
   endif
   if exists('g:local_vim_dir')
-    let l:ret .= '  ' . 'Conf:' . g:local_vim_dir
+    let l:ret .= '  ' . 'Cfg:' . g:local_vim_dir
   endif
   " let l:ret .= ' '
   return l:ret
