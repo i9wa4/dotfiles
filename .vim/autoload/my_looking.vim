@@ -51,8 +51,8 @@ function! my_looking#statusline() abort
   let l:ret .= '%<'
   let l:ret .= "%="
   let l:ret .= (v:hlsearch ? my_looking#last_search_count() . ' ' : '')
-  " let l:ret .= '  ' . '%l/%L:%-2c'
-  let l:ret .= '  ' . 'Ln:%l/%L, Col:%-2c'
+  let l:ret .= '  ' . '%l/%L:%-2c'
+  " let l:ret .= '  ' . 'Ln:%l/%L Col:%-2c'
   " let l:ret .= '  ' . '%2p' . "%{'\%'}"
   let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
