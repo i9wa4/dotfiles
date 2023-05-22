@@ -255,17 +255,6 @@ augroup VimrcAutocmd
   autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
 augroup END
 
-augroup MyYank
-  autocmd!
-  " Clipboard
-  " if !has('clipboard')
-  if exists('$WSLENV')
-    autocmd TextYankPost * call s:copy2clip_win()
-  else
-    autocmd TextYankPost * call s:copy2clip()
-  endif
-augroup END
-
 
 " --------------------------------------
 " End of setting
