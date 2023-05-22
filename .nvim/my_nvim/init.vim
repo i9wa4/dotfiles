@@ -32,14 +32,6 @@ set pumblend=30
 
 
 " --------------------------------------
-" Autocmd
-"
-" augroup MyYank
-"   autocmd!
-" augroup END
-
-
-" --------------------------------------
 " End of setting
 "
 colorscheme habamax
