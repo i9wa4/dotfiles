@@ -34,7 +34,8 @@ else
   language messages en
 endif
 if has('unix')
-  set clipboard=unnamedplus
+  set clipboard&
+  set clipboard^=unnamedplus
 endif
 set autoread
 set belloff=all
@@ -116,28 +117,6 @@ cnoreabbrev w' w
 
 
 " --------------------------------------
-" Command
-"
-function s:copy2clip(...) abort
-  if a:0 >= 1
-    let @+ = getreg(a:1)
-  else
-    let @+ = @"
-  endif
-endfunction
-command! -nargs=? C call s:copy2clip(<q-args>)
-
-function s:copy2clip_win(...) abort
-  if a:0 >= 1
-    call system('clip.exe', system('nkf -sc', getreg(a:1)))
-  else
-    call system('clip.exe', system('nkf -sc', @"))
-  endif
-endfunction
-command! -nargs=? CW call s:copy2clip_win(<q-args>)
-
-
-" --------------------------------------
 " Keymap
 "
 nnoremap <silent> j gj
@@ -196,6 +175,28 @@ nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
 
 
 " --------------------------------------
+" Command
+"
+function s:copy2clip(...) abort
+  if a:0 >= 1
+    let @+ = getreg(a:1)
+  else
+    let @+ = @"
+  endif
+endfunction
+command! -nargs=? C call s:copy2clip(<q-args>)
+
+function s:copy2clip_win(...) abort
+  if a:0 >= 1
+    call system('clip.exe', system('nkf -sc', getreg(a:1)))
+  else
+    call system('clip.exe', system('nkf -sc', @"))
+  endif
+endfunction
+command! -nargs=? CW call s:copy2clip_win(<q-args>)
+
+
+" --------------------------------------
 " Aucocommand
 "
 function! s:my_filetype() abort
@@ -242,7 +243,7 @@ function! s:my_asyncjob_on_save() abort
   endif
 endfunction
 
-augroup MyAutocmd
+augroup VimrcAutocmd
   autocmd!
   " Auto Reload
   autocmd WinEnter * checktime
@@ -257,8 +258,11 @@ augroup END
 augroup MyYank
   autocmd!
   " Clipboard
-  if !has('clipboard')
+  " if !has('clipboard')
+  if exists('$WSLENV')
     autocmd TextYankPost * call s:copy2clip_win()
+  else
+    autocmd TextYankPost * call s:copy2clip()
   endif
 augroup END
 
