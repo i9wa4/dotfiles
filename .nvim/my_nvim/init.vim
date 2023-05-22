@@ -34,9 +34,9 @@ set pumblend=30
 " --------------------------------------
 " Autocmd
 "
-augroup MyYank
-  autocmd!
-augroup END
+" augroup MyYank
+"   autocmd!
+" augroup END
 
 
 " --------------------------------------
