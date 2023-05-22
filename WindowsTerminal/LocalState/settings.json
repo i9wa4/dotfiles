@@ -55,7 +55,6 @@
         {"command": "unbound", "keys": "ctrl+shift+home"},
         {"command": "unbound", "keys": "ctrl+shift+m"},
         {"command": "unbound", "keys": "ctrl+shift+n"},
-        {"command": "unbound", "keys": "ctrl+shift+p"},
         {"command": "unbound", "keys": "ctrl+shift+pgdn"},
         {"command": "unbound", "keys": "ctrl+shift+pgup"},
         {"command": "unbound", "keys": "ctrl+shift+space"},
