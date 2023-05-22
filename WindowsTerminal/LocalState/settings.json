@@ -67,6 +67,7 @@
         {"command": "unbound", "keys": "ctrl+tab"},
         {"command": "unbound", "keys": "enter"},
         {"command": "unbound", "keys": "f11"},
+        {"command": "unbound", "keys": "shift+insert"},
         {"command": "unbound", "keys": "win+sc(41)"}
     ],
     "copyFormatting": "none",
