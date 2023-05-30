@@ -9,8 +9,6 @@ if has('nvim') && has('unix') && exists('$WSLENV')
   let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {
-    " \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
-    " \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
     \      '+': ["clip.exe"],
     \      '*': ["clip.exe"],
     \    },
