@@ -5,22 +5,6 @@ set runtimepath+=~/.vim/after
 set packpath^=~/.vim
 
 
-if has('nvim') && has('unix') && exists('$WSLENV')
-  let g:clipboard = {
-    \   'name': 'WslClipboard',
-    \   'copy': {
-    \      '+': ["clip.exe"],
-    \      '*': ["clip.exe"],
-    \    },
-    \   'paste': {
-    \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \   },
-    \   'cache_enabled': 1,
-    \ }
-endif
-
-
 " --------------------------------------
 " dein.vim
 "
