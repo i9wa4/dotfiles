@@ -162,7 +162,7 @@ nnoremap <silent> <Plug>(my-edit)fe :<C-u>setlocal fileencoding=euc-jp<CR>
 nnoremap <silent> <Plug>(my-edit)fu :<C-u>setlocal fileencoding=utf-8<CR>
 nnoremap <silent> <Plug>(my-edit)ld :<C-u>edit ++fileformat=dos<CR>
 nnoremap <silent> <Plug>(my-edit)lu :<C-u>edit ++fileformat=unix<CR>
-nnoremap <silent> <Plug>(my-edit)tr :<C-u>%s/\r\n/\n/ge<CR>
+nnoremap <silent> <Plug>(my-edit)tr :<C-u>%s/\r$//e<CR>
 nnoremap <silent> <Plug>(my-edit)ts :<C-u>%s/\s\+$//e<CR>
 nnoremap <silent> <Plug>(my-edit)v  :<C-u>execute 'edit' $MYVIMRC<CR>
 
