@@ -126,6 +126,7 @@ function! my_looking#highlight() abort
   highlight MyEmphasis term=NONE cterm=NONE ctermfg=Black ctermbg=DarkYellow gui=NONE guifg=Black guibg=DarkYellow
   call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
   call matchadd('MyEmphasis', strftime('%Y-%m-%d'))
+  call matchadd('MyEmphasis', strftime('%Y%m%d'))
   " 　 
   highlight MyError term=NONE cterm=NONE ctermfg=Black ctermbg=DarkRed gui=NONE guifg=Black guibg=DarkRed
   call matchadd('MyError', '　\|\s\+$')
