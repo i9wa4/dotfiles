@@ -18,6 +18,11 @@ exit /b
     copy /y ".\etc\home\.markdownlintrc"    "%USERPROFILE%"
     copy /y ".\etc\home\.markdownlintrc"    "C:\work"
 
+    @REM Vim
+    set VIM_DIR="%USERPROFILE%\.vim"
+    rmdir /q /s "%VIM_DIR:"=%"
+    xcopy /e /i /y ".\.vim" "%VIM_DIR:"=%"
+
     @REM VSCode
     set CODE_DIR="%APPDATA%\Code\User"
     rmdir /q /s "%CODE_DIR:"=%"
