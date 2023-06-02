@@ -1,5 +1,5 @@
 .PHONY: all
-all: init copy apt git
+all: init copy apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
 	nodejs-init \
