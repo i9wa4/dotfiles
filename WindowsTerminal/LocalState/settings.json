@@ -4,7 +4,7 @@
     "actions":
     [
         {"command": "openNewTabDropdown", "keys": "alt+down"},
-        {"command": "paste", "keys": "ctrl+shift+p"},
+        {"command": "paste", "keys": "shift+insert"},
         {"command": {"action": "nextTab"}, "keys": "alt+right"},
         {"command": {"action": "prevTab"}, "keys": "alt+left"},
         {"command": "unbound", "keys": "alt+enter"},
@@ -55,6 +55,7 @@
         {"command": "unbound", "keys": "ctrl+shift+home"},
         {"command": "unbound", "keys": "ctrl+shift+m"},
         {"command": "unbound", "keys": "ctrl+shift+n"},
+        {"command": "unbound", "keys": "ctrl+shift+p"},
         {"command": "unbound", "keys": "ctrl+shift+pgdn"},
         {"command": "unbound", "keys": "ctrl+shift+pgup"},
         {"command": "unbound", "keys": "ctrl+shift+space"},
@@ -66,7 +67,6 @@
         {"command": "unbound", "keys": "ctrl+tab"},
         {"command": "unbound", "keys": "enter"},
         {"command": "unbound", "keys": "f11"},
-        {"command": "unbound", "keys": "shift+insert"},
         {"command": "unbound", "keys": "win+sc(41)"}
     ],
     "copyFormatting": "none",
