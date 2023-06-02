@@ -43,6 +43,7 @@ copy:
 	mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets
 	cp -rf "$${HOME}"/dotfiles/.jupyter                     "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip/*        "$(WIN_UTIL_DIR)"/VSCode/User/snippets
+	cp -rf "$${HOME}"/dotfiles/.vim                         "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/VSCode                       "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/WSL                          "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/WindowsTerminal              "$(WIN_UTIL_DIR)"
