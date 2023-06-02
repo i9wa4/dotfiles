@@ -189,9 +189,17 @@ command! -nargs=? C call s:copy2clip(<q-args>)
 
 function s:copy2clip_win(...) abort
   if a:0 >= 1
-    call system('clip.exe', system('nkf -sc', getreg(a:1)))
+    if has('win32unix')
+      call system('clip.exe', getreg(a:1))
+    else
+      call system('clip.exe', system('nkf -sc', getreg(a:1)))
+    endif
   else
-    call system('clip.exe', system('nkf -sc', @"))
+    if has('win32unix')
+      call system('clip.exe', @")
+    else
+      call system('clip.exe', system('nkf -sc', @"))
+    endif
   endif
 endfunction
 command! -nargs=? CW call s:copy2clip_win(<q-args>)
