@@ -1,15 +1,12 @@
-.PHONY: minimal
-minimal: init copy apt git
-
-.PHONY: normal
-normal: init copy apt git \
-	nodejs-init \
-
 .PHONY: all
-all: vim-init vim-build nvim-init nvim-build \
+all: init copy apt git \
+	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
 	nodejs-init \
 	r-init
+
+.PHONY: minimal
+minimal: init copy apt git
 
 .PHONY: init
 init:
