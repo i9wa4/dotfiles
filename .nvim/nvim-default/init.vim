@@ -47,7 +47,6 @@ endif
 "
 set laststatus=3
 set nrformats=unsigned
-set pumblend=30
 
 
 " --------------------------------------
