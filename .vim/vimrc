@@ -80,7 +80,9 @@ set noequalalways
 set pumheight=10
 set splitbelow
 set splitright
-set wildmenu wildmode=list:longest
+if !has('nvim')
+  set wildmenu wildmode=list:longest
+endif
 
 " CommandLine
 set cmdheight=1
