@@ -2,7 +2,9 @@ export LC_ALL=C.UTF-8
 export XDG_CONFIG_HOME="${HOME}"/.config
 
 # Neovim
-export NVIM_APPNAME=my_nvim
+export NVIM_APPNAME1=nvim
+export NVIM_APPNAME2=nvim-minimal
+export NVIM_APPNAME="${NVIM_APPNAME1}"
 
 # Deno
 export DENO_TLS_CA_STORE="system"
