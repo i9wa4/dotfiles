@@ -2,7 +2,7 @@ export LC_ALL=C.UTF-8
 export XDG_CONFIG_HOME="${HOME}"/.config
 
 # Neovim
-export NVIM_APPNAME1=nvim
+export NVIM_APPNAME1=nvim-default
 export NVIM_APPNAME2=nvim-minimal
 export NVIM_APPNAME="${NVIM_APPNAME1}"
 
