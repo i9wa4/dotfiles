@@ -71,7 +71,7 @@
     ],
     "copyFormatting": "none",
     "copyOnSelect": true,
-    "defaultProfile": "{17bf3de4-5353-5709-bcf9-835bd952a95e}",
+    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
     "disableAnimations": true,
     "experimental.detectURLs": false,
     "experimental.rendering.forceFullRepaint": true,
@@ -98,13 +98,6 @@
         },
         "list":
         [
-            {
-                "commandline": "C:\\WINDOWS\\system32\\wsl.exe -d Ubuntu-22.04",
-                "guid": "{17bf3de4-5353-5709-bcf9-835bd952a95e}",
-                "hidden": false,
-                "name": "Ubuntu-22.04",
-                "source": "Windows.Terminal.Wsl"
-            },
             {
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
