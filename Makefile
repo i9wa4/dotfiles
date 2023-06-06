@@ -29,10 +29,10 @@ copy:
 	# Neovim (symbolic link)
 	. "$${HOME}"/.profile \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/my_nvim \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/minimal \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/my_nvim "$${XDG_CONFIG_HOME}"/my_nvim \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/minimal "$${XDG_CONFIG_HOME}"/minimal
+	&& rm -rf "$${XDG_CONFIG_HOME}"/nvim \
+	&& rm -rf "$${XDG_CONFIG_HOME}"/nvim-minimal \
+	&& ln -fs "$${HOME}"/dotfiles/.nvim/nvim "$${XDG_CONFIG_HOME}"/nvim \
+	&& ln -fs "$${HOME}"/dotfiles/.nvim/nvim-minimal "$${XDG_CONFIG_HOME}"/nvim-minimal
 	# WSL
 	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Windows
