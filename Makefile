@@ -29,24 +29,24 @@ copy:
 	# Neovim (symbolic link)
 	. "$${HOME}"/.profile \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/nvim \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/nvim-minimal \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/nvim "$${XDG_CONFIG_HOME}"/nvim \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/nvim-minimal "$${XDG_CONFIG_HOME}"/nvim-minimal
+	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
+	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
+	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
+	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
 	# WSL
 	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Windows
 	rm -rf "$(WIN_UTIL_DIR)"
 	mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets
-	cp -rf "$${HOME}"/dotfiles/.jupyter                     "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/.nvim/my_nvim/vsnip/*        "$(WIN_UTIL_DIR)"/VSCode/User/snippets
-	cp -rf "$${HOME}"/dotfiles/.vim                         "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/VSCode                       "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WSL                          "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/WindowsTerminal              "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/bin                          "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/bin/windows/my_copy.bat      "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/etc                          "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.jupyter "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets
+	cp -rf "$${HOME}"/dotfiles/.vim "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/VSCode "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/WindowsTerminal "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
 apt:

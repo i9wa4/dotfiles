@@ -94,8 +94,8 @@ function! my_looking#tabline() abort
     " let l:ret .= ' ' . fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
     let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
   endif
-  if exists('g:local_vim_dir')
-    let l:ret .= '  ' . 'Cfg:' . g:local_vim_dir
+  if exists('g:local_vim_setting_name')
+    let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
   endif
   " let l:ret .= ' '
   return l:ret
