@@ -180,9 +180,11 @@ nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
 "
 function s:copy2clip(...) abort
   if a:0 >= 1
-    let @+ = getreg(a:1)
+    " let @+ = getreg(a:1)
+    setreg('+', a:1)
   else
-    let @+ = @"
+    " let @+ = @"
+    setreg('+', @")
   endif
 endfunction
 command! -nargs=? C call s:copy2clip(<q-args>)
