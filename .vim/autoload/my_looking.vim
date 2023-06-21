@@ -45,9 +45,9 @@ function! my_looking#statusline() abort
   let l:ret = ''
   " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
   let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
-  let l:ret .= '%t '
+  " let l:ret .= '%t '
   " let l:ret .= '%f '
-  let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
+  " let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
   let l:ret .= '%<'
   let l:ret .= "%="
   let l:ret .= (v:hlsearch ? my_looking#last_search_count() . ' ' : '')
@@ -57,8 +57,7 @@ function! my_looking#statusline() abort
   let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
-  let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
+  " let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
   " let l:ret .= ' '
   return l:ret
 endfunction
@@ -97,6 +96,7 @@ function! my_looking#tabline() abort
   if exists('g:local_vim_setting_name')
     let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
   endif
+  let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
   " let l:ret .= ' '
   return l:ret
 endfunction
