@@ -89,7 +89,7 @@ function! my_looking#tabline() abort
   endfor
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:.')
+  let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:t:r')
   if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
     " let l:ret .= ' ' . fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
     let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
