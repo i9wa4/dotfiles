@@ -21,7 +21,8 @@ endfunction
 
 function! my_vimrc#clean_viminfo() abort
   " delete marks
-  delmarks a-z0-9[]^.<>
+  delmarks!
+  delmarks A-Z0-9
 
   " delete registers
   let l:reg_list = split(
