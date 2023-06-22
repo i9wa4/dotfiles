@@ -20,6 +20,13 @@ function! my_vimrc#set_register() abort
 endfunction
 
 function! my_vimrc#clean_viminfo() abort
+  " delete history
+  call histdel("cmd")
+  call histdel("search")
+  call histdel("expr")
+  call histdel("input")
+  call histdel("debug")
+
   " delete registers
   let l:reg_list = split(
     \   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-"',
