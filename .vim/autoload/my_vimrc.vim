@@ -20,10 +20,6 @@ function! my_vimrc#set_register() abort
 endfunction
 
 function! my_vimrc#clean_viminfo() abort
-  " delete marks
-  delmarks!
-  delmarks A-Z0-9
-
   " delete registers
   let l:reg_list = split(
     \   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-"',
@@ -32,6 +28,10 @@ function! my_vimrc#clean_viminfo() abort
   for l:r in l:reg_list
     call setreg(l:r, [])
   endfor
+
+  " delete marks
+  delmarks!
+  delmarks A-Z0-9
 
   " save vininfo
   if has('nvim')
