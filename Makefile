@@ -2,8 +2,7 @@
 all: init copy apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
-	nodejs-init \
-	r-init
+	nodejs-init
 
 .PHONY: minimal
 minimal: init copy apt git
