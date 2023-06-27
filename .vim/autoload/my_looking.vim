@@ -57,7 +57,7 @@ function! my_looking#statusline() abort
   let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  " let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
+  let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
   " let l:ret .= ' '
   return l:ret
 endfunction
