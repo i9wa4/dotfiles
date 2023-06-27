@@ -12,16 +12,13 @@ init:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
-	# WSL
-	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 
 .PHONY: copy
 WIN_UTIL_DIR := /mnt/c/work/util
 copy:
-	# Windows (symbolic link)
-	mkdir -p /mnt/c/work
-	rm -rf "$${HOME}"/work
-	ln -s /mnt/c/work/ "$${HOME}"/work
+	# WSL
+	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
+	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Vim (symbolic link)
 	rm -rf "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
@@ -32,8 +29,10 @@ copy:
 	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
-	# WSL
-	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
+	# Windows (symbolic link)
+	mkdir -p /mnt/c/work
+	rm -rf "$${HOME}"/work
+	ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows
 	rm -rf "$(WIN_UTIL_DIR)"
 	mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets
