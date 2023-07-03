@@ -34,7 +34,7 @@ copy:
 	rm -rf "$${HOME}"/work
 	ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows
-        . "$${HOME}"/.profile \
+	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
 	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
 	&& cp -rf "$${HOME}"/dotfiles/.jupyter "$(WIN_UTIL_DIR)" \
