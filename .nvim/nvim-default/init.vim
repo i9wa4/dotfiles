@@ -8,20 +8,20 @@ set packpath^=~/.vim
 " --------------------------------------
 " Variable
 "
-" if has('nvim') && has('unix') && exists('$WSLENV')
-"   let g:clipboard = {
-"     \   'name': 'WslClipboard',
-"     \   'copy': {
-"     \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
-"     \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
-"     \    },
-"     \   'paste': {
-"     \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-"     \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-"     \   },
-"     \   'cache_enabled': 1,
-"     \ }
-" endif
+if has('nvim') && has('unix') && exists('$WSLENV') && !exists('$TMUX')
+  let g:clipboard = {
+    \   'name': 'WslClipboard',
+    \   'copy': {
+    \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
+    \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
+    \    },
+    \   'paste': {
+    \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    \   },
+    \   'cache_enabled': 1,
+    \ }
+endif
 
 
 " --------------------------------------
@@ -45,7 +45,7 @@ endif
 " --------------------------------------
 " Option
 "
-set laststatus=3
+" set laststatus=3
 set nrformats=unsigned
 
 

@@ -9,16 +9,6 @@ function! my_vimrc#restore_cursor() abort
   endif
 endfunction
 
-function! my_vimrc#set_register() abort
-  if empty(&buftype)
-    let @a = expand('%:p:~')
-    let @b = expand('%:p:~:h')
-    let @c = expand('%:t')
-    let @d = expand('%:t:r')
-    let @e = fnamemodify(getcwd(), ':~')
-  endif
-endfunction
-
 function! my_vimrc#clean_viminfo() abort
   " delete history
   call histdel("cmd")

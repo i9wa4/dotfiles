@@ -51,8 +51,8 @@ function! my_looking#statusline() abort
   let l:ret .= '%<'
   let l:ret .= "%="
   let l:ret .= (v:hlsearch ? my_looking#last_search_count() . ' ' : '')
-  let l:ret .= '  ' . '%l/%L:%-2c'
-  " let l:ret .= '  ' . 'Ln:%l/%L Col:%-2c'
+  " let l:ret .= '  ' . '%l/%L:%-2c'
+  let l:ret .= '  ' . 'Ln:%l/%L,Col:%-2c'
   " let l:ret .= '  ' . '%2p' . "%{'\%'}"
   let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
@@ -93,9 +93,9 @@ function! my_looking#tabline() abort
     " let l:ret .= ' ' . fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
     let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
   endif
-  if exists('g:local_vim_setting_name')
-    let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
-  endif
+  " if exists('g:local_vim_setting_name')
+  "   let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
+  " endif
   let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
   " let l:ret .= ' '
   return l:ret
@@ -111,11 +111,11 @@ function! my_looking#highlight() abort
   highlight link markdownItalic Normal
 
   " override colorscheme setting
-  highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
   highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
   highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
   highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=NONE
-  highlight StatusLine    term=NONE cterm=NONE ctermfg=Gray ctermbg=Black gui=NONE guifg=Gray guibg=Black
+  highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
+  highlight StatusLine    term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black

@@ -210,6 +210,28 @@ command! -nargs=? CW call s:copy2clip_win(<q-args>)
 " --------------------------------------
 " Aucocommand
 "
+function! s:set_register() abort
+  if empty(&buftype)
+    call setreg('a', expand('%:p:~'))
+    call setreg('b', expand('%:p:~:h'))
+    call setreg('c', expand('%:t'))
+    call setreg('d', expand('%:t:r'))
+    let l:status = 'CWD:' . fnamemodify(getcwd(), ':~')
+    if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
+      let l:status .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
+    endif
+    if exists('g:local_vim_setting_name')
+      let l:status = '  ' . 'Cfg:' . g:local_vim_setting_name
+    endif
+    let l:status .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
+    let l:status .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
+    let l:status .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+    let l:status .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
+    let l:status .= '  ' . (has('nvim') ? 'N' : 'V')
+    call setreg('z', l:status)
+  endif
+endfunction
+
 function! s:my_filetype() abort
   if empty(&filetype)
     return
@@ -220,7 +242,6 @@ function! s:my_filetype() abort
 
   if index([
     \   'css',
-    \   'markdown',
     \   'mermaid',
     \   'plantuml',
     \   'sh',
@@ -256,6 +277,9 @@ endfunction
 
 augroup VimrcAutocmd
   autocmd!
+  " Register
+  autocmd BufEnter * call s:set_register()
+
   " Auto Reload
   autocmd WinEnter * checktime
 
