@@ -22,7 +22,8 @@ require("lspconfig")["pylsp"].setup{}
 
 [[plugins]]
 repo = 'jose-elias-alvarez/null-ls.nvim'
-if = "has('nvim')"
+if = 0
+# if = "has('nvim')"
 on_event = ['BufNewFile', 'BufRead']
 lua_source = '''
 local null_ls = require("null-ls")
@@ -39,5 +40,6 @@ null_ls.setup({
 
 [[plugins]]
 repo = 'nvim-lua/plenary.nvim'
-if = "has('nvim')"
+if = 0
+# if = "has('nvim')"
 on_source = ['null-ls.nvim']
