@@ -1,3 +1,0 @@
-shardulm94.trailing-spaces
-shd101wyy.markdown-preview-enhanced
-vscodevim.vim
