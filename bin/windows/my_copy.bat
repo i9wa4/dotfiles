@@ -13,10 +13,10 @@ exit /b
     copy /y ".\WSL\.wslconfig"              "%USERPROFILE%"
 
     @REM %USERPROFILE% & C:\work
-    copy /y ".\etc\home\.jupytext"          "%USERPROFILE%"
-    copy /y ".\etc\home\.jupytext"          "C:\work"
-    copy /y ".\etc\home\.markdownlintrc"    "%USERPROFILE%"
-    copy /y ".\etc\home\.markdownlintrc"    "C:\work"
+    copy /y ".\etc\home\.jupytext"                  "%USERPROFILE%"
+    copy /y ".\etc\home\.jupytext"                  "C:\work"
+    copy /y ".\etc\home\.markdownlint-cli2.jsonc"   "%USERPROFILE%"
+    copy /y ".\etc\home\.markdownlint-cli2.jsonc"   "C:\work"
 
     @REM Vim
     set VIM_DIR="%USERPROFILE%\.vim"
