@@ -268,7 +268,7 @@ function! s:my_asyncjob_on_save() abort
     endif
   elseif &filetype == 'markdown'
     if executable('markdown-lint-cli2-fix')
-      call my_async#jobstart('markdown-lint-cli2-fix ' . expand('%:p'))
+      call my_async#jobstart('markdownlint-cli2-fix ' . expand('%:p'))
     endif
   else
     " Do nothing.
