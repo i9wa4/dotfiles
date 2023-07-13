@@ -77,7 +77,7 @@ let g:vsnip_snippet_dir = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/vsni
 '''
 
 [[plugins]]
-repo = 'hrsh7th/vim-vsnip-integ'
+repo = 'uga-rosa/ddc-source-vsnip'
 on_source = ['ddc.vim']
 
 [[plugins]]
