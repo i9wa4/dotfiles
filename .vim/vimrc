@@ -267,9 +267,6 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
-    if executable('markdown-table-formatter')
-      call my_async#jobstart('markdownlint-table-formatter ' . expand('%:p'))
-    endif
     if executable('markdownlint-cli2-fix')
       call my_async#jobstart('markdownlint-cli2-fix ' . expand('%:p'))
     endif
