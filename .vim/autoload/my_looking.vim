@@ -88,6 +88,7 @@ function! my_looking#tabline() abort
   endfor
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
+  let $BASH_ENV = "~/.bashrc"
   let l:ret .= system('__git_ps1')
   " let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:t:r')
   " if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
