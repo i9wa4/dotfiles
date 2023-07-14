@@ -88,11 +88,12 @@ function! my_looking#tabline() abort
   endfor
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
+  let l:ret .= system('__git_ps1')
   " let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:t:r')
-  if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
-    let l:ret .= fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
-    let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
-  endif
+  " if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
+  "   let l:ret .= fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
+  "   let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
+  " endif
   " if exists('g:local_vim_setting_name')
   "   let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
   " endif
