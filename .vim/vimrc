@@ -217,9 +217,7 @@ function! s:set_register() abort
     call setreg('c', expand('%:t'))
     call setreg('d', expand('%:t:r'))
     let l:status = 'CWD:' . fnamemodify(getcwd(), ':~')
-    if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
-      let l:status .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
-    endif
+    let l:status .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
     if exists('g:local_vim_setting_name')
       let l:status .= '  ' . 'Cfg:' . g:local_vim_setting_name
     endif
