@@ -221,7 +221,7 @@ function! s:set_register() abort
       let l:status .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
     endif
     if exists('g:local_vim_setting_name')
-      let l:status = '  ' . 'Cfg:' . g:local_vim_setting_name
+      let l:status .= '  ' . 'Cfg:' . g:local_vim_setting_name
     endif
     let l:status .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
     let l:status .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
