@@ -63,6 +63,11 @@ function! my_vimrc#add_path(path_list) abort
   let $PATH = join(l:path_list, l:separator)
 endfunction
 
+let s:preload_vimrc_path = ''
+function! my_vimrc#set_preload_vimrc(path) abort
+  let s:preload_vimrc_path = a:path
+endfunction
+
 function! my_vimrc#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " https://github.com/vim-jp/issues/issues/1176
@@ -71,7 +76,9 @@ function! my_vimrc#source_local_vimrc(path) abort
     call add(l:vimrc_path_list, fnamemodify(expand(l:i), ':p'))
   endfor
 
-  call insert(l:vimrc_path_list, expand('~/.vim/rc/local_sample.vim'), 0)
+  if s:preload_vimrc_path != ''
+    call insert(l:vimrc_path_list, s:preload_vimrc_path, 0)
+  endif
 
   for l:i in l:vimrc_path_list
     if filereadable(l:i)

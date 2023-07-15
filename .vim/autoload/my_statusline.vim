@@ -3,7 +3,40 @@ scriptencoding utf-8
 " --------------------------------------
 " StatusLine
 "
-function! my_looking#last_search_count() abort
+function! my_statusline#statusline() abort
+  " let l:mode_dict = {
+  "  \ 'n': 'NORMAL',
+  "  \ 'i': 'INSERT',
+  "  \ 'R': 'REPLACE',
+  "  \ 'v': 'VISUAL',
+  "  \ 'V': 'V-LINE',
+  "  \ "\<C-v>": 'V-BLOCK',
+  "  \ 'S': 'S-LINE',
+  "  \ "\<C-s>": 'S-BLOCK',
+  "  \ 's': 'SELECT',
+  "  \ 'c': 'COMMAND',
+  "  \ 't': 'TERMINAL',
+  "  \ }
+
+  let l:ret = ''
+  " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
+  let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
+  let l:ret .= '%t '
+  " let l:ret .= '%f '
+  " let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
+  let l:ret .= '%<'
+  let l:ret .= "%="
+  let l:ret .= (v:hlsearch ? s:last_search_count() . ' ' : '')
+  " let l:ret .= '  ' . 'Ln:%l/%L Col:%-2c'
+  let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
+  let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
+  let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
+  " let l:ret .= ' '
+  return l:ret
+endfunction
+
+function! s:last_search_count() abort
   " :help searchcount()
   if !exists('*searchcount')
     return '*'
@@ -26,47 +59,11 @@ function! my_looking#last_search_count() abort
   return printf(' /%s [%d/%d]', @/, l:result.current, l:result.total)
 endfunction
 
-function! my_looking#statusline() abort
-  " let l:mode_dict = {
-  "  \ 'n': 'NORMAL',
-  "  \ 'i': 'INSERT',
-  "  \ 'R': 'REPLACE',
-  "  \ 'v': 'VISUAL',
-  "  \ 'V': 'V-LINE',
-  "  \ "\<C-v>": 'V-BLOCK',
-  "  \ 'S': 'S-LINE',
-  "  \ "\<C-s>": 'S-BLOCK',
-  "  \ 's': 'SELECT',
-  "  \ 'c': 'COMMAND',
-  "  \ 't': 'TERMINAL',
-  "  \ }
-
-  " let l:ret = ' '
-  let l:ret = ''
-  " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
-  let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
-  let l:ret .= '%t '
-  " let l:ret .= '%f '
-  " let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
-  let l:ret .= '%<'
-  let l:ret .= "%="
-  let l:ret .= (v:hlsearch ? my_looking#last_search_count() . ' ' : '')
-  " let l:ret .= '  ' . '%l/%L:%-2c'
-  let l:ret .= '  ' . 'Ln:%l/%L,Col:%-2c'
-  " let l:ret .= '  ' . '%2p' . "%{'\%'}"
-  let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
-  let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
-  let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
-  " let l:ret .= ' '
-  return l:ret
-endfunction
-
 
 " --------------------------------------
 " TabLine
 "
-function! my_looking#tabline() abort
+function! my_statusline#tabline() abort
   " https://qiita.com/wadako111/items/755e753677dd72d8036d
   let l:ret = ''
   for l:i in range(1, tabpagenr('$'))
@@ -89,16 +86,7 @@ function! my_looking#tabline() abort
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
   let l:ret .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
-  " let l:ret .= 'CWD:' . fnamemodify(getcwd(), ':~:t:r')
-  " if systemlist('git rev-parse --is-inside-work-tree')[0] == 'true'
-  "   let l:ret .= fnamemodify(systemlist('git rev-parse --show-toplevel')[0], ':t')
-  "   let l:ret .= '(' . systemlist('git symbolic-ref --short HEAD')[0] . ')'
-  " endif
-  " if exists('g:local_vim_setting_name')
-  "   let l:ret .= '  ' . 'Cfg:' . g:local_vim_setting_name
-  " endif
   let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
-  " let l:ret .= ' '
   return l:ret
 endfunction
 
@@ -106,7 +94,7 @@ endfunction
 " --------------------------------------
 " Highlight
 "
-function! my_looking#highlight() abort
+function! my_statusline#highlight() abort
   " substitute for ~/.vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal
   highlight link markdownItalic Normal
@@ -116,7 +104,7 @@ function! my_looking#highlight() abort
   highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
   highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=NONE
   highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
-  highlight StatusLine    term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
+  highlight StatusLine    term=NONE cterm=NONE ctermfg=Gray ctermbg=Black gui=NONE guifg=Gray guibg=Black
   highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
   highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black

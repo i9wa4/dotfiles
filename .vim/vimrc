@@ -10,6 +10,7 @@ syntax off
 " --------------------------------------
 " Variable
 "
+call my_vimrc#set_preload_vimrc(expand('~/.vim/rc/local_sample.vim'))
 let g:auto_reload = timer_start(
   \   1000,
   \   {-> execute('silent! checktime')},
@@ -61,7 +62,7 @@ set virtualedit=block
 
 " Search
 if executable('rg')
-  let &grepprg = 'rg --vimgrep --no-heading'
+  let &grepprg = 'rg --vimgrep --no-heading -uu'
   set grepformat=%f:%l:%c:%m
 endif
 set hlsearch
@@ -178,6 +179,7 @@ nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
 " --------------------------------------
 " Command
 "
+command! -nargs=? C call s:copy2clip(<q-args>)
 function s:copy2clip(...) abort
   if a:0 >= 1
     " let @+ = getreg(a:1)
@@ -187,8 +189,8 @@ function s:copy2clip(...) abort
     call setreg('+', @")
   endif
 endfunction
-command! -nargs=? C call s:copy2clip(<q-args>)
 
+command! -nargs=? CW call s:copy2clip_win(<q-args>)
 function s:copy2clip_win(...) abort
   if a:0 >= 1
     if has('win32unix')
@@ -204,7 +206,6 @@ function s:copy2clip_win(...) abort
     endif
   endif
 endfunction
-command! -nargs=? CW call s:copy2clip_win(<q-args>)
 
 
 " --------------------------------------
