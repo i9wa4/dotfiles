@@ -131,8 +131,8 @@ vnoremap <silent> k gk
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
 " QuickFix
-nnoremap <silent> <C-n> :<C-u>cnext<CR>
-nnoremap <silent> <C-p> :<C-u>cprevious<CR>
+nnoremap <silent> <C-n> :<C-u>lnext<CR>
+nnoremap <silent> <C-p> :<C-u>lprevious<CR>
 
 " Resize Window
 nnoremap <silent> <S-Down>  <C-w>1-
@@ -258,6 +258,17 @@ function! s:my_filetype() abort
   else
     " Do nothing.
   endif
+
+  " Linter
+  if &filetype == 'sh' && executable('shellcheck')
+    let &l:makeprg = 'shellcheck -f gcc -x %'
+    let &l:errorformat = '%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m,'
+  elseif &filetype == 'dockerfile' && executable ('hadolint')
+    let &l:makeprg = 'hadolint --no-color %'
+    let &l:errorformat = '%f:%l %m'
+  else
+    " Do nothing.
+  endif
 endfunction
 
 function! s:my_asyncjob_on_save() abort
@@ -267,9 +278,10 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
-    if executable('markdownlint-cli2-fix')
-      " call my_async#jobstart('markdownlint-cli2-fix ' . expand('%:p'))
-    endif
+    " TODO: Table Formatter
+    " if executable('markdownlint-cli2-fix')
+    "   call my_async#jobstart('markdownlint-cli2-fix ' . expand('%:p'))
+    " endif
   else
     " Do nothing.
   endif

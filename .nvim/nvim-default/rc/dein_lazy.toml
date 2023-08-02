@@ -19,27 +19,3 @@ vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 
 require("lspconfig")["pylsp"].setup{}
 '''
-
-[[plugins]]
-repo = 'jose-elias-alvarez/null-ls.nvim'
-if = 0
-# if = "has('nvim')"
-on_event = ['BufNewFile', 'BufRead']
-lua_source = '''
-local null_ls = require("null-ls")
-
-local null_sources = {}
-table.insert(null_sources, null_ls.builtins.diagnostics["hadolint"])
-table.insert(null_sources, null_ls.builtins.diagnostics["markdownlint"])
-table.insert(null_sources, null_ls.builtins.diagnostics["shellcheck"])
-
-null_ls.setup({
-  sources = null_sources,
-})
-'''
-
-[[plugins]]
-repo = 'nvim-lua/plenary.nvim'
-if = 0
-# if = "has('nvim')"
-on_source = ['null-ls.nvim']
