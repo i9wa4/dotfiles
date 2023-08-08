@@ -1,0 +1,3 @@
+let g:netrw_dirhistmax  =1
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/home/i9wa4/dotfiles'
