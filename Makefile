@@ -8,7 +8,7 @@ all: init copy apt git \
 minimal: init copy apt git
 
 .PHONY: win-all
-all: init copy wincopy apt git \
+all: init copy win-copy apt git \
 	vim-init vim-build nvim-init nvim-build \
 	py-init py-build py-vmu \
 	nodejs-init
@@ -38,11 +38,13 @@ copy:
 	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
 
-.PHONY: wincopy
+.PHONY: win-copy
 WIN_UTIL_DIR := /mnt/c/work/util
 wincopy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
+	# dotfiles
+	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Windows (symbolic link)
 	mkdir -p /mnt/c/work
 	rm -rf "$${HOME}"/work
