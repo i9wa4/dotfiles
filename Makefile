@@ -306,3 +306,7 @@ r-init:
 	. "$${HOME}"/.profile \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
+
+.PHONY: ubuntu-desktop
+ubuntu-desktop:
+	gsettings set org.gnome.desktop.interface text-scaling-factor 1.25
