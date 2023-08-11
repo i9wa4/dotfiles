@@ -309,4 +309,4 @@ r-init:
 
 .PHONY: ubuntu-desktop
 ubuntu-desktop:
-	gsettings set org.gnome.desktop.interface text-scaling-factor 1.25
+	# Settings --> Accessibility --> Large Text
