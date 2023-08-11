@@ -76,6 +76,7 @@ apt:
 	  tmux \
 	  unzip \
 	  vim \
+	  xsel \
 	  zip
 
 .PHONY: git
