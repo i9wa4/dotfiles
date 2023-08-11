@@ -310,3 +310,5 @@ r-init:
 .PHONY: ubuntu-desktop
 ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
+	# https://askubuntu.com/questions/1456119/no-wifi-and-display-brightness-options-after-removing-nvidia-graphics-drivers
+	sudo apt install --reinstall linux-generic-hwe-22.04
