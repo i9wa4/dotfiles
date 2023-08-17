@@ -19,32 +19,34 @@ minimal: init copy win-copy apt git
 .PHONY: init
 init:
 	# Bash
-	echo "if [ -f "$${HOME}"/dotfiles/etc/.bashrc ]; then . "$${HOME}"/dotfiles/etc/.bashrc; fi" >> "$${HOME}"/.bashrc
+	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "cd" >> "$${HOME}"/.bashrc
-	echo "if [ -f "$${HOME}"/dotfiles/etc/.profile ]; then . "$${HOME}"/dotfiles/etc/.profile; fi" >> "$${HOME}"/.profile
+	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
 
 .PHONY: copy
 copy:
 	# dotfiles
-	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
+	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
+	cp -rf "$${HOME}"/dotfiles/etc/home/dot.gitignore "$${HOME}"/.gitignore
+	cp -rf "$${HOME}"/dotfiles/etc/home/dot.jupytext "$${HOME}"/.jupytext
+	cp -rf "$${HOME}"/dotfiles/etc/home/dot.markdownlint-cli2.jsonc "$${HOME}"/.markdownlint-cli2.jsonc
+	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
 	# Vim (symbolic link)
 	rm -rf "$${HOME}"/.vim
-	ln -fs "$${HOME}"/dotfiles/.vim "$${HOME}"/.vim
+	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# Neovim (symbolic link)
 	. "$${HOME}"/.profile \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
-	&& ln -fs "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
+	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
 
 .PHONY: win-copy
 WIN_UTIL_DIR := /mnt/c/work/util
 win-copy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
-	# dotfiles
-	cp -rf "$${HOME}"/dotfiles/etc/home/. "$${HOME}"
 	# Windows (symbolic link)
 	mkdir -p /mnt/c/work
 	rm -rf "$${HOME}"/work
@@ -53,9 +55,9 @@ win-copy:
 	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
 	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
-	&& cp -rf "$${HOME}"/dotfiles/.jupyter "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
-	&& cp -rf "$${HOME}"/dotfiles/.vim "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
+	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/VSCode "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WindowsTerminal "$(WIN_UTIL_DIR)" \
