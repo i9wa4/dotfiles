@@ -40,7 +40,7 @@ copy:
 
 .PHONY: win-copy
 WIN_UTIL_DIR := /mnt/c/work/util
-wincopy:
+win-copy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# dotfiles
