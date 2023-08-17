@@ -190,8 +190,8 @@ function s:copy2clip(...) abort
   endif
 endfunction
 
-command! -nargs=? CW call s:copy2clip_win(<q-args>)
-function s:copy2clip_win(...) abort
+command! -nargs=? CW call s:copy2clip_wsl(<q-args>)
+function s:copy2clip_wsl(...) abort
   if a:0 >= 1
     if has('win32unix')
       call system('clip.exe', getreg(a:1))
@@ -263,7 +263,7 @@ function! s:my_filetype() abort
   if &filetype == 'sh' && executable('shellcheck')
     let &l:makeprg = 'shellcheck -f gcc -x %'
     let &l:errorformat = '%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m,'
-  elseif &filetype == 'dockerfile' && executable ('hadolint')
+  elseif &filetype == 'dockerfile' && executable('hadolint')
     let &l:makeprg = 'hadolint --no-color %'
     let &l:errorformat = '%f:%l %m'
   else
@@ -277,11 +277,6 @@ function! s:my_asyncjob_on_save() abort
     if executable('jupytext') && filereadable(l:ipynb_path)
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
-  elseif &filetype == 'markdown'
-    " TODO: Table Formatter
-    " if executable('markdownlint-cli2-fix')
-    "   call my_async#jobstart('markdownlint-cli2-fix ' . expand('%:p'))
-    " endif
   else
     " Do nothing.
   endif

@@ -232,10 +232,6 @@ nodejs-init:
 	curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
 	sudo apt update
 	sudo apt install -y nodejs
-	sudo npm install -g markdownlint-cli2
-	sudo npm install -g markdownlint-cli2-formatter-default
-	# sudo npm install -g prettier
-	# sudo npm install -g prettier-plugin-md-nocjsp
 
 .PHONY: psql-init
 psql-init:
