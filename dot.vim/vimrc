@@ -107,11 +107,6 @@ else
   set spelllang+=cjk spell
 endif
 
-" Color
-" if has('termguicolors')
-"   set termguicolors
-" endif
-
 " Abbreviation
 " :w' --> :w
 cnoreabbrev w' w
