@@ -3,6 +3,10 @@ repo = 'tyru/caw.vim'
 on_event = ['BufNewFile', 'BufRead']
 
 [[plugins]]
+repo = 'dhruvasagar/vim-table-mode'
+on_event = ['BufNewFile', 'BufRead']
+
+[[plugins]]
 repo = 'neovim/nvim-lspconfig'
 if = "has('nvim')"
 on_event = ['BufNewFile', 'BufRead']

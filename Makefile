@@ -56,7 +56,7 @@ win-copy:
 	&& rm -rf "$(WIN_UTIL_DIR)" \
 	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
 	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
+	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets
 	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/VSCode "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)" \
