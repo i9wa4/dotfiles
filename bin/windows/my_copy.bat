@@ -9,19 +9,19 @@ exit /b
     cd /d %~dp0
 
     @REM %USERPROFILE%
-    copy /y ".\etc\home\.gitignore"         "%USERPROFILE%"
-    copy /y ".\WSL\.wslconfig"              "%USERPROFILE%"
+    copy /y ".\etc\home\dot.gitignore"      "%USERPROFILE%/.gitignore"
+    copy /y ".\WSL\dot.wslconfig"           "%USERPROFILE%/.wslconfig"
 
     @REM %USERPROFILE% & C:\work
-    copy /y ".\etc\home\.jupytext"                  "%USERPROFILE%"
-    copy /y ".\etc\home\.jupytext"                  "C:\work"
-    copy /y ".\etc\home\.markdownlint-cli2.jsonc"   "%USERPROFILE%"
-    copy /y ".\etc\home\.markdownlint-cli2.jsonc"   "C:\work"
+    copy /y ".\etc\home\dot.jupytext"                   "%USERPROFILE%/.jupytext"
+    copy /y ".\etc\home\dot.jupytext"                   "C:\work/.jupytext"
+    copy /y ".\etc\home\dot.markdownlint-cli2.jsonc"    "%USERPROFILE%/.markdownlint-cli2.jsonc"
+    copy /y ".\etc\home\dot.markdownlint-cli2.jsonc"    "C:\work/.markdownlint-cli2.jsonc"
 
     @REM Vim
     set VIM_DIR="%USERPROFILE%\.vim"
     rmdir /q /s "%VIM_DIR:"=%"
-    xcopy /e /i /y ".\.vim" "%VIM_DIR:"=%"
+    xcopy /e /i /y ".\dot.vim" "%VIM_DIR:"=%"
 
     @REM VSCode
     set CODE_DIR="%APPDATA%\Code\User"
