@@ -1,20 +1,13 @@
 .PHONY: all
 all: init copy apt git \
-	vim-init vim-build nvim-init nvim-build \
+	vim-init vim-build \
+	nvim-init nvim-build \
 	py-init py-build py-vmu \
 	nodejs-init
 
 .PHONY: minimal
-minimal: init copy apt git
-
-.PHONY: win-all
-all: init copy win-copy apt git \
-	vim-init vim-build nvim-init nvim-build \
-	py-init py-build py-vmu \
-	nodejs-init
-
-.PHONY: win-minimal
-minimal: init copy win-copy apt git
+minimal: init copy apt git \
+	vim-init vim-build
 
 .PHONY: init
 init:
@@ -47,11 +40,11 @@ WIN_UTIL_DIR := /mnt/c/work/util
 win-copy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
-	# Windows (symbolic link)
+	# Windows symbolic link
 	mkdir -p /mnt/c/work
 	rm -rf "$${HOME}"/work
 	ln -s /mnt/c/work/ "$${HOME}"/work
-	# Windows
+	# Windows copy
 	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
 	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
@@ -62,7 +55,7 @@ win-copy:
 	&& cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WindowsTerminal "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/bin/Windows/my_copy.bat "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
