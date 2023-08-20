@@ -7,9 +7,9 @@
     "settings": {},
     "extensions": {
         "recommendations": [
-            "shd101wyy.markdown-preview-enhanced",
             "shardulm94.trailing-spaces",
-            "vscodevim.vim"
+            "vscodevim.vim",
+            "yzhang.markdown-all-in-one"
         ]
     }
 }

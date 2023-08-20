@@ -1,6 +1,6 @@
 strSendKey = "{NUMLOCK}"
 
-intSleepTime = 254321
+intSleepTime = 234567
 
 strQuery = "Select * FROM Win32_Process WHERE (Caption = 'wscript.exe' OR Caption = 'cscript.exe') AND " _
          & " CommandLine LIKE '%" & WScript.ScriptName & "%'"
