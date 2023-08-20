@@ -6,8 +6,7 @@ all: init copy apt git \
 	nodejs-init
 
 .PHONY: minimal
-minimal: init copy apt git \
-	vim-init vim-build
+minimal: init copy apt git
 
 .PHONY: init
 init:
