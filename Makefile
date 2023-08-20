@@ -48,14 +48,14 @@ win-copy:
 	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
 	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
-	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets
-	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/VSCode "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/WindowsTerminal "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/bin/Windows/my_copy.bat "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
+	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
