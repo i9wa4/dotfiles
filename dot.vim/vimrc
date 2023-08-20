@@ -81,7 +81,11 @@ set noequalalways
 set pumheight=10
 set splitbelow
 set splitright
-set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
+if has('patch-8.2.4325')
+  set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
+else
+  set wildmenu wildoptions=tagfile wildchar=<Tab>
+endif
 
 " CommandLine
 set cmdheight=1
