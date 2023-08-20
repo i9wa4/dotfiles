@@ -19,10 +19,10 @@ init:
 .PHONY: copy
 copy:
 	# dotfiles
+	# cp -rf "$${HOME}"/dotfiles/etc/home/dot.markdownlint-cli2.jsonc "$${HOME}"/.markdownlint-cli2.jsonc
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.gitignore "$${HOME}"/.gitignore
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.jupytext "$${HOME}"/.jupytext
-	cp -rf "$${HOME}"/dotfiles/etc/home/dot.markdownlint-cli2.jsonc "$${HOME}"/.markdownlint-cli2.jsonc
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
 	# Vim (symbolic link)
 	rm -rf "$${HOME}"/.vim
