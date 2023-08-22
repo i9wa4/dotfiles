@@ -17,6 +17,7 @@ function! my_highlight#highlight() abort
   " highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=Gray
   " highlight VertSplit     term=NONE cterm=NONE ctermfg=DarkGray ctermbg=NONE
 
+  call clearmatches()
   " [ ]
   highlight MyEmphasis term=NONE cterm=NONE ctermfg=Black ctermbg=218 " Pink1
   call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
