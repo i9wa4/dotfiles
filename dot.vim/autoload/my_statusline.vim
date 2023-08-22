@@ -26,7 +26,7 @@ function! my_statusline#statusline() abort
   " let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
   let l:ret .= '%<'
   let l:ret .= "%="
-  let l:ret .= (v:hlsearch ? s:last_search_count() . ' ' : '')
+  let l:ret .= (v:hlsearch ? s:last_search_count() : '')
   " let l:ret .= '  ' . 'Ln:%l/%L Col:%-2c'
   " let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
   " let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)

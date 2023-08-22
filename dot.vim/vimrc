@@ -73,8 +73,8 @@ set smartcase
 set wrapscan
 
 " View
-set ambiwidth=double
 " set number
+set ambiwidth=double
 
 " Window
 set noequalalways
@@ -216,12 +216,14 @@ function! s:set_register() abort
     call setreg('b', expand('%:p:~:h'))
     call setreg('c', expand('%:t'))
     call setreg('d', expand('%:t:r'))
+
     let l:dir_status = 'CWD:' . fnamemodify(getcwd(), ':~')
     let l:dir_status .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
     if exists('g:local_vim_setting_name')
       let l:dir_status .= '  ' . 'Cfg:' . g:local_vim_setting_name
     endif
     call setreg('y', l:dir_status)
+
     let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
     let l:file_status .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
     let l:file_status .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
@@ -303,13 +305,10 @@ augroup END
 set background=dark
 filetype plugin indent on
 syntax enable
-if has('termguicolors') && (v:version >= 900 || has('nvim-0.10.0'))
+if has('termguicolors')
   set termguicolors
 endif
+
 if has('patch-9.0.1778')
   execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-elseif has('patch-9.0.133')
-  execute 'colorscheme' get(g:, 'colors_name', 'habamax')
-else
-  execute 'colorscheme' get(g:, 'colors_name', 'desert')
 endif

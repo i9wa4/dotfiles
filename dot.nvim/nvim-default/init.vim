@@ -47,9 +47,10 @@ endif
 "
 " set laststatus=3
 set nrformats=unsigned
+set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 
 
 " --------------------------------------
 " End of setting
 "
-colorscheme habamax
+colorscheme retrobox
