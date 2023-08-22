@@ -6,26 +6,26 @@ function! my_highlight#highlight() abort
   highlight link markdownItalic Normal
 
   " override colorscheme setting
-  highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
-  highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
-  highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE guisp=NONE
-  " highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black gui=NONE guifg=NONE guibg=Black
-  " highlight StatusLine    term=NONE cterm=NONE ctermfg=Gray ctermbg=Black gui=NONE guifg=Gray guibg=Black
-  " highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
-  " highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
-  " highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black gui=NONE guifg=DarkGray guibg=Black
-  " highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=Gray gui=NONE guifg=Black guibg=DarkGray
-  " highlight VertSplit     term=NONE cterm=NONE ctermfg=DarkGray ctermbg=NONE gui=NONE guifg=DarkGray guibg=NONE
+  highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE
+  highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE
+  highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE
+  " highlight ColorColumn   term=NONE cterm=NONE ctermfg=NONE ctermbg=Black
+  " highlight StatusLine    term=NONE cterm=NONE ctermfg=Gray ctermbg=Black
+  " highlight StatusLineNC  term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black
+  " highlight TabLine       term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black
+  " highlight TabLineFill   term=NONE cterm=NONE ctermfg=DarkGray ctermbg=Black
+  " highlight TabLineSel    term=NONE cterm=NONE ctermfg=Black ctermbg=Gray
+  " highlight VertSplit     term=NONE cterm=NONE ctermfg=DarkGray ctermbg=NONE
 
   " [ ]
-  highlight MyEmphasis term=NONE cterm=NONE ctermfg=Black ctermbg=DarkYellow gui=NONE guifg=Black guibg=DarkYellow
+  highlight MyEmphasis term=NONE cterm=NONE ctermfg=Black ctermbg=218 " Pink1
   call matchadd('MyEmphasis', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
   call matchadd('MyEmphasis', strftime('%Y-%m-%d'))
   call matchadd('MyEmphasis', strftime('%Y%m%d'))
   " 　 
-  highlight MyError term=NONE cterm=NONE ctermfg=Black ctermbg=DarkRed gui=NONE guifg=Black guibg=DarkRed
+  highlight MyError term=NONE cterm=NONE ctermfg=Black ctermbg=DarkRed
   call matchadd('MyError', '　\|\s\+$')
   " [		]
-  highlight MySpecial term=NONE cterm=NONE ctermfg=DarkRed ctermbg=NONE gui=NONE guifg=Red guibg=NONE
+  highlight MySpecial term=NONE cterm=NONE ctermfg=DarkRed ctermbg=NONE
   call matchadd('MySpecial', '\t')
 endfunction
