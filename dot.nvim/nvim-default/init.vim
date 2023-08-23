@@ -8,7 +8,7 @@ set packpath^=~/.vim
 " --------------------------------------
 " Variable
 "
-if has('nvim') && has('unix') && exists('$WSLENV') && !exists('$TMUX')
+if 0 && has('nvim') && has('unix') && exists('$WSLENV') && !exists('$TMUX')
   let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {
