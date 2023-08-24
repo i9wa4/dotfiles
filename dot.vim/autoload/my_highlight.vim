@@ -28,7 +28,7 @@ function! my_highlight#highlight() abort
   else
     highlight MyEmphasis1   term=NONE cterm=NONE ctermfg=0 ctermbg=218
   endif
-  call matchadd('MyEmphasis1', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
+  call matchadd('MyEmphasis1', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]\|J11\|J1x\|Jx1\|Jxx')
 
   " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
   " Black, LightGoldenrod2, Himawari
