@@ -6,12 +6,19 @@ function! my_highlight#highlight() abort
   highlight link markdownItalic Normal
 
   " override colorscheme setting
+  highlight clear Error
+  highlight clear ErrorMsg
+  highlight clear SpellBad
   highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
   highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE guisp=NONE
   highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
 
   " https://www.ditig.com/256-colors-cheat-sheet
   call clearmatches()
+  highlight clear MyEmphasis1
+  highlight clear MyEmphasis2
+  highlight clear MyError
+  highlight clear MySpecial
 
   " [ ]
   "https://www.anarchive-beta.com/entry/2022/07/14/052235
