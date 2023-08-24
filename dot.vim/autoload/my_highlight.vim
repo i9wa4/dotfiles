@@ -9,9 +9,7 @@ function! my_highlight#highlight() abort
   highlight clear Error
   highlight clear ErrorMsg
   highlight clear SpellBad
-  highlight Error         term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
-  highlight ErrorMsg      term=NONE cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE guisp=NONE
-  highlight SpellBad      term=NONE cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
+  highlight SpellBad      cterm=underline gui=underline
 
   " https://www.ditig.com/256-colors-cheat-sheet
   call clearmatches()
@@ -26,7 +24,7 @@ function! my_highlight#highlight() abort
   if has('nvim')
     highlight MyEmphasis1   gui=NONE guifg=#000000 guibg=#ffb6c1
   else
-    highlight MyEmphasis1   term=NONE cterm=NONE ctermfg=0 ctermbg=218
+    highlight MyEmphasis1   cterm=NONE ctermfg=0 ctermbg=218
   endif
   call matchadd('MyEmphasis1', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]\|J11\|J1x\|Jx1\|Jxx')
 
@@ -35,16 +33,16 @@ function! my_highlight#highlight() abort
   if has('nvim')
     highlight MyEmphasis2   gui=NONE guifg=#000000 guibg=#fbe340
   else
-    highlight MyEmphasis2   term=NONE cterm=NONE ctermfg=0 ctermbg=221
+    highlight MyEmphasis2   cterm=NONE ctermfg=0 ctermbg=221
   endif
   call matchadd('MyEmphasis2', strftime('%Y-%m-%d'))
   call matchadd('MyEmphasis2', strftime('%Y%m%d'))
 
   " 　 
-  highlight MyError       term=NONE cterm=NONE ctermfg=0 ctermbg=88 gui=NONE guifg=#000000 guibg=#870000 " Black, DarkRed
+  highlight MyError       ctermfg=0 ctermbg=88 guifg=#000000 guibg=#870000 " Black, DarkRed
   call matchadd('MyError', '　\|\s\+$')
 
   " [		]
-  highlight MySpecial     term=NONE cterm=NONE ctermfg=88 ctermbg=NONE gui=NONE guifg=#870000 guibg=NONE " DarkRed
+  highlight MySpecial     ctermfg=88 ctermbg=NONE guifg=#870000 guibg=NONE " DarkRed
   call matchadd('MySpecial', '\t')
 endfunction
