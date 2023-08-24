@@ -39,10 +39,10 @@ function! my_highlight#highlight() abort
   call matchadd('MyEmphasis2', strftime('%Y%m%d'))
 
   " 　 
-  highlight MyError       ctermfg=0 ctermbg=88 guifg=0 guibg=88 " Black, DarkRed
+  highlight MyError       ctermfg=0 ctermbg=88 guifg=#000000 guibg=#870000 " Black, DarkRed
   call matchadd('MyError', '　\|\s\+$')
 
   " [		]
-  highlight MySpecial     ctermfg=88 ctermbg=NONE guifg=88 guibg=NONE " DarkRed
+  highlight MySpecial     ctermfg=88 ctermbg=NONE guifg=#870000 guibg=NONE " DarkRed
   call matchadd('MySpecial', '\t')
 endfunction
