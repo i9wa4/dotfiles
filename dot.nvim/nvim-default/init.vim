@@ -8,7 +8,7 @@ set packpath^=~/.vim
 " --------------------------------------
 " Variable
 "
-if 0 && has('nvim') && has('unix') && exists('$WSLENV') && !exists('$TMUX')
+if exists('$WSLENV') && !exists('$TMUX')
   let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {
@@ -19,7 +19,7 @@ if 0 && has('nvim') && has('unix') && exists('$WSLENV') && !exists('$TMUX')
     \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
     \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
     \   },
-    \   'cache_enabled': 1,
+    \   'cache_enabled': 0,
     \ }
 endif
 
