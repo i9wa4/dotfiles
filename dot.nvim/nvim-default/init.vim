@@ -8,7 +8,7 @@ set packpath^=~/.vim
 " --------------------------------------
 " Variable
 "
-if exists('$WSLENV') && !exists('$TMUX')
+if exists('$WSLENV')
   let g:clipboard = {
     \   'name': 'WslClipboard',
     \   'copy': {
@@ -21,15 +21,6 @@ if exists('$WSLENV') && !exists('$TMUX')
     \   },
     \   'cache_enabled': 0,
     \ }
-endif
-
-
-" --------------------------------------
-" dein.vim
-"
-let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim'
-if filereadable(s:dein_path)
-  execute 'source' s:dein_path
 endif
 
 
