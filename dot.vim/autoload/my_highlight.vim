@@ -15,28 +15,34 @@ function! my_highlight#highlight() abort
   call clearmatches()
   highlight clear MyEmphasis1
   highlight clear MyEmphasis2
+  highlight clear MyEmphasis3
   highlight clear MyError
   highlight clear MySpecial
 
   " [ ]
   "https://www.anarchive-beta.com/entry/2022/07/14/052235
-  " Black, Pink1, Sayu
-  highlight MyEmphasis1 ctermfg=0 ctermbg=218 guifg=#000000 guibg=#ffb6c1
-  call matchadd('MyEmphasis1', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]\|J11\|J1x\|Jx1\|Jxx')
+  " Black, Pink1(218), Sayu(#FFB6C1)
+  highlight MyEmphasis1 guifg=#000000 guibg=#FFB6C1
+  call matchadd('MyEmphasis1', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
 
   " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
-  " Black, LightGoldenrod2, Himawari
-  highlight MyEmphasis2 ctermfg=0 ctermbg=221 guifg=#000000 guibg=#fbe340
-  call matchadd('MyEmphasis2', strftime('%Y-%m-%d'))
-  call matchadd('MyEmphasis2', strftime('%Y%m%d'))
+  " Black, PaleVioletRed1(211), Saku(#EF9AAF)
+  highlight MyEmphasis2 guifg=#000000 guibg=#EF9AAF
+  call matchadd('MyEmphasis2', 'J11\|J1x\|Jx1\|Jxx')
+
+  " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
+  " Black, LightGoldenrod2(221), Himawari(#FBE340)
+  highlight MyEmphasis3 guifg=#000000 guibg=#FBE340
+  call matchadd('MyEmphasis3', strftime('%Y-%m-%d'))
+  call matchadd('MyEmphasis3', strftime('%Y%m%d'))
 
   " 　 
-  " Black, DarkRed
-  highlight MyError ctermfg=0 ctermbg=88 guifg=#000000 guibg=#870000
+  " Black, DarkRed(88,#870000)
+  highlight MyError guifg=#000000 guibg=#870000
   call matchadd('MyError', '　\|\s\+$')
 
   " [		]
-  " DarkRed
-  highlight MySpecial ctermfg=88 ctermbg=NONE guifg=#870000 guibg=NONE
+  " DarkRed(88,#870000), NONE
+  highlight MySpecial guifg=#870000 guibg=NONE
   call matchadd('MySpecial', '\t')
 endfunction
