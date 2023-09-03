@@ -171,6 +171,7 @@ nnoremap <Plug>(my-filer) <Nop>
 nmap <Space>f <Plug>(my-filer)
 nnoremap <silent> <Plug>(my-filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
 nnoremap <silent> <Plug>(my-filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
+nnoremap <silent> <Plug>(my-filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
 nnoremap <silent> <Plug>(my-filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
 nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
 
