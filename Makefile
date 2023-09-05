@@ -304,7 +304,7 @@ ubuntu-desktop:
 	# https://askubuntu.com/questions/1456119/no-wifi-and-display-brightness-options-after-removing-nvidia-graphics-drivers
 	sudo apt install --reinstall linux-generic-hwe-22.04
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	sudo apt install openssh-server
-	sudo systemctl reload-daemon
-	sudo systemctl enable ssh.service
-	sudo systemctl start ssh.service
+	# sudo apt install openssh-server
+	# sudo systemctl reload-daemon
+	# sudo systemctl enable ssh.service
+	# sudo systemctl start ssh.service
