@@ -192,7 +192,7 @@ docker-init:
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 	# https://docs.docker.com/engine/install/linux-postinstall/
 	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
-	sudo groupadd docker
+	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
 	# hadolint
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
