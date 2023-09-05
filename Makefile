@@ -1,11 +1,12 @@
-.PHONY: all
-all: init copy apt git \
+.PHONY: minimal
+minimal: init copy apt git \
+	vim-init vim-build
+
+.PHONY: home
+home: init copy apt git \
 	vim-init vim-build \
 	nvim-init nvim-build \
 	py-init py-build py-vmu
-
-.PHONY: minimal
-minimal: init copy apt git
 
 .PHONY: init
 init:
