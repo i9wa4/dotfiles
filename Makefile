@@ -67,6 +67,7 @@ apt:
 	  bc \
 	  nkf \
 	  ripgrep \
+	  shellcheck \
 	  tmux \
 	  unzip \
 	  vim \
@@ -148,7 +149,6 @@ nvim-init:
 	  ninja-build \
 	  pkg-config \
 	  unzip
-	sudo apt install -y shellcheck
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
