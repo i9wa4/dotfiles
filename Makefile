@@ -118,6 +118,15 @@ vim-build:
 	&& sudo make \
 	&& sudo make install \
 	&& hash -r
+	# Deno
+	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	# SKK
+	mkdir -p "$${HOME}"/.skk
+	cd "$${HOME}"/.skk \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
+	&& gzip -d SKK-JISYO.L.gz \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
+	&& gzip -d SKK-JISYO.jinmei.gz
 
 .PHONY: nvim-init
 nvim-init:
@@ -141,15 +150,6 @@ nvim-init:
 	sudo apt install -y shellcheck
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
-	# Deno
-	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
-	# SKK
-	mkdir -p "$${HOME}"/.skk
-	cd "$${HOME}"/.skk \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
-	&& gzip -d SKK-JISYO.L.gz \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
-	&& gzip -d SKK-JISYO.jinmei.gz
 
 .PHONY: nvim-build
 nvim-build:
@@ -162,8 +162,8 @@ nvim-build:
 .PHONY: anaconda-init
 anaconda-init:
 	cd \
-	&& wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh \
-	&& bash Anaconda3-2022.05-Linux-x86_64.sh
+	&& wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh \
+	&& bash Anaconda3-2023.07-2-Linux-x86_64.sh
 	. "$${HOME}"/.bashrc \
 	&& conda config --append channels conda-forge \
 	&& conda config --set auto_activate_base false \
