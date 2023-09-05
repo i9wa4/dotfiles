@@ -22,5 +22,6 @@
     "files.autoGuessEncoding": true,
     "git.ignoreMissingGitWarning": true,
     "http.proxyStrictSSL": false,
+    "markdown.extension.toc.levels": "2..6",
     "vim.useSystemClipboard": true
 }
