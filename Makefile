@@ -103,6 +103,15 @@ vim-init:
 	sudo apt build-dep -y vim
 	cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
+	# Deno
+	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	# SKK
+	mkdir -p "$${HOME}"/.skk
+	cd "$${HOME}"/.skk \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
+	&& gzip -d SKK-JISYO.L.gz \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
+	&& gzip -d SKK-JISYO.jinmei.gz
 
 .PHONY: vim-build
 vim-build:
@@ -120,15 +129,6 @@ vim-build:
 	&& sudo make \
 	&& sudo make install \
 	&& hash -r
-	# Deno
-	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
-	# SKK
-	mkdir -p "$${HOME}"/.skk
-	cd "$${HOME}"/.skk \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
-	&& gzip -d SKK-JISYO.L.gz \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
-	&& gzip -d SKK-JISYO.jinmei.gz
 
 .PHONY: nvim-init
 nvim-init:
