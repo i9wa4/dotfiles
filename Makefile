@@ -190,7 +190,7 @@ docker-init:
 	  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	sudo apt-get update
 	# Install the Docker packages
-	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 	# https://docs.docker.com/engine/install/linux-postinstall/
 	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
 	# sudo groupadd docker
