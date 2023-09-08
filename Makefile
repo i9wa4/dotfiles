@@ -199,12 +199,6 @@ docker-init:
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
 
-.PHONY: docker-systemd
-docker-systemd:
-	sudo systemctl daemon-reload
-	sudo systemctl enable docker
-	sudo systemctl start docker
-
 .PHONY: go-init
 go-init:
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
