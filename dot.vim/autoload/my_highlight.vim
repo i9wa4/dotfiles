@@ -35,6 +35,7 @@ function! my_highlight#highlight() abort
   " Black, LightGoldenrod2(221), Himawari(#FBE340)
   highlight MyEmphasis3 guifg=#000000 guibg=#FBE340
   call matchadd('MyEmphasis3', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
+  call matchadd('MyEmphasis3', strftime('%Y%m%d', localtime() + 24 * 60 * 60))
 
   " 　 
   " Black, DarkRed(88,#870000)
