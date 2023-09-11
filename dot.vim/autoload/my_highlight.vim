@@ -28,7 +28,7 @@ function! my_highlight#highlight() abort
   " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
   " Black, PaleVioletRed1(211), Saku(#EF9AAF)
   highlight MyEmphasis2 guifg=#000000 guibg=#EF9AAF
-  call matchadd('MyEmphasis2', 'J11\|J1x\|Jx1\|Jxx')
+  call matchadd('MyEmphasis2', 'J11\|J1_\|J_1\|J__')
 
   " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
   " Black, LightGoldenrod2(221), Himawari(#FBE340)
