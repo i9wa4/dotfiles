@@ -18,3 +18,8 @@ export PATH="${HOME}"/go/bin:"${PATH}"
 export PY_VER_MINOR=3.11
 export PY_VER_PATCH=3.11.5
 export PY_VENV_MYENV="${HOME}"/venv/myenv
+
+# Docker
+start_container() {
+    docker exec -u "$(id -u "${USER}")":"$(id -g "${USER}")" -it $1 /bin/sh
+}
