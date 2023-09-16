@@ -6,11 +6,17 @@ minimal: init copy apt git \
 wsl: minimal \
 	win-copy \
 	docker-init \
-	echo "Restart WSL and execute 'make docker-systemd'"
+	prompt-restart-wsl
 
 .PHONY: ubuntu
 wsl: minimal \
 	docker-init docker-systemd
+
+
+
+.PHONY: prompt-restart-wsl
+prompt-restart-wsl:
+	echo "Restart WSL and execute 'make docker-systemd'"
 
 
 
@@ -201,15 +207,26 @@ docker-init:
 	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
-	# hadolint
+
+.PHONY: docker-hadolint
+docker-hadolint:
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
 
 .PHONY: docker-systemd
 docker-systemd:
-	sudo sytemctl daemon-reload
+	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
+
+.PHONY: docker-trivy
+docker-trivy:
+	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
+	sudo apt-get install wget apt-transport-https gnupg lsb-release
+	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+	sudo apt-get update
+	sudo apt-get install trivy
 
 .PHONY: go-init
 go-init:
