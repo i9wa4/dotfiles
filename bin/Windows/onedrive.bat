@@ -1,5 +1,8 @@
 @echo off
 
+call :main
+exit /b
+
 :main
     taskkill /f /im OneDrive.exe
     timeout /t 1

@@ -10,6 +10,9 @@
 @REM    %APPDATA%\Roaming\Microsoft\Network\Connections\Pbk\rasphone.pbk
 @REM    PreviewUserPw=0
 
+call :main
+exit /b
+
 :main
     REM chcp 65001>nul
     cd /d %~dp0
