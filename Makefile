@@ -2,11 +2,22 @@
 minimal: init copy apt git \
 	vim-init vim-build
 
-.PHONY: home
-home: init copy apt git \
-	vim-init vim-build \
-	nvim-init nvim-build \
-	py-init py-build py-vmu
+.PHONY: wsl
+wsl: minimal \
+	win-copy \
+	docker-init prompt-docker-systemd
+
+.PHONY: ubuntu
+wsl: minimal \
+	docker-init docker-systemd
+
+
+
+.PHONY: prompt-docker-systemd
+prompt-docker-systemd:
+	echo "Restart WSL and execute 'make docker-systemd'"
+
+
 
 .PHONY: init
 init:
@@ -198,6 +209,12 @@ docker-init:
 	# hadolint
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
+
+.PHONY: docker-systemd
+docker-systemd:
+	sudo sytemctl daemon-reload
+	sudo systemctl start docker
+	sudo systemctl enable docker
 
 .PHONY: go-init
 go-init:
