@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
-let g:my_bookmark_path = expand('~/work/bookmark.md')
-let g:my_gtd_path = expand('~/work/gtd.md')
+let g:my_bookmark_path = expand('~/work/git/fragment/md/bookmark.md')
+let g:my_gtd_path = expand('~/work/git/fragment/md/gtd.md')
 let g:my_skk_path = expand('~/work/skk.md')
 let g:local_vim_setting_name = fnamemodify(expand('<sfile>'), ":h:t")
 
