@@ -5,17 +5,12 @@ minimal: init copy apt git \
 .PHONY: wsl
 wsl: minimal \
 	win-copy \
-	docker-init prompt-docker-systemd
+	docker-init \
+	echo "Restart WSL and execute 'make docker-systemd'"
 
 .PHONY: ubuntu
 wsl: minimal \
 	docker-init docker-systemd
-
-
-
-.PHONY: prompt-docker-systemd
-prompt-docker-systemd:
-	echo "Restart WSL and execute 'make docker-systemd'"
 
 
 
