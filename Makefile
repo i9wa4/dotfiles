@@ -336,9 +336,9 @@ r-init:
 ubuntu-server:
 	# Settings --> Accessibility --> Large Text
 	# https://askubuntu.com/questions/1456119/no-wifi-and-display-brightness-options-after-removing-nvidia-graphics-drivers
-	sudo apt install --reinstall linux-generic-hwe-22.04
+	sudo apt install -y --reinstall linux-generic-hwe-22.04
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	sudo apt install openssh-server
-	sudo systemctl reload-daemon
+	sudo apt install -y openssh-server
+	sudo systemctl daemon-reload
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
