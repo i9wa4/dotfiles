@@ -58,8 +58,8 @@ win-copy:
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
 	mkdir -p /mnt/c/work
-	rm -rf "$${HOME}"/work
-	ln -s /mnt/c/work/ "$${HOME}"/work
+	# rm -rf "$${HOME}"/work
+	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
 	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
