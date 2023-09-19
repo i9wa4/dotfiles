@@ -82,7 +82,7 @@ on_source = ['ddc.vim']
 repo = 'hrsh7th/vim-vsnip'
 on_source = ['ddc.vim']
 hook_source = '''
-let g:vsnip_snippet_dir = expand($XDG_CONFIG_HOME . '/' . $NVIM_APPNAME . '/vsnip')
+let g:vsnip_snippet_dir = expand($HOME . '.vim/vsnip')
 '''
 
 [[plugins]]

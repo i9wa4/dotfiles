@@ -41,6 +41,7 @@ copy:
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.jupytext "$${HOME}"/.jupytext
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
 	# Vim (symbolic link)
+	rm -f "$${HOME}"/.vimrc
 	rm -rf "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# Neovim (symbolic link)
@@ -55,7 +56,7 @@ copy:
 WIN_UTIL_DIR := /mnt/c/work/util
 win-copy:
 	# WSL
-	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
+	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
 	mkdir -p /mnt/c/work
 	# rm -rf "$${HOME}"/work
@@ -63,14 +64,9 @@ win-copy:
 	# Windows copy
 	. "$${HOME}"/.profile \
 	&& rm -rf "$(WIN_UTIL_DIR)" \
-	&& mkdir -p "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
-	&& cp -rf "$${HOME}"/dotfiles/VSCode "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/WSL "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/WindowsTerminal "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/bin/Windows/my_copy.bat "$(WIN_UTIL_DIR)" \
+	&& cp -rf "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}"/vsnip/* "$(WIN_UTIL_DIR)"/VSCode/User/snippets \
 	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
 	&& cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
 
