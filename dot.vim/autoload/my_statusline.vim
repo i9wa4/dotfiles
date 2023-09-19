@@ -69,7 +69,7 @@ function! my_statusline#tabline() abort
     let l:bufnrs = tabpagebuflist(l:i)
     let l:bufnr = l:bufnrs[tabpagewinnr(l:i) - 1]
     let l:no = l:i
-    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t'), 0, 20)
+    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t'), 0, 10)
     if empty(l:title)
       let l:title = '[No Name]'
     endif
