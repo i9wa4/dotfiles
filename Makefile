@@ -62,14 +62,13 @@ win-copy:
 	# rm -rf "$${HOME}"/work
 	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
-	. "$${HOME}"/.profile \
-	&& rm -rf "$(WIN_UTIL_DIR)" \
-	&& cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)"
-	&& cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.nvim "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)" \
-	&& cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)" \
+	rm -rf "$(WIN_UTIL_DIR)"
+	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/dot.nvim "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)"
+	cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
 
 .PHONY: apt
 apt:
