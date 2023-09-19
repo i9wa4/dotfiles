@@ -94,12 +94,9 @@ repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
 hook_source = '''
 call skkeleton#config({
-  \   'eggLikeNewline': v:true,
   \   'globalDictionaries': [
-  \     '~/.skk/SKK-JISYO.L',
-  \     '~/.skk/SKK-JISYO.jinmei',
-  \   ],
-  \   'showCandidateCount': 1
+  \     '~/.skk/SKK-JISYO.L'
+  \   ]
   \ })
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
