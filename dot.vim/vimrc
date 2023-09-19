@@ -219,7 +219,7 @@ function! s:set_register() abort
     call setreg('d', expand('%:t:r'))
 
     let l:dir_status = 'CWD:' . fnamemodify(getcwd(), ':~')
-    let l:dir_status .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
+    " let l:dir_status .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
     if exists('g:local_vim_setting_name')
       let l:dir_status .= '  ' . 'Cfg:' . g:local_vim_setting_name
     endif
