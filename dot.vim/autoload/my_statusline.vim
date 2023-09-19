@@ -84,7 +84,8 @@ function! my_statusline#tabline() abort
   endfor
 
   let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret .= fnamemodify(getcwd(), ':~') . system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
+  " let l:ret .= fnamemodify(getcwd(), ':~')
+  let l:ret .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
   let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
   return l:ret
 endfunction
