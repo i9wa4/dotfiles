@@ -22,7 +22,7 @@ exit /b
     set CODE_DIR="%APPDATA%\Code\User"
     rmdir /q /s "%CODE_DIR:"=%"
     mkdir "%CODE_DIR:"=%\snippets"
-    copy /y ".\etc\windows\code.settings.json "%CODE_DIR:"=%\settings.json"
+    copy /y ".\etc\windows\code.settings.json" "%CODE_DIR:"=%\settings.json"
     xcopy /e /i /y ".\dot.vim\snippets" "%CODE_DIR:"=%\snippets"
 
     @REM Windows Terminal
