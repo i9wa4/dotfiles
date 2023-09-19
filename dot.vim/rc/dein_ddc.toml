@@ -98,7 +98,8 @@ call skkeleton#config({
   \   'globalDictionaries': [
   \     '~/.skk/SKK-JISYO.L',
   \     '~/.skk/SKK-JISYO.jinmei',
-  \   ]
+  \   ],
+  \   'showCandidateCount': 1
   \ })
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
