@@ -63,6 +63,7 @@ win-copy:
 	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
 	rm -rf "$(WIN_UTIL_DIR)"
+	mkdir -p "$(WIN_UTIL_DIR)"
 	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)"
 	cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)"
