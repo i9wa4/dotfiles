@@ -1,7 +1,8 @@
 body {
   font-family: "Meiryo", sans-serif;
   background-color: White;
-  color: rgb(230, 230, 230);
+  /* color: rgb(230, 230, 230); */
+  color: Black;
   font-size: 18px;
 }
 
