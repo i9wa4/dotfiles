@@ -17,7 +17,7 @@ fi
 alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
 alias jl='
 rm -rf "${HOME}"/.ipynb_checkpoints \
-&& cp -rf "${HOME}"/dotfiles/.jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
+&& cp -rf "${HOME}"/dotfiles/dot.jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
 && jupyter-lab \
   --no-browser \
   --ServerApp.use_redirect_file=False \
