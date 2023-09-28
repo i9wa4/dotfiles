@@ -24,6 +24,5 @@ rm -rf "${HOME}"/.ipynb_checkpoints \
   --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 '
 alias rmarkdown-render='
-find "$(pwd)" -maxdepth 2 -name "*.Rmd" -type f -print \
-| xargs -I {} bash -c 'R -e "rmarkdown::render(\"{}\", output_dir=\""$(dirname {})"\")"' \
+bash "${HOME}"/dotfiles/etc/rmarkdown_render.sh "$(pwd)" \
 '
