@@ -25,5 +25,5 @@ rm -rf "${HOME}"/.ipynb_checkpoints \
 '
 alias rmarkdown-render='
 find "$(pwd)" -maxdepth 2 -name "*.Rmd" -type f -print \
-| xargs -I {} R -e "rmarkdown::render(\"{}\", output_dir=\""$(dirname {})"\")" \
+| xargs -I {} bash -c 'R -e "rmarkdown::render(\"{}\", output_dir=\""$(dirname {})"\")"' \
 '
