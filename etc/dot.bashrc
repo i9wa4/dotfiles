@@ -24,5 +24,5 @@ rm -rf "${HOME}"/.ipynb_checkpoints \
   --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 '
 alias rmarkdown-render='
-bash "${HOME}"/dotfiles/etc/rmarkdown_render.sh "$(pwd)" \
+bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)" \
 '
