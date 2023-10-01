@@ -9,7 +9,7 @@ wsl: minimal \
 	prompt-restart-wsl
 
 .PHONY: ubuntu
-wsl: minimal \
+ubuntu: minimal \
 	docker-init docker-systemd
 
 .PHONY: ubuntu-desktop
