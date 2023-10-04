@@ -10,12 +10,8 @@ wsl: minimal \
 
 .PHONY: ubuntu
 ubuntu: minimal \
-	docker-init docker-systemd
-
-.PHONY: ubuntu-desktop
-ubuntu-desktop: minimal \
 	docker-init docker-systemd \
-	ubuntu-server
+	ubuntu
 
 
 
@@ -331,13 +327,11 @@ r-init:
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
-.PHONY: ubuntu-server
-ubuntu-server:
+.PHONY: ubuntu
+ubuntu:
 	# Settings --> Accessibility --> Large Text
-	# https://askubuntu.com/questions/1456119/no-wifi-and-display-brightness-options-after-removing-nvidia-graphics-drivers
-	sudo apt install -y --reinstall linux-generic-hwe-22.04
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	sudo apt install -y openssh-server
-	sudo systemctl daemon-reload
-	sudo systemctl enable ssh.service
-	sudo systemctl start ssh.service
+	# sudo apt install -y openssh-server
+	# sudo systemctl daemon-reload
+	# sudo systemctl enable ssh.service
+	# sudo systemctl start ssh.service
