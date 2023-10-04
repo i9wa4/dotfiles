@@ -8,13 +8,12 @@ services:
       GAMEMODE: survival
       DIFFICULTY: normal
       TZ: Asia/Tokyo
-  ports:
-    - 19132:19132/udp
-  volumes:
-    - /dbs:/data
-  stdin_open: true
-  tty: true
+    ports:
+      - 19132:19132/udp
+    volumes:
+      - /dbs:/data
+    stdin_open: true
+    tty: true
 volumes:
   dbs:
-#volumeの場所
-#/var/lib/docker/volumes/docker_dbs/_data/
+# volume -> /var/lib/docker/volumes/docker_dbs/_data/
