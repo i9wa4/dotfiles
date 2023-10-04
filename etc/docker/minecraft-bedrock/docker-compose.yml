@@ -1,0 +1,20 @@
+services:
+  bds:
+    image: itzg/minecraft-bedrock-server
+    container_name: bedrock_server
+    environment:
+      EULA: "TRUE"
+      SERVER_NAME: minecraft-bedrock
+      GAMEMODE: survival
+      DIFFICULTY: normal
+      TZ: Asia/Tokyo
+  ports:
+    - 19132:19132/udp
+  volumes:
+    - /dbs:/data
+  stdin_open: true
+  tty: true
+volumes:
+  dbs:
+#volumeの場所
+#/var/lib/docker/volumes/docker_dbs/_data/
