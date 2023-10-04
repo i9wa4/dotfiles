@@ -11,7 +11,7 @@ wsl: minimal \
 .PHONY: ubuntu
 ubuntu: minimal \
 	docker-init docker-systemd \
-	ubuntu
+	ubuntu-desktop
 
 
 
@@ -327,8 +327,8 @@ r-init:
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
-.PHONY: ubuntu
-ubuntu:
+.PHONY: ubuntu-desktop
+ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
 	# sudo apt install -y openssh-server
