@@ -1,19 +1,13 @@
 services:
-  bds:
+  mbs:
     image: itzg/minecraft-bedrock-server:latest
-    container_name: bedrock_server
-    environment:
-      EULA: "TRUE"
-      SERVER_NAME: minecraft-bedrock-server1
-      LEVEL_NAME: 25nishi
-      GAMEMODE: survival
-      DIFFICULTY: normal
-      TZ: Asia/Tokyo
+    tty: true
+    stdin_open: true
+    container_name: minecraft-bedrock-server
     ports:
       - 19132:19132/udp
+    environment:
+      EULA: "TRUE"
+      SERVER_NAME: minecraft-bedrock-server
     volumes:
-      - docker:/mbs
-    stdin_open: true
-    tty: true
-volumes:
-  docker:
+      - "${HOME}/Minecraft/mbs:/data"
