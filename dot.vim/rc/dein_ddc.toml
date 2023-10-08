@@ -86,6 +86,10 @@ let g:vsnip_snippet_dir = expand($HOME . '.vim/vsnip')
 '''
 
 [[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_source = ['ddc.vim']
+
+[[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
 on_source = ['ddc.vim']
 
