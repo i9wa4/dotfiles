@@ -1,7 +1,6 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-# on_event = ['InsertEnter']
-on_event = ['BufNewFile', 'BufRead']
+on_event = ['InsertEnter']
 depends = ['denops.vim']
 hook_source = '''
 call ddc#custom#patch_global('ui', 'native')
@@ -91,7 +90,8 @@ on_source = ['ddc.vim']
 hook_source = '''
 call skkeleton#config({
   \   'globalDictionaries': [
-  \     '~/.skk/SKK-JISYO.L'
+  \     '~/.skk/SKK-JISYO.L',
+  \     '~/.skk/SKK-JISYO.jinmei',
   \   ],
   \   'showCandidatesCount': 1,
   \ })
