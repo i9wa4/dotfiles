@@ -5,12 +5,14 @@ on_event = ['BufNewFile', 'BufRead']
 depends = ['denops.vim']
 hook_source = '''
 call ddc#custom#patch_global('ui', 'native')
+call ddc#custom#patch_global('sources', [
+  \   'around',
+  \   'vsnip',
+  \   'skkeleton',
+  \ ])
 if has('nvim')
   call ddc#custom#patch_global('sources', [
-    \   'around',
     \   'nvim-lsp',
-    \   'vsnip',
-    \   'skkeleton',
     \ ])
   call ddc#custom#patch_global('sourceOptions', #{
     \   nvim-lsp: #{
@@ -18,12 +20,6 @@ if has('nvim')
     \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
     \   },
     \ })
-else
-  call ddc#custom#patch_global('sources', [
-    \   'around',
-    \   'vsnip',
-    \   'skkeleton',
-    \ ])
 endif
 call ddc#custom#patch_global('sourceOptions', #{
   \   _: #{
@@ -34,12 +30,12 @@ call ddc#custom#patch_global('sourceOptions', #{
   \ })
 call ddc#custom#patch_global('sourceOptions', #{
   \   around: #{
-  \     mark: 'Around',
+  \     mark: 'around',
   \   },
   \ })
 call ddc#custom#patch_global('sourceOptions', #{
   \   vsnip: #{
-  \     mark: 'Snippet',
+  \     mark: 'vsnip',
   \   },
   \ })
 call ddc#custom#patch_global('sourceOptions', #{
@@ -86,12 +82,11 @@ let g:vsnip_snippet_dir = expand($HOME . '.vim/vsnip')
 '''
 
 [[plugins]]
-repo = 'hrsh7th/vim-vsnip-integ'
-on_source = ['ddc.vim']
-
-[[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
 on_source = ['ddc.vim']
+hook_source = '''
+let g:ddc-source-vsnip-param-menu = v:true
+'''
 
 [[plugins]]
 repo = 'vim-skk/skkeleton'
