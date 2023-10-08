@@ -68,7 +68,7 @@ endif
 set hlsearch
 set ignorecase
 set incsearch
-set shortmess+=S
+set shortmess+=cS
 set smartcase
 set wrapscan
 
