@@ -78,14 +78,14 @@ on_source = ['ddc.vim']
 repo = 'hrsh7th/vim-vsnip'
 on_source = ['ddc.vim']
 hook_source = '''
-let g:vsnip_snippet_dir = expand($HOME . '.vim/vsnip')
+let g:vsnip_snippet_dir = expand($HOME . '/.vim/vsnip')
 '''
 
 [[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
 on_source = ['ddc.vim']
 hook_source = '''
-let g:ddc-source-vsnip-param-menu = v:true
+let g:ddc_source_vsnip_param_menu = v:true
 '''
 
 [[plugins]]
