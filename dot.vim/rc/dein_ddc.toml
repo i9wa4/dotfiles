@@ -10,17 +10,6 @@ call ddc#custom#patch_global('sources', [
   \   'vsnip',
   \   'skkeleton',
   \ ])
-if has('nvim')
-  call ddc#custom#patch_global('sources', [
-    \   'nvim-lsp',
-    \ ])
-  call ddc#custom#patch_global('sourceOptions', #{
-    \   nvim-lsp: #{
-    \     mark: 'LSP',
-    \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
-    \   },
-    \ })
-endif
 call ddc#custom#patch_global('sourceOptions', #{
   \   _: #{
   \     matchers: ['matcher_head'],
@@ -47,6 +36,17 @@ call ddc#custom#patch_global('sourceOptions', #{
   \     isVolatile: v:true,
   \   },
   \ })
+if has('nvim')
+  call ddc#custom#patch_global('sources', [
+    \   'nvim-lsp',
+    \ ])
+  call ddc#custom#patch_global('sourceOptions', #{
+    \   nvim-lsp: #{
+    \     mark: 'LSP',
+    \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
+    \   },
+    \ })
+endif
 call ddc#enable()
 '''
 
@@ -84,9 +84,6 @@ let g:vsnip_snippet_dir = expand($HOME . '/.vim/vsnip')
 [[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
 on_source = ['ddc.vim']
-hook_source = '''
-let g:ddc_source_vsnip_param_menu = v:true
-'''
 
 [[plugins]]
 repo = 'vim-skk/skkeleton'
@@ -95,7 +92,8 @@ hook_source = '''
 call skkeleton#config({
   \   'globalDictionaries': [
   \     '~/.skk/SKK-JISYO.L'
-  \   ]
+  \   ],
+  \   'showCandidatesCount': 1,
   \ })
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
