@@ -9,3 +9,7 @@ if !empty($PY_VENV_MYENV) && !empty($PY_VER_MINOR)
   let g:python3_host_prog = expand($PY_VENV_MYENV . '/bin/python' . $PY_VER_MINOR)
   call my_vimrc#add_path([expand($PY_VENV_MYENV . '/bin')])
 endif
+
+" Denops Plugin Development
+" let g:denops#debug = 1
+" set runtimepath^=~/work/git/markdown-number-header.vim/
