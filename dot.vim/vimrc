@@ -281,6 +281,8 @@ function! s:my_asyncjob_on_save() abort
     if executable('jupytext') && filereadable(l:ipynb_path)
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
+  elseif &filetype == 'markdown'
+    execute 'NumberHeader'
   else
     " Do nothing.
   endif
