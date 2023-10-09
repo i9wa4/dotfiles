@@ -156,7 +156,9 @@ nnoremap <Plug>(my-edit) <Nop>
 nmap <Space>e <Plug>(my-edit)
 nnoremap <silent> <Plug>(my-edit)ec :<C-u>edit ++encoding=cp932<CR>
 nnoremap <silent> <Plug>(my-edit)ee :<C-u>edit ++encoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-edit)el :<C-u>execute 'edit' expand('~/local.vim')<CR>
 nnoremap <silent> <Plug>(my-edit)eu :<C-u>edit ++encoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-edit)ev :<C-u>execute 'edit' $MYVIMRC<CR>
 nnoremap <silent> <Plug>(my-edit)fc :<C-u>setlocal fileencoding=cp932<CR>
 nnoremap <silent> <Plug>(my-edit)fe :<C-u>setlocal fileencoding=euc-jp<CR>
 nnoremap <silent> <Plug>(my-edit)fu :<C-u>setlocal fileencoding=utf-8<CR>
@@ -164,7 +166,6 @@ nnoremap <silent> <Plug>(my-edit)ld :<C-u>edit ++fileformat=dos<CR>
 nnoremap <silent> <Plug>(my-edit)lu :<C-u>edit ++fileformat=unix<CR>
 nnoremap <silent> <Plug>(my-edit)tr :<C-u>%s/\r$//e<CR>
 nnoremap <silent> <Plug>(my-edit)ts :<C-u>%s/\s\+$//e<CR>
-nnoremap <silent> <Plug>(my-edit)v  :<C-u>execute 'edit' $MYVIMRC<CR>
 
 " Filer
 nnoremap <Plug>(my-filer) <Nop>
