@@ -283,6 +283,8 @@ function! s:my_asyncjob_on_save() abort
     endif
   elseif &filetype == 'markdown'
     execute 'NumberHeader'
+  elseif &filetype == 'rmd'
+    execute 'NumberHeader'
   else
     " Do nothing.
   endif
