@@ -324,8 +324,7 @@ r-init:
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown')"
 	sudo R -e "install.packages('IRkernel')"
-	sudo R -e "install.packages('devtools')"
-	sudo R -e "devtools::install_github('rich-iannone/DiagrammeR')"
+	# sudo R -e "install.packages('DiagrammeR')"
 	. "$${HOME}"/.profile \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
