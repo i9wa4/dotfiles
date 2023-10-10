@@ -282,9 +282,13 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
-    execute 'NumberHeader'
+    if exists(':NumberHeader') == 2
+      execute 'NumberHeader'
+    endif
   elseif &filetype == 'rmd'
-    execute 'NumberHeader'
+    if exists(':NumberHeader') == 2
+      execute 'NumberHeader'
+    endif
   else
     " Do nothing.
   endif
@@ -302,7 +306,7 @@ augroup VimrcAutocmd
   autocmd FileType,BufEnter * call s:my_filetype()
 
   " Asynchrohous Job
-  autocmd BufWritePost *.md,*.py call s:my_asyncjob_on_save()
+  autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
 
 
