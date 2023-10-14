@@ -144,23 +144,23 @@ nnoremap <silent> <S-Left>  <C-w>10<
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
-nnoremap <Plug>(my-edit) <Nop>
-nmap <Space>e <Plug>(my-edit)
-nnoremap <silent> <Plug>(my-edit)r :<C-u>%s/\r$//e<CR>
-nnoremap <silent> <Plug>(my-edit)s :<C-u>%s/\s\+$//e<CR>
+nnoremap <Plug>(my-Edit) <Nop>
+nmap <Space>e <Plug>(my-Edit)
+nnoremap <silent> <Plug>(my-Edit)r :<C-u>%s/\r$//e<CR>
+nnoremap <silent> <Plug>(my-Edit)s :<C-u>%s/\s\+$//e<CR>
 
 " Filer
-nnoremap <Plug>(my-filer) <Nop>
-nmap <Space>f <Plug>(my-filer)
-nnoremap <silent> <Plug>(my-filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
-nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
-nnoremap <silent> <Plug>(my-filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
-nnoremap <silent> <Plug>(my-filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
-nnoremap <silent> <Plug>(my-filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
-nnoremap <silent> <Plug>(my-filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
-nnoremap <silent> <Plug>(my-filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
+nnoremap <Plug>(my-Filer) <Nop>
+nmap <Space>f <Plug>(my-Filer)
+nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <silent> <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
+nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
+nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
+nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
+nnoremap <silent> <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
+nnoremap <silent> <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
 
-" Encoding
+" eNcoding
 nnoremap <Plug>(my-eNcoding) <Nop>
 nmap <Space>n <Plug>(my-eNcoding)
 nnoremap <silent> <Plug>(my-eNcoding)ec :<C-u>setlocal fileencoding=cp932<CR>
@@ -173,15 +173,15 @@ nnoremap <silent> <Plug>(my-eNcoding)ne :<C-u>edit ++encoding=euc-jp<CR>
 nnoremap <silent> <Plug>(my-eNcoding)nu :<C-u>edit ++encoding=utf-8<CR>
 
 " Switch
-nnoremap <Plug>(my-switch) <Nop>
-nmap <Space>s <Plug>(my-switch)
-nnoremap <silent> <Plug>(my-switch)b :<C-u>setlocal scrollbind! scrollbind?<CR>
-nnoremap <silent> <Plug>(my-switch)n :<C-u>setlocal number! number?<CR>
-nnoremap <silent> <Plug>(my-switch)p :<C-u>setlocal paste! paste?<CR>
-nnoremap <silent> <Plug>(my-switch)r :<C-u>setlocal relativenumber! relativenumber?<CR>
-nnoremap <silent> <Plug>(my-switch)s :<C-u>setlocal spell! spell?<CR>
-nnoremap <silent> <Plug>(my-switch)t :<C-u>setlocal expandtab! expandtab?<CR>
-nnoremap <silent> <Plug>(my-switch)w :<C-u>setlocal wrap! wrap?<CR>
+nnoremap <Plug>(my-Switch) <Nop>
+nmap <Space>s <Plug>(my-Switch)
+nnoremap <silent> <Plug>(my-Switch)b :<C-u>setlocal scrollbind! scrollbind?<CR>
+nnoremap <silent> <Plug>(my-Switch)n :<C-u>setlocal number! number?<CR>
+nnoremap <silent> <Plug>(my-Switch)p :<C-u>setlocal paste! paste?<CR>
+nnoremap <silent> <Plug>(my-Switch)r :<C-u>setlocal relativenumber! relativenumber?<CR>
+nnoremap <silent> <Plug>(my-Switch)s :<C-u>setlocal spell! spell?<CR>
+nnoremap <silent> <Plug>(my-Switch)t :<C-u>setlocal expandtab! expandtab?<CR>
+nnoremap <silent> <Plug>(my-Switch)w :<C-u>setlocal wrap! wrap?<CR>
 
 
 " --------------------------------------
@@ -229,7 +229,7 @@ function! s:set_register() abort
 
     call setreg('x', '-------------------')
     let l:dir_status = 'CWD:' .. fnamemodify(getcwd(), ':~')
-    let l:dir_status ..= '  ' .. 'Cfg:' . get(g:, 'local_vim_setting_name', 'NONE')
+    let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ":h:t")
     let l:dir_status ..= '  ' .. (has('nvim') ? 'N' : 'V')
     call setreg('y', l:dir_status)
     let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop

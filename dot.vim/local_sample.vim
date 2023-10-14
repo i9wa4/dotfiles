@@ -1,7 +1,6 @@
 scriptencoding utf-8
 
 " Global Variables
-let g:local_vim_setting_name = fnamemodify(expand('<sfile>'), ":h:t")
 let g:my_bookmark_path    = expand('~/work/git/fragment/md/bookmark.md')
 let g:my_gtd_path         = expand('~/work/git/fragment/md/gtd.md')
 let g:my_local_vimrc_path = expand(expand('<sfile>'))
