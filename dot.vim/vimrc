@@ -10,12 +10,6 @@ syntax off
 " --------------------------------------
 " Variable
 "
-call my_vimrc#set_preload_vimrc(expand('~/.vim/rc/local_sample.vim'))
-let g:auto_reload = timer_start(
-  \   1000,
-  \   {-> execute('silent! checktime')},
-  \   {'repeat': -1}
-  \ )
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
@@ -23,6 +17,14 @@ let g:netrw_hide = 0
 let g:netrw_home = expand('~/.vim')
 let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
+
+let g:auto_reload = timer_start(
+  \   1000,
+  \   {-> execute('silent! checktime')},
+  \   {'repeat': -1}
+  \ )
+let g:my_local_vimrc_path = expand('~/.vim/local_sample.vim')
+call my_vimrc#set_preload_vimrc(g:my_local_vimrc_path)
 
 
 " --------------------------------------
@@ -129,7 +131,7 @@ vnoremap <silent> k gk
 " i_CTRL-D Delete one indent
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
-" QuickFix
+" Location List
 nnoremap <silent> <C-n> :<C-u>lnext<CR>
 nnoremap <silent> <C-p> :<C-u>lprevious<CR>
 
@@ -140,6 +142,35 @@ nnoremap <silent> <S-Right> <C-w>10>
 nnoremap <silent> <S-Left>  <C-w>10<
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
+" Edit
+nnoremap <Plug>(my-edit) <Nop>
+nmap <Space>e <Plug>(my-edit)
+nnoremap <silent> <Plug>(my-edit)r :<C-u>%s/\r$//e<CR>
+nnoremap <silent> <Plug>(my-edit)s :<C-u>%s/\s\+$//e<CR>
+
+" Filer
+nnoremap <Plug>(my-filer) <Nop>
+nmap <Space>f <Plug>(my-filer)
+nnoremap <silent> <Plug>(my-filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
+nnoremap <silent> <Plug>(my-filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
+nnoremap <silent> <Plug>(my-filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
+nnoremap <silent> <Plug>(my-filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
+nnoremap <silent> <Plug>(my-filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
+nnoremap <silent> <Plug>(my-filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
+
+" Encoding
+nnoremap <Plug>(my-encoding) <Nop>
+nmap <Space>n <Plug>(my-encoding)
+nnoremap <silent> <Plug>(my-encoding)ec :<C-u>edit ++encoding=cp932<CR>
+nnoremap <silent> <Plug>(my-encoding)ee :<C-u>edit ++encoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-encoding)eu :<C-u>edit ++encoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-encoding)fc :<C-u>setlocal fileencoding=cp932<CR>
+nnoremap <silent> <Plug>(my-encoding)fe :<C-u>setlocal fileencoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-encoding)fu :<C-u>setlocal fileencoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-encoding)d :<C-u>edit ++fileformat=dos<CR>
+nnoremap <silent> <Plug>(my-encoding)u :<C-u>edit ++fileformat=unix<CR>
+
 " Switch
 nnoremap <Plug>(my-switch) <Nop>
 nmap <Space>s <Plug>(my-switch)
@@ -150,31 +181,6 @@ nnoremap <silent> <Plug>(my-switch)r :<C-u>setlocal relativenumber! relativenumb
 nnoremap <silent> <Plug>(my-switch)s :<C-u>setlocal spell! spell?<CR>
 nnoremap <silent> <Plug>(my-switch)t :<C-u>setlocal expandtab! expandtab?<CR>
 nnoremap <silent> <Plug>(my-switch)w :<C-u>setlocal wrap! wrap?<CR>
-
-" Edit
-nnoremap <Plug>(my-edit) <Nop>
-nmap <Space>e <Plug>(my-edit)
-nnoremap <silent> <Plug>(my-edit)ec :<C-u>edit ++encoding=cp932<CR>
-nnoremap <silent> <Plug>(my-edit)ee :<C-u>edit ++encoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-edit)el :<C-u>execute 'edit' expand('~/local.vim')<CR>
-nnoremap <silent> <Plug>(my-edit)eu :<C-u>edit ++encoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-edit)ev :<C-u>execute 'edit' $MYVIMRC<CR>
-nnoremap <silent> <Plug>(my-edit)fc :<C-u>setlocal fileencoding=cp932<CR>
-nnoremap <silent> <Plug>(my-edit)fe :<C-u>setlocal fileencoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-edit)fu :<C-u>setlocal fileencoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-edit)ld :<C-u>edit ++fileformat=dos<CR>
-nnoremap <silent> <Plug>(my-edit)lu :<C-u>edit ++fileformat=unix<CR>
-nnoremap <silent> <Plug>(my-edit)tr :<C-u>%s/\r$//e<CR>
-nnoremap <silent> <Plug>(my-edit)ts :<C-u>%s/\s\+$//e<CR>
-
-" Filer
-nnoremap <Plug>(my-filer) <Nop>
-nmap <Space>f <Plug>(my-filer)
-nnoremap <silent> <Plug>(my-filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
-nnoremap <silent> <Plug>(my-filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
-nnoremap <silent> <Plug>(my-filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
-nnoremap <silent> <Plug>(my-filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
-nnoremap <silent> <Plug>(my-filer)c :<C-u>15Lexplore<CR>
 
 
 " --------------------------------------
@@ -302,7 +308,7 @@ augroup VimrcAutocmd
   " FileType
   autocmd FileType,BufEnter * call s:my_filetype()
 
-  " Asynchrohous Job
+  " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
 
@@ -310,7 +316,7 @@ augroup END
 " --------------------------------------
 " dein.vim
 "
-let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim'
+let s:dein_path = expand('<sfile>:p:h') .. '/rc/dein.vim'
 if filereadable(s:dein_path)
   execute 'source' s:dein_path
 endif
