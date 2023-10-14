@@ -326,7 +326,7 @@ r-init:
 	sudo R -e "install.packages('rmarkdown', dependencies=TRUE)"
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
-	sudo R -e "install.packages('devtools', dependencies=TRUE)"
+	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
 	. "$${HOME}"/.profile \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
