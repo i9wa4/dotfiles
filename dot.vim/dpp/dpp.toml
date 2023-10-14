@@ -3,20 +3,20 @@ repo = 'Shougo/dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-lazy'
-on_source = 'dpp.vim'
+on_source = ['dpp.vim']
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-toml'
-on_source = 'dpp.vim'
+on_source = ['dpp.vim']
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-local'
-on_source = 'dpp.vim'
+on_source = ['dpp.vim']
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-installer'
-on_source = 'dpp.vim'
+on_source = ['dpp.vim']
 
 [[plugins]]
 repo = 'Shougo/dpp-protocol-git'
-on_source = 'dpp.vim'
+on_source = ['dpp.vim']
