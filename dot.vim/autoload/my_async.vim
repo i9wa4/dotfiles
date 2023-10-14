@@ -26,18 +26,18 @@ function! s:get_msg(ch, msg) abort
   if has('nvim')
     if len(a:msg) > 1
       let s:line_no += len(a:msg[:-2])
-      let l:msg = '[' . s:line_no . '] ' . a:msg[-2]
+      let l:msg = '[' .. s:line_no .. '] ' .. a:msg[-2]
       echomsg l:msg
       call add(s:result, l:msg)
     endif
   else
     let s:line_no += 1
-    let l:msg = '[' . s:line_no . '] ' . a:msg
+    let l:msg = '[' .. s:line_no .. '] ' .. a:msg
     echomsg l:msg
     call add(s:result, l:msg)
   endif
 endfunction
 
 function! s:exit_cb(job, status) abort
-  echomsg s:result[-1] . ' - Job exited.'
+  echomsg s:result[-1] .. ' - Job exited.'
 endfunction

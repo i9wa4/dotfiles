@@ -19,19 +19,19 @@ function! my_statusline#statusline() abort
   "  \ }
 
   let l:ret = ''
-  " let l:ret .= '[' . l:mode_dict[mode()] . (&paste ? '|PASTE' : '') . '] '
-  let l:ret .= ((&buftype == 'terminal') ? ('[' . (has('nvim') ? &channel : bufnr()) . '] ') : '')
-  let l:ret .= '%t '
-  " let l:ret .= '%f '
-  " let l:ret .= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
-  let l:ret .= '%<'
-  let l:ret .= "%="
-  let l:ret .= (v:hlsearch ? s:last_search_count() : '')
-  " let l:ret .= '  ' . 'Ln:%l/%L Col:%-2c'
-  " let l:ret .= '  ' . (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
-  " let l:ret .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
-  " let l:ret .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  " let l:ret .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
+  " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
+  let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
+  let l:ret ..= '%t '
+  " let l:ret ..= '%f '
+  " let l:ret ..= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
+  let l:ret ..= '%<'
+  let l:ret ..= "%="
+  let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
+  " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-2c'
+  " let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  " let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  " let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  " let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
   return l:ret
 endfunction
 
@@ -75,17 +75,17 @@ function! my_statusline#tabline() abort
     endif
     let l:mod = getbufvar(l:bufnr, '&modified') ? '[+]' : ''
 
-    let l:ret .= '%' . l:i . 'T'
-    let l:ret .= '%#' . (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') . '#'
-    let l:ret .= (((l:i > 1 ) && (l:i > tabpagenr())) ? '|' : '')
-    let l:ret .= ' ' . l:no . ' ' . l:title . l:mod . ' '
-    let l:ret .= (((l:i < tabpagenr()) && (l:i < tabpagenr('$'))) ? '|' : '')
-    let l:ret .= '%#TabLineFill#'
+    let l:ret ..= '%' .. l:i .. 'T'
+    let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
+    let l:ret ..= (((l:i > 1 ) && (l:i > tabpagenr())) ? '|' : '')
+    let l:ret ..= ' ' .. l:no .. ' ' .. l:title .. l:mod .. ' '
+    let l:ret ..= (((l:i < tabpagenr()) && (l:i < tabpagenr('$'))) ? '|' : '')
+    let l:ret ..= '%#TabLineFill#'
   endfor
 
-  let l:ret .= '%#TabLineFill#%T%=%#TabLineFill#'
-  " let l:ret .= fnamemodify(getcwd(), ':~')
-  let l:ret .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
-  let l:ret .= '  ' . (has('nvim') ? 'N' : 'V')
+  let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
+  " let l:ret ..= fnamemodify(getcwd(), ':~')
+  let l:ret ..= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
+  let l:ret ..= '  ' .. (has('nvim') ? 'N' : 'V')
   return l:ret
 endfunction
