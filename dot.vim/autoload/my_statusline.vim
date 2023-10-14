@@ -38,7 +38,7 @@ endfunction
 function! s:last_search_count() abort
   " :help searchcount()
   if !exists('*searchcount')
-    return '*'
+    return ''
   endif
 
   let l:result = searchcount(#{recompute: 1, maxcount: 100000})
@@ -46,16 +46,16 @@ function! s:last_search_count() abort
     return ''
   endif
   if l:result.incomplete ==# 1 " timed out
-    return printf(' /%s [?/??]', @/)
+    return printf('[?/?] %s', @/)
   elseif l:result.incomplete ==# 2 " max count exceeded
-    if l:result.total > l:result.maxcount
-      \ && l:result.current > l:result.maxcount
-      return printf(' /%s [>%d/>%d]', @/, l:result.current, l:result.total)
+    if (l:result.total > l:result.maxcount)
+      \ && (l:result.current > l:result.maxcount)
+      return printf('[>%d/>%d] %s', l:result.current, l:result.total, @/)
     elseif l:result.total > l:result.maxcount
-      return printf(' /%s [%d/>%d]', @/, l:result.current, l:result.total)
+      return printf('[%d/>%d] %s', l:result.current, l:result.total, @/)
     endif
   endif
-  return printf(' /%s [%d/%d]', @/, l:result.current, l:result.total)
+  return printf('[%d/%d] %s', l:result.current, l:result.total, @/)
 endfunction
 
 
