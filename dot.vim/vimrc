@@ -318,9 +318,18 @@ augroup END
 " --------------------------------------
 " dein.vim
 "
-let s:dein_path = expand('<sfile>:p:h') .. '/rc/dein.vim'
+let s:dein_path = expand('<sfile>:p:h') .. '/dein/dein.vim'
 if filereadable(s:dein_path)
   execute 'source' s:dein_path
+endif
+
+
+" --------------------------------------
+" dpp.vim
+"
+let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
+if filereadable(s:dpp_path)
+  " execute 'source' s:dpp_path
 endif
 
 
