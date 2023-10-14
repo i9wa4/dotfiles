@@ -20,8 +20,8 @@ function! my_statusline#statusline() abort
 
   let l:ret = ''
   " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
-  let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
-  let l:ret ..= '%t '
+  " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
+  " let l:ret ..= '%t '
   " let l:ret ..= '%f '
   " let l:ret ..= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
   let l:ret ..= '%<'
@@ -69,7 +69,7 @@ function! my_statusline#tabline() abort
     let l:bufnrs = tabpagebuflist(l:i)
     let l:bufnr = l:bufnrs[tabpagewinnr(l:i) - 1]
     let l:no = l:i
-    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t'), 0, 10)
+    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '          ', 0, 10)
     if empty(l:title)
       let l:title = '[No Name]'
     endif
@@ -78,7 +78,7 @@ function! my_statusline#tabline() abort
     let l:ret ..= '%' .. l:i .. 'T'
     let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
     let l:ret ..= (((l:i > 1 ) && (l:i > tabpagenr())) ? '|' : '')
-    let l:ret ..= ' ' .. l:no .. ' ' .. l:title .. l:mod .. ' '
+    let l:ret ..= '' .. l:no .. ' ' .. l:title .. l:mod .. ''
     let l:ret ..= (((l:i < tabpagenr()) && (l:i < tabpagenr('$'))) ? '|' : '')
     let l:ret ..= '%#TabLineFill#'
   endfor
@@ -86,6 +86,6 @@ function! my_statusline#tabline() abort
   let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
   " let l:ret ..= fnamemodify(getcwd(), ':~')
   let l:ret ..= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
-  let l:ret ..= '  ' .. (has('nvim') ? 'N' : 'V')
+  " let l:ret ..= '  ' .. (has('nvim') ? 'N' : 'V')
   return l:ret
 endfunction

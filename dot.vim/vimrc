@@ -76,6 +76,7 @@ set wrapscan
 
 " View
 set number
+set relativenumber
 set ambiwidth=double
 
 " Window
@@ -160,16 +161,16 @@ nnoremap <silent> <Plug>(my-filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
 nnoremap <silent> <Plug>(my-filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
 
 " Encoding
-nnoremap <Plug>(my-encoding) <Nop>
-nmap <Space>n <Plug>(my-encoding)
-nnoremap <silent> <Plug>(my-encoding)ec :<C-u>edit ++encoding=cp932<CR>
-nnoremap <silent> <Plug>(my-encoding)ee :<C-u>edit ++encoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-encoding)eu :<C-u>edit ++encoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-encoding)fc :<C-u>setlocal fileencoding=cp932<CR>
-nnoremap <silent> <Plug>(my-encoding)fe :<C-u>setlocal fileencoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-encoding)fu :<C-u>setlocal fileencoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-encoding)d :<C-u>edit ++fileformat=dos<CR>
-nnoremap <silent> <Plug>(my-encoding)u :<C-u>edit ++fileformat=unix<CR>
+nnoremap <Plug>(my-eNcoding) <Nop>
+nmap <Space>n <Plug>(my-eNcoding)
+nnoremap <silent> <Plug>(my-eNcoding)ec :<C-u>setlocal fileencoding=cp932<CR>
+nnoremap <silent> <Plug>(my-eNcoding)ee :<C-u>setlocal fileencoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-eNcoding)eu :<C-u>setlocal fileencoding=utf-8<CR>
+nnoremap <silent> <Plug>(my-eNcoding)fd :<C-u>edit ++fileformat=dos<CR>
+nnoremap <silent> <Plug>(my-eNcoding)fu :<C-u>edit ++fileformat=unix<CR>
+nnoremap <silent> <Plug>(my-eNcoding)nc :<C-u>edit ++encoding=cp932<CR>
+nnoremap <silent> <Plug>(my-eNcoding)ne :<C-u>edit ++encoding=euc-jp<CR>
+nnoremap <silent> <Plug>(my-eNcoding)nu :<C-u>edit ++encoding=utf-8<CR>
 
 " Switch
 nnoremap <Plug>(my-switch) <Nop>
@@ -229,6 +230,7 @@ function! s:set_register() abort
     call setreg('x', '-------------------')
     let l:dir_status = 'CWD:' .. fnamemodify(getcwd(), ':~')
     let l:dir_status ..= '  ' .. 'Cfg:' . get(g:, 'local_vim_setting_name', 'NONE')
+    let l:dir_status ..= '  ' .. (has('nvim') ? 'N' : 'V')
     call setreg('y', l:dir_status)
     let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
     let l:file_status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
