@@ -219,18 +219,18 @@ function! s:set_register() abort
     call setreg('c', expand('%:t'))
     call setreg('d', expand('%:t:r'))
 
-    let l:dir_status = 'CWD:' . fnamemodify(getcwd(), ':~')
-    " let l:dir_status .= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
+    let l:dir_status = 'CWD:' .. fnamemodify(getcwd(), ':~')
+    " let l:dir_status ..= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
     if exists('g:local_vim_setting_name')
-      let l:dir_status .= '  ' . 'Cfg:' . g:local_vim_setting_name
+      let l:dir_status ..= '  ' .. 'Cfg:' .. g:local_vim_setting_name
     endif
     call setreg('y', l:dir_status)
 
-    let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') . &tabstop
-    let l:file_status .= '  ' . ((&fileencoding != '') ? &fileencoding : &encoding)
-    let l:file_status .= '  ' . ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-    let l:file_status .= '  ' . ((&filetype == '') ? 'no_ft' : &filetype)
-    let l:file_status .= '  ' . (has('nvim') ? 'N' : 'V')
+    let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+    let l:file_status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+    let l:file_status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+    let l:file_status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+    let l:file_status ..= '  ' .. (has('nvim') ? 'N' : 'V')
     call setreg('z', l:file_status)
   endif
 endfunction
@@ -313,7 +313,7 @@ augroup END
 " --------------------------------------
 " dein.vim
 "
-let s:dein_path = expand('<sfile>:p:h') . '/rc/dein.vim'
+let s:dein_path = expand('<sfile>:p:h') .. '/rc/dein.vim'
 if filereadable(s:dein_path)
   execute 'source' s:dein_path
 endif
