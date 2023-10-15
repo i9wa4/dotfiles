@@ -8,8 +8,6 @@
     "extensions": {
         "recommendations": [
             "shardulm94.trailing-spaces",
-            "vscodevim.vim",
-            "yzhang.markdown-all-in-one"
         ]
     }
 }
