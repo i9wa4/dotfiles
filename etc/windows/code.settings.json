@@ -3,5 +3,6 @@
     "editor.fontSize": 20,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
+    "extensions.ignoreRecommendations": true,
     "git.ignoreMissingGitWarning": true
 }
