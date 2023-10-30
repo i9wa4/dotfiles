@@ -335,10 +335,10 @@ r-init:
 ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	# sudo apt install -y openssh-server
-	# sudo systemctl daemon-reload
-	# sudo systemctl enable ssh.service
-	# sudo systemctl start ssh.service
+	sudo apt install -y openssh-server
+	sudo systemctl daemon-reload
+	sudo systemctl enable ssh.service
+	sudo systemctl start ssh.service
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
