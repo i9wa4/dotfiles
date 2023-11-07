@@ -20,7 +20,7 @@ exit /b
     call "%VENV_MYENV:"=%\Scripts\activate.bat"
     python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org"
     python -m pip install --upgrade pip setuptools wheel
-    python -m pip install flake8 ipykernel jupyterlab jupytext
+    python -m pip install -r "..\..\etc\py_venv_myenv_requirements.txt"
     python -m pip check
     @REM deactivate
 
