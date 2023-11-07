@@ -152,13 +152,13 @@ nnoremap <silent> <Plug>(my-Edit)s :<C-u>%s/\s\+$//e<CR>
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'tabedit' g:my_bookmark_path<CR>
 nnoremap <silent> <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
-nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
-nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
+nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'tabedit' g:my_gtd_path<CR>
+nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'tabedit' g:my_local_vimrc_path<CR>
 nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
-nnoremap <silent> <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
-nnoremap <silent> <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
+nnoremap <silent> <Plug>(my-Filer)s :<C-u>execute 'tabedit' g:my_skk_path<CR>
+nnoremap <silent> <Plug>(my-Filer)v :<C-u>execute 'tabedit' $MYVIMRC<CR>
 
 " eNcoding
 nnoremap <Plug>(my-eNcoding) <Nop>
@@ -302,13 +302,13 @@ endfunction
 augroup VimrcAutocmd
   autocmd!
   " Register
-  autocmd BufNewFile,BufReadPost,BufEnter * call s:set_register()
+  autocmd BufEnter * call s:set_register()
 
   " Auto Reload
-  autocmd BufNewFile,BufReadPost,BufEnter * checktime
+  autocmd BufEnter * checktime
 
   " FileType
-  autocmd BufNewFile,BufReadPost,BufEnter * call s:my_filetype()
+  autocmd BufEnter * call s:my_filetype()
 
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
