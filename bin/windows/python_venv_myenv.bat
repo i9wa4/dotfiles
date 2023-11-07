@@ -1,5 +1,5 @@
 @echo off
-@REM Run as user.
+@REM Run as administrator.
 
 set PY_VER_MINOR=3.11
 set VENV_MYENV="C:\venv\myenv"
