@@ -1,7 +1,7 @@
 @echo off
 @REM Run as user.
 
-set PY_VER_MINOR=3.10
+set PY_VER_MINOR=3.11
 set VENV_MYENV="C:\venv\myenv"
 
 call :main
