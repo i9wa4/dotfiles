@@ -280,10 +280,10 @@ py-init:
 py-build:
 	. "$${HOME}"/.profile \
 	&& cd /usr/local/src/cpython \
-	&& sudo git checkout main \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
+	&& sudo make clean \
 	&& sudo ./configure \
 	&& sudo make \
 	&& sudo make altinstall \
