@@ -12,7 +12,7 @@ exit /b
 
     rmdir /q /s "%USERPROFILE%\.ipynb_checkpoints"
 
-    xcopy /e /i /y "..\..\.jupyter" "%VENV_MYENV:"=%\share\jupyter"
+    xcopy /e /i /y "..\..\dot.jupyter" "%VENV_MYENV:"=%\share\jupyter"
     cd /d ".."
 
     call "%VENV_MYENV:"=%\Scripts\activate.bat"
