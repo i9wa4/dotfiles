@@ -302,13 +302,13 @@ endfunction
 augroup VimrcAutocmd
   autocmd!
   " Register
-  autocmd BufEnter * call s:set_register()
+  autocmd BufNewFile,BufReadPost,BufEnter * call s:set_register()
 
   " Auto Reload
-  autocmd BufEnter * checktime
+  autocmd BufNewFile,BufReadPost,BufEnter * checktime
 
   " FileType
-  autocmd BufEnter * call s:my_filetype()
+  autocmd BufNewFile,BufReadPost,BufEnter * call s:my_filetype()
 
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
