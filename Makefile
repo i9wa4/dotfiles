@@ -127,9 +127,7 @@ vim-init:
 .PHONY: vim-build
 vim-build:
 	cd /usr/local/src/vim \
-	&& sudo git checkout master \
 	&& sudo git fetch \
-	&& sudo git merge \
 	&& cd ./src \
 	&& sudo ./configure \
 	  --disable-gui \
