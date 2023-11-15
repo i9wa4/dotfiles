@@ -127,7 +127,9 @@ vim-init:
 .PHONY: vim-build
 vim-build:
 	cd /usr/local/src/vim \
+	&& sudo git checkout master \
 	&& sudo git fetch \
+	&& sudo git merge \
 	&& cd ./src \
 	&& sudo ./configure \
 	  --disable-gui \
@@ -279,7 +281,6 @@ py-build:
 	. "$${HOME}"/.profile \
 	&& cd /usr/local/src/cpython \
 	&& sudo git fetch \
-	&& sudo git merge \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
 	&& sudo make clean \
 	&& sudo ./configure \
