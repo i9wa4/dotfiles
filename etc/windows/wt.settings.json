@@ -71,7 +71,7 @@
     ],
     "copyFormatting": "none",
     "copyOnSelect": true,
-    "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+    "defaultProfile": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
     "disableAnimations": true,
     "experimental.detectURLs": false,
     "experimental.rendering.forceFullRepaint": true,
@@ -99,14 +99,14 @@
         "list":
         [
             {
-                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
-                "hidden": false,
-                "name": "Windows PowerShell"
-            },
-            {
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
                 "name": "Command Prompt"
+            },
+            {
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "hidden": false,
+                "name": "Windows PowerShell"
             },
             {
                 "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
