@@ -282,7 +282,6 @@ py-build:
 	&& cd /usr/local/src/cpython \
 	&& sudo git fetch \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-	&& sudo make clean \
 	&& sudo ./configure \
 	&& sudo make \
 	&& sudo make altinstall \
