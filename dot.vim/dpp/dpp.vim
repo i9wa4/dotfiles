@@ -1,8 +1,8 @@
 scriptencoding utf-8
 
-let $CACHE = expand('~/.cache')
-if !($CACHE->isdirectory())
-  call mkdir($CACHE, 'p')
+call setenv('CACHE', expand('~/.cache'))
+if !(getenv('CACHE')->isdirectory())
+  call mkdir(getenv('CACHE'), 'p')
 endif
 
 for s:plugin in [
@@ -13,7 +13,7 @@ for s:plugin in [
   let s:dir = s:plugin->fnamemodify(':t')->fnamemodify(':p')
   if !(s:dir->isdirectory())
     " Search from $CACHE directory
-    let s:dir = $CACHE .. '/dpp/repos/github.com/' .. s:plugin
+    let s:dir = getenv('CACHE') .. '/dpp/repos/github.com/' .. s:plugin
     if !(s:dir->isdirectory())
       execute 'silent !git clone https://github.com/' .. s:plugin s:dir
     endif

@@ -50,7 +50,7 @@ function! my_vimrc#add_path(path_list) abort
     let l:separator = ";"
   endif
 
-  let l:path_list = split($PATH, l:separator)
+  let l:path_list = split(getenv('PATH'), l:separator)
   for l:item in reverse(a:path_list)
     let l:index = index(l:path_list, l:item)
     if l:index < 0
@@ -60,7 +60,7 @@ function! my_vimrc#add_path(path_list) abort
       call insert(l:path_list, l:item)
     endif
   endfor
-  let $PATH = join(l:path_list, l:separator)
+  call setenv('PATH', join(l:path_list, l:separator))
 endfunction
 
 let s:preload_vimrc_path = ''
