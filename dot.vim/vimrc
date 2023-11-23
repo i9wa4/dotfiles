@@ -192,10 +192,8 @@ nnoremap <silent> <Plug>(my-Switch)w :<C-u>setlocal wrap! wrap?<CR>
 command! -nargs=? C call s:copy2clip(<q-args>)
 function s:copy2clip(...) abort
   if a:0 >= 1
-    " let @+ = getreg(a:1)
     call setreg('+', getreg(a:1))
   else
-    " let @+ = @"
     call setreg('+', @")
   endif
 endfunction
