@@ -11,39 +11,33 @@ function! my_highlight#highlight() abort
   highlight clear SpellBad
   highlight SpellBad cterm=underline gui=underline
 
-  " https://www.ditig.com/256-colors-cheat-sheet
   call clearmatches()
-  highlight clear MyEmphasis1
-  highlight clear MyEmphasis2
-  highlight clear MyEmphasis3
-  highlight clear MyError
-  highlight clear MySpecial
 
-  " [ ]
-  "https://www.anarchive-beta.com/entry/2022/07/14/052235
-  " Black, Pink1(218), Sayu(#FFB6C1)
+  highlight clear MyEmphasis1
   highlight MyEmphasis1 guifg=#000000 guibg=#FFB6C1
   call matchadd('MyEmphasis1', strftime('%Y-%m-%d'))
   call matchadd('MyEmphasis1', strftime('%Y%m%d'))
 
-  " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
-  " Black, PaleVioletRed1(211), Saku(#EF9AAF)
+  highlight clear MyEmphasis2
   highlight MyEmphasis2 guifg=#000000 guibg=#EF9AAF
-  call matchadd('MyEmphasis2', 'J11\|J1_\|J_1\|J__')
+  call matchadd('MyEmphasis2', 'NOTE:\|WARNING:\|# %%')
 
-  " https://wikiwiki.jp/nijisanji/%E3%82%AB%E3%83%A9%E3%83%BC%E3%82%B3%E3%83%BC%E3%83%89%E3%81%BE%E3%81%A8%E3%82%81
-  " Black, LightGoldenrod2(221), Himawari(#FBE340)
+  " [ ]
+  highlight clear MyEmphasis3
   highlight MyEmphasis3 guifg=#000000 guibg=#FBE340
-  call matchadd('MyEmphasis3', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
+  call matchadd('MyEmphasis3', 'TODO:\|FIXME:\|DEBUG:\|\[ \]')
+  call matchadd('MyEmphasis3', strftime('%Y-%m-%d', localtime() + 24 * 60 * 60))
   call matchadd('MyEmphasis3', strftime('%Y%m%d', localtime() + 24 * 60 * 60))
 
   " 　 
   " Black, DarkRed(88,#870000)
+  highlight clear MyError
   highlight MyError guifg=#000000 guibg=#870000
   call matchadd('MyError', '　\|\s\+$')
 
   " [		]
   " DarkRed(88,#870000), NONE
+  highlight clear MySpecial
   highlight MySpecial guifg=#870000 guibg=NONE
   call matchadd('MySpecial', '\t')
 endfunction
