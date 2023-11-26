@@ -80,6 +80,10 @@ function! my_statusline#tabline() abort
   endfor
 
   let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret ..= system('. /usr/lib/git-core/git-sh-prompt && __git_ps1')
+  call setenv('GIT_PS1_SHOWDIRTYSTATE', 'true')
+  call setenv('GIT_PS1_SHOWSTASHSTATE', 'true')
+  call setenv('GIT_PS1_SHOWUNTRACKEDFILES', 'true')
+  call setenv('GIT_PS1_SHOWUPSTREAM', 'auto')
+  let l:ret ..= system('. /etc/bash_completion.d/git-prompt && __git_ps1')
   return l:ret
 endfunction
