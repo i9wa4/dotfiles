@@ -282,7 +282,8 @@ py-build:
 	&& cd /usr/local/src/cpython \
 	&& sudo git fetch \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-	&& sudo ./configure \
+	&& sudo make distclean \
+	&& sudo ./configure --with-pydebug \
 	&& sudo make \
 	&& sudo make altinstall \
 	&& python"$${PY_VER_MINOR}" --version
