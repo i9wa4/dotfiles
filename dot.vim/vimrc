@@ -310,10 +310,9 @@ augroup VimrcAutocmd
   autocmd BufEnter * checktime
 
   " FileType
-  " autocmd BufEnter,FileType * call s:my_filetype()
-  autocmd BufNewFile,BufRead * call s:my_filetype()
   autocmd BufNewFile,BufRead *.bashrc,*.profile,*.bash_profile
     \ setfiletype bash
+  autocmd BufEnter,FileType * call s:my_filetype()
 
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
