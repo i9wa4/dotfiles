@@ -195,7 +195,7 @@ function s:copy2clip(...) abort
   if a:0 >= 1
     call setreg('+', getreg(a:1))
   else
-    call setreg('+', @")
+    call setreg('+', getreg('"'))
   endif
 endfunction
 
@@ -209,9 +209,9 @@ function s:copy2clip_wsl(...) abort
     endif
   else
     if has('win32unix')
-      call system('clip.exe', @")
+      call system('clip.exe', getreg('"'))
     else
-      call system('clip.exe', system('nkf -sc', @"))
+      call system('clip.exe', system('nkf -sc', getreg('"')))
     endif
   endif
 endfunction
