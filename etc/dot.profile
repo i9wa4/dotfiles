@@ -16,6 +16,12 @@ export DENO_TLS_CA_STORE="system"
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
+# Git
+export GIT_PS1_SHOWDIRTYSTATE=true      # *:unstaged, +:staged
+export GIT_PS1_SHOWSTASHSTATE=true      # $:stashed
+export GIT_PS1_SHOWUNTRACKEDFILES=true  # %:untracked
+export GIT_PS1_SHOWUPSTREAM=auto        # >:ahead, <:behind
+
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
