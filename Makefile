@@ -15,9 +15,22 @@ ubuntu: minimal \
 
 
 
+WIN_UTIL_DIR := /mnt/c/work/util
+MF_PY_VER_MINOR := "${PY_VER_MINOR}"
+MF_PY_VER_PATCH := "${PY_VER_PATCH}"
+MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
+
+
+
 .PHONY: prompt-restart-wsl
 prompt-restart-wsl:
 	echo "Restart WSL and execute 'make docker-systemd'"
+
+.PHONY: dummy
+dummy:
+	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
+	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
+	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
 
 
@@ -49,7 +62,6 @@ copy:
 	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
 
 .PHONY: win-copy
-WIN_UTIL_DIR := /mnt/c/work/util
 win-copy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
@@ -281,33 +293,33 @@ py-build:
 	. "$${HOME}"/.profile \
 	&& cd /usr/local/src/cpython \
 	&& sudo git fetch \
-	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
+	&& sudo git checkout refs/tags/v"$(MF_PY_VER_PATCH)" \
 	&& sudo make distclean \
 	&& sudo ./configure --with-pydebug \
 	&& sudo make \
 	&& sudo make altinstall \
-	&& python"$${PY_VER_MINOR}" --version
+	&& python"$(MF_PY_VER_MINOR)" --version
 
 .PHONY: py-vmu
 py-vmu:
 	. "$${HOME}"/.profile \
-	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
+	&& if [ -d "$(MF_PY_VENV_MYENV)" ]; then \
+	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)" --upgrade; \
 	else \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
+	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)"; \
 	fi \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
-	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
-	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-	&& python"$${PY_VER_MINOR}" -m pip check \
+	&& . "$(MF_PY_VENV_MYENV)"/bin/activate \
+	&& python"$(MF_PY_VER_MINOR)" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python"$(MF_PY_VER_MINOR)" -m pip install --upgrade pip setuptools wheel \
+	&& python"$(MF_PY_VER_MINOR)" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python"$(MF_PY_VER_MINOR)" -m pip check \
 	&& deactivate
 
 .PHONY: py-tag
 py-tag:
 	. "$${HOME}"/.profile \
 	&& sudo git -C /usr/local/src/cpython fetch \
-	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
+	&& sudo git -C /usr/local/src/cpython tag | grep v"$(MF_PY_VER_MINOR)"
 
 .PHONY: r-init
 r-init:
@@ -327,7 +339,7 @@ r-init:
 	sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
 	. "$${HOME}"/.profile \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	&& . "$(MF_PY_VENV_MYENV)"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
 .PHONY: ubuntu-desktop
