@@ -1,5 +1,10 @@
+# Common
 export LC_ALL=C.UTF-8
 export XDG_CONFIG_HOME="${HOME}"/.config
+
+# Vim
+export EDITOR=vim
+export VISUAL=vim
 
 # Neovim
 export NVIM_APPNAME1=nvim-default
@@ -24,8 +29,3 @@ export PATH="${HOME}"/go/bin:"${PATH}"
 export PY_VER_MINOR=3.11
 export PY_VER_PATCH=3.11.7
 export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
-
-# Docker
-start_container() {
-    docker exec -u "$(id -u "${USER}")":"$(id -g "${USER}")" -it $1 /bin/sh
-}
