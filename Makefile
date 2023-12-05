@@ -313,6 +313,7 @@ py-vmu:
 	&& python"$(MF_PY_VER_MINOR)" -m pip install --upgrade pip setuptools wheel \
 	&& python"$(MF_PY_VER_MINOR)" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
 	&& python"$(MF_PY_VER_MINOR)" -m pip check \
+	&& python --version \
 	&& deactivate
 
 .PHONY: py-tag
