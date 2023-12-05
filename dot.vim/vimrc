@@ -222,21 +222,22 @@ endfunction
 "
 function! s:set_register() abort
   if empty(&buftype)
-    call setreg('a', '-------------------')
-    call setreg('b', expand('%:p:~'))
-    call setreg('c', expand('%:p:~:h'))
-    call setreg('d', expand('%:t'))
-    call setreg('e', expand('%:t:r'))
+    call setreg('a', expand('%:p:~'))
+    call setreg('b', expand('%:p:~:h'))
+    call setreg('c', expand('%:t'))
+    call setreg('d', expand('%:t:r'))
 
-    call setreg('x', '-------------------')
-    let l:dir_status = 'CWD:' .. fnamemodify(getcwd(), ':~')
+    let l:dir_status = '['
+    let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
     let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ":h:t")
-    let l:dir_status ..= '  ' .. (has('nvim') ? 'N' : 'V')
+    let l:dir_status ..= ']'
     call setreg('y', l:dir_status)
-    let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+    let l:file_status = '['
+    let l:file_status ..= (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
     let l:file_status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
     let l:file_status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
     let l:file_status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+    let l:file_status ..= ']'
     call setreg('z', l:file_status)
   endif
 endfunction
@@ -309,7 +310,10 @@ augroup VimrcAutocmd
   autocmd BufEnter * checktime
 
   " FileType
-  autocmd BufEnter,FileType * call s:my_filetype()
+  " autocmd BufEnter,FileType * call s:my_filetype()
+  autocmd BufNewFile,BufRead * call s:my_filetype()
+  autocmd BufNewFile,BufRead *.bashrc,*.profile,*.bash_profile
+    \ setfiletype bash
 
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()

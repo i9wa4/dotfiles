@@ -15,11 +15,6 @@ fi
 if [ -f /etc/bash_completion.d/git-prompt ]; then
   . /etc/bash_completion.d/git-prompt
 
-  GIT_PS1_SHOWDIRTYSTATE=true       # *:unstaged, +:staged
-  GIT_PS1_SHOWSTASHSTATE=true       # $:stashed
-  GIT_PS1_SHOWUNTRACKEDFILES=true   # %:untracked
-  GIT_PS1_SHOWUPSTREAM=auto         # >:ahead, <:behind
-
   COLOR_USER_HOST="$(tput setaf 2)"
   COLOR_PWD="$(tput setaf 3)"
   COLOR_GIT="$(tput setaf 1)"
