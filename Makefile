@@ -333,7 +333,7 @@ r-init:
 	sudo add-apt-repository -y \
 	  "deb https://cloud.r-project.org/bin/linux/ubuntu ""$$(lsb_release -cs)""-cran40/"
 	sudo apt install -y --no-install-recommends r-base
-	sudo apt install -y libcurl4-openssl-dev libxml2-dev libbras-dev liblapack-dev libavfilter-dev
+	sudo apt install -y libcurl4-openssl-dev libxml2-dev libblas-dev liblapack-dev libavfilter-dev
 	sudo apt install -y pandoc
 	sudo R -e "install.packages('rmarkdown', dependencies=TRUE)"
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
