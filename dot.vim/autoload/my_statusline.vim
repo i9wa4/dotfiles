@@ -80,8 +80,7 @@ function! my_statusline#tabline() abort
   endfor
 
   let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
-  " let l:ret ..= system('. /etc/bash_completion.d/git-prompt && echo $(__git_ps1 " (%s)")')
-  let l:ret ..= system('. /etc/bash_completion.d/git-prompt && __git_ps1')
+  let l:ret ..= system('. /etc/bash_completion.d/git-prompt && __git_ps1')->substitute('%', '%%', 'g')
   let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
   return l:ret
 endfunction
