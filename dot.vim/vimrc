@@ -251,6 +251,7 @@ function! s:my_filetype() abort
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
 
   if index([
+    \   'bash',
     \   'css',
     \   'mermaid',
     \   'plantuml',

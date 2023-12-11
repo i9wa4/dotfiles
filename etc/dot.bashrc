@@ -15,16 +15,30 @@ fi
 if [ -f /etc/bash_completion.d/git-prompt ]; then
   . /etc/bash_completion.d/git-prompt
 
-  COLOR_USER_HOST="$(tput setaf 2)"
-  COLOR_PWD="$(tput setaf 3)"
-  COLOR_GIT="$(tput setaf 1)"
-  COLOR_PROMPT="$(tput setaf 4)"
-  COLOR_RESET="$(tput sgr0)"
+  _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+  _CL_USER_HOST_LOCAL="$(tput setaf 2)"
+  _CL_USER_HOST_REMOTE="$(tput setaf 1)"
+  _CL_PWD="$(tput setaf 3)"
+  _CL_GIT="$(tput setaf 1)"
+  _CL_PROMPT="$(tput setaf 4)"
+  _CL_RESET="$(tput sgr0)"
 
-  PS1='\n${debian_chroot:+($debian_chroot)}[\[${COLOR_USER_HOST}\]\u@\h\[${COLOR_RESET}\]:\[${COLOR_PWD}\]\w\[${COLOR_GIT}\]$(__git_ps1)\[${COLOR_RESET}\]]\n\[${COLOR_PROMPT}\]$ \[${COLOR_RESET}\]'
+  PS1='\n[${debian_chroot:+($debian_chroot)}'
   if [ -n "${MYVIMRC}" ]; then
-    PS1='\n\[${COLOR_PROMPT}\]$ \[${COLOR_RESET}\]'
+    PS1="${PS1}"
+  else
+    if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+      # remote host
+      PS1="${PS1}"'\[${_CL_USER_HOST_REMOTE}\]\u@\H \s'
+    else
+      # local host
+      PS1="${PS1}"'\[${_CL_USER_HOST_LOCAL}\]\u@\H \s'
+    fi
+    PS1="${PS1}"' \[${_CL_RESET}\]L${SHLVL}("${_SHELL_TYPE}"):'
+    PS1="${PS1}"'\[${_CL_PWD}\]\w'
+    PS1="${PS1}"'\[${_CL_GIT}\]$(__git_ps1)'
   fi
+  PS1="${PS1}"'\[${_CL_RESET}\]]\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
 fi
 
 # .bash_aliases
