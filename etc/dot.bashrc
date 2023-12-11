@@ -24,9 +24,9 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
   _CL_PROMPT="$(tput setaf 4)"
   _CL_RESET="$(tput sgr0)"
 
-  PS1='\n[${debian_chroot:+($debian_chroot)}'
+  PS1='\n${debian_chroot:+($debian_chroot)}'
   if [ -n "${MYVIMRC}" ]; then
-    PS1="${PS1}"
+    PS1="${PS1}\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] "
   else
     if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
       # remote host
@@ -35,11 +35,11 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
       # local host
       PS1="${PS1}"'\[${_CL_USER_HOST_LOCAL}\]\u@\H'
     fi
-    PS1="${PS1}"' \[${_CL_SH}\](L${SHLVL}\s)\[${_CL_RESET}\]:'
+    PS1="${PS1}"' \[${_CL_SH}\](Lv${SHLVL}\s)\[${_CL_RESET}\]:'
     PS1="${PS1}"' \[${_CL_PWD}\]\w'
     PS1="${PS1}"'\[${_CL_GIT}\]$(__git_ps1)'
+    PS1="${PS1}"'\[${_CL_RESET}\]]\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
   fi
-  PS1="${PS1}"'\[${_CL_RESET}\]]\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
 fi
 
 # .bash_aliases
