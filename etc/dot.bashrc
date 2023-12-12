@@ -28,7 +28,6 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
   if [ -n "${MYVIMRC}" ]; then
     PS1="${PS1}\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] "
   else
-    PS1="${PS1}"'['
     if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
       # remote host
       PS1="${PS1}"'\[${_CL_USER_HOST_REMOTE}\]\u@\H'
@@ -39,7 +38,7 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
     PS1="${PS1}"' \[${_CL_SH}\](Lv${SHLVL}\s)\[${_CL_RESET}\]:'
     PS1="${PS1}"' \[${_CL_PWD}\]\w'
     PS1="${PS1}"'\[${_CL_GIT}\]$(__git_ps1)'
-    PS1="${PS1}"'\[${_CL_RESET}\]]\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
+    PS1="${PS1}"'\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
   fi
 fi
 
