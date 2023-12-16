@@ -1,50 +1,67 @@
-scriptencoding utf-8
-
-call setenv('CACHE', expand('~/.cache'))
-if !(getenv('CACHE')->isdirectory())
-  call mkdir(getenv('CACHE'), 'p')
+let $CACHE = '~/.cache'->expand()
+if !$CACHE->isdirectory()
+  call mkdir($CACHE, 'p')
 endif
 
-for s:plugin in [
-  \   'vim-denops/denops.vim',
-  \   'Shougo/dpp.vim',
-  \   'Shougo/dpp-ext-installer',
-  \   'Shougo/dpp-protocol-git',
-  \   'Shougo/dpp-ext-lazy',
-  \   'Shougo/dpp-ext-toml',
-  \ ]->filter({ _, val->&runtimepath !~# '/' .. val->fnamemodify(':t') })
-  " Search from current directory
-  let s:dir = s:plugin->fnamemodify(':t')->fnamemodify(':p')
-  if !(s:dir->isdirectory())
+function InitPlugin(plugin)
+  " Search from ~/work directory
+  let dir = '~/work/'->expand() .. a:plugin->fnamemodify(':t')
+  if !dir->isdirectory()
     " Search from $CACHE directory
-    let s:dir = getenv('CACHE') .. '/dpp/repos/github.com/' .. s:plugin
-    if !(s:dir->isdirectory())
-      execute 'silent !git clone https://github.com/' .. s:plugin s:dir
+    let dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin
+    if !dir->isdirectory()
+      " Install plugin automatically.
+      execute '!git clone https://github.com/' .. a:plugin dir
     endif
   endif
 
-  if s:plugin->fnamemodify(':t') ==# 'dpp.vim'
-    execute 'set runtimepath^='
-          \ .. s:dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+  execute 'set runtimepath^='
+        \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+endfunction
+
+" NOTE: dpp.vim path must be added
+call InitPlugin('Shougo/dpp.vim')
+call InitPlugin('Shougo/dpp-ext-lazy')
+
+
+"---------------------------------------------------------------------------
+" dpp configurations.
+
+" Set dpp base path (required)
+const s:dpp_base = '~/.cache/dpp'->expand()
+
+let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
+
+if s:dpp_base->dpp#min#load_state()
+  " NOTE: denops.vim and dpp plugins are must be added
+  for s:plugin in [
+        \   'Shougo/dpp-ext-installer',
+        \   'Shougo/dpp-ext-local',
+        \   'Shougo/dpp-ext-packspec',
+        \   'Shougo/dpp-ext-toml',
+        \   'Shougo/dpp-protocol-git',
+        \   'vim-denops/denops.vim',
+        \ ]
+    call InitPlugin(s:plugin)
+  endfor
+
+  " NOTE: Manual load is needed for neovim
+  " Because "--noplugin" is used to optimize.
+  if has('nvim')
+    runtime! plugin/denops.vim
   endif
-endfor
 
+  autocmd MyAutoCmd User DenopsReady
+        \ : echohl WarningMsg
+        \ | echomsg 'dpp load_state() is failed'
+        \ | echohl NONE
+        \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand())
+else
+  autocmd MyAutoCmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
+        \ call dpp#check_files()
+endif
 
-
-" " Set dpp base path (required)
-" const s:dpp_base = '~/.cache/dpp/'
-"
-" " Set dpp source path (required)
-" const s:dpp_src = '~/.cache/dpp/repos/github.com/Shougo/dpp.vim'
-" const s:denops_src = '~/.cache/dpp/repos/github.com/vim-denops/denops.vim'
-"
-" " Set dpp runtime path (required)
-" execute 'set runtimepath^=' .. s:dpp_src
-"
-" if dpp#min#load_state(s:dpp_base)
-"   " NOTE: dpp#make_state() requires denops.vim
-"   execute 'set runtimepath^=' .. s:denops_src
-"   autocmd User DenopsReady
-"  \ call dpp#make_state(s:dpp_base, '~/dotfiles/dot.vim/dpp/dpp.ts')
-" endif
-"
+autocmd MyAutoCmd User Dpp:makeStatePost
+      \ : echohl WarningMsg
+      \ | echomsg 'dpp make_state() is done'
+      \ | echohl NONE
