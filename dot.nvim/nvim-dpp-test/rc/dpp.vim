@@ -16,10 +16,12 @@ function InitPlugin(plugin)
   endif
 
   execute 'set runtimepath^='
-        \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+       \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
 endfunction
 
 " NOTE: dpp.vim path must be added
+call InitPlugin('vim-denops/denops.vim')
+call InitPlugin('vim-denops/denops-helloworld.vim')
 call InitPlugin('Shougo/dpp.vim')
 call InitPlugin('Shougo/dpp-ext-lazy')
 
@@ -35,13 +37,14 @@ let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
 if s:dpp_base->dpp#min#load_state()
   " NOTE: denops.vim and dpp plugins are must be added
   for s:plugin in [
-        \   'Shougo/dpp-ext-installer',
-        \   'Shougo/dpp-ext-local',
-        \   'Shougo/dpp-ext-packspec',
-        \   'Shougo/dpp-ext-toml',
-        \   'Shougo/dpp-protocol-git',
-        \   'vim-denops/denops.vim',
-        \ ]
+       \   'Shougo/dpp-ext-installer',
+       \   'Shougo/dpp-ext-local',
+       \   'Shougo/dpp-ext-packspec',
+       \   'Shougo/dpp-ext-toml',
+       \   'Shougo/dpp-protocol-git',
+       "\   'vim-denops/denops.vim',
+       "\   'vim-denops/denops-helloworld.vim',
+       \ ]
     call InitPlugin(s:plugin)
   endfor
 
@@ -52,16 +55,40 @@ if s:dpp_base->dpp#min#load_state()
   endif
 
   autocmd MyAutoCmd User DenopsReady
-        \ : echohl WarningMsg
-        \ | echomsg 'dpp load_state() is failed'
-        \ | echohl NONE
-        \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand())
+       \ : echohl WarningMsg
+       \ | echomsg 'dpp load_state() is failed'
+       \ | echohl NONE
+       \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand())
 else
   autocmd MyAutoCmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
-        \ call dpp#check_files()
+       \ call dpp#check_files()
 endif
 
 autocmd MyAutoCmd User Dpp:makeStatePost
-      \ : echohl WarningMsg
-      \ | echomsg 'dpp make_state() is done'
-      \ | echohl NONE
+     \ : echohl WarningMsg
+     \ | echomsg 'dpp make_state() is done'
+     \ | echohl NONE
+
+
+
+
+
+
+
+
+" let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
+" const s:dpp_base = '~/.cache/dpp/'
+"
+" " Set dpp source path (required)
+" const s:dpp_src = '~/.cache/dpp/repos/github.com/Shougo/dpp.vim'
+" const s:denops_src = '~/.cache/dpp/repos/github.com/vim-denops/denops.vim'
+"
+" " Set dpp runtime path (required)
+" execute 'set runtimepath^=' .. s:dpp_src
+"
+" if dpp#min#load_state(s:dpp_base)
+"   " NOTE: dpp#make_state() requires denops.vim
+"   execute 'set runtimepath^=' .. s:denops_src
+"   autocmd User DenopsReady
+"  \ call dpp#make_state(s:dpp_base, $BASE_DIR/dpp.ts->expand())
+" endif
