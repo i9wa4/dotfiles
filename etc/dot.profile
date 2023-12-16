@@ -9,6 +9,7 @@ export VISUAL=vim
 # Neovim
 export NVIM_APPNAME1=nvim-default
 export NVIM_APPNAME2=nvim-minimal
+export NVIM_APPNAME3=nvim-dpp-test
 export NVIM_APPNAME="${NVIM_APPNAME1}"
 
 # Deno
