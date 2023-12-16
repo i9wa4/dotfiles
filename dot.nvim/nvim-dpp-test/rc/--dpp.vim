@@ -16,7 +16,7 @@ function InitPlugin(plugin)
   endif
 
   execute 'set runtimepath^='
-        \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+       \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
 endfunction
 
 " NOTE: dpp.vim path must be added
@@ -35,17 +35,16 @@ const s:dpp_base = '~/.cache/dpp'->expand()
 let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
 
 if s:dpp_base->dpp#min#load_state()
-  echomsg 'dpp#min#load_state() failed'
   " NOTE: denops.vim and dpp plugins are must be added
   for s:plugin in [
-        \   'Shougo/dpp-ext-installer',
-        \   'Shougo/dpp-ext-local',
-        \   'Shougo/dpp-ext-packspec',
-        \   'Shougo/dpp-ext-toml',
-        \   'Shougo/dpp-protocol-git',
-        \   'vim-denops/denops.vim',
-        \   'vim-denops/denops-helloworld.vim',
-        \ ]
+       \   'Shougo/dpp-ext-installer',
+       \   'Shougo/dpp-ext-local',
+       \   'Shougo/dpp-ext-packspec',
+       \   'Shougo/dpp-ext-toml',
+       \   'Shougo/dpp-protocol-git',
+       \   'vim-denops/denops.vim',
+       \   'vim-denops/denops-helloworld.vim',
+       \ ]
     call InitPlugin(s:plugin)
   endfor
 
@@ -56,17 +55,16 @@ if s:dpp_base->dpp#min#load_state()
   endif
 
   autocmd MyAutoCmd User DenopsReady
-        \ : echohl WarningMsg
-        \ | echomsg 'dpp load_state() is failed'
-        \ | echohl NONE
-        \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand())
+       \ : echohl WarningMsg
+       \ | echomsg 'dpp load_state() is failed'
+       \ | echohl NONE
+       \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand())
 else
-  echomsg 'dpp#min#load_state() success'
   autocmd MyAutoCmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
-        \ call dpp#check_files()
+       \ call dpp#check_files()
 endif
 
 autocmd MyAutoCmd User Dpp:makeStatePost
-      \ : echohl WarningMsg
-      \ | echomsg 'dpp make_state() is done'
-      \ | echohl NONE
+     \ : echohl WarningMsg
+     \ | echomsg 'dpp make_state() is done'
+     \ | echohl NONE

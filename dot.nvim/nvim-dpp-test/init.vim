@@ -4,6 +4,8 @@ set noswapfile
 set noundofile
 set nowritebackup
 
+let g:denops#debug = 1
+
 augroup MyAutoCmd
   autocmd!
 augroup END
@@ -15,3 +17,5 @@ endif
 
 filetype plugin indent on
 syntax enable
+set termguicolors
+execute 'colorscheme' get(g:, 'colors_name', 'retrobox')

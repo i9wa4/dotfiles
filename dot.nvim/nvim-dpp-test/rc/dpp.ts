@@ -35,50 +35,40 @@ export class Config extends BaseConfig {
 
     // Load toml plugins
     const tomls: Toml[] = [];
-    for (
-      const tomlFile of [
-        "$BASE_DIR/denops.toml",
-        "$BASE_DIR/dpp.toml",
-      ]
-    ) {
-      const toml = await args.dpp.extAction(
-        args.denops,
-        context,
-        options,
-        "toml",
-        "load",
-        {
-          path: tomlFile,
-          options: {
-            lazy: false,
-          },
+    const toml = await args.dpp.extAction(
+      args.denops,
+      context,
+      options,
+      "toml",
+      "load",
+      {
+        path: "$BASE_DIR/dpp.toml",
+        options: {
+          lazy: false,
         },
-      ) as Toml | undefined;
-      if (toml) {
-        tomls.push();
-      }
+      },
+    ) as Toml | undefined;
+    if (toml) {
+      tomls.push();
     }
-    for (
-      const tomlFile of [
-        "$BASE_DIR/lazy.toml",
-      ]
-    ) {
-      const toml = await args.dpp.extAction(
-        args.denops,
-        context,
-        options,
-        "toml",
-        "load",
-        {
-          path: tomlFile,
-          options: {
-            lazy: true,
-          },
+
+    // Load toml plugins
+    const tomls2: Toml[] = [];
+    const toml = await args.dpp.extAction(
+      args.denops,
+      context,
+      options,
+      "toml",
+      "load",
+      {
+        path: "$BASE_DIR/lazy.toml",
+        options: {
+          lazy: false,
         },
-      ) as Toml | undefined;
-      if (toml) {
-        tomls.push();
-      }
+      },
+    ) as Toml | undefined;
+    if (toml) {
+      tomls2.push();
     }
 
     // Merge toml results
@@ -105,34 +95,34 @@ export class Config extends BaseConfig {
       }
     }
 
-    // const localPlugins = await args.dpp.extAction(
-    //   args.denops,
-    //   context,
-    //   options,
-    //   "local",
-    //   "local",
-    //   {
-    //     directory: "~/work",
-    //     options: {
-    //       frozen: true,
-    //       merged: false,
-    //     },
-    //   },
-    // ) as Plugin[] | undefined;
-    // 
-    // if (localPlugins) {
-    //   // Merge localPlugins
-    //   for (const plugin of localPlugins) {
-    //     if (plugin.name in recordPlugins) {
-    //       recordPlugins[plugin.name] = Object.assign(
-    //         recordPlugins[plugin.name],
-    //         plugin,
-    //       );
-    //     } else {
-    //       recordPlugins[plugin.name] = plugin;
-    //     }
-    //   }
-    // }
+    const localPlugins = await args.dpp.extAction(
+      args.denops,
+      context,
+      options,
+      "local",
+      "local",
+      {
+        directory: "~/work",
+        options: {
+          frozen: true,
+          merged: false,
+        },
+      },
+    ) as Plugin[] | undefined;
+
+    if (localPlugins) {
+      // Merge localPlugins
+      for (const plugin of localPlugins) {
+        if (plugin.name in recordPlugins) {
+          recordPlugins[plugin.name] = Object.assign(
+            recordPlugins[plugin.name],
+            plugin,
+          );
+        } else {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const lazyResult = await args.dpp.extAction(
       args.denops,
