@@ -120,6 +120,8 @@ endif
 " Abbreviation
 " :w' --> :w
 cnoreabbrev w' w
+" :w\ --> :w
+cnoreabbrev w\ w
 
 
 " --------------------------------------
