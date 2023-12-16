@@ -1,10 +1,8 @@
 [[plugins]]
 repo = 'vim-denops/denops.vim'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'vim-denops/denops-helloworld.vim'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp.vim'
