@@ -52,25 +52,6 @@ export class Config extends BaseConfig {
       tomls.push();
     }
 
-    // Load toml plugins
-    const tomls2: Toml[] = [];
-    const toml = await args.dpp.extAction(
-      args.denops,
-      context,
-      options,
-      "toml",
-      "load",
-      {
-        path: "$BASE_DIR/lazy.toml",
-        options: {
-          lazy: false,
-        },
-      },
-    ) as Toml | undefined;
-    if (toml) {
-      tomls2.push();
-    }
-
     // Merge toml results
     const recordPlugins: Record<string, Plugin> = {};
     const ftplugins: Record<string, string> = {};
