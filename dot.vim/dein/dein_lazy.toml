@@ -28,3 +28,6 @@ vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 
 require("lspconfig")["pylsp"].setup{}
 '''
+
+[[plugins]]
+repo = 'Shougo/shougo-s-github'
