@@ -31,3 +31,6 @@ require("lspconfig")["pylsp"].setup{}
 
 [[plugins]]
 repo = 'Shougo/shougo-s-github'
+
+[[plugins]]
+repo = 'Shougo/dpp.vim'
