@@ -19,6 +19,9 @@ WIN_UTIL_DIR := /mnt/c/work/util
 MF_PY_VER_MINOR := "${PY_VER_MINOR}"
 MF_PY_VER_PATCH := "${PY_VER_PATCH}"
 MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
+MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
+MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
+MF_NVIM_APPNAME3 := "${NVIM_APPNAME3}"
 
 
 
@@ -58,8 +61,10 @@ copy:
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
+	&& rm -rf "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME3}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"
+	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/"$${NVIM_APPNAME3}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME3}"
 
 .PHONY: win-copy
 win-copy:
