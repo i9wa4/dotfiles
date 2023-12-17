@@ -21,9 +21,10 @@ endif
 if dein#min#load_state(s:dein_dir)
   let s:rc_dir = expand('<sfile>:p:h')
   call dein#begin(s:dein_dir)
-  call dein#load_toml(s:rc_dir .. '/dein_nolazy.toml', {'lazy': 0})
-  call dein#load_toml(s:rc_dir .. '/dein_lazy.toml', {'lazy': 1})
-  call dein#load_toml(s:rc_dir .. '/dein_ddc.toml', {'lazy': 1})
+  call dein#load_toml(s:rc_dir .. '/denops.toml', {'lazy': 0})
+  call dein#load_toml(s:rc_dir .. '/dein.toml', {'lazy': 0})
+  call dein#load_toml(s:rc_dir .. '/lazy.toml', {'lazy': 1})
+  call dein#load_toml(s:rc_dir .. '/ddc.toml', {'lazy': 1})
   call dein#end()
   call dein#save_state()
 endif

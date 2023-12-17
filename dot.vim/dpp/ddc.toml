@@ -3,7 +3,7 @@ repo = 'Shougo/ddc.vim'
 on_event = ['InsertEnter']
 depends = ['denops.vim']
 hook_source = '''
-call ddc#custom#patch_global('ui', 'native')
+call ddc#custom#patch_global('ui', 'pum')
 call ddc#custom#patch_global('sources', [
   \   'around',
   \   'vsnip',
@@ -66,23 +66,17 @@ repo = 'Shougo/ddc-sorter_rank'
 on_source = ['ddc.vim']
 
 [[plugins]]
-repo = 'Shougo/ddc-ui-native'
+repo = 'Shougo/ddc-ui-pum'
 on_source = ['ddc.vim']
 
 [[plugins]]
-repo = 'matsui54/denops-popup-preview.vim'
+repo = 'Shougo/pum.vim'
 on_source = ['ddc.vim']
 hook_source = '''
-call popup_preview#enable()
-'''
-
-[[plugins]]
-repo = 'hrsh7th/vim-vsnip'
-on_source = ['ddc.vim']
-hook_source = '''
-let g:vsnip_snippet_dir = expand(getenv('HOME') .. '/.vim/vsnip')
-let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.rmd = ['markdown']
+inoremap <C-n>  <Cmd>call pum#map#insert_relative(+1)<CR>
+inoremap <C-p>  <Cmd>call pum#map#insert_relative(-1)<CR>
+inoremap <C-y>  <Cmd>call pum#map#confirm()<CR>
+inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
 '''
 
 [[plugins]]
@@ -98,12 +92,28 @@ call skkeleton#config({
   \     '~/.skk/SKK-JISYO.L',
   \     '~/.skk/SKK-JISYO.jinmei',
   \   ],
-  \   'showCandidatesCount': 1,
   \ })
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
 '''
 
 [[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_source = ['ddc.vim']
+hook_source = '''
+let g:vsnip_snippet_dir = expand(getenv('HOME') .. '/.vim/vsnip')
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.rmd = ['markdown']
+'''
+
+[[plugins]]
 repo = 'Shougo/ddc-source-nvim-lsp'
 on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'uga-rosa/ddc-previewer-floating'
+on_source = ['ddc.vim']
+lua_source = '''
+local ddc_previewer_floating = require("ddc_previewer_floating")
+ddc_previewer_floating.enable()
+'''

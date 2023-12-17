@@ -304,7 +304,7 @@ function! s:my_asyncjob_on_save() abort
   endif
 endfunction
 
-augroup VimrcAutocmd
+augroup MyVimrcAutocmd
   autocmd!
   " Register
   autocmd BufEnter * call s:set_register()
@@ -327,7 +327,7 @@ augroup END
 "
 let s:dein_path = expand('<sfile>:p:h') .. '/dein/dein.vim'
 if filereadable(s:dein_path)
-  execute 'source' s:dein_path
+  " execute 'source' s:dein_path
 endif
 
 
@@ -336,7 +336,7 @@ endif
 "
 let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
 if filereadable(s:dpp_path)
-  " execute 'source' s:dpp_path
+  execute 'source' s:dpp_path
 endif
 
 
