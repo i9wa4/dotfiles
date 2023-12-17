@@ -21,7 +21,6 @@ MF_PY_VER_PATCH := "${PY_VER_PATCH}"
 MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
 MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
 MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
-MF_NVIM_APPNAME3 := "${NVIM_APPNAME3}"
 
 
 
@@ -57,14 +56,11 @@ copy:
 	rm -rf "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# Neovim (symbolic link)
-	. "$${HOME}"/.profile \
-	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
-	&& rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME3) \
-	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
-	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
-	&& ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME3) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME3)
+	mkdir -p "$${XDG_CONFIG_HOME}"
+	rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
+	rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
+	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
+	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 
 .PHONY: win-copy
 win-copy:
@@ -295,25 +291,23 @@ py-init:
 
 .PHONY: py-build
 py-build:
-	. "$${HOME}"/.profile \
-	&& cd /usr/local/src/cpython \
-	&& sudo git fetch \
-	&& sudo git checkout refs/tags/v"$(MF_PY_VER_PATCH)" \
-	&& sudo make distclean \
-	&& sudo ./configure --with-pydebug \
-	&& sudo make \
-	&& sudo make altinstall \
-	&& python"$(MF_PY_VER_MINOR)" --version
+	cd /usr/local/src/cpython
+	sudo git fetch
+	sudo git checkout refs/tags/v"$(MF_PY_VER_PATCH)"
+	sudo make distclean
+	sudo ./configure --with-pydebug
+	sudo make
+	sudo make altinstall
+	python"$(MF_PY_VER_MINOR)" --version
 
 .PHONY: py-vmu
 py-vmu:
-	. "$${HOME}"/.profile \
-	&& if [ -d "$(MF_PY_VENV_MYENV)" ]; then \
+	if [ -d "$(MF_PY_VENV_MYENV)" ]; then \
 	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)" --upgrade; \
 	else \
 	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)"; \
 	fi \
-	&& . "$(MF_PY_VENV_MYENV)"/bin/activate \
+	. "$(MF_PY_VENV_MYENV)"/bin/activate \
 	&& python"$(MF_PY_VER_MINOR)" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$(MF_PY_VER_MINOR)" -m pip install --upgrade pip setuptools wheel \
 	&& python"$(MF_PY_VER_MINOR)" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
@@ -323,9 +317,8 @@ py-vmu:
 
 .PHONY: py-tag
 py-tag:
-	. "$${HOME}"/.profile \
-	&& sudo git -C /usr/local/src/cpython fetch \
-	&& sudo git -C /usr/local/src/cpython tag | grep v"$(MF_PY_VER_MINOR)"
+	sudo git -C /usr/local/src/cpython fetch
+	sudo git -C /usr/local/src/cpython tag | grep v"$(MF_PY_VER_MINOR)"
 
 .PHONY: r-init
 r-init:
@@ -344,8 +337,7 @@ r-init:
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. "$${HOME}"/.profile \
-	&& . "$(MF_PY_VENV_MYENV)"/bin/activate \
+	. "$(MF_PY_VENV_MYENV)"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
 .PHONY: ubuntu-desktop
