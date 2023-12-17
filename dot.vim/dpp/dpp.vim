@@ -28,7 +28,6 @@ endfunction
 " NOTE: dpp.vim path must be added
 call InitPlugin('Shougo/dpp-ext-lazy')
 call InitPlugin('Shougo/dpp.vim')
-call InitPlugin('vim-denops/denops.vim')
 
 
 "---------------------------------------------------------------------------
@@ -81,6 +80,7 @@ if dpp#min#load_state(s:dpp_base, s:profile)
     \ | echohl NONE
     \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
 else
+  call InitPlugin('vim-denops/denops.vim')
   autocmd MyDppAutocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
     \ call dpp#check_files()
 endif

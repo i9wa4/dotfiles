@@ -15,3 +15,15 @@ vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 
 require("lspconfig")["pylsp"].setup{}
 '''
+
+[[plugins]]
+repo = 'Shougo/ddc-source-nvim-lsp'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'uga-rosa/ddc-previewer-floating'
+on_source = ['ddc.vim']
+lua_source = '''
+local ddc_previewer_floating = require("ddc_previewer_floating")
+ddc_previewer_floating.enable()
+'''
