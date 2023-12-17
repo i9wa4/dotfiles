@@ -1,0 +1,30 @@
+# [[plugins]]
+# repo = 'tyru/caw.vim'
+# on_event = ['BufNewFile', 'BufRead']
+#
+# [[plugins]]
+# repo = 'dhruvasagar/vim-table-mode'
+# on_event = ['BufNewFile', 'BufRead']
+#
+# [[plugins]]
+# repo = 'i9wa4/markdown-number-header.vim'
+# on_event = ['BufNewFile', 'BufRead']
+# depends = ['denops.vim']
+#
+# [[plugins]]
+# repo = 'neovim/nvim-lspconfig'
+# if = "has('nvim')"
+# on_event = ['BufNewFile', 'BufRead']
+# lua_source = '''
+# -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
+# local opts = {noremap=true, silent=true}
+# vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+# vim.keymap.set('n', '<space>dc', vim.lsp.buf.declaration, opts)
+# vim.keymap.set('n', '<space>de', vim.diagnostic.open_float, opts)
+# vim.keymap.set('n', '<space>df', vim.lsp.buf.definition, opts)
+# vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
+# -- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+# -- vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+#
+# require("lspconfig")["pylsp"].setup{}
+# '''

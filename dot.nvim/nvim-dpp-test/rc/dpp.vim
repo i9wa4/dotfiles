@@ -22,8 +22,6 @@ endfunction
 " NOTE: dpp.vim path must be added
 call InitPlugin('Shougo/dpp.vim')
 call InitPlugin('Shougo/dpp-ext-lazy')
-" call InitPlugin('vim-denops/denops.vim')
-" call InitPlugin('vim-denops/denops-helloworld.vim')
 
 
 "---------------------------------------------------------------------------
@@ -44,7 +42,6 @@ if s:dpp_base->dpp#min#load_state()
         \   'Shougo/dpp-ext-toml',
         \   'Shougo/dpp-protocol-git',
         \   'vim-denops/denops.vim',
-        \   'vim-denops/denops-helloworld.vim',
         \ ]
     call InitPlugin(s:plugin)
   endfor
