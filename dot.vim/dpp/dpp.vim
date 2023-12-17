@@ -9,7 +9,7 @@ if !$CACHE->isdirectory()
   call mkdir($CACHE, 'p')
 endif
 
-function InitPlugin(plugin)
+function s:init_plugin(plugin)
   " Search from ~/work directory
   let dir = '~/work/'->expand() .. a:plugin->fnamemodify(':t')
   if !dir->isdirectory()
@@ -26,8 +26,8 @@ function InitPlugin(plugin)
 endfunction
 
 " NOTE: dpp.vim path must be added
-call InitPlugin('Shougo/dpp-ext-lazy')
-call InitPlugin('Shougo/dpp.vim')
+call s:init_plugin('Shougo/dpp-ext-lazy')
+call s:init_plugin('Shougo/dpp.vim')
 
 
 "---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ if dpp#min#load_state(s:dpp_base, s:profile)
       \   'Shougo/dpp-protocol-git',
       \   'vim-denops/denops.vim',
       \ ]
-    call InitPlugin(s:plugin)
+    call s:init_plugin(s:plugin)
   endfor
 
   " NOTE: Manual load is needed for neovim
@@ -80,9 +80,9 @@ if dpp#min#load_state(s:dpp_base, s:profile)
     \ | echohl NONE
     \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
 else
-  call InitPlugin('vim-denops/denops.vim')
+  call s:init_plugin('vim-denops/denops.vim')
   autocmd MyDppAutocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
-    \ call dpp#check_files()
+    \ call dpp#check_files(s:profile)
 endif
 
 autocmd MyDppAutocmd User Dpp:makeStatePost
