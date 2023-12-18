@@ -1,9 +1,7 @@
-scriptencoding utf-8
-
 let s:dein_dir = expand('~/.cache/dein')
 if has('nvim')
-  if !(getenv('NVIM_APPNAME')->empty())
-    let s:dein_dir ..= '/' .. getenv('NVIM_APPNAME')
+  if !($NVIM_APPNAME->empty())
+    let s:dein_dir ..= '/' .. $NVIM_APPNAME
   else
     let s:dein_dir ..= '/nvim'
   endif

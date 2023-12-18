@@ -42,10 +42,8 @@ if has('unix') && !has('win32unix')
 endif
 set autoread
 set belloff=all
-set nobackup
 set noswapfile
 set noundofile
-set nowritebackup
 
 " Edit
 " set binary noeol

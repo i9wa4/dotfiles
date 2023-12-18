@@ -1,5 +1,3 @@
-scriptencoding utf-8
-
 set runtimepath^=~/.vim
 set runtimepath+=~/.vim/after
 set packpath^=~/.vim
