@@ -9,13 +9,14 @@ endif
 
 function s:init_plugin(plugin)
   " Search from ~/work directory
-  let dir = '~/work/'->expand() .. a:plugin->fnamemodify(':t')
+  let dir = '~/work/git/plugins'->expand() .. a:plugin->fnamemodify(':t')
   if !dir->isdirectory()
     " Search from $CACHE directory
     let dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin
     if !dir->isdirectory()
       " Install plugin automatically.
-      execute 'silent !git clone https://github.com/' .. a:plugin dir
+      " execute 'silent !git clone https://github.com/' .. a:plugin dir
+      execute '!git clone https://github.com/' .. a:plugin dir
     endif
   endif
 
@@ -79,8 +80,8 @@ else
     \ call dpp#check_files(s:profile)
 endif
 
-autocmd MyDppAutocmd User DenopsReady
-  \ : call InstallPlugin()
+" autocmd MyDppAutocmd User DenopsReady
+"  \ : call InstallPlugin()
 
 autocmd MyDppAutocmd User Dpp:makeStatePost
   \ : echohl WarningMsg

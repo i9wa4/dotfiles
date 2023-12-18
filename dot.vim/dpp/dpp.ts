@@ -121,7 +121,7 @@ export class Config extends BaseConfig {
       "local",
       "local",
       {
-        directory: "~/work",
+        directory: "~/work/git/plugins",
         options: {
           frozen: true,
           merged: false,

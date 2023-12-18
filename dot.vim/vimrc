@@ -14,7 +14,7 @@ let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
 let g:netrw_hide = 0
-let g:netrw_home = expand('~/.vim')
+let g:netrw_home = '~/.vim'->expand()
 let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
 
@@ -23,7 +23,7 @@ let g:auto_reload = timer_start(
   \   {-> execute('silent! checktime')},
   \   {'repeat': -1}
   \ )
-let g:my_local_vimrc_path = expand('~/.vim/local_sample.vim')
+let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
 call my_vimrc#set_preload_vimrc(g:my_local_vimrc_path)
 
 
@@ -163,7 +163,7 @@ nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
 nnoremap <silent> <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
 nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
 nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
-nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' expand('%:p:h')<CR>
+nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <silent> <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
 nnoremap <silent> <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
 
@@ -226,10 +226,10 @@ endfunction
 "
 function! s:set_register() abort
   if empty(&buftype)
-    call setreg('a', expand('%:p:~'))
-    call setreg('b', expand('%:p:~:h'))
-    call setreg('c', expand('%:t'))
-    call setreg('d', expand('%:t:r'))
+    call setreg('a', '%:p:~'->expand())
+    call setreg('b', '%:p:~:h'->expand())
+    call setreg('c', '%:t'->expand())
+    call setreg('d', '%:t:r'->expand())
 
     let l:dir_status = '['
     let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
@@ -289,7 +289,7 @@ endfunction
 
 function! s:my_asyncjob_on_save() abort
   if &filetype == 'python'
-    let l:ipynb_path = expand('%:p:r') . '.ipynb'
+    let l:ipynb_path = '%:p:r'->expand() . '.ipynb'
     if executable('jupytext') && filereadable(l:ipynb_path)
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
@@ -322,15 +322,6 @@ augroup MyVimrcAutocmd
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
-
-
-" --------------------------------------
-" dpp.vim
-"
-" let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
-" if filereadable(s:dpp_path)
-"   execute 'source' s:dpp_path
-" endif
 
 
 " --------------------------------------
