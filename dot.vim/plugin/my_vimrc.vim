@@ -1,5 +1,3 @@
-scriptencoding utf-8
-
 augroup MyVimrc
   autocmd!
   autocmd BufReadPost * call my_vimrc#restore_cursor()

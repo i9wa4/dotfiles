@@ -1,5 +1,3 @@
-scriptencoding utf-8
-
 " --------------------------------------
 " Viminfo
 "
@@ -76,7 +74,7 @@ function! my_vimrc#source_local_vimrc(path) abort
     call add(l:vimrc_path_list, fnamemodify(expand(l:i), ':p'))
   endfor
 
-  if s:preload_vimrc_path != ''
+  if !(s:preload_vimrc_path->empty())
     call insert(l:vimrc_path_list, s:preload_vimrc_path, 0)
   endif
 

@@ -1,5 +1,3 @@
-scriptencoding utf-8
-
 function! my_terminal#split(size) abort
   if a:size > 0
     execute a:size 'split'
