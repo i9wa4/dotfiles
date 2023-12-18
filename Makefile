@@ -306,7 +306,7 @@ py-vmu:
 	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)" --upgrade; \
 	else \
 	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)"; \
-	fi \
+	fi
 	. "$(MF_PY_VENV_MYENV)"/bin/activate \
 	&& python"$(MF_PY_VER_MINOR)" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$(MF_PY_VER_MINOR)" -m pip install --upgrade pip setuptools wheel \
