@@ -325,33 +325,27 @@ augroup END
 
 
 " --------------------------------------
-" dein.vim
-"
-let s:dein_path = expand('<sfile>:p:h') .. '/dein/dein.vim'
-if filereadable(s:dein_path)
-  " execute 'source' s:dein_path
-endif
-
-
-" --------------------------------------
 " dpp.vim
 "
-let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
-if filereadable(s:dpp_path)
-  execute 'source' s:dpp_path
-endif
+" let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
+" if filereadable(s:dpp_path)
+"   execute 'source' s:dpp_path
+" endif
 
 
 " --------------------------------------
 " End of setting
 "
-set background=dark
-filetype plugin indent on
-syntax enable
-if has('termguicolors')
-  set termguicolors
-endif
+if !has('nvim')
+  set background=dark
+  filetype plugin indent on
+  syntax enable
 
-if has('patch-9.0.1778')
-  execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+  if has('termguicolors')
+    set termguicolors
+  endif
+
+  if has('patch-9.0.1778')
+    execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+  endif
 endif

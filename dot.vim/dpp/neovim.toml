@@ -1,6 +1,5 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-if = "has('nvim')"
 on_event = ['BufNewFile', 'BufRead']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration

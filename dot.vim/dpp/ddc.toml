@@ -101,7 +101,7 @@ cmap <C-j> <Plug>(skkeleton-enable)
 repo = 'hrsh7th/vim-vsnip'
 on_source = ['ddc.vim']
 hook_source = '''
-let g:vsnip_snippet_dir = expand(getenv('HOME') .. '/.vim/vsnip')
+let g:vsnip_snippet_dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/vsnip'
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.rmd = ['markdown']
 '''

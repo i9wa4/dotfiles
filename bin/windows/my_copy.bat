@@ -23,7 +23,7 @@ exit /b
     rmdir /q /s "%CODE_DIR:"=%"
     mkdir "%CODE_DIR:"=%\snippets"
     copy /y ".\etc\windows\code.settings.json" "%CODE_DIR:"=%\settings.json"
-    xcopy /e /i /y ".\dot.vim\vsnip" "%CODE_DIR:"=%\snippets"
+    xcopy /e /i /y ".\dot.nvim\nvim\vsnip" "%CODE_DIR:"=%\snippets"
 
     @REM Windows Terminal
     set WINTERM_DIR="%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
