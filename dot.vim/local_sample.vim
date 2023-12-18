@@ -15,5 +15,5 @@ endif
 let $PS1 = '\n$ '
 
 " Denops Plugin Development
-let g:denops#debug = 1
+" let g:denops#debug = 1
 " set runtimepath^=~/work/git/markdown-number-header.vim/

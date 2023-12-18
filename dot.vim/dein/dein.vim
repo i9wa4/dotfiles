@@ -2,9 +2,10 @@ scriptencoding utf-8
 
 let s:dein_dir = expand('~/.cache/dein')
 if has('nvim')
-  let s:dein_dir ..= '/nvim'
   if !(getenv('NVIM_APPNAME')->empty())
     let s:dein_dir ..= '/' .. getenv('NVIM_APPNAME')
+  else
+    let s:dein_dir ..= '/nvim'
   endif
 else
   let s:dein_dir ..= '/vim'
@@ -23,8 +24,6 @@ if dein#min#load_state(s:dein_dir)
   call dein#begin(s:dein_dir)
   call dein#load_toml(s:rc_dir .. '/denops.toml', {'lazy': 0})
   call dein#load_toml(s:rc_dir .. '/dein.toml', {'lazy': 0})
-  call dein#load_toml(s:rc_dir .. '/lazy.toml', {'lazy': 1})
-  call dein#load_toml(s:rc_dir .. '/ddc.toml', {'lazy': 1})
   call dein#end()
   call dein#save_state()
 endif
