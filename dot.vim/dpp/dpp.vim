@@ -33,15 +33,11 @@ call s:init_plugin('Shougo/dpp.vim')
 "---------------------------------------------------------------------------
 " dpp configurations.
 function InstallPlugin()
-  " if dpp#sync_ext_action('installer', 'getNotInstalled')->len()
   call dpp#async_ext_action('installer', 'install')
-  " endif
 endfunction
 
 function UpdatePlugin()
-  " if dpp#sync_ext_action('installer', 'checkNotUpdated')
   call dpp#async_ext_action('installer', 'update')
-  " endif
 endfunction
 
 
@@ -84,6 +80,9 @@ else
   autocmd MyDppAutocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
     \ call dpp#check_files(s:profile)
 endif
+
+autocmd MyDppAutocmd User DenopsReady
+  \ : call InstallPlugin()
 
 autocmd MyDppAutocmd User Dpp:makeStatePost
   \ : echohl WarningMsg

@@ -137,6 +137,10 @@ vnoremap <silent> k gk
 " i_CTRL-D Delete one indent
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
+" TabLine
+nnoremap <silent> H gT
+nnoremap <silent> L gt
+
 " Location List
 nnoremap <silent> <C-n> :<C-u>lnext<CR>
 nnoremap <silent> <C-p> :<C-u>lprevious<CR>

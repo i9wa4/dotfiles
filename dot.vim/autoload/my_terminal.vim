@@ -23,7 +23,7 @@ function! my_terminal#send_cmd(number, path) abort
   elseif l:ext == 'r'
     call s:send(a:number, "Rscript --encoding=utf-8 " .. a:path)
   else
-    echo l:ext .. ' is unavailable.'
+    echomsg l:ext .. ' is unavailable.'
   endif
 endfunction
 
@@ -38,7 +38,7 @@ function! my_terminal#send_cell(number, path) abort
     execute line_ini .. ',' .. line_end .. 'y'
     call s:send(a:number, "%paste")
   else
-    echo l:ext .. ' is unavailable.'
+    echomsg l:ext .. ' is unavailable.'
   endif
 endfunction
 

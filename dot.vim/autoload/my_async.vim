@@ -27,17 +27,23 @@ function! s:get_msg(ch, msg) abort
     if len(a:msg) > 1
       let s:line_no += len(a:msg[:-2])
       let l:msg = '[' .. s:line_no .. '] ' .. a:msg[-2]
+      echohl Comment
       echomsg l:msg
+      echohl NONE
       call add(s:result, l:msg)
     endif
   else
     let s:line_no += 1
     let l:msg = '[' .. s:line_no .. '] ' .. a:msg
+    echohl Comment
     echomsg l:msg
+    echohl NONE
     call add(s:result, l:msg)
   endif
 endfunction
 
 function! s:exit_cb(job, status) abort
+  echohl Comment
   echomsg s:result[-1] .. ' - Job exited.'
+  echohl NONE
 endfunction
