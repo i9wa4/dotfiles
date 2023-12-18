@@ -8,8 +8,8 @@ nnoremap <Plug>(my-terminal) <Nop>
 nmap <Space>t <Plug>(my-terminal)
 nnoremap <silent> <Plug>(my-terminal)h :call my_terminal#split(v:count)<CR>
 nnoremap <silent> <Plug>(my-terminal)v :<C-u>call my_terminal#vsplit()<CR>
-nnoremap <silent> <Plug>(my-terminal)r :<C-u>call my_terminal#send_cell(v:count, expand('%:p'))<CR>
-nnoremap <silent> <Plug>(my-terminal)s :<C-u>call my_terminal#send_cmd(v:count, expand('%:p'))<CR>
+nnoremap <silent> <Plug>(my-terminal)r :<C-u>call my_terminal#send_cell(v:count, '%:p'->expand())<CR>
+nnoremap <silent> <Plug>(my-terminal)s :<C-u>call my_terminal#send_cmd(v:count, '%:p'->expand())<CR>
 
 augroup MyTerminal
   autocmd!

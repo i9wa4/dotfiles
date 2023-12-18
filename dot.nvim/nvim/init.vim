@@ -25,7 +25,7 @@ endif
 " --------------------------------------
 " vimrc
 "
-let s:vimrc_path = expand('~/.vim/vimrc')
+let s:vimrc_path = '~/.vim/vimrc'->expand()
 if filereadable(s:vimrc_path)
   execute 'source' s:vimrc_path
 endif
@@ -42,7 +42,7 @@ set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 " --------------------------------------
 " dpp.vim
 "
-let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
+let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
 if filereadable(s:dpp_path)
   execute 'source' s:dpp_path
 endif

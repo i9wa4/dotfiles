@@ -71,7 +71,7 @@ function! my_vimrc#source_local_vimrc(path) abort
   " https://github.com/vim-jp/issues/issues/1176
   let l:vimrc_path_list = []
   for l:i in reverse(findfile('local.vim', escape(a:path, ' ') . ';', -1))
-    call add(l:vimrc_path_list, fnamemodify(expand(l:i), ':p'))
+    call add(l:vimrc_path_list, l:i->expand()->fnamemodify(':p'))
   endfor
 
   if !(s:preload_vimrc_path->empty())
