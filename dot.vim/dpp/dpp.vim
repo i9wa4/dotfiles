@@ -44,7 +44,7 @@ const s:dpp_base = '~/.cache/dpp'->expand()
 let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
 
 if has('nvim')
-  const s:profile = getenv('NVIM_APPNAME')
+  const s:profile = $NVIM_APPNAME
 else
   const s:profile = 'vim'
 endif

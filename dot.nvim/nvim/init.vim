@@ -40,6 +40,23 @@ set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 
 
 " --------------------------------------
+" dpp.vim
+"
+let s:dpp_path = expand('<sfile>:p:h') .. '/dpp/dpp.vim'
+if filereadable(s:dpp_path)
+  execute 'source' s:dpp_path
+endif
+
+
+" --------------------------------------
 " End of setting
 "
-colorscheme retrobox
+set background=dark
+filetype plugin indent on
+syntax enable
+
+if has('termguicolors')
+  set termguicolors
+endif
+
+execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
