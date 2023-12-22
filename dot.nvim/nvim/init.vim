@@ -43,7 +43,7 @@ set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 " dpp.vim
 "
 let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
-if filereadable(s:dpp_path)
+if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
   execute 'source' s:dpp_path
 endif
 
