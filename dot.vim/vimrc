@@ -7,6 +7,10 @@ filetype plugin indent off
 syntax off
 
 
+" https://github.com/vim/vim/issues/390
+set t_u7=
+
+
 " --------------------------------------
 " Variable
 "
@@ -322,6 +326,15 @@ augroup MyVimrcAutocmd
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
+
+
+" --------------------------------------
+" dpp.vim
+"
+let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
+if filereadable(s:dpp_path)
+  execute 'source' s:dpp_path
+endif
 
 
 " --------------------------------------
