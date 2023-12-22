@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
-export LC_ALL=C
+set -euxo pipefail
 
 find $1 -maxdepth 1 -name "*.Rmd" -type f -print | while read file
 do

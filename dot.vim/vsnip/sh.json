@@ -3,8 +3,7 @@
         "prefix": "shebang",
         "body": [
             "#!/usr/bin/env bash",
-            "set -euo pipefail",
-            "export LC_ALL=C",
+            "set -euxo pipefail",
             "",
             "$0"
         ]
