@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 find $1 -maxdepth 1 -name "*.Rmd" -type f -print | while read file
 do
