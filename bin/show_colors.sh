@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
-export LC_ALL=C
-
+set -euxo pipefail
 
 # background colors
 for C in {0..255}; do
