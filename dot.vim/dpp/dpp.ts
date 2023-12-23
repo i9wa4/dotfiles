@@ -67,7 +67,6 @@ export class Config extends BaseConfig {
       const tomlFile of [
         "$BASE_DIR/ddc.toml",
         "$BASE_DIR/lazy.toml",
-        "$BASE_DIR/watch.toml",
         hasNvim ? "$BASE_DIR/neovim.toml" : "$BASE_DIR/vim.toml",
       ]
     ) {
@@ -81,6 +80,29 @@ export class Config extends BaseConfig {
           path: tomlFile,
           options: {
             lazy: true,
+          },
+        },
+      ) as Toml | undefined;
+
+      if (toml) {
+        tomls.push(toml);
+      }
+    }
+    for (
+      const tomlFile of [
+        "$BASE_DIR/watch.toml",
+      ]
+    ) {
+      const toml = await args.dpp.extAction(
+        args.denops,
+        context,
+        options,
+        "toml",
+        "load",
+        {
+          path: tomlFile,
+          options: {
+            if: false,
           },
         },
       ) as Toml | undefined;
@@ -114,36 +136,36 @@ export class Config extends BaseConfig {
       }
     }
 
-    const localPlugins = await args.dpp.extAction(
-      args.denops,
-      context,
-      options,
-      "local",
-      "local",
-      {
-        directory: "~/work/git/plugins",
-        options: {
-          frozen: true,
-          merged: false,
-        },
-        // includes: [
-        // ],
-      },
-    ) as Plugin[] | undefined;
-
-    if (localPlugins) {
-      // Merge localPlugins
-      for (const plugin of localPlugins) {
-        if (plugin.name in recordPlugins) {
-          recordPlugins[plugin.name] = Object.assign(
-            recordPlugins[plugin.name],
-            plugin,
-          );
-        } else {
-          recordPlugins[plugin.name] = plugin;
-        }
-      }
-    }
+    // const localPlugins = await args.dpp.extAction(
+    //   args.denops,
+    //   context,
+    //   options,
+    //   "local",
+    //   "local",
+    //   {
+    //     directory: "~/work/git/plugins",
+    //     options: {
+    //       frozen: true,
+    //       merged: false,
+    //     },
+    //     includes: [
+    //     ],
+    //   },
+    // ) as Plugin[] | undefined;
+    //
+    // if (localPlugins) {
+    //   // Merge localPlugins
+    //   for (const plugin of localPlugins) {
+    //     if (plugin.name in recordPlugins) {
+    //       recordPlugins[plugin.name] = Object.assign(
+    //         recordPlugins[plugin.name],
+    //         plugin,
+    //       );
+    //     } else {
+    //       recordPlugins[plugin.name] = plugin;
+    //     }
+    //   }
+    // }
 
     const lazyResult = await args.dpp.extAction(
       args.denops,

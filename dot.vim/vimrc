@@ -293,8 +293,8 @@ endfunction
 
 function! s:my_asyncjob_on_save() abort
   if &filetype == 'python'
-    let l:ipynb_path = '%:p:r'->expand() . '.ipynb'
-    if executable('jupytext') && filereadable(l:ipynb_path)
+    let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
+    if filereadable(l:ipynb_path) && executable('jupytext')
       call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
@@ -332,7 +332,7 @@ augroup END
 " dpp.vim
 "
 let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
-if filereadable(s:dpp_path)
+if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
   execute 'source' s:dpp_path
 endif
 
@@ -353,3 +353,4 @@ if !has('nvim')
     execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
   endif
 endif
+
