@@ -53,12 +53,12 @@ copy:
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
 	# Vim (symbolic link)
 	rm -f "$${HOME}"/.vimrc
-	rm -rf "$${HOME}"/.vim
+	rm -f "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# Neovim (symbolic link)
 	mkdir -p "$${XDG_CONFIG_HOME}"
-	rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
-	rm -rf "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
+	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
+	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
 	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 
@@ -71,14 +71,14 @@ win-copy:
 	# rm -rf "$${HOME}"/work
 	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
-	rm -rf "$(WIN_UTIL_DIR)"
-	mkdir -p "$(WIN_UTIL_DIR)"
-	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/bin "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/dot.jupyter "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/dot.nvim "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/dot.vim "$(WIN_UTIL_DIR)"
-	cp -rf "$${HOME}"/dotfiles/etc "$(WIN_UTIL_DIR)"
+	rm -rf $(WIN_UTIL_DIR)
+	mkdir -p $(WIN_UTIL_DIR)
+	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/bin $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.jupyter $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.nvim $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.vim $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/etc $(WIN_UTIL_DIR)
 
 .PHONY: apt
 apt:
@@ -293,32 +293,32 @@ py-init:
 py-build:
 	cd /usr/local/src/cpython
 	sudo git fetch
-	sudo git checkout refs/tags/v"$(MF_PY_VER_PATCH)"
+	sudo git checkout refs/tags/v$(MF_PY_VER_PATCH)
 	sudo make distclean
 	sudo ./configure --with-pydebug
 	sudo make
 	sudo make altinstall
-	python"$(MF_PY_VER_MINOR)" --version
+	python$(MF_PY_VER_MINOR) --version
 
 .PHONY: py-vmu
 py-vmu:
-	if [ -d "$(MF_PY_VENV_MYENV)" ]; then \
-	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)" --upgrade; \
+	if [ -d $(MF_PY_VENV_MYENV) ]; then \
+	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV) --upgrade; \
 	else \
-	  python"$(MF_PY_VER_MINOR)" -m venv "$(MF_PY_VENV_MYENV)"; \
+	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV); \
 	fi
-	. "$(MF_PY_VENV_MYENV)"/bin/activate \
-	&& python"$(MF_PY_VER_MINOR)" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python"$(MF_PY_VER_MINOR)" -m pip install --upgrade pip setuptools wheel \
-	&& python"$(MF_PY_VER_MINOR)" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-	&& python"$(MF_PY_VER_MINOR)" -m pip check \
+	. $(MF_PY_VENV_MYENV)/bin/activate \
+	&& python$(MF_PY_VER_MINOR) -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python$(MF_PY_VER_MINOR) -m pip install --upgrade pip setuptools wheel \
+	&& python$(MF_PY_VER_MINOR) -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python$(MF_PY_VER_MINOR) -m pip check \
 	&& python --version \
 	&& deactivate
 
 .PHONY: py-tag
 py-tag:
 	sudo git -C /usr/local/src/cpython fetch
-	sudo git -C /usr/local/src/cpython tag | grep v"$(MF_PY_VER_MINOR)"
+	sudo git -C /usr/local/src/cpython tag | grep v$(MF_PY_VER_MINOR)
 
 .PHONY: r-init
 r-init:
@@ -337,7 +337,7 @@ r-init:
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. "$(MF_PY_VENV_MYENV)"/bin/activate \
+	. $(MF_PY_VENV_MYENV)/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
 .PHONY: ubuntu-desktop

@@ -1,7 +1,3 @@
-augroup MyDppAutocmd
-  autocmd!
-augroup END
-
 let $CACHE = '~/.cache'->expand()
 if !$CACHE->isdirectory()
   call mkdir($CACHE, 'p')
@@ -16,7 +12,11 @@ function s:init_plugin(plugin)
     if !dir->isdirectory()
       " Install plugin automatically.
       " execute 'silent !git clone https://github.com/' .. a:plugin dir
-      execute '!git clone https://github.com/' .. a:plugin dir
+      if has('nvim')
+        execute '!git clone https://github.com/' .. a:plugin dir
+      else
+        execute 'silent !git clone https://github.com/' .. a:plugin dir
+      endif
     endif
   endif
 
@@ -31,6 +31,7 @@ call s:init_plugin('Shougo/dpp.vim')
 
 "---------------------------------------------------------------------------
 " dpp configurations.
+"
 function InstallPlugin()
   call dpp#async_ext_action('installer', 'install')
 endfunction
@@ -49,6 +50,10 @@ if has('nvim')
 else
   const s:profile = 'vim'
 endif
+
+augroup MyDppAutocmd
+  autocmd!
+augroup END
 
 if dpp#min#load_state(s:dpp_base, s:profile)
   " NOTE: denops.vim and dpp plugins are must be added
@@ -79,9 +84,6 @@ else
   autocmd MyDppAutocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
     \ call dpp#check_files(s:profile)
 endif
-
-" autocmd MyDppAutocmd User DenopsReady
-"  \ : call InstallPlugin()
 
 autocmd MyDppAutocmd User Dpp:makeStatePost
   \ : echohl WarningMsg
