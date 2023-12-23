@@ -88,6 +88,7 @@ apt:
 	sudo apt upgrade -y
 	sudo apt install -y \
 	  bc \
+	  fish \
 	  nkf \
 	  ripgrep \
 	  shellcheck \
