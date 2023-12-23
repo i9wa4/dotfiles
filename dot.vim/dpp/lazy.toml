@@ -8,5 +8,6 @@ on_event = ['BufNewFile', 'BufRead']
 
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
+if = 0
 on_event = ['BufNewFile', 'BufRead']
 depends = ['denops.vim']
