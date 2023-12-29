@@ -140,8 +140,8 @@ vnoremap <silent> k gk
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 
 " TabLine
-nnoremap <silent> H gT
-nnoremap <silent> L gt
+nnoremap <silent> H :<C-u>tabprevious<CR>
+nnoremap <silent> L :<C-u>tabnext<CR>
 
 " Location List
 nnoremap <silent> <C-n> :<C-u>lnext<CR>
@@ -360,4 +360,3 @@ if !has('nvim')
     execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
   endif
 endif
-
