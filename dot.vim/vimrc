@@ -224,6 +224,13 @@ function s:copy2clip_wsl(...) abort
   endif
 endfunction
 
+command! GitDiff
+  \ tabnew
+  \ | setlocal buftype=nofile bufhidden=delete noswapfile
+  \ | setfiletype gitcommit
+  \ | execute 'read !git diff #'
+  \ | normal! gg
+
 
 " --------------------------------------
 " Aucocommand
