@@ -15,7 +15,7 @@ fi
 if [ -f /etc/bash_completion.d/git-prompt ]; then
   . /etc/bash_completion.d/git-prompt
 
-  # _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+  _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
   _CL_USER_HOST_LOCAL="$(tput setaf 2)"
   _CL_USER_HOST_REMOTE="$(tput setaf 1)"
   _CL_SH="$(tput setaf 8)"
@@ -35,7 +35,7 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
       # local host
       PS1="${PS1}"'\[${_CL_USER_HOST_LOCAL}\]\u@\H'
     fi
-    PS1="${PS1}"' \[${_CL_SH}\](Lv${SHLVL}\s)\[${_CL_RESET}\]:'
+    PS1="${PS1}"' \[${_CL_SH}\](${_SHELL_TYPE} Lv${SHLVL})\[${_CL_RESET}\]:'
     PS1="${PS1}"' \[${_CL_PWD}\]\w'
     PS1="${PS1}"'\[${_CL_GIT}\]$(__git_ps1)'
     PS1="${PS1}"'\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] '
