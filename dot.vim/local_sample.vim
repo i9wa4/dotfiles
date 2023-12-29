@@ -15,4 +15,4 @@ endif
 
 " Denops Plugin Development
 let g:denops#debug = 1
-" set runtimepath^=~/work/git/markdown-number-header.vim/
+" set runtimepath^=~/work/git/plugins/markdown-number-header.vim/
