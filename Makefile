@@ -356,3 +356,5 @@ ubuntu-desktop:
 	&& fc-cache -fv
 	&& rm -f MyricaM.zip
 	&& rm -rf MyricaM
+	# https://falconblog.org/windows-ubuntu-remote-desktop/
+	sudo apt install -y xrdp
