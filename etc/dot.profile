@@ -25,6 +25,10 @@ export GIT_PS1_SHOWUPSTREAM=auto        # >:ahead, <:behind
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
+# Jekyll
+export GEM_HOME="${HOME}"/gems
+export PATH="${HOME}"/gems/bin:"${PATH}"
+
 # Python
 export PY_VER_MINOR=3.11
 export PY_VER_PATCH=3.11.7
