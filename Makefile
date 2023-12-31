@@ -257,9 +257,9 @@ jekyll-init:
 	# https://github.com/github/pages-gem
 	sudo apt update
 	sudo apt upgrade -y
-	sudo apt install -y ruby ruby-bundler
+	sudo apt install -y ruby-full build-essential zlib1g-dev
 	. "$${HOME}"/.profile \
-	&& gem install bundler --user-install
+	&& gem install jekyll bundler
 
 .PHONY: nodejs-init
 nodejs-init:
