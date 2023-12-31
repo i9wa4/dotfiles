@@ -2,8 +2,7 @@
     "codeblock": {
         "prefix": "codeblock",
         "body": [
-            "```$1",
-            "$0",
+            "```$0",
             "```"
         ]
     },
