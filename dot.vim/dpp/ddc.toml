@@ -118,9 +118,3 @@ let g:vsnip_filetypes.rmd = ['markdown']
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
 on_source = ['ddc.vim']
-lua_source = '''
-local capabilities = require("ddc_source_lsp").make_client_capabilities()
-require("lspconfig").denols.setup({
-  capabilities = capabilities,
-})
-'''

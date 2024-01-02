@@ -1,4 +1,8 @@
 [[plugins]]
+repo = 'rhysd/vim-healthcheck'
+on_event = ['BufNewFile', 'BufRead']
+
+[[plugins]]
 repo = 'prabirshrestha/vim-lsp'
 on_event = ['BufNewFile', 'BufRead']
 hook_source = '''
@@ -10,6 +14,9 @@ if executable('pylsp')
     \   'allowlist': ['python'],
     \ })
 endif
+
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
 '''
 
 [[plugins]]
