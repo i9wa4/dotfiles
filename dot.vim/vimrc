@@ -138,6 +138,7 @@ vnoremap <silent> k gk
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
+inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 
 " TabLine
 nnoremap <silent> H :<C-u>tabprevious<CR>
