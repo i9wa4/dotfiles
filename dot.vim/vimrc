@@ -361,3 +361,13 @@ if !has('nvim')
     execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
   endif
 endif
+
+
+if executable('pylsp')
+  " pip install python-lsp-server
+  au User lsp_setup call lsp#register_server({
+    \   'name': 'pylsp',
+    \   'cmd': {server_info->['pylsp']},
+    \   'allowlist': ['python'],
+    \ })
+endif

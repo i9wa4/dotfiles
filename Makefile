@@ -253,6 +253,7 @@ go-init:
 	go install github.com/rhysd/vim-startuptime@latest
 	# $$ vim-startuptime -vimpath nvim -count 1000
 	# $$ vim-startuptime -vimpath vim -count 1000
+	go install github.com/mattn/efm-langserver@latest
 
 .PHONY: jekyll-init
 jekyll-init:
