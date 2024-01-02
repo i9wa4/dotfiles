@@ -144,6 +144,7 @@ vim-build:
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& cd ./src \
+	&& sudo make clean \
 	&& sudo ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -183,7 +184,9 @@ nvim-build:
 	&& sudo git checkout master \
 	&& sudo git fetch \
 	&& sudo git merge \
-	&& sudo make CMAKE_BUILD_TYPE=Release \
+	&& sudo make distclean \
+	&& sudo make CMAKE_BUILD_TYPE=RelWithDebInfo \
+	    BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& sudo make install
 
 .PHONY: anaconda-init
