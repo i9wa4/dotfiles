@@ -32,15 +32,6 @@ call s:init_plugin('Shougo/dpp.vim')
 "---------------------------------------------------------------------------
 " dpp configurations.
 "
-function InstallPlugin()
-  call dpp#async_ext_action('installer', 'install')
-endfunction
-
-function UpdatePlugin()
-  call dpp#async_ext_action('installer', 'update')
-endfunction
-
-
 " Set dpp base path (required)
 const s:dpp_base = '~/.cache/dpp'->expand()
 let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
@@ -89,3 +80,16 @@ autocmd MyDppAutocmd User Dpp:makeStatePost
   \ : echohl WarningMsg
   \ | echomsg 'dpp make_state() is done'
   \ | echohl NONE
+
+
+function DppInstall()
+  call dpp#async_ext_action('installer', 'install')
+endfunction
+
+function DppUpdate()
+  call dpp#async_ext_action('installer', 'update')
+endfunction
+
+function DppMakeState()
+    call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
+endfunction

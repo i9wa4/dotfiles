@@ -24,7 +24,7 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
   _CL_PROMPT="$(tput setaf 4)"
   _CL_RESET="$(tput sgr0)"
 
-  PS1='\n${debian_chroot:+($debian_chroot)}'
+  PS1='${debian_chroot:+($debian_chroot)}'
   if [ -n "${MYVIMRC}" ]; then
     PS1="${PS1}\n\[${_CL_PROMPT}\]$\[${_CL_RESET}\] "
   else
