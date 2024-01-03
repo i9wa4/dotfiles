@@ -1,0 +1,8 @@
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+hook_add = '''
+let g:lsp_settings_filetype_python = ['pylsp']
+'''
