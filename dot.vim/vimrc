@@ -327,7 +327,7 @@ augroup MyVimrcAutocmd
   autocmd BufEnter * checktime
 
   " FileType
-  autocmd BufNewFile,BufRead *.bashrc,*.profile,*.bash_profile
+  autocmd BufNewFile,BufReadPre *.bashrc,*.profile,*.bash_profile
     \ setfiletype bash
   autocmd BufEnter,FileType * call s:my_filetype()
 

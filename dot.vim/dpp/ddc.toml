@@ -1,6 +1,5 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-if = 0
 on_event = ['InsertEnter']
 depends = ['denops.vim']
 hook_source = '''
@@ -115,7 +114,3 @@ let g:vsnip_snippet_dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/vsnip'
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.rmd = ['markdown']
 '''
-
-[[plugins]]
-repo = 'Shougo/ddc-source-lsp'
-on_source = ['ddc.vim']

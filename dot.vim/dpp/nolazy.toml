@@ -1,8 +1,10 @@
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
+if = "!has('nvim')"
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
+if = "!has('nvim')"
 hook_add = '''
 let g:lsp_settings_filetype_python = ['pylsp']
 '''
