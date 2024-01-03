@@ -1,12 +1,12 @@
 [[plugins]]
 repo = 'tyru/caw.vim'
-on_event = ['BufNewFile', 'BufRead']
+on_event = ['BufNewFile', 'BufReadPre']
 
 [[plugins]]
 repo = 'dhruvasagar/vim-table-mode'
-on_event = ['BufNewFile', 'BufRead']
+on_event = ['BufNewFile', 'BufReadPre']
 
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
-on_event = ['BufNewFile', 'BufRead']
+on_event = ['BufNewFile', 'BufReadPre']
 depends = ['denops.vim']

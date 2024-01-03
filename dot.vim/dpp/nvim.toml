@@ -1,6 +1,6 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-on_event = ['BufNewFile', 'BufRead']
+on_event = ['BufNewFile', 'BufReadPre']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
 local opts = {noremap=true, silent=true}
@@ -16,12 +16,6 @@ vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 require("lspconfig")["pylsp"].setup{
   autostart = true,
 }
-
--- ddc-source-lsp
-local capabilities = require("ddc_source_lsp").make_client_capabilities()
-require("lspconfig").denols.setup({
-  capabilities = capabilities,
-})
 '''
 
 [[plugins]]
@@ -30,4 +24,15 @@ on_source = ['ddc.vim']
 lua_source = '''
 local ddc_previewer_floating = require("ddc_previewer_floating")
 ddc_previewer_floating.enable()
+'''
+
+[[plugins]]
+repo = 'Shougo/ddc-source-lsp'
+on_source = ['ddc.vim']
+lua_source = '''
+-- ddc-source-lsp
+local capabilities = require("ddc_source_lsp").make_client_capabilities()
+require("lspconfig").denols.setup({
+  capabilities = capabilities,
+})
 '''

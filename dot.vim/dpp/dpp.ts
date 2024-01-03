@@ -4,7 +4,8 @@ import {
   Dpp,
   Plugin,
 } from "https://deno.land/x/dpp_vim@v0.0.2/types.ts";
-import { Denops, fn } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
+// import { Denops, fn } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
+import { Denops } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
 
 type Toml = {
   hooks_file?: string;
@@ -28,7 +29,7 @@ export class Config extends BaseConfig {
     stateLines: string[];
   }> {
     const hasNvim = args.denops.meta.host === "nvim";
-    const hasWindows = await fn.has(args.denops, "win32");
+    // const hasWindows = await fn.has(args.denops, "win32");
 
     args.contextBuilder.setGlobal({
       protocols: ["git"],
@@ -43,7 +44,7 @@ export class Config extends BaseConfig {
       const tomlFile of [
         "$BASE_DIR/dpp.toml",
         "$BASE_DIR/denops.toml",
-        hasNvim ? "" : "$BASE_DIR/vim_nolazy.toml",
+        "$BASE_DIR/nolazy.toml",
       ]
     ) {
       const toml = await args.dpp.extAction(
@@ -137,36 +138,36 @@ export class Config extends BaseConfig {
       }
     }
 
-    // const localPlugins = await args.dpp.extAction(
-    //   args.denops,
-    //   context,
-    //   options,
-    //   "local",
-    //   "local",
-    //   {
-    //     directory: "~/work/git/plugins",
-    //     options: {
-    //       frozen: true,
-    //       merged: false,
-    //     },
-    //     includes: [
-    //     ],
-    //   },
-    // ) as Plugin[] | undefined;
-    //
-    // if (localPlugins) {
-    //   // Merge localPlugins
-    //   for (const plugin of localPlugins) {
-    //     if (plugin.name in recordPlugins) {
-    //       recordPlugins[plugin.name] = Object.assign(
-    //         recordPlugins[plugin.name],
-    //         plugin,
-    //       );
-    //     } else {
-    //       recordPlugins[plugin.name] = plugin;
-    //     }
-    //   }
-    // }
+    const localPlugins = await args.dpp.extAction(
+      args.denops,
+      context,
+      options,
+      "local",
+      "local",
+      {
+        directory: "~/work/git/plugins",
+        options: {
+          frozen: true,
+          merged: false,
+        },
+        includes: [
+        ],
+      },
+    ) as Plugin[] | undefined;
+
+    if (localPlugins) {
+      // Merge localPlugins
+      for (const plugin of localPlugins) {
+        if (plugin.name in recordPlugins) {
+          recordPlugins[plugin.name] = Object.assign(
+            recordPlugins[plugin.name],
+            plugin,
+          );
+        } else {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const lazyResult = await args.dpp.extAction(
       args.denops,
