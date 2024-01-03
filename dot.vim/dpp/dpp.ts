@@ -43,6 +43,7 @@ export class Config extends BaseConfig {
       const tomlFile of [
         "$BASE_DIR/dpp.toml",
         "$BASE_DIR/denops.toml",
+        hasNvim ? "" : "$BASE_DIR/vim_nolazy.toml",
       ]
     ) {
       const toml = await args.dpp.extAction(
@@ -67,7 +68,7 @@ export class Config extends BaseConfig {
       const tomlFile of [
         "$BASE_DIR/ddc.toml",
         "$BASE_DIR/lazy.toml",
-        hasNvim ? "$BASE_DIR/neovim.toml" : "$BASE_DIR/vim.toml",
+        hasNvim ? "$BASE_DIR/nvim.toml" : "$BASE_DIR/vim.toml",
       ]
     ) {
       const toml = await args.dpp.extAction(
