@@ -303,7 +303,7 @@ function! s:my_asyncjob_on_save() abort
   if &filetype == 'python'
     let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
     if filereadable(l:ipynb_path) && executable('jupytext')
-      call my_async#jobstart('jupytext --sync ' . l:ipynb_path)
+      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' . l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
     if exists(':NumberHeader') == 2

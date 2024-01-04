@@ -33,3 +33,5 @@ export PATH="${HOME}"/gems/bin:"${PATH}"
 export PY_VER_MINOR=3.11
 export PY_VER_PATCH=3.11.7
 export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
+# config file path: ~/.config/jupyter
+export JUPYTER_PLATFORM_DIRS=1
