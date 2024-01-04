@@ -10,7 +10,7 @@ exit /b
 
     @REM %USERPROFILE%
     copy /y ".\etc\home\dot.gitignore" "%USERPROFILE%\.gitignore"
-    copy /y ".\etc\home\dot.jupytext" "%USERPROFILE%\.jupytext"
+    @REM copy /y ".\etc\home\dot.jupytext" "%USERPROFILE%\.jupytext"
     copy /y ".\etc\windows\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 
     @REM Vim
