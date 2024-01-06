@@ -35,3 +35,6 @@ export PY_VER_PATCH=3.11.7
 export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
 # config file path: ~/.config/jupyter
 export JUPYTER_PLATFORM_DIRS=1
+
+# Rust
+export PATH="${HOME}"/.cargo/bin:"${PATH}"

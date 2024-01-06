@@ -344,6 +344,11 @@ r-init:
 	. $(MF_PY_VENV_MYENV)/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
+.PHONY: rust-init
+rust-init:
+	sudo apt install -y cargo
+	cargo install tokei
+
 .PHONY: ubuntu-desktop
 ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
