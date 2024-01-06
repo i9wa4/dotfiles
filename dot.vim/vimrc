@@ -300,7 +300,8 @@ function! s:my_filetype() abort
 endfunction
 
 function! s:my_asyncjob_on_save() abort
-  if &filetype == 'python'
+  if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
+    " Jupyter Notebook
     let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
     if filereadable(l:ipynb_path) && executable('jupytext')
       call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' . l:ipynb_path)
