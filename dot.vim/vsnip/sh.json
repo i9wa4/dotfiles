@@ -3,7 +3,7 @@
         "prefix": "shebang",
         "body": [
             "#!/usr/bin/env bash",
-            "set -euxo pipefail",
+            "set -euox pipefail",
             "",
             "$0"
         ]
