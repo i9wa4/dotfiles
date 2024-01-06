@@ -42,12 +42,8 @@ else
   const s:profile = 'vim'
 endif
 
-augroup MyDppAutocmd
-  autocmd!
-augroup END
-
 if dpp#min#load_state(s:dpp_base, s:profile)
-  " NOTE: denops.vim and dpp plugins are must be added
+  " NOTE: denops.vim and dpp plugins must be added
   for s:plugin in [
       \   'Shougo/dpp-ext-installer',
       \   'Shougo/dpp-ext-local',
@@ -65,22 +61,22 @@ if dpp#min#load_state(s:dpp_base, s:profile)
     runtime! plugin/denops.vim
   endif
 
-  autocmd MyDppAutocmd User DenopsReady
+  autocmd User DenopsReady
     \ : echohl WarningMsg
-    \ | echomsg 'dpp load_state() is failed'
+    \ | echomsg '[dpp] call make_state()'
     \ | echohl NONE
     \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
 else
   call s:init_plugin('vim-denops/denops.vim')
-  autocmd MyDppAutocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
+
+  autocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
     \ call dpp#check_files(s:profile)
 endif
 
-autocmd MyDppAutocmd User Dpp:makeStatePost
+autocmd User Dpp:makeStatePost
   \ : echohl WarningMsg
-  \ | echomsg 'dpp make_state() is done'
+  \ | echomsg '[dpp] make_state() is done'
   \ | echohl NONE
-
 
 function DppInstall()
   call dpp#async_ext_action('installer', 'install')
