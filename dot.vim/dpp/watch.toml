@@ -3,6 +3,3 @@ repo = 'Shougo/shougo-s-github'
 
 [[plugins]]
 repo = 'vim-jp/vital.vim'
-
-[[plugins]]
-repo = 'aiya000/aiya000.github.io'
