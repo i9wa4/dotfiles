@@ -45,12 +45,15 @@ fi
 # .bash_aliases
 alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
 alias jl='
+# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
+# --no-browser \
+# --ServerApp.use_redirect_file=False \
+# --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 rm -rf "${HOME}"/.ipynb_checkpoints \
-&& cp -rf "${HOME}"/dotfiles/dot.jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
 && jupyter-lab \
-  --no-browser \
-  --ServerApp.use_redirect_file=False \
-  --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
+  --c.FileContentsManager.checkpoints_kwargs = {
+      "root_dir": "~/.ipynb_checkpoints",
+  }
 '
 alias rmarkdown-render='
 bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)" \
