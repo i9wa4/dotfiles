@@ -128,3 +128,7 @@ for s:file in glob(s:dir . '*.*', 1, 1)
   call denippet#load(s:file)
 endfor
 '''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_source = ['ddc.vim']
