@@ -51,9 +51,8 @@ alias jl='
 # --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 rm -rf "${HOME}"/.ipynb_checkpoints \
 && jupyter-lab \
-  --c.FileContentsManager.checkpoints_kwargs = {
-      "root_dir": "~/.ipynb_checkpoints",
-  }
+  --config="${XDG_CONFIG_HOME}"/jupyter/jupyter_lab_config.py \
+  --c.FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
 '
 alias rmarkdown-render='
 bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)" \
