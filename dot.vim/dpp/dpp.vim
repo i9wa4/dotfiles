@@ -5,23 +5,23 @@ endif
 
 function s:init_plugin(plugin)
   " Search from ~/work directory
-  let dir = '~/work/git/plugins'->expand() .. a:plugin->fnamemodify(':t')
-  if !dir->isdirectory()
+  let s:dir = '~/work/git/plugins'->expand() .. a:plugin->fnamemodify(':t')
+  if !s:dir->isdirectory()
     " Search from $CACHE directory
-    let dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin
-    if !dir->isdirectory()
+    let s:dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin
+    if !s:dir->isdirectory()
       " Install plugin automatically.
-      " execute 'silent !git clone https://github.com/' .. a:plugin dir
+      " execute 'silent !git clone https://github.com/' .. a:plugin s:dir
       if has('nvim')
-        execute '!git clone https://github.com/' .. a:plugin dir
+        execute '!git clone https://github.com/' .. a:plugin s:dir
       else
-        execute 'silent !git clone https://github.com/' .. a:plugin dir
+        execute 'silent !git clone https://github.com/' .. a:plugin s:dir
       endif
     endif
   endif
 
   execute 'set runtimepath^='
-    \ .. dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+    \ .. s:dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
 endfunction
 
 " NOTE: dpp.vim path must be added

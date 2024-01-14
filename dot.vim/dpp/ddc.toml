@@ -1,17 +1,16 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-on_event = ['InsertEnter']
-depends = ['denops.vim']
+on_event = ['DenopsProcessStarted']
 hook_source = '''
-let g:sources_list = [
+let s:sources_list = [
   \   'around',
-  \   'vsnip',
   \   'skkeleton',
+  \   'denippet',
+  \   'lsp',
   \ ]
-call add(g:sources_list, 'lsp')
 
 call ddc#custom#patch_global('ui', 'pum')
-call ddc#custom#patch_global('sources', g:sources_list)
+call ddc#custom#patch_global('sources', s:sources_list)
 call ddc#custom#patch_global('sourceOptions', #{
   \   _: #{
   \     matchers: ['matcher_head'],
@@ -25,8 +24,8 @@ call ddc#custom#patch_global('sourceOptions', #{
   \   },
   \ })
 call ddc#custom#patch_global('sourceOptions', #{
-  \   vsnip: #{
-  \     mark: 'vsnip',
+  \   denippet: #{
+  \     mark: 'denippet',
   \   },
   \ })
 call ddc#custom#patch_global('sourceOptions', #{
@@ -48,12 +47,25 @@ call ddc#custom#patch_global('sourceOptions', #{
 call ddc#custom#patch_global('sourceParams', #{
   \   lsp: #{
   \     snippetEngine: denops#callback#register({
-  \       body -> vsnip#anonymous(body)
+  \       body -> denippet#anonymous(body)
   \     }),
   \     enableResolveItem: v:true,
   \     enableAdditionalTextEdit: v:true,
   \   }
   \ })
+if has('nvim')
+  call ddc#custom#patch_global('sourceParams', #{
+    \   lsp: #{
+    \     lspEngine: 'nvim-lsp',
+    \   }
+    \ })
+else
+  call ddc#custom#patch_global('sourceParams', #{
+    \   lsp: #{
+    \     lspEngine: 'vim-lsp',
+    \   }
+    \ })
+endif
 call ddc#enable()
 '''
 
@@ -91,11 +103,11 @@ inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
 repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
 hook_source = '''
+let s:base_path = '~/.cache/dpp/repos/github.com/skk-dev/dict/'->expand()
 call skkeleton#config({
-  \   'completionRankFile': '~/.skkeleton/rank.json',
   \   'globalDictionaries': [
-  \     '~/.skk/SKK-JISYO.L',
-  \     '~/.skk/SKK-JISYO.jinmei',
+  \     s:base_path .. 'SKK-JISYO.L',
+  \     s:base_path .. 'SKK-JISYO.jinmei',
   \   ],
   \ })
 imap <C-j> <Plug>(skkeleton-enable)
@@ -103,14 +115,14 @@ cmap <C-j> <Plug>(skkeleton-enable)
 '''
 
 [[plugins]]
-repo = 'uga-rosa/ddc-source-vsnip'
-on_source = ['ddc.vim']
+repo = 'skk-dev/dict'
 
 [[plugins]]
-repo = 'hrsh7th/vim-vsnip'
+repo = 'uga-rosa/denippet.vim'
 on_source = ['ddc.vim']
 hook_source = '''
-let g:vsnip_snippet_dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/vsnip'
-let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.rmd = ['markdown']
+let s:dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/snippet_json/'
+for s:file in glob(s:dir . '*.*', 1, 1)
+  call denippet#load(s:file)
+endfor
 '''

@@ -1,42 +1,36 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-on_event = ['BufNewFile', 'BufReadPre']
+on_event = ['DenopsProcessStarted']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
-local opts = {noremap=true, silent=true}
-vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-vim.keymap.set('n', '<space>dc', vim.lsp.buf.declaration, opts)
-vim.keymap.set('n', '<space>de', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '<space>df', vim.lsp.buf.definition, opts)
-vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
+-- local opts = {noremap=true, silent=true}
+-- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+-- vim.keymap.set('n', '<space>dc', vim.lsp.buf.declaration, opts)
+-- vim.keymap.set('n', '<space>de', vim.diagnostic.open_float, opts)
+-- vim.keymap.set('n', '<space>df', vim.lsp.buf.definition, opts)
+-- vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
 -- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 -- vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 
+require('ddc_source_lsp_setup').setup()
 -- if autostart = false, execute :LspStart to attach.
 local lspconfig = require('lspconfig')
-lspconfig.pylsp.setup{
-  autostart = true,
-}
-lspconfig.denols.setup{
-  autostart = true,
-}
+lspconfig.pylsp.setup{}
+lspconfig.denols.setup{}
 '''
 
 [[plugins]]
 repo = 'uga-rosa/ddc-previewer-floating'
 on_source = ['ddc.vim']
 lua_source = '''
-local ddc_previewer_floating = require("ddc_previewer_floating")
+local ddc_previewer_floating = require('ddc_previewer_floating')
 ddc_previewer_floating.enable()
 '''
 
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
-on_source = ['ddc.vim']
-lua_source = '''
--- ddc-source-lsp
-local capabilities = require("ddc_source_lsp").make_client_capabilities()
-require("lspconfig").denols.setup({
-  capabilities = capabilities,
-})
-'''
+on_source = ['ddc.vim', 'nvim-lspconfig']
+
+[[plugins]]
+repo = 'uga-rosa/ddc-source-lsp-setup'
+on_source = ['ddc.vim', 'nvim-lspconfig']
