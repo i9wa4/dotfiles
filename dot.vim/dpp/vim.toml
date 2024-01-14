@@ -1,6 +1,6 @@
 [[plugins]]
 repo = 'rhysd/vim-healthcheck'
-on_event = ['BufNewFile', 'BufReadPre']
+on_event = ['BufNewFile', 'BufReadPost']
 
 [[plugins]]
 repo = 'matsui54/denops-popup-preview.vim'

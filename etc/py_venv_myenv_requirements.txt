@@ -8,6 +8,7 @@ jupytext
 matplotlib
 numpy
 pandas
+py
 pynvim
-python-lsp-server
+python-lsp-server[all]
 scikit-learn
