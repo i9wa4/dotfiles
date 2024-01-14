@@ -45,15 +45,17 @@ fi
 # .bash_aliases
 alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
 alias jl='
-# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
-# --no-browser \
-# --ServerApp.use_redirect_file=False \
-# --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
-rm -rf "${HOME}"/.ipynb_checkpoints \
-&& jupyter-lab \
-  --config="${XDG_CONFIG_HOME}"/jupyter/jupyter_lab_config.py \
-  --c.FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
+bash "${HOME}"/dotfiles/bin/jl.sh "$(pwd)" \
 '
+# # && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "${PY_VENV_MYENV}"/share/jupyter \
+# # --no-browser \
+# # --ServerApp.use_redirect_file=False \
+# # --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
+# rm -rf "${HOME}"/.ipynb_checkpoints \
+# && jupyter-lab \
+#   --config="${XDG_CONFIG_HOME}"/jupyter/jupyter_lab_config.py \
+#   --FileCheckpoints.checkpoint_dir="${HOME}"/.ipynb_checkpoints \
+# '
 alias rmarkdown-render='
 bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)" \
 '
