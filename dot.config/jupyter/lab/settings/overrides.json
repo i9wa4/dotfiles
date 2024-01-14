@@ -2,10 +2,6 @@
     "@jupyterlab/apputils-extension:themes": {
         "theme": "JupyterLab Dark"
     },
-    "@jupyterlab/codemirror-extension:commands": {
-        "keyMap": "vim",
-        "theme": "jupyter"
-    },
     "@jupyterlab/fileeditor-extension:plugin": {
         "editorConfig": {
             "fontFamily": "'MyricaM M', monospace",
