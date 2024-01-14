@@ -5,13 +5,14 @@ minimal: init copy apt git \
 .PHONY: wsl
 wsl: minimal \
 	win-copy \
+	ubuntu-font \
 	docker-init \
 	prompt-restart-wsl
 
 .PHONY: ubuntu
 ubuntu: minimal \
 	docker-init docker-systemd \
-	ubuntu-desktop
+	ubuntu-desktop ubuntu-font
 
 
 
@@ -357,11 +358,14 @@ ubuntu-desktop:
 	sudo systemctl daemon-reload
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
+
+.PHONY: ubuntu-font
+ubuntu-font:
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
 	&& unzip -d MyricaM MyricaM.zip \
 	&& sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/ \
-	&& fc-cache -fv
-	&& rm -f MyricaM.zip
+	&& fc-cache -fv \
+	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM
