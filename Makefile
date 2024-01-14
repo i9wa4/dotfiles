@@ -252,8 +252,8 @@ go-init:
 	sudo apt update
 	sudo apt install -y golang-go
 	go install github.com/rhysd/vim-startuptime@latest
-	# $$ vim-startuptime -vimpath nvim -count 1000
-	# $$ vim-startuptime -vimpath vim -count 1000
+	# $ vim-startuptime -vimpath nvim -count 100
+	# $ vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
 
 .PHONY: jekyll-init
