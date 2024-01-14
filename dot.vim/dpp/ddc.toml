@@ -1,5 +1,6 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
+# on_event = ['DenopsProcessStarted']
 on_event = ['BufNewFile', 'BufReadPost']
 hook_source = '''
 let s:sources_list = [
