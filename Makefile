@@ -59,8 +59,12 @@ copy:
 	mkdir -p "$${XDG_CONFIG_HOME}"
 	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
 	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
-	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
-	ln -fs "$${HOME}"/dotfiles/dot.nvim/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
+	rm -f "$${XDG_CONFIG_HOME}"/efm-langserver
+	rm -f "$${XDG_CONFIG_HOME}"/jupyter
+	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
+	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
+	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
+	ln -fs "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"/jupyter
 
 .PHONY: win-copy
 win-copy:
@@ -75,8 +79,7 @@ win-copy:
 	mkdir -p $(WIN_UTIL_DIR)
 	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat $(WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/bin $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.jupyter $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.nvim $(WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.config $(WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/dot.vim $(WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/etc $(WIN_UTIL_DIR)
 

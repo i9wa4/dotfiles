@@ -6,7 +6,6 @@ if = "!has('nvim')"
 repo = 'mattn/vim-lsp-settings'
 if = "!has('nvim')"
 hook_source = '''
-" let g:lsp_settings_filetype_python = ['pylsp-all']
 let g:lsp_settings = {
   \   'pylsp-all': {
   \     'workspace_config': {
