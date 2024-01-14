@@ -1,6 +1,7 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-on_event = ['DenopsProcessStarted']
+# on_event = ['DenopsProcessStarted']
+on_event = ['BufNewFile', 'BufReadPost']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
 -- local opts = {noremap=true, silent=true}
