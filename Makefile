@@ -60,11 +60,11 @@ copy:
 	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
 	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 	rm -f "$${XDG_CONFIG_HOME}"/efm-langserver
-	rm -f "$${XDG_CONFIG_HOME}"/jupyter
+	rm -rf "$${XDG_CONFIG_HOME}"/jupyter
 	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
 	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
-	ln -fs "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"/jupyter
+	cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"/jupyter
 
 .PHONY: win-copy
 win-copy:
