@@ -4,9 +4,6 @@ let g:my_gtd_path         = '~/work/gtd.md'->expand()
 let g:my_local_vimrc_path = '<sfile>'->expand()
 let g:my_skk_path         = '~/work/skk.md'->expand()
 
-" Environment Variables
-" let $PS1 = '\n$ '
-
 " Python
 if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
   let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python' .. $PY_VER_MINOR

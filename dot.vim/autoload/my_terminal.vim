@@ -5,12 +5,14 @@ function! my_terminal#split(size, path) abort
     6split
   endif
   call s:open_terminal()
+  sleep 100m
   call s:change_directory(a:path)
 endfunction
 
 function! my_terminal#vsplit(path) abort
   vsplit
   call s:open_terminal()
+  sleep 100m
   call s:change_directory(a:path)
 endfunction
 
