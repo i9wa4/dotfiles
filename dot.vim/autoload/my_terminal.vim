@@ -1,17 +1,17 @@
-function! my_terminal#split(size) abort
+function! my_terminal#split(size, path) abort
   if a:size > 0
     execute a:size 'split'
   else
     6split
   endif
   call s:open_terminal()
-  wincmd p
+  call s:change_directory(a:path)
 endfunction
 
-function! my_terminal#vsplit() abort
+function! my_terminal#vsplit(path) abort
   vsplit
   call s:open_terminal()
-  wincmd p
+  call s:change_directory(a:path)
 endfunction
 
 function! my_terminal#send_cmd(number, path) abort
@@ -72,4 +72,11 @@ function! s:open_terminal() abort
   else
     terminal ++curwin
   endif
+  wincmd p
+endfunction
+
+function! s:change_directory(path) abort
+  wincmd p
+  call s:send(s:terminal_number, "cd " .. a:path)
+  wincmd p
 endfunction
