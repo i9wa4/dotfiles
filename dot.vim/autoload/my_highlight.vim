@@ -6,8 +6,8 @@ function! my_highlight#highlight() abort
   highlight link markdownItalic Normal
 
   " override colorscheme setting
-  highlight clear Error
-  highlight clear ErrorMsg
+  " highlight clear Error
+  " highlight clear ErrorMsg
   highlight clear SpellBad
   highlight SpellBad cterm=underline gui=underline
 
