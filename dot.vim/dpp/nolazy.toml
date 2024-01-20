@@ -7,8 +7,11 @@ repo = 'mattn/vim-lsp-settings'
 if = "!has('nvim')"
 hook_add = '''
 let g:lsp_auto_enable = 1
+let g:lsp_diagnostics_virtual_text_align = "after"
 let g:lsp_diagnostics_virtual_text_enabled = 1
+let g:lsp_diagnostics_virtual_text_wrap = "truncate"
 let g:lsp_log_file = ''
+let g:lsp_settings_enable_suggestions = 0
 let g:lsp_settings = {
   \   'pylsp-all': {
   \     'workspace_config': {
@@ -22,7 +25,6 @@ let g:lsp_settings = {
   \     'allowlist': ['sh'],
   \   },
   \ }
-let g:lsp_settings_enable_suggestions = 0
 
 function! s:my_lsp_highlight() abort
   highlight clear MyLspHighlight
