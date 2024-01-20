@@ -302,6 +302,7 @@ py-build:
 	&& sudo git merge \
 	&& sudo git checkout . \
 	&& sudo git checkout refs/tags/v$(MF_PY_VER_PATCH) \
+	&& sudo make distclean \
 	&& sudo ./configure --with-pydebug \
 	&& sudo make \
 	&& sudo make altinstall
