@@ -299,7 +299,7 @@ py-build:
 	cd /usr/local/src/cpython
 	sudo git fetch
 	sudo git checkout refs/tags/v$(MF_PY_VER_PATCH)
-	sudo make distclean
+	# sudo make distclean
 	sudo ./configure --with-pydebug
 	sudo make
 	sudo make altinstall
