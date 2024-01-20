@@ -5,7 +5,7 @@ let g:my_local_vimrc_path = '<sfile>'->expand()
 let g:my_skk_path         = '~/work/skk.md'->expand()
 
 " Environment Variables
-let $PS1 = '\n$ '
+" let $PS1 = '\n$ '
 
 " Python
 if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
