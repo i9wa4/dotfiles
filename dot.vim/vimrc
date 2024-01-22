@@ -317,7 +317,7 @@ function! s:my_asyncjob_on_save() abort
   elseif &filetype == 'mermaid'
     let l:filename = '%:p:r'->expand()
     if executable('mmdc')
-      call my_async#jobstart('mmdc -i ' .. l:ipynb_path .. '.mmd -o ' .. l:ipynb_path .. '.svg')
+      call my_async#jobstart('mmdc -i ' .. l:filename .. '.mmd -o ' .. l:filename .. '.svg')
     endif
   else
     " Do nothing.
