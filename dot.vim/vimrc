@@ -304,7 +304,7 @@ function! s:my_asyncjob_on_save() abort
     " Jupyter Notebook
     let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
     if filereadable(l:ipynb_path) && executable('jupytext')
-      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' . l:ipynb_path)
+      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
     endif
   elseif &filetype == 'markdown'
     if exists(':NumberHeader') == 2
@@ -313,6 +313,11 @@ function! s:my_asyncjob_on_save() abort
   elseif &filetype == 'rmd'
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
+    endif
+  elseif &filetype == 'mermaid'
+    let l:filename = '%:p:r'->expand()
+    if executable('mmdc')
+      call my_async#jobstart('mmdc -i ' .. l:ipynb_path .. '.mmd -o ' .. l:ipynb_path .. '.svg')
     endif
   else
     " Do nothing.
