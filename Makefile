@@ -269,12 +269,10 @@ jekyll-init:
 .PHONY: nodejs-init
 nodejs-init:
 	# Node.js/npm
-	# https://github.com/nodesource/distributions/blob/master/README.md#debinstall
-	# https://github.com/nodesource/distributions/issues/1157
-	sudo rm -f /etc/apt/sources.list.d/nodesource.list
-	curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
-	sudo apt update
-	sudo apt install -y nodejs
+	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
+	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+	sudo apt-get install -y nodejs
+	sudo npm install -g @mermaid-js/mermaid-cli
 
 .PHONY: psql-init
 psql-init:
