@@ -273,6 +273,8 @@ nodejs-init:
 	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
 	sudo apt-get install -y nodejs
 	sudo npm install -g @mermaid-js/mermaid-cli
+	# https://github.com/mermaid-js/mermaid-cli/issues/595
+	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
 
 .PHONY: psql-init
 psql-init:
