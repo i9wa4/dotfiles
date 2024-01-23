@@ -44,7 +44,6 @@ export class Config extends BaseConfig {
       const tomlFile of [
         "$BASE_DIR/dpp.toml",
         "$BASE_DIR/denops.toml",
-        "$BASE_DIR/nolazy.toml",
       ]
     ) {
       const toml = await args.dpp.extAction(
