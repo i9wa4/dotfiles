@@ -37,7 +37,7 @@ function! s:my_lsp_highlight() abort
 endfunction
 
 augroup MyLspSetting
-  au!
-  au User lsp_buffer_enabled call s:my_lsp_highlight()
+  autocmd!
+  autocmd User lsp_buffer_enabled call s:my_lsp_highlight()
 augroup END
 '''
