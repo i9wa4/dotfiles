@@ -78,14 +78,11 @@ autocmd User Dpp:makeStatePost
   \ | echomsg '[dpp] make_state() is done'
   \ | echohl NONE
 
-function DppInstall()
-  call dpp#async_ext_action('installer', 'install')
-endfunction
+command! DppInstall
+  \ call dpp#async_ext_action('installer', 'install')
 
-function DppUpdate()
-  call dpp#async_ext_action('installer', 'update')
-endfunction
+command! DppUpdate
+  \ call dpp#async_ext_action('installer', 'update')
 
-function DppMakeState()
-    call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
-endfunction
+command! DppMakeState
+  \ call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
