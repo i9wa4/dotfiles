@@ -24,6 +24,7 @@ if = "!has('nvim')"
 on_source = ['vim-lsp']
 hook_source = '''
 let g:lsp_auto_enable = 1
+let g:lsp_diagnostics_float_cursor = 1
 let g:lsp_diagnostics_virtual_text_align = "after"
 let g:lsp_diagnostics_virtual_text_enabled = 1
 let g:lsp_diagnostics_virtual_text_wrap = "truncate"
