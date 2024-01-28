@@ -42,6 +42,7 @@ if [ -f /etc/bash_completion.d/git-prompt ]; then
 fi
 
 # .bash_aliases
+alias ll='ls -alFv'
 alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
 alias jl='
 bash "${HOME}"/dotfiles/bin/jl.sh "$(pwd)" \
