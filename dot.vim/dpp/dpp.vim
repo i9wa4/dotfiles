@@ -13,9 +13,9 @@ function s:init_plugin(plugin)
       " Install plugin automatically.
       " execute 'silent !git clone https://github.com/' .. a:plugin s:dir
       if has('nvim')
-        execute '!git clone https://github.com/' .. a:plugin s:dir
+        execute '!git clone --depth 1 https://github.com/' .. a:plugin s:dir
       else
-        execute 'silent !git clone https://github.com/' .. a:plugin s:dir
+        execute 'silent !git clone --depth 1 https://github.com/' .. a:plugin s:dir
       endif
     endif
   endif
