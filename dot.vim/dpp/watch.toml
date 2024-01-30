@@ -2,4 +2,7 @@
 repo = 'Shougo/shougo-s-github'
 
 [[plugins]]
+repo = 'yasunori0418/dotfiles'
+
+[[plugins]]
 repo = 'vim-jp/vital.vim'
