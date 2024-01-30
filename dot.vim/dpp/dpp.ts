@@ -33,6 +33,11 @@ export class Config extends BaseConfig {
 
     args.contextBuilder.setGlobal({
       protocols: ["git"],
+      protocolParams: {
+        git: {
+          enablePartialClone: true,
+        },
+      },
     });
 
     const [context, options] = await args.contextBuilder.get(args.denops);
