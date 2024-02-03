@@ -6,41 +6,40 @@ SHELL := /usr/bin/env bash
 # all targets are phony
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
-WIN_UTIL_DIR := /mnt/c/work/util
+# variables
+MF_WIN_UTIL_DIR := /mnt/c/work/util
 MF_PY_VER_MINOR := "${PY_VER_MINOR}"
 MF_PY_VER_PATCH := "${PY_VER_PATCH}"
 MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
 MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
 MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
 
-minimal: init copy apt git \
-	vim-init vim-build
-
-wsl: minimal \
-	win-copy \
-	ubuntu-font \
-	docker-init \
-	prompt-restart-wsl
-
-ubuntu: minimal \
-	docker-init docker-systemd \
-	ubuntu-desktop ubuntu-font
-
-prompt-restart-wsl:
-	echo "Restart WSL and execute 'make docker-systemd'"
-
 dummy:
 	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-init:
+wsl: ## task for WSL2 Ubuntu
+	setup-bashrc copy apt git \
+	vim-init vim-build \
+	win-copy \
+	ubuntu-font \
+	docker-init \
+	echo "Restart WSL and execute 'make docker-systemd'"
+
+ubuntu: ## task for Ubuntu
+	setup-bashrc copy apt git \
+	vim-init vim-build \
+	docker-init docker-systemd \
+	ubuntu-desktop ubuntu-font
+
+setup-bashrc:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "cd" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
 
-copy:
+copy: ## copy config files and make symbolic links
 	# dotfiles
 	cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
@@ -59,7 +58,7 @@ copy:
 	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
 
-win-copy:
+win-copy: ## copy config files for Windows
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
@@ -67,13 +66,13 @@ win-copy:
 	# rm -rf "$${HOME}"/work
 	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
-	rm -rf $(WIN_UTIL_DIR)
-	mkdir -p $(WIN_UTIL_DIR)
-	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/bin $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.config $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.vim $(WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/etc $(WIN_UTIL_DIR)
+	rm -rf $(MF_WIN_UTIL_DIR)
+	mkdir -p $(MF_WIN_UTIL_DIR)
+	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/bin $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.config $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.vim $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/etc $(MF_WIN_UTIL_DIR)
 
 apt:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -113,7 +112,7 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init:
+vim-init: ## initialize for building Vim
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	# sudo apt update
 	sudo apt build-dep -y vim
@@ -129,7 +128,7 @@ vim-init:
 	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
 	&& gzip -d SKK-JISYO.jinmei.gz
 
-vim-build:
+vim-build: ## build Vim
 	cd /usr/local/src/vim \
 	&& sudo git checkout master \
 	&& sudo git checkout . \
@@ -148,7 +147,7 @@ vim-build:
 	&& sudo make install \
 	&& hash -r
 
-nvim-init:
+nvim-init: ## initialize for building Neovim
 	# https://github.com/neovim/neovim/wiki/Building-Neovim
 	# sudo apt update
 	sudo apt install -y \
@@ -169,7 +168,7 @@ nvim-init:
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
-nvim-build:
+nvim-build: ## build Neovim
 	cd /usr/local/src/neovim \
 	&& sudo git checkout master \
 	&& sudo git checkout . \
@@ -180,7 +179,7 @@ nvim-build:
 	    BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& sudo make install
 
-anaconda-init:
+anaconda-init: ## install Anaconda
 	cd \
 	&& wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh \
 	&& bash Anaconda3-2023.07-2-Linux-x86_64.sh
@@ -191,7 +190,7 @@ anaconda-init:
 	&& conda info -e
 	# conda env create -y -f foo.yml
 
-docker-init:
+docker-init: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
 	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
@@ -214,16 +213,16 @@ docker-init:
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
 
-docker-hadolint:
+docker-hadolint: ## install hadolint
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
 
-docker-systemd:
+docker-systemd: ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-docker-trivy:
+docker-trivy: ## install trivy
 	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
 	sudo apt-get install wget apt-transport-https gnupg lsb-release
 	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
@@ -231,7 +230,7 @@ docker-trivy:
 	sudo apt-get update
 	sudo apt-get install trivy
 
-go-init:
+go-init: ## install go
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
@@ -240,7 +239,7 @@ go-init:
 	# $ vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
 
-jekyll-init:
+jekyll-init: ## install Jekyll
 	# https://maeda577.github.io/2019/11/04/new-jekyll.html
 	# https://github.com/github/pages-gem
 	sudo apt update
@@ -249,7 +248,7 @@ jekyll-init:
 	. "$${HOME}"/.profile \
 	&& gem install jekyll bundler
 
-nodejs-init:
+nodejs-init: ## install Node.js
 	# Node.js/npm
 	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
 	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
@@ -258,10 +257,10 @@ nodejs-init:
 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
 
-psql-init:
+psql-init: ## install PostgreSQL
 	sudo apt install -y postgresql postgresql-contrib
 
-py-init:
+py-init: ## initialize for building CPython
 	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	# sudo apt update
@@ -274,7 +273,7 @@ py-init:
 	cd /usr/local/src \
 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
-py-build:
+py-build: ## build CPython
 	cd /usr/local/src/cpython \
 	&& sudo git switch main \
 	&& sudo git fetch \
@@ -287,7 +286,7 @@ py-build:
 	&& sudo make altinstall
 	python$(MF_PY_VER_MINOR) --version
 
-py-vmu:
+py-vmu: ## update venv named myenv
 	if [ -d $(MF_PY_VENV_MYENV) ]; then \
 	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV) --upgrade; \
 	else \
@@ -301,11 +300,11 @@ py-vmu:
 	&& python --version \
 	&& deactivate
 
-py-tag:
+py-tag: ## show cpython tags
 	sudo git -C /usr/local/src/cpython fetch
 	sudo git -C /usr/local/src/cpython tag | grep v$(MF_PY_VER_MINOR)
 
-r-init:
+r-init: ## install R
 	# sudo apt update
 	sudo apt install -y --no-install-recommends \
 	  software-properties-common dirmngr
@@ -324,7 +323,7 @@ r-init:
 	. $(MF_PY_VENV_MYENV)/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
-rust-init:
+rust-init: ## install Rust
 	sudo apt install -y cargo
 	cargo install tokei
 
@@ -345,3 +344,9 @@ ubuntu-font:
 	&& fc-cache -fv \
 	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM
+
+help: ## Print this help
+	@echo 'Usage: make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
