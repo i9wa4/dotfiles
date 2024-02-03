@@ -8,7 +8,7 @@ cd "${script_dir}"
 start_time=$(date +%s.%N)
 
 echo "Hello, World!"
-sleep 1
+# sleep 1
 echo "Done."
 
 end_time=$(date +%s.%N)
