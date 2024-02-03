@@ -1,20 +1,10 @@
-.PHONY: minimal
-minimal: init copy apt git \
-	vim-init vim-build
+MAKEFLAGS += --warn-undefined-variables
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -euox pipefail -o posix -c
+.DEFAULT_GOAL := help
 
-.PHONY: wsl
-wsl: minimal \
-	win-copy \
-	ubuntu-font \
-	docker-init \
-	prompt-restart-wsl
-
-.PHONY: ubuntu
-ubuntu: minimal \
-	docker-init docker-systemd \
-	ubuntu-desktop ubuntu-font
-
-
+# all targets are phony
+.PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 WIN_UTIL_DIR := /mnt/c/work/util
 MF_PY_VER_MINOR := "${PY_VER_MINOR}"
@@ -23,28 +13,33 @@ MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
 MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
 MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
 
+minimal: init copy apt git \
+	vim-init vim-build
 
+wsl: minimal \
+	win-copy \
+	ubuntu-font \
+	docker-init \
+	prompt-restart-wsl
 
-.PHONY: prompt-restart-wsl
+ubuntu: minimal \
+	docker-init docker-systemd \
+	ubuntu-desktop ubuntu-font
+
 prompt-restart-wsl:
 	echo "Restart WSL and execute 'make docker-systemd'"
 
-.PHONY: dummy
 dummy:
 	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-
-
-.PHONY: init
 init:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "cd" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
 
-.PHONY: copy
 copy:
 	# dotfiles
 	cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
@@ -64,7 +59,6 @@ copy:
 	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
 	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
 
-.PHONY: win-copy
 win-copy:
 	# WSL
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
@@ -81,7 +75,6 @@ win-copy:
 	cp -rf "$${HOME}"/dotfiles/dot.vim $(WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/etc $(WIN_UTIL_DIR)
 
-.PHONY: apt
 apt:
 	sudo add-apt-repository -y ppa:git-core/ppa
 	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
@@ -98,7 +91,6 @@ apt:
 	  xsel \
 	  zip
 
-.PHONY: git
 git:
 	git config --global alias.lo "log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short"
 	git config --global commit.verbose true
@@ -121,7 +113,6 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-.PHONY: vim-init
 vim-init:
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	# sudo apt update
@@ -138,7 +129,6 @@ vim-init:
 	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
 	&& gzip -d SKK-JISYO.jinmei.gz
 
-.PHONY: vim-build
 vim-build:
 	cd /usr/local/src/vim \
 	&& sudo git checkout master \
@@ -157,7 +147,6 @@ vim-build:
 	&& sudo make install \
 	&& hash -r
 
-.PHONY: nvim-init
 nvim-init:
 	# https://github.com/neovim/neovim/wiki/Building-Neovim
 	# sudo apt update
@@ -179,7 +168,6 @@ nvim-init:
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
-.PHONY: nvim-build
 nvim-build:
 	cd /usr/local/src/neovim \
 	&& sudo git checkout master \
@@ -190,7 +178,6 @@ nvim-build:
 	    BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& sudo make install
 
-.PHONY: anaconda-init
 anaconda-init:
 	cd \
 	&& wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh \
@@ -202,7 +189,6 @@ anaconda-init:
 	&& conda info -e
 	# conda env create -y -f foo.yml
 
-.PHONY: docker-init
 docker-init:
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
@@ -226,18 +212,15 @@ docker-init:
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
 
-.PHONY: docker-hadolint
 docker-hadolint:
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
 
-.PHONY: docker-systemd
 docker-systemd:
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-.PHONY: docker-trivy
 docker-trivy:
 	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
 	sudo apt-get install wget apt-transport-https gnupg lsb-release
@@ -246,7 +229,6 @@ docker-trivy:
 	sudo apt-get update
 	sudo apt-get install trivy
 
-.PHONY: go-init
 go-init:
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
@@ -256,7 +238,6 @@ go-init:
 	# $ vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
 
-.PHONY: jekyll-init
 jekyll-init:
 	# https://maeda577.github.io/2019/11/04/new-jekyll.html
 	# https://github.com/github/pages-gem
@@ -266,7 +247,6 @@ jekyll-init:
 	. "$${HOME}"/.profile \
 	&& gem install jekyll bundler
 
-.PHONY: nodejs-init
 nodejs-init:
 	# Node.js/npm
 	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
@@ -276,11 +256,9 @@ nodejs-init:
 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
 
-.PHONY: psql-init
 psql-init:
 	sudo apt install -y postgresql postgresql-contrib
 
-.PHONY: py-init
 py-init:
 	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
@@ -294,7 +272,6 @@ py-init:
 	cd /usr/local/src \
 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
-.PHONY: py-build
 py-build:
 	cd /usr/local/src/cpython \
 	&& sudo git switch main \
@@ -308,7 +285,6 @@ py-build:
 	&& sudo make altinstall
 	python$(MF_PY_VER_MINOR) --version
 
-.PHONY: py-vmu
 py-vmu:
 	if [ -d $(MF_PY_VENV_MYENV) ]; then \
 	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV) --upgrade; \
@@ -323,12 +299,10 @@ py-vmu:
 	&& python --version \
 	&& deactivate
 
-.PHONY: py-tag
 py-tag:
 	sudo git -C /usr/local/src/cpython fetch
 	sudo git -C /usr/local/src/cpython tag | grep v$(MF_PY_VER_MINOR)
 
-.PHONY: r-init
 r-init:
 	# sudo apt update
 	sudo apt install -y --no-install-recommends \
@@ -348,12 +322,10 @@ r-init:
 	. $(MF_PY_VENV_MYENV)/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
-.PHONY: rust-init
 rust-init:
 	sudo apt install -y cargo
 	cargo install tokei
 
-.PHONY: ubuntu-desktop
 ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
@@ -362,7 +334,6 @@ ubuntu-desktop:
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
 
-.PHONY: ubuntu-font
 ubuntu-font:
 	# https://myrica.estable.jp/
 	cd \
