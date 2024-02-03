@@ -132,6 +132,7 @@ vim-init:
 vim-build:
 	cd /usr/local/src/vim \
 	&& sudo git checkout master \
+	&& sudo git checkout . \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& cd ./src \
@@ -171,6 +172,7 @@ nvim-init:
 nvim-build:
 	cd /usr/local/src/neovim \
 	&& sudo git checkout master \
+	&& sudo git checkout . \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo make distclean \
