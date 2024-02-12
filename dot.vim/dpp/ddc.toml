@@ -1,7 +1,6 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-# on_event = ['DenopsProcessStarted']
-# on_event = ['BufNewFile', 'BufReadPost']
+depends = ['denops.vim']
 on_event = ['InsertEnter']
 hook_source = '''
 let s:sources_list = [
@@ -128,7 +127,3 @@ for s:file in glob(s:dir . '*.*', 1, 1)
   call denippet#load(s:file)
 endfor
 '''
-
-[[plugins]]
-repo = 'hrsh7th/vim-vsnip'
-on_source = ['ddc.vim']

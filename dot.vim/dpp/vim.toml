@@ -1,17 +1,6 @@
 [[plugins]]
 repo = 'rhysd/vim-healthcheck'
-on_event = ['BufNewFile', 'BufReadPost']
-
-[[plugins]]
-repo = 'matsui54/denops-popup-preview.vim'
-on_source = ['ddc.vim']
-hook_source = '''
-call popup_preview#enable()
-'''
-
-[[plugins]]
-repo = 'Shougo/ddc-source-lsp'
-on_source = ['ddc.vim']
+on_event = ['VimEnter']
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
@@ -58,4 +47,15 @@ augroup MyLspSetting
   autocmd!
   autocmd User lsp_buffer_enabled call s:my_lsp_highlight()
 augroup END
+'''
+
+[[plugins]]
+repo = 'Shougo/ddc-source-lsp'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'matsui54/denops-popup-preview.vim'
+on_source = ['ddc.vim']
+hook_source = '''
+call popup_preview#enable()
 '''
