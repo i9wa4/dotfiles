@@ -111,6 +111,7 @@ call skkeleton#config({
   \     s:base_path .. 'SKK-JISYO.jinmei',
   \   ],
   \ })
+call skkeleton#register_keymap('input', ';', 'henkanPoint')
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
 '''
