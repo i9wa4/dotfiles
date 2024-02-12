@@ -44,9 +44,5 @@ fi
 # .bash_aliases
 alias ll='ls -alFv'
 alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
-alias jl='
-bash "${HOME}"/dotfiles/bin/jl.sh "$(pwd)" \
-'
-alias rmarkdown-render='
-bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)" \
-'
+alias jl='bash "${HOME}"/dotfiles/bin/jl.sh "$(pwd)"'
+alias rmarkdown-render='bash "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"'

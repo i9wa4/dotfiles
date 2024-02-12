@@ -19,7 +19,7 @@ dummy:
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-wsl: ## task for WSL2 Ubuntu
+wsl2: ## task for WSL2 Ubuntu
 	setup-bashrc copy apt git \
 	vim-init vim-build \
 	win-copy \
@@ -59,7 +59,7 @@ copy: ## copy config files and make symbolic links
 	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
 
 win-copy: ## copy config files for Windows
-	# WSL
+	# WSL2
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
 	mkdir -p /mnt/c/work

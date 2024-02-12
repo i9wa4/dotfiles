@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euox pipefail -o posix
 
 script_basename=$(basename "$0")
 script_dir=$(cd $(dirname "$0"); pwd)

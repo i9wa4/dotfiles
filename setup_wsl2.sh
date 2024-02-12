@@ -12,7 +12,7 @@ sudo apt install -y \
   bc \
   make
 
-make minimal
+make wsl2
 
 end_time=$(date +%s.%N)
 wall_time=$(echo "${end_time}"-"${start_time}" | bc -l)

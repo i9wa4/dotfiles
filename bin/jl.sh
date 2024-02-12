@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail -o posix
+set -euox pipefail -o posix
 
 rm -rf "${HOME}"/.ipynb_checkpoints
 rm -rf "${HOME}"/.virtual_documents
