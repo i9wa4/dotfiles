@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euox pipefail -o posix
 
 # background colors
 for C in {0..255}; do
