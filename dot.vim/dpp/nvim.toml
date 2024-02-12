@@ -1,7 +1,5 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-# on_event = ['DenopsProcessStarted']
-# on_event = ['BufNewFile', 'BufReadPost']
 on_event = ['VimEnter']
 lua_source = '''
 -- https://github.com/neovim/nvim-lspconfig#suggested-configuration
@@ -39,17 +37,17 @@ augroup END
 '''
 
 [[plugins]]
-repo = 'uga-rosa/ddc-previewer-floating'
-on_source = ['ddc.vim']
-lua_source = '''
-local ddc_previewer_floating = require('ddc_previewer_floating')
-ddc_previewer_floating.enable()
-'''
-
-[[plugins]]
 repo = 'Shougo/ddc-source-lsp'
 on_source = ['ddc.vim', 'nvim-lspconfig']
 
 [[plugins]]
 repo = 'uga-rosa/ddc-source-lsp-setup'
 on_source = ['ddc.vim', 'nvim-lspconfig']
+
+[[plugins]]
+repo = 'uga-rosa/ddc-previewer-floating'
+on_source = ['ddc.vim']
+lua_source = '''
+local ddc_previewer_floating = require('ddc_previewer_floating')
+ddc_previewer_floating.enable()
+'''
