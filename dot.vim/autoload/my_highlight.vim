@@ -40,4 +40,14 @@ function! my_highlight#highlight() abort
   highlight clear MySpecial
   highlight MySpecial guifg=#870000 guibg=NONE
   call matchadd('MySpecial', '\t')
+
+  " transparent background
+  highlight EndOfBuffer guibg=NONE
+  highlight Folded guibg=NONE
+  highlight Identifier guibg=NONE
+  highlight LineNr guibg=NONE
+  highlight NonText guibg=NONE
+  highlight Normal guibg=NONE
+  highlight Special guibg=NONE
+  highlight VertSplit guibg=NONE
 endfunction
