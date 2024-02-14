@@ -3,29 +3,33 @@
 "
 function! my_statusline#statusline() abort
   " let l:mode_dict = {
-  "  \ 'n': 'NORMAL',
-  "  \ 'i': 'INSERT',
-  "  \ 'R': 'REPLACE',
-  "  \ 'v': 'VISUAL',
-  "  \ 'V': 'V-LINE',
-  "  \ "\<C-v>": 'V-BLOCK',
-  "  \ 'S': 'S-LINE',
-  "  \ "\<C-s>": 'S-BLOCK',
-  "  \ 's': 'SELECT',
-  "  \ 'c': 'COMMAND',
-  "  \ 't': 'TERMINAL',
-  "  \ }
+  "   \ 'n': 'NORMAL',
+  "   \ 'i': 'INSERT',
+  "   \ 'R': 'REPLACE',
+  "   \ 'v': 'VISUAL',
+  "   \ 'V': 'V-LINE',
+  "   \ "\<C-v>": 'V-BLOCK',
+  "   \ 'S': 'S-LINE',
+  "   \ "\<C-s>": 'S-BLOCK',
+  "   \ 's': 'SELECT',
+  "   \ 'c': 'COMMAND',
+  "   \ 't': 'TERMINAL',
+  "   \ }
 
   let l:ret = ''
   " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
   " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
-  " let l:ret ..= '%t '
+  let l:ret ..= '%t '
   " let l:ret ..= '%f '
-  " let l:ret ..= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
+  let l:ret ..= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
   let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
-  " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-2c'
+  let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-2c'
+  let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
   return l:ret
 endfunction
 
