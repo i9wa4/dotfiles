@@ -25,7 +25,7 @@ function! my_statusline#statusline() abort
   let l:ret ..= '%<'
   let l:ret ..= "%="
   let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
-  let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-2c'
+  let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
   let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
   let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
