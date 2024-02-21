@@ -5,5 +5,9 @@
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
     "extensions.ignoreRecommendations": true,
-    "git.ignoreMissingGitWarning": true
+    "git.ignoreMissingGitWarning": true,
+    "security.allowedUNCHosts": [
+        "wsl.localhost"
+    ],
+    "markdown.extension.toc.levels": "2..6"
 }
