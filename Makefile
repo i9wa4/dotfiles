@@ -122,13 +122,12 @@ vim-init: ## initialize for building Vim
 	&& gzip -d SKK-JISYO.jinmei.gz
 
 vim-build: ## build Vim
+	# sudo make clean
 	cd /usr/local/src/vim \
-	&& sudo git checkout . \
 	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& cd ./src \
-	&& sudo make clean \
 	&& sudo ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -163,7 +162,6 @@ nvim-init: ## initialize for building Neovim
 
 nvim-build: ## build Neovim
 	cd /usr/local/src/neovim \
-	&& sudo git checkout . \
 	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
@@ -273,7 +271,6 @@ py-build: ## build CPython
 	&& sudo git switch main \
 	&& sudo git fetch \
 	&& sudo git merge \
-	&& sudo git checkout . \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
 	&& sudo make distclean \
 	&& sudo ./configure --with-pydebug \
