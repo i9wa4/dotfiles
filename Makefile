@@ -22,13 +22,13 @@ dummy:
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-wsl2: setup-bashrc ## task for WSL2 Ubuntu
+wsl2: setup-bashrc \ ## task for WSL2 Ubuntu
 	copy apt git \
 	vim-init vim-build \
 	win-copy \
 	echo "Restart WSL"
 
-ubuntu: setup-bashrc ## task for Ubuntu
+ubuntu: setup-bashrc \ ## task for Ubuntu
 	copy apt git \
 	vim-init vim-build \
 	docker-init docker-systemd \
