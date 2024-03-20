@@ -42,7 +42,8 @@ setup-bashrc:
 
 copy: ## copy config files and make symbolic links
 	# dotfiles
-	cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.gitignore "$${HOME}"/.gitignore
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
