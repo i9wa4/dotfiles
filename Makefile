@@ -22,15 +22,14 @@ dummy:
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-wsl2: setup-bashrc \ ## task for WSL2 Ubuntu
-	copy apt git \
-	vim-init vim-build \
+ubuntu-minimal:
+	setup-bashrc copy apt git vim-init vim-build
+
+wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	win-copy \
 	echo "Restart WSL"
 
-ubuntu: setup-bashrc \ ## task for Ubuntu
-	copy apt git \
-	vim-init vim-build \
+ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init docker-systemd \
 	ubuntu-desktop ubuntu-font
 
