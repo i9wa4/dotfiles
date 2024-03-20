@@ -123,7 +123,7 @@ vim-init: ## initialize for building Vim
 
 vim-build: ## build Vim
 	cd /usr/local/src/vim \
-	&& sudo git checkout master \
+	&& sudo git switch master \
 	&& sudo git checkout . \
 	&& sudo git fetch \
 	&& sudo git merge \
@@ -163,7 +163,7 @@ nvim-init: ## initialize for building Neovim
 
 nvim-build: ## build Neovim
 	cd /usr/local/src/neovim \
-	&& sudo git checkout master \
+	&& sudo git switch master \
 	&& sudo git checkout . \
 	&& sudo git fetch \
 	&& sudo git merge \
