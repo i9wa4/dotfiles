@@ -18,6 +18,7 @@ MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
 
 
 dummy:
+	apt
 	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
