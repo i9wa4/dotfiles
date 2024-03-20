@@ -6,21 +6,13 @@ SHELL := /usr/bin/env bash
 
 # variables
 MF_WIN_UTIL_DIR := /mnt/c/work/util
-MF_PY_VER_MINOR := "${PY_VER_MINOR}"
-MF_PY_VER_PATCH := "${PY_VER_PATCH}"
-MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
-MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
-MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
-
 
 # all targets are phony
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
 dummy:
-	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
-	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
-	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
+	@echo "MF_WIN_UTIL_DIR=$(MF_WIN_UTIL_DIR)"
 
 ubuntu-minimal: setup-bashrc copy apt git vim-init vim-build
 
@@ -52,11 +44,11 @@ copy: ## copy config files and make symbolic links
 	# XDG_CONFIG_HOME
 	. "${HOME}"/dotfiles/etc/dot.profile \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
-	&& rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
+	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
+	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& rm -f "$${XDG_CONFIG_HOME}"/efm-langserver \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
 
 win-copy: ## copy config files for Windows
@@ -275,35 +267,38 @@ py-init: ## initialize for building CPython
 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
 py-build: ## build CPython
-	cd /usr/local/src/cpython \
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& cd /usr/local/src/cpython \
 	&& sudo git switch main \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo git checkout . \
-	&& sudo git checkout refs/tags/v$(MF_PY_VER_PATCH) \
+	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
 	&& sudo make distclean \
 	&& sudo ./configure --with-pydebug \
 	&& sudo make \
 	&& sudo make altinstall
-	python$(MF_PY_VER_MINOR) --version
+	&& python"$${PY_VER_MINOR}" --version
 
 py-vmu: ## update venv named myenv
-	if [ -d $(MF_PY_VENV_MYENV) ]; then \
-	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV) --upgrade; \
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
-	  python$(MF_PY_VER_MINOR) -m venv $(MF_PY_VENV_MYENV); \
-	fi
-	. $(MF_PY_VENV_MYENV)/bin/activate \
-	&& python$(MF_PY_VER_MINOR) -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python$(MF_PY_VER_MINOR) -m pip install --upgrade pip setuptools wheel \
-	&& python$(MF_PY_VER_MINOR) -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-	&& python$(MF_PY_VER_MINOR) -m pip check \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
+	fi \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
+	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python"$${PY_VER_MINOR}" -m pip check \
 	&& python --version \
 	&& deactivate
 
 py-tag: ## show cpython tags
-	sudo git -C /usr/local/src/cpython fetch
-	sudo git -C /usr/local/src/cpython tag | grep v$(MF_PY_VER_MINOR)
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& sudo git -C /usr/local/src/cpython fetch
+	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 r-init: ## install R
 	# sudo apt update
@@ -321,7 +316,8 @@ r-init: ## install R
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. $(MF_PY_VENV_MYENV)/bin/activate \
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
 rust-init: ## install Rust
