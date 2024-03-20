@@ -123,12 +123,12 @@ vim-init: ## initialize for building Vim
 
 vim-build: ## build Vim
 	cd /usr/local/src/vim \
-	&& sudo git switch master \
 	&& sudo git checkout . \
+	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& cd ./src \
-	&& sudo make clean \
+	&& sudo make distclean \
 	&& sudo ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -163,8 +163,8 @@ nvim-init: ## initialize for building Neovim
 
 nvim-build: ## build Neovim
 	cd /usr/local/src/neovim \
-	&& sudo git switch master \
 	&& sudo git checkout . \
+	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo make distclean \
@@ -269,6 +269,7 @@ py-init: ## initialize for building CPython
 py-build: ## build CPython
 	. "${HOME}"/dotfiles/etc/dot.profile \
 	&& cd /usr/local/src/cpython \
+	&& sudo git checkout . \
 	&& sudo git switch main \
 	&& sudo git fetch \
 	&& sudo git merge \
