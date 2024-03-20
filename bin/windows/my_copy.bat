@@ -9,14 +9,14 @@ exit /b
     cd /d %~dp0
 
     @REM %USERPROFILE%
-    copy /y ".\etc\home\dot.gitignore" "%USERPROFILE%\.gitignore"
+    @REM copy /y ".\etc\home\dot.gitignore" "%USERPROFILE%\.gitignore"
     @REM copy /y ".\etc\home\dot.jupytext" "%USERPROFILE%\.jupytext"
     copy /y ".\etc\windows\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 
     @REM Vim
-    set VIM_DIR="%USERPROFILE%\.vim"
-    rmdir /q /s "%VIM_DIR:"=%"
-    xcopy /e /i /y ".\dot.vim" "%VIM_DIR:"=%"
+    @REM set VIM_DIR="%USERPROFILE%\.vim"
+    @REM rmdir /q /s "%VIM_DIR:"=%"
+    @REM xcopy /e /i /y ".\dot.vim" "%VIM_DIR:"=%"
 
     @REM VSCode
     set CODE_DIR="%APPDATA%\Code\User"
