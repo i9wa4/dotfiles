@@ -52,13 +52,14 @@ copy: ## copy config files and make symbolic links
 	rm -f "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
-	mkdir -p "$${XDG_CONFIG_HOME}"
-	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
-	rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
-	rm -f "$${XDG_CONFIG_HOME}"/efm-langserver
-	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1)
-	ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2)
-	ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
+	. "${HOME}"/dotfiles/etc/dot.profile \
+	&& mkdir -p "$${XDG_CONFIG_HOME}" \
+	&& rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
+	&& rm -f "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
+	&& rm -f "$${XDG_CONFIG_HOME}"/efm-langserver \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME1) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME1) \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/$(MF_NVIM_APPNAME2) "$${XDG_CONFIG_HOME}"/$(MF_NVIM_APPNAME2) \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
 
 win-copy: ## copy config files for Windows
 	# WSL2
