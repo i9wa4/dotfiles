@@ -18,19 +18,18 @@ MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
 
 
 dummy:
-	apt
 	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-wsl2: ## task for WSL2 Ubuntu
-	setup-bashrc copy apt git \
+wsl2: setup-bashrc ## task for WSL2 Ubuntu
+	copy apt git \
 	vim-init vim-build \
 	win-copy \
 	echo "Restart WSL"
 
-ubuntu: ## task for Ubuntu
-	setup-bashrc copy apt git \
+ubuntu: setup-bashrc ## task for Ubuntu
+	copy apt git \
 	vim-init vim-build \
 	docker-init docker-systemd \
 	ubuntu-desktop ubuntu-font
