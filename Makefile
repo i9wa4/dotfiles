@@ -25,12 +25,8 @@ dummy:
 wsl2: ## task for WSL2 Ubuntu
 	setup-bashrc copy apt git \
 	vim-init vim-build \
-	nvim-init nvim-build \
-	py-init py-build py-vmu \
-	r-init \
-	docker-init \
 	win-copy \
-	echo "Restart WSL and execute 'make docker-systemd'"
+	echo "Restart WSL"
 
 ubuntu: ## task for Ubuntu
 	setup-bashrc copy apt git \
