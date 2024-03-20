@@ -22,8 +22,7 @@ dummy:
 	@echo "MF_PY_VER_PATCH=$(MF_PY_VER_PATCH)"
 	@echo "MF_PY_VENV_MYENV=$(MF_PY_VENV_MYENV)"
 
-ubuntu-minimal:
-	setup-bashrc copy apt git vim-init vim-build
+ubuntu-minimal: setup-bashrc copy apt git vim-init vim-build
 
 wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	win-copy \
