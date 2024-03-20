@@ -128,7 +128,7 @@ vim-build: ## build Vim
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& cd ./src \
-	&& sudo make distclean \
+	&& sudo make clean \
 	&& sudo ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
