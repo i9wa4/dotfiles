@@ -3,8 +3,6 @@ SHELL := /usr/bin/env bash
 .SHELLFLAGS := -euox pipefail -o posix -c
 .DEFAULT_GOAL := help
 
-# all targets are phony
-.PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 # variables
 MF_WIN_UTIL_DIR := /mnt/c/work/util
@@ -13,6 +11,11 @@ MF_PY_VER_PATCH := "${PY_VER_PATCH}"
 MF_PY_VENV_MYENV := "${PY_VENV_MYENV}"
 MF_NVIM_APPNAME1 := "${NVIM_APPNAME1}"
 MF_NVIM_APPNAME2 := "${NVIM_APPNAME2}"
+
+
+# all targets are phony
+.PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
+
 
 dummy:
 	@echo "MF_PY_VER_MINOR=$(MF_PY_VER_MINOR)"
