@@ -8,7 +8,7 @@
 
 ### 2.1. WSL2 (Ubuntu)
 
-1. Execute `make wsl2` or run `setup_wsl2.sh`.
+1. Execute `make wsl2`.
 
 ### 2.2. Ubuntu
 
