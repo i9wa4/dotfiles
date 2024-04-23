@@ -24,11 +24,21 @@ ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init docker-systemd \
 	ubuntu-desktop ubuntu-font
 
+mac: brew-init ## task for Mac
+	setup-zshrc \
+	git
+
 setup-bashrc:
 	# Bash
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
 	echo "cd" >> "$${HOME}"/.bashrc
 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
+
+setup-zshrc:
+	# Zsh
+	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "if test -f "$${HOME}"/dotfiles/etc/dot.profile; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.zshenv
+	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 
 copy: ## copy config files and make symbolic links
 	# dotfiles
@@ -121,6 +131,17 @@ vim-init: ## initialize for building Vim
 	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
 	&& gzip -d SKK-JISYO.jinmei.gz
 
+vim-init-mac: ## initialize for Vim in Mac
+	# Deno
+	brew install deno
+	# SKK
+	mkdir -p "$${HOME}"/.skk
+	cd "$${HOME}"/.skk \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
+	&& gzip -d SKK-JISYO.L.gz \
+	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
+	&& gzip -d SKK-JISYO.jinmei.gz
+
 vim-build: ## build Vim
 	# sudo make clean
 	cd /usr/local/src/vim \
@@ -180,6 +201,21 @@ anaconda-init: ## install Anaconda
 	&& conda update --all \
 	&& conda info -e
 	# conda env create -y -f foo.yml
+
+brew-init: ## install Homebrew
+	# https://brew.sh/
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	brew -v
+	brew update
+	brew upgrade
+	brew install \
+		bash-completion \
+		git \
+		nvim \
+		tmux \
+		vim \
+		wget
+	brew install --cask google-cloud-sdk
 
 docker-init: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu

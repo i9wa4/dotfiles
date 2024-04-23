@@ -82,7 +82,13 @@ function! my_statusline#tabline() abort
   endfor
 
   let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret ..= system('. /etc/bash_completion.d/git-prompt && __git_ps1')->substitute('%', '%%', 'g')
+  if has('mac')
+    " https://qiita.com/lca367/items/17eaf04e34bdaa0abb65
+    let l:ret ..= system('. ' .. systemlist('brew --prefix')[0] .. '/etc/bash_completion.d/git-prompt.sh && __git_ps1')->substitute('%', '%%', 'g')
+
+  else
+    let l:ret ..= system('. /etc/bash_completion.d/git-prompt && __git_ps1')->substitute('%', '%%', 'g')
+  endif
   let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
   return l:ret
 endfunction
