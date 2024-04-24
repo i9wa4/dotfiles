@@ -15,3 +15,5 @@
 1. Execute `make ubuntu`.
 
 ### 2.3. Mac
+
+1. Execute `make mac`.
