@@ -40,7 +40,10 @@ if has('unix')
 else
   language messages en
 endif
-if has('unix') && !has('win32unix')
+if has('mac')
+  set clipboard&
+  set clipboard+=unnamedplus,unnamed
+elseif has('unix') && !has('win32unix')
   set clipboard&
   set clipboard^=unnamedplus
 endif
