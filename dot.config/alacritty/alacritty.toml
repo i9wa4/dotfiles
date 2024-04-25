@@ -1,0 +1,8 @@
+[shell]
+program = "wsl"
+
+[font]
+size = 18
+
+[font.normal]
+family = "MyricaM M"
