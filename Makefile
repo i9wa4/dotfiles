@@ -216,6 +216,8 @@ brew-init: ## install Homebrew
 		vim \
 		wget
 	brew install --cask google-cloud-sdk
+	# https://namileriblog.com/mac/rust_alacritty/
+	brew install --cask alacritty
 
 docker-init: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
