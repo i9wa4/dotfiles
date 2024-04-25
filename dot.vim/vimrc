@@ -362,9 +362,9 @@ if !has('nvim')
   filetype plugin indent on
   syntax enable
 
-  " if has('termguicolors')
-  "   set termguicolors
-  " endif
+  if has('termguicolors')
+    set termguicolors
+  endif
 
   if has('patch-9.0.1778')
     execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
