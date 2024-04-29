@@ -27,10 +27,8 @@ export AWS_DEFAULT_PROFILE=
 # eval "$(rbenv init - zsh)"
 
 # tmux
-# https://qiita.com/ssh0/items/a9956a74bff8254a606a
+# https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
 alias tmux="tmux -u2"
-
-# tmuxの自動起動
 count=$(ps aux | grep tmux | grep -v grep | wc -l)
 if test "${count}" -eq 0; then
     echo $(tmux)
