@@ -38,10 +38,15 @@ export AWS_DEFAULT_PROFILE=
 
 # tmux
 # https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
-alias tmux="tmux -u2"
-count=$(ps aux | grep tmux | grep -v grep | wc -l)
-if test "${count}" -eq 0; then
-    echo $(tmux)
-elif test "${count}" -eq 1; then
-    echo $(tmux a)
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  # remote host
+else
+  # local host
+  alias tmux="tmux -u2"
+  count=$(ps aux | grep tmux | grep -v grep | wc -l)
+  if test "${count}" -eq 0; then
+      echo $(tmux)
+  elif test "${count}" -eq 1; then
+      echo $(tmux a)
+  fi
 fi
