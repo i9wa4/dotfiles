@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 set -euox pipefail -o posix
 
 find "$1" -maxdepth 1 -name "*.Rmd" -type f -print | while read -r filepath

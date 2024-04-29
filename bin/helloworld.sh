@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 set -euox pipefail -o posix
 
 script_basename=$(basename "$0")

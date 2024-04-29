@@ -26,8 +26,8 @@ exit /b
     xcopy /e /i /y ".\dot.vim\snippet_json" "%CODE_DIR:"=%\snippets"
 
     @REM Windows Terminal
-    set WINTERM_DIR="%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
-    rmdir /q /s "%WINTERM_DIR:"=%"
-    mkdir "%WINTERM_DIR:"=%"
-    copy /y ".\etc\windows\wt.settings.json" "%WINTERM_DIR:"=%\settings.json"
+    @REM set WINTERM_DIR="%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+    @REM rmdir /q /s "%WINTERM_DIR:"=%"
+    @REM mkdir "%WINTERM_DIR:"=%"
+    @REM copy /y ".\etc\windows\wt.settings.json" "%WINTERM_DIR:"=%\settings.json"
 exit /b

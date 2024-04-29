@@ -338,6 +338,8 @@ augroup MyVimrcAutocmd
   " FileType
   autocmd BufNewFile,BufReadPost *.bashrc,*.profile,*.bash_profile
     \ setfiletype bash
+  autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
+    \ setfiletype zsh
   autocmd BufEnter,FileType * call s:my_filetype()
 
   " Async Job
