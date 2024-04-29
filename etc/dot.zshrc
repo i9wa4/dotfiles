@@ -21,11 +21,11 @@ zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 # zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
-zstyle ':vcs_info:*' formats "%F{mazenta}%c%u(%b)%f"
+zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 # PROMPT='%n@%m %c'\$vcs_info_msg_0_' %# '
 # _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT='%F{green}%n@%m%f'
+PROMPT='%F{cyan}%n@%m%f'
 # PROMPT="${PROMPT}"' %F{blue}('\$_SHELL_TYPE'-Lv%L)%f'
 PROMPT="${PROMPT}"' %F{reset}%~ '\$vcs_info_msg_0_'
 %# '
