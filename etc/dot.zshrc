@@ -38,8 +38,15 @@ zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT='%F{cyan}%n@%m%f'
-# PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  # remote host
+  PROMPT='%F{red}%n@%m%f'
+else
+  # local host
+  PROMPT='%F{cyan}%n@%m%f'
+fi
+
+PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
 PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
 precmd(){ vcs_info }
