@@ -42,7 +42,7 @@ setup-zshrc:
 init-copy:
 	# Alacritty
 	. "${HOME}"/dotfiles/etc/dot.zshenv \
-	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local.toml "$${HOME}"
+	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
 copy: ## copy config files and make symbolic links
 	# dotfiles
