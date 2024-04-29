@@ -14,35 +14,39 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 dummy:
 	@echo "MF_WIN_UTIL_DIR=$(MF_WIN_UTIL_DIR)"
 
-ubuntu-minimal: setup-bashrc copy apt git vim-init vim-build
+ubuntu-minimal: setup-zshrc copy apt git vim-init vim-build
+	chsh -s "$$(which zsh)"
 
 wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	win-copy \
+	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
 ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init docker-systemd \
 	ubuntu-desktop ubuntu-font
 
-mac: brew-init ## task for Mac
-	setup-zshrc \
-	git
+mac: setup-zshrc copy brew git vim-init-mac ## task for Mac
 
-setup-bashrc:
-	# Bash
-	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
-	echo "cd" >> "$${HOME}"/.bashrc
-	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
+# setup-bashrc:
+# 	# Bash
+# 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
+# 	echo "cd" >> "$${HOME}"/.bashrc
+# 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
 
 setup-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
-	echo "if test -f "$${HOME}"/dotfiles/etc/dot.profile; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.zshenv
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+
+init-copy:
+	# Alacritty
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local.toml "$${HOME}"
 
 copy: ## copy config files and make symbolic links
 	# dotfiles
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
 	cp -rf "$${HOME}"/dotfiles/etc/home/dot.gitignore "$${HOME}"/.gitignore
@@ -52,14 +56,16 @@ copy: ## copy config files and make symbolic links
 	rm -f "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& rm -f "$${XDG_CONFIG_HOME}"/efm-langserver \
+	&& rm -f "$${XDG_CONFIG_HOME}"/alacritty \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty "$${XDG_CONFIG_HOME}"
 
 win-copy: ## copy config files for Windows
 	# WSL2
@@ -93,7 +99,25 @@ apt:
 	  unzip \
 	  vim \
 	  xsel \
-	  zip
+	  zip \
+	  zsh
+
+brew:
+	# https://brew.sh/
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	brew -v
+	brew update
+	brew upgrade
+	brew install \
+	  bash-completion \
+	  git \
+	  nvim \
+	  tmux \
+	  vim \
+	  wget
+	brew install --cask google-cloud-sdk
+	# https://namileriblog.com/mac/rust_alacritty/
+	brew install --cask alacritty
 
 git:
 	git config --global alias.lo "log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short"
@@ -204,23 +228,6 @@ anaconda-init: ## install Anaconda
 	&& conda info -e
 	# conda env create -y -f foo.yml
 
-brew-init: ## install Homebrew
-	# https://brew.sh/
-	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	brew -v
-	brew update
-	brew upgrade
-	brew install \
-		bash-completion \
-		git \
-		nvim \
-		tmux \
-		vim \
-		wget
-	brew install --cask google-cloud-sdk
-	# https://namileriblog.com/mac/rust_alacritty/
-	brew install --cask alacritty
-
 docker-init: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
@@ -305,7 +312,7 @@ py-init: ## initialize for building CPython
 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
 py-build: ## build CPython
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& cd /usr/local/src/cpython \
 	&& sudo git checkout . \
 	&& sudo git switch main \
@@ -319,7 +326,7 @@ py-build: ## build CPython
 	&& python"$${PY_VER_MINOR}" --version
 
 py-vmu: ## update venv named myenv
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
@@ -334,7 +341,7 @@ py-vmu: ## update venv named myenv
 	&& deactivate
 
 py-tag: ## show cpython tags
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& sudo git -C /usr/local/src/cpython fetch
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
@@ -354,7 +361,7 @@ r-init: ## install R
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. "${HOME}"/dotfiles/etc/dot.profile \
+	. "${HOME}"/dotfiles/etc/dot.zshenv \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
