@@ -64,7 +64,7 @@ copy: ## copy config files and make symbolic links
 	&& rm -f "$${XDG_CONFIG_HOME}"/alacritty \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty "$${XDG_CONFIG_HOME}"
 
 win-copy: ## copy config files for Windows
