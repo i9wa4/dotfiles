@@ -38,6 +38,7 @@ setup-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	git clone https://github.com/yuki-yano/zeno.zsh "$${HOME}"/.cache/zeno.zsh
 
 init-copy:
 	# Alacritty
@@ -62,10 +63,12 @@ copy: ## copy config files and make symbolic links
 	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& rm -f "$${XDG_CONFIG_HOME}"/efm-langserver \
 	&& rm -f "$${XDG_CONFIG_HOME}"/alacritty \
+	&& rm -f "$${XDG_CONFIG_HOME}"/zeno \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty "$${XDG_CONFIG_HOME}"
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno "$${XDG_CONFIG_HOME}"
 
 win-copy: ## copy config files for Windows
 	# WSL2
@@ -92,6 +95,7 @@ apt:
 	sudo apt install -y \
 	  alacritty \
 	  bc \
+	  fzf \
 	  nkf \
 	  ripgrep \
 	  shellcheck \
@@ -110,6 +114,7 @@ brew:
 	brew upgrade
 	brew install \
 	  bash-completion \
+	  fzf \
 	  git \
 	  nvim \
 	  tmux \

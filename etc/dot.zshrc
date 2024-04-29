@@ -1,17 +1,32 @@
+# https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit promptinit
 compinit
 promptinit
 
 prompt suse
 
-# editor
-# set -o vi
+# https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
+zstyle ':completion:*' menu select interactive
+setopt menu_complete
+zmodload zsh/complist
+bindkey -M menuselect '^k' accept-and-infer-next-history
+bindkey -M menuselect '^n' down-line-or-history
+bindkey -M menuselect '^p' up-line-or-history
 
-# aliases
-alias ll='ls -alFv'
-alias py-vma='. "${PY_VENV_MYENV}"/bin/activate'
-alias jl='zsh "${HOME}"/dotfiles/bin/jl.sh "$(pwd)"'
-alias rmarkdown-render='zsh "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"'
+# editor
+set -o vi
+
+# zeno.zsh
+. "${HOME}"/.cache/zeno.zsh/zeno.zsh
+# https://qiita.com/obake_fe/items/da8f861eed607436b91c
+if [[ -n $ZENO_LOADED ]]; then
+  bindkey ' '  zeno-auto-snippet
+  bindkey '^m' zeno-auto-snippet-and-accept-line
+  bindkey '^i' zeno-completion
+  bindkey '^g' zeno-ghq-cd
+  bindkey '^r' zeno-history-selection
+  bindkey '^x' zeno-insert-snippet
+fi
 
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
@@ -24,8 +39,8 @@ zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 PROMPT='%F{cyan}%n@%m%f'
-PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
-PROMPT="${PROMPT}"' %F{reset}%~ '\$vcs_info_msg_0_'
+# PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
+PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
 precmd(){ vcs_info }
 

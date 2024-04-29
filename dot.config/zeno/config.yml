@@ -1,0 +1,13 @@
+snippets:
+  - name: ll
+    keyword: ll
+    snippet: ls -alFv
+  - name: (Python) activate venv myenv
+    keyword: py-vma
+    snippet: . "${PY_VENV_MYENV}"/bin/activate
+  - name: (Python) JupyterLab
+    keyword: jl
+    snippet: zsh "${HOME}"/dotfiles/bin/jl.sh "$(pwd)"
+  - name: (R Markdown) render
+    keyword: rmarkdown-render
+    snippet: zsh "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"
