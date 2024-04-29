@@ -2,7 +2,7 @@ autoload -Uz compinit promptinit
 compinit
 promptinit
 
-prompt walters
+prompt suse
 
 # editor
 # set -o vi
@@ -16,12 +16,20 @@ alias rmarkdown-render='zsh "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"'
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
 autoload -Uz vcs_info
-precmd_vcs_info() { vcs_info }
-precmd_functions+=( precmd_vcs_info )
 setopt prompt_subst
-# RPROMPT=\$vcs_info_msg_0_
-# PROMPT=\$vcs_info_msg_0_'%# '
-zstyle ':vcs_info:git:*' formats '%b'
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
+# zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
+zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+# PROMPT='%n@%m %c'\$vcs_info_msg_0_' %# '
+_SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+PROMPT='%F{green}%n@%m%f'
+PROMPT="${PROMPT}"' %F{blue}('\$_SHELL_TYPE'-Lv%L)%f'
+PROMPT="${PROMPT}"' %F{reset}%~ '\$vcs_info_msg_0_'
+%# '
+precmd(){ vcs_info }
 
 # Homebrew
 export PATH=/opt/homebrew/bin:"${PATH}"
