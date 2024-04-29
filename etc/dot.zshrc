@@ -28,12 +28,12 @@ export AWS_DEFAULT_PROFILE=
 
 # tmux
 # https://qiita.com/ssh0/items/a9956a74bff8254a606a
-if [[ ! -n "${TMUX}" ]]; then
-  # get the IDs
-  ID="$(tmux list-sessions)"
-  if [[ -z "${ID}" ]]; then
-    tmux new-session
-  fi
-  ID="$(echo "${ID}" | "${PERCOL}" | cut -d: -f1)"
-  tmux attach-session -t "${ID}"
+alias tmux="tmux -u2"
+
+# tmuxの自動起動
+count=$(ps aux | grep tmux | grep -v grep | wc -l)
+if test "${count}" -eq 0; then
+    echo $(tmux)
+elif test "${count}" -eq 1; then
+    echo $(tmux a)
 fi
