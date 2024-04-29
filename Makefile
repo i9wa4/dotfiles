@@ -79,10 +79,12 @@ win-copy: ## copy config files for Windows
 
 apt:
 	sudo add-apt-repository -y ppa:git-core/ppa
+	sudo add-apt-repository -y ppa:aslatter/ppa
 	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y \
+	  alacritty \
 	  bc \
 	  nkf \
 	  ripgrep \
