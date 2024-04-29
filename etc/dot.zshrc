@@ -17,8 +17,13 @@ bindkey -M menuselect '^p' up-line-or-history
 set -o vi
 
 # zeno.zsh
-if test "${HOME}"/.cache/zeno.zsh/zeno.zsh -f; then
+if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
   . "${HOME}"/.cache/zeno.zsh/zeno.zsh
+else
+  git clone https://github.com/yuki-yano/zeno.zsh "${HOME}"/.cache/zeno.zsh
+  if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
+    . "${HOME}"/.cache/zeno.zsh/zeno.zsh
+  fi
 fi
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
 if [[ -n $ZENO_LOADED ]]; then

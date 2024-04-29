@@ -38,7 +38,6 @@ setup-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	git clone https://github.com/yuki-yano/zeno.zsh "$${HOME}"/.cache/zeno.zsh
 
 init-copy:
 	# Alacritty
