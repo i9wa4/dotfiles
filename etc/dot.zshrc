@@ -17,7 +17,9 @@ bindkey -M menuselect '^p' up-line-or-history
 set -o vi
 
 # zeno.zsh
-. "${HOME}"/.cache/zeno.zsh/zeno.zsh
+if test "${HOME}"/.cache/zeno.zsh/zeno.zsh -f; then
+  . "${HOME}"/.cache/zeno.zsh/zeno.zsh
+fi
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
 if [[ -n $ZENO_LOADED ]]; then
   bindkey ' '  zeno-auto-snippet
