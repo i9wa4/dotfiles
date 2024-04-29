@@ -38,8 +38,6 @@ setup-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	curl -o ~/.git-prompt.sh \
-	  https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
 
 init-copy:
 	# Alacritty
