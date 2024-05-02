@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-set -euox pipefail -o posix
+set -euo pipefail
 
 rm -rf "${HOME}"/.ipynb_checkpoints
 rm -rf "${HOME}"/.virtual_documents

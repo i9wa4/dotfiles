@@ -1,9 +1,18 @@
 {
-    "shebang": {
-        "prefix": "shebang",
+    "shebang-bash": {
+        "prefix": "shebang-bash",
+        "body": [
+            "#!/usr/bin/env bash",
+            "set -euox pipefail -o posix",
+            "",
+            "$0"
+        ]
+    },
+    "shebang-zsh": {
+        "prefix": "shebang-zsh",
         "body": [
             "#!/usr/bin/env zsh",
-            "set -euox pipefail -o posix",
+            "set -euo pipefail",
             "",
             "$0"
         ]
