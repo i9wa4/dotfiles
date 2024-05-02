@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-set -euox pipefail -o posix
+set -euo pipefail
 
 # background colors
 for C in {0..255}; do
