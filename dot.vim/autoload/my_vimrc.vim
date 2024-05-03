@@ -9,7 +9,7 @@ endfunction
 
 function! my_vimrc#clean_viminfo() abort
   " delete history
-  call histdel("cmd")
+  " call histdel("cmd")
   call histdel("search")
   call histdel("expr")
   call histdel("input")
