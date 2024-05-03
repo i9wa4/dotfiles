@@ -152,9 +152,6 @@ export class Config extends BaseConfig {
           frozen: true,
           merged: false,
         },
-        includes: [
-          "*.vim",
-        ],
       },
     ) as Plugin[] | undefined;
 
