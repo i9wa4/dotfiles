@@ -1,9 +1,10 @@
 import {
   BaseConfig,
+  ConfigReturn,
   ContextBuilder,
   Dpp,
   Plugin,
-} from "https://deno.land/x/dpp_vim@v0.0.2/types.ts";
+} from "https://deno.land/x/dpp_vim@v0.1.0/types.ts";
 // import { Denops, fn } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
 import { Denops } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
 
@@ -24,10 +25,7 @@ export class Config extends BaseConfig {
     contextBuilder: ContextBuilder;
     basePath: string;
     dpp: Dpp;
-  }): Promise<{
-    plugins: Plugin[];
-    stateLines: string[];
-  }> {
+  }): Promise<ConfigReturn> {
     const hasNvim = args.denops.meta.host === "nvim";
     // const hasWindows = await fn.has(args.denops, "win32");
 
@@ -142,36 +140,36 @@ export class Config extends BaseConfig {
       }
     }
 
-    // const localPlugins = await args.dpp.extAction(
-    //   args.denops,
-    //   context,
-    //   options,
-    //   "local",
-    //   "local",
-    //   {
-    //     directory: "~/work/git/plugins",
-    //     options: {
-    //       frozen: true,
-    //       merged: false,
-    //     },
-    //     includes: [
-    //     ],
-    //   },
-    // ) as Plugin[] | undefined;
-    //
-    // if (localPlugins) {
-    //   // Merge localPlugins
-    //   for (const plugin of localPlugins) {
-    //     if (plugin.name in recordPlugins) {
-    //       recordPlugins[plugin.name] = Object.assign(
-    //         recordPlugins[plugin.name],
-    //         plugin,
-    //       );
-    //     } else {
-    //       recordPlugins[plugin.name] = plugin;
-    //     }
-    //   }
-    // }
+    const localPlugins = await args.dpp.extAction(
+      args.denops,
+      context,
+      options,
+      "local",
+      "local",
+      {
+        directory: "~/work/git/plugins",
+        options: {
+          frozen: true,
+          merged: false,
+        },
+        includes: [
+          "*.vim",
+        ],
+      },
+    ) as Plugin[] | undefined;
+
+    if (localPlugins) {
+      for (const plugin of localPlugins) {
+        if (plugin.name in recordPlugins) {
+          recordPlugins[plugin.name] = Object.assign(
+            recordPlugins[plugin.name],
+            plugin,
+          );
+        } else {
+          recordPlugins[plugin.name] = plugin;
+        }
+      }
+    }
 
     const lazyResult = await args.dpp.extAction(
       args.denops,
