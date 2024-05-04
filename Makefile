@@ -28,54 +28,37 @@ ubuntu: ubuntu-minimal ## task for Ubuntu
 
 mac: setup-zshrc copy brew git vim-init-mac ## task for Mac
 
-# setup-bashrc:
-# 	# Bash
-# 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.bashrc ]; then . "$${HOME}"/dotfiles/etc/dot.bashrc; fi" >> "$${HOME}"/.bashrc
-# 	echo "cd" >> "$${HOME}"/.bashrc
-# 	echo "if [ -f "$${HOME}"/dotfiles/etc/dot.profile ]; then . "$${HOME}"/dotfiles/etc/dot.profile; fi" >> "$${HOME}"/.profile
-
 setup-zshrc:
 	# Zsh
-	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshrc; then . "$${HOME}"/dotfiles/etc/dot.zshrc; fi" >> "$${HOME}"/.zshrc
-	echo "if test -f "$${HOME}"/dotfiles/etc/dot.zshenv; then . "$${HOME}"/dotfiles/etc/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "if test -f "$${HOME}"/dotfiles/dot.zshenv; then . "$${HOME}"/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 
 init-copy:
 	# Alacritty
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
 copy: ## copy config files and make symbolic links
 	# dotfiles
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
-	&& cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
-	cp -rf "$${HOME}"/dotfiles/etc/home/dot.bash_profile "$${HOME}"/.bash_profile
-	cp -rf "$${HOME}"/dotfiles/etc/home/dot.gitignore "$${HOME}"/.gitignore
-	cp -rf "$${HOME}"/dotfiles/etc/home/dot.tmux.conf "$${HOME}"/.tmux.conf
+	ln -fs "$${HOME}"/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
-	rm -f "$${HOME}"/.vimrc
-	rm -f "$${HOME}"/.vim
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
-	# XDG_CONFIG_HOME
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	# $XDG_CONFIG_HOME
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
-	&& rm -f "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
-	&& rm -f "$${XDG_CONFIG_HOME}"/efm-langserver \
-	&& rm -f "$${XDG_CONFIG_HOME}"/alacritty \
-	&& rm -f "$${XDG_CONFIG_HOME}"/zeno \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}" "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver "$${XDG_CONFIG_HOME}"/efm-langserver \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno "$${XDG_CONFIG_HOME}"
+	&& cp -rf "$${HOME}"/dotfiles/dot.config/jupyter                "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}"    "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}"    "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty              "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver         "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
 
 win-copy: ## copy config files for Windows
 	# WSL2
-	sudo cp -f "$${HOME}"/dotfiles/etc/wsl/wsl.conf /etc/wsl.conf
+	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
 	mkdir -p /mnt/c/work
-	# rm -rf "$${HOME}"/work
-	# ln -s /mnt/c/work/ "$${HOME}"/work
 	# Windows copy
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
@@ -83,6 +66,7 @@ win-copy: ## copy config files for Windows
 	cp -rf "$${HOME}"/dotfiles/bin $(MF_WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/dot.config $(MF_WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/dot.vim $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/dotfiles/dot.vscode $(MF_WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/etc $(MF_WIN_UTIL_DIR)
 
 apt:
@@ -287,7 +271,7 @@ jekyll-init: ## install Jekyll
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y ruby-full build-essential zlib1g-dev
-	. "$${HOME}"/.profile \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& gem install jekyll bundler
 
 nodejs-init: ## install Node.js
@@ -316,7 +300,7 @@ py-init: ## initialize for building CPython
 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
 py-build: ## build CPython
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& cd /usr/local/src/cpython \
 	&& sudo git checkout . \
 	&& sudo git switch main \
@@ -330,7 +314,7 @@ py-build: ## build CPython
 	&& python"$${PY_VER_MINOR}" --version
 
 py-vmu: ## update venv named myenv
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
 	else \
@@ -345,7 +329,7 @@ py-vmu: ## update venv named myenv
 	&& deactivate
 
 py-tag: ## show cpython tags
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& sudo git -C /usr/local/src/cpython fetch
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
@@ -365,7 +349,7 @@ r-init: ## install R
 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
 	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. "${HOME}"/dotfiles/etc/dot.zshenv \
+	. "${HOME}"/dotfiles/dot.zshenv \
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& R -e "IRkernel::installspec()"
 
