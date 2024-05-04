@@ -13,6 +13,7 @@
         "body": [
             "#!/usr/bin/env zsh",
             "set -euo pipefail",
+            "setopt xtrace posix",
             "",
             "$0"
         ]
