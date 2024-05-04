@@ -31,6 +31,7 @@ mac: setup-zshrc copy brew git vim-init-mac ## task for Mac
 setup-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "cd" >> "$${HOME}"/.zshrc
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshenv; then . "$${HOME}"/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 
 init-copy:
