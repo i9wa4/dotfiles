@@ -1,0 +1,1 @@
+/home/i9wa4/dotfiles/dot.vim
