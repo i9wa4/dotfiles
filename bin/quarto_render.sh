@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 set -euo pipefail
-setopt xtrace
+setopt xtrace posix err_exit
 
 . "${PY_VENV_MYENV}"/bin/activate
 find "$1" -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath

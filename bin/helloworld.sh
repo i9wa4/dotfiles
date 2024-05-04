@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 set -euo pipefail
-setopt xtrace posix
+setopt xtrace posix err_exit
 
 script_basename=$(basename "$0")
 script_dir=$(cd "$(dirname "$0")"; pwd)
