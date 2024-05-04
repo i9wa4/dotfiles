@@ -1,6 +1,6 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
-.SHELLFLAGS := -euox pipefail -o posix -c
+.SHELLFLAGS := -euo pipefail -o posix -c
 .DEFAULT_GOAL := help
 
 
@@ -53,7 +53,8 @@ copy: ## copy config files and make symbolic links
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver         "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
-	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter                "$${XDG_CONFIG_HOME}"
+	# cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
+	# cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
 win-copy: ## copy config files for Windows
 	# WSL2
@@ -320,7 +321,6 @@ py-vmu: ## update venv named myenv
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
 	fi \
-	# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
