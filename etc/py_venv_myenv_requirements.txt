@@ -11,4 +11,5 @@ pandas
 py
 pynvim
 python-lsp-server[all]
+quarto-cli
 scikit-learn
