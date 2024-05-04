@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 set -euo pipefail
-setopt xtrace posix
+setopt xtrace posix err_exit
 
 find "$1" -maxdepth 1 -name "*.Rmd" -type f -print | while read -r filepath
 do

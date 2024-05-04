@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 set -euo pipefail
-setopt xtrace posix
+setopt xtrace posix err_exit
 
 rm -rf "${HOME}"/.ipynb_checkpoints
 rm -rf "${HOME}"/.virtual_documents
