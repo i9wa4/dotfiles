@@ -2,15 +2,17 @@ snippets:
   - name: ll
     keyword: ll
     snippet: ls -alFv
-  - name: (Python) activate venv myenv
-    keyword: py-vma
+  - name: (Python venv) Activate myenv
+    keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
+  - name: (Quarto) Render
+    keyword: qr
+    snippet: find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
+              do
+                quarto render "${filepath}";
+              done
   - name: (Python) JupyterLab
     keyword: jl
-    snippet: zsh "${HOME}"/dotfiles/bin/jl.sh "$(pwd)"
-  - name: (R Markdown) render
-    keyword: rmarkdown-render
-    snippet: zsh "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"
-  - name: (Quarto) render
-    keyword: quarto-render
-    snippet: zsh "${HOME}"/dotfiles/bin/quarto_render.sh "$(pwd)"
+    snippet: jupyter-lab
+              --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
+              --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
