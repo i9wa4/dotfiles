@@ -47,13 +47,13 @@ copy: ## copy config files and make symbolic links
 	# $XDG_CONFIG_HOME
 	. "${HOME}"/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& cp -rf "$${HOME}"/dotfiles/dot.config/jupyter                "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}"    "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}"    "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty              "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver         "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
+	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter                "$${XDG_CONFIG_HOME}"
 
 win-copy: ## copy config files for Windows
 	# WSL2
@@ -320,6 +320,7 @@ py-vmu: ## update venv named myenv
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
 	fi \
+	# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
