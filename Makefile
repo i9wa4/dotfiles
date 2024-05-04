@@ -308,10 +308,9 @@ py-build: ## build CPython
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-	&& sudo make distclean \
 	&& sudo ./configure --with-pydebug \
 	&& sudo make \
-	&& sudo make altinstall
+	&& sudo make altinstall \
 	&& python"$${PY_VER_MINOR}" --version
 
 py-vmu: ## update venv named myenv
@@ -331,7 +330,7 @@ py-vmu: ## update venv named myenv
 
 py-tag: ## show cpython tags
 	. "${HOME}"/dotfiles/dot.zshenv \
-	&& sudo git -C /usr/local/src/cpython fetch
+	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 r-init: ## install R
