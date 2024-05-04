@@ -11,3 +11,6 @@ snippets:
   - name: (R Markdown) render
     keyword: rmarkdown-render
     snippet: zsh "${HOME}"/dotfiles/bin/rmarkdown_render.sh "$(pwd)"
+  - name: (Quarto) render
+    keyword: quarto-render
+    snippet: zsh "${HOME}"/dotfiles/bin/quarto_render.sh "$(pwd)"
