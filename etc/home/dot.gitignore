@@ -1,5 +1,6 @@
 .ipynb_checkpoints/
 .virtual_documents/
+.vscode/
 node_modules/
 *.log
 .DS_Store
