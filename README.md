@@ -13,6 +13,8 @@
 1. Install WSL2.
     - cf. [WSL2 のセットアップ | i9wa4’s blog](https://i9wa4.github.io/blog/2024/03/25/setup-wsl2.html)
 1. Execute `make wsl2`.
+1. Install VS Code extension "Remote Development".
+    - cf. [WSL で VS Code の使用を開始する | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/tutorials/wsl-vscode)
 
 ### 2.2. Ubuntu
 
