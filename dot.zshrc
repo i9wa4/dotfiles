@@ -65,12 +65,6 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 # AWS
 export AWS_DEFAULT_PROFILE=
 
-# local env
-# export VOLTA_HOME="${HOME}"/.volta
-# export PATH="${VOLTA_HOME}"/bin:"${PATH}"
-# export PATH="${HOME}"/.rbenv/bin:"${PATH}"
-# eval "$(rbenv init - zsh)"
-
 # tmux
 # https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
