@@ -333,6 +333,38 @@ py-tag: ## show cpython tags
 	&& sudo git -C /usr/local/src/cpython fetch \
 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
+pyenv-init-mac: ## initialize for pyenv in Mac
+	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+	brew update
+	brew install pyenv
+	brew install openssl readline sqlite3 xz zlib tcl-tk
+	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
+
+pyenv-build: ## build CPython
+	. "${HOME}"/dotfiles/dot.zshenv \
+	&& pyenv -v \
+	&& pyenv install --list \
+	&& pyenv install "$${PY_VER_MINOR}" \
+	&& python --version \
+	&& pyenv versions \
+	&& pyenv global  "$${PY_VER_MINOR}"
+
+pyenv-vmu: ## update venv named myenv
+	. "${HOME}"/dotfiles/dot.zshenv \
+	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+	  python -m venv "$${PY_VENV_MYENV}" --upgrade; \
+	else \
+	  python -m venv "$${PY_VENV_MYENV}"; \
+	fi \
+	&& . "$${PY_VENV_MYENV}"/bin/activate \
+	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python -m pip install --upgrade pip setuptools wheel \
+	&& python -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python -m pip check \
+	&& python --version \
+	&& deactivate
+
 r-init: ## install R
 	# sudo apt update
 	sudo apt install -y --no-install-recommends \
