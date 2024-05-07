@@ -1,3 +1,4 @@
-[import]
-~/.config/alacritty/config/common.toml
-~/alacritty_local.toml
+import = [
+  "~/.config/alacritty/config/common.toml",
+  "~/alacritty_local.toml",
+]
