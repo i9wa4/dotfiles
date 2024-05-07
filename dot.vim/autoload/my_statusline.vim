@@ -82,11 +82,12 @@ function! my_statusline#tabline() abort
   endfor
 
   let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
-  let l:ret ..= fnamemodify(getcwd(), ':~')
+  " let l:ret ..= fnamemodify(getcwd(), ':~')
   if function('branch_name#get_current_branch_name') != 0
     let l:branch_name = branch_name#get_current_branch_name()
     if l:branch_name != ''
-      let l:ret ..= ' (' .. branch_name#get_current_branch_name() .. ')'
+      " let l:ret ..= ' (' .. branch_name#get_current_branch_name() .. ')'
+      let l:ret ..= branch_name#get_current_branch_name()
     endif
   endif
   " if has('mac')
