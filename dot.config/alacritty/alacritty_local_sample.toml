@@ -1,4 +1,5 @@
-[import]
-# ~/.config/alacritty/config/mac.toml
-# ~/.config/alacritty/config/ubuntu.toml
-# ~/.config/alacritty/config/wsl.toml
+import = [
+  "~/.config/alacritty/config/mac.toml",
+  # "~/.config/alacritty/config/ubuntu.toml",
+  # "~/.config/alacritty/config/wsl.toml",
+]
