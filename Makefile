@@ -98,7 +98,6 @@ brew:
 	brew update
 	brew upgrade
 	brew install \
-	  bash-completion \
 	  fzf \
 	  git \
 	  nvim \
