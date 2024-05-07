@@ -101,6 +101,7 @@ brew:
 	  fzf \
 	  git \
 	  nvim \
+	  ripgrep \
 	  tmux \
 	  vim \
 	  wget
