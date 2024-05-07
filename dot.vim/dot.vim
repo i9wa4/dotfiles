@@ -1,1 +1,1 @@
-/home/i9wa4/dotfiles/dot.vim
+/Users/daiki.mawatari/dotfiles/dot.vim
