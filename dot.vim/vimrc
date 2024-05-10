@@ -169,6 +169,7 @@ nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
 nnoremap <silent> <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
+nnoremap <silent> <Plug>(my-Filer)d :<C-u>execute 'edit' g:my_daily_path<CR>
 nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
 nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
 nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' '%:p:h'->expand()<CR>
@@ -276,6 +277,7 @@ function! s:my_filetype() abort
     \   'mermaid',
     \   'plantuml',
     \   'sh',
+    \   'terraform',
     \   'toml',
     \   'typescript',
     \   'vim',
