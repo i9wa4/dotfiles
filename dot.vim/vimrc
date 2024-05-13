@@ -111,11 +111,13 @@ set noshowmode
 set showtabline=2
 
 " Highlight
-" set colorcolumn=80
-" set cursorline
+set colorcolumn=80
+set cursorcolumn
+set cursorline
 set showmatch matchtime=1 matchpairs+=\<:\>
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
-set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
+" set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
+set list listchars=nbsp:%
 if &diff
   set nospell
 else
