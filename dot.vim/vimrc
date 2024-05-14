@@ -145,13 +145,15 @@ xnoremap <expr> k (v:count == 0 && mode() ==# 'v') ? 'gk' : 'k'
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 
-" TabLine
-nnoremap <silent> H :<C-u>tabprevious<CR>
-nnoremap <silent> L :<C-u>tabnext<CR>
-
-" Location List
-nnoremap <silent> <C-n> :<C-u>lnext<CR>
-nnoremap <silent> <C-p> :<C-u>lprevious<CR>
+" pair
+command! Cprevious  try | cprevious | catch | clast   | catch | endtry
+command! Cnext      try | cnext     | catch | cfirst  | catch | endtry
+command! Lprevious  try | lprevious | catch | llast   | catch | endtry
+command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
+nnoremap <C-[> :Cprevious<CR>
+nnoremap <C-]> :Cnext<CR>
+nnoremap <S-[> :Lprevious<CR>
+nnoremap <S-]> :Lnext<CR>
 
 " Resize Window
 nnoremap <silent> <S-Down>  <C-w>1-
