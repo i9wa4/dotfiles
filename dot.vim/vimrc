@@ -117,7 +117,7 @@ set cursorline
 set showmatch matchtime=1 matchpairs+=\<:\>
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
 " set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
-set list listchars=nbsp:%
+set list listchars=tab:>-,trail:~,nbsp:%,extends:»,precedes:«
 if &diff
   set nospell
 else
