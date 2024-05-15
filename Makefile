@@ -351,10 +351,9 @@ pyenv-build: ## build CPython
 	&& pyenv -v \
 	&& pyenv install --list \
 	&& pyenv install "$${PY_VER_MINOR}" \
-	&& python --version \
 	&& pyenv versions \
 	&& pyenv global  "$${PY_VER_MINOR}" \
-	&& sudo python -m pip config --global set global.require-virtualenv true
+	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-vmu: ## update venv named myenv
 	. "${HOME}"/dotfiles/dot.zshenv \
