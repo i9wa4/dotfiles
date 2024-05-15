@@ -31,7 +31,7 @@ export PATH="${HOME}"/gems/bin:"${PATH}"
 
 # Python
 export PY_VER_MINOR=3.12
-export PY_VER_PATCH=3.12.3
+# export PY_VER_PATCH=3.12.3
 export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 # config file path: ${XDG_CONFIG_HOME}/jupyter

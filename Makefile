@@ -370,6 +370,10 @@ pyenv-vmu: ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
+pyenv-list: ## show available versions
+	pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
+
+
 # r-init-ubuntu: ## install R
 # 	# sudo apt update
 # 	sudo apt install -y --no-install-recommends \
