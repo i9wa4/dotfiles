@@ -14,26 +14,7 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 # editor
-set -o vi
-
-# zeno.zsh
-if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
-  . "${HOME}"/.cache/zeno.zsh/zeno.zsh
-else
-  git clone https://github.com/yuki-yano/zeno.zsh "${HOME}"/.cache/zeno.zsh
-  if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
-    . "${HOME}"/.cache/zeno.zsh/zeno.zsh
-  fi
-fi
-# https://qiita.com/obake_fe/items/da8f861eed607436b91c
-if [[ -n $ZENO_LOADED ]]; then
-  bindkey ' '  zeno-auto-snippet
-  bindkey '^m' zeno-auto-snippet-and-accept-line
-  bindkey '^i' zeno-completion
-  bindkey '^g' zeno-ghq-cd
-  bindkey '^r' zeno-history-selection
-  bindkey '^x' zeno-insert-snippet
-fi
+# set -o vi
 
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
@@ -53,17 +34,11 @@ else
   PROMPT='%F{cyan}%n@%m%f'
 fi
 
+# Prompt
 PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
 PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
 precmd(){ vcs_info }
-
-# Homebrew
-export PATH=/opt/homebrew/bin:"${PATH}"
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-
-# AWS
-export AWS_DEFAULT_PROFILE=
 
 # tmux
 # https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
@@ -78,4 +53,23 @@ else
   elif test "${count}" -eq 1; then
       echo $(tmux a)
   fi
+fi
+
+# zeno.zsh
+if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
+  . "${HOME}"/.cache/zeno.zsh/zeno.zsh
+else
+  git clone https://github.com/yuki-yano/zeno.zsh "${HOME}"/.cache/zeno.zsh
+  if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
+    . "${HOME}"/.cache/zeno.zsh/zeno.zsh
+  fi
+fi
+# https://qiita.com/obake_fe/items/da8f861eed607436b91c
+if [[ -n $ZENO_LOADED ]]; then
+  bindkey ' '  zeno-auto-snippet
+  bindkey '^m' zeno-auto-snippet-and-accept-line
+  bindkey '^i' zeno-completion
+  bindkey '^g' zeno-ghq-cd
+  bindkey '^r' zeno-history-selection
+  bindkey '^x' zeno-insert-snippet
 fi

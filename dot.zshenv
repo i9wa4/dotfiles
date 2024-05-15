@@ -17,10 +17,10 @@ export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
 # Git
-export GIT_PS1_SHOWDIRTYSTATE=true      # *:unstaged, +:staged
-export GIT_PS1_SHOWSTASHSTATE=true      # $:stashed
-export GIT_PS1_SHOWUNTRACKEDFILES=true  # %:untracked
-export GIT_PS1_SHOWUPSTREAM=auto        # >:ahead, <:behind
+# export GIT_PS1_SHOWDIRTYSTATE=true      # *:unstaged, +:staged
+# export GIT_PS1_SHOWSTASHSTATE=true      # $:stashed
+# export GIT_PS1_SHOWUNTRACKEDFILES=true  # %:untracked
+# export GIT_PS1_SHOWUPSTREAM=auto        # >:ahead, <:behind
 
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
@@ -36,3 +36,10 @@ export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 # config file path: ${XDG_CONFIG_HOME}/jupyter
 export JUPYTER_PLATFORM_DIRS=1
+
+# Homebrew
+export PATH=/opt/homebrew/bin:"${PATH}"
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+
+# AWS
+export AWS_DEFAULT_PROFILE=
