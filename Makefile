@@ -317,7 +317,8 @@ pyenv-vmu: ## update venv named myenv
 	&& deactivate
 
 pyenv-list: ## show available versions
-	pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
+	. "${HOME}"/dotfiles/dot.zshenv \
+	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
 
 ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
