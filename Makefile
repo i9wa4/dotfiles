@@ -315,7 +315,7 @@ py-build: ## build CPython
 	&& sudo make \
 	&& sudo make altinstall \
 	&& python"$${PY_VER_MINOR}" --version \
-	&& python -m pip config --global set global.require-virtualenv true
+	&& sudo python -m pip config --global set global.require-virtualenv true
 
 py-vmu: ## update venv named myenv
 	. "${HOME}"/dotfiles/dot.zshenv \
@@ -353,7 +353,7 @@ pyenv-build: ## build CPython
 	&& python --version \
 	&& pyenv versions \
 	&& pyenv global  "$${PY_VER_MINOR}" \
-	&& python -m pip config --global set global.require-virtualenv true
+	&& sudo python -m pip config --global set global.require-virtualenv true
 
 pyenv-vmu: ## update venv named myenv
 	. "${HOME}"/dotfiles/dot.zshenv \
