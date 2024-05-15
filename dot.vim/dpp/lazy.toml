@@ -1,6 +1,6 @@
 [[plugins]]
 repo = 'dhruvasagar/vim-table-mode'
-on_ft = ['markdown', 'rmd']
+on_ft = ['markdown', 'qmd', 'rmd']
 
 [[plugins]]
 repo = 'vim-denops/denops-helloworld.vim'
@@ -10,7 +10,7 @@ on_source = ['denops.vim']
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
 depends = ['denops.vim']
-on_ft = ['markdown', 'rmd']
+on_ft = ['markdown', 'qmd', 'rmd']
 
 [[plugins]]
 repo = 'i9wa4/get-git-branch-name.vim'

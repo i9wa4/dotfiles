@@ -11,10 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-dummy:
-	@echo "MF_WIN_UTIL_DIR=$(MF_WIN_UTIL_DIR)"
-
-ubuntu-minimal: setup-zshrc link apt git vim-init vim-build
+ubuntu-minimal: init-zshrc init-copy link apt git vim-init-ubuntu vim-build-ubuntu go-package
 	chsh -s "$$(which zsh)"
 
 wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
@@ -23,12 +20,13 @@ wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	echo "Restart WSL"
 
 ubuntu: ubuntu-minimal ## task for Ubuntu
-	docker-init docker-systemd \
-	ubuntu-desktop ubuntu-font
+	docker-init-ubuntu docker-systemd-ubuntu \
+	desktop-ubuntu font-ubuntu
 
-mac: setup-zshrc link brew git vim-init-mac ## task for Mac
+mac: init-zshrc init-copy link brew git vim-init-mac go-package ## task for Mac
 
-setup-zshrc:
+
+init-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "cd" >> "$${HOME}"/.zshrc
@@ -36,8 +34,7 @@ setup-zshrc:
 
 init-copy:
 	# Alacritty
-	. "${HOME}"/dotfiles/dot.zshenv \
-	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
+	cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
 link: ## make symbolic links
 	# dotfiles
@@ -101,8 +98,10 @@ brew:
 	brew install \
 	  fzf \
 	  git \
+	  hadolint \
 	  nvim \
 	  ripgrep \
+	  shellcheck \
 	  tmux \
 	  vim \
 	  wget
@@ -133,7 +132,7 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init: ## initialize for building Vim
+vim-init-ubuntu: ## initialize for building Vim
 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	# sudo apt update
 	sudo apt build-dep -y vim
@@ -148,6 +147,10 @@ vim-init: ## initialize for building Vim
 	&& gzip -d SKK-JISYO.L.gz \
 	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
 	&& gzip -d SKK-JISYO.jinmei.gz
+	# Go
+	sudo add-apt-repository -y ppa:longsleep/golang-backports
+	sudo apt update
+	sudo apt install -y golang-go
 
 vim-init-mac: ## initialize for Vim in Mac
 	# Deno
@@ -159,8 +162,10 @@ vim-init-mac: ## initialize for Vim in Mac
 	&& gzip -d SKK-JISYO.L.gz \
 	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
 	&& gzip -d SKK-JISYO.jinmei.gz
+	# Go
+	brew install go
 
-vim-build: ## build Vim
+vim-build-ubuntu: ## build Vim
 	# sudo make clean
 	cd /usr/local/src/vim \
 	&& sudo git switch master \
@@ -178,7 +183,7 @@ vim-build: ## build Vim
 	&& sudo make install \
 	&& hash -r
 
-nvim-init: ## initialize for building Neovim
+nvim-init-ubuntu: ## initialize for building Neovim
 	# https://github.com/neovim/neovim/wiki/Building-Neovim
 	# sudo apt update
 	sudo apt install -y \
@@ -199,7 +204,7 @@ nvim-init: ## initialize for building Neovim
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
-nvim-build: ## build Neovim
+nvim-build-ubuntu: ## build Neovim
 	cd /usr/local/src/neovim \
 	&& sudo git switch master \
 	&& sudo git fetch \
@@ -209,18 +214,7 @@ nvim-build: ## build Neovim
 	    BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& sudo make install
 
-anaconda-init: ## install Anaconda
-	cd \
-	&& wget https://repo.anaconda.com/archive/Anaconda3-2023.07-2-Linux-x86_64.sh \
-	&& bash Anaconda3-2023.07-2-Linux-x86_64.sh
-	. "$${HOME}"/.bashrc \
-	&& conda config --append channels conda-forge \
-	&& conda config --set auto_activate_base false \
-	&& conda update --all \
-	&& conda info -e
-	# conda env create -y -f foo.yml
-
-docker-init: ## install Docker
+docker-init-ubuntu: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
 	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
@@ -243,33 +237,30 @@ docker-init: ## install Docker
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
 
-docker-hadolint: ## install hadolint
+docker-hadolint-ubuntu: ## install hadolint
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
 	sudo chmod 755 /usr/local/bin/hadolint
 
-docker-systemd: ## enable autostart for docker
+docker-systemd-ubuntu: ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-docker-trivy: ## install trivy
-	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
-	sudo apt-get install wget apt-transport-https gnupg lsb-release
-	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-	sudo apt-get update
-	sudo apt-get install trivy
+# docker-trivy-ubuntu: ## install trivy
+# 	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
+# 	sudo apt-get install wget apt-transport-https gnupg lsb-release
+# 	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+# 	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+# 	sudo apt-get update
+# 	sudo apt-get install trivy
 
-go-init: ## install go
-	sudo add-apt-repository -y ppa:longsleep/golang-backports
-	sudo apt update
-	sudo apt install -y golang-go
+go-package: ## install go packages
 	go install github.com/rhysd/vim-startuptime@latest
 	# $ vim-startuptime -vimpath nvim -count 100
 	# $ vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
 
-jekyll-init: ## install Jekyll
+jekyll-init-ubuntu: ## install Jekyll
 	# https://maeda577.github.io/2019/11/04/new-jekyll.html
 	# https://github.com/github/pages-gem
 	sudo apt update
@@ -278,64 +269,61 @@ jekyll-init: ## install Jekyll
 	. "${HOME}"/dotfiles/dot.zshenv \
 	&& gem install jekyll bundler
 
-nodejs-init: ## install Node.js
-	# Node.js/npm
-	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
-	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-	sudo apt-get install -y nodejs
-	sudo npm install -g @mermaid-js/mermaid-cli
-	# https://github.com/mermaid-js/mermaid-cli/issues/595
-	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
+# nodejs-init-ubnutu: ## install Node.js
+# 	# Node.js/npm
+# 	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
+# 	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+# 	sudo apt-get install -y nodejs
+# 	sudo npm install -g @mermaid-js/mermaid-cli
+# 	# https://github.com/mermaid-js/mermaid-cli/issues/595
+# 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
 
-psql-init: ## install PostgreSQL
-	sudo apt install -y postgresql postgresql-contrib
+# py-init-ubuntu: ## initialize for building CPython
+# 	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
+# 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
+# 	# sudo apt update
+# 	sudo apt build-dep -y python3
+# 	sudo apt install -y \
+# 	  build-essential gdb lcov pkg-config \
+# 	  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
+# 	  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
+# 	  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
+# 	cd /usr/local/src \
+# 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
 
-py-init: ## initialize for building CPython
-	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
-	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-	# sudo apt update
-	sudo apt build-dep -y python3
-	sudo apt install -y \
-	  build-essential gdb lcov pkg-config \
-	  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
-	  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-	  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
-	cd /usr/local/src \
-	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
+# py-build-ubuntu: ## build CPython
+# 	. "${HOME}"/dotfiles/dot.zshenv \
+# 	&& cd /usr/local/src/cpython \
+# 	&& sudo git checkout . \
+# 	&& sudo git switch main \
+# 	&& sudo git fetch \
+# 	&& sudo git merge \
+# 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
+# 	&& sudo ./configure --with-pydebug \
+# 	&& sudo make \
+# 	&& sudo make altinstall \
+# 	&& python"$${PY_VER_MINOR}" --version \
+# 	&& sudo python -m pip config --global set global.require-virtualenv true
 
-py-build: ## build CPython
-	. "${HOME}"/dotfiles/dot.zshenv \
-	&& cd /usr/local/src/cpython \
-	&& sudo git checkout . \
-	&& sudo git switch main \
-	&& sudo git fetch \
-	&& sudo git merge \
-	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-	&& sudo ./configure --with-pydebug \
-	&& sudo make \
-	&& sudo make altinstall \
-	&& python"$${PY_VER_MINOR}" --version \
-	&& sudo python -m pip config --global set global.require-virtualenv true
+# py-vmu: ## update venv named myenv
+# 	. "${HOME}"/dotfiles/dot.zshenv \
+# 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+# 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --clear; \
+# 	else \
+# 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
+# 	fi \
+# 	&& . "$${PY_VENV_MYENV}"/bin/activate \
+# 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+# 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
+# 	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+# 	&& python"$${PY_VER_MINOR}" -m pip check \
+# 	&& python --version \
+# 	&& deactivate
 
-py-vmu: ## update venv named myenv
-	. "${HOME}"/dotfiles/dot.zshenv \
-	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --clear; \
-	else \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
-	fi \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
-	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
-	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-	&& python"$${PY_VER_MINOR}" -m pip check \
-	&& python --version \
-	&& deactivate
-
-py-tag: ## show cpython tags
-	. "${HOME}"/dotfiles/dot.zshenv \
-	&& sudo git -C /usr/local/src/cpython fetch \
-	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
+# py-tag: ## show cpython tags
+# 	. "${HOME}"/dotfiles/dot.zshenv \
+# 	&& sudo git -C /usr/local/src/cpython fetch \
+# 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 pyenv-init-mac: ## initialize for pyenv in Mac
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
@@ -343,6 +331,19 @@ pyenv-init-mac: ## initialize for pyenv in Mac
 	brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
+
+pyenv-init-ubuntu: ## initialize for pyenv in Mac
+	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+	curl https://pyenv.run | bash
+	sudo apt update
+	sudo apt install -y \
+	  build-essential libssl-dev zlib1g-dev \
+	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
+	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+	echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build: ## build CPython
@@ -370,31 +371,31 @@ pyenv-vmu: ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-r-init: ## install R
-	# sudo apt update
-	sudo apt install -y --no-install-recommends \
-	  software-properties-common dirmngr
-	wget -qO- \
-	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
-	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-	sudo add-apt-repository -y \
-	  "deb https://cloud.r-project.org/bin/linux/ubuntu ""$$(lsb_release -cs)""-cran40/"
-	sudo apt install -y --no-install-recommends r-base
-	sudo apt install -y libcurl4-openssl-dev libxml2-dev libblas-dev liblapack-dev libavfilter-dev
-	sudo apt install -y pandoc
-	sudo R -e "install.packages('rmarkdown', dependencies=TRUE)"
-	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
-	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
-	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-	. "${HOME}"/dotfiles/dot.zshenv \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
-	&& R -e "IRkernel::installspec()"
+# r-init-ubuntu: ## install R
+# 	# sudo apt update
+# 	sudo apt install -y --no-install-recommends \
+# 	  software-properties-common dirmngr
+# 	wget -qO- \
+# 	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+# 	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+# 	sudo add-apt-repository -y \
+# 	  "deb https://cloud.r-project.org/bin/linux/ubuntu ""$$(lsb_release -cs)""-cran40/"
+# 	sudo apt install -y --no-install-recommends r-base
+# 	sudo apt install -y libcurl4-openssl-dev libxml2-dev libblas-dev liblapack-dev libavfilter-dev
+# 	sudo apt install -y pandoc
+# 	sudo R -e "install.packages('rmarkdown', dependencies=TRUE)"
+# 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
+# 	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
+# 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
+# 	. "${HOME}"/dotfiles/dot.zshenv \
+# 	&& . "$${PY_VENV_MYENV}"/bin/activate \
+# 	&& R -e "IRkernel::installspec()"
 
-rust-init: ## install Rust
-	sudo apt install -y cargo
-	cargo install tokei
+# rust-init-ubuntu: ## install Rust
+# 	sudo apt install -y cargo
+# 	cargo install tokei
 
-ubuntu-desktop:
+desktop-ubuntu:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
 	sudo apt install -y openssh-server
@@ -402,7 +403,7 @@ ubuntu-desktop:
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
 
-ubuntu-font:
+font-ubuntu:
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \

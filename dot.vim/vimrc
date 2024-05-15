@@ -323,6 +323,10 @@ function! s:my_asyncjob_on_save() abort
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
     endif
+  elseif &filetype == 'qmd'
+    if exists(':NumberHeader') == 2
+      execute 'NumberHeader'
+    endif
   elseif &filetype == 'rmd'
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
