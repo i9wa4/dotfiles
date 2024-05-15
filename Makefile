@@ -11,19 +11,19 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc init-copy link apt git vim-init-ubuntu vim-build-ubuntu go-package
+ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init-ubuntu vim-build-ubuntu go-package
 	chsh -s "$$(which zsh)"
 
 ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init-ubuntu docker-systemd-ubuntu \
-	desktop-ubuntu font-ubuntu
+	package-ubuntu-desktop ubuntu-desktop ubuntu-font
 
 wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	copy-win \
 	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link brew git vim-init-mac go-package ## task for Mac
+mac: init-zshrc init-copy link package-mac git vim-init-mac go-package ## task for Mac
 
 
 init-zshrc:
@@ -69,14 +69,11 @@ copy-win: ## copy config files for Windows
 	cp -rf "$${HOME}"/dotfiles/dot.vscode $(MF_WIN_UTIL_DIR)
 	cp -rf "$${HOME}"/dotfiles/etc $(MF_WIN_UTIL_DIR)
 
-apt:
+package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
-	sudo add-apt-repository -y ppa:aslatter/ppa
-	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y \
-	  alacritty \
 	  bc \
 	  fzf \
 	  nkf \
@@ -88,8 +85,23 @@ apt:
 	  xsel \
 	  zip \
 	  zsh
+	# build-dep
+	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
+	sudo apt update
+	sudo apt build-dep -y vim
+	# Deno
+	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	# Go
+	sudo add-apt-repository -y ppa:longsleep/golang-backports
+	sudo apt update
+	sudo apt install -y golang-go
 
-brew:
+package-ubuntu-desktop:
+	sudo add-apt-repository -y ppa:aslatter/ppa
+	sudo apt update
+	sudo apt install -y alacritty
+
+package-mac:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	brew -v
@@ -108,6 +120,10 @@ brew:
 	brew install --cask google-cloud-sdk
 	# https://namileriblog.com/mac/rust_alacritty/
 	brew install --cask alacritty
+	# Deno
+	brew install deno
+	# Go
+	brew install go
 
 git:
 	# git config --global alias.lo "log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short"
@@ -132,40 +148,14 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init-ubuntu: ## initialize for building Vim
-	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-	# sudo apt update
-	sudo apt build-dep -y vim
+vim-init-ubuntu: ## initialize for building Vim in Ubuntu
 	cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
-	# Deno
-	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
-	# SKK
-	mkdir -p "$${HOME}"/.skk
-	cd "$${HOME}"/.skk \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
-	&& gzip -d SKK-JISYO.L.gz \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
-	&& gzip -d SKK-JISYO.jinmei.gz
-	# Go
-	sudo add-apt-repository -y ppa:longsleep/golang-backports
-	sudo apt update
-	sudo apt install -y golang-go
 
-vim-init-mac: ## initialize for Vim in Mac
-	# Deno
-	brew install deno
-	# SKK
-	mkdir -p "$${HOME}"/.skk
-	cd "$${HOME}"/.skk \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.L.gz \
-	&& gzip -d SKK-JISYO.L.gz \
-	&& wget http://openlab.jp/skk/dic/SKK-JISYO.jinmei.gz \
-	&& gzip -d SKK-JISYO.jinmei.gz
-	# Go
-	brew install go
+vim-init-mac: ## initialize for building Vim in Mac
+	echo 'none'
 
-vim-build-ubuntu: ## build Vim
+vim-build-ubuntu: ## build Vim in Ubuntu
 	# sudo make clean
 	cd /usr/local/src/vim \
 	&& sudo git switch master \
@@ -183,24 +173,29 @@ vim-build-ubuntu: ## build Vim
 	&& sudo make install \
 	&& hash -r
 
+vim-build-mac: ## build Vim in Mac
+	echo 'none'
+
 nvim-init-ubuntu: ## initialize for building Neovim
-	# https://github.com/neovim/neovim/wiki/Building-Neovim
-	# sudo apt update
+	# https://github.com/neovim/neovim/blob/master/BUILD.md
+	sudo apt update
 	sudo apt install -y \
-	  autoconf \
-	  automake \
-	  cmake \
-	  cmake \
-	  curl \
-	  doxygen \
-	  g++ \
-	  gcc \
-	  gettext \
-	  libtool \
-	  libtool-bin \
-	  ninja-build \
-	  pkg-config \
-	  unzip
+	  ninja-build gettext cmake unzip curl build-essential
+	# sudo apt install -y \
+	#   autoconf \
+	#   automake \
+	#   cmake \
+	#   cmake \
+	#   curl \
+	#   doxygen \
+	#   g++ \
+	#   gcc \
+	#   gettext \
+	#   libtool \
+	#   libtool-bin \
+	#   ninja-build \
+	#   pkg-config \
+	#   unzip
 	cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
@@ -324,7 +319,7 @@ pyenv-vmu: ## update venv named myenv
 pyenv-list: ## show available versions
 	pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
 
-desktop-ubuntu:
+ubuntu-desktop:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
 	sudo apt install -y openssh-server
@@ -332,7 +327,7 @@ desktop-ubuntu:
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
 
-font-ubuntu:
+ubuntu-font:
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
