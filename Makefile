@@ -119,6 +119,7 @@ git:
 	git config --global core.pager "LESSCHARSET=utf-8 less"
 	git config --global core.quotepath false
 	git config --global credential.helper store
+	git config --global diff.algorithm histogram
 	git config --global diff.compactionHeuristic true
 	git config --global diff.tool vimdiff
 	git config --global difftool.prompt false
