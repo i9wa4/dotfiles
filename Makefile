@@ -126,7 +126,6 @@ package-mac:
 	brew install go
 
 git:
-	# git config --global alias.lo "log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short"
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
 	git config --global core.editor vim
