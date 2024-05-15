@@ -13,8 +13,8 @@ bindkey -M menuselect '^k' accept-and-infer-next-history
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
-# editor
-# set -o vi
+# Keybind
+bindkey -v
 
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/

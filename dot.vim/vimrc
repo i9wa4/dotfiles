@@ -157,52 +157,52 @@ nnoremap <M-[> :Lprevious<CR>
 nnoremap <M-]> :Lnext<CR>
 
 " Resize Window
-nnoremap <silent> <S-Down>  <C-w>1-
-nnoremap <silent> <S-Up>    <C-w>1+
-nnoremap <silent> <S-Right> <C-w>10>
-nnoremap <silent> <S-Left>  <C-w>10<
+nnoremap <S-Down>  <C-w>1-
+nnoremap <S-Up>    <C-w>1+
+nnoremap <S-Right> <C-w>10>
+nnoremap <S-Left>  <C-w>10<
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
 nnoremap <Plug>(my-Edit) <Nop>
 nmap <Space>e <Plug>(my-Edit)
-nnoremap <silent> <Plug>(my-Edit)r :<C-u>%s/\r$//e<CR>
-nnoremap <silent> <Plug>(my-Edit)s :<C-u>%s/\s\+$//e<CR>
+nnoremap <Plug>(my-Edit)r :<C-u>%s/\r$//e<CR>
+nnoremap <Plug>(my-Edit)s :<C-u>%s/\s\+$//e<CR>
 
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <silent> <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
-nnoremap <silent> <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
-nnoremap <silent> <Plug>(my-Filer)d :<C-u>execute 'edit' g:my_daily_path<CR>
-nnoremap <silent> <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
-nnoremap <silent> <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
-nnoremap <silent> <Plug>(my-Filer)o :<C-u>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <silent> <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
-nnoremap <silent> <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
+nnoremap <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
+nnoremap <Plug>(my-Filer)d :<C-u>execute 'edit' g:my_daily_path<CR>
+nnoremap <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
+nnoremap <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
+nnoremap <Plug>(my-Filer)o :<C-u>execute '15Lexplore' '%:p:h'->expand()<CR>
+nnoremap <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
+nnoremap <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
 
 " eNcoding
 nnoremap <Plug>(my-eNcoding) <Nop>
 nmap <Space>n <Plug>(my-eNcoding)
-nnoremap <silent> <Plug>(my-eNcoding)ec :<C-u>setlocal fileencoding=cp932<CR>
-nnoremap <silent> <Plug>(my-eNcoding)ee :<C-u>setlocal fileencoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-eNcoding)eu :<C-u>setlocal fileencoding=utf-8<CR>
-nnoremap <silent> <Plug>(my-eNcoding)fd :<C-u>edit ++fileformat=dos<CR>
-nnoremap <silent> <Plug>(my-eNcoding)fu :<C-u>edit ++fileformat=unix<CR>
-nnoremap <silent> <Plug>(my-eNcoding)nc :<C-u>edit ++encoding=cp932<CR>
-nnoremap <silent> <Plug>(my-eNcoding)ne :<C-u>edit ++encoding=euc-jp<CR>
-nnoremap <silent> <Plug>(my-eNcoding)nu :<C-u>edit ++encoding=utf-8<CR>
+nnoremap <Plug>(my-eNcoding)ec :<C-u>setlocal fileencoding=cp932<CR>
+nnoremap <Plug>(my-eNcoding)ee :<C-u>setlocal fileencoding=euc-jp<CR>
+nnoremap <Plug>(my-eNcoding)eu :<C-u>setlocal fileencoding=utf-8<CR>
+nnoremap <Plug>(my-eNcoding)fd :<C-u>edit ++fileformat=dos<CR>
+nnoremap <Plug>(my-eNcoding)fu :<C-u>edit ++fileformat=unix<CR>
+nnoremap <Plug>(my-eNcoding)nc :<C-u>edit ++encoding=cp932<CR>
+nnoremap <Plug>(my-eNcoding)ne :<C-u>edit ++encoding=euc-jp<CR>
+nnoremap <Plug>(my-eNcoding)nu :<C-u>edit ++encoding=utf-8<CR>
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
-nnoremap <silent> <Plug>(my-Switch)b :<C-u>setlocal scrollbind! scrollbind?<CR>
-nnoremap <silent> <Plug>(my-Switch)n :<C-u>setlocal number! number?<CR>
-nnoremap <silent> <Plug>(my-Switch)p :<C-u>setlocal paste! paste?<CR>
-nnoremap <silent> <Plug>(my-Switch)r :<C-u>setlocal relativenumber! relativenumber?<CR>
-nnoremap <silent> <Plug>(my-Switch)s :<C-u>setlocal spell! spell?<CR>
-nnoremap <silent> <Plug>(my-Switch)t :<C-u>setlocal expandtab! expandtab?<CR>
-nnoremap <silent> <Plug>(my-Switch)w :<C-u>setlocal wrap! wrap?<CR>
+nnoremap <Plug>(my-Switch)b :<C-u>setlocal scrollbind! scrollbind?<CR>
+nnoremap <Plug>(my-Switch)n :<C-u>setlocal number! number?<CR>
+nnoremap <Plug>(my-Switch)p :<C-u>setlocal paste! paste?<CR>
+nnoremap <Plug>(my-Switch)r :<C-u>setlocal relativenumber! relativenumber?<CR>
+nnoremap <Plug>(my-Switch)s :<C-u>setlocal spell! spell?<CR>
+nnoremap <Plug>(my-Switch)t :<C-u>setlocal expandtab! expandtab?<CR>
+nnoremap <Plug>(my-Switch)w :<C-u>setlocal wrap! wrap?<CR>
 
 
 " --------------------------------------
