@@ -14,14 +14,14 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 ubuntu-minimal: init-zshrc init-copy link apt git vim-init-ubuntu vim-build-ubuntu go-package
 	chsh -s "$$(which zsh)"
 
-wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
-	win-copy \
-	echo "cd" >> "$${HOME}"/.zshrc
-	echo "Restart WSL"
-
 ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init-ubuntu docker-systemd-ubuntu \
 	desktop-ubuntu font-ubuntu
+
+wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
+	copy-win \
+	echo "cd" >> "$${HOME}"/.zshrc
+	echo "Restart WSL"
 
 mac: init-zshrc init-copy link brew git vim-init-mac go-package ## task for Mac
 
@@ -54,7 +54,7 @@ link: ## make symbolic links
 	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
-win-copy: ## copy config files for Windows
+copy-win: ## copy config files for Windows
 	# WSL2
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
@@ -236,6 +236,13 @@ docker-init-ubuntu: ## install Docker
 	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
+	# Trivy
+	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
+	sudo apt-get install wget apt-transport-https gnupg lsb-release
+	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+	sudo apt-get update
+	sudo apt-get install trivy
 
 docker-hadolint-ubuntu: ## install hadolint
 	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
@@ -245,14 +252,6 @@ docker-systemd-ubuntu: ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
-
-# docker-trivy-ubuntu: ## install trivy
-# 	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
-# 	sudo apt-get install wget apt-transport-https gnupg lsb-release
-# 	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-# 	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-# 	sudo apt-get update
-# 	sudo apt-get install trivy
 
 go-package: ## install go packages
 	go install github.com/rhysd/vim-startuptime@latest
@@ -277,53 +276,6 @@ jekyll-init-ubuntu: ## install Jekyll
 # 	sudo npm install -g @mermaid-js/mermaid-cli
 # 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 # 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
-
-# py-init-ubuntu: ## initialize for building CPython
-# 	# https://devguide.python.org/getting-started/setup-building/#build-dependencies
-# 	# sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-# 	# sudo apt update
-# 	sudo apt build-dep -y python3
-# 	sudo apt install -y \
-# 	  build-essential gdb lcov pkg-config \
-# 	  libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
-# 	  libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-# 	  lzma lzma-dev tk-dev uuid-dev zlib1g-dev
-# 	cd /usr/local/src \
-# 	&& if [ ! -d ./cpython ]; then sudo git clone https://github.com/python/cpython.git; fi
-
-# py-build-ubuntu: ## build CPython
-# 	. "${HOME}"/dotfiles/dot.zshenv \
-# 	&& cd /usr/local/src/cpython \
-# 	&& sudo git checkout . \
-# 	&& sudo git switch main \
-# 	&& sudo git fetch \
-# 	&& sudo git merge \
-# 	&& sudo git checkout refs/tags/v"$${PY_VER_PATCH}" \
-# 	&& sudo ./configure --with-pydebug \
-# 	&& sudo make \
-# 	&& sudo make altinstall \
-# 	&& python"$${PY_VER_MINOR}" --version \
-# 	&& sudo python -m pip config --global set global.require-virtualenv true
-
-# py-vmu: ## update venv named myenv
-# 	. "${HOME}"/dotfiles/dot.zshenv \
-# 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-# 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --clear; \
-# 	else \
-# 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
-# 	fi \
-# 	&& . "$${PY_VENV_MYENV}"/bin/activate \
-# 	&& python"$${PY_VER_MINOR}" -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-# 	&& python"$${PY_VER_MINOR}" -m pip install --upgrade pip setuptools wheel \
-# 	&& python"$${PY_VER_MINOR}" -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
-# 	&& python"$${PY_VER_MINOR}" -m pip check \
-# 	&& python --version \
-# 	&& deactivate
-
-# py-tag: ## show cpython tags
-# 	. "${HOME}"/dotfiles/dot.zshenv \
-# 	&& sudo git -C /usr/local/src/cpython fetch \
-# 	&& sudo git -C /usr/local/src/cpython tag | grep v"$${PY_VER_MINOR}"
 
 pyenv-init-mac: ## initialize for pyenv in Mac
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
@@ -372,31 +324,6 @@ pyenv-vmu: ## update venv named myenv
 
 pyenv-list: ## show available versions
 	pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
-
-
-# r-init-ubuntu: ## install R
-# 	# sudo apt update
-# 	sudo apt install -y --no-install-recommends \
-# 	  software-properties-common dirmngr
-# 	wget -qO- \
-# 	  https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
-# 	  | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-# 	sudo add-apt-repository -y \
-# 	  "deb https://cloud.r-project.org/bin/linux/ubuntu ""$$(lsb_release -cs)""-cran40/"
-# 	sudo apt install -y --no-install-recommends r-base
-# 	sudo apt install -y libcurl4-openssl-dev libxml2-dev libblas-dev liblapack-dev libavfilter-dev
-# 	sudo apt install -y pandoc
-# 	sudo R -e "install.packages('rmarkdown', dependencies=TRUE)"
-# 	sudo R -e "install.packages('IRkernel', dependencies=TRUE)"
-# 	# sudo R -e "install.packages('DiagrammeR', dependencies=TRUE)"
-# 	# sudo R -e "install.packages('devtools', dependencies=TRUE)"
-# 	. "${HOME}"/dotfiles/dot.zshenv \
-# 	&& . "$${PY_VENV_MYENV}"/bin/activate \
-# 	&& R -e "IRkernel::installspec()"
-
-# rust-init-ubuntu: ## install Rust
-# 	sudo apt install -y cargo
-# 	cargo install tokei
 
 desktop-ubuntu:
 	# Settings --> Accessibility --> Large Text
