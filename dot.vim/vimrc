@@ -151,10 +151,10 @@ command! Cprevious  try | cprevious | catch | clast   | catch | endtry
 command! Cnext      try | cnext     | catch | cfirst  | catch | endtry
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
 command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
-nnoremap <C-[> :Cprevious<CR>
-nnoremap <C-]> :Cnext<CR>
-nnoremap <S-[> :Lprevious<CR>
-nnoremap <S-]> :Lnext<CR>
+nnoremap <S-[> :Cprevious<CR>
+nnoremap <S-]> :Cnext<CR>
+nnoremap <M-[> :Lprevious<CR>
+nnoremap <M-]> :Lnext<CR>
 
 " Resize Window
 nnoremap <silent> <S-Down>  <C-w>1-
