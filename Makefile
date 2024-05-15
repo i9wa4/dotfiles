@@ -14,7 +14,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 dummy:
 	@echo "MF_WIN_UTIL_DIR=$(MF_WIN_UTIL_DIR)"
 
-ubuntu-minimal: setup-zshrc copy apt git vim-init vim-build
+ubuntu-minimal: setup-zshrc link apt git vim-init vim-build
 	chsh -s "$$(which zsh)"
 
 wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
@@ -26,7 +26,7 @@ ubuntu: ubuntu-minimal ## task for Ubuntu
 	docker-init docker-systemd \
 	ubuntu-desktop ubuntu-font
 
-mac: setup-zshrc copy brew git vim-init-mac ## task for Mac
+mac: setup-zshrc link brew git vim-init-mac ## task for Mac
 
 setup-zshrc:
 	# Zsh
@@ -39,10 +39,11 @@ init-copy:
 	. "${HOME}"/dotfiles/dot.zshenv \
 	&& cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
-copy: ## copy config files and make symbolic links
+link: ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
+	if test -d "$${HOME}"/.vim; then unlink "$${HOME}"/.vim; fi
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# $XDG_CONFIG_HOME
 	. "${HOME}"/dotfiles/dot.zshenv \
@@ -53,8 +54,8 @@ copy: ## copy config files and make symbolic links
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver         "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
-	# cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}"
-	# cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
+	# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
 win-copy: ## copy config files for Windows
 	# WSL2
