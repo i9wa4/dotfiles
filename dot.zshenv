@@ -36,6 +36,3 @@ export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 # config file path: ${XDG_CONFIG_HOME}/jupyter
 export JUPYTER_PLATFORM_DIRS=1
-
-# Rust
-export PATH="${HOME}"/.cargo/bin:"${PATH}"
