@@ -320,7 +320,7 @@ py-build: ## build CPython
 py-vmu: ## update venv named myenv
 	. "${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --upgrade; \
+	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
 	  python"$${PY_VER_MINOR}" -m venv "$${PY_VENV_MYENV}"; \
 	fi \
@@ -358,7 +358,7 @@ pyenv-build: ## build CPython
 pyenv-vmu: ## update venv named myenv
 	. "${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python -m venv "$${PY_VENV_MYENV}" --upgrade; \
+	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
 	  python -m venv "$${PY_VENV_MYENV}"; \
 	fi \
