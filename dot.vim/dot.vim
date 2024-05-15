@@ -1,1 +1,0 @@
-/Users/daiki.mawatari/dotfiles/dot.vim
