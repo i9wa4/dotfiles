@@ -236,6 +236,9 @@ docker-init-ubuntu: ## install Docker
 	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
 	# sudo groupadd docker
 	sudo usermod -aG docker "$${USER}"
+	# hadolint
+	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
+	sudo chmod 755 /usr/local/bin/hadolint
 	# Trivy
 	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
 	sudo apt-get install wget apt-transport-https gnupg lsb-release
@@ -243,10 +246,6 @@ docker-init-ubuntu: ## install Docker
 	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
 	sudo apt-get update
 	sudo apt-get install trivy
-
-docker-hadolint-ubuntu: ## install hadolint
-	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
-	sudo chmod 755 /usr/local/bin/hadolint
 
 docker-systemd-ubuntu: ## enable autostart for docker
 	sudo systemctl daemon-reload
