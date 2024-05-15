@@ -37,9 +37,9 @@ function! my_highlight#highlight() abort
 
   " [		]
   " DarkRed(88,#870000), NONE
-  highlight clear MySpecial
-  highlight MySpecial guifg=#870000 guibg=NONE
-  call matchadd('MySpecial', '\t')
+  " highlight clear MySpecial
+  " highlight MySpecial guifg=#870000 guibg=NONE
+  " call matchadd('MySpecial', '\t')
 
   " transparent background
   highlight EndOfBuffer guibg=NONE
