@@ -11,7 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init-ubuntu vim-build-ubuntu go-package
+ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init-ubuntu vim-build-ubuntu
 	chsh -s "$$(which zsh)"
 
 ubuntu: ubuntu-minimal ## task for Ubuntu
@@ -23,7 +23,7 @@ wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-mac git vim-init-mac go-package ## task for Mac
+mac: init-zshrc init-copy link package-mac git vim-init-mac ## task for Mac
 
 
 init-zshrc:
