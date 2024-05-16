@@ -30,6 +30,7 @@ let g:auto_reload = timer_start(
 let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
 call my_vimrc#set_preload_vimrc(g:my_local_vimrc_path)
 
+let g:denops_disable_version_check = 1
 
 " --------------------------------------
 " Option
@@ -114,7 +115,7 @@ set showtabline=2
 set colorcolumn=80
 set cursorcolumn
 set cursorline
-set diffopt=internal,filler,algorithm:histogram,indent-heuristic
+set diffopt="internal,filler,algorithm:histogram,indent-heuristic"
 set showmatch matchtime=1 matchpairs+=\<:\>
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
 " set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«

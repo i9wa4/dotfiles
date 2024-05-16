@@ -124,6 +124,8 @@ package-mac:
 	brew install deno
 	# Go
 	brew install go
+	# Vim build dependencies
+	brew install xmkmf
 
 git:
 	git config --global commit.verbose true
@@ -148,11 +150,14 @@ git:
 	git config --global push.default current
 
 vim-init-ubuntu: ## initialize for building Vim in Ubuntu
-	cd /usr/local/src \
+	sudo mkdir -p /usr/local/src \
+	&& cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
 
 vim-init-mac: ## initialize for building Vim in Mac
-	echo 'none'
+	sudo mkdir -p /usr/local/src \
+	&& cd /usr/local/src \
+	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
 
 vim-build-ubuntu: ## build Vim in Ubuntu
 	# sudo make clean
@@ -195,7 +200,8 @@ nvim-init-ubuntu: ## initialize for building Neovim
 	#   ninja-build \
 	#   pkg-config \
 	#   unzip
-	cd /usr/local/src \
+	sudo mkdir -p /usr/local/src \
+	&& cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
 nvim-build-ubuntu: ## build Neovim
