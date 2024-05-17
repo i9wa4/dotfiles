@@ -59,8 +59,4 @@ if has('termguicolors')
   set termguicolors
 endif
 
-if v:version >= 901
-  execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-else
-  execute 'colorscheme' get(g:, 'colors_name', 'habamax')
-endif
+execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
