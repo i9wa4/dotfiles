@@ -280,6 +280,7 @@ pyenv-build: ## build CPython
 pyenv-vmu: ## update venv named myenv
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
+	  # https://dev.classmethod.jp/articles/change-venv-python-version/
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
 	  python -m venv "$${PY_VENV_MYENV}"; \
