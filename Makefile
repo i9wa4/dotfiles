@@ -11,7 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init-ubuntu vim-build-ubuntu
+ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init vim-build
 	chsh -s "$$(which zsh)"
 
 ubuntu: ubuntu-minimal ## task for Ubuntu
@@ -23,7 +23,7 @@ wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
 	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-mac git vim-init-mac ## task for Mac
+mac: init-zshrc init-copy link package-mac git vim-init vim-build ## task for Mac
 
 
 init-zshrc:
@@ -85,16 +85,20 @@ package-ubuntu:
 	  xsel \
 	  zip \
 	  zsh
-	# build-dep
-	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
-	sudo apt update
-	sudo apt build-dep -y vim
 	# Deno
 	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
 	# Go
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
+	# Vim build dependencies
+	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
+	sudo apt update
+	sudo apt build-dep -y vim
+	# Neovim build dependencies
+	#   https://github.com/neovim/neovim/blob/master/BUILD.md
+	sudo apt install -y \
+	  ninja-build gettext cmake unzip curl build-essential
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -124,8 +128,9 @@ package-mac:
 	brew install deno
 	# Go
 	brew install go
-	# Vim build dependencies
-	brew install xmkmf
+	# Neovim build dependencies
+	#   https://github.com/neovim/neovim/blob/master/BUILD.md
+	brew install ninja cmake gettext curl
 
 git:
 	git config --global commit.verbose true
@@ -149,17 +154,12 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init-ubuntu: ## initialize for building Vim in Ubuntu
+vim-init: ## initialize for building Vim
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
 
-vim-init-mac: ## initialize for building Vim in Mac
-	sudo mkdir -p /usr/local/src \
-	&& cd /usr/local/src \
-	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
-
-vim-build-ubuntu: ## build Vim in Ubuntu
+vim-build: ## build Vim
 	# sudo make clean
 	cd /usr/local/src/vim \
 	&& sudo git switch master \
@@ -172,47 +172,26 @@ vim-build-ubuntu: ## build Vim in Ubuntu
 	  --enable-python3interp=dynamic \
 	  --prefix=/usr/local \
 	  --with-features=huge \
-	  --with-x \
+	# --with-x
 	&& sudo make \
 	&& sudo make install \
 	&& hash -r
 
-vim-build-mac: ## build Vim in Mac
-	echo 'none'
-
-nvim-init-ubuntu: ## initialize for building Neovim
-	# https://github.com/neovim/neovim/blob/master/BUILD.md
-	sudo apt update
-	sudo apt install -y \
-	  ninja-build gettext cmake unzip curl build-essential
-	# sudo apt install -y \
-	#   autoconf \
-	#   automake \
-	#   cmake \
-	#   cmake \
-	#   curl \
-	#   doxygen \
-	#   g++ \
-	#   gcc \
-	#   gettext \
-	#   libtool \
-	#   libtool-bin \
-	#   ninja-build \
-	#   pkg-config \
-	#   unzip
+nvim-init: ## initialize for building Neovim
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
-nvim-build-ubuntu: ## build Neovim
+nvim-build: ## build Neovim
 	cd /usr/local/src/neovim \
 	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
 	&& sudo make distclean \
 	&& sudo make CMAKE_BUILD_TYPE=RelWithDebInfo \
-	    BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
-	&& sudo make install
+	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
+	&& sudo make install \
+	&& hash -r
 
 docker-init-ubuntu: ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
