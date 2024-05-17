@@ -43,7 +43,7 @@ link: ## make symbolic links
 	if test -d "$${HOME}"/.vim; then unlink "$${HOME}"/.vim; fi
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
 	# $XDG_CONFIG_HOME
-	. "${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}"    "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}"    "$${XDG_CONFIG_HOME}" \
@@ -52,7 +52,7 @@ link: ## make symbolic links
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
 	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
-	# && cp -rf "${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
 copy-win: ## copy config files for Windows
 	# WSL2
@@ -95,10 +95,15 @@ package-ubuntu:
 	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	sudo apt update
 	sudo apt build-dep -y vim
-	# Neovim build dependencies
-	#   https://github.com/neovim/neovim/blob/master/BUILD.md
+	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
+	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+	curl https://pyenv.run | bash
+	sudo apt install -y \
+	  build-essential libssl-dev zlib1g-dev \
+	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
+	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -128,9 +133,11 @@ package-mac:
 	brew install deno
 	# Go
 	brew install go
-	# Neovim build dependencies
-	#   https://github.com/neovim/neovim/blob/master/BUILD.md
+	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	brew install ninja cmake gettext curl
+	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+	brew install pyenv
+	brew install openssl readline sqlite3 xz zlib tcl-tk
 
 git:
 	git config --global commit.verbose true
@@ -243,7 +250,7 @@ jekyll-init-ubuntu: ## install Jekyll
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y ruby-full build-essential zlib1g-dev
-	. "${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& gem install jekyll bundler
 
 # nodejs-init-ubnutu: ## install Node.js
@@ -255,29 +262,14 @@ jekyll-init-ubuntu: ## install Jekyll
 # 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 # 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
 
-pyenv-init-mac: ## initialize for pyenv in Mac
-	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	brew update
-	brew install pyenv
-	brew install openssl readline sqlite3 xz zlib tcl-tk
+pyenv-init: ## initialize for pyenv
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
-
-pyenv-init-ubuntu: ## initialize for pyenv in Mac
-	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	curl https://pyenv.run | bash
-	sudo apt update
-	sudo apt install -y \
-	  build-essential libssl-dev zlib1g-dev \
-	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
-	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-	echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshrc
+	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshrc
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build: ## build CPython
-	. "${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv -v \
 	&& pyenv install --list \
 	&& pyenv install "$${PY_VER_MINOR}" \
@@ -286,7 +278,7 @@ pyenv-build: ## build CPython
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-vmu: ## update venv named myenv
-	. "${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
@@ -301,7 +293,7 @@ pyenv-vmu: ## update venv named myenv
 	&& deactivate
 
 pyenv-list: ## show available versions
-	. "${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
 
 ubuntu-desktop:
