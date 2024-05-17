@@ -2,6 +2,9 @@ snippets:
   - name: ll
     keyword: ll
     snippet: ls -alFv
+  - name: pp
+    keyword: pp
+    snippet: pwd | pbcopy
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
