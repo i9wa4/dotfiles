@@ -29,8 +29,8 @@ snippets:
     snippet: log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short
     context:
       lbuffer: '^git\s'
-  - name: (Git) git tag
-    keyword: tag
+  - name: (Git) git addtag
+    keyword: addtag
     snippet: tag -a {{tagname}} -m '' commithash
     context:
       lbuffer: '^git\s'
