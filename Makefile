@@ -179,7 +179,6 @@ vim-build: ## build Vim
 	  --enable-python3interp=dynamic \
 	  --prefix=/usr/local \
 	  --with-features=huge \
-	# --with-x
 	&& sudo make \
 	&& sudo make install \
 	&& hash -r
