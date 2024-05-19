@@ -320,6 +320,13 @@ function! s:my_asyncjob_on_save() abort
     if executable('mmdc')
       call my_async#jobstart('mmdc -i ' .. l:filename .. '.mmd -o ' .. l:filename .. '.svg')
     endif
+  elseif index([
+    \ 'terraform',
+    \ 'terraform-vars',
+    \ ], &filetype) >= 0
+    if executable('terraform')
+      call my_async#jobstart('terraform fmt ' .. '%:p'->expand())
+    endif
   else
     " Do nothing.
   endif
