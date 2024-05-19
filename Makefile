@@ -109,6 +109,11 @@ package-ubuntu:
 	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 	sudo apt update
 	sudo apt install -y terraform
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip awscliv2.zip \
+	&& sudo ./aws/install
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -146,6 +151,10 @@ package-mac:
 	# https://developer.hashicorp.com/terraform/install
 	brew tap hashicorp/tap
 	brew install hashicorp/tap/terraform
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
+	&& sudo installer -pkg AWSCLIV2.pkg -target /
 
 git:
 	git config --global commit.verbose true
