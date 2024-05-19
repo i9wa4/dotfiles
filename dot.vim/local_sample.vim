@@ -8,7 +8,7 @@ let g:my_skk_path         = '~/work/skk.md'->expand()
 " Python
 if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
   let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python' .. $PY_VER_MINOR
-  call my_vimrc#add_path([$PY_VENV_MYENV->expand() .. '/bin'])
+  call my_util#add_path([$PY_VENV_MYENV->expand() .. '/bin'])
 endif
 
 " Denops Plugin Development

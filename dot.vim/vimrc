@@ -28,9 +28,9 @@ let g:auto_reload = timer_start(
   \   {'repeat': -1}
   \ )
 let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
-call my_vimrc#set_preload_vimrc(g:my_local_vimrc_path)
 
-let g:denops_disable_version_check = 1
+" let g:denops_disable_version_check = 1
+
 
 " --------------------------------------
 " Option
@@ -148,62 +148,58 @@ inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 
 " pair
-command! Cprevious  try | cprevious | catch | clast   | catch | endtry
-command! Cnext      try | cnext     | catch | cfirst  | catch | endtry
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
 command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
-nnoremap <S-[> :Cprevious<CR>
-nnoremap <S-]> :Cnext<CR>
-nnoremap <M-[> :Lprevious<CR>
-nnoremap <M-]> :Lnext<CR>
+nnoremap <C-p> :Lprevious<CR>
+nnoremap <C-n> :Lnext<CR>
 
 " Resize Window
 nnoremap <S-Down>  <C-w>1-
 nnoremap <S-Up>    <C-w>1+
-nnoremap <S-Right> <C-w>10>
-nnoremap <S-Left>  <C-w>10<
+nnoremap <S-Right> <C-w>5>
+nnoremap <S-Left>  <C-w>5<
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
 nnoremap <Plug>(my-Edit) <Nop>
 nmap <Space>e <Plug>(my-Edit)
-nnoremap <Plug>(my-Edit)r :<C-u>%s/\r$//e<CR>
-nnoremap <Plug>(my-Edit)s :<C-u>%s/\s\+$//e<CR>
+nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
+nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)b :<C-u>execute 'edit' g:my_bookmark_path<CR>
-nnoremap <Plug>(my-Filer)c :<C-u>15Lexplore<CR>
-nnoremap <Plug>(my-Filer)d :<C-u>execute 'edit' g:my_daily_path<CR>
-nnoremap <Plug>(my-Filer)g :<C-u>execute 'edit' g:my_gtd_path<CR>
-nnoremap <Plug>(my-Filer)l :<C-u>execute 'edit' g:my_local_vimrc_path<CR>
-nnoremap <Plug>(my-Filer)o :<C-u>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <Plug>(my-Filer)s :<C-u>execute 'edit' g:my_skk_path<CR>
-nnoremap <Plug>(my-Filer)v :<C-u>execute 'edit' $MYVIMRC<CR>
+nnoremap <Plug>(my-Filer)b <Cmd>execute 'edit' g:my_bookmark_path<CR>
+nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
+nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_daily_path<CR>
+nnoremap <Plug>(my-Filer)g <Cmd>execute 'edit' g:my_gtd_path<CR>
+nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' g:my_local_vimrc_path<CR>
+nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
+nnoremap <Plug>(my-Filer)s <Cmd>execute 'edit' g:my_skk_path<CR>
+nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC<CR>
 
 " eNcoding
 nnoremap <Plug>(my-eNcoding) <Nop>
 nmap <Space>n <Plug>(my-eNcoding)
-nnoremap <Plug>(my-eNcoding)ec :<C-u>setlocal fileencoding=cp932<CR>
-nnoremap <Plug>(my-eNcoding)ee :<C-u>setlocal fileencoding=euc-jp<CR>
-nnoremap <Plug>(my-eNcoding)eu :<C-u>setlocal fileencoding=utf-8<CR>
-nnoremap <Plug>(my-eNcoding)fd :<C-u>edit ++fileformat=dos<CR>
-nnoremap <Plug>(my-eNcoding)fu :<C-u>edit ++fileformat=unix<CR>
-nnoremap <Plug>(my-eNcoding)nc :<C-u>edit ++encoding=cp932<CR>
-nnoremap <Plug>(my-eNcoding)ne :<C-u>edit ++encoding=euc-jp<CR>
-nnoremap <Plug>(my-eNcoding)nu :<C-u>edit ++encoding=utf-8<CR>
+nnoremap <Plug>(my-eNcoding)ec <Cmd>setlocal fileencoding=cp932<CR>
+nnoremap <Plug>(my-eNcoding)ee <Cmd>setlocal fileencoding=euc-jp<CR>
+nnoremap <Plug>(my-eNcoding)eu <Cmd>setlocal fileencoding=utf-8<CR>
+nnoremap <Plug>(my-eNcoding)fd <Cmd>edit ++fileformat=dos<CR>
+nnoremap <Plug>(my-eNcoding)fu <Cmd>edit ++fileformat=unix<CR>
+nnoremap <Plug>(my-eNcoding)nc <Cmd>edit ++encoding=cp932<CR>
+nnoremap <Plug>(my-eNcoding)ne <Cmd>edit ++encoding=euc-jp<CR>
+nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
-nnoremap <Plug>(my-Switch)b :<C-u>setlocal scrollbind! scrollbind?<CR>
-nnoremap <Plug>(my-Switch)n :<C-u>setlocal number! number?<CR>
-nnoremap <Plug>(my-Switch)p :<C-u>setlocal paste! paste?<CR>
-nnoremap <Plug>(my-Switch)r :<C-u>setlocal relativenumber! relativenumber?<CR>
-nnoremap <Plug>(my-Switch)s :<C-u>setlocal spell! spell?<CR>
-nnoremap <Plug>(my-Switch)t :<C-u>setlocal expandtab! expandtab?<CR>
-nnoremap <Plug>(my-Switch)w :<C-u>setlocal wrap! wrap?<CR>
+nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
+nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
+nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
+nnoremap <Plug>(my-Switch)r <Cmd>setlocal relativenumber! relativenumber?<CR>
+nnoremap <Plug>(my-Switch)s <Cmd>setlocal spell! spell?<CR>
+nnoremap <Plug>(my-Switch)t <Cmd>setlocal expandtab! expandtab?<CR>
+nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 
 
 " --------------------------------------
@@ -320,15 +316,11 @@ function! s:my_asyncjob_on_save() abort
     if filereadable(l:ipynb_path) && executable('jupytext')
       call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
     endif
-  elseif &filetype == 'markdown'
-    if exists(':NumberHeader') == 2
-      execute 'NumberHeader'
-    endif
-  elseif &filetype == 'qmd'
-    if exists(':NumberHeader') == 2
-      execute 'NumberHeader'
-    endif
-  elseif &filetype == 'rmd'
+  elseif index([
+    \ 'markdown',
+    \ 'qmd',
+    \ 'rmd',
+    \ ], &filetype) >= 0
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
     endif
