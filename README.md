@@ -26,4 +26,6 @@
 
 1. Execute `make mac`.
 
-## AWS CLI
+## 3. AWS CLI
+
+cf. <https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html>
