@@ -277,9 +277,9 @@ pyenv-build: ## build CPython
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-vmu: ## update venv named myenv
+	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  # https://dev.classmethod.jp/articles/change-venv-python-version/
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
 	  python -m venv "$${PY_VENV_MYENV}"; \
