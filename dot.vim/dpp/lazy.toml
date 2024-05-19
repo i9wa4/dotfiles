@@ -34,6 +34,19 @@ on_event = ['VimEnter']
 [[plugins]]
 repo = 'i9wa4/my-statusline.vim'
 on_event = ['VimEnter']
+hook_source = '''
+function! MyStatuslineRightTabline() abort
+  let l:ret = ''
+  if exists('*branch_name#get_current_branch_name')
+    let l:branch_name = branch_name#get_current_branch_name()
+    if l:branch_name != ''
+      let l:ret ..= l:branch_name
+    endif
+  endif
+  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+  return l:ret
+endfunction
+'''
 
 [[plugins]]
 repo = 'i9wa4/my-terminal.vim'
