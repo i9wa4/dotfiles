@@ -25,3 +25,5 @@
 ### 2.3. Mac
 
 1. Execute `make mac`.
+
+## AWS CLI
