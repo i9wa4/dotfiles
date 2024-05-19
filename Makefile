@@ -104,6 +104,11 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+	# https://developer.hashicorp.com/terraform/install
+	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+	sudo apt update
+	sudo apt install -y terraform
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -138,6 +143,9 @@ package-mac:
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
+	# https://developer.hashicorp.com/terraform/install
+	brew tap hashicorp/tap
+	brew install hashicorp/tap/terraform
 
 git:
 	git config --global commit.verbose true
