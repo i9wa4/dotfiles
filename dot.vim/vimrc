@@ -275,7 +275,7 @@ function! s:my_filetype() abort
 
   setlocal nofoldenable autoindent expandtab
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
-  setlocal nowrap
+  setlocal wrap
 
   if index([
     \   'bash',
