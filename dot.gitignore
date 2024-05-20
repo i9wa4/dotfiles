@@ -1,9 +1,6 @@
 .ipynb_checkpoints/
 .virtual_documents/
-.vscode/
 node_modules/
-*.log
-*.tfvars
 .DS_Store
 .netrwbook
 .netrwhist

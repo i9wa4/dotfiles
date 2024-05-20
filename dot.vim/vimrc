@@ -323,6 +323,7 @@ function! s:my_asyncjob_on_save() abort
   elseif index([
     \ 'terraform',
     \ 'terraform-vars',
+    \ 'tf',
     \ ], &filetype) >= 0
     if executable('terraform')
       call my_async#jobstart('terraform fmt ' .. '%:p'->expand())
@@ -345,6 +346,8 @@ augroup MyVimrcAutocmd
     \ setfiletype bash
   autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
     \ setfiletype zsh
+  autocmd BufNewFile,BufReadPost *.tf,*.tfvars
+    \ setfiletype tf
   autocmd BufNewFile,BufReadPost *.tfstate
     \ setfiletype json
   autocmd BufEnter,FileType * call s:my_filetype()
