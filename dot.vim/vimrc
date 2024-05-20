@@ -346,8 +346,8 @@ augroup MyVimrcAutocmd
     \ setfiletype bash
   autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
     \ setfiletype zsh
-  autocmd BufNewFile,BufReadPost *.tf,*.tfvars
-    \ setfiletype tf
+  autocmd BufNewFile,BufReadPost *.tf
+    \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.tfstate
     \ setfiletype json
   autocmd BufEnter,FileType * call s:my_filetype()
