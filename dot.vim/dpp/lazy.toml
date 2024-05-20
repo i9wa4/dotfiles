@@ -1,13 +1,4 @@
 [[plugins]]
-repo = 'dhruvasagar/vim-table-mode'
-on_ft = ['markdown', 'qmd', 'rmd']
-
-[[plugins]]
-repo = 'vim-denops/denops-helloworld.vim'
-if = 0
-on_source = ['denops.vim']
-
-[[plugins]]
 repo = 'preservim/vim-indent-guides'
 on_event = ['VimEnter']
 hook_source = '''
@@ -15,9 +6,17 @@ let g:indent_guides_enable_on_vim_startup = 1
 '''
 
 [[plugins]]
+repo = 'dhruvasagar/vim-table-mode'
+on_ft = ['markdown', 'qmd', 'rmd']
+
+[[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
 depends = ['denops.vim']
 on_ft = ['markdown', 'qmd', 'rmd']
+
+[[plugins]]
+repo = 'hashivim/vim-terraform'
+on_ft = ['terraform', 'terraform-vars']
 
 [[plugins]]
 repo = 'i9wa4/my-statusline.vim'
