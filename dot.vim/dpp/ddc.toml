@@ -123,7 +123,7 @@ repo = 'skk-dev/dict'
 repo = 'uga-rosa/denippet.vim'
 on_source = ['ddc.vim']
 hook_source = '''
-let s:dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/snippet_json/'
+let s:dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/snippet/'
 for s:file in glob(s:dir . '*.*', 1, 1)
   call denippet#load(s:file)
 endfor

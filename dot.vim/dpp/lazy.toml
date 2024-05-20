@@ -8,17 +8,54 @@ if = 0
 on_source = ['denops.vim']
 
 [[plugins]]
+repo = 'preservim/vim-indent-guides'
+on_event = ['VimEnter']
+hook_source = '''
+let g:indent_guides_enable_on_vim_startup = 1
+'''
+
+[[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
 depends = ['denops.vim']
 on_ft = ['markdown', 'qmd', 'rmd']
+
+[[plugins]]
+repo = 'i9wa4/my-statusline.vim'
+on_event = ['VimEnter']
+hook_source = '''
+function! MyStatuslineRightTabline() abort
+  let l:ret = ''
+  if match(&runtimepath, 'get-git-branch-name.vim') >= 0
+    let l:branch_name = branch_name#get_current_branch_name()
+    let l:repo_name = branch_name#get_current_repo_root_name()
+    if l:branch_name != ''
+      let l:ret ..= l:repo_name .. ' (' .. l:branch_name .. ')'
+    endif
+  endif
+  " let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+  return l:ret
+endfunction
+'''
 
 [[plugins]]
 repo = 'i9wa4/get-git-branch-name.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
-repo = 'preservim/vim-indent-guides'
+repo = 'i9wa4/my-async.vim'
+on_event = ['VimEnter']
+
+[[plugins]]
+repo = 'i9wa4/my-highlight.vim'
+on_event = ['VimEnter']
+
+[[plugins]]
+repo = 'i9wa4/my-terminal.vim'
+on_event = ['VimEnter']
+
+[[plugins]]
+repo = 'i9wa4/my-util.vim'
 on_event = ['VimEnter']
 hook_source = '''
-let g:indent_guides_enable_on_vim_startup = 1
+let g:my_util#preload_vimrc_path = '~/.vim/local_sample.vim'->expand()
 '''
