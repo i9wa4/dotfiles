@@ -104,6 +104,16 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+	# https://developer.hashicorp.com/terraform/install
+	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+	sudo apt update
+	sudo apt install -y terraform
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip awscliv2.zip \
+	&& sudo ./aws/install
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -138,6 +148,13 @@ package-mac:
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
+	# https://developer.hashicorp.com/terraform/install
+	brew tap hashicorp/tap
+	brew install hashicorp/tap/terraform
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
+	&& sudo installer -pkg AWSCLIV2.pkg -target /
 
 git:
 	git config --global commit.verbose true
@@ -277,9 +294,9 @@ pyenv-build: ## build CPython
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-vmu: ## update venv named myenv
+	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  # https://dev.classmethod.jp/articles/change-venv-python-version/
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
 	  python -m venv "$${PY_VENV_MYENV}"; \
