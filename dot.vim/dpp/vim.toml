@@ -20,16 +20,16 @@ let g:lsp_diagnostics_virtual_text_wrap = "truncate"
 let g:lsp_log_file = ''
 let g:lsp_settings_enable_suggestions = 0
 let g:lsp_settings = {
+  \   'efm-langserver': {
+  \     'disabled': v:false,
+  \     'allowlist': ['sh'],
+  \   },
   \   'pylsp-all': {
   \     'workspace_config': {
   \       'pylsp': {
   \         'configurationSources': ['flake8']
   \       }
   \     }
-  \   },
-  \   'efm-langserver': {
-  \     'disabled': v:false,
-  \     'allowlist': ['sh'],
   \   },
   \ }
 

@@ -15,9 +15,9 @@ lua_source = '''
 require('ddc_source_lsp_setup').setup()
 -- if autostart = false, execute :LspStart to attach.
 local lspconfig = require('lspconfig')
+lspconfig.efm.setup{}
 lspconfig.pylsp.setup{}
 lspconfig.denols.setup{}
-lspconfig.efm.setup{}
 '''
 hook_source = '''
 function! s:my_lsp_highlight() abort
