@@ -4,7 +4,7 @@ snippets:
     snippet: ls -alFv
   - name: pp
     keyword: pp
-    snippet: pwd | pbcopy
+    snippet: echo 'cd' $(pwd) | pbcopy
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
