@@ -5,7 +5,7 @@ lint-debounce: 1s
 
 tools:
   dockerfile-hadolint: &dockerfile-hadolint
-    lint-command: 'hadolint --nocolor'
+    lint-command: 'hadolint --no-color'
     lint-formats:
       - '%f:%l %m'
 

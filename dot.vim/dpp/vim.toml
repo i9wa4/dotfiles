@@ -22,7 +22,6 @@ let g:lsp_settings_enable_suggestions = 0
 let g:lsp_settings = {
   \   'efm-langserver': {
   \     'disabled': v:false,
-  \     'allowlist': ['sh'],
   \   },
   \   'pylsp-all': {
   \     'workspace_config': {
@@ -55,6 +54,7 @@ on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'matsui54/denops-popup-preview.vim'
+if = 0
 on_source = ['ddc.vim']
 hook_source = '''
 call popup_preview#enable()
