@@ -120,11 +120,6 @@ set showmatch matchtime=1 matchpairs+=\<:\>
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
 " set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
 set list listchars=tab:>-,trail:~,nbsp:%,extends:»,precedes:«
-if &diff
-  set nospell
-else
-  set spelllang+=cjk spell
-endif
 
 " Abbreviation
 " :w' --> :w
@@ -262,7 +257,13 @@ function! s:my_filetype() abort
 
   setlocal nofoldenable autoindent expandtab
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
-  setlocal wrap
+  setlocal nowrap
+  setlocal spelllang+=cjk spell
+
+  if &diff
+    setlocal wrap
+    setlocal nospell
+  endif
 
   if index([
     \   'bash',
