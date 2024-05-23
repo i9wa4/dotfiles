@@ -36,7 +36,7 @@ init-copy:
 	# Alacritty
 	cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
-link: ## make symbolic links
+link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
@@ -54,7 +54,7 @@ link: ## make symbolic links
 	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
-copy-win: ## copy config files for Windows
+copy-win:  ## copy config files for Windows
 	# WSL2
 	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
@@ -178,12 +178,12 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init: ## initialize for building Vim
+vim-init:  ## initialize for building Vim
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
 
-vim-build: ## build Vim
+vim-build:  ## build Vim
 	# sudo make clean
 	cd /usr/local/src/vim \
 	&& sudo git switch master \
@@ -200,12 +200,12 @@ vim-build: ## build Vim
 	&& sudo make install \
 	&& hash -r
 
-nvim-init: ## initialize for building Neovim
+nvim-init:  ## initialize for building Neovim
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
 
-nvim-build: ## build Neovim
+nvim-build:  ## build Neovim
 	cd /usr/local/src/neovim \
 	&& sudo git switch master \
 	&& sudo git fetch \
@@ -216,7 +216,7 @@ nvim-build: ## build Neovim
 	&& sudo make install \
 	&& hash -r
 
-docker-init-ubuntu: ## install Docker
+docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
 	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
@@ -249,18 +249,18 @@ docker-init-ubuntu: ## install Docker
 	sudo apt-get update
 	sudo apt-get install trivy
 
-docker-systemd-ubuntu: ## enable autostart for docker
+docker-systemd-ubuntu:  ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-go-package: ## install go packages
+go-package:  ## install go packages
 	go install github.com/rhysd/vim-startuptime@latest
 	# $ vim-startuptime -vimpath nvim -count 100
 	# $ vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
 
-jekyll-init-ubuntu: ## install Jekyll
+jekyll-init-ubuntu:  ## install Jekyll
 	# https://maeda577.github.io/2019/11/04/new-jekyll.html
 	# https://github.com/github/pages-gem
 	sudo apt update
@@ -269,22 +269,13 @@ jekyll-init-ubuntu: ## install Jekyll
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& gem install jekyll bundler
 
-# nodejs-init-ubnutu: ## install Node.js
-# 	# Node.js/npm
-# 	# https://github.com/nodesource/distributions/blob/master/README.md#using-ubuntu
-# 	curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-# 	sudo apt-get install -y nodejs
-# 	sudo npm install -g @mermaid-js/mermaid-cli
-# 	# https://github.com/mermaid-js/mermaid-cli/issues/595
-# 	node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
-
-pyenv-init: ## initialize for pyenv
+pyenv-init:  ## initialize for pyenv
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshrc
 	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshrc
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
-pyenv-build: ## build CPython
+pyenv-build:  ## build CPython
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv -v \
 	&& pyenv install --list \
@@ -293,7 +284,7 @@ pyenv-build: ## build CPython
 	&& pyenv global  "$${PY_VER_MINOR}" \
 	&& python -m pip config --site set global.require-virtualenv true
 
-pyenv-vmu: ## update venv named myenv
+pyenv-vmu:  ## update venv named myenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
@@ -309,7 +300,7 @@ pyenv-vmu: ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-pyenv-list: ## show available versions
+pyenv-list:  ## show available versions
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
 
@@ -331,7 +322,15 @@ ubuntu-font:
 	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM
 
-help: ## Print this help
+volta-init:  ## install Volta
+	curl https://get.volta.sh | bash
+	exec "$${SHELL}" -l
+	volta install node
+	sudo npm install -g @mermaid-js/mermaid-cli
+	# https://github.com/mermaid-js/mermaid-cli/issues/595
+	# node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
+
+help:  ## Print this help
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Targets:'
