@@ -9,7 +9,7 @@ prompt suse
 zstyle ':completion:*' menu select interactive
 setopt menu_complete
 zmodload zsh/complist
-bindkey -M menuselect '^k' accept-and-infer-next-history
+bindkey -M menuselect '^y' accept-and-infer-next-history
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
@@ -65,7 +65,7 @@ else
   fi
 fi
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
-if [[ -n $ZENO_LOADED ]]; then
+if [[ -n "${ZENO_LOADED}" ]]; then
   bindkey ' '  zeno-auto-snippet
   bindkey '^m' zeno-auto-snippet-and-accept-line
   bindkey '^i' zeno-completion
