@@ -35,3 +35,6 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 
 # AWS
 export AWS_DEFAULT_PROFILE=
+
+# Volta
+export PATH="${HOME}"/.volta/bin:"${PATH}"

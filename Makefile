@@ -324,8 +324,10 @@ ubuntu-font:
 
 volta-init:  ## install Volta
 	curl https://get.volta.sh | bash
-	exec "$${SHELL}" -l
+	# exec "$${SHELL}" -l
+	hash -r
 	volta install node
+	hash -r
 	sudo npm install -g @mermaid-js/mermaid-cli
 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 	# node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
