@@ -79,6 +79,7 @@ package-ubuntu:
 	  nkf \
 	  ripgrep \
 	  shellcheck \
+	  ssh \
 	  tmux \
 	  unzip \
 	  vim \
