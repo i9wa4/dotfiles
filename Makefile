@@ -11,13 +11,13 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init vim-build
+ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init
 	chsh -s "$$(which zsh)"
 
 ubuntu: ubuntu-minimal  ## task for Ubuntu
 	docker-init-ubuntu docker-systemd-ubuntu \
 
-ubuntu-server:  ## task for Ubuntu Server
+ubuntu-server: ubuntu  ## task for Ubuntu Server
 	package-ubuntu-server
 
 ubuntu-desktop:  ## task for Ubuntu Desktop
@@ -25,10 +25,9 @@ ubuntu-desktop:  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
 	copy-win \
-	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-homebrew package-mac git vim-init vim-build  ## task for Mac
+mac: init-zshrc init-copy link package-mac package-homebrew git vim-init  ## task for Mac
 
 
 init-zshrc:
@@ -144,8 +143,6 @@ package-ubuntu-server:
 	sudo systemctl start ssh.service
 
 package-homebrew:
-	# https://brew.sh/
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	brew -v
 	brew update
 	brew upgrade
@@ -174,6 +171,8 @@ package-homebrew:
 	brew install hashicorp/tap/terraform
 
 package-mac:
+	# https://brew.sh/
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	brew install --cask google-cloud-sdk
 	# https://namileriblog.com/mac/rust_alacritty/
 	brew install --cask alacritty
