@@ -93,6 +93,7 @@ package-ubuntu:
 	sudo apt update
 	sudo apt install -y golang-go
 	# Vim build dependencies
+	sudo sed -i -e "s/^# deb-src/deb-src/" /etc/apt/sources.list
 	sudo sed -i -e "s/^Types: deb$/Types: deb deb-src/" /etc/apt/sources.list.d/ubuntu.sources
 	sudo apt update
 	sudo apt build-dep -y vim
