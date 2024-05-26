@@ -79,6 +79,7 @@ package-ubuntu:
 	sudo apt upgrade -y
 	sudo apt install -y \
 	  bc \
+	  curl \
 	  fzf \
 	  nkf \
 	  ripgrep \
