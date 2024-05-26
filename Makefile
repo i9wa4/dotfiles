@@ -14,16 +14,21 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init vim-build
 	chsh -s "$$(which zsh)"
 
-ubuntu: ubuntu-minimal ## task for Ubuntu
+ubuntu: ubuntu-minimal  ## task for Ubuntu
 	docker-init-ubuntu docker-systemd-ubuntu \
-	package-ubuntu-desktop ubuntu-desktop ubuntu-font
 
-wsl2: ubuntu-minimal ## task for WSL2 Ubuntu
+ubuntu-server:  ## task for Ubuntu Server
+	package-ubuntu-server
+
+ubuntu-desktop:  ## task for Ubuntu Desktop
+	package-ubuntu-desktop
+
+wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
 	copy-win \
 	echo "cd" >> "$${HOME}"/.zshrc
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-mac git vim-init vim-build ## task for Mac
+mac: init-zshrc init-copy link package-homebrew package-mac git vim-init vim-build  ## task for Mac
 
 
 init-zshrc:
@@ -95,8 +100,6 @@ package-ubuntu:
 	# Vim build dependencies
 	# Ubuntu-22.04
 	sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
-	# Ubuntu-24.04
-	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
 	sudo apt update
 	sudo apt build-dep -y vim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
@@ -123,8 +126,24 @@ package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
 	sudo apt update
 	sudo apt install -y alacritty
+	# https://myrica.estable.jp/
+	cd \
+	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
+	&& unzip -d MyricaM MyricaM.zip \
+	&& sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/ \
+	&& fc-cache -fv \
+	&& rm -f MyricaM.zip \
+	&& rm -rf MyricaM
 
-package-mac:
+package-ubuntu-server:
+	# Settings --> Accessibility --> Large Text
+	# https://zenn.dev/wsuzume/articles/26b26106c3925e
+	sudo apt install -y openssh-server
+	sudo systemctl daemon-reload
+	sudo systemctl enable ssh.service
+	sudo systemctl start ssh.service
+
+package-homebrew:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	brew -v
@@ -139,10 +158,8 @@ package-mac:
 	  shellcheck \
 	  tmux \
 	  vim \
-	  wget
-	brew install --cask google-cloud-sdk
-	# https://namileriblog.com/mac/rust_alacritty/
-	brew install --cask alacritty
+	  wget \
+	  zsh
 	# Deno
 	brew install deno
 	# Go
@@ -155,6 +172,11 @@ package-mac:
 	# https://developer.hashicorp.com/terraform/install
 	brew tap hashicorp/tap
 	brew install hashicorp/tap/terraform
+
+package-mac:
+	brew install --cask google-cloud-sdk
+	# https://namileriblog.com/mac/rust_alacritty/
+	brew install --cask alacritty
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
@@ -307,24 +329,6 @@ pyenv-vmu:  ## update venv named myenv
 pyenv-list:  ## show available versions
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
-
-ubuntu-desktop:
-	# Settings --> Accessibility --> Large Text
-	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	sudo apt install -y openssh-server
-	sudo systemctl daemon-reload
-	sudo systemctl enable ssh.service
-	sudo systemctl start ssh.service
-
-ubuntu-font:
-	# https://myrica.estable.jp/
-	cd \
-	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
-	&& unzip -d MyricaM MyricaM.zip \
-	&& sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/ \
-	&& fc-cache -fv \
-	&& rm -f MyricaM.zip \
-	&& rm -rf MyricaM
 
 volta-init:  ## install Volta
 	curl https://get.volta.sh | bash
