@@ -81,6 +81,7 @@ package-ubuntu:
 	  bc \
 	  curl \
 	  fzf \
+	  jq \
 	  nkf \
 	  ripgrep \
 	  shellcheck \
@@ -141,6 +142,7 @@ package-homebrew:
 	  fzf \
 	  git \
 	  hadolint \
+	  jq \
 	  nvim \
 	  ripgrep \
 	  shellcheck \
