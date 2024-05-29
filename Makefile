@@ -111,16 +111,6 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-	# https://developer.hashicorp.com/terraform/install
-	# wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-	# echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-	# sudo apt update
-	# sudo apt install -y terraform
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	# cd "${HOME}" \
-	# && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	# && unzip awscliv2.zip \
-	# && sudo ./aws/install
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -242,6 +232,13 @@ nvim-build:  ## build Neovim
 	&& sudo make install \
 	&& hash -r
 
+awscli-init-ubuntu:
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip awscliv2.zip \
+	&& sudo ./aws/install
+
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
@@ -329,6 +326,13 @@ pyenv-vmu:  ## update venv named myenv
 pyenv-list:  ## show available versions
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}"
+
+terraform-init-ubuntu:
+	# https://developer.hashicorp.com/terraform/install
+	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+	sudo apt update
+	sudo apt install -y terraform
 
 volta-init:  ## install Volta
 	curl https://get.volta.sh | bash
