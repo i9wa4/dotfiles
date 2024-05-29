@@ -23,10 +23,10 @@ let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
 
 let g:auto_reload = timer_start(
-  \   1000,
-  \   {-> execute('silent! checktime')},
-  \   {'repeat': -1}
-  \ )
+\   1000,
+\   {-> execute('silent! checktime')},
+\   {'repeat': -1}
+\ )
 let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
 
 " let g:denops_disable_version_check = 1
@@ -227,11 +227,11 @@ function s:copy2clip_wsl(...) abort
 endfunction
 
 command! GitDiff
-  \ tabnew
-  \ | setlocal buftype=nofile bufhidden=delete noswapfile
-  \ | setfiletype gitcommit
-  \ | execute 'read !git diff #'
-  \ | normal! gg
+\ tabnew
+\ | setlocal buftype=nofile bufhidden=delete noswapfile
+\ | setfiletype gitcommit
+\ | execute 'read !git diff #'
+\ | normal! gg
 
 
 " --------------------------------------
@@ -264,24 +264,24 @@ function! s:my_filetype() abort
   endif
 
   if index([
-    \   'bash',
-    \   'css',
-    \   'liquid',
-    \   'mermaid',
-    \   'plantuml',
-    \   'sh',
-    \   'terraform',
-    \   'toml',
-    \   'typescript',
-    \   'vim',
-    \   'yaml',
-    \   'zsh',
-    \ ], &filetype) >= 0
+  \   'bash',
+  \   'css',
+  \   'liquid',
+  \   'mermaid',
+  \   'plantuml',
+  \   'sh',
+  \   'terraform',
+  \   'toml',
+  \   'typescript',
+  \   'vim',
+  \   'yaml',
+  \   'zsh',
+  \ ], &filetype) >= 0
     setlocal shiftwidth=2 softtabstop=2 tabstop=2
   elseif index([
-    \   'go',
-    \   'make',
-    \ ], &filetype) >= 0
+  \   'go',
+  \   'make',
+  \ ], &filetype) >= 0
     setlocal noexpandtab
   else
     " Do nothing.
@@ -297,6 +297,11 @@ function! s:my_filetype() abort
   else
     " Do nothing.
   endif
+
+  " Formatter
+  if &filetype == 'json' && executable('jq')
+    let &l:formatprg = 'jq .'
+  endif
 endfunction
 
 function! s:my_asyncjob_on_save() abort
@@ -307,10 +312,10 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
     endif
   elseif index([
-    \ 'markdown',
-    \ 'qmd',
-    \ 'rmd',
-    \ ], &filetype) >= 0
+  \ 'markdown',
+  \ 'qmd',
+  \ 'rmd',
+  \ ], &filetype) >= 0
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
     endif
@@ -320,10 +325,10 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('mmdc -i ' .. l:filename .. '.mmd -o ' .. l:filename .. '.svg')
     endif
   elseif index([
-    \ 'terraform',
-    \ 'terraform-vars',
-    \ 'tf',
-    \ ], &filetype) >= 0
+  \ 'terraform',
+  \ 'terraform-vars',
+  \ 'tf',
+  \ ], &filetype) >= 0
     if executable('terraform')
       call my_async#jobstart('terraform fmt ' .. '%:p'->expand())
     endif
@@ -342,13 +347,13 @@ augroup MyVimrcAutocmd
 
   " FileType
   autocmd BufNewFile,BufReadPost *.bashrc,*.profile,*.bash_profile
-    \ setfiletype bash
+  \ setfiletype bash
   autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
-    \ setfiletype zsh
+  \ setfiletype zsh
   autocmd BufNewFile,BufReadPost *.tf
-    \ setfiletype terraform
+  \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.tfstate
-    \ setfiletype json
+  \ setfiletype json
   autocmd BufEnter,FileType * call s:my_filetype()
 
   " Async Job
