@@ -4,68 +4,68 @@ depends = ['denops.vim']
 on_event = ['InsertEnter']
 hook_source = '''
 let s:sources_list = [
-  \   'around',
-  \   'skkeleton',
-  \   'denippet',
-  \   'lsp',
-  \ ]
+\   'around',
+\   'skkeleton',
+\   'denippet',
+\   'lsp',
+\ ]
 
 call ddc#custom#patch_global('ui', 'pum')
 call ddc#custom#patch_global('sources', s:sources_list)
 call ddc#custom#patch_global('sourceOptions', #{
-  \   _: #{
-  \     matchers: ['matcher_head'],
-  \     sorters: ['sorter_rank'],
-  \     converters: ['converter_remove_overlap'],
-  \   },
-  \ })
+\   _: #{
+\     matchers: ['matcher_head'],
+\     sorters: ['sorter_rank'],
+\     converters: ['converter_remove_overlap'],
+\   },
+\ })
 call ddc#custom#patch_global('sourceOptions', #{
-  \   around: #{
-  \     mark: 'around',
-  \   },
-  \ })
+\   around: #{
+\     mark: 'around',
+\   },
+\ })
 call ddc#custom#patch_global('sourceOptions', #{
-  \   denippet: #{
-  \     mark: 'denippet',
-  \   },
-  \ })
+\   denippet: #{
+\     mark: 'denippet',
+\   },
+\ })
 call ddc#custom#patch_global('sourceOptions', #{
-  \   skkeleton: #{
-  \     mark: 'skk',
-  \     matchers: [],
-  \     sorters: [],
-  \     converters: [],
-  \     isVolatile: v:true,
-  \     minAutoCompleteLength: 1,
-  \   },
-  \ })
+\   skkeleton: #{
+\     mark: 'skk',
+\     matchers: [],
+\     sorters: [],
+\     converters: [],
+\     isVolatile: v:true,
+\     minAutoCompleteLength: 1,
+\   },
+\ })
 call ddc#custom#patch_global('sourceOptions', #{
-  \   lsp: #{
-  \     mark: 'lsp',
-  \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
-  \   },
-  \ })
+\   lsp: #{
+\     mark: 'lsp',
+\     forceCompletionPattern: '\.\w*|:\w*|->\w*',
+\   },
+\ })
 call ddc#custom#patch_global('sourceParams', #{
-  \   lsp: #{
-  \     snippetEngine: denops#callback#register({
-  \       body -> denippet#anonymous(body)
-  \     }),
-  \     enableResolveItem: v:true,
-  \     enableAdditionalTextEdit: v:true,
-  \   }
-  \ })
+\   lsp: #{
+\     snippetEngine: denops#callback#register({
+\       body -> denippet#anonymous(body)
+\     }),
+\     enableResolveItem: v:true,
+\     enableAdditionalTextEdit: v:true,
+\   }
+\ })
 if has('nvim')
-  call ddc#custom#patch_global('sourceParams', #{
-    \   lsp: #{
-    \     lspEngine: 'nvim-lsp',
-    \   }
-    \ })
+call ddc#custom#patch_global('sourceParams', #{
+\   lsp: #{
+\     lspEngine: 'nvim-lsp',
+\   }
+\ })
 else
-  call ddc#custom#patch_global('sourceParams', #{
-    \   lsp: #{
-    \     lspEngine: 'vim-lsp',
-    \   }
-    \ })
+call ddc#custom#patch_global('sourceParams', #{
+\   lsp: #{
+\     lspEngine: 'vim-lsp',
+\   }
+\ })
 endif
 call ddc#enable()
 '''
@@ -106,11 +106,11 @@ on_source = ['ddc.vim']
 hook_source = '''
 let s:base_path = '~/.cache/dpp/repos/github.com/skk-dev/dict/'->expand()
 call skkeleton#config({
-  \   'globalDictionaries': [
-  \     s:base_path .. 'SKK-JISYO.L',
-  \     s:base_path .. 'SKK-JISYO.jinmei',
-  \   ],
-  \ })
+\   'globalDictionaries': [
+\     s:base_path .. 'SKK-JISYO.L',
+\     s:base_path .. 'SKK-JISYO.jinmei',
+\   ],
+\ })
 call skkeleton#register_keymap('input', ';', 'henkanPoint')
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)

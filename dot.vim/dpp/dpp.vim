@@ -21,7 +21,7 @@ function s:init_plugin(plugin)
   endif
 
   execute 'set runtimepath^='
-    \ .. s:dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
+  \ .. s:dir->fnamemodify(':p')->substitute('[/\\]$', '', '')
 endfunction
 
 " NOTE: dpp.vim path must be added
@@ -45,13 +45,13 @@ endif
 if dpp#min#load_state(s:dpp_base, s:profile)
   " NOTE: denops.vim and dpp plugins must be added
   for s:plugin in [
-      \   'Shougo/dpp-ext-installer',
-      \   'Shougo/dpp-ext-local',
-      \   'Shougo/dpp-ext-packspec',
-      \   'Shougo/dpp-ext-toml',
-      \   'Shougo/dpp-protocol-git',
-      \   'vim-denops/denops.vim',
-      \ ]
+  \   'Shougo/dpp-ext-installer',
+  \   'Shougo/dpp-ext-local',
+  \   'Shougo/dpp-ext-packspec',
+  \   'Shougo/dpp-ext-toml',
+  \   'Shougo/dpp-protocol-git',
+  \   'vim-denops/denops.vim',
+  \ ]
     call s:init_plugin(s:plugin)
   endfor
 
@@ -62,27 +62,27 @@ if dpp#min#load_state(s:dpp_base, s:profile)
   endif
 
   autocmd User DenopsReady
-    \ : echohl WarningMsg
-    \ | echomsg '[dpp] call make_state()'
-    \ | echohl NONE
-    \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
+  \ : echohl WarningMsg
+  \ | echomsg '[dpp] call make_state()'
+  \ | echohl NONE
+  \ | call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
 else
   call s:init_plugin('vim-denops/denops.vim')
 
   autocmd BufWritePost *.lua,*.vim,*.toml,*.ts,vimrc,.vimrc
-    \ call dpp#check_files(s:profile)
+  \ call dpp#check_files(s:profile)
 endif
 
 autocmd User Dpp:makeStatePost
-  \ : echohl WarningMsg
-  \ | echomsg '[dpp] make_state() is done'
-  \ | echohl NONE
+\ : echohl WarningMsg
+\ | echomsg '[dpp] make_state() is done'
+\ | echohl NONE
 
 command! DppInstall
-  \ call dpp#async_ext_action('installer', 'install')
+\ call dpp#async_ext_action('installer', 'install')
 
 command! DppUpdate
-  \ call dpp#async_ext_action('installer', 'update')
+\ call dpp#async_ext_action('installer', 'update')
 
 command! DppMakeState
-  \ call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
+\ call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)

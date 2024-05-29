@@ -8,17 +8,17 @@ set packpath^=~/.vim
 "
 if exists('$WSLENV')
   let g:clipboard = {
-    \   'name': 'WslClipboard',
-    \   'copy': {
-    \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
-    \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
-    \    },
-    \   'paste': {
-    \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    \   },
-    \   'cache_enabled': 0,
-    \ }
+  \   'name': 'WslClipboard',
+  \   'copy': {
+  \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
+  \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
+  \    },
+  \   'paste': {
+  \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+  \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+  \   },
+  \   'cache_enabled': 0,
+  \ }
 endif
 
 
