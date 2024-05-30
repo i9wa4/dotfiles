@@ -49,7 +49,7 @@ elseif has('unix') && !has('win32unix')
   set clipboard^=unnamedplus
 endif
 set autoread
-set belloff=all
+" set belloff=all
 set noswapfile
 set noundofile
 
