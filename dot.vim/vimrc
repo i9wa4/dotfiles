@@ -271,6 +271,8 @@ function! s:my_filetype() abort
   \   'plantuml',
   \   'sh',
   \   'terraform',
+  \   'terraform-vars',
+  \   'tf',
   \   'toml',
   \   'typescript',
   \   'vim',
