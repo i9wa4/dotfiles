@@ -20,7 +20,7 @@ on_ft = ['markdown', 'qmd', 'rmd']
 
 [[plugins]]
 repo = 'hashivim/vim-terraform'
-on_ft = ['terraform', 'terraform-vars']
+on_ft = ['terraform', 'terraform-vars', 'tf']
 
 [[plugins]]
 repo = 'i9wa4/my-statusline.vim'
