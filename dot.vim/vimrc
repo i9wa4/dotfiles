@@ -142,6 +142,11 @@ xnoremap <expr> k (v:count == 0 && mode() ==# 'v') ? 'gk' : 'k'
 inoremap ,date <C-r>=strftime('%Y-%m-%d')<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 
+" Normal Mode
+" <!--ts-->
+" <!--te-->
+" nnoremap ,toc <Cmd>execute '!bash "${HOME}"/.cache/gh-md-toc --insert' expand('%')<CR>
+
 " pair
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
 command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
