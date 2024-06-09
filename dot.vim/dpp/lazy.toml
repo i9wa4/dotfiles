@@ -23,7 +23,7 @@ augroup END
 repo = 'mzlogin/vim-markdown-toc'
 on_ft = ['markdown', 'qmd', 'rmd']
 hook_source = '''
-let g:vmt_max_level = 2
+let g:vmt_max_level = 3
 '''
 
 [[plugins]]
