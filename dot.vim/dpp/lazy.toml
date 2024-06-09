@@ -11,17 +11,17 @@ let g:indent_guides_enable_on_vim_startup = 1
 
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
-on_ft = ['markdown', 'qmd', 'rmd']
+on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
 augroup MyEasyAlign
   autocmd!
-  autocmd FileType markdown,qmd,rmd vmap <Space><Space> :EasyAlign*<Bar><Enter>
+  autocmd FileType markdown,quarto,rmd vmap <Space><Space> :EasyAlign*<Bar><Enter>
 augroup END
 '''
 
 [[plugins]]
 repo = 'mzlogin/vim-markdown-toc'
-on_ft = ['markdown', 'qmd', 'rmd']
+on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
 let g:vmt_max_level = 3
 '''
@@ -29,7 +29,7 @@ let g:vmt_max_level = 3
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
 depends = ['denops.vim']
-on_ft = ['markdown', 'qmd', 'rmd']
+on_ft = ['markdown', 'quarto', 'rmd']
 
 [[plugins]]
 repo = 'hashivim/vim-terraform'
