@@ -12,10 +12,12 @@ let g:indent_guides_enable_on_vim_startup = 1
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
 on_ft = ['markdown', 'qmd', 'rmd']
-
-[[plugins]]
-repo = 'dhruvasagar/vim-table-mode'
-on_ft = ['markdown', 'qmd', 'rmd']
+hook_source = '''
+augroup MyEasyAlign
+  autocmd!
+  autocmd FileType markdown,qmd,rmd vmap <Space><Space> :EasyAlign*<Bar><Enter>
+augroup END
+'''
 
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
