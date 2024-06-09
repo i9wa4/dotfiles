@@ -10,6 +10,10 @@ let g:indent_guides_enable_on_vim_startup = 1
 '''
 
 [[plugins]]
+repo = 'junegunn/vim-easy-align'
+on_ft = ['markdown', 'qmd', 'rmd']
+
+[[plugins]]
 repo = 'dhruvasagar/vim-table-mode'
 on_ft = ['markdown', 'qmd', 'rmd']
 
