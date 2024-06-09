@@ -22,6 +22,9 @@ augroup END
 [[plugins]]
 repo = 'mzlogin/vim-markdown-toc'
 on_ft = ['markdown', 'qmd', 'rmd']
+hook_source = '''
+let g:vmt_max_level = 2
+'''
 
 [[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
