@@ -20,6 +20,10 @@ augroup END
 '''
 
 [[plugins]]
+repo = 'mzlogin/vim-markdown-toc'
+on_ft = ['markdown', 'qmd', 'rmd']
+
+[[plugins]]
 repo = 'i9wa4/markdown-number-header.vim'
 depends = ['denops.vim']
 on_ft = ['markdown', 'qmd', 'rmd']
