@@ -50,6 +50,14 @@
             "\\end{pmatrix}"
         ]
     },
+    "tableofcontents": {
+        "prefix": "tableofcontents",
+        "body": [
+            "<!--ts-->",
+            "<!--te-->",
+            "$0"
+        ]
+    },
     "vmatrix": {
         "prefix": "vmatrix",
         "body": [
