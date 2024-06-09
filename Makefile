@@ -196,13 +196,6 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-gh-md-init:
-	# https://github.com/ekalinin/github-markdown-toc
-	mkdir -p "${HOME}"/.cache \
-	&& cd "${HOME}"/.cache \
-	&& wget https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc \
-	&& chmod a+x gh-md-toc
-
 vim-init:  ## initialize for building Vim
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
