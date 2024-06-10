@@ -21,6 +21,7 @@ augroup END
 
 [[plugins]]
 repo = 'mzlogin/vim-markdown-toc'
+if = 0
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
 let g:vmt_max_level = 3
