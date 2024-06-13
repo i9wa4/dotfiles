@@ -5,9 +5,10 @@ on_event = ['InsertEnter']
 hook_source = '''
 let s:sources_list = [
 \   'around',
-\   'skkeleton',
 \   'denippet',
+\   'file',
 \   'lsp',
+\   'skkeleton',
 \ ]
 
 call ddc#custom#patch_global('ui', 'pum')
@@ -39,6 +40,24 @@ call ddc#custom#patch_global('sourceOptions', #{
 \     minAutoCompleteLength: 1,
 \   },
 \ })
+call ddc#custom#patch_global('sourceOptions', {
+\   'file': {
+\     'mark': 'F',
+\     'isVolatile': v:true,
+\     'forceCompletionPattern': '\S/\S*',
+\ }})
+call ddc#custom#patch_filetype(
+\   ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
+\   'sourceOptions': {
+\     'file': {
+\       'forceCompletionPattern': '\S\\\S*',
+\     },
+\   },
+\   'sourceParams': {
+\     'file': {
+\       'mode': 'win32',
+\     },
+\ }})
 call ddc#custom#patch_global('sourceOptions', #{
 \   lsp: #{
 \     mark: 'lsp',
@@ -128,3 +147,7 @@ for s:file in glob(s:dir . '*.*', 1, 1)
   call denippet#load(s:file)
 endfor
 '''
+
+[[plugins]]
+repo = 'LumaKernel/ddc-source-file'
+on_source = ['ddc.vim']
