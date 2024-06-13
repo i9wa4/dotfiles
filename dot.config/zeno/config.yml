@@ -29,3 +29,6 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
+  - name: (ghq) update
+    keyword: gu
+    snippet: ghq list | ghq get --update --parallel
