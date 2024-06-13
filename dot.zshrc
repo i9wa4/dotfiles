@@ -72,11 +72,6 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
 
-# Git automatic fetch
-if test "$(pgrep tmux | wc -l)" -eq 0; then
-  git -C "${HOME}"/dotfiles fetch &
-fi
-
 # tmux
 # https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
