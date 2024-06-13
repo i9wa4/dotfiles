@@ -47,7 +47,7 @@ link:  ## make symbolic links
 	# Vim (symbolic link)
 	if test -d "$${HOME}"/.vim; then unlink "$${HOME}"/.vim; fi
 	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
-	# $XDG_CONFIG_HOME
+	# XDG_CONFIG_HOME
 	. "$${HOME}"/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}"    "$${XDG_CONFIG_HOME}" \
