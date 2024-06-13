@@ -16,6 +16,7 @@ ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init
 
 ubuntu: ubuntu-minimal  ## task for Ubuntu
 	docker-init-ubuntu docker-systemd-ubuntu \
+	go-package
 
 ubuntu-server: ubuntu  ## task for Ubuntu Server
 	package-ubuntu-server
@@ -27,7 +28,7 @@ wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
 	copy-win \
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-mac package-homebrew git vim-init  ## task for Mac
+mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-init  ## task for Mac
 
 
 init-zshrc:
@@ -112,6 +113,10 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+	# Zsh
+	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	. "${HOME}"/.zshrc \
+	&& zinit self-update
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -173,6 +178,10 @@ package-mac:
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
 	&& sudo installer -pkg AWSCLIV2.pkg -target /
+	# Zsh
+	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	. "${HOME}"/.zshrc \
+	&& zinit self-update
 
 git:
 	git config --global color.ui auto
@@ -190,6 +199,7 @@ git:
 	git config --global diff.tool vimdiff
 	git config --global difftool.prompt false
 	git config --global difftool.vimdiff.path vim
+	git config --global ghq.root ~/src
 	git config --global grep.lineNumber true
 	git config --global http.sslVerify false
 	git config --global init.defaultBranch main
@@ -286,18 +296,11 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 
 go-package:  ## install go packages
 	go install github.com/rhysd/vim-startuptime@latest
-	# $ vim-startuptime -vimpath nvim -count 100
-	# $ vim-startuptime -vimpath vim -count 100
+	# vim-startuptime -vimpath nvim -count 100
+	# vim-startuptime -vimpath vim -count 100
 	go install github.com/mattn/efm-langserver@latest
-
-jekyll-init-ubuntu:  ## install Jekyll
-	# https://maeda577.github.io/2019/11/04/new-jekyll.html
-	# https://github.com/github/pages-gem
-	sudo apt update
-	sudo apt upgrade -y
-	sudo apt install -y ruby-full build-essential zlib1g-dev
-	. "$${HOME}"/dotfiles/dot.zshenv \
-	&& gem install jekyll bundler
+	# https://github.com/Songmu/ghq-handbook
+	go install github.com/x-motemen/ghq@latest
 
 pyenv-init:  ## initialize for pyenv
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv

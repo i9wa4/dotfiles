@@ -54,9 +54,27 @@ PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
 precmd(){ vcs_info }
 
+# zeno.zsh
+zinit ice lucid depth"1" blockf
+zinit light yuki-yano/zeno.zsh
+
+# https://qiita.com/obake_fe/items/da8f861eed607436b91c
+if [[ -n "${ZENO_LOADED}" ]]; then
+  bindkey ' '  zeno-auto-snippet
+  bindkey '^m' zeno-auto-snippet-and-accept-line
+  bindkey '^i' zeno-completion
+  bindkey '^g' zeno-ghq-cd
+  bindkey '^r' zeno-history-selection
+  bindkey '^x' zeno-insert-snippet
+fi
+
+zinit light zsh-users/zsh-completions
+# zinit light zsh-users/zsh-autosuggestions
+# zinit light zsh-users/zsh-syntax-highlighting
+
 # Git automatic fetch
 if test "$(pgrep tmux | wc -l)" -eq 0; then
-  bash "${HOME}"/dotfiles/bin/git-autofetch.sh &
+  git -C "${HOME}"/dotfiles fetch &
 fi
 
 # tmux
@@ -72,23 +90,4 @@ else
   elif test "${count}" -eq 1; then
       echo $(tmux a)
   fi
-fi
-
-# zeno.zsh
-if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
-  . "${HOME}"/.cache/zeno.zsh/zeno.zsh
-else
-  git clone https://github.com/yuki-yano/zeno.zsh "${HOME}"/.cache/zeno.zsh
-  if test -e "${HOME}"/.cache/zeno.zsh/zeno.zsh; then
-    . "${HOME}"/.cache/zeno.zsh/zeno.zsh
-  fi
-fi
-# https://qiita.com/obake_fe/items/da8f861eed607436b91c
-if [[ -n "${ZENO_LOADED}" ]]; then
-  bindkey ' '  zeno-auto-snippet
-  bindkey '^m' zeno-auto-snippet-and-accept-line
-  bindkey '^i' zeno-completion
-  bindkey '^g' zeno-ghq-cd
-  bindkey '^r' zeno-history-selection
-  bindkey '^x' zeno-insert-snippet
 fi
