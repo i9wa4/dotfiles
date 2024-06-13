@@ -5,20 +5,20 @@ snippets:
   - name: pp
     keyword: pp
     snippet: echo 'cd' $(pwd) | pbcopy
+  # - name: (Quarto) render
+  #   keyword: qr
+  #   snippet: find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
+  #             do
+  #               quarto render "${filepath}";
+  #             done
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
-  - name: (Quarto) render
-    keyword: qr
-    snippet: find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
-              do
-                quarto render "${filepath}";
-              done
-  - name: (Python) jupyter-lab
-    keyword: jl
-    snippet: jupyter-lab
-              --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-              --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
+  # - name: (Python) jupyter-lab
+  #   keyword: jl
+  #   snippet: jupyter-lab
+  #             --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
+  #             --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Git) git graph
     keyword: lo
     snippet: log --graph --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short
@@ -29,8 +29,8 @@ snippets:
     snippet: log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short
     context:
       lbuffer: '^git\s'
-  - name: (Git) git addtag
-    keyword: addtag
-    snippet: tag -a {{tagname}} -m '' commithash
-    context:
-      lbuffer: '^git\s'
+  # - name: (Git) git addtag
+  #   keyword: addtag
+  #   snippet: tag -a {{tagname}} -m '' commithash
+  #   context:
+  #     lbuffer: '^git\s'
