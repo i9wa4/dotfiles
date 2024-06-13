@@ -16,6 +16,20 @@ bindkey -M menuselect '^p' up-line-or-history
 # Keybind
 bindkey -v
 
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history
+setopt extended_history
+setopt hist_allow_clobber
+setopt hist_fcntl_lock
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_verify
+setopt share_history
+
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
 autoload -Uz vcs_info
