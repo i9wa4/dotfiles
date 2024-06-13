@@ -62,7 +62,7 @@ else
   set nrformats=
 endif
 set backspace=indent,eol,start
-set completeopt=menu
+set completeopt=menuone,noinsert,noselect
 set fileencodings=utf-8,euc-jp,cp932
 set fileformat=unix
 set fileformats=unix,dos,mac
