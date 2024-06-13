@@ -40,6 +40,11 @@ PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
 precmd(){ vcs_info }
 
+# Git automatic fetch
+if test "$(pgrep tmux | wc -l)" -eq 0; then
+  bash "${HOME}"/dotfiles/bin/git-autofetch.sh &
+fi
+
 # tmux
 # https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
@@ -72,8 +77,4 @@ if [[ -n "${ZENO_LOADED}" ]]; then
   bindkey '^g' zeno-ghq-cd
   bindkey '^r' zeno-history-selection
   bindkey '^x' zeno-insert-snippet
-fi
-
-if test "$(pgrep tmux | wc -l)" -eq 0; then
-  bash "${HOME}"/dotfiles/bin/git-autofetch.sh &
 fi
