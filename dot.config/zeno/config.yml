@@ -21,16 +21,11 @@ snippets:
   #             --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Git) git graph
     keyword: lo
-    snippet: log --graph --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
     context:
       lbuffer: '^git\s'
   - name: (Git) git graph --all
     keyword: la
-    snippet: log --graph --all --format='%C(cyan dim)(%ad) %C(white dim)%h %C(green)<%an> %Creset%s %C(bold yellow)%d' --date=short
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
-  # - name: (Git) git addtag
-  #   keyword: addtag
-  #   snippet: tag -a {{tagname}} -m '' commithash
-  #   context:
-  #     lbuffer: '^git\s'
