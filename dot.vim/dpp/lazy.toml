@@ -3,6 +3,10 @@ repo = 'github/copilot.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
+repo = 'tyru/caw.vim'
+on_event = ['VimEnter']
+
+[[plugins]]
 repo = 'preservim/vim-indent-guides'
 on_event = ['VimEnter']
 hook_source = '''
