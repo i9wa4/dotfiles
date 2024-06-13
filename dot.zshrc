@@ -73,3 +73,7 @@ if [[ -n "${ZENO_LOADED}" ]]; then
   bindkey '^r' zeno-history-selection
   bindkey '^x' zeno-insert-snippet
 fi
+
+if test "$(pgrep tmux | wc -l)" -eq 0; then
+  bash "${HOME}"/dotfiles/bin/git-autofetch.sh &
+fi
