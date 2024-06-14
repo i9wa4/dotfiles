@@ -1,3 +1,6 @@
+# Keybind
+bindkey -v
+
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit promptinit
 compinit
@@ -12,9 +15,6 @@ zmodload zsh/complist
 bindkey -M menuselect '^y' accept-and-infer-next-history
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
-
-# Keybind
-bindkey -v
 
 # History
 HISTFILE=~/.zsh_history
@@ -39,7 +39,9 @@ zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
-_SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+precmd(){ vcs_info }
+
+# Prompt
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
   PROMPT='%F{red}%n@%m%f'
@@ -47,12 +49,10 @@ else
   # local host
   PROMPT='%F{cyan}%n@%m%f'
 fi
-
-# Prompt
-PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
+# _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+# PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
 PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
-precmd(){ vcs_info }
 
 # zeno.zsh
 zinit ice lucid depth"1" blockf
@@ -66,6 +66,11 @@ if [[ -n "${ZENO_LOADED}" ]]; then
   bindkey '^g' zeno-ghq-cd
   bindkey '^r' zeno-history-selection
   bindkey '^x' zeno-insert-snippet
+else
+  # https://wayohoo.com/article/6922
+  bindkey '\e[3~' delete-char
+  bindkey '^r' history-incremental-search-backward
+  bindkey '^s' history-incremental-search-forward
 fi
 
 zinit light zsh-users/zsh-completions

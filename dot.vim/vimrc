@@ -85,7 +85,7 @@ set wrapscan
 
 " View
 set number
-" set relativenumber
+set relativenumber
 set ambiwidth=double
 
 " Window
