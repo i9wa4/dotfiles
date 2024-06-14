@@ -1,6 +1,3 @@
-# Keybind
-bindkey -v
-
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit promptinit
 compinit
@@ -8,27 +5,8 @@ promptinit
 
 prompt suse
 
-# https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
-zstyle ':completion:*' menu select interactive
-setopt menu_complete
-zmodload zsh/complist
-bindkey -M menuselect '^y' accept-and-infer-next-history
-bindkey -M menuselect '^n' down-line-or-history
-bindkey -M menuselect '^p' up-line-or-history
-
-# History
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-setopt append_history
-setopt extended_history
-setopt hist_allow_clobber
-setopt hist_fcntl_lock
-setopt hist_ignore_all_dups
-setopt hist_reduce_blanks
-setopt hist_save_no_dups
-setopt hist_verify
-setopt share_history
+# Keybind
+bindkey -v
 
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
@@ -53,6 +31,28 @@ fi
 # PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
 PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
 %# '
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history
+setopt extended_history
+setopt hist_allow_clobber
+setopt hist_fcntl_lock
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_verify
+setopt share_history
+
+# https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
+zstyle ':completion:*' menu select interactive
+setopt menu_complete
+zmodload zsh/complist
+bindkey -M menuselect '^y' accept-and-infer-next-history
+bindkey -M menuselect '^n' down-line-or-history
+bindkey -M menuselect '^p' up-line-or-history
 
 # zeno.zsh
 zinit ice lucid depth"1" blockf
