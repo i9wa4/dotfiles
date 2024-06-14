@@ -5,7 +5,6 @@ import {
   Dpp,
   Plugin,
 } from "https://deno.land/x/dpp_vim@v0.1.0/types.ts";
-// import { Denops, fn } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
 import { Denops } from "https://deno.land/x/dpp_vim@v0.0.2/deps.ts";
 
 type Toml = {
