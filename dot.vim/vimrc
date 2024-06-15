@@ -333,6 +333,7 @@ function! s:my_asyncjob_on_save() abort
   \ ], &filetype) >= 0
     if executable('terraform')
       call my_async#jobstart('terraform fmt ' .. '%:p'->expand())
+      " execute 'LspDocumentFormatSync'
     endif
   else
     " Do nothing.
