@@ -5,3 +5,6 @@ node_modules/
 .netrwbook
 .netrwhist
 local.vim
+.terraform.lock.hcl
+terraform.tfstate
+terraform.exe
