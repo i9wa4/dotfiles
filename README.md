@@ -1,7 +1,5 @@
 # dotfiles
 
-test
-
 ## 1. Target OS
 
 - Ubuntu 24.04 LTS
