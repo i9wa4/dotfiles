@@ -84,9 +84,9 @@ set smartcase
 set wrapscan
 
 " View
-set number
-set relativenumber
 set ambiwidth=double
+set number
+" set relativenumber
 
 " Window
 set noequalalways

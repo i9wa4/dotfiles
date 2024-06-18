@@ -3,18 +3,14 @@
         "prefix": "shebang-bash",
         "body": [
             "#!/usr/bin/env bash",
-            "set -euox pipefail -o posix",
+            "set -o verbose",
+            "set -o xtrace",
+            "set -o errexit",
+            "set -o nounset",
+            "set -o pipefail",
+            "set -o posix",
             "",
-            "$0"
-        ]
-    },
-    "shebang-zsh": {
-        "prefix": "shebang-zsh",
-        "body": [
-            "#!/usr/bin/env zsh",
-            "set -euo pipefail",
-            "setopt xtrace posix err_exit",
-            "",
+            "cd \"\\$(dirname \"\\$0\")\"",
             "$0"
         ]
     }
