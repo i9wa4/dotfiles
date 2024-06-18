@@ -24,7 +24,7 @@ snippets:
       #   quarto render "${filepath}";
       # done
   - name: (Python venv) activate myenv
-    keyword: pma
+    keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
   - name: (Python) jupyter-lab
     keyword: pjl
