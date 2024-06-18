@@ -5,20 +5,6 @@ snippets:
   - name: pp
     keyword: pp
     snippet: echo 'cd' $(pwd) | pbcopy
-  # - name: (Quarto) render
-  #   keyword: qr
-  #   snippet: find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
-  #             do
-  #               quarto render "${filepath}";
-  #             done
-  - name: (Python venv) activate myenv
-    keyword: pvma
-    snippet: . "${PY_VENV_MYENV}"/bin/activate
-  # - name: (Python) jupyter-lab
-  #   keyword: jl
-  #   snippet: jupyter-lab
-  #             --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-  #             --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Git) git graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
@@ -29,30 +15,47 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
+  - name: (Quarto) render
+    keyword: qr
+    snippet: quarto render
+      # NOTE: Without _quarto.yml, the following code is useful.
+      # find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
+      # do
+      #   quarto render "${filepath}";
+      # done
+  - name: (Python venv) activate myenv
+    keyword: pma
+    snippet: . "${PY_VENV_MYENV}"/bin/activate
+  - name: (Python) jupyter-lab
+    keyword: pjl
+    snippet:
+      jupyter-lab
+        --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
+        --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
   - name: (Mac) update
     keyword: mu
-    snippet:  brew update
-              && brew upgrade
-              && ghq list | ghq get --update --parallel
-              && cd ~/dotfiles
-              && git fetch
-              && git merge
-              && make vim-build
-              && make nvim-build
-              && make pyenv-list
-              && cd -
+    snippet:
+      cd ~/dotfiles
+      && make vim-build
+      && brew update
+      && brew upgrade
+      && git fetch
+      && git merge
+      && ghq list | ghq get --update --parallel
+      && make pyenv-list
+      && cd -
   - name: (Ubuntu) update
     keyword: uu
-    snippet:  sudo apt update
-              && sudo apt upgrade -y
-              && ghq list | ghq get --update --parallel
-              && cd ~/dotfiles
-              && git fetch
-              && git merge
-              && make vim-build
-              && make nvim-build
-              && make pyenv-list
-              && cd -
+    snippet:
+      cd ~/dotfiles
+      && make vim-build
+      && sudo apt update
+      && sudo apt upgrade -y
+      && git fetch
+      && git merge
+      && ghq list | ghq get --update --parallel
+      && make pyenv-list
+      && cd -
