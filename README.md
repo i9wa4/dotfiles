@@ -12,6 +12,12 @@
     - `winget install Alacritty.Alacritty`
 1. Install WSL2.
     - cf. <https://learn.microsoft.com/en-us/windows/wsl/install>
+1. Clone this repository.
+
+    ```sh
+    cd && git clone https://github.com/i9wa4/dotfiles
+    ```
+
 1. Execute `make init-zsh-ubuntu`.
 1. Restart WSL2.
 
