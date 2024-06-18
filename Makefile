@@ -337,7 +337,7 @@ pyenv-vmu:  ## update venv named myenv
 
 pyenv-list:  ## show available versions
 	. "$${HOME}"/dotfiles/dot.zshenv \
-	&& echo "[pyenv] Available Python versions:" \
+	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
