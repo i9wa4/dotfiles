@@ -32,3 +32,27 @@ snippets:
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
+  - name: (Mac) update
+    keyword: mu
+    snippet:  brew update
+              && brew upgrade
+              && ghq list | ghq get --update --parallel
+              && cd ~/dotfiles
+              && git fetch
+              && git merge
+              && make vim-build
+              && make nvim-build
+              && make pyenv-list
+              && cd -
+  - name: (Ubuntu) update
+    keyword: uu
+    snippet:  sudo apt update
+              && sudo apt upgrade -y
+              && ghq list | ghq get --update --parallel
+              && cd ~/dotfiles
+              && git fetch
+              && git merge
+              && make vim-build
+              && make nvim-build
+              && make pyenv-list
+              && cd -
