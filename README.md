@@ -12,14 +12,26 @@
     - `winget install Alacritty.Alacritty`
 1. Install WSL2.
     - cf. <https://learn.microsoft.com/en-us/windows/wsl/install>
+1. Execute `make init-zsh-ubuntu`.
+1. Restart WSL2.
+
+    ```sh
+    exit
+    ```
+
+    ```powershell
+    wsl --shutdown
+    wsl
+    ```
+
 1. Execute `make wsl2`.
 1. (Optional) Install VS Code extension "Remote Development".
     - cf. <https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-vscode>
 
 ### 2.2. Ubuntu
 
-1. (Optional) Install Alacritty.
-    - cf. <https://github.com/alacritty/alacritty/blob/master/INSTALL.md>
+1. Execute `make init-zsh-ubuntu`.
+1. Restart Ubuntu.
 1. Execute `make ubuntu`.
 
 ### 2.3. Mac

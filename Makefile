@@ -11,7 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zsh-ubuntu init-zshrc init-copy link
+ubuntu-minimal: init-zshrc init-copy link
 	package-ubuntu go-package \
 	git vim-init nvim-init pyenv-init
 
