@@ -33,8 +33,8 @@ mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-i
 
 init-zshrc:
 	# Zinit
-	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	. "${HOME}"/.zshrc \
+	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	. "$${HOME}"/.zshrc \
 	&& zinit self-update
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
