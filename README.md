@@ -14,7 +14,7 @@
     cd && git clone https://github.com/i9wa4/dotfiles
     ```
 
-### 2.3. Mac
+### 2.3. macOS
 
 1. Execute the following command.
 
