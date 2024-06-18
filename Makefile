@@ -39,7 +39,7 @@ init-zsh-ubuntu:  ## Install Zsh
 init-zshrc:
 	# Zinit
 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	. "$${HOME}"/.zshrc \
+	. "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh
 	&& zinit self-update
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
