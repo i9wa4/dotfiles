@@ -11,12 +11,14 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc init-copy link package-ubuntu git vim-init
-	chsh -s "$$(which zsh)"
+ubuntu-minimal:
+	init-zshrc-ubuntu-pre \
+	init-zshrc init-copy link \
+	package-ubuntu go-package \
+	git vim-init nvim-init pyenv-init
 
 ubuntu: ubuntu-minimal  ## task for Ubuntu
-	docker-init-ubuntu docker-systemd-ubuntu \
-	go-package
+	docker-init-ubuntu docker-systemd-ubuntu
 
 ubuntu-server: ubuntu  ## task for Ubuntu Server
 	package-ubuntu-server
@@ -28,8 +30,15 @@ wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
 	copy-win \
 	echo "Restart WSL"
 
-mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-init  ## task for Mac
+mac:  ## task for Mac
+	init-zshrc init-copy link \
+	package-mac package-homebrew go-package \
+	git vim-init nvim-init pyenv-init
 
+
+init-zshrc-ubuntu-pre:
+	sudo apt install -y zsh
+	chsh -s "$$(which zsh)"
 
 init-zshrc:
 	# Zinit
@@ -95,8 +104,7 @@ package-ubuntu:
 	  unzip \
 	  vim \
 	  xsel \
-	  zip \
-	  zsh
+	  zip
 	# Deno
 	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
 	# Go
@@ -207,7 +215,7 @@ git:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init:  ## initialize for building Vim
+vim-init:
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
@@ -229,7 +237,7 @@ vim-build:  ## build Vim
 	&& sudo make install \
 	&& hash -r
 
-nvim-init:  ## initialize for building Neovim
+nvim-init:
 	sudo mkdir -p /usr/local/src \
 	&& cd /usr/local/src \
 	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
@@ -252,7 +260,6 @@ awscli-init-ubuntu:
 	&& unzip awscliv2.zip \
 	&& sudo ./aws/install \
 	&& rm awscliv2.zip
-
 
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
@@ -300,7 +307,7 @@ go-package:  ## install go packages
 	# https://github.com/Songmu/ghq-handbook
 	go install github.com/x-motemen/ghq@latest
 
-pyenv-init:  ## initialize for pyenv
+pyenv-init:
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshrc
 	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshrc
@@ -338,7 +345,7 @@ pyenv-list:  ## show available versions
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
-terraform-init-ubuntu:
+terraform-init-ubuntu:  ## install Terraform
 	# https://developer.hashicorp.com/terraform/install
 	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
