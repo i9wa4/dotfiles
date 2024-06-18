@@ -11,10 +11,13 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zsh-ubuntu \
+common:
 	init-zshrc init-copy link \
-	package-ubuntu go-package \
-	git vim-init nvim-init pyenv-init
+	git vim-init nvim-init pyenv-init \
+	go-package \
+	vim-build nvim-build pyenv-build pyenv-vmu
+
+ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu  ## task for Ubuntu
 
@@ -25,10 +28,10 @@ ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	echo "Restart WSL2"
 
-mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-init nvim-init pyenv-init  ## task for Mac
+mac: package-mac package-homebrew common  ## task for Mac
 
 
-init-zsh-ubuntu:  ## Install Zsh
+init-zsh-ubuntu:
 	sudo apt install -y zsh
 	chsh -s "$$(which zsh)"
 
