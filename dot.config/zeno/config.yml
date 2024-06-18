@@ -40,6 +40,7 @@ snippets:
     snippet:
       cd ~/dotfiles
       && make vim-build
+      && zinit self-update
       && brew update
       && brew upgrade
       && git fetch
@@ -52,6 +53,7 @@ snippets:
     snippet:
       cd ~/dotfiles
       && make vim-build
+      && zinit self-update
       && sudo apt update
       && sudo apt upgrade -y
       && git fetch

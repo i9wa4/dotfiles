@@ -1,49 +1,41 @@
 # dotfiles
 
-## 1. Requirements
+## 1. Installation
 
-- make
-
-## 2. Installation
-
-### 2.1. WSL2 (Ubuntu)
-
-1. Install Alacritty.
-    - `winget install Alacritty.Alacritty`
-1. Install WSL2.
-    - cf. <https://learn.microsoft.com/en-us/windows/wsl/install>
 1. Clone this repository.
 
     ```sh
     cd && git clone https://github.com/i9wa4/dotfiles
     ```
 
-1. Execute `make init-zsh-ubuntu`.
-1. Restart WSL2.
+### 1.1. WSL2 (Ubuntu 24.04)
+
+1. Install WSL2 and Ubuntu 24.04.
+    - <https://learn.microsoft.com/en-us/windows/wsl/install>
+    - <https://i9wa4.github.io/blog/posts/2024-03-25-setup-wsl2.html>
+1. Install make.
 
     ```sh
-    exit
-    ```
-
-    ```powershell
-    wsl --shutdown
-    wsl
+    sudo apt install -y make
     ```
 
 1. Execute `make wsl2`.
-1. (Optional) Install VS Code extension "Remote Development".
-    - cf. <https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-vscode>
+1. Install Alacritty.
 
-### 2.2. Ubuntu
+    ```powershell
+    winget install Alacritty.Alacritty
+    ```
 
-1. Execute `make init-zsh-ubuntu`.
-1. Restart Ubuntu.
+### 1.2. Ubuntu 24.04
+
 1. Execute `make ubuntu`.
 
-### 2.3. Mac
+### 1.3. Mac
 
 1. Execute `make mac`.
 
-## 3. AWS CLI
+## 2. Post installation
 
-cf. <https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html>
+### 3. AWS CLI
+
+<https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html>
