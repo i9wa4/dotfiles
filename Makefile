@@ -337,9 +337,9 @@ pyenv-vmu:  ## update venv named myenv
 
 pyenv-list:  ## show available versions
 	. "$${HOME}"/dotfiles/dot.zshenv \
-	&& echo "Available versions:" \
+	&& echo "[pyenv] Available Python versions:" \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" \
-	&& echo "Installed versions:" \
+	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
 terraform-init-ubuntu:
