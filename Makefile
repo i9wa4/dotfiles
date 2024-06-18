@@ -103,10 +103,6 @@ package-ubuntu:
 	  zip
 	# Deno
 	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
-	# Go
-	sudo add-apt-repository -y ppa:longsleep/golang-backports
-	sudo apt update
-	sudo apt install -y golang-go
 	# Vim build dependencies
 	# Ubuntu-22.04
 	sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
@@ -121,6 +117,10 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+	# Go
+	sudo add-apt-repository -y ppa:longsleep/golang-backports
+	sudo apt update
+	sudo apt install -y golang-go
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -161,13 +161,13 @@ package-homebrew:
 	  zsh
 	# Deno
 	brew install deno
-	# Go
-	brew install go
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	brew install ninja cmake gettext curl
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
+	# Go
+	brew install go
 	# https://developer.hashicorp.com/terraform/install
 	brew tap hashicorp/tap
 	brew install hashicorp/tap/terraform
