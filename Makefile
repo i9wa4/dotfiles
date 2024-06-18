@@ -35,7 +35,6 @@ mac: init-zshrc init-copy link  ## task for Mac
 init-zsh-ubuntu:  ## Install Zsh
 	sudo apt install -y zsh
 	chsh -s "$$(which zsh)"
-	zsh
 
 init-zshrc:
 	# Zinit
