@@ -11,7 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal: init-zshrc-ubuntu-pre init-zshrc init-copy link
+ubuntu-minimal: init-zsh-ubuntu init-zshrc init-copy link
 	package-ubuntu go-package \
 	git vim-init nvim-init pyenv-init
 
@@ -32,9 +32,10 @@ mac: init-zshrc init-copy link  ## task for Mac
 	git vim-init nvim-init pyenv-init
 
 
-init-zshrc-ubuntu-pre:
+init-zsh-ubuntu:  ## Install Zsh
 	sudo apt install -y zsh
 	chsh -s "$$(which zsh)"
+	zsh
 
 init-zshrc:
 	# Zinit
