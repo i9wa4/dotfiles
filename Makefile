@@ -24,7 +24,7 @@ ubuntu-server: ubuntu  ## task for Ubuntu Server
 
 ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
-wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
+wsl2: ubuntu-minimal \  ## task for WSL2 Ubuntu
 	copy-win \
 	echo "Restart WSL"
 
@@ -114,6 +114,7 @@ package-ubuntu:
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+	sudo rm -rf "$${HOME}"/.pyenv
 	curl https://pyenv.run | bash
 	sudo apt install -y \
 	  build-essential libssl-dev zlib1g-dev \
