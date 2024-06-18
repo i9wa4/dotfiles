@@ -16,21 +16,16 @@ ubuntu-minimal: init-zsh-ubuntu \
 	package-ubuntu go-package \
 	git vim-init nvim-init pyenv-init
 
-ubuntu: ubuntu-minimal  ## task for Ubuntu
-	docker-init-ubuntu docker-systemd-ubuntu
+ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu  ## task for Ubuntu
 
-ubuntu-server: ubuntu  ## task for Ubuntu Server
-	package-ubuntu-server
+ubuntu-server: ubuntu package-ubuntu-server  ## task for Ubuntu Server
 
 ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
-wsl2: ubuntu-minimal \  ## task for WSL2 Ubuntu
-	copy-win \
-	echo "Restart WSL"
+wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
+	echo "Restart WSL2"
 
-mac: init-zshrc init-copy link  ## task for Mac
-	package-mac package-homebrew go-package \
-	git vim-init nvim-init pyenv-init
+mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-init nvim-init pyenv-init  ## task for Mac
 
 
 init-zsh-ubuntu:  ## Install Zsh
