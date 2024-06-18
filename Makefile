@@ -11,9 +11,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-ubuntu-minimal:
-	init-zshrc-ubuntu-pre \
-	init-zshrc init-copy link \
+ubuntu-minimal: init-zshrc-ubuntu-pre init-zshrc init-copy link
 	package-ubuntu go-package \
 	git vim-init nvim-init pyenv-init
 
@@ -23,15 +21,13 @@ ubuntu: ubuntu-minimal  ## task for Ubuntu
 ubuntu-server: ubuntu  ## task for Ubuntu Server
 	package-ubuntu-server
 
-ubuntu-desktop:  ## task for Ubuntu Desktop
-	package-ubuntu-desktop
+ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal  ## task for WSL2 Ubuntu
 	copy-win \
 	echo "Restart WSL"
 
-mac:  ## task for Mac
-	init-zshrc init-copy link \
+mac: init-zshrc init-copy link  ## task for Mac
 	package-mac package-homebrew go-package \
 	git vim-init nvim-init pyenv-init
 
