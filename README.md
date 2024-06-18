@@ -19,7 +19,12 @@
     sudo apt install -y make
     ```
 
-1. Execute `make wsl2`.
+1. Execute the following command.
+
+    ```sh
+    make wsl2
+    ```
+
 1. Install Alacritty.
 
     ```powershell
@@ -28,14 +33,22 @@
 
 ### 1.2. Ubuntu 24.04
 
-1. Execute `make ubuntu`.
+1. Execute the following command.
+
+    ```sh
+    make ubuntu
+    ```
 
 ### 1.3. Mac
 
-1. Execute `make mac`.
+1. Execute the following command.
+
+    ```sh
+    make mac
+    ```
 
 ## 2. Post installation
 
-### 3. AWS CLI
+### 2.1. AWS CLI
 
 <https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html>
