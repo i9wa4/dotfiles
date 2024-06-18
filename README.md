@@ -2,9 +2,9 @@
 
 ## 1. Target OS
 
+- macOS
 - Ubuntu 24.04 LTS
 - Ubuntu 24.04 LTS (WSL2)
-- macOS
 
 ## 2. Installation
 
@@ -14,9 +14,25 @@
     cd && git clone https://github.com/i9wa4/dotfiles
     ```
 
-### 2.1. WSL2 (Ubuntu)
+### 2.3. Mac
 
-1. Install WSL2 and Ubuntu
+1. Execute the following command.
+
+    ```sh
+    make mac
+    ```
+
+### 2.2. Ubuntu
+
+1. Execute the following command.
+
+    ```sh
+    make ubuntu
+    ```
+
+### 2.1. Ubuntu (WSL2)
+
+1. Install WSL2 and Ubuntu.
     - <https://learn.microsoft.com/en-us/windows/wsl/install>
     - <https://i9wa4.github.io/blog/posts/2024-03-25-setup-wsl2.html>
 1. Launch Ubuntu with PowerShell.
@@ -43,26 +59,17 @@
     exit
     ```
 
-1. Install Alacritty with PowerShell.
+1. Restart WSL2.
+
+    ```powershell
+    wsl --shutdown
+    wsl
+    ```
+
+1. (Optional) Install Alacritty with PowerShell.
 
     ```powershell
     winget install Alacritty.Alacritty
-    ```
-
-### 2.2. Ubuntu
-
-1. Execute the following command.
-
-    ```sh
-    make ubuntu
-    ```
-
-### 2.3. Mac
-
-1. Execute the following command.
-
-    ```sh
-    make mac
     ```
 
 ## 3. Post installation
