@@ -32,6 +32,10 @@ mac: init-zshrc init-copy link package-mac package-homebrew go-package git vim-i
 
 
 init-zshrc:
+	# Zinit
+	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	. "${HOME}"/.zshrc \
+	&& zinit self-update
 	# Zsh
 	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "cd" >> "$${HOME}"/.zshrc
@@ -113,10 +117,6 @@ package-ubuntu:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-	# Zsh
-	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	. "${HOME}"/.zshrc \
-	&& zinit self-update
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -178,10 +178,6 @@ package-mac:
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
 	&& sudo installer -pkg AWSCLIV2.pkg -target /
-	# Zsh
-	bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	. "${HOME}"/.zshrc \
-	&& zinit self-update
 	# Rectangle
 	brew install --cask rectangle
 
