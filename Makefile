@@ -107,7 +107,7 @@ package-ubuntu:
 	# Ubuntu-22.04
 	# sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
 	# Ubuntu-24.04
-	sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
 	sudo apt update
 	sudo apt build-dep -y vim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
