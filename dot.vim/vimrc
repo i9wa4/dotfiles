@@ -28,6 +28,7 @@ let g:auto_reload = timer_start(
 \   {'repeat': -1}
 \ )
 let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
+let g:tabstop_two_lang_list = []
 
 " let g:denops_disable_version_check = 1
 
@@ -263,22 +264,7 @@ function! s:my_filetype() abort
     setlocal nospell
   endif
 
-  if index([
-  \   'bash',
-  \   'css',
-  \   'liquid',
-  \   'mermaid',
-  \   'plantuml',
-  \   'sh',
-  \   'terraform',
-  \   'terraform-vars',
-  \   'tf',
-  \   'toml',
-  \   'typescript',
-  \   'vim',
-  \   'yaml',
-  \   'zsh',
-  \ ], &filetype) >= 0
+  if index(g:tabstop_two_lang_list, &filetype) >= 0
     setlocal shiftwidth=2 softtabstop=2 tabstop=2
   elseif index([
   \   'go',
@@ -353,7 +339,7 @@ augroup MyVimrcAutocmd
   \ setfiletype bash
   autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
   \ setfiletype zsh
-  autocmd BufNewFile,BufReadPost *.tf
+  autocmd BufNewFile,BufReadPost *.tf,*.tftpl
   \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.tfstate
   \ setfiletype json
