@@ -4,6 +4,22 @@ let g:my_daily_path       = '~/work/daily.md'->expand()
 let g:my_gtd_path         = '~/work/gtd.md'->expand()
 let g:my_local_vimrc_path = '<sfile>'->expand()
 let g:my_skk_path         = '~/work/skk.md'->expand()
+let g:tabstop_two_lang_list = [
+\   'bash',
+\   'css',
+\   'liquid',
+\   'mermaid',
+\   'plantuml',
+\   'sh',
+\   'terraform',
+\   'terraform-vars',
+\   'tf',
+\   'toml',
+\   'typescript',
+\   'vim',
+\   'yaml',
+\   'zsh',
+\ ]
 
 " Python
 if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
