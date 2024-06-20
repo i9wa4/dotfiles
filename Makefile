@@ -89,6 +89,7 @@ package-ubuntu:
 	  bc \
 	  curl \
 	  fzf \
+	  gh \
 	  jq \
 	  nkf \
 	  ripgrep \
@@ -150,6 +151,7 @@ package-homebrew:
 	brew upgrade
 	brew install \
 	  fzf \
+	  gh \
 	  git \
 	  hadolint \
 	  jq \
