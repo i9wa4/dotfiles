@@ -26,6 +26,7 @@ ubuntu-server: ubuntu package-ubuntu-server  ## task for Ubuntu Server
 ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
+	sudo apt install -y wslu
 	echo "Restart WSL2"
 
 mac: package-mac package-homebrew common  ## task for Mac
