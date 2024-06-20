@@ -5,16 +5,21 @@ snippets:
   - name: pp
     keyword: pp
     snippet: echo 'cd' $(pwd) | pbcopy
-  - name: (Git) git graph
+  - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
     context:
       lbuffer: '^git\s'
-  - name: (Git) git graph --all
+  - name: (Git) graph --all
     keyword: la
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
+  # - name: (Git) browse
+  #   keyword: browse
+  #   snippet: '!deno run --allow-net --allow-run --allow-read --allow-env jsr:@lambdalisue/git-browse/cli'
+  #   context:
+  #     lbuffer: '^git\s'
   - name: (Quarto) render
     keyword: qr
     snippet: quarto render
