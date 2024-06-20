@@ -169,9 +169,12 @@ package-homebrew:
 	brew install openssl readline sqlite3 xz zlib tcl-tk
 	# Go
 	brew install go
-	# https://developer.hashicorp.com/terraform/install
-	brew tap hashicorp/tap
-	brew install hashicorp/tap/terraform
+	# tfenv
+	brew install tfenv
+	tfenv list-remote
+	tfenv install 1.6.0
+	tfenv use 1.6.0
+	terraform version
 
 package-mac:
 	# https://brew.sh/
