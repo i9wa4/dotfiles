@@ -27,10 +27,10 @@ else
   # local host
   PROMPT='%F{cyan}%n@%m%f'
 fi
-# _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
+_SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
 PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
-%# '
+\$ '
 
 # History
 HISTFILE=~/.zsh_history
@@ -78,16 +78,6 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-syntax-highlighting
 
 # tmux
-# https://qiita.com/kiwi-bird/items/7f1a77faf6b0ab0df571
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  # remote host
-else
-  # local host
-  alias tmux="tmux -u2"
-  count=$(ps aux | grep tmux | grep -v grep | wc -l)
-  if test "${count}" -eq 0; then
-      echo $(tmux)
-  elif test "${count}" -eq 1; then
-      echo $(tmux a)
-  fi
+if [[ "${SHLVL}" -eq 1 ]]; then
+  tmux
 fi
