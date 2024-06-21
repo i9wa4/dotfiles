@@ -42,33 +42,29 @@ snippets:
     snippet:
       jupyter-lab
         --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-        --config="$${HOME}"/dotfiles/dot.config/jupyter/jupyter_lab_config.py
+        --config="$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
   - name: (Mac) update
     keyword: mu
     snippet:
-      cd ~/dotfiles
+      cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
       && zinit self-update
       && brew update
       && brew upgrade
-      && git fetch
-      && git merge
       && ghq list | ghq get --update --parallel
       && make pyenv-list
       && cd -
   - name: (Ubuntu) update
     keyword: uu
     snippet:
-      cd ~/dotfiles
+      cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
       && zinit self-update
       && sudo apt update
       && sudo apt upgrade -y
-      && git fetch
-      && git merge
       && ghq list | ghq get --update --parallel
       && make pyenv-list
       && cd -

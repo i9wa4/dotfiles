@@ -41,46 +41,46 @@ init-zshrc:
 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 	# Zsh
-	echo "if test -f "$${HOME}"/dotfiles/dot.zshrc; then . "$${HOME}"/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "cd" >> "$${HOME}"/.zshrc
-	echo "if test -f "$${HOME}"/dotfiles/dot.zshenv; then . "$${HOME}"/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 
 init-copy:
 	# Alacritty
-	cp -rf "$${HOME}"/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
 link:  ## make symbolic links
 	# dotfiles
-	ln -fs "$${HOME}"/dotfiles/dot.gitignore "$${HOME}"/.gitignore
+	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
 	if test -d "$${HOME}"/.vim; then unlink "$${HOME}"/.vim; fi
-	ln -fs "$${HOME}"/dotfiles/dot.vim "$${HOME}"/.vim
+	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
-	. "$${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME1}"    "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/"$${NVIM_APPNAME2}"    "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/alacritty              "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/efm-langserver         "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/tmux                   "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/dotfiles/dot.config/zeno                   "$${XDG_CONFIG_HOME}"
-	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
-	# && cp -rf "$${HOME}"/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/"$${NVIM_APPNAME1}"   "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/"$${NVIM_APPNAME2}"   "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/efm-langserver        "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/tmux                  "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno                  "$${XDG_CONFIG_HOME}"
+	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
+	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 
 copy-win:  ## copy config files for Windows
 	# WSL2
-	sudo cp -f "$${HOME}"/dotfiles/etc/wsl.conf /etc/wsl.conf
+	sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
 	# Windows symbolic link
 	mkdir -p /mnt/c/work
 	# Windows copy
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f "$${HOME}"/dotfiles/bin/windows/my_copy.bat $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/bin $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.config $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.vim $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/dot.vscode $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/dotfiles/etc $(MF_WIN_UTIL_DIR)
+	cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/my_copy.bat $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/bin $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/etc $(MF_WIN_UTIL_DIR)
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -317,7 +317,7 @@ pyenv-init:
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build:  ## build CPython
-	. "$${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv -v \
 	&& pyenv install --list \
 	&& pyenv install "$${PY_VER_MINOR}" \
@@ -327,7 +327,7 @@ pyenv-build:  ## build CPython
 
 pyenv-vmu:  ## update venv named myenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
-	. "$${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
@@ -336,13 +336,13 @@ pyenv-vmu:  ## update venv named myenv
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install -r "$${HOME}"/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python -m pip install -r "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/py_venv_myenv_requirements.txt \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
 
 pyenv-list:  ## show available versions
-	. "$${HOME}"/dotfiles/dot.zshenv \
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" \
 	&& echo "[pyenv] Installed Python versions:" \

@@ -11,15 +11,15 @@
 1. Clone this repository.
 
     ```sh
-    cd && git clone https://github.com/i9wa4/dotfiles
+    git clone https://github.com/i9wa4/dotfiles ~/src/github.com/i9wa4/dotfiles
     ```
 
-### 2.3. macOS
+### 2.1. macOS
 
 1. Execute the following command.
 
     ```sh
-    make mac
+    cd ~/src/github.com/i9wa4/dotfiles && make mac
     ```
 
 ### 2.2. Ubuntu
@@ -27,10 +27,10 @@
 1. Execute the following command.
 
     ```sh
-    make ubuntu
+    cd ~/src/github.com/i9wa4/dotfiles && make ubuntu
     ```
 
-### 2.1. Ubuntu (WSL2)
+### 2.3. Ubuntu (WSL2)
 
 1. Install WSL2 and Ubuntu.
     - <https://learn.microsoft.com/en-us/windows/wsl/install>
@@ -50,7 +50,7 @@
 1. Execute the following command.
 
     ```sh
-    make wsl2
+    cd ~/src/github.com/i9wa4/dotfiles && make wsl2
     ```
 
 1. Exit Ubuntu.
