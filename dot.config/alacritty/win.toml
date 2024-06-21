@@ -1,2 +1,5 @@
 [shell]
 program = "wsl"
+
+[font]
+size = 20
