@@ -11,17 +11,14 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
-test:
-	echo "import = ['~/.config/alacritty/config/wsl.toml']" > "$${HOME}"/alacritty_local.toml
-
 common:
-	init-zshrc init-copy link \
+	init-zshrc link \
 	git vim-init nvim-init pyenv-init \
 	go-package \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
-	echo "import = ['~/.config/alacritty/config/mac.toml']" > "$${HOME}"/alacritty_local.toml
+	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu  ## task for Ubuntu
 
@@ -31,11 +28,11 @@ ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	sudo apt install -y wslu
-	echo "import = ['~/.config/alacritty/config/wsl.toml']" > "$${HOME}"/alacritty_local.toml
+	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/wsl.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 	echo "Restart WSL2"
 
 mac: package-mac package-homebrew common  ## task for Mac
-	echo "import = ['~/.config/alacritty/config/mac.toml']" > "$${HOME}"/alacritty_local.toml
+	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 
 init-zsh-ubuntu:
@@ -50,10 +47,6 @@ init-zshrc:
 	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 	echo "cd" >> "$${HOME}"/.zshrc
 	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-
-init-copy:
-	# Alacritty
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty_local_sample.toml "$${HOME}"/alacritty_local.toml
 
 link:  ## make symbolic links
 	# dotfiles
