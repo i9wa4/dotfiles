@@ -24,7 +24,7 @@ exit /b
     xcopy /e /i /y ".\dot.config\alacritty" "%CODE_DIR:"=%"
     echo %APPDATA% >> "%CODE_DIR:"=%\alacritty.toml"
     echo import = [ > "%CODE_DIR:"=%\alacritty.toml"
-    echo "%APPDATA%\alacritty\common.toml", >> "%CODE_DIR:"=%\alacritty.toml"
-    echo "%APPDATA%\alacritty\win.toml", >> "%CODE_DIR:"=%\alacritty.toml"
+    echo "%APPDATA:\=/%/alacritty/common.toml", >> "%CODE_DIR:"=%/alacritty.toml"
+    echo "%APPDATA:\=/%/alacritty/win.toml", >> "%CODE_DIR:"=%/alacritty.toml"
     echo ] >> "%CODE_DIR:"=%\alacritty.toml"
 exit /b
