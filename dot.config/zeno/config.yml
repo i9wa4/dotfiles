@@ -5,6 +5,12 @@ snippets:
   - name: pp
     keyword: pp
     snippet: echo 'cd' $(pwd) | pbcopy
+  - name: prompt-simple
+    keyword: prs
+    snippet: PROMPT_BACKUP=$PROMPT; PROMPT=$'\n''$ '
+  - name: prompt-ordinary
+    keyword: pro
+    snippet: PROMPT=$PROMPT_BACKUP
   - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
