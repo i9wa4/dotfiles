@@ -24,6 +24,12 @@
 
 ### 2.2. Ubuntu
 
+1. Install make.
+
+    ```sh
+    sudo apt install -y make
+    ```
+
 1. Execute the following command.
 
     ```sh
@@ -65,10 +71,16 @@
     wsl --shutdown
     ```
 
-1. Install Alacritty with PowerShell.
+1. Install Alacritty.
 
     ```powershell
     winget install Alacritty.Alacritty
+    ```
+
+1. Exit PowerShell.
+
+    ```powershell
+    exit
     ```
 
 1. Run `C:\work\util\my_copy.bat`.
