@@ -28,7 +28,6 @@ ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	sudo apt install -y wslu
-	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/wsl.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 	echo "Restart WSL2"
 
 mac: package-mac package-homebrew common  ## task for Mac
