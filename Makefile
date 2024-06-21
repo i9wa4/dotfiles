@@ -11,6 +11,9 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
 
+test:
+	echo "import = ['~/.config/alacritty/config/wsl.toml']" > "$${HOME}"/alacritty_local.toml
+
 common:
 	init-zshrc init-copy link \
 	git vim-init nvim-init pyenv-init \
@@ -18,6 +21,7 @@ common:
 	vim-build nvim-build pyenv-build pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
+	echo "import = ['~/.config/alacritty/config/mac.toml']" > "$${HOME}"/alacritty_local.toml
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu  ## task for Ubuntu
 
@@ -27,9 +31,11 @@ ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
 
 wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	sudo apt install -y wslu
+	echo "import = ['~/.config/alacritty/config/wsl.toml']" > "$${HOME}"/alacritty_local.toml
 	echo "Restart WSL2"
 
 mac: package-mac package-homebrew common  ## task for Mac
+	echo "import = ['~/.config/alacritty/config/mac.toml']" > "$${HOME}"/alacritty_local.toml
 
 
 init-zsh-ubuntu:
