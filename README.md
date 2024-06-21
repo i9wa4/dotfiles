@@ -59,18 +59,21 @@
     exit
     ```
 
-1. Restart WSL2.
+1. Shutdown WSL2.
 
     ```powershell
     wsl --shutdown
-    wsl
     ```
 
-1. (Optional) Install Alacritty with PowerShell.
+1. Install Alacritty with PowerShell.
 
     ```powershell
     winget install Alacritty.Alacritty
     ```
+
+1. Run `C:\work\util\my_copy.bat`.
+
+1. Start Alacritty.
 
 ## 3. Post installation
 
