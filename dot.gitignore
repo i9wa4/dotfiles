@@ -4,6 +4,7 @@ node_modules/
 .DS_Store
 .netrwbook
 .netrwhist
+alacritty.toml
 local.vim
 .terraform.lock.hcl
 terraform.tfstate
