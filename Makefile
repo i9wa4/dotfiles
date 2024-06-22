@@ -12,7 +12,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 
 common: init-zshrc link \
-	git vim-init nvim-init pyenv-init \
+	git-config vim-init nvim-init pyenv-init \
 	go-package \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
@@ -189,7 +189,7 @@ package-mac:
 	# Rectangle
 	brew install --cask rectangle
 
-git:
+git-config:
 	git config --global color.ui auto
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
