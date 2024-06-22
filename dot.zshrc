@@ -78,6 +78,11 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-syntax-highlighting
 
 # tmux
-if [[ "${SHLVL}" -eq 1 ]]; then
-  tmux
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  # remote host
+else
+  # local host
+  if [[ "${SHLVL}" -eq 1 ]]; then
+    tmux
+  fi
 fi
