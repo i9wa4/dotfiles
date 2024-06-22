@@ -29,7 +29,7 @@ snippets:
   - name: (Quarto) render
     keyword: qr
     snippet: quarto render
-      # NOTE: Without _quarto.yml, the following code is useful.
+      # NOTE: Without _quarto.yml, the following command is useful.
       # find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
       # do
       #   quarto render "${filepath}";
