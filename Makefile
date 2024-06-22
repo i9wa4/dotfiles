@@ -319,7 +319,7 @@ pyenv-build:  ## build CPython
 	&& pyenv install --list \
 	&& pyenv install "$${PY_VER_MINOR}" \
 	&& pyenv versions \
-	&& pyenv global  "$${PY_VER_MINOR}" \
+	&& pyenv global "$${PY_VER_MINOR}" \
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-vmu:  ## update venv named myenv
