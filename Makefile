@@ -309,8 +309,8 @@ go-package:  ## install go packages
 
 pyenv-init:
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshrc
-	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshrc
+	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshenv
+	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshenv
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build:  ## build CPython
