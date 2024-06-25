@@ -251,7 +251,7 @@ function! s:set_register() abort
   endif
 endfunction
 
-function! s:my_filetype() abort
+function! s:my_filetype_on_enter() abort
   if !empty(&buftype)
     return
   endif
@@ -273,6 +273,12 @@ function! s:my_filetype() abort
     setlocal noexpandtab
   else
     " Do nothing.
+  endif
+endfunction
+
+function! s:my_filetype() abort
+  if !empty(&buftype)
+    return
   endif
 
   " Linter
@@ -343,6 +349,7 @@ augroup MyVimrcAutocmd
   \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.tfstate
   \ setfiletype json
+  autocmd BufNewFile,BufReadPost * call s:my_filetype_on_enter()
   autocmd BufEnter,FileType * call s:my_filetype()
 
   " Async Job
