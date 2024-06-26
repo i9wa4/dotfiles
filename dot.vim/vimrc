@@ -87,8 +87,9 @@ set wrapscan
 
 " View
 set ambiwidth=double
+set nowrap
 set number
-" set relativenumber
+set relativenumber
 
 " Window
 set noequalalways
@@ -255,7 +256,6 @@ function! s:my_filetype_on_enter() abort
     return
   endif
 
-  setlocal nowrap
   setlocal nofoldenable autoindent expandtab
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
   setlocal spelllang+=cjk spell
