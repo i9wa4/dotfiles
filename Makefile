@@ -14,6 +14,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 common: init-zshrc link \
 	git-config vim-init nvim-init pyenv-init \
 	go-package \
+	ghq-get-https \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
@@ -188,6 +189,9 @@ package-mac:
 	&& sudo installer -pkg AWSCLIV2.pkg -target /
 	# Rectangle
 	brew install --cask rectangle
+
+ghq-get-https:
+	ghq get skk-dev/dict
 
 git-config:
 	git config --global color.ui auto
