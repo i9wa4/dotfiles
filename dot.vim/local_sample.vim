@@ -1,5 +1,4 @@
 " Global Variables
-let g:my_bookmark_path    = '~/work/bookmark.md'->expand()
 let g:my_gtd_path         = '~/work/gtd.md'->expand()
 let g:my_local_vimrc_path = '<sfile>'->expand()
 let g:my_skk_path         = '~/work/skk.md'->expand()
