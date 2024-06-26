@@ -165,7 +165,6 @@ nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)b <Cmd>execute 'edit' g:my_bookmark_path<CR>
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)g <Cmd>execute 'edit' g:my_gtd_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' g:my_local_vimrc_path<CR>
