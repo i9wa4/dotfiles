@@ -3,6 +3,10 @@ repo = 'github/copilot.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
+repo = 'monaqa/dps-dial.vim'
+on_event = ['VimEnter']
+
+[[plugins]]
 repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
 
