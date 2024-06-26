@@ -123,7 +123,7 @@ inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
 repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
 hook_source = '''
-let s:base_path = '~/.cache/dpp/repos/github.com/skk-dev/dict/'->expand()
+let s:base_path = '~/src/github.com/skk-dev/dict/'->expand()
 call skkeleton#config({
 \   'globalDictionaries': [
 \     s:base_path .. 'SKK-JISYO.L',
@@ -134,9 +134,6 @@ call skkeleton#register_keymap('input', ';', 'henkanPoint')
 imap <C-j> <Plug>(skkeleton-enable)
 cmap <C-j> <Plug>(skkeleton-enable)
 '''
-
-[[plugins]]
-repo = 'skk-dev/dict'
 
 [[plugins]]
 repo = 'uga-rosa/denippet.vim'
