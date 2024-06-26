@@ -6,6 +6,11 @@ node_modules/
 .netrwhist
 alacritty.toml
 local.vim
+
+# Terraform
 .terraform.lock.hcl
 terraform.tfstate
 terraform.exe
+
+# Terragrunt
+.terragrunt-cache/
