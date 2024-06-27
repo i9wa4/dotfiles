@@ -23,10 +23,10 @@ precmd(){ vcs_info }
 # %}%B%F{yellow}%K{black}%d>%b%f%k'
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  PROMPT="%F{red}█▓▒░%F{black}%K{red}%n@%m%k%f%F{red}%K{black}░▒▓█%f%k%F{red}%K{black}█▓▒░%F{white}%K{black} "
+  PROMPT="%F{red}█▓▒░%F{black}%K{red}%B%n@%m%b%k%f%F{red}%K{black}░▒▓█%f%k%F{red}%K{black}█▓▒░%F{white}%K{black} "
 else
   # local host
-  PROMPT="%F{green}█▓▒░%F{black}%K{green}%n@%m%k%f%F{green}%K{black}░▒▓█%f%k%F{green}%K{black}█▓▒░%F{white}%K{black} "
+  PROMPT="%F{green}█▓▒░%F{black}%K{green}%B%n@%m%b%k%f%F{green}%K{black}░▒▓█%f%k%F{green}%K{black}█▓▒░%F{white}%K{black} "
 fi
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 PROMPT="${PROMPT}"" %F{#696969}%D{%Y-%m-%d %H:%M:%S} ("${_SHELL_TYPE}"-lv%L)%f %F{yellow}%K{black}%~%f%k \$vcs_info_msg_0_
