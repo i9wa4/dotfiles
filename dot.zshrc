@@ -3,8 +3,6 @@ autoload -Uz compinit promptinit
 compinit
 promptinit
 
-prompt suse
-
 # Keybind
 bindkey -v
 
@@ -19,18 +17,20 @@ zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f"
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 precmd(){ vcs_info }
 
-# Prompt
+# https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
+# prompt bigfade
+# PROMPT='%B%F{blue}█▓▒░%B%F{white}%K{blue}%n@%m%b%k%f%F{blue}%K{black}░▒▓█%b%f%k%F{blue}%K{black}█▓▒░%B%F{white}%K{black} %D{%a %b %d} %D{%I:%M:%S%P}
+# %}%B%F{yellow}%K{black}%d>%b%f%k'
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  PROMPT='%F{red}%n@%m%f'
+  PROMPT="%F{red}█▓▒░%F{black}%K{red}%n@%m%k%f%F{red}%K{black}░▒▓█%f%k%F{red}%K{black}█▓▒░%F{white}%K{black} "
 else
   # local host
-  PROMPT='%F{cyan}%n@%m%f'
+  PROMPT="%F{green}█▓▒░%F{black}%K{green}%n@%m%k%f%F{green}%K{black}░▒▓█%f%k%F{green}%K{black}█▓▒░%F{white}%K{black} "
 fi
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT="${PROMPT}"' %F{#696969}('\$_SHELL_TYPE'-lv%L)%f'
-PROMPT="${PROMPT}"' %F{#696969}%~%f '\$vcs_info_msg_0_'
-\$ '
+PROMPT="${PROMPT}"" %F{#696969}%D{%Y-%m-%d %H:%M:%S} ("${_SHELL_TYPE}"-lv%L)%f %F{yellow}%K{black}%~%f%k \$vcs_info_msg_0_
+$ "
 
 # History
 HISTFILE=~/.zsh_history
