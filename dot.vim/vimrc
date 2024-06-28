@@ -352,6 +352,9 @@ augroup MyVimrcAutocmd
   autocmd BufNewFile,BufReadPost * call s:my_filetype_on_enter()
   autocmd BufEnter,FileType * call s:my_filetype()
 
+  " Highlight
+  autocmd BufEnter * highlight CursorLine guibg=#505050
+
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
