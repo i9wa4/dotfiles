@@ -375,8 +375,8 @@ tfenv-install:
 
 tfenv-list:  ## show available versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[tfenv] Available Terraform "${PY_VER_MINOR}" versions:" \
-	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_PATCH}" \
+	&& echo "[tfenv] Available Terraform "${TFENV_TF_VER_MINOR}" versions:" \
+	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_MINOR}" \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
