@@ -56,6 +56,7 @@ snippets:
       && brew update
       && brew upgrade
       && ghq list | ghq get --update --parallel
+      && make tfenv-list
       && make pyenv-list
       && cd -
   - name: (Ubuntu) update
@@ -68,5 +69,6 @@ snippets:
       && sudo apt update
       && sudo apt upgrade -y
       && ghq list | ghq get --update --parallel
+      && make tfenv-list
       && make pyenv-list
       && cd -

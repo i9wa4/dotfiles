@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
-# .SHELLFLAGS := -euo pipefail -o posix -c
-.SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
+# .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
+.SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
 
@@ -278,7 +278,6 @@ nvim-build:  ## build Neovim
 	&& sudo git switch master \
 	&& sudo git fetch \
 	&& sudo git merge \
-	&& sudo make distclean \
 	&& sudo make CMAKE_BUILD_TYPE=RelWithDebInfo \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& sudo make install \
@@ -369,10 +368,17 @@ pyenv-list:  ## show available versions
 
 tfenv-init:
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& tfenv list-remote \
-	&& tfenv install "$${TFENV_TF_VERSION}" \
-	&& tfenv use "$${TFENV_TF_VERSION}" \
+	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_PATCH}" \
+	&& tfenv install "$${TFENV_TF_VER_PATCH}" \
+	&& tfenv use "$${TFENV_TF_VER_PATCH}" \
 	&& terraform version
+
+tfenv-list:  ## show available versions
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& echo "[tfenv] Available Terraform "${PY_VER_MINOR}" versions:" \
+	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_PATCH}" \
+	&& echo "[tfenv] Installed Terraform versions:" \
+	&& tfenv list
 
 volta-init:  ## install Volta
 	curl https://get.volta.sh | bash
