@@ -81,10 +81,6 @@ repo = 'i9wa4/my-async.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
-repo = 'i9wa4/my-highlight.vim'
-on_event = ['VimEnter']
-
-[[plugins]]
 repo = 'i9wa4/my-terminal.vim'
 on_event = ['VimEnter']
 
