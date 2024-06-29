@@ -1,6 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
-.SHELLFLAGS := -euo pipefail -o posix -c
+# .SHELLFLAGS := -euo pipefail -o posix -c
+.SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
 
@@ -13,8 +14,9 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 common: init-zshrc link \
 	git-config vim-init nvim-init pyenv-init \
-	go-package \
+	package-go package-rust \
 	ghq-get-https \
+	tfenv-init \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
@@ -99,18 +101,18 @@ package-ubuntu:
 	  vim \
 	  xsel \
 	  zip
-	# Deno
-	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
-	# Vim build dependencies
-	# Ubuntu-22.04
+	# Vim
 	# sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
-	# Ubuntu-24.04
 	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
 	sudo apt update
 	sudo apt build-dep -y vim
+	# Neovim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
+	# Deno
+	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	sudo rm -rf "$${HOME}"/.pyenv
 	curl https://pyenv.run | bash
@@ -122,6 +124,22 @@ package-ubuntu:
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
+	# Rust
+	curl https://sh.rustup.rs -sSf | sh
+	# AWS CLI
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip awscliv2.zip \
+	&& sudo ./aws/install \
+	&& rm awscliv2.zip
+	# gcloud CLI
+	# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+	sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
+	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+	sudo apt-get update && sudo apt-get install -y google-cloud-cli
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -161,37 +179,46 @@ package-homebrew:
 	  vim \
 	  wget \
 	  zsh
-	# Deno
-	brew install deno
+	# Neovim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	brew install ninja cmake gettext curl
+	# Deno
+	brew install deno
+	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
 	# Go
 	brew install go
-	# tfenv
-	brew install tfenv
-	tfenv list-remote
-	tfenv install 1.6.0
-	tfenv use 1.6.0
-	terraform version
+	# Rust
+	brew install rustup-init && rustup-init
+	# AWS CLI
+	brew install awscli
+	# gcloud CLI
+	brew install --cask google-cloud-sdk
 
 package-mac:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	brew install --cask google-cloud-sdk
 	# https://namileriblog.com/mac/rust_alacritty/
 	brew install --cask alacritty
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd "${HOME}" \
-	&& curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg" \
-	&& sudo installer -pkg AWSCLIV2.pkg -target /
 	# Rectangle
 	brew install --cask rectangle
 
+package-rust:  ## install rust packages
+	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
+
+package-go:  ## install go packages
+	go install github.com/rhysd/vim-startuptime@latest
+	# vim-startuptime -vimpath nvim -count 100
+	# vim-startuptime -vimpath vim -count 100
+	go install github.com/mattn/efm-langserver@latest
+	# https://github.com/Songmu/ghq-handbook
+	go install github.com/x-motemen/ghq@latest
+
 ghq-get-https:
 	ghq get skk-dev/dict
+	ghq get tfutils/tfenv
 
 git-config:
 	git config --global color.ui auto
@@ -257,14 +284,6 @@ nvim-build:  ## build Neovim
 	&& sudo make install \
 	&& hash -r
 
-awscli-init-ubuntu:
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd "${HOME}" \
-	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip awscliv2.zip \
-	&& sudo ./aws/install \
-	&& rm awscliv2.zip
-
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
@@ -302,14 +321,6 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
-
-go-package:  ## install go packages
-	go install github.com/rhysd/vim-startuptime@latest
-	# vim-startuptime -vimpath nvim -count 100
-	# vim-startuptime -vimpath vim -count 100
-	go install github.com/mattn/efm-langserver@latest
-	# https://github.com/Songmu/ghq-handbook
-	go install github.com/x-motemen/ghq@latest
 
 pyenv-init:
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
@@ -349,12 +360,19 @@ pyenv-list:  ## show available versions
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
-terraform-init-ubuntu:  ## install Terraform
-	# https://developer.hashicorp.com/terraform/install
-	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-	sudo apt update
-	sudo apt install -y terraform
+# terraform-init-ubuntu:  ## install Terraform
+# 	# https://developer.hashicorp.com/terraform/install
+# 	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+# 	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+# 	sudo apt update
+# 	sudo apt install -y terraform
+
+tfenv-init:
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& tfenv list-remote \
+	&& tfenv install "$${TFENV_TF_VERSION}" \
+	&& tfenv use "$${TFENV_TF_VERSION}" \
+	&& terraform version
 
 volta-init:  ## install Volta
 	curl https://get.volta.sh | bash

@@ -51,6 +51,7 @@ snippets:
     snippet:
       cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
+      && make nvim-build
       && zinit self-update
       && brew update
       && brew upgrade
@@ -62,6 +63,7 @@ snippets:
     snippet:
       cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
+      && make nvim-build
       && zinit self-update
       && sudo apt update
       && sudo apt upgrade -y

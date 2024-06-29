@@ -39,3 +39,7 @@ export AWS_DEFAULT_PROFILE=
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
+
+# tfenv
+export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
+export TFENV_TF_VERSION=1.6.0
