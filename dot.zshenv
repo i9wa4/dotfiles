@@ -42,5 +42,5 @@ export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
 
 # tfenv
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
-export TFENV_TF_VER_MINOR=1.6
+export TFENV_TF_VER_MINOR=1.9
 export TFENV_TF_VER_PATCH="${TFENV_TF_VER_MINOR}".0
