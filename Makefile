@@ -16,7 +16,7 @@ common: init-zshrc link \
 	git-config vim-init nvim-init pyenv-init \
 	package-go package-rust \
 	ghq-get-https \
-	tfenv-init \
+	tfenv-install \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
@@ -366,9 +366,9 @@ pyenv-list:  ## show available versions
 # 	sudo apt update
 # 	sudo apt install -y terraform
 
-tfenv-init:
+tfenv-install:
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_PATCH}" \
+	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_MINOR}" \
 	&& tfenv install "$${TFENV_TF_VER_PATCH}" \
 	&& tfenv use "$${TFENV_TF_VER_PATCH}" \
 	&& terraform version
