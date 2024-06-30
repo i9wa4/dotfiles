@@ -131,7 +131,7 @@ package-ubuntu:
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip awscliv2.zip \
-	&& sudo ./aws/install \
+	&& sudo ./aws/install --update \
 	&& rm awscliv2.zip
 	# gcloud CLI
 	# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
