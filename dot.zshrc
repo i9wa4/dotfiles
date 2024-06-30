@@ -37,9 +37,9 @@ else
   PROMPT="%K{black}%F{green}█▓▒░%f%F{black}%K{green}%B%n@%m%b%k%f%F{green}░▒▓█%f%F{white}█▓▒░ %f%k"
 fi
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT="${PROMPT}%K{black}%F{#696969}%D{%Y-%m-%d(%a) %H:%M:%S} (${_SHELL_TYPE}-lv%L)%f
+PROMPT="${PROMPT}{black}%F{#696969}%D{%Y-%m-%d(%a) %H:%M:%S} (${_SHELL_TYPE}-lv%L)%f
 %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
-$ %k"
+$ "
 
 # History
 HISTFILE=~/.zsh_history
