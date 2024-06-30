@@ -31,10 +31,10 @@ add-zsh-hook precmd _vcs_precmd
 # %}%B%F{yellow}%K{black}%d>%b%f%k'
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  PROMPT="%F{red}█▓▒░%f%F{black}%K{red}%B%n@%m%b%k%f%F{red}░▒▓█%f%F{white}█▓▒░ %f"
+  PROMPT="%F{red}█▓▒░%f%F{black}%K{red}%n@%m%k%f%F{red}░▒▓█%f%F{white}█▓▒░ %f"
 else
   # local host
-  PROMPT="%F{green}█▓▒░%f%F{black}%K{green}%B%n@%m%b%k%f%F{green}░▒▓█%f%F{white}█▓▒░ %f"
+  PROMPT="%F{green}█▓▒░%f%F{black}%K{green}%n@%m%k%f%F{green}░▒▓█%f%F{white}█▓▒░ %f"
 fi
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d(%a) %H:%M:%S]} (${_SHELL_TYPE}-lv%L)%f
