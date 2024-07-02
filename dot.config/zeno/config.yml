@@ -2,15 +2,6 @@ snippets:
   - name: ll
     keyword: ll
     snippet: ls -alFv
-  - name: pp
-    keyword: pp
-    snippet: echo 'cd' $(pwd) | pbcopy
-  - name: prompt-simple
-    keyword: prs
-    snippet: PROMPT_BACKUP=$PROMPT; PROMPT=$'\n''$ '
-  - name: prompt-ordinary
-    keyword: pro
-    snippet: PROMPT=$PROMPT_BACKUP
   - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
@@ -21,11 +12,6 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
-  # - name: (Git) browse
-  #   keyword: browse
-  #   snippet: '!deno run --allow-net --allow-run --allow-read --allow-env jsr:@lambdalisue/git-browse/cli'
-  #   context:
-  #     lbuffer: '^git\s'
   - name: (Quarto) render
     keyword: qr
     snippet: quarto render
