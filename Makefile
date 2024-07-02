@@ -13,9 +13,9 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 
 common: init-zshrc link \
-	git-config vim-init nvim-init pyenv-init \
+	git-config pyenv-init \
+	ghq-get \
 	package-go package-rust \
-	ghq-get-https \
 	tfenv-install \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
@@ -132,7 +132,8 @@ package-ubuntu:
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip awscliv2.zip \
 	&& sudo ./aws/install --update \
-	&& rm awscliv2.zip
+	&& rm awscliv2.zip \
+	&& cd -
 	# gcloud CLI
 	# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 	sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
@@ -152,7 +153,8 @@ package-ubuntu-desktop:
 	&& sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/ \
 	&& fc-cache -fv \
 	&& rm -f MyricaM.zip \
-	&& rm -rf MyricaM
+	&& rm -rf MyricaM \
+	&& cd -
 
 package-ubuntu-server:
 	# Settings --> Accessibility --> Large Text
@@ -216,9 +218,11 @@ package-go:  ## install go packages
 	# https://github.com/Songmu/ghq-handbook
 	go install github.com/x-motemen/ghq@latest
 
-ghq-get-https:
+ghq-get:
 	ghq get skk-dev/dict
 	ghq get tfutils/tfenv
+	ghq get vim/vim
+	ghq get neovim/neovim
 
 git-config:
 	git config --global color.ui auto
@@ -246,42 +250,33 @@ git-config:
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
 
-vim-init:
-	sudo mkdir -p /usr/local/src \
-	&& cd /usr/local/src \
-	&& if [ ! -d ./vim ]; then sudo git clone https://github.com/vim/vim.git; fi
-
 vim-build:  ## build Vim
-	# sudo make clean
-	cd /usr/local/src/vim \
-	&& sudo git switch master \
-	&& sudo git fetch \
-	&& sudo git merge \
+	# make clean
+	cd ~/src/github.com/vim/vim \
+	&& ghq get --update . \
 	&& cd ./src \
-	&& sudo ./configure \
+	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
 	  --enable-python3interp=dynamic \
-	  --prefix=/usr/local \
+	  --prefix="$${HOME}" \
 	  --with-features=huge \
-	&& sudo make \
-	&& sudo make install \
-	&& hash -r
-
-nvim-init:
-	sudo mkdir -p /usr/local/src \
-	&& cd /usr/local/src \
-	&& if [ ! -d ./neovim ]; then sudo git clone https://github.com/neovim/neovim.git; fi
+	&& make \
+	&& make install \
+	&& hash -r \
+	&& cd -
 
 nvim-build:  ## build Neovim
-	cd /usr/local/src/neovim \
-	&& sudo git switch master \
-	&& sudo git fetch \
-	&& sudo git merge \
-	&& sudo make CMAKE_BUILD_TYPE=RelWithDebInfo \
+	# make distclean
+	cd ~/src/github.com/neovim/neovim \
+	&& ghq get --update . \
+	&& make \
+	  CMAKE_BUILD_TYPE=RelWithDebInfo \
+	  CMAKE_INSTALL_PREFIX="$${HOME}" \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
-	&& sudo make install \
-	&& hash -r
+	&& make install \
+	&& hash -r \
+	&& cd -
 
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
