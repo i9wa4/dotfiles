@@ -219,10 +219,10 @@ package-go:  ## install go packages
 	go install github.com/x-motemen/ghq@latest
 
 ghq-get:
+	ghq get neovim/neovim
 	ghq get skk-dev/dict
 	ghq get tfutils/tfenv
 	ghq get vim/vim
-	ghq get neovim/neovim
 
 git-config:
 	git config --global color.ui auto
