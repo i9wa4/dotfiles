@@ -14,8 +14,8 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 common: init-zshrc link \
 	git-config pyenv-init \
-	ghq-get \
 	package-go package-rust \
+	ghq-get \
 	tfenv-install \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
