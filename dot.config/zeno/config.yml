@@ -55,7 +55,6 @@ snippets:
       && ghq list | ghq get --update --parallel
       && zinit self-update
       && make vim-build
-      && make nvim-build
       && make tfenv-list
       && make pyenv-list
       && cd -
@@ -68,7 +67,6 @@ snippets:
       && ghq list | ghq get --update --parallel
       && zinit self-update
       && make vim-build
-      && make nvim-build
       && make tfenv-list
       && make pyenv-list
       && cd -
