@@ -1,6 +1,7 @@
 # Common
 export LC_ALL=C.UTF-8
 export XDG_CONFIG_HOME="${HOME}"/.config
+export PATH="${HOME}"/bin:"${PATH}"
 
 # Vim
 export EDITOR=vim

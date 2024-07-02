@@ -50,12 +50,12 @@ snippets:
     keyword: mu
     snippet:
       cd ~/src/github.com/i9wa4/dotfiles
-      && make vim-build
-      && make nvim-build
-      && zinit self-update
       && brew update
       && brew upgrade
       && ghq list | ghq get --update --parallel
+      && zinit self-update
+      && make vim-build
+      && make nvim-build
       && make tfenv-list
       && make pyenv-list
       && cd -
@@ -63,12 +63,12 @@ snippets:
     keyword: uu
     snippet:
       cd ~/src/github.com/i9wa4/dotfiles
-      && make vim-build
-      && make nvim-build
-      && zinit self-update
       && sudo apt update
       && sudo apt upgrade -y
       && ghq list | ghq get --update --parallel
+      && zinit self-update
+      && make vim-build
+      && make nvim-build
       && make tfenv-list
       && make pyenv-list
       && cd -
