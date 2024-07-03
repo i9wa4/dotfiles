@@ -9,7 +9,8 @@ SHELL := /usr/bin/env bash
 MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 # all targets are phony
-.PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
+# .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
+.PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
 common: init-zshrc link \
@@ -319,8 +320,6 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 
 pyenv-init:
 	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-	echo 'export PYENV_ROOT="$${HOME}"/.pyenv' >> ~/.zshenv
-	echo '[[ -d "$${PYENV_ROOT}"/bin ]] && export PATH="$${PYENV_ROOT}"/bin:"$${PATH}"' >> ~/.zshenv
 	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build:  ## build CPython
