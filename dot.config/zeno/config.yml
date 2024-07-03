@@ -2,6 +2,9 @@ snippets:
   - name: ll
     keyword: ll
     snippet: ls -alFv
+  - name: (ghq) update
+    keyword: gu
+    snippet: ghq list | ghq get --update --parallel
   - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>'
@@ -12,26 +15,23 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%as] %C(green)<%an>' --all
     context:
       lbuffer: '^git\s'
-  - name: (Quarto) render
-    keyword: qr
-    snippet: quarto render
-      # NOTE: Without _quarto.yml, the following command is useful.
-      # find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
-      # do
-      #   quarto render "${filepath}";
-      # done
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
-  - name: (Python) jupyter-lab
-    keyword: pjl
-    snippet:
-      jupyter-lab
-        --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-        --config="$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
-  - name: (ghq) update
-    keyword: gu
-    snippet: ghq list | ghq get --update --parallel
+  # - name: (Python) jupyter-lab
+  #   keyword: pjl
+  #   snippet:
+  #     jupyter-lab
+  #       --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
+  #       --config="$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
+  # - name: (Quarto) render
+  #   keyword: qr
+  #   # NOTE: Without _quarto.yml, the following command is useful.
+  #   snippet:
+  #     find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
+  #     do
+  #       quarto render "${filepath}";
+  #     done
   - name: (Mac) update
     keyword: mu
     snippet:
