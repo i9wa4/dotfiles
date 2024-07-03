@@ -1,8 +1,3 @@
-# Common
-export LC_ALL=C.UTF-8
-export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${HOME}"/bin:"${PATH}"
-
 # Vim
 export EDITOR=vim
 export VISUAL=vim
@@ -45,3 +40,8 @@ export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
 export TFENV_TF_VER_MINOR=1.9
 export TFENV_TF_VER_PATCH="${TFENV_TF_VER_MINOR}".0
+
+# Common
+export LC_ALL=C.UTF-8
+export XDG_CONFIG_HOME="${HOME}"/.config
+export PATH="${HOME}"/bin:"${PATH}"
