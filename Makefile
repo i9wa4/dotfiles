@@ -13,8 +13,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
-common: init-zshrc link \
-	git-config pyenv-init \
+common: init-zshrc link git-config \
 	package-go package-rust \
 	ghq-get \
 	tfenv-install \
@@ -317,10 +316,6 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
-
-pyenv-init:
-	# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-	echo 'eval "$$(pyenv init --path)"' >> ~/.zshrc
 
 pyenv-build:  ## build CPython
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \

@@ -86,6 +86,10 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
 
+[[ -n "$(command -v rbenv)" ]] && eval "$(rbenv init --path)"
+# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+[[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
+
 export PATH="${HOME}"/bin:"${PATH}"
 
 # tmux
