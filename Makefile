@@ -269,6 +269,7 @@ vim-build:  ## build Vim
 nvim-build:  ## build Neovim
 	# make distclean
 	cd ~/src/github.com/neovim/neovim \
+	&& git checkout stable \
 	&& ghq get --update . \
 	&& make \
 	  CMAKE_BUILD_TYPE=RelWithDebInfo \
