@@ -110,7 +110,7 @@ package-ubuntu:
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
 	# Deno
-	if [ -z "$$(which deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
 	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	sudo rm -rf "$${HOME}"/.pyenv
