@@ -1,4 +1,4 @@
-MAKEFLAGS += --warn-undefined-variables
+# MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
