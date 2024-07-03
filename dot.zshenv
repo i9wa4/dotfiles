@@ -1,8 +1,3 @@
-# Common
-export LC_ALL=C.UTF-8
-export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${HOME}"/bin:"${PATH}"
-
 # AWS
 export AWS_DEFAULT_PROFILE=
 
@@ -37,9 +32,9 @@ export PYENV_ROOT="${HOME}"/.pyenv
 export PATH="${HOME}"/.cargo/env:"${PATH}"
 
 # tfenv
-export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
 export TFENV_TF_VER_MINOR=1.9
 export TFENV_TF_VER_PATCH="${TFENV_TF_VER_MINOR}".0
+export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
 
 # Vim
 export EDITOR=vim
@@ -48,3 +43,8 @@ export VISUAL=vim
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
+
+# Common
+export LC_ALL=C.UTF-8
+export XDG_CONFIG_HOME="${HOME}"/.config
+export PATH="${HOME}"/bin:"${PATH}"
