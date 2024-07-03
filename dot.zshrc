@@ -90,7 +90,8 @@ zinit light zsh-users/zsh-completions
 # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 [[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
 
-export PATH="${HOME}"/bin:"${PATH}"
+if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
+# export PATH="${HOME}"/bin:"${PATH}"
 
 # tmux
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
