@@ -93,6 +93,8 @@ zinit light zsh-users/zsh-completions
 if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
 # export PATH="${HOME}"/bin:"${PATH}"
 
+cd
+
 # tmux
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
