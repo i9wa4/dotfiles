@@ -252,7 +252,6 @@ git-config:
 vim-build:  ## build Vim
 	# make clean
 	cd ~/src/github.com/vim/vim \
-	&& ghq get --update . \
 	&& cd ./src \
 	&& ./configure \
 	  --disable-gui \
@@ -269,7 +268,6 @@ nvim-build:  ## build Neovim
 	# make distclean
 	cd ~/src/github.com/neovim/neovim \
 	&& git checkout stable \
-	&& ghq get --update . \
 	&& make \
 	  CMAKE_BUILD_TYPE=RelWithDebInfo \
 	  CMAKE_INSTALL_PREFIX="$${HOME}" \
