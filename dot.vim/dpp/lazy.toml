@@ -61,7 +61,7 @@ function! MyStatuslineRightTabline() abort
   let l:ret = ''
   if match(&runtimepath, 'get-git-branch-name.vim') >= 0
     let l:branch_name = branch_name#get_current_branch_name()
-    let l:repo_name = branch_name#get_current_repo_root_name()
+    " let l:repo_name = branch_name#get_current_repo_root_name()
     if l:branch_name != ''
       " let l:ret ..= l:repo_name .. ' (' .. l:branch_name .. ')'
       let l:ret ..= '(' .. l:branch_name .. ')'
