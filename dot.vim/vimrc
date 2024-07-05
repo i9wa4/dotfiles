@@ -170,7 +170,7 @@ nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)g <Cmd>execute 'edit' g:my_gtd_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' g:my_local_vimrc_path<CR>
-nnoremap <Plug>(my-Filer)o <Cmd>execute '10Lexplore' '%:p:h'->expand()<CR>
+nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)s <Cmd>execute 'edit' g:my_skk_path<CR>
 nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC<CR>
 

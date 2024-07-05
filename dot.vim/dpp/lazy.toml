@@ -4,6 +4,8 @@ on_event = ['VimEnter']
 
 [[plugins]]
 repo = 'monaqa/dps-dial.vim'
+depends = ['denops.vim']
+# on_event = ['BufEnter']
 on_post_source = ['denops.vim']
 hook_source = '''
 nmap <C-a>  <Plug>(dps-dial-increment)
