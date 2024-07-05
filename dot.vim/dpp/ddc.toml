@@ -1,8 +1,7 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-# depends = ['denops.vim']
-# on_event = ['InsertEnter']
-on_post_source = ['denops.vim']
+depends = ['denops.vim']
+on_event = ['InsertEnter']
 hook_source = '''
 let s:sources_list = [
 \   'around',
