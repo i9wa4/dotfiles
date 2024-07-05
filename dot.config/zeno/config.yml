@@ -35,11 +35,11 @@ snippets:
   - name: (Mac) update
     keyword: mu
     snippet:
-      cd ~/src/github.com/i9wa4/dotfiles
+      ghq list | ghq get --update --parallel
       && brew update
       && brew upgrade
-      && ghq list | ghq get --update --parallel
       && zinit self-update
+      && cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
       && make tfenv-list
       && make pyenv-list
@@ -47,11 +47,11 @@ snippets:
   - name: (Ubuntu) update
     keyword: uu
     snippet:
-      cd ~/src/github.com/i9wa4/dotfiles
+      ghq list | ghq get --update --parallel
       && sudo apt update
       && sudo apt upgrade -y
-      && ghq list | ghq get --update --parallel
       && zinit self-update
+      && cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
       && make tfenv-list
       && make pyenv-list
