@@ -35,9 +35,9 @@ snippets:
   - name: (Mac) update
     keyword: mu
     snippet:
-      ghq list | ghq get --update --parallel
-      && brew update
+      brew update
       && brew upgrade
+      && ghq list | ghq get --update --parallel
       && zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
@@ -47,9 +47,9 @@ snippets:
   - name: (Ubuntu) update
     keyword: uu
     snippet:
-      ghq list | ghq get --update --parallel
-      && sudo apt update
+      sudo apt update
       && sudo apt upgrade -y
+      && ghq list | ghq get --update --parallel
       && zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
       && make vim-build
