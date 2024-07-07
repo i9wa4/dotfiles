@@ -136,7 +136,7 @@ set showtabline=2
 
 " Highlight
 set colorcolumn=80
-set cursorcolumn
+" set cursorcolumn
 set cursorline
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic
 set showmatch matchtime=1 matchpairs+=\<:\>
