@@ -7,19 +7,6 @@ function! my_util#restore_cursor() abort
   endif
 endfunction
 
-function! my_util#set_register() abort
-  if empty(&buftype)
-    call setreg('a', expand('%')->fnamemodify(':p:~'))
-    call setreg('b', expand('%')->fnamemodify(':p:~:h'))
-
-    let l:dir_status = '['
-    let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
-    let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ':h:t')
-    let l:dir_status ..= ']'
-    call setreg('z', l:dir_status)
-  endif
-endfunction
-
 function! my_util#clean_viminfo() abort
   " delete history
   " call histdel("cmd")
@@ -74,11 +61,9 @@ function! my_util#add_path(path_list) abort
   call setenv('PATH', join(l:path_list, l:separator))
 endfunction
 
-" let s:preload_vimrc_path = ''
-" function! my_util#set_preload_vimrc(path) abort
-"   let s:preload_vimrc_path = a:path
-" endfunction
-
+let s:preload_vimrc_path = ''
+let s:last_loaded_local_vimrc_path = ''
+let s:loaded_vimrc_path_list = []
 function! my_util#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " https://github.com/vim-jp/issues/issues/1176
@@ -87,13 +72,26 @@ function! my_util#source_local_vimrc(path) abort
     call add(l:vimrc_path_list, l:i->expand()->fnamemodify(':p'))
   endfor
 
-  if exists('g:my_util#preload_vimrc_path')
-    call insert(l:vimrc_path_list, g:my_util#preload_vimrc_path, 0)
-  endif
+  call insert(l:vimrc_path_list, s:preload_vimrc_path, 0)
 
+  let s:loaded_vimrc_path_list = []
   for l:i in l:vimrc_path_list
     if filereadable(l:i)
       execute 'source' l:i
+      let s:last_loaded_local_vimrc_path = l:i
+      call extend(s:loaded_vimrc_path_list, [l:i])
     endif
   endfor
+endfunction
+
+function! my_util#set_preload_vimrc(path) abort
+  let s:preload_vimrc_path = a:path
+endfunction
+
+function! my_util#get_last_loaded_local_vimrc_path() abort
+  return s:last_loaded_local_vimrc_path
+endfunction
+
+function! my_util#get_loaded_vimrc_path_list() abort
+  return s:loaded_vimrc_path_list
 endfunction
