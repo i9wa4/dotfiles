@@ -330,7 +330,6 @@ endfunction
 
 augroup MyVimrc
   autocmd!
-  autocmd BufEnter * checktime
   autocmd BufEnter * call s:set_register()
   autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
