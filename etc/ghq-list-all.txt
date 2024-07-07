@@ -1,0 +1,16 @@
+github.com/Shougo/shougo-s-github
+github.com/aws-ia/terraform-aws-mwaa
+github.com/i9wa4/blog
+github.com/i9wa4/dotfiles
+github.com/i9wa4/i9wa4
+github.com/i9wa4/i9wa4.github.io
+github.com/i9wa4/minecraft-bedrock-server-setup
+github.com/i9wa4/private-notes
+github.com/i9wa4/resume
+github.com/i9wa4/slides
+github.com/i9wa4/tf-import-test
+github.com/i9wa4/tf-sfn-handson
+github.com/neovim/neovim
+github.com/skk-dev/dict
+github.com/tfutils/tfenv
+github.com/vim/vim
