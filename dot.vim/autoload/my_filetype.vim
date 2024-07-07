@@ -1,6 +1,5 @@
-let g:my_filetype#tabstop_two_lang_list = []
-
-function! my_filetype#set() abort
+let s:tabstop2_lang_list = []
+function! my_filetype#init() abort
   if !empty(&buftype)
     return
   endif
@@ -13,7 +12,7 @@ function! my_filetype#set() abort
     setlocal nospell
   endif
 
-  if index(g:my_filetype#tabstop_two_lang_list, &filetype) >= 0
+  if index(s:tabstop2_lang_list, &filetype) >= 0
     setlocal shiftwidth=2 softtabstop=2 tabstop=2
   elseif index([
   \   'go',
@@ -39,4 +38,8 @@ function! my_filetype#set() abort
   if &filetype == 'json' && executable('jq')
     let &l:formatprg = 'jq .'
   endif
+endfunction
+
+function! my_filetype#set_tabstop2_lang_list(list) abort
+  let s:tabstop2_lang_list = a:list
 endfunction
