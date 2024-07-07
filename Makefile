@@ -231,6 +231,7 @@ package-go:  ## install go packages
 	go install github.com/x-motemen/ghq@latest
 
 ghq-get:
+	ghq get Shougo/shougo-s-github
 	ghq get neovim/neovim
 	ghq get skk-dev/dict
 	ghq get tfutils/tfenv
