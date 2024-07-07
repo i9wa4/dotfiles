@@ -28,9 +28,31 @@ let g:auto_reload = timer_start(
 \   {'repeat': -1}
 \ )
 let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
-let g:tabstop_two_lang_list = []
 
 " let g:denops_disable_version_check = 1
+
+
+" --------------------------------------
+" hook_source
+"
+let g:my_filetype#tabstop_two_lang_list = []
+let g:my_util#preload_vimrc_path = '~/.vim/local_sample.vim'->expand()
+
+function! MyStatuslineRightTabline() abort
+  let l:ret = ''
+  let l:ret ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
+  let l:ret ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ':h:t')
+  if match(&runtimepath, 'get-git-branch-name.vim') >= 0
+    let l:branch_name = branch_name#get_current_branch_name()
+    " let l:repo_name = branch_name#get_current_repo_root_name()
+    if l:branch_name != ''
+      " let l:ret ..= '  ' .. l:repo_name .. ' (' .. l:branch_name .. ')'
+      let l:ret ..= '  ' .. '(' .. l:branch_name .. ')'
+    endif
+  endif
+  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+  return l:ret
+endfunction
 
 
 " --------------------------------------
@@ -238,62 +260,6 @@ command! GitDiff
 " --------------------------------------
 " Aucocommand
 "
-function! s:set_register() abort
-  if empty(&buftype)
-    call setreg('a', expand('%')->fnamemodify(':p:~'))
-    call setreg('b', expand('%')->fnamemodify(':p:~:h'))
-
-    let l:dir_status = '['
-    let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
-    let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ':h:t')
-    let l:dir_status ..= ']'
-    call setreg('z', l:dir_status)
-  endif
-endfunction
-
-
-function! s:my_filetype() abort
-  if !empty(&buftype)
-    return
-  endif
-
-  setlocal nofoldenable autoindent expandtab
-  setlocal shiftwidth=4 softtabstop=4 tabstop=4
-  setlocal spelllang+=cjk spell
-
-  if &diff
-    setlocal nospell
-  endif
-
-  if index(g:tabstop_two_lang_list, &filetype) >= 0
-    setlocal shiftwidth=2 softtabstop=2 tabstop=2
-  elseif index([
-  \   'go',
-  \   'make',
-  \ ], &filetype) >= 0
-    setlocal noexpandtab
-  else
-    " Do nothing.
-  endif
-
-  " Linter
-  if &filetype == 'sh' && executable('shellcheck')
-    let &l:makeprg = 'shellcheck -f gcc -x %'
-    let &l:errorformat = '%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%f:%l:%c: %tote: %m,'
-  elseif &filetype == 'dockerfile' && executable('hadolint')
-    let &l:makeprg = 'hadolint --no-color %'
-    let &l:errorformat = '%f:%l %m'
-  else
-    " Do nothing.
-  endif
-
-  " Formatter
-  if &filetype == 'json' && executable('jq')
-    let &l:formatprg = 'jq .'
-  endif
-endfunction
-
-
 function! s:my_asyncjob_on_save() abort
   if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
     " Jupyter Notebook
@@ -329,66 +295,8 @@ function! s:my_asyncjob_on_save() abort
 endfunction
 
 
-function! s:my_highlight() abort
-  " substitution for ~/.vim/after/ftplugin/markdown.vim
-  highlight link markdownError Normal
-  highlight link markdownItalic Normal
-
-  " override colorscheme setting
-  highlight clear Error
-  highlight clear ErrorMsg
-  highlight clear SpellBad
-  highlight SpellBad cterm=underline gui=underline
-
-  call clearmatches()
-
-  highlight clear MyEmphasis1
-  highlight MyEmphasis1 guifg=#000000 guibg=#FFB6C1
-  call matchadd('MyEmphasis1', strftime('%Y-%m-%d'))
-  call matchadd('MyEmphasis1', strftime('%Y%m%d'))
-
-  highlight clear MyEmphasis2
-  highlight MyEmphasis2 guifg=#000000 guibg=#EF9AAF
-  call matchadd('MyEmphasis2', 'NOTE:\|WARNING:\|# %%')
-
-  " [ ]
-  highlight clear MyEmphasis3
-  highlight MyEmphasis3 guifg=#000000 guibg=#FBE340
-  call matchadd('MyEmphasis3', 'TODO:\|FIXME:\|DEBUG:\|\[ \]')
-  call matchadd('MyEmphasis3', strftime('%Y-%m-%d', localtime() + 24 * 60 * 60))
-  call matchadd('MyEmphasis3', strftime('%Y%m%d', localtime() + 24 * 60 * 60))
-
-  " 　 
-  " Black, DarkRed(88,#870000)
-  highlight clear MyError
-  highlight MyError guifg=#000000 guibg=#870000
-  call matchadd('MyError', '　\|\s\+$')
-
-  " [		]
-  " DarkRed(88,#870000), NONE
-  highlight clear MySpecial
-  highlight MySpecial guifg=#870000 guibg=NONE
-  call matchadd('MySpecial', '\t')
-
-  " cursorline
-  highlight CursorLine guibg=#404040
-
-  " transparent background
-  highlight EndOfBuffer guibg=NONE
-  highlight Folded guibg=NONE
-  highlight Identifier guibg=NONE
-  highlight LineNr guibg=NONE
-  highlight NonText guibg=NONE
-  highlight Normal guibg=NONE
-  highlight Special guibg=NONE
-  highlight VertSplit guibg=NONE
-endfunction
-
-
 augroup MyVimrcAutocmd
   autocmd!
-  " Register
-  autocmd BufEnter * call s:set_register()
 
   " Auto Reload
   autocmd BufEnter * checktime
@@ -402,10 +310,6 @@ augroup MyVimrcAutocmd
   \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.tfstate
   \ setfiletype json
-  autocmd BufEnter,FileType * call s:my_filetype()
-
-  " Highlight
-  autocmd VimEnter,BufEnter,WinEnter * call s:my_highlight()
 
   " Async Job
   autocmd BufWritePost * call s:my_asyncjob_on_save()
