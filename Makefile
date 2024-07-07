@@ -231,11 +231,11 @@ package-go:  ## install go packages
 	go install github.com/x-motemen/ghq@latest
 
 ghq-get:
-	ghq get Shougo/shougo-s-github
-	ghq get neovim/neovim
-	ghq get skk-dev/dict
-	ghq get tfutils/tfenv
-	ghq get vim/vim
+	cat etc/ghq-list-essential.txt | ghq get
+	cat etc/ghq-list-all.txt | ghq get
+
+ghq-backup:
+	ghq list > etc/ghq-list-all.txt
 
 git-config:
 	git config --global color.ui auto
@@ -348,7 +348,7 @@ pyenv-vmu:  ## update venv named myenv
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install -r "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/py_venv_myenv_requirements.txt \
+	&& python -m pip install -r "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/py-venv-myenv-requirements.txt \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
