@@ -6,6 +6,7 @@ promptinit
 # Keybind
 bindkey -v
 
+
 # Git
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
 # https://qiita.com/ono_matope/items/55d9dac8d30b299f590d
@@ -41,6 +42,7 @@ PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d(%a) %H:%M:%S]} (${_SHELL_TYPE}-lv%L)%f
 %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
 $ "
 
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -55,6 +57,7 @@ setopt hist_save_no_dups
 setopt hist_verify
 setopt share_history
 
+
 # https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
 zstyle ':completion:*' menu select interactive
 setopt menu_complete
@@ -62,6 +65,7 @@ zmodload zsh/complist
 bindkey -M menuselect '^y' accept-and-infer-next-history
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
+
 
 # zeno.zsh
 zinit ice lucid depth"1" blockf
@@ -86,13 +90,31 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
 
+
+# https://obel.hatenablog.jp/entry/20200214/1581620400
+# https://qiita.com/reoring/items/47689c23d2e31035720b
+UNAME="$(uname -a)"
+if [ "$(echo $UNAME | grep Darwin)" ]; then
+  echo 'Hello, macOS!'
+elif [ "$(echo $UNAME | grep Ubuntu)" ]; then
+  echo 'Hello, Ubuntu'
+  alias pbcopy='xclip -selection clipboard'
+elif [ "$(echo $UNAME | grep WSL2)" ]; then
+  echo 'Hello, WSL2!'
+  alias pbcopy='xclip -selection clipboard'
+elif [ "$(echo $UNAME | grep arm)" ]; then
+  echo 'Hello, Raspberry Pi!'
+elif [ "$(echo $UNAME | grep el7)" ]; then
+  echo 'Hello, CentOS!'
+else
+  echo 'What OS are you using?'
+fi
+
+
 [[ -n "$(command -v rbenv)" ]] && eval "$(rbenv init - --path)"
 # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 [[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
-
 if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
-# export PATH="${HOME}"/bin:"${PATH}"
-
 cd
 
 # tmux
