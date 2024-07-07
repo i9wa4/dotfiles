@@ -13,7 +13,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
-common: init-zshrc link git-config \
+common: init-zshrc unlink link git-config \
 	package-go package-rust \
 	ghq-get \
 	tfenv-install \
@@ -52,7 +52,6 @@ link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
-	if test -d "$${HOME}"/.vim; then unlink "$${HOME}"/.vim; fi
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
@@ -65,6 +64,20 @@ link:  ## make symbolic links
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno                  "$${XDG_CONFIG_HOME}"
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+
+unlink:  ## unlink symbolic links
+	# dotfiles
+	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
+	# Vim (symbolic link)
+	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
+	# XDG_CONFIG_HOME
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" ]; then unlink "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}"; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" ]; then unlink "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];           then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];      then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 
 copy-win:  ## copy config files for Windows
 	# WSL2

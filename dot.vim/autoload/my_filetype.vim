@@ -1,3 +1,5 @@
+let g:my_filetype#tabstop_two_lang_list = []
+
 function! my_filetype#set() abort
   if !empty(&buftype)
     return

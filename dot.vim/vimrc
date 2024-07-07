@@ -35,16 +35,14 @@ let g:my_local_vimrc_path = '~/.vim/local_sample.vim'->expand()
 " --------------------------------------
 " hook_source
 "
-let g:my_filetype#tabstop_two_lang_list = []
 let g:my_util#preload_vimrc_path = '~/.vim/local_sample.vim'->expand()
 
 function! MyStatuslineRightTabline() abort
   let l:ret = ''
-  let l:ret ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
-  let l:ret ..= '  ' .. 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ':h:t')
+  let l:ret ..= 'Cfg:' .. fnamemodify(g:my_local_vimrc_path, ':h:t')
   if match(&runtimepath, 'get-git-branch-name.vim') >= 0
     let l:branch_name = branch_name#get_current_branch_name()
-    " let l:repo_name = branch_name#get_current_repo_root_name()
+    let l:repo_name = branch_name#get_current_repo_root_name()
     if l:branch_name != ''
       " let l:ret ..= '  ' .. l:repo_name .. ' (' .. l:branch_name .. ')'
       let l:ret ..= '  ' .. '(' .. l:branch_name .. ')'
