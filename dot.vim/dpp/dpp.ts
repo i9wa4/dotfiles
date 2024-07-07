@@ -91,29 +91,6 @@ export class Config extends BaseConfig {
         tomls.push(toml);
       }
     }
-    for (
-      const tomlFile of [
-        "$BASE_DIR/watch.toml",
-      ]
-    ) {
-      const toml = await args.dpp.extAction(
-        args.denops,
-        context,
-        options,
-        "toml",
-        "load",
-        {
-          path: tomlFile,
-          options: {
-            if: false,
-          },
-        },
-      ) as Toml | undefined;
-
-      if (toml) {
-        tomls.push(toml);
-      }
-    }
 
     // Merge toml results
     const recordPlugins: Record<string, Plugin> = {};
