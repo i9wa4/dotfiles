@@ -37,9 +37,9 @@ snippets:
     snippet:
       brew update
       && brew upgrade
-      && ghq list | ghq get --update --parallel
       && zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
+      && ghq list | ghq get --update --parallel
       && make vim-build
       && make tfenv-list
       && make pyenv-list
@@ -49,9 +49,9 @@ snippets:
     snippet:
       sudo apt update
       && sudo apt upgrade -y
-      && ghq list | ghq get --update --parallel
       && zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
+      && ghq list | ghq get --update --parallel
       && make vim-build
       && make tfenv-list
       && make pyenv-list
