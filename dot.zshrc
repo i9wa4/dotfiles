@@ -96,6 +96,8 @@ zinit light zsh-users/zsh-completions
 UNAME="$(uname -a)"
 if [ "$(echo $UNAME | grep Darwin)" ]; then
   echo 'Hello, macOS!'
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores True
+  killall Finder > /dev/null 2>&1
 elif [ "$(echo $UNAME | grep Ubuntu)" ]; then
   echo 'Hello, Ubuntu'
   alias pbcopy='xclip -selection clipboard'
