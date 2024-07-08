@@ -52,6 +52,7 @@ link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
+	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
