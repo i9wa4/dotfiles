@@ -90,7 +90,6 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
 
-
 # https://obel.hatenablog.jp/entry/20200214/1581620400
 # https://qiita.com/reoring/items/47689c23d2e31035720b
 UNAME="$(uname -a)"
