@@ -41,7 +41,7 @@ repo = 'hashivim/vim-terraform'
 on_ft = ['terraform', 'terraform-vars', 'tf']
 
 [[plugins]]
-repo = 'i9wa4/markdown-number-header.vim'
+repo = 'i9wa4/vim-markdown-number-header'
 depends = ['denops.vim']
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
@@ -49,5 +49,5 @@ let g:mnh_header_level_shift = 1
 '''
 
 [[plugins]]
-repo = 'i9wa4/get-git-branch-name.vim'
+repo = 'i9wa4/vim-get-git-branch-name'
 on_event = ['VimEnter']
