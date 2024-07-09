@@ -233,10 +233,18 @@ package-go:  ## install go packages
 
 ghq-get:
 	cat etc/ghq-list-essential.txt | ghq get
-	cat etc/ghq-list-all.txt | ghq get
 
-ghq-backup:
+ghq-get-private:
+	cat etc/ghq-list-private.txt | ghq get
+
+ghq-get-company:
+	cat ~/str/etc/ghq-list-company.txt | ghq get -p
+
+ghq-backup-private:
 	ghq list > etc/ghq-list-all.txt
+
+ghq-backup-company:
+	ghq list > ~/str/etc/ghq-list-company.txt
 
 git-config:
 	git config --global color.ui auto
