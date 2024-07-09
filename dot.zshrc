@@ -116,6 +116,9 @@ fi
 [[ -n "$(command -v rbenv)" ]] && eval "$(rbenv init - --path)"
 # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
 [[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+    . $HOME/.nix-profile/etc/profile.d/nix.sh;
+fi
 if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
 cd
 

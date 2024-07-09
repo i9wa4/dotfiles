@@ -299,6 +299,12 @@ nvim-build:  ## build Neovim
 	&& hash -r \
 	&& cd -
 
+nix-install-ubuntu:  ## installl Nix
+	# curl -L https://nixos.org/nix/install | sh
+	curl -L https://nixos.org/nix/install | sh -s -- --daemon
+	# uninstall:
+	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
+
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
