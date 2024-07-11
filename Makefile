@@ -425,17 +425,17 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 copy-win:  ## copy config files for Windows
 	# WSL2
 	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
-	cat "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows copy
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
 	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy_win.bat   $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim                    $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
-	cat "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
+	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## Print this help
 	@echo 'Usage: make [target]'
