@@ -15,7 +15,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
-	ghq-get \
+	ghq-get-readonly \
 	tfenv-install \
 	vim-build nvim-build pyenv-build pyenv-vmu
 
@@ -231,8 +231,8 @@ package-go:  ## install go packages
 	# https://github.com/Songmu/ghq-handbook
 	go install github.com/x-motemen/ghq@latest
 
-ghq-get:
-	cat etc/ghq-list-essential.txt | ghq get
+ghq-get-readonly:
+	cat etc/ghq-list-readonly.txt | ghq get
 
 ghq-get-private:
 	cat etc/ghq-list-private.txt | ghq get
@@ -241,7 +241,7 @@ ghq-get-company:
 	cat ~/str/etc/ghq-list-company.txt | ghq get -p
 
 ghq-backup-private:
-	ghq list > etc/ghq-list-all.txt
+	ghq list > etc/ghq-list-private.txt
 
 ghq-backup-company:
 	ghq list > ~/str/etc/ghq-list-company.txt
@@ -374,13 +374,6 @@ pyenv-list:  ## show available versions
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
-
-# terraform-init-ubuntu:  ## install Terraform
-# 	# https://developer.hashicorp.com/terraform/install
-# 	wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-# 	echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $$(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-# 	sudo apt update
-# 	sudo apt install -y terraform
 
 tfenv-install:  ## intall specific version of Terraform
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
