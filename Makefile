@@ -382,7 +382,7 @@ pyenv-list:  ## show available versions
 # 	sudo apt update
 # 	sudo apt install -y terraform
 
-tfenv-install:
+tfenv-install:  ## intall specific version of Terraform
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_MINOR}" \
 	&& tfenv install "$${TFENV_TF_VER_PATCH}" \
