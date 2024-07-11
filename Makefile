@@ -5,9 +5,6 @@ SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
 
-# variables
-MF_WIN_UTIL_DIR := /mnt/c/work/util
-
 # all targets are phony
 # .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
@@ -79,21 +76,6 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];      then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
-
-copy-win:  ## copy config files for Windows
-	# WSL2
-	sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
-	# Windows symbolic link
-	mkdir -p /mnt/c/work
-	# Windows copy
-	rm -rf $(MF_WIN_UTIL_DIR)
-	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/my_copy.bat $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/bin $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode $(MF_WIN_UTIL_DIR)
-	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/etc $(MF_WIN_UTIL_DIR)
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -352,6 +334,25 @@ pyenv-build:  ## build CPython
 	&& pyenv global "$${PY_VER_MINOR}" \
 	&& python -m pip config --site set global.require-virtualenv true
 
+define REQUIREMENTS_PY_VENV_MYENV
+autopep8
+charset-normalizer<3,>=2
+flake8
+ipykernel
+japanize-matplotlib
+jupyterlab
+jupytext
+matplotlib
+numpy
+pandas
+py
+pynvim
+python-lsp-server[all]
+quarto-cli
+scikit-learn
+endef
+export REQUIREMENTS_PY_VENV_MYENV
+
 pyenv-vmu:  ## update venv named myenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
@@ -363,7 +364,7 @@ pyenv-vmu:  ## update venv named myenv
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install -r "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/py-venv-myenv-requirements.txt \
+	&& echo "$${REQUIREMENTS_PY_VENV_MYENV}" | xargs python -m pip install \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
@@ -398,6 +399,43 @@ volta-init:  ## install Volta
 	# sudo npm install -g @mermaid-js/mermaid-cli
 	# https://github.com/mermaid-js/mermaid-cli/issues/595
 	# node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
+
+define WSLCONF_IN_WSL
+[boot]
+systemd=true
+
+[interop]
+appendWindowsPath=true
+endef
+export WSLCONF_IN_WSL
+
+define WSLCONFIG_IN_WINDOWS
+[wsl2]
+localhostForwarding=true
+processors=2
+swap=0
+
+[experimental]
+autoMemoryReclaim=gradual
+endef
+export WSLCONFIG_IN_WINDOWS
+
+MF_WIN_UTIL_DIR := /mnt/c/work/util
+
+copy-win:  ## copy config files for Windows
+	# WSL2
+	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
+	cat "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	# Windows copy
+	rm -rf $(MF_WIN_UTIL_DIR)
+	mkdir -p $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy_win.bat   $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim                    $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
+	cat "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## Print this help
 	@echo 'Usage: make [target]'

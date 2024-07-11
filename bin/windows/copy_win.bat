@@ -22,9 +22,9 @@ exit /b
     echo ] >> "%CODE_DIR:"=%\alacritty.toml"
 
     @REM VSCode
-    @REM set CODE_DIR="%APPDATA%\Code\User"
-    @REM rmdir /q /s "%CODE_DIR:"=%"
-    @REM mkdir "%CODE_DIR:"=%\snippets"
-    @REM copy /y ".\dot.vscode/settings.json" "%CODE_DIR:"=%\settings.json"
-    @REM xcopy /e /i /y ".\dot.vim\snippet" "%CODE_DIR:"=%\snippets"
+    set CODE_DIR="%APPDATA%\Code\User"
+    rmdir /q /s "%CODE_DIR:"=%"
+    mkdir "%CODE_DIR:"=%\snippets"
+    copy /y ".\dot.vscode/settings.json" "%CODE_DIR:"=%\settings.json"
+    xcopy /e /i /y ".\dot.vim\snippet" "%CODE_DIR:"=%\snippets"
 exit /b
