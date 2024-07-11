@@ -1,7 +1,0 @@
-[wsl2]
-localhostForwarding=true
-processors=2
-swap=0
-
-[experimental]
-autoMemoryReclaim=gradual
