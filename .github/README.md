@@ -43,7 +43,7 @@
     - <https://i9wa4.github.io/blog/posts/2024-03-25-setup-wsl2.html>
 1. Launch Ubuntu with PowerShell.
 
-    ```powershell
+    ```dosbat
     wsl
     ```
 
@@ -67,25 +67,23 @@
 
 1. Shutdown WSL2.
 
-    ```powershell
+    ```dosbat
     wsl --shutdown
-    ```
-
-1. Install Alacritty.
-
-    ```powershell
-    winget install Alacritty.Alacritty
     ```
 
 1. Exit PowerShell.
 
-    ```powershell
+    ```dosbat
     exit
     ```
 
-1. Run `C:\work\util\my_copy.bat`.
+1. Run `C:\work\util\copy_win.bat`.
 
-1. Start Alacritty.
+1. (Optional) Install Alacritty.
+
+    ```dosbat
+    winget install Alacritty.Alacritty
+    ```
 
 ## 3. Post installation
 
