@@ -1,7 +1,10 @@
 snippets:
-  - name: ll
-    keyword: ll
+  - name: lll
+    keyword: lll
     snippet: ls -alFv --time-style=long-iso
+  - name: llm
+    keyword: llm
+    snippet: ls -alFv -D "%Y-%m-%d %H:%M:%S"
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
