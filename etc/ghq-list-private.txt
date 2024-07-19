@@ -5,11 +5,14 @@ github.com/i9wa4/dotfiles
 github.com/i9wa4/i9wa4
 github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/minecraft-bedrock-server-setup
+github.com/i9wa4/nix-handson
 github.com/i9wa4/private-notes
 github.com/i9wa4/resume
 github.com/i9wa4/slides
 github.com/i9wa4/tf-import-test
 github.com/i9wa4/tf-sfn-handson
+github.com/i9wa4/vim-get-git-branch-name
+github.com/i9wa4/vim-markdown-number-header
 github.com/neovim/neovim
 github.com/skk-dev/dict
 github.com/tfutils/tfenv
