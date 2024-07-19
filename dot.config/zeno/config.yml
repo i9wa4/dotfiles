@@ -1,4 +1,7 @@
 snippets:
+  - name: ll
+    keyword: ll
+    snippet: ls -alFv
   - name: lll
     keyword: lll
     snippet: ls -alFv --time-style=long-iso
