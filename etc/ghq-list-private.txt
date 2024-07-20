@@ -7,6 +7,7 @@ github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/minecraft-bedrock-server-setup
 github.com/i9wa4/nix-handson
 github.com/i9wa4/private-notes
+github.com/i9wa4/quarto-jupyter-sandbox
 github.com/i9wa4/resume
 github.com/i9wa4/slides
 github.com/i9wa4/tf-import-test
