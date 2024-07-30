@@ -48,8 +48,6 @@ init-zshrc:
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
-	# Vim (symbolic link)
-	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
@@ -66,7 +64,6 @@ link:  ## make symbolic links
 unlink:  ## unlink symbolic links
 	# dotfiles
 	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
-	# Vim (symbolic link)
 	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
