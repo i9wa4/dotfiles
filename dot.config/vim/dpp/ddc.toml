@@ -139,7 +139,7 @@ cmap <C-j> <Plug>(skkeleton-enable)
 repo = 'uga-rosa/denippet.vim'
 on_source = ['ddc.vim']
 hook_source = '''
-let s:dir = $MYVIMRC->expand()->fnamemodify(':h') .. '/snippet/'
+let s:dir = $XDG_CONFIG_HOME->expand()->fnamemodify(':h') .. '/vim/snippet/'
 for s:file in glob(s:dir . '*.*', 1, 1)
   call denippet#load(s:file)
 endfor

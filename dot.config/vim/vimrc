@@ -18,7 +18,7 @@ let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
 let g:netrw_hide = 0
-let g:netrw_home = '~/.vim'->expand()
+let g:netrw_home = $XDG_CONFIG_HOME->expand() .. '/vim'
 let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
 
@@ -34,7 +34,7 @@ let g:auto_reload = timer_start(
 " --------------------------------------
 " hook_source
 "
-call my_util#set_preload_vimrc('~/.vim/local_sample.vim'->expand())
+call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/local_sample.vim')
 call my_filetype#set_tabstop2_lang_list([
 \   'bash',
 \   'css',
@@ -338,7 +338,7 @@ augroup END
 " --------------------------------------
 " dpp.vim
 "
-let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
+let s:dpp_path = $XDG_CONFIG_HOME->expand() .. '/vim/dpp/dpp.vim'
 if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
   execute 'source' s:dpp_path
 endif

@@ -1,6 +1,6 @@
-set runtimepath^=~/.vim
-set runtimepath+=~/.vim/after
-set packpath^=~/.vim
+set runtimepath^=~/.config/vim
+set runtimepath+=~/.config/vim/after
+set packpath^=~/.config/vim
 
 
 " --------------------------------------
@@ -25,7 +25,7 @@ endif
 " --------------------------------------
 " vimrc
 "
-let s:vimrc_path = '~/.vim/vimrc'->expand()
+let s:vimrc_path = $XDG_CONFIG_HOME->expand() .. '/vim/vimrc'
 if filereadable(s:vimrc_path)
   execute 'source' s:vimrc_path
 endif
@@ -42,7 +42,7 @@ set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 " --------------------------------------
 " dpp.vim
 "
-let s:dpp_path = '~/.vim/dpp/dpp.vim'->expand()
+let s:dpp_path = $XDG_CONFIG_HOME->expand() .. '/vim/dpp/dpp.vim'
 if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
   execute 'source' s:dpp_path
 endif
