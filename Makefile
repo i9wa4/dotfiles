@@ -13,8 +13,7 @@ SHELL := /usr/bin/env bash
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
 	ghq-get-readonly \
-	tfenv-install \
-	vim-build nvim-build pyenv-build pyenv-vmu
+	vim-build nvim-build pyenv-install pyenv-vmu
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
@@ -323,7 +322,7 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-pyenv-build:  ## build CPython
+pyenv-install:  ## install CPython
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv -v \
 	&& pyenv install --list \
@@ -374,17 +373,17 @@ pyenv-list:  ## show available versions
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
-tfenv-install:  ## intall specific version of Terraform
+tfenv-install:  ## intall specific version of Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_MINOR}" \
-	&& tfenv install "$${TFENV_TF_VER_PATCH}" \
-	&& tfenv use "$${TFENV_TF_VER_PATCH}" \
+	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
+	&& tfenv install "$(TF_VER_PATCH)" \
+	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
 tfenv-list:  ## show available versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[tfenv] Available Terraform "${TFENV_TF_VER_MINOR}" versions:" \
-	&& tfenv list-remote | grep '^'"$${TFENV_TF_VER_MINOR}" \
+	&& echo "[tfenv] Available Terraform "${TF_VER_MINOR}" versions:" \
+	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
