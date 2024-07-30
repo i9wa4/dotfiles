@@ -32,8 +32,7 @@ export PYENV_ROOT="${HOME}"/.pyenv
 export PATH="${HOME}"/.cargo/env:"${PATH}"
 
 # tfenv
-export TFENV_TF_VER_MINOR=1.9
-export TFENV_TF_VER_PATCH="${TFENV_TF_VER_MINOR}".2
+export TF_VER_MINOR=1.9
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
 
 # Vim
