@@ -50,7 +50,6 @@ link:  ## make symbolic links
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
 	# Vim (symbolic link)
 	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
-	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vim "$${HOME}"/.vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
@@ -59,6 +58,7 @@ link:  ## make symbolic links
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/efm-langserver        "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/tmux                  "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/vim                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno                  "$${XDG_CONFIG_HOME}"
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
