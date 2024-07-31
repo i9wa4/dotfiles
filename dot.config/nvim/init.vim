@@ -4,25 +4,6 @@ set packpath^=~/.config/vim
 
 
 " --------------------------------------
-" Variable
-"
-if exists('$WSLENV')
-  let g:clipboard = {
-  \   'name': 'WslClipboard',
-  \   'copy': {
-  \      '+': ['sh', '-c', "nkf -sc | clip.exe"],
-  \      '*': ['sh', '-c', "nkf -sc | clip.exe"],
-  \    },
-  \   'paste': {
-  \      '+': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-  \      '*': 'powershell.exe -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-  \   },
-  \   'cache_enabled': 0,
-  \ }
-endif
-
-
-" --------------------------------------
 " vimrc
 "
 let s:vimrc_path = $XDG_CONFIG_HOME->expand() .. '/vim/vimrc'
@@ -35,8 +16,6 @@ endif
 " Option
 "
 " set laststatus=3
-set nrformats=unsigned
-set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 
 
 " --------------------------------------

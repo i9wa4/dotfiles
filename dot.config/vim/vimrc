@@ -93,11 +93,11 @@ set noundofile
 " Edit
 " set binary noeol
 " set isfname-=|
-if has('patch-8.2.0860')
-  set nrformats=unsigned
-else
-  set nrformats=
-endif
+" if has('patch-8.2.0860')
+set nrformats=unsigned
+" else
+"  set nrformats=
+" endif
 set backspace=indent,eol,start
 set completeopt=menuone,noinsert,noselect
 set fileencodings=utf-8,euc-jp,cp932
@@ -132,11 +132,11 @@ set noequalalways
 set pumheight=10
 set splitbelow
 set splitright
-if has('patch-8.2.4325')
-  set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
-else
-  set wildmenu wildoptions=tagfile wildchar=<Tab>
-endif
+" if has('patch-8.2.4325')
+set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
+" else
+"   set wildmenu wildoptions=tagfile wildchar=<Tab>
+" endif
 
 " CommandLine
 set cmdheight=1
@@ -356,7 +356,7 @@ if !has('nvim')
     set termguicolors
   endif
 
-  if has('patch-9.0.1778')
-    execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-  endif
+  " if has('patch-9.0.1778')
+  execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+  " endif
 endif
