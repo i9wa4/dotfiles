@@ -64,7 +64,7 @@ function! MyStatuslineRightTabline() abort
       let l:ret ..= ' ' .. '(' .. l:branch_name .. ')'
     endif
   endif
-  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+  " let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
   return l:ret
 endfunction
 
