@@ -59,4 +59,4 @@ if has('termguicolors')
   set termguicolors
 endif
 
-execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+execute 'colorscheme' get(g:, 'colors_name', 'habamax')
