@@ -1,3 +1,6 @@
+# https://karur4n.hatenablog.com/entry/2016/01/18/100000
+setopt no_global_rcs
+
 # AWS
 export AWS_DEFAULT_PROFILE=
 
