@@ -118,7 +118,7 @@ fi
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
     . $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
-if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
+# if test -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi
 cd
 
 # tmux
