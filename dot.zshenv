@@ -1,6 +1,14 @@
 # https://karur4n.hatenablog.com/entry/2016/01/18/100000
 setopt no_global_rcs
 
+# Common
+export LC_ALL=C.UTF-8
+export EDITOR=vim
+export VISUAL=vim
+export XDG_CONFIG_HOME="${HOME}"/.config
+export PATH="${PATH}":/usr/local/bin
+export PATH="${HOME}"/bin:"${PATH}"
+
 # AWS
 export AWS_DEFAULT_PROFILE=
 
@@ -38,15 +46,6 @@ export PATH="${HOME}"/.cargo/env:"${PATH}"
 export TF_VER_MINOR=1.9
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
 
-# Vim
-export EDITOR=vim
-export VISUAL=vim
-
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
-
-# Common
-export LC_ALL=C.UTF-8
-export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${HOME}"/bin:"${PATH}"
