@@ -31,7 +31,7 @@ export NVIM_APPNAME="${NVIM_APPNAME1}"
 
 # Python
 export PY_VER_MINOR=3.12
-export PY_VENV_MYENV="${HOME}"/venv/myenv"${PY_VER_MINOR}"
+export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
 
