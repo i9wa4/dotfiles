@@ -21,30 +21,30 @@ export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 export PATH="${HOME}"/go/bin:"${PATH}"
 
 # Homebrew
-export PATH=/opt/homebrew/bin:"${PATH}"
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+export PATH=/opt/homebrew/bin:"${PATH}"
 
 # Neovim
 export NVIM_APPNAME1=nvim
 export NVIM_APPNAME2=nvim-minimal
 export NVIM_APPNAME="${NVIM_APPNAME1}"
 
-# Python
-export PY_VER_MINOR=3.12
-export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
-export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
-export JUPYTER_PLATFORM_DIRS=1
-
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
 [[ -d "${PYENV_ROOT}"/bin ]] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
+
+# Python
+export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
+export JUPYTER_PLATFORM_DIRS=1
+export PY_VER_MINOR=3.12
+export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 
 # Rust
 export PATH="${HOME}"/.cargo/env:"${PATH}"
 
 # tfenv
-export TF_VER_MINOR=1.9
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
+export TF_VER_MINOR=1.9
 
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
