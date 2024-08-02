@@ -369,7 +369,7 @@ pyenv-vmu:  ## update venv named myenv
 pyenv-list:  ## show available versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
-	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" \
+	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
@@ -383,7 +383,7 @@ tfenv-install:  ## intall specific version of Terraform (e.g. make tfenv-install
 tfenv-list:  ## show available versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Available Terraform "${TF_VER_MINOR}" versions:" \
-	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
+	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" | sort -nr \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
