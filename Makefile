@@ -209,6 +209,7 @@ package-go:  ## install go packages
 	go install github.com/mattn/efm-langserver@latest
 	# https://github.com/Songmu/ghq-handbook
 	go install github.com/x-motemen/ghq@latest
+	go install github.com/evilmartians/lefthook@latest
 
 ghq-get-readonly:
 	cat etc/ghq-list-readonly.txt | ghq get
