@@ -199,9 +199,6 @@ package-mac:
 	# Rectangle
 	brew install --cask rectangle
 
-package-rust:
-	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
-
 package-go:
 	go install github.com/rhysd/vim-startuptime@latest
 	# vim-startuptime -vimpath nvim -count 100
@@ -210,6 +207,9 @@ package-go:
 	# https://github.com/Songmu/ghq-handbook
 	go install github.com/x-motemen/ghq@latest
 	go install github.com/evilmartians/lefthook@latest
+
+package-rust:
+	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-readonly:
 	cat etc/ghq-list-readonly.txt | ghq get -p
