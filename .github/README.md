@@ -8,10 +8,13 @@
 
 ## 2. Installation
 
+1. Establish an SSH connection to GitHub.
+    - cf. [Mac GitHub SSH接続設定 #初期設定 - Qiita](https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24)
+
 1. Clone this repository.
 
     ```sh
-    git clone https://github.com/i9wa4/dotfiles ~/src/github.com/i9wa4/dotfiles
+    git clone git@github.com:i9wa4/dotfiles ~/src/github.com/i9wa4/dotfiles
     ```
 
 ### 2.1. macOS
