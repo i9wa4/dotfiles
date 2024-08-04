@@ -199,10 +199,10 @@ package-mac:
 	# Rectangle
 	brew install --cask rectangle
 
-package-rust:  ## install rust packages
+package-rust:
 	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
-package-go:  ## install go packages
+package-go:
 	go install github.com/rhysd/vim-startuptime@latest
 	# vim-startuptime -vimpath nvim -count 100
 	# vim-startuptime -vimpath vim -count 100
@@ -279,12 +279,6 @@ nvim-build:  ## build Neovim
 	&& hash -r \
 	&& cd -
 
-nix-install-ubuntu:  ## installl Nix
-	# curl -L https://nixos.org/nix/install | sh
-	curl -L https://nixos.org/nix/install | sh -s -- --daemon
-	# uninstall:
-	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
-
 docker-init-ubuntu:  ## install Docker
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
@@ -323,6 +317,12 @@ docker-systemd-ubuntu:  ## enable autostart for docker
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
+nix-install-ubuntu:  ## installl Nix
+	# curl -L https://nixos.org/nix/install | sh
+	curl -L https://nixos.org/nix/install | sh -s -- --daemon
+	# uninstall:
+	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
+
 pyenv-install:  ## install CPython
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv -v \
@@ -331,6 +331,13 @@ pyenv-install:  ## install CPython
 	&& pyenv versions \
 	&& pyenv global "$${PY_VER_MINOR}" \
 	&& python -m pip config --site set global.require-virtualenv true
+
+pyenv-list:  ## show available versions
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
+	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
+	&& echo "[pyenv] Installed Python versions:" \
+	&& pyenv versions
 
 define REQUIREMENTS_PY_VENV_MYENV
 autopep8
@@ -367,13 +374,6 @@ pyenv-vmu:  ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-pyenv-list:  ## show available versions
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
-	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
-	&& echo "[pyenv] Installed Python versions:" \
-	&& pyenv versions
-
 tfenv-install:  ## intall specific version of Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
@@ -388,7 +388,7 @@ tfenv-list:  ## show available versions
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
-volta-init:  ## install Volta
+volta-init:
 	curl https://get.volta.sh | bash
 	# exec "$${SHELL}" -l
 	hash -r
