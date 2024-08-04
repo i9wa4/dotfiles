@@ -212,10 +212,10 @@ package-go:  ## install go packages
 	go install github.com/evilmartians/lefthook@latest
 
 ghq-get-readonly:
-	cat etc/ghq-list-readonly.txt | ghq get
+	cat etc/ghq-list-readonly.txt | ghq get -p
 
 ghq-get-private:
-	cat etc/ghq-list-private.txt | ghq get
+	cat etc/ghq-list-private.txt | ghq get -p
 
 ghq-get-company:
 	cat ~/str/etc/ghq-list-company.txt | ghq get -p
