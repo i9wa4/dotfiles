@@ -13,12 +13,12 @@ snippets:
     snippet: ghq list | ghq get --update --parallel
   - name: (Git) graph
     keyword: lo
-    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%ai] %C(green)<%an>'
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
     context:
       lbuffer: '^git\s'
   - name: (Git) graph --all
     keyword: la
-    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(blue)[%ai] %C(green)<%an>' --all
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n            %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
   - name: (Python venv) activate myenv
