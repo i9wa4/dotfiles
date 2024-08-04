@@ -1,5 +1,5 @@
-# https://karur4n.hatenablog.com/entry/2016/01/18/100000
-setopt no_global_rcs
+# https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
+if [[ "$0" == *"zsh"* ]]; then setopt no_global_rcs; fi
 
 # Common
 export LC_ALL=C.UTF-8
