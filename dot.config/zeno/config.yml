@@ -52,6 +52,8 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
+      && make package-go
+      && make package-rust
       && make vim-build
       && make tfenv-list
       && make pyenv-list
@@ -66,6 +68,8 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
+      && make package-go
+      && make package-rust
       && make vim-build
       && make tfenv-list
       && make pyenv-list
