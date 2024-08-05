@@ -254,8 +254,8 @@ git-config:
 
 vim-build:  ## build Vim
 	# make clean
-	cd ~/src/github.com/vim/vim \
-	&& cd ./src \
+	cd ~/src/github.com/vim/vim/src \
+	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
