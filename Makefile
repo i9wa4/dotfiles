@@ -270,7 +270,7 @@ vim-build:  ## build Vim
 nvim-build:  ## build Neovim
 	# make distclean
 	cd ~/src/github.com/neovim/neovim \
-	&& git checkout stable \
+	&& git checkout nightly \
 	&& make \
 	  CMAKE_BUILD_TYPE=RelWithDebInfo \
 	  CMAKE_INSTALL_PREFIX="$${HOME}" \
