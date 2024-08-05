@@ -6,8 +6,6 @@ export LC_ALL=C.UTF-8
 export EDITOR=vim
 export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${PATH}":/usr/local/bin
-export PATH="${HOME}"/bin:"${PATH}"
 
 # AWS
 export AWS_DEFAULT_PROFILE=
@@ -49,3 +47,7 @@ export TF_VER_MINOR=1.9
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
+
+# Common $PATH
+export PATH="${PATH}":/usr/local/bin
+export PATH="${HOME}"/bin:"${PATH}"
