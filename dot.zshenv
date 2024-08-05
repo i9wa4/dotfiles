@@ -40,7 +40,7 @@ export PY_VER_MINOR=3.12
 export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 
 # Rust
-export PATH="${HOME}"/.cargo/env:"${PATH}"
+if test -f "$${HOME}"/.cargo/env; then . "$${HOME}"/.cargo/env; fi
 
 # tfenv
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
