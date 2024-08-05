@@ -445,7 +445,7 @@ copy-win:  ## copy config files for Windows
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
-help:  ## Print this help
+help:  ## print this help
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Targets:'
