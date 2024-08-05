@@ -29,7 +29,12 @@ wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	echo "Restart WSL2"
 
 mac: package-mac package-homebrew common  ## task for Mac
+	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
+	killall Finder > /dev/null 2>&1
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
+
+mac-delete-ds_store:
+	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
 
 
 init-zsh-ubuntu:
@@ -59,6 +64,7 @@ link:  ## make symbolic links
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno                  "$${XDG_CONFIG_HOME}"
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	# TODO: vscode
 
 unlink:  ## unlink symbolic links
 	# dotfiles
@@ -73,6 +79,11 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];                 then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	# TODO: vscode
+	# cp -f "${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode/settings.json \
+	#   ~/Library/"Application Support"/Code/User/
+	# cp -rf "${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/vim/snippet/ \
+	#   ~/Library/"Application Support"/Code/User/snippets/
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
