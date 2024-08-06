@@ -38,7 +38,7 @@ else
   PROMPT="%F{green}█▓▒░%f%F{black}%K{green}%n@%m%k%f%F{green}░▒▓█%f%F{white}█▓▒░ %f"
 fi
 _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d(%a) %H:%M:%S]} (${_SHELL_TYPE}-lv%L)%f
+PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_SHELL_TYPE}-lv%L)%f
 %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
 $ "
 
@@ -106,7 +106,7 @@ elif [ "$(echo $UNAME | grep arm)" ]; then
 elif [ "$(echo $UNAME | grep el7)" ]; then
   echo 'Hello, CentOS!'
 else
-  echo 'What OS are you using?'
+  echo 'Which OS are you using?'
 fi
 
 
