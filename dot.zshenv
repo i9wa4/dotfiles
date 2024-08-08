@@ -1,5 +1,11 @@
 # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
 if [[ "$0" == *"zsh"* ]]; then setopt no_global_rcs; fi
+# missing paths for macOS:
+# /System/Cryptexes/App/usr/bin
+# /usr/local/bin
+# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
+# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
+# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
 
 # Common
 export LC_ALL=C.UTF-8
