@@ -22,6 +22,8 @@ zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 zstyle ':vcs_info:git+set-message:*' hooks git-config-user
 function +vi-git-config-user(){
   hook_com[misc]+=`git config user.name`
+  hook_com[misc]+=' | '
+  hook_com[misc]+=`git config user.email`
 }
 _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
