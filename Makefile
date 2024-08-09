@@ -1,12 +1,10 @@
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
-# .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
 
 # all targets are phony
-# .PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
@@ -138,7 +136,6 @@ package-ubuntu:
 	&& rm awscliv2.zip \
 	&& cd -
 	# gcloud CLI
-	# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 	sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
