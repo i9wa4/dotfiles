@@ -55,8 +55,8 @@ snippets:
       && make package-go
       && make package-rust
       && make vim-build
-      && make tfenv-list
       && make pyenv-list
+      && make tfenv-list
       && cd -
   - name: (Ubuntu) update
     keyword: uu
@@ -71,6 +71,7 @@ snippets:
       && make package-go
       && make package-rust
       && make vim-build
-      && make tfenv-list
+      && pyenv update
       && make pyenv-list
+      && make tfenv-list
       && cd -
