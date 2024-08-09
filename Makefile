@@ -18,21 +18,57 @@ ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu
 
-ubuntu-server: ubuntu package-ubuntu-server  ## task for Ubuntu Server
+ubuntu-server: ubuntu package-ubuntu-server  ## init for Ubuntu Server
 
-ubuntu-desktop: ubuntu package-ubuntu-desktop  ## task for Ubuntu Desktop
+ubuntu-desktop: ubuntu package-ubuntu-desktop  ## init for Ubuntu Desktop
 
-wsl: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
+wsl: ubuntu-minimal copy-win  ## init for WSL2 Ubuntu
 	sudo apt install -y wslu
 	echo "Restart WSL2"
 
-mac: package-mac package-homebrew common  ## task for Mac
+mac: package-mac package-homebrew common  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	killall Finder > /dev/null 2>&1
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
 	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
+
+define WSLCONF_IN_WSL
+[boot]
+systemd=true
+
+[interop]
+appendWindowsPath=true
+endef
+export WSLCONF_IN_WSL
+
+define WSLCONFIG_IN_WINDOWS
+[wsl2]
+localhostForwarding=true
+processors=2
+swap=0
+
+[experimental]
+autoMemoryReclaim=gradual
+endef
+export WSLCONFIG_IN_WINDOWS
+
+MF_WIN_UTIL_DIR := /mnt/c/work/util
+
+copy-win:  ## copy config files for Windows
+	# WSL2
+	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
+	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	# Windows copy
+	rm -rf $(MF_WIN_UTIL_DIR)
+	mkdir -p $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy_win.bat   $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
+	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
 init-zsh-ubuntu:
@@ -287,7 +323,7 @@ nvim-build:  ## build Neovim
 	&& hash -r \
 	&& cd -
 
-docker-init-ubuntu:  ## install Docker
+docker-init-ubuntu:
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
 	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
@@ -320,18 +356,18 @@ docker-init-ubuntu:  ## install Docker
 	sudo apt-get update
 	sudo apt-get install trivy
 
-docker-systemd-ubuntu:  ## enable autostart for docker
+docker-systemd-ubuntu:
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-nix-install-ubuntu:  ## installl Nix
+nix-install-ubuntu:  ## install Nix
 	# curl -L https://nixos.org/nix/install | sh
 	curl -L https://nixos.org/nix/install | sh -s -- --daemon
 	# uninstall:
 	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
 
-pyenv-install:  ## install CPython
+pyenv-install:  ## install Python
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv -v \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
@@ -340,7 +376,7 @@ pyenv-install:  ## install CPython
 	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
 
-pyenv-list:  ## show available versions
+pyenv-list:  ## show installed Python versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
@@ -382,14 +418,14 @@ pyenv-vmu:  ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-tfenv-install:  ## install specific version of Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
+tfenv-install:  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
 	&& tfenv install "$(TF_VER_PATCH)" \
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
-tfenv-list:  ## show available versions
+tfenv-list:  ## show installed Terraform versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Available Terraform "${TF_VER_MINOR}" versions:" \
 	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" | sort -nr \
@@ -400,42 +436,6 @@ volta-init:
 	curl https://get.volta.sh | bash
 	"$${HOME}"/.volta/bin/volta install node
 	echo "Restart Shell"
-
-define WSLCONF_IN_WSL
-[boot]
-systemd=true
-
-[interop]
-appendWindowsPath=true
-endef
-export WSLCONF_IN_WSL
-
-define WSLCONFIG_IN_WINDOWS
-[wsl2]
-localhostForwarding=true
-processors=2
-swap=0
-
-[experimental]
-autoMemoryReclaim=gradual
-endef
-export WSLCONFIG_IN_WINDOWS
-
-MF_WIN_UTIL_DIR := /mnt/c/work/util
-
-copy-win:  ## copy config files for Windows
-	# WSL2
-	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
-	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
-	# Windows copy
-	rm -rf $(MF_WIN_UTIL_DIR)
-	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy_win.bat   $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
-	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help
 	@echo 'Usage: make [target]'
