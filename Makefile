@@ -336,15 +336,17 @@ nix-install-ubuntu:  ## installl Nix
 
 pyenv-install:  ## install CPython
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& pyenv update \
 	&& pyenv -v \
-	&& pyenv install --list \
+	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
 	&& pyenv install "$${PY_VER_MINOR}" \
-	&& pyenv versions \
 	&& pyenv global "$${PY_VER_MINOR}" \
+	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-list:  ## show available versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& pyenv update \
 	&& echo "[pyenv] Available Python"${PY_VER_MINOR}" versions:" \
 	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -nr \
 	&& echo "[pyenv] Installed Python versions:" \
