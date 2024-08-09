@@ -16,13 +16,13 @@ common: init-zshrc unlink link git-config \
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
-ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu  ## task for Ubuntu
+ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu
 
 ubuntu-server: ubuntu package-ubuntu-server  ## task for Ubuntu Server
 
-ubuntu-desktop: package-ubuntu-desktop  ## task for Ubuntu Desktop
+ubuntu-desktop: ubuntu package-ubuntu-desktop  ## task for Ubuntu Desktop
 
-wsl2: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
+wsl: ubuntu-minimal copy-win  ## task for WSL2 Ubuntu
 	sudo apt install -y wslu
 	echo "Restart WSL2"
 
@@ -31,7 +31,7 @@ mac: package-mac package-homebrew common  ## task for Mac
 	killall Finder > /dev/null 2>&1
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
-mac-delete-ds_store:
+mac-delete-ds_store:  ## delete .DS_Store in ~/src
 	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
 
 
@@ -382,7 +382,7 @@ pyenv-vmu:  ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-tfenv-install:  ## intall specific version of Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
+tfenv-install:  ## install specific version of Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" \
 	&& tfenv install "$(TF_VER_PATCH)" \
@@ -398,13 +398,8 @@ tfenv-list:  ## show available versions
 
 volta-init:
 	curl https://get.volta.sh | bash
-	# exec "$${SHELL}" -l
-	hash -r
-	volta install node
-	hash -r
-	# sudo npm install -g @mermaid-js/mermaid-cli
-	# https://github.com/mermaid-js/mermaid-cli/issues/595
-	# node /usr/lib/node_modules/@mermaid-js/mermaid-cli/node_modules/puppeteer/install.js
+	"$${HOME}"/.volta/bin/volta install node
+	echo "Restart Shell"
 
 define WSLCONF_IN_WSL
 [boot]
