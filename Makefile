@@ -378,7 +378,7 @@ pyenv-install:  ## install Python
 
 pyenv-list:  ## show installed Python versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[pyenv] Available Python"$${PY_VER_MINOR}" or newer versions:" \
+	&& echo "[pyenv] Available Python "$${PY_VER_MINOR}" or newer versions:" \
 	&& pyenv install --list | grep '^\s*[0-9]' | sort -Vr | head -n $$( \
 	  pyenv install --list | grep '^\s*[0-9]' | sort -Vr \
 	  | grep -n "$${PY_VER_MINOR}" | cut -f1 -d: | tail -n1) \
