@@ -298,12 +298,15 @@ git-config:
 
 vim-build:  ## build Vim
 	# make clean
+	# --enable-python3interp=dynamic
 	cd ~/src/github.com/vim/vim/src \
 	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
+	  --enable-multibyte \
 	  --enable-fail-if-missing \
-	  --enable-python3interp=dynamic \
+	  --enable-luainterp \
+	  --enable-python3interp \
 	  --prefix="$${HOME}" \
 	  --with-features=huge \
 	&& make \
@@ -314,11 +317,11 @@ vim-build:  ## build Vim
 nvim-build:  ## build Neovim
 	# make distclean
 	cd ~/src/github.com/neovim/neovim \
-	&& git checkout stable \
+	&& git checkout master \
 	&& make \
-	  CMAKE_BUILD_TYPE=RelWithDebInfo \
+	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
+	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}" \
-	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=ON' \
 	&& make install \
 	&& hash -r \
 	&& cd -
