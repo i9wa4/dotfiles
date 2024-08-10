@@ -70,8 +70,8 @@ snippets:
       && make link
       && make package-go
       && make package-rust
-      && make vim-build
       && pyenv update
+      && make vim-build
       && make pyenv-list
       && make tfenv-list
       && cd -

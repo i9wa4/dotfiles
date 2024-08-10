@@ -4,12 +4,10 @@ on_event = ['VimEnter']
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
-if = "!has('nvim')"
 on_event = ['VimEnter']
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
-if = "!has('nvim')"
 on_source = ['vim-lsp']
 hook_source = '''
 let g:lsp_auto_enable = 1
@@ -51,11 +49,3 @@ augroup END
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
 on_source = ['ddc.vim']
-
-[[plugins]]
-repo = 'matsui54/denops-popup-preview.vim'
-if = 0
-on_source = ['ddc.vim']
-hook_source = '''
-call popup_preview#enable()
-'''
