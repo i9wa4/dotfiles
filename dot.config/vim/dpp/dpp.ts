@@ -69,6 +69,7 @@ export class Config extends BaseConfig {
     for (
       const tomlFile of [
         "$BASE_DIR/ddc.toml",
+        "$BASE_DIR/ddu.toml",
         "$BASE_DIR/lazy.toml",
         hasNvim ? "$BASE_DIR/nvim.toml" : "$BASE_DIR/vim.toml",
       ]
