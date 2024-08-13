@@ -305,7 +305,6 @@ vim-build:  ## build Vim
 	  --disable-gui \
 	  --enable-multibyte \
 	  --enable-fail-if-missing \
-	  --enable-luainterp \
 	  --enable-python3interp \
 	  --prefix="$${HOME}" \
 	  --with-features=huge \
