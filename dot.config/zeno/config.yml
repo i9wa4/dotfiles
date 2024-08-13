@@ -1,22 +1,13 @@
 snippets:
-  - name: ll
-    keyword: ll
-    snippet: ls -Flv --all
   - name: ls for macOS & Linux
-    keyword: llt
+    keyword: ll
     snippet:
-      UNAME="$(uname -a)"
-      && if [ "$(echo "${UNAME}" | grep Darwin)" ]; then
-        ls -Flv --all -D "%Y-%m-%d %H:%M:%S";
+      UNAME="$(uname -a)";
+      if [ "$(echo "${UNAME}" | grep Darwin)" ]; then
+        ls -aFlv -h --color=always -D "%Y-%m-%d %H:%M:%S";
       else
-        ls -Flv --all --color=always --group-directories-first --human-readable --time-style=long-iso;
+        ls -aFlv -h --color=always --time-style=long-iso;
       fi
-  - name: ls for Linux
-    keyword: lll
-    snippet: ls -Flv --all --color=always --group-directories-first --human-readable --time-style=long-iso
-  - name: ls for macOS
-    keyword: llm
-    snippet: ls -Flv --all -D "%Y-%m-%d %H:%M:%S"
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
