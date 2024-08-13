@@ -43,7 +43,7 @@ snippets:
   #       quarto render "${filepath}";
   #     done
   - name: update for macOS & Ubuntu
-    keyword: upd
+    keyword: up
     snippet:
       _UNAME="$(uname -a)";
       if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
