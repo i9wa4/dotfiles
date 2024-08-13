@@ -94,18 +94,18 @@ zinit light zsh-users/zsh-completions
 
 # https://obel.hatenablog.jp/entry/20200214/1581620400
 # https://qiita.com/reoring/items/47689c23d2e31035720b
-UNAME="$(uname -a)"
-if [ "$(echo $UNAME | grep Darwin)" ]; then
+_UNAME="$(uname -a)"
+if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
   echo 'Hello, macOS!'
-elif [ "$(echo $UNAME | grep Ubuntu)" ]; then
+elif [ "$(echo "${_UNAME} | grep Ubuntu)" ]; then
   echo 'Hello, Ubuntu'
   alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo $UNAME | grep WSL2)" ]; then
+elif [ "$(echo "${_UNAME}" | grep WSL2)" ]; then
   echo 'Hello, WSL2!'
   alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo $UNAME | grep arm)" ]; then
+elif [ "$(echo "${_UNAME} | grep arm)" ]; then
   echo 'Hello, Raspberry Pi!'
-elif [ "$(echo $UNAME | grep el7)" ]; then
+elif [ "$(echo "${_UNAME} | grep el7)" ]; then
   echo 'Hello, CentOS!'
 else
   echo 'Which OS are you using?'
