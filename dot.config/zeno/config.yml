@@ -1,9 +1,9 @@
 snippets:
-  - name: ls for macOS & Linux
+  - name: ls for macOS & Ubuntu
     keyword: ll
     snippet:
-      UNAME="$(uname -a)";
-      if [ "$(echo "${UNAME}" | grep Darwin)" ]; then
+      _UNAME="$(uname -a)";
+      if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
         ls -aFlv -h --color=always -D "%Y-%m-%d %H:%M:%S";
       else
         ls -aFlv -h --color=always --time-style=long-iso;
@@ -42,11 +42,17 @@ snippets:
   #     do
   #       quarto render "${filepath}";
   #     done
-  - name: (Mac) update
-    keyword: mu
+  - name: update for macOS & Ubuntu
+    keyword: upd
     snippet:
-      brew update
-      && brew upgrade
+      _UNAME="$(uname -a)";
+      if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
+        brew update
+        && brew upgrade;
+      else
+        sudo apt update
+        && sudo apt upgrade -y;
+      fi
       && zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
       && make unlink
@@ -54,23 +60,6 @@ snippets:
       && make link
       && make package-go
       && make package-rust
-      && make vim-build
-      && make pyenv-list
-      && make tfenv-list
-      && cd -
-  - name: (Ubuntu) update
-    keyword: uu
-    snippet:
-      sudo apt update
-      && sudo apt upgrade -y
-      && zinit self-update
-      && cd ~/src/github.com/i9wa4/dotfiles
-      && make unlink
-      && ghq list | ghq get --update --parallel
-      && make link
-      && make package-go
-      && make package-rust
-      && pyenv update
       && make vim-build
       && make pyenv-list
       && make tfenv-list
