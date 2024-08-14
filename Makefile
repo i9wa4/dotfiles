@@ -313,7 +313,9 @@ ghq-backup-company:
 	ghq list > ~/str/etc/ghq-list-company.txt
 
 git-config:
+	git config --global gpg.format ssh
 	git config --global color.ui auto
+	git config --global commit.gpgsign true
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
 	git config --global core.editor vim
@@ -337,6 +339,7 @@ git-config:
 	git config --global mergetool.prompt false
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
+	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
 	# make clean
