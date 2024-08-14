@@ -44,7 +44,8 @@ snippets:
   - name: update
     keyword: up
     snippet:
-      cd ~/src/github.com/i9wa4/dotfiles
+      zinit self-update
+      && cd ~/src/github.com/i9wa4/dotfiles
       && make package-update
       && make unlink
       && ghq list | ghq get --update --parallel

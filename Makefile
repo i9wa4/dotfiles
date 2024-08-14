@@ -139,7 +139,6 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
-	zinit self-update
 	make package-go
 	make package-rust
 
