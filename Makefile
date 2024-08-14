@@ -11,7 +11,8 @@ SHELL := /usr/bin/env bash
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
 	ghq-get-readonly \
-	vim-build nvim-build pyenv-install pyenv-vmu
+	vim-build nvim-build pyenv-install pyenv-vmu \
+	volta-init
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
@@ -141,6 +142,7 @@ package-update:
 	# OS common update
 	make package-go
 	make package-rust
+	make volta-update
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -484,6 +486,9 @@ volta-init:
 	curl https://get.volta.sh | bash
 	"$${HOME}"/.volta/bin/volta install node
 	echo "Restart Shell"
+
+volta-update:
+	curl https://get.volta.sh | bash
 
 help:  ## print this help
 	@echo 'Usage: make [target]'
