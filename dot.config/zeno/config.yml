@@ -1,5 +1,9 @@
 snippets:
-  - name: ls for macOS & Ubuntu
+  - name: ll
+    keyword: ll
+    snippet:
+      ls -aFlv
+  - name: ls for macOS
     keyword: llm
     snippet:
       ls -aFlv -h --color=always -D "%Y-%m-%d %H:%M:%S"
@@ -44,9 +48,9 @@ snippets:
   - name: update
     keyword: up
     snippet:
-      zinit self-update
       && cd ~/src/github.com/i9wa4/dotfiles
       && make package-update
+      && zinit self-update
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
