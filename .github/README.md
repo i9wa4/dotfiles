@@ -11,6 +11,7 @@
 1. Establish an SSH connection to GitHub.
     - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
     - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
+        - <https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/>
 1. Clone this repository.
 
     ```sh
