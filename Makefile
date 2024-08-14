@@ -26,7 +26,7 @@ wsl: ubuntu-minimal copy-win  ## init for WSL2 Ubuntu
 	sudo apt install -y wslu
 	echo "Restart WSL2"
 
-mac: package-mac package-homebrew common  ## init for Mac
+mac: package-mac common  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	killall Finder > /dev/null 2>&1
 	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
@@ -119,6 +119,30 @@ unlink:  ## unlink symbolic links
 	# cp -rf "${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/vim/snippet/ \
 	#   ~/Library/"Application Support"/Code/User/snippets/
 
+package-update:
+	# OS-specific update
+	_UNAME="$$(uname -a)"; \
+	if [ "$$(echo "$${_UNAME}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  make package-mac-update; \
+	elif [ "$$(echo "$${_UNAME}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	  make package-ubuntu-update; \
+	elif [ "$$(echo "$${_UNAME}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	  make package-ubuntu-update; \
+	elif [ "$$(echo "$${_UNAME}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_UNAME}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
+	# OS common update
+	zinit self-update
+	make package-go
+	make package-rust
+
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
 	sudo apt update
@@ -168,7 +192,7 @@ package-ubuntu:
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip awscliv2.zip \
-	&& sudo ./aws/install --update \
+	&& sudo ./aws/install \
 	&& rm awscliv2.zip \
 	&& cd -
 	# gcloud CLI
@@ -177,6 +201,22 @@ package-ubuntu:
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 	sudo apt-get update && sudo apt-get install -y google-cloud-cli
+
+package-ubuntu-update:
+	sudo apt update
+	sudo apt upgrade -y
+	# Deno
+	deno upgrade
+	# Rust
+	rustup update
+	# AWS CLI
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd "${HOME}" \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip -u awscliv2.zip \
+	&& sudo ./aws/install --update \
+	&& rm awscliv2.zip \
+	&& cd -
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -200,7 +240,14 @@ package-ubuntu-server:
 	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
 
-package-homebrew:
+package-mac:
+	# https://brew.sh/
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	# https://namileriblog.com/mac/rust_alacritty/
+	brew install --cask alacritty
+	# Rectangle
+	brew install --cask rectangle
+	# CLI
 	brew -v
 	brew update
 	brew upgrade
@@ -235,13 +282,9 @@ package-homebrew:
 	# gcloud CLI
 	brew install --cask google-cloud-sdk
 
-package-mac:
-	# https://brew.sh/
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# https://namileriblog.com/mac/rust_alacritty/
-	brew install --cask alacritty
-	# Rectangle
-	brew install --cask rectangle
+package-mac-update:
+	brew update
+	brew upgrade
 
 package-go:
 	go install github.com/rhysd/vim-startuptime@latest
