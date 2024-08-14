@@ -25,6 +25,8 @@ ubuntu-desktop: ubuntu package-ubuntu-desktop  ## init for Ubuntu Desktop
 
 wsl: ubuntu-minimal copy-win  ## init for WSL2 Ubuntu
 	sudo apt install -y wslu
+	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
+	eval `ssh-agent`
 	echo "Restart WSL2"
 
 mac: package-mac common  ## init for Mac
