@@ -288,13 +288,10 @@ package-mac-update:
 	brew upgrade
 
 package-go:
-	go install github.com/rhysd/vim-startuptime@latest
-	# vim-startuptime -vimpath nvim -count 100
-	# vim-startuptime -vimpath vim -count 100
-	go install github.com/mattn/efm-langserver@latest
-	# https://github.com/Songmu/ghq-handbook
-	go install github.com/x-motemen/ghq@latest
 	go install github.com/evilmartians/lefthook@latest
+	go install github.com/mattn/efm-langserver@latest
+	go install github.com/rhysd/vim-startuptime@latest
+	go install github.com/x-motemen/ghq@latest
 
 package-rust:
 	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
