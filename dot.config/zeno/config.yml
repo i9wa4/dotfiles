@@ -41,24 +41,14 @@ snippets:
   #     do
   #       quarto render "${filepath}";
   #     done
-  - name: update for macOS & Ubuntu
+  - name: update
     keyword: up
     snippet:
-      _UNAME="$(uname -a)";
-      if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
-        brew update
-        && brew upgrade;
-      else
-        sudo apt update
-        && sudo apt upgrade -y;
-      fi
-      && zinit self-update
-      && cd ~/src/github.com/i9wa4/dotfiles
+      cd ~/src/github.com/i9wa4/dotfiles
+      && make package-update
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
-      && make package-go
-      && make package-rust
       && make vim-build
       && make pyenv-list
       && make tfenv-list
