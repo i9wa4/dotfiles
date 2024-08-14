@@ -7,6 +7,7 @@ github.com/i9wa4/private-notes
 github.com/i9wa4/resume
 github.com/i9wa4/slides
 github.com/i9wa4/terraform-aws-mwaa
+github.com/i9wa4/vim-markdown-number-header
 github.com/neovim/neovim
 github.com/skk-dev/dict
 github.com/tfutils/tfenv
