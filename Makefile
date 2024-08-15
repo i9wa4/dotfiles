@@ -210,7 +210,7 @@ package-ubuntu-update:
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 	cd "${HOME}" \
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip -u awscliv2.zip \
+	&& unzip -f awscliv2.zip \
 	&& sudo ./aws/install --update \
 	&& rm awscliv2.zip \
 	&& cd -
