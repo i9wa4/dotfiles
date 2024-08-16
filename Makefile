@@ -186,7 +186,7 @@ package-ubuntu:
 	curl https://sh.rustup.rs -sSf | sh
 	# AWS CLI
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd "${HOME}" \
+	cd \
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip awscliv2.zip \
 	&& sudo ./aws/install \
@@ -208,7 +208,7 @@ package-ubuntu-update:
 	rustup update
 	# AWS CLI
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd "${HOME}" \
+	cd \
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip -f awscliv2.zip \
 	&& sudo ./aws/install --update \
