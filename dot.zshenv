@@ -1,25 +1,29 @@
 if [[ "$0" == *"zsh"* ]]; then
   typeset -U path PATH
   # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
-  setopt no_global_rcs;
+  setopt no_global_rcs
+  # missing paths for macOS:
+  # /System/Cryptexes/App/usr/bin
+  # /usr/local/bin
+  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
+  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
+  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
 fi
-# missing paths for macOS:
-# /System/Cryptexes/App/usr/bin
-# /usr/local/bin
-# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
-# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
-# /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
+
+# /etc/zsh/zshenv (Ubuntu-24.04)
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/games":"${PATH}"
+
+# Package Manager
+#   Homebrew
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+export PATH=/opt/homebrew/bin:"${PATH}"
 
 # Common
 export LC_ALL=C.UTF-8
 export EDITOR=vim
 export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${PATH}":/usr/local/bin
-
-# Homebrew
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-export PATH=/opt/homebrew/bin:"${PATH}"
+export PATH="${HOME}"/bin:"${PATH}"
 
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
@@ -49,14 +53,11 @@ export NVIM_APPNAME1=nvim
 export NVIM_APPNAME2=nvim-minimal
 export NVIM_APPNAME="${NVIM_APPNAME1}"
 
-# Rust
-if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
-
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
 export PY_VER_MINOR=3.12
 export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 
-# Common $PATH
-export PATH="${HOME}"/bin:"${PATH}"
+# Rust
+if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
