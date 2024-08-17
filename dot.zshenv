@@ -35,7 +35,7 @@ export TF_VER_MINOR=1.9
 
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
-export PATH="${VOLTA_HOME}"/.volta/bin:"${PATH}"
+export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
 # AWS
 export AWS_DEFAULT_PROFILE=
