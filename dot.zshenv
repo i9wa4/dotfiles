@@ -1,3 +1,5 @@
+# loaded /etc/zsh/zshenv
+
 if [[ "$0" == *"zsh"* ]]; then
   typeset -U path PATH
   # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
@@ -9,9 +11,6 @@ if [[ "$0" == *"zsh"* ]]; then
   # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
   # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
 fi
-
-# /etc/zsh/zshenv (Ubuntu-24.04)
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/games":"${PATH}"
 
 # Package Manager
 #   Homebrew
