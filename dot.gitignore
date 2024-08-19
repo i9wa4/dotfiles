@@ -9,8 +9,8 @@ local.vim
 
 # Terraform
 .terraform.lock.hcl
-terraform.tfstate
 terraform.exe
+terraform.tfstate
 
 # Terragrunt
 .terragrunt-cache/
