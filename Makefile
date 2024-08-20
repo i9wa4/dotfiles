@@ -356,7 +356,7 @@ vim-build:  ## build Vim
 nvim-build:  ## build Neovim
 	# make distclean
 	cd ~/src/github.com/neovim/neovim \
-	&& git checkout master \
+	&& git checkout refs/tags/stable \
 	&& make \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
