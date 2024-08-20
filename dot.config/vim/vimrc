@@ -136,10 +136,10 @@ cnoreabbrev w\ w
 " --------------------------------------
 " Keymap
 "
-nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
-nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
-xnoremap <expr> j (v:count == 0 && mode() ==# 'v') ? 'gj' : 'j'
-xnoremap <expr> k (v:count == 0 && mode() ==# 'v') ? 'gk' : 'k'
+nnoremap <expr> j (v:count == 0) ? 'gj' : 'j'
+nnoremap <expr> k (v:count == 0) ? 'gk' : 'k'
+xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
+xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
 
 " Insert Mode
 " i_CTRL-T Insert one indent
@@ -254,9 +254,7 @@ function! s:set_register() abort
 
     let l:dir_status = '['
     let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
-    if exists('*my_util#get_last_loaded_local_vimrc_path')
-      let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':h:t')
-    endif
+    let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':h:t')
     let l:dir_status ..= ']'
     call setreg('z', l:dir_status)
   endif
