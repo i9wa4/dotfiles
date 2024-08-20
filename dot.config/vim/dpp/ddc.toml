@@ -113,10 +113,10 @@ on_source = ['ddc.vim']
 repo = 'Shougo/pum.vim'
 on_source = ['ddc.vim']
 hook_source = '''
-inoremap <C-n>  <Cmd>call pum#map#insert_relative(+1)<CR>
-inoremap <C-p>  <Cmd>call pum#map#insert_relative(-1)<CR>
-inoremap <C-y>  <Cmd>call pum#map#confirm()<CR>
-inoremap <C-e>  <Cmd>call pum#map#cancel()<CR>
+inoremap <expr> <C-n> pum#visible() ? pum#map#select_relative(+1) : '<Cmd>normal! gj<CR>'
+inoremap <expr> <C-p> pum#visible() ? pum#map#select_relative(-1) : '<Cmd>normal! gk<CR>'
+inoremap <expr> <C-y> pum#visible() ? pum#map#confirm() : '<C-y>'
+inoremap <expr> <C-e> pum#visible() ? pum#map#cancel() : '<C-e>'
 '''
 
 [[plugins]]
