@@ -231,6 +231,9 @@ function s:copy2clip_wsl(...) abort
   endif
 endfunction
 
+command! CreateLocalVim
+\ call system('echo "let g:mnh_header_level_shift = 7" > ./local.vim')
+
 command! GitDiff
 \ tabnew
 \ | setlocal buftype=nofile bufhidden=delete noswapfile
