@@ -93,6 +93,12 @@
 
 - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
 
-### 3.2. AWS CLI
+### 3.2. gh
+
+1. Choose SSH for Git operation protocol.
+1. Skip uploading SSH public key.
+1. Login with a web browser: <https://github.com/login/device>.
+
+### 3.3. AWS CLI
 
 - <https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html>
