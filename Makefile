@@ -24,6 +24,7 @@ ubuntu-server: ubuntu package-ubuntu-server  ## init for Ubuntu Server
 ubuntu-desktop: ubuntu package-ubuntu-desktop  ## init for Ubuntu Desktop
 
 wsl: ubuntu-minimal copy-win  ## init for WSL2 Ubuntu
+	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt install -y wslu
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
