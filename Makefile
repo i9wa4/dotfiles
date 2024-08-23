@@ -67,7 +67,7 @@ copy-win:  ## copy config files for Windows
 	# Windows copy
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy_win.bat   $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy-win.bat   $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
