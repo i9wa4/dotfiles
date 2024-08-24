@@ -42,7 +42,7 @@
 
 1. Install WSL2 and Ubuntu.
     - <https://learn.microsoft.com/en-us/windows/wsl/install>
-    - <https://i9wa4.github.io/blog/posts/2024-03-25-setup-wsl2.html>
+    - <https://i9wa4.github.io/blog/2024-03-25-setup-wsl2.html>
 1. Launch Ubuntu with PowerShell.
 
     ```dosbat
