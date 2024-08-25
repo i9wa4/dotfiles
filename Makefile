@@ -90,11 +90,11 @@ init-zshrc:
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
+	mkdir -p "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/"$${NVIM_APPNAME1}"   "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/"$${NVIM_APPNAME2}"   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/efm-langserver        "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/tmux                  "$${XDG_CONFIG_HOME}" \
@@ -107,10 +107,10 @@ unlink:  ## unlink symbolic links
 	# dotfiles
 	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
 	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
+	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" ]; then unlink "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}"; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}" ]; then unlink "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME2}"; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];           then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];      then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
