@@ -49,7 +49,6 @@ export PATH="${HOME}"/go/bin:"${PATH}"
 
 # Neovim
 export NVIM_APPNAME1=nvim
-export NVIM_APPNAME2=nvim-minimal
 export NVIM_APPNAME="${NVIM_APPNAME1}"
 
 # Python

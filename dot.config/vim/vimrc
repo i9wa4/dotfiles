@@ -51,19 +51,15 @@ elseif has('unix') && !has('win32unix')
   set clipboard&
   set clipboard^=unnamedplus
 endif
-set autoread
 " set belloff=all
-set noswapfile
-set noundofile
+set autoread
+set backupdir=~/.cache/vim
+set directory=~/.cache/vim
+set undodir=~/.cache/vim
 
 " Edit
 " set binary noeol
 " set isfname-=|
-" if has('patch-8.2.0860')
-set nrformats=unsigned
-" else
-"  set nrformats=
-" endif
 set backspace=indent,eol,start
 set completeopt=menuone,noinsert,noselect
 set fileencodings=utf-8,euc-jp,cp932
@@ -71,6 +67,7 @@ set fileformat=unix
 set fileformats=unix,dos,mac
 set hidden
 set nofoldenable autoindent expandtab
+set nrformats=unsigned
 set shiftwidth=4 softtabstop=4 tabstop=4
 set virtualedit=block
 
@@ -98,11 +95,7 @@ set noequalalways
 set pumheight=10
 set splitbelow
 set splitright
-" if has('patch-8.2.4325')
 set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
-" else
-"   set wildmenu wildoptions=tagfile wildchar=<Tab>
-" endif
 
 " CommandLine
 set cmdheight=1
@@ -314,16 +307,12 @@ endif
 " --------------------------------------
 " End of setting
 "
-if !has('nvim')
-  set background=dark
-  filetype plugin indent on
-  syntax enable
+set background=dark
+filetype plugin indent on
+syntax enable
 
-  if has('termguicolors')
-    set termguicolors
-  endif
-
-  " if has('patch-9.0.1778')
-  execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-  " endif
+if has('termguicolors')
+  set termguicolors
 endif
+
+execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
