@@ -122,6 +122,7 @@ inoremap <C-e> <Cmd>call pum#map#cancel()<CR>
 [[plugins]]
 repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
+# [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
 hook_source = '''
 let s:base_path = '~/src/github.com/skk-dev/dict/'->expand()
 call skkeleton#config({
