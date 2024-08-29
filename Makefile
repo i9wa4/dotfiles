@@ -97,6 +97,7 @@ link:  ## make symbolic links
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/"$${NVIM_APPNAME1}"   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/efm-langserver        "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/tmux                  "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/vim                   "$${XDG_CONFIG_HOME}" \
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno                  "$${XDG_CONFIG_HOME}"
@@ -113,6 +114,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}" ]; then unlink "$${XDG_CONFIG_HOME}"/"$${NVIM_APPNAME1}"; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];           then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];      then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];                 then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];                 then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
