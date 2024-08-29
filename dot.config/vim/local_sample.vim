@@ -1,8 +1,8 @@
 " Global Variables
 let g:mnh_header_level_shift = 1
-let g:my_dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/dot.skkeleton'
+let g:my_dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict'
 let g:my_gtd_path = '~/work/gtd.md'->expand()
-let g:my_skk_path = '~/work/skk.md'->expand()
+let g:my_temp_path = '~/work/temp.md'->expand()
 
 call my_filetype#set_tabstop2_lang_list([
 \   'bash',

@@ -125,14 +125,15 @@ on_source = ['ddc.vim']
 # [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
 hook_source = '''
 let s:base_path = '~/src/github.com/skk-dev/dict/'->expand()
-let s:config_path = $XDG_CONFIG_HOME->expand() .. '/skk/'
+" let s:base_path = '~/src/github.com/skk-dict/jisyo/yaml'->expand()
+let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict'
 call skkeleton#config({
 \   'globalDictionaries': [
 \     s:base_path .. 'SKK-JISYO.L',
 \     s:base_path .. 'SKK-JISYO.jinmei',
 \   ],
 \   'immediatelyDictionaryRW': v:false,
-\   'userDictionary': s:config_path .. 'dot.skkeleton',
+\   'userDictionary': s:dict_path,
 \ })
 call skkeleton#register_keymap('input', ';', 'henkanPoint')
 imap <C-j> <Plug>(skkeleton-enable)
