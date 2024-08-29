@@ -1,5 +1,6 @@
 " Global Variables
 let g:mnh_header_level_shift = 1
+let g:my_dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/dot.skkeleton'
 let g:my_gtd_path = '~/work/gtd.md'->expand()
 let g:my_skk_path = '~/work/skk.md'->expand()
 
