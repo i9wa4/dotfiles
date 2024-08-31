@@ -1,6 +1,32 @@
 scriptencoding utf-8
 
 function! my_highlight#highlight() abort
+  call clearmatches()
+
+  highlight MyHlEC guifg=#000000 guibg=#DAFFF9
+  highlight MyHlIN guifg=#000000 guibg=#E6325F
+  highlight MyHlIR guifg=#000000 guibg=#FF8C3C
+  highlight MyHlKM guifg=#000000 guibg=#EB4682
+  highlight MyHlMS guifg=#000000 guibg=#FFB6C1
+  highlight MyHlSR guifg=#000000 guibg=#2887FF
+
+  call matchadd('MyHlEC', 'MyHlEC')
+  call matchadd('MyHlIN', 'MyHlIN')
+  call matchadd('MyHlIR', 'MyHlIR')
+  call matchadd('MyHlKM', 'MyHlKM')
+  call matchadd('MyHlMS', 'MyHlMS')
+  call matchadd('MyHlSR', 'MyHlSR')
+
+  call matchadd('MyHlEC', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
+  call matchadd('MyHlEC', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('MyHlEC', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('MyHlIN', '　\|\s\+$')
+  call matchadd('MyHlIR', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:')
+  call matchadd('MyHlMS', '\[ \]\|# %%')
+  call matchadd('MyHlSR', strftime('%Y%m%d',    localtime() + 1 * 24 * 60 * 60))
+  call matchadd('MyHlSR', strftime('%Y-%m-%d',  localtime() + 1 * 24 * 60 * 60))
+  call matchadd('MyHlSR', strftime('%Y/%m/%d',  localtime() + 1 * 24 * 60 * 60))
+
   " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal
   highlight link markdownItalic Normal
@@ -28,32 +54,4 @@ function! my_highlight#highlight() abort
   highlight Normal guibg=NONE
   highlight Special guibg=NONE
   highlight VertSplit guibg=NONE
-
-  call clearmatches()
-
-  highlight clear MyIR
-  highlight MyIR guifg=#000000 guibg=#FF8C3C
-  call matchadd('MyIR', 'MyIR')
-  call matchadd('MyIR', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:')
-
-  highlight clear MyMS
-  highlight MyMS guifg=#000000 guibg=#FFB6C1
-  call matchadd('MyMS', 'MyMS')
-  call matchadd('MyMS', '\[ \]\|# %%')
-  call matchadd('MyMS', strftime('%Y-%m-%d'))
-  call matchadd('MyMS', strftime('%Y/%m/%d'))
-  call matchadd('MyMS', strftime('%Y%m%d'))
-
-  highlight clear MyEC
-  highlight MyEC guifg=#000000 guibg=#DAFFF9
-  call matchadd('MyEC', 'MyEC')
-  call matchadd('MyEC', strftime('%Y-%m-%d', localtime() + 24 * 60 * 60))
-  call matchadd('MyEC', strftime('%Y/%m/%d', localtime() + 24 * 60 * 60))
-  call matchadd('MyEC', strftime('%Y%m%d', localtime() + 24 * 60 * 60))
-
-  " 　		 
-  highlight clear MyIN
-  highlight MyIN guifg=#FFFFFF guibg=#E6325F
-  call matchadd('MyIN', 'MyIN')
-  call matchadd('MyIN', '　\|\s\+$')
 endfunction
