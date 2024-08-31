@@ -115,9 +115,6 @@ set colorcolumn=80
 set cursorline
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic
 set showmatch matchtime=1 matchpairs+=\<:\>
-" space:\\u2423,extends:\\u00BB,precedes:\\u00AB
-" set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
-set list listchars=tab:>-,trail:~,nbsp:%,extends:»,precedes:«
 
 " Abbreviation
 " :w' --> :w
@@ -188,6 +185,9 @@ nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
 nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
+" space:\\u2423,extends:\\u00BB,precedes:\\u00AB
+set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
+nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:« list?<CR>
 nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
 nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
 nnoremap <Plug>(my-Switch)r <Cmd>setlocal relativenumber! relativenumber?<CR>
