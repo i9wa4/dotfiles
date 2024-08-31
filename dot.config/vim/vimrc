@@ -18,7 +18,7 @@ let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
 let g:netrw_hide = 0
-let g:netrw_home = $XDG_CONFIG_HOME->expand() .. '/vim'
+let g:netrw_home = $HOME->expand() .. '/.cache/vim'
 let g:netrw_liststyle = 0
 let g:vim_indent_cont = 0
 
