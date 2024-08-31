@@ -44,7 +44,6 @@ if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
   call my_util#add_path([$PY_VENV_MYENV->expand() .. '/bin'])
 endif
 
-" " Denops Plugin Development
-" let g:denops#debug = 1
-" let g:denops_disable_version_check = 1
+" Denops Plugin Development
+let g:denops#debug = 1
 " set runtimepath^=~/src/github.com/i9wa4/vim-markdown-number-header
