@@ -5,14 +5,19 @@ function! my_highlight#highlight() abort
   highlight link markdownError Normal
   highlight link markdownItalic Normal
 
-  " override colorscheme setting
+  " error
   highlight clear Error
   highlight clear ErrorMsg
   highlight clear SpellBad
   highlight SpellBad cterm=underline gui=underline
 
   " cursorline
+  highlight clear CursorLine
   highlight CursorLine guibg=#404040
+
+  " [		  ]
+  highlight clear SpecialKey
+  highlight SpecialKey guifg=#606060
 
   " transparent background
   highlight EndOfBuffer guibg=NONE
