@@ -1,5 +1,3 @@
-scriptencoding utf-8
-
 function! my_highlight#highlight() abort
   call clearmatches()
 
