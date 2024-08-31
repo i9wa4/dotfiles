@@ -6,11 +6,11 @@ snippets:
   - name: ls for macOS
     keyword: llm
     snippet:
-      ls -aFlv -h --color=always -D "%Y-%m-%d %H:%M:%S"
+      ls -aFlv --color=always -D "%Y-%m-%d %H:%M:%S" -h
   - name: ls for Ubuntu
     keyword: llu
     snippet:
-      ls -aFlv -h --color=always --time-style=long-iso
+      ls -aFlv --color=always --time-style=long-iso -h
   - name: (ghq) update
     keyword: gu
     snippet: ghq list | ghq get --update --parallel
