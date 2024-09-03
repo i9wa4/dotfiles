@@ -29,6 +29,7 @@ on_event = ['VimEnter']
 
 [[plugins]]
 repo = 'preservim/vim-markdown'
+if = 0
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
 '''
