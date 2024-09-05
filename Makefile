@@ -154,7 +154,6 @@ package-ubuntu:
 	  gh \
 	  jq \
 	  nkf \
-	  r-base \
 	  ripgrep \
 	  shellcheck \
 	  ssh \
@@ -259,7 +258,6 @@ package-mac:
 	  hadolint \
 	  jq \
 	  nvim \
-	  r \
 	  ripgrep \
 	  shellcheck \
 	  tmux \
