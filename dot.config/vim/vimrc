@@ -255,13 +255,7 @@ function! s:set_register() abort
 endfunction
 
 function! s:my_asyncjob_on_save() abort
-  if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
-    " Jupyter Notebook
-    let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
-    if filereadable(l:ipynb_path) && executable('jupytext')
-      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
-    endif
-  elseif index([
+  if index([
   \ 'markdown',
   \ 'quarto',
   \ 'rmd',
@@ -269,19 +263,11 @@ function! s:my_asyncjob_on_save() abort
     if exists(':NumberHeader') == 2
       execute 'NumberHeader'
     endif
-  elseif &filetype == 'mermaid'
-    let l:filename = '%:p:r'->expand()
-    if executable('mmdc')
-      call my_async#jobstart('mmdc -i ' .. l:filename .. '.mmd -o ' .. l:filename .. '.svg')
-    endif
-  elseif index([
-  \ 'json',
-  \ 'terraform',
-  \ 'terraform-vars',
-  \ 'tf',
-  \ ], &filetype) >= 0
-    if executable('terraform')
-      execute 'LspDocumentFormat'
+  elseif (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
+    " Jupyter Notebook
+    let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
+    if filereadable(l:ipynb_path) && executable('jupytext')
+      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
     endif
   else
     " Do nothing.

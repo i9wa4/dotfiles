@@ -30,6 +30,20 @@ let g:lsp_settings = {
 \   },
 \ }
 
+function! s:my_format_on_save() abort
+  execute 'LspDocumentFormatSync'
+  " if index([
+  " \ 'json',
+  " \ 'terraform',
+  " \ 'terraform-vars',
+  " \ 'tf',
+  " \ ], &filetype) >= 0
+  "   execute 'LspDocumentFormatSync'
+  " else
+  "   " Do nothing.
+  " endif
+endfunction
+
 function! s:my_lsp_highlight() abort
   highlight clear MyLspHighlight
   highlight MyLspHighlight guifg=#808080 cterm=underline gui=underline
@@ -43,6 +57,7 @@ endfunction
 augroup MyLspSetting
   autocmd!
   autocmd User lsp_buffer_enabled call s:my_lsp_highlight()
+  autocmd BufWritePre * call s:my_format_on_save()
 augroup END
 '''
 
