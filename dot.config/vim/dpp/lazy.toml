@@ -24,6 +24,8 @@ repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['BufEnter']
 hook_source = '''
+let g:gin_proxy_apply_without_confirm = 1
+
 augroup my_gin_component
   autocmd!
   autocmd User GinComponentPost redrawstatus
