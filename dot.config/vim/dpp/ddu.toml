@@ -1,7 +1,7 @@
 [[plugins]]
 repo = 'Shougo/ddu.vim'
 depends = ['denops.vim']
-on_event = ['VimEnter']
+on_event = ['BufEnter']
 hook_source = '''
 " https://zenn.dev/vim_jp/articles/0005-search_help_with_ddu
 call ddu#custom#patch_global(#{
