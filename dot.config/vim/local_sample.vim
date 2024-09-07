@@ -37,21 +37,22 @@ function! MyStatuslineRightTabline() abort
   "   endif
   " endif
 
-  if exists('*gin#component#worktree#name')
-    let l:name = gin#component#worktree#name()
-    let l:branch = gin#component#branch#ascii()
-    let l:traffic = gin#component#traffic#ascii()
-    if !empty(l:name)
-      let l:ret ..= ' ' .. l:name
-    endif
-    if !empty(l:branch)
-      let l:ret ..= ' ' .. '(' .. l:branch .. ')'
-    endif
-    if !empty(l:traffic)
-      let l:ret ..= ' ' .. '[' .. l:traffic .. ']'
-    endif
+  let l:name = gin#component#worktree#name()
+  let l:branch = gin#component#branch#ascii()
+  let l:traffic = gin#component#traffic#ascii()
+
+  if !empty(l:name)
+    let l:ret ..= ' ' .. l:name
   endif
-  " let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+  if !empty(l:branch)
+    let l:ret ..= ' ' .. '(' .. l:branch .. ')'
+  endif
+  if !empty(l:traffic)
+    let l:ret ..= ' ' .. '[' .. l:traffic .. ']'
+  endif
+
+  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
+
   return l:ret
 endfunction
 

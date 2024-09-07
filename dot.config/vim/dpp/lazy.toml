@@ -9,7 +9,7 @@ on_event = ['VimEnter']
 [[plugins]]
 repo = 'monaqa/dps-dial.vim'
 depends = ['denops.vim']
-on_event = ['VimEnter']
+on_event = ['BufEnter']
 hook_source = '''
 nmap <C-a>  <Plug>(dps-dial-increment)
 nmap <C-x>  <Plug>(dps-dial-decrement)
@@ -28,7 +28,7 @@ augroup my_gin_component
   autocmd!
   autocmd User GinComponentPost redrawstatus
   " Or if you use tabline instead
-  "autocmd User GinComponentPost redrawtabline
+  autocmd User GinComponentPost redrawtabline
 augroup END
 '''
 
