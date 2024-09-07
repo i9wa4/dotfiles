@@ -150,6 +150,7 @@ package-ubuntu:
 	sudo apt install -y \
 	  bc \
 	  curl \
+	  fd-find \
 	  fzf \
 	  gh \
 	  jq \
@@ -252,6 +253,7 @@ package-mac:
 	brew update
 	brew upgrade
 	brew install \
+	  fd \
 	  fzf \
 	  gh \
 	  git \
