@@ -2,22 +2,18 @@
 repo = 'neovim/nvim-lspconfig'
 on_event = ['VimEnter']
 lua_source = '''
--- https://github.com/neovim/nvim-lspconfig#suggested-configuration
--- local opts = {noremap=true, silent=true}
--- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
--- vim.keymap.set('n', '<space>dc', vim.lsp.buf.declaration, opts)
--- vim.keymap.set('n', '<space>de', vim.diagnostic.open_float, opts)
--- vim.keymap.set('n', '<space>df', vim.lsp.buf.definition, opts)
--- vim.keymap.set('n', '<space>dq', vim.diagnostic.setloclist, opts)
--- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
--- vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-
+-- https://github.com/uga-rosa/ddc-source-lsp-setup
 require('ddc_source_lsp_setup').setup()
--- if autostart = false, execute :LspStart to attach.
+
+-- https://github.com/neovim/nvim-lspconfig/blob/master/test/minimal_init.lua
+-- Mappings.
+local opts = { buffer = bufnr, noremap = true, silent = true }
+vim.keymap.set('n', '<space>lf', vim.diagnostic.open_float, opts)
+
 local lspconfig = require('lspconfig')
-lspconfig.efm.setup{ }
+lspconfig.efm.setup{}
 lspconfig.pylsp.setup{}
-lspconfig.denols.setup{}
+-- lspconfig.denols.setup{}
 
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   callback = function()
@@ -25,22 +21,22 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   end,
 })
 '''
-hook_source = '''
-function! s:my_lsp_highlight() abort
-  highlight clear MyLspHighlight
-  highlight MyLspHighlight guifg=#808080 cterm=underline gui=underline
-
-  highlight link DiagnosticVirtualTextError MyLspHighlight
-  highlight link DiagnosticVirtualTextWarn MyLspHighlight
-  highlight link DiagnosticVirtualTextInfo MyLspHighlight
-  highlight link DiagnosticVirtualTextHint MyLspHighlight
-endfunction
-
-augroup MyLspAutocmd
-  autocmd!
-  autocmd LspAttach * call s:my_lsp_highlight()
-augroup END
-'''
+# hook_source = '''
+# function! s:my_lsp_highlight() abort
+#   highlight clear MyLspHighlight
+#   highlight MyLspHighlight guifg=#808080 cterm=underline gui=underline
+#
+#   highlight link DiagnosticVirtualTextError MyLspHighlight
+#   highlight link DiagnosticVirtualTextWarn MyLspHighlight
+#   highlight link DiagnosticVirtualTextInfo MyLspHighlight
+#   highlight link DiagnosticVirtualTextHint MyLspHighlight
+# endfunction
+#
+# augroup MyLspAutocmd
+#   autocmd!
+#   autocmd LspAttach * call s:my_lsp_highlight()
+# augroup END
+# '''
 
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
@@ -56,4 +52,7 @@ on_source = ['ddc.vim']
 lua_source = '''
 local ddc_previewer_floating = require('ddc_previewer_floating')
 ddc_previewer_floating.enable()
+ddc_previewer_floating.setup({
+  ui = "pum",
+})
 '''
