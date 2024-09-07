@@ -32,6 +32,7 @@ function! s:my_gin_log() abort
   \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'"
   \ ]
   execute 'GinLog'
+  let g:gin_log_default_args = []
 endfunction
 
 function! s:my_gin_log_all() abort
@@ -41,10 +42,19 @@ function! s:my_gin_log_all() abort
   \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'"
   \ ]
   execute 'GinLog'
+  let g:gin_log_default_args = []
 endfunction
 
-nnoremap <Space>glo <Cmd>call <SID>my_gin_log()<CR>
-nnoremap <Space>gla <Cmd>call <SID>my_gin_log_all()<CR>
+nnoremap <Plug>(my-Gin) <Nop>
+nmap <Space>g <Plug>(my-Gin)
+nnoremap <Plug>(my-Gin)aa <Cmd>execute 'Gin add .'<CR>
+nnoremap <Plug>(my-Gin)au <Cmd>execute 'Gin add -u'<CR>
+nnoremap <Plug>(my-Gin)c  <Cmd>execute 'Gin commit'<CR>
+nnoremap <Plug>(my-Gin)d  <Cmd>execute 'GinDiff'<CR>
+nnoremap <Plug>(my-Gin)la <Cmd>call <SID>my_gin_log_all()<CR>
+nnoremap <Plug>(my-Gin)lo <Cmd>call <SID>my_gin_log()<CR>
+nnoremap <Plug>(my-Gin)p  <Cmd>execute 'Gin push'<CR>
+nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
 
 augroup my_gin_component
   autocmd!
