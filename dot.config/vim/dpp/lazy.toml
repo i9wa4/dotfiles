@@ -19,6 +19,10 @@ xmap g<C-a> g<Plug>(dps-dial-increment)
 xmap g<C-x> g<Plug>(dps-dial-decrement)
 '''
 
+[[plugins]]
+repo = 'lambdalisue/vim-gin'
+depends = ['denops.vim']
+on_cmd = ['GinStatus']
 
 # --------------------------------------
 # Markdown
