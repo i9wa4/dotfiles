@@ -1,3 +1,4 @@
+" ~/.config/vim/vimrc
 set runtimepath^=~/.config/vim
 set runtimepath+=~/.config/vim/after
 set packpath^=~/.config/vim
