@@ -22,7 +22,7 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 [[plugins]]
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
-on_cmd = ['GinStatus']
+on_event = ['BufEnter']
 
 # --------------------------------------
 # Markdown

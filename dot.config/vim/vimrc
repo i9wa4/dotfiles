@@ -275,13 +275,13 @@ function! s:my_asyncjob_on_save() abort
       call my_async#jobstart('mmdc -i ' .. l:filename .. '.mmd -o ' .. l:filename .. '.svg')
     endif
   elseif index([
+  \ 'json',
   \ 'terraform',
   \ 'terraform-vars',
   \ 'tf',
   \ ], &filetype) >= 0
     if executable('terraform')
-      call my_async#jobstart('terraform fmt ' .. '%:p'->expand())
-      " execute 'LspDocumentFormatSync'
+      execute 'LspDocumentFormat'
     endif
   else
     " Do nothing.
@@ -292,7 +292,7 @@ endfunction
 augroup MyVimrc
   autocmd!
   autocmd BufEnter * call s:set_register()
-  autocmd BufWritePost * call s:my_asyncjob_on_save()
+  autocmd BufWritePre * call s:my_asyncjob_on_save()
 augroup END
 
 
