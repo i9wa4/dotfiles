@@ -24,6 +24,7 @@ call my_filetype#set_tabstop2_lang_list([
 
 function! MyStatuslineRightTabline() abort
   let l:ret = ''
+
   " if exists('*my_util#get_last_loaded_local_vimrc_path')
   "   let l:ret ..= 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':p:~:h:t')
   " endif
@@ -37,8 +38,7 @@ function! MyStatuslineRightTabline() abort
   "   endif
   " endif
 
-
-  if exists('*gin#component#worktree#name')
+  if match(&runtimepath, 'vim-gin')
     let l:name = gin#component#worktree#name()
     let l:branch = gin#component#branch#ascii()
     let l:traffic = gin#component#traffic#ascii()
