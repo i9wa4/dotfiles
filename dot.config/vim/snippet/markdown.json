@@ -1,85 +1,85 @@
 {
-    "codeblock": {
-        "prefix": "codeblock",
-        "body": [
-            "```$0",
-            "```"
-        ]
-    },
-    "table": {
-        "prefix": "table",
-        "body": [
-            "| $0 | |",
-            "| --- | --- |",
-            "| | |"
-        ]
-    },
-    "aligned": {
-        "prefix": "aligned",
-        "body": [
-            "\\begin{aligned}",
-            "\t$0",
-            "\\end{aligned}"
-        ]
-    },
-    "bold": {
-        "prefix": "bold",
-        "body": [
-            "**$0**"
-        ]
-    },
-    "fraction": {
-        "prefix": "frac",
-        "body": [
-            "\\dfrac{$0}{}"
-        ]
-    },
-    "bmatrix": {
-        "prefix": "bmatrix",
-        "body": [
-            "\\begin{bmatrix}",
-            "\t$0",
-            "\\end{bmatrix}"
-        ]
-    },
-    "pmatrix": {
-        "prefix": "pmatrix",
-        "body": [
-            "\\begin{pmatrix}",
-            "\t$0",
-            "\\end{pmatrix}"
-        ]
-    },
-    "vmatrix": {
-        "prefix": "vmatrix",
-        "body": [
-            "\\begin{vmatrix}",
-            "\t$0",
-            "\\end{vmatrix}"
-        ]
-    },
-    "braces": {
-        "prefix": "braces",
-        "body": [
-            "\\left{$0\\right}"
-        ]
-    },
-    "brackets": {
-        "prefix": "brackets",
-        "body": [
-            "\\left[$0\\right]"
-        ]
-    },
-    "parenthesis": {
-        "prefix": "parenthesis",
-        "body": [
-            "\\left($0\\right)"
-        ]
-    },
-    "vbars": {
-        "prefix": "vbars",
-        "body": [
-            "\\left|$0\\right|"
-        ]
-    }
+  "codeblock": {
+    "prefix": "codeblock",
+    "body": [
+      "```$0",
+      "```"
+    ]
+  },
+  "table": {
+    "prefix": "table",
+    "body": [
+      "| $0 | |",
+      "| --- | --- |",
+      "| | |"
+    ]
+  },
+  "aligned": {
+    "prefix": "aligned",
+    "body": [
+      "\\begin{aligned}",
+      "\t$0",
+      "\\end{aligned}"
+    ]
+  },
+  "bold": {
+    "prefix": "bold",
+    "body": [
+      "**$0**"
+    ]
+  },
+  "fraction": {
+    "prefix": "frac",
+    "body": [
+      "\\dfrac{$0}{}"
+    ]
+  },
+  "bmatrix": {
+    "prefix": "bmatrix",
+    "body": [
+      "\\begin{bmatrix}",
+      "\t$0",
+      "\\end{bmatrix}"
+    ]
+  },
+  "pmatrix": {
+    "prefix": "pmatrix",
+    "body": [
+      "\\begin{pmatrix}",
+      "\t$0",
+      "\\end{pmatrix}"
+    ]
+  },
+  "vmatrix": {
+    "prefix": "vmatrix",
+    "body": [
+      "\\begin{vmatrix}",
+      "\t$0",
+      "\\end{vmatrix}"
+    ]
+  },
+  "braces": {
+    "prefix": "braces",
+    "body": [
+      "\\left{$0\\right}"
+    ]
+  },
+  "brackets": {
+    "prefix": "brackets",
+    "body": [
+      "\\left[$0\\right]"
+    ]
+  },
+  "parenthesis": {
+    "prefix": "parenthesis",
+    "body": [
+      "\\left($0\\right)"
+    ]
+  },
+  "vbars": {
+    "prefix": "vbars",
+    "body": [
+      "\\left|$0\\right|"
+    ]
+  }
 }

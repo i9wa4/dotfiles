@@ -23,6 +23,14 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['BufEnter']
+hook_source = '''
+augroup my_gin_component
+  autocmd!
+  autocmd User GinComponentPost redrawstatus
+  " Or if you use tabline instead
+  "autocmd User GinComponentPost redrawtabline
+augroup END
+'''
 
 # --------------------------------------
 # Markdown
