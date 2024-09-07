@@ -15,9 +15,15 @@ lua_source = '''
 require('ddc_source_lsp_setup').setup()
 -- if autostart = false, execute :LspStart to attach.
 local lspconfig = require('lspconfig')
-lspconfig.efm.setup{}
+lspconfig.efm.setup{ }
 lspconfig.pylsp.setup{}
 lspconfig.denols.setup{}
+
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  callback = function()
+    vim.lsp.buf.format()
+  end,
+})
 '''
 hook_source = '''
 function! s:my_lsp_highlight() abort
