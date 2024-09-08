@@ -20,16 +20,20 @@ function! my_statusline#statusline() abort
   " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
   " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
   " let l:ret ..= '%t '
-  let l:ret ..= '%f '
-  let l:ret ..= (&readonly ? '[RO] ' : (&modified ? '[+] ' : ''))
+  " let l:ret ..= '%f '
+  " let l:ret ..= getcwd()->fnamemodify(':t') .. '/' .. '%'->expand()->fnamemodify(':p:.')
+  let l:ret ..= '%'->expand()->fnamemodify(':p:.')
+  let l:ret ..= '%m'
+  let l:ret ..= '%r'
+  " let l:ret ..= (&readonly ? '[RO]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
   let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
-  let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
-  let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
-  let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-  let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+  " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
+  " let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  " let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  " let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  " let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
   return l:ret
 endfunction
 
