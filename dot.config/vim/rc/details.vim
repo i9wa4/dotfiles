@@ -228,6 +228,7 @@ function! s:set_register() abort
     let l:dir_status = '['
     let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
     let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':h:t')
+    let l:dir_status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
     let l:dir_status ..= ']'
     call setreg('z', l:dir_status)
   endif
