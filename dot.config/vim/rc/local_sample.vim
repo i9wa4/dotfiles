@@ -54,8 +54,6 @@ function! MyStatuslineRightTabline() abort
     endif
   endif
 
-  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
-
   return l:ret
 endfunction
 

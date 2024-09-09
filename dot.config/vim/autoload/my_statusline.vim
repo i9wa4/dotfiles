@@ -23,8 +23,7 @@ function! my_statusline#statusline() abort
   " let l:ret ..= '%t '
   " let l:ret ..= '%f '
   let l:ret ..= '%'->expand()->fnamemodify(':p:.')
-  " let l:ret ..= '%m%r'
-  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
+  let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
   " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
@@ -73,18 +72,23 @@ function! my_statusline#tabline() abort
     let l:bufnrs = tabpagebuflist(l:i)
     let l:bufnr = l:bufnrs[tabpagewinnr(l:i) - 1]
     let l:no = l:i
-    " let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '          ', 0, 10)
-    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '                    ', 0, 20)
+    let l:title = fnamemodify(bufname(l:bufnr), ':t')
     if empty(l:title)
       let l:title = '[No Name]'
     endif
     let l:mod = getbufvar(l:bufnr, '&modified') ? '[+]' : ''
-  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
+    let l:mod ..= getbufvar(l:bufnr, '&readonly') ? '[-]' : ''
+
+    let l:content = l:i
+    let l:content ..= ' '
+    let l:content ..= l:title
+    let l:content ..= l:mod
+    let l:content = strcharpart(l:content .. '                    ', 0, 20)
 
     let l:ret ..= '%' .. l:i .. 'T'
     let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
     let l:ret ..= (((l:i > 1 ) && (l:i > tabpagenr())) ? '|' : '')
-    let l:ret ..= '' .. l:no .. ' ' .. l:title .. l:mod .. ''
+    let l:ret ..= l:content
     let l:ret ..= (((l:i < tabpagenr()) && (l:i < tabpagenr('$'))) ? '|' : '')
     let l:ret ..= '%#TabLineFill#'
   endfor
