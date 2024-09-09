@@ -1,5 +1,6 @@
 " set statusline=%{'-'->repeat(&columns)}
-set statusline=%{my_statusline#last_search_count()}%f
+"
+set statusline=%{my_statusline#last_search_count()}%<%{'%F'->expand()->fnamemodify(':p:~')}
 set tabline=%!my_statusline#tabline()
 
 augroup MyTerminal
