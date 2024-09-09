@@ -212,7 +212,10 @@ function! s:set_register() abort
     call setreg('a', '%'->expand()->fnamemodify(':p:~'))
     call setreg('b', '%'->expand()->fnamemodify(':p:~:h'))
     call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
-    call setreg('d', '%'->expand()->fnamemodify(':p:~:t:r'))
+
+    let l:buf_status = ''
+    let l:buf_status ..= (&buftype == 'terminal') ? ('[buftype:' .. &buftype .. '  channel:' .. (has('nvim') ? &channel : bufnr())) .. ']' : ''
+    call setreg('x', l:buf_status)
 
     let l:file_status = '['
     let l:file_status ..= (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
