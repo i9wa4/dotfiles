@@ -19,9 +19,9 @@ function! my_statusline#statusline() abort
   let l:ret = ''
   " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
   " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
-  let l:ret ..= (v:hlsearch ? s:last_search_count() .. '  ' : '')
-  " let l:ret ..= '%t '
-  " let l:ret ..= '%f '
+  let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
+  " let l:ret ..= '%t'
+  " let l:ret ..= '%f'
   let l:ret ..= '%'->expand()->fnamemodify(':p:.')
   " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
