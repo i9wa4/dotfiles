@@ -23,7 +23,7 @@ function! my_statusline#statusline() abort
   " let l:ret ..= '%t '
   " let l:ret ..= '%f '
   let l:ret ..= '%'->expand()->fnamemodify(':p:.')
-  let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
+  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
   " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
@@ -81,9 +81,7 @@ function! my_statusline#tabline() abort
 
     let l:content = l:i
     let l:content ..= ' '
-    let l:content ..= l:title
-    let l:content ..= l:mod
-    let l:content = strcharpart(l:content .. '                    ', 0, 20)
+    let l:content ..= strcharpart(l:mod .. l:title .. '                    ', 0, 20)
 
     let l:ret ..= '%' .. l:i .. 'T'
     let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
