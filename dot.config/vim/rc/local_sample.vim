@@ -38,7 +38,7 @@ function! MyStatuslineRightTabline() abort
   "   endif
   " endif
 
-  if match(&runtimepath, 'vim-gin')
+  if match(&runtimepath, 'vim-gin') >= 0
     let l:name = gin#component#worktree#name()
     let l:branch = gin#component#branch#ascii()
     let l:traffic = gin#component#traffic#ascii()
