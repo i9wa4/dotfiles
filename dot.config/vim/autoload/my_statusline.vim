@@ -19,16 +19,14 @@ function! my_statusline#statusline() abort
   let l:ret = ''
   " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
   " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
+  let l:ret ..= (v:hlsearch ? s:last_search_count() .. '  ' : '')
   " let l:ret ..= '%t '
   " let l:ret ..= '%f '
-  " let l:ret ..= getcwd()->fnamemodify(':t') .. '/' .. '%'->expand()->fnamemodify(':p:.')
   let l:ret ..= '%'->expand()->fnamemodify(':p:.')
-  let l:ret ..= '%m'
-  let l:ret ..= '%r'
-  " let l:ret ..= (&readonly ? '[RO]' : (&modified ? '[+]' : ''))
+  " let l:ret ..= '%m%r'
+  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
-  let l:ret ..= (v:hlsearch ? s:last_search_count() : '')
   " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
   " let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
   " let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
@@ -48,16 +46,20 @@ function! s:last_search_count() abort
     return ''
   endif
   if l:result.incomplete ==# 1 " timed out
-    return printf('[?/?] %s', @/)
+    " return printf('[?/?] %s', @/)
+    return printf('[?/?]')
   elseif l:result.incomplete ==# 2 " max count exceeded
     if (l:result.total > l:result.maxcount)
       \ && (l:result.current > l:result.maxcount)
-      return printf('[>%d/>%d] %s', l:result.current, l:result.total, @/)
+      " return printf('[>%d/>%d] %s', l:result.current, l:result.total, @/)
+      return printf('[>%d/>%d]', l:result.current, l:result.total)
     elseif l:result.total > l:result.maxcount
-      return printf('[%d/>%d] %s', l:result.current, l:result.total, @/)
+      " return printf('[%d/>%d] %s', l:result.current, l:result.total, @/)
+      return printf('[%d/>%d]', l:result.current, l:result.total)
     endif
   endif
-  return printf('[%d/%d] %s', l:result.current, l:result.total, @/)
+  " return printf('[%d/%d] %s', l:result.current, l:result.total, @/)
+  return printf('[%d/%d]', l:result.current, l:result.total)
 endfunction
 
 
@@ -71,11 +73,13 @@ function! my_statusline#tabline() abort
     let l:bufnrs = tabpagebuflist(l:i)
     let l:bufnr = l:bufnrs[tabpagewinnr(l:i) - 1]
     let l:no = l:i
-    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '          ', 0, 10)
+    " let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '          ', 0, 10)
+    let l:title = strcharpart(fnamemodify(bufname(l:bufnr), ':t') .. '                    ', 0, 20)
     if empty(l:title)
       let l:title = '[No Name]'
     endif
     let l:mod = getbufvar(l:bufnr, '&modified') ? '[+]' : ''
+  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
 
     let l:ret ..= '%' .. l:i .. 'T'
     let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
