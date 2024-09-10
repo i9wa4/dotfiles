@@ -50,7 +50,8 @@ endif
 set hlsearch
 set ignorecase
 set incsearch
-set shortmess+=cS
+set shortmess+=c
+set shortmess-=S
 set smartcase
 set wrapscan
 
@@ -75,7 +76,8 @@ set noshowcmd
 
 " StatusLine
 " set fillchars+=stl:\ ,stlnc:\_
-set laststatus=2
+" set laststatus=2
+set laststatus=0
 set noshowmode
 
 " TabLine
