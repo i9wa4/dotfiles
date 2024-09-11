@@ -345,8 +345,7 @@ git-config:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
-	# make clean
-	# --enable-python3interp=dynamic
+	# make distclean
 	cd ~/src/github.com/vim/vim/src \
 	&& git checkout master \
 	&& ./configure \
