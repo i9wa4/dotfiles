@@ -208,6 +208,9 @@ package-ubuntu-update:
 	sudo apt upgrade -y
 	# Deno
 	deno upgrade
+	# pyenv
+	cd "$${HOME}"/.pyenv \
+	&& git pull
 	# Rust
 	rustup update
 	# AWS CLI
@@ -414,10 +417,8 @@ nix-install-ubuntu:  ## install Nix
 	# uninstall:
 	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
 
-pyenv-install:  ## install Python
+pyenv-install: pyenv-list  ## install Python
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& pyenv -v \
-	&& pyenv install --list | grep '^\s*'"$${PY_VER_MINOR}" | sort -Vr \
 	&& pyenv install "$${PY_VER_MINOR}" \
 	&& pyenv global "$${PY_VER_MINOR}" \
 	&& pyenv versions \
@@ -425,9 +426,9 @@ pyenv-install:  ## install Python
 
 pyenv-list:  ## show installed Python versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[pyenv] Available Python "$${PY_VER_MINOR}" or newer versions:" \
-	&& pyenv install --list | grep '^\s*[0-9]' | sort -Vr | head -n $$( \
-	  pyenv install --list | grep '^\s*[0-9]' | sort -Vr \
+	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
+	&& pyenv install --list | grep '^\s*[0-9]' | sort -Vr | grep -v '[a-zA-Z]' | head -n $$( \
+	  pyenv install --list | grep '^\s*[0-9]' | sort -Vr | grep -v '[a-zA-Z]' \
 	  | grep -n "$${PY_VER_MINOR}" | cut -f1 -d: | tail -n1) \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
@@ -467,18 +468,17 @@ pyenv-vmu:  ## update venv named myenv
 	&& python --version \
 	&& deactivate
 
-tfenv-install:  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
+tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& tfenv list-remote | grep '^'"$${TF_VER_MINOR}" | sort -Vr \
 	&& tfenv install "$(TF_VER_PATCH)" \
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
 tfenv-list:  ## show installed Terraform versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& echo "[tfenv] Available Terraform "${TF_VER_MINOR}" or newer versions:" \
-	&& tfenv list-remote | sort -Vr | head -n $$( \
-	  tfenv list-remote | sort -Vr \
+	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
+	&& tfenv list-remote | sort -Vr | grep -v '[a-zA-Z]' | head -n $$( \
+	  tfenv list-remote | sort -Vr | grep -v '[a-zA-Z]' \
 	  | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | tail -n1) \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
