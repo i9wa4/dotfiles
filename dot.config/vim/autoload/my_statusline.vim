@@ -2,35 +2,33 @@
 " StatusLine
 "
 function! my_statusline#statusline() abort
-  " let l:mode_dict = {
-  "  \ 'n': 'NORMAL',
-  "  \ 'i': 'INSERT',
-  "  \ 'R': 'REPLACE',
-  "  \ 'v': 'VISUAL',
-  "  \ 'V': 'V-LINE',
-  "  \ "\<C-v>": 'V-BLOCK',
-  "  \ 'S': 'S-LINE',
-  "  \ "\<C-s>": 'S-BLOCK',
-  "  \ 's': 'SELECT',
-  "  \ 'c': 'COMMAND',
-  "  \ 't': 'TERMINAL',
-  "  \ }
+  let l:mode_dict = {
+  \ 'n': 'NORMAL',
+  \ 'i': 'INSERT',
+  \ 'R': 'REPLACE',
+  \ 'v': 'VISUAL',
+  \ 'V': 'V-LINE',
+  \ "\<C-v>": 'V-BLOCK',
+  \ 'S': 'S-LINE',
+  \ "\<C-s>": 'S-BLOCK',
+  \ 's': 'SELECT',
+  \ 'c': 'COMMAND',
+  \ 't': 'TERMINAL',
+  \ }
 
   let l:ret = ''
-  " let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
-  " let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
-  " let l:ret ..= (v:hlsearch ? my_statusline#last_search_count() : '')
-  " let l:ret ..= my_statusline#last_search_count()
-  " let l:ret ..= '%t'
-  " let l:ret ..= '%'->expand()->fnamemodify(':p:.')
-  " let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
+  let l:ret ..= '[' .. l:mode_dict[mode()] .. (&paste ? '|PASTE' : '') .. '] '
+  let l:ret ..= ((&buftype == 'terminal') ? ('[' .. (has('nvim') ? &channel : bufnr()) .. '] ') : '')
+  let l:ret ..= my_statusline#last_search_count()
+  let l:ret ..= '%f'
+  let l:ret ..= (&readonly ? '[-]' : (&modified ? '[+]' : ''))
   let l:ret ..= '%<'
   let l:ret ..= "%="
-  " let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
-  " let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
-  " let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-  " let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  " let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+  let l:ret ..= '  ' .. 'Ln:%l/%L Col:%-3c'
+  let l:ret ..= '  ' .. (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  let l:ret ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  let l:ret ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  let l:ret ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
   return l:ret
 endfunction
 
@@ -49,7 +47,7 @@ function! my_statusline#last_search_count() abort
     return printf('[?/?] %s | ', @/)
   elseif l:result.incomplete ==# 2 " max count exceeded
     if (l:result.total > l:result.maxcount)
-      \ && (l:result.current > l:result.maxcount)
+    \ && (l:result.current > l:result.maxcount)
       return printf('[>%d/>%d] %s | ', l:result.current, l:result.total, @/)
     elseif l:result.total > l:result.maxcount
       return printf('[%d/>%d] %s | ', l:result.current, l:result.total, @/)
@@ -80,7 +78,7 @@ function! my_statusline#tabline() abort
 
     let l:content = l:i
     let l:content ..= ' '
-    let l:content ..= strcharpart(l:mod .. l:title .. '                    ', 0, 20)
+    let l:content ..= strcharpart(l:mod .. l:title .. '               ', 0, 15)
 
     let l:ret ..= '%' .. l:i .. 'T'
     let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'

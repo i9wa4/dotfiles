@@ -76,8 +76,8 @@ set noshowcmd
 
 " StatusLine
 " set fillchars+=stl:\ ,stlnc:\_
-" set laststatus=2
-set laststatus=0
+set laststatus=2
+" set laststatus=0
 set noshowmode
 
 " TabLine
