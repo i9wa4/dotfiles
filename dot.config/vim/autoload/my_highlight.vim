@@ -25,6 +25,10 @@ function! my_highlight#highlight() abort
   call matchadd('MyHlSR', strftime('%Y-%m-%d',  localtime() + 1 * 24 * 60 * 60))
   call matchadd('MyHlSR', strftime('%Y/%m/%d',  localtime() + 1 * 24 * 60 * 60))
 
+  " [		  ]
+  highlight clear SpecialKey
+  highlight SpecialKey guifg=#606060
+
   " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal
   highlight link markdownItalic Normal
@@ -38,10 +42,6 @@ function! my_highlight#highlight() abort
   " cursorline
   highlight clear CursorLine
   highlight CursorLine guibg=#404040
-
-  " [		  ]
-  highlight clear SpecialKey
-  highlight SpecialKey guifg=#606060
 
   " transparent background
   highlight EndOfBuffer guibg=NONE

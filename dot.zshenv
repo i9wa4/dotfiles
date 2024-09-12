@@ -47,10 +47,6 @@ export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
-# Neovim
-export NVIM_APPNAME1=nvim
-export NVIM_APPNAME="${NVIM_APPNAME1}"
-
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
