@@ -63,7 +63,6 @@ endfunction
 
 let s:preload_vimrc_path = ''
 let s:last_loaded_local_vimrc_path = ''
-let s:loaded_vimrc_path_list = []
 function! my_util#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " https://github.com/vim-jp/issues/issues/1176
@@ -74,12 +73,12 @@ function! my_util#source_local_vimrc(path) abort
 
   call insert(l:vimrc_path_list, s:preload_vimrc_path, 0)
 
-  let s:loaded_vimrc_path_list = []
+  let l:loaded_vimrc_path_list = []
   for l:i in l:vimrc_path_list
     if filereadable(l:i)
       execute 'source' l:i
       let s:last_loaded_local_vimrc_path = l:i
-      call extend(s:loaded_vimrc_path_list, [l:i])
+      call extend(l:loaded_vimrc_path_list, [l:i])
     endif
   endfor
 endfunction
@@ -90,8 +89,4 @@ endfunction
 
 function! my_util#get_last_loaded_local_vimrc_path() abort
   return s:last_loaded_local_vimrc_path
-endfunction
-
-function! my_util#get_loaded_vimrc_path_list() abort
-  return s:loaded_vimrc_path_list
 endfunction
