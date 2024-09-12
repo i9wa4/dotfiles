@@ -9,15 +9,11 @@ set encoding=utf-8
 let g:netrw_home = $HOME->expand() .. '/.cache/vim'
 
 " System
-if has('unix')
-  language messages C
-else
-  language messages en
-endif
 if has('mac')
   set clipboard&
   set clipboard+=unnamedplus,unnamed
-elseif has('unix') && !has('win32unix')
+" elseif has('unix') && !has('win32unix')
+else
   set clipboard&
   set clipboard^=unnamedplus
 endif
