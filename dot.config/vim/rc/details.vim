@@ -84,7 +84,7 @@ set noshowmode
 set showtabline=2
 
 " Highlight
-set colorcolumn=80
+" set colorcolumn=80
 set cursorcolumn
 set cursorline
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic
@@ -210,27 +210,13 @@ command! GitDiff
 function! s:set_register() abort
   if empty(&buftype)
     call setreg('a', '%'->expand()->fnamemodify(':p:~'))
-    call setreg('b', '%'->expand()->fnamemodify(':p:~:h'))
-    call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
 
-    let l:buf_status = ''
-    let l:buf_status ..= (&buftype == 'terminal') ? ('[buftype:' .. &buftype .. '  channel:' .. (has('nvim') ? &channel : bufnr())) .. ']' : ''
-    call setreg('x', l:buf_status)
-
-    let l:file_status = '['
-    let l:file_status ..= (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+    let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
     let l:file_status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
     let l:file_status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
     let l:file_status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
-    let l:file_status ..= ']'
-    call setreg('y', l:file_status)
-
-    let l:dir_status = '['
-    let l:dir_status ..= 'CWD:' .. fnamemodify(getcwd(), ':~')
-    let l:dir_status ..= '  ' .. 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':h:t')
-    let l:dir_status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
-    let l:dir_status ..= ']'
-    call setreg('z', l:dir_status)
+    let l:file_status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
+    call setreg('z', l:file_status)
   endif
 endfunction
 
