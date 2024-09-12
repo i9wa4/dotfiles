@@ -6,8 +6,8 @@ set statusline=%{'\ '->repeat(&columns)}
 
 set tabline=%!my_statusline#tabline()
 
-augroup MyTerminal
-  autocmd!
-  autocmd BufEnter * redrawstatus
-  autocmd BufEnter * redrawtabline
-augroup END
+" augroup MyTerminal
+"   autocmd!
+"   autocmd BufEnter * redrawstatus
+"   autocmd BufEnter * redrawtabline
+" augroup END

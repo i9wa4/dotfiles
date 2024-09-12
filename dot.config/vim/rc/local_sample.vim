@@ -25,19 +25,6 @@ call my_filetype#set_tabstop2_lang_list([
 function! MyStatuslineRightTabline() abort
   let l:ret = ''
 
-  " if exists('*my_util#get_last_loaded_local_vimrc_path')
-  "   let l:ret ..= 'Cfg:' .. fnamemodify(my_util#get_last_loaded_local_vimrc_path(), ':p:~:h:t')
-  " endif
-
-  " if empty(&buftype) && (match(&runtimepath, 'vim-get-git-branch-name') >= 0)
-  "   let l:branch_name = branch_name#get_current_branch_name()
-  "   let l:repo_name = branch_name#get_current_repo_root_name()
-  "   if l:branch_name != ''
-  "     " let l:ret ..= ' / ' .. l:repo_name .. ' (' .. l:branch_name .. ')'
-  "     let l:ret ..= ' ' .. '(' .. l:branch_name .. ')'
-  "   endif
-  " endif
-
   if match(&runtimepath, 'vim-gin') >= 0
     let l:name = gin#component#worktree#name()
     let l:branch = gin#component#branch#ascii()
