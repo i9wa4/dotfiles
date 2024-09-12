@@ -426,8 +426,8 @@ pyenv-install: pyenv-list  ## install Python
 pyenv-list:  ## show installed Python versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
-	&& pyenv install --list | grep '^\s*[0-9]' | sort -Vr | grep -v '[a-zA-Z]' | head -n $$( \
-	  pyenv install --list | grep '^\s*[0-9]' | sort -Vr | grep -v '[a-zA-Z]' \
+	&& pyenv install --list | grep -v '[a-zA-Z]' | sort -Vr | head -n $$( \
+	  pyenv install --list | grep -v '[a-zA-Z]' | sort -Vr \
 	  | grep -n "$${PY_VER_MINOR}" | cut -f1 -d: | tail -n1) \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
@@ -476,8 +476,8 @@ tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_
 tfenv-list:  ## show installed Terraform versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
-	&& tfenv list-remote | sort -Vr | grep -v '[a-zA-Z]' | head -n $$( \
-	  tfenv list-remote | sort -Vr | grep -v '[a-zA-Z]' \
+	&& tfenv list-remote | grep -v '[a-zA-Z]' | sort -Vr | head -n $$( \
+	  tfenv list-remote | grep -v '[a-zA-Z]' | sort -Vr \
 	  | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | tail -n1) \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
