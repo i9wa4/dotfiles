@@ -68,17 +68,6 @@ augroup END
 # Markdown
 #
 [[plugins]]
-repo = 'i9wa4/vim-get-git-branch-name'
-on_event = ['VimEnter']
-
-[[plugins]]
-repo = 'preservim/vim-markdown'
-if = 0
-on_ft = ['markdown', 'quarto', 'rmd']
-hook_source = '''
-'''
-
-[[plugins]]
 repo = 'junegunn/vim-easy-align'
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
@@ -96,6 +85,12 @@ hook_source = '''
 let g:mnh_header_level_shift = 1
 '''
 
+[[plugins]]
+repo = 'preservim/vim-markdown'
+if = 0
+on_ft = ['markdown', 'quarto', 'rmd']
+hook_source = '''
+'''
 
 # --------------------------------------
 # Terraform

@@ -21,22 +21,6 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   end,
 })
 '''
-# hook_source = '''
-# function! s:my_lsp_highlight() abort
-#   highlight clear MyLspHighlight
-#   highlight MyLspHighlight guifg=#808080 cterm=underline gui=underline
-#
-#   highlight link DiagnosticVirtualTextError MyLspHighlight
-#   highlight link DiagnosticVirtualTextWarn MyLspHighlight
-#   highlight link DiagnosticVirtualTextInfo MyLspHighlight
-#   highlight link DiagnosticVirtualTextHint MyLspHighlight
-# endfunction
-#
-# augroup MyLspAutocmd
-#   autocmd!
-#   autocmd LspAttach * call s:my_lsp_highlight()
-# augroup END
-# '''
 
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
