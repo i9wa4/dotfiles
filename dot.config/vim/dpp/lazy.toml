@@ -83,6 +83,10 @@ depends = ['denops.vim']
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
 let g:mnh_header_level_shift = 1
+augroup mnh
+  autocmd!
+  autocmd BufWritePost *.md,*.rmd,*.qmd execute 'NumberHeader'
+augroup END
 '''
 
 [[plugins]]
