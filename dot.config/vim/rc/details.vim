@@ -38,7 +38,6 @@ set virtualedit=block
 
 " Search
 if executable('rg')
-  " let &grepprg = 'rg --vimgrep --no-heading -uu'
   let &grepprg = 'rg --vimgrep --no-heading'
   set grepformat=%f:%l:%c:%m
 endif
@@ -70,7 +69,6 @@ set cmdheight=1
 set noshowcmd
 
 " StatusLine
-" set fillchars+=stl:\ ,stlnc:\_
 set laststatus=0
 set noshowmode
 
@@ -78,7 +76,7 @@ set noshowmode
 set showtabline=2
 
 " Highlight
-" set colorcolumn=80
+set colorcolumn=80
 set cursorcolumn
 set cursorline
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic
