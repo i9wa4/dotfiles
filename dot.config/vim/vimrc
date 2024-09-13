@@ -2,6 +2,11 @@
 " ~/.config/nvim/init.vim
 set encoding=utf-8
 
+filetype off
+filetype plugin indent off
+syntax off
+
+
 " --------------------------------------
 " Minimum setting
 "

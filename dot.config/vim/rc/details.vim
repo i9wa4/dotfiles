@@ -1,8 +1,3 @@
-filetype off
-filetype plugin indent off
-syntax off
-
-
 " --------------------------------------
 " Variable
 "
