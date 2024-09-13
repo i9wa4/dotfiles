@@ -190,13 +190,6 @@ endfunction
 command! CreateLocalVim
 \ call system('echo "let g:mnh_header_level_shift = 7" > ./local.vim')
 
-command! GitDiff
-\ tabnew
-\ | setlocal buftype=nofile bufhidden=delete noswapfile
-\ | setfiletype gitcommit
-\ | execute 'read !git diff #'
-\ | normal! gg
-
 
 " --------------------------------------
 " Aucocommand
@@ -215,15 +208,7 @@ function! s:set_register() abort
 endfunction
 
 function! s:my_asyncjob_on_save() abort
-  if index([
-  \ 'markdown',
-  \ 'quarto',
-  \ 'rmd',
-  \ ], &filetype) >= 0
-    if exists(':NumberHeader') == 2
-      execute 'NumberHeader'
-    endif
-  elseif (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
+  if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
     " Jupyter Notebook
     let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
     if filereadable(l:ipynb_path) && executable('jupytext')
