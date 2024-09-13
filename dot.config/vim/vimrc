@@ -11,9 +11,9 @@ let g:netrw_home = $HOME->expand() .. '/.cache/vim'
 " System
 set clipboard&
 if has('mac')
- set clipboard+=unnamedplus,unnamed
+  set clipboard+=unnamedplus,unnamed
 else
- set clipboard^=unnamedplus
+  set clipboard^=unnamedplus
 endif
 set autoread
 set backupdir=~/.cache/vim
