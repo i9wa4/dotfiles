@@ -18,7 +18,7 @@ let g:auto_reload = timer_start(
 " --------------------------------------
 " hook_source
 "
-call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/rc/local_sample.vim')
+call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/rc/local.default.vim')
 
 
 " --------------------------------------
