@@ -1,3 +1,7 @@
+let g:vim_indent = #{
+\   line_continuation: 0
+\ }
+
 augroup MyFiletype
   autocmd!
   autocmd BufEnter,FileType * call my_filetype#init()
