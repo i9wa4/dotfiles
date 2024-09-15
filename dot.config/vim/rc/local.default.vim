@@ -22,28 +22,6 @@ call my_filetype#set_tabstop2_lang_list([
 \   'zsh',
 \ ])
 
-function! MyStatuslineRightTabline() abort
-  let l:ret = ''
-
-  if match(&runtimepath, 'vim-gin') >= 0
-    let l:name = gin#component#worktree#name()
-    let l:branch = gin#component#branch#ascii()
-    let l:traffic = gin#component#traffic#ascii()
-
-    if !empty(l:name)
-      let l:ret ..= ' ' .. l:name
-    endif
-    if !empty(l:branch)
-      let l:ret ..= ' ' .. '(' .. l:branch .. ')'
-    endif
-    if !empty(l:traffic)
-      let l:ret ..= ' ' .. '[' .. l:traffic .. ']'
-    endif
-  endif
-
-  return l:ret
-endfunction
-
 " Python
 if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
   let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python' .. $PY_VER_MINOR

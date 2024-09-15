@@ -71,6 +71,7 @@ set noshowcmd
 " StatusLine
 set laststatus=0
 set noshowmode
+set statusline=%{'\ '->repeat(&columns)}
 
 " TabLine
 set showtabline=2
@@ -196,12 +197,12 @@ function! s:set_register() abort
   if empty(&buftype)
     call setreg('a', '%'->expand()->fnamemodify(':p:~'))
 
-    let l:file_status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
-    let l:file_status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-    let l:file_status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-    let l:file_status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
-    let l:file_status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
-    call setreg('z', l:file_status)
+    let l:status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+    let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+    let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+    let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+    let l:status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
+    call setreg('z', l:status)
   endif
 endfunction
 
