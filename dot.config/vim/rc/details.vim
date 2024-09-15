@@ -6,7 +6,6 @@ let g:netrw_banner = 0
 let g:netrw_dirhistmax = 1
 let g:netrw_hide = 0
 let g:netrw_liststyle = 0
-let g:vim_indent_cont = 0
 
 let g:auto_reload = timer_start(
 \   1000,
