@@ -43,6 +43,7 @@ function! my_util#restore_cursor() abort
   endif
 endfunction
 
+
 function! my_util#clean_viminfo() abort
   " delete history
   " call histdel("cmd")
@@ -76,29 +77,10 @@ endfunction
 " --------------------------------------
 " Environment
 "
-function! my_util#add_path(path_list) abort
-  " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-  if has('unix')
-    let l:separator = ":"
-  else
-    let l:separator = ";"
-  endif
-
-  let l:path_list = split(getenv('PATH'), l:separator)
-  for l:item in reverse(a:path_list)
-    let l:index = index(l:path_list, l:item)
-    if l:index < 0
-      call insert(l:path_list, l:item)
-    else
-      call remove(l:path_list, l:index)
-      call insert(l:path_list, l:item)
-    endif
-  endfor
-  call setenv('PATH', join(l:path_list, l:separator))
-endfunction
-
 let s:preload_vimrc_path = ''
 let s:last_loaded_local_vimrc_path = ''
+
+
 function! my_util#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " https://github.com/vim-jp/issues/issues/1176
@@ -119,10 +101,34 @@ function! my_util#source_local_vimrc(path) abort
   endfor
 endfunction
 
+
 function! my_util#set_preload_vimrc(path) abort
   let s:preload_vimrc_path = a:path
 endfunction
 
+
 function! my_util#get_last_loaded_local_vimrc_path() abort
   return s:last_loaded_local_vimrc_path
+endfunction
+
+
+function! my_util#add_path(path_list) abort
+  " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
+  if has('unix')
+    let l:separator = ":"
+  else
+    let l:separator = ";"
+  endif
+
+  let l:path_list = split(getenv('PATH'), l:separator)
+  for l:item in reverse(a:path_list)
+    let l:index = index(l:path_list, l:item)
+    if l:index < 0
+      call insert(l:path_list, l:item)
+    else
+      call remove(l:path_list, l:index)
+      call insert(l:path_list, l:item)
+    endif
+  endfor
+  call setenv('PATH', join(l:path_list, l:separator))
 endfunction

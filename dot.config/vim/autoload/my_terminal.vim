@@ -1,3 +1,6 @@
+let s:terminal_number = 0
+
+
 function! my_terminal#split(size, path) abort
   if a:size > 0
     execute a:size 'split'
@@ -9,12 +12,14 @@ function! my_terminal#split(size, path) abort
   call s:change_directory(a:path)
 endfunction
 
+
 function! my_terminal#vsplit(path) abort
   vsplit
   call s:open_terminal()
   sleep 100m
   call s:change_directory(a:path)
 endfunction
+
 
 function! my_terminal#send_cmd(number, path) abort
   let l:ext = tolower(fnamemodify(a:path, ':e'))
@@ -26,6 +31,7 @@ function! my_terminal#send_cmd(number, path) abort
     echomsg l:ext .. ' is unavailable.'
   endif
 endfunction
+
 
 function! my_terminal#send_cell(number, path) abort
   let l:ext = tolower(fnamemodify(a:path, ':e'))
@@ -42,7 +48,7 @@ function! my_terminal#send_cell(number, path) abort
   endif
 endfunction
 
-let s:terminal_number = 0
+
 function! my_terminal#update_terminal_number() abort
   if &buftype == 'terminal'
     if has('nvim')
@@ -52,6 +58,7 @@ function! my_terminal#update_terminal_number() abort
     endif
   endif
 endfunction
+
 
 function! s:send(number, cmd) abort
   let l:cmd = a:cmd .. "\<CR>"
@@ -68,6 +75,7 @@ function! s:send(number, cmd) abort
   endif
 endfunction
 
+
 function! s:open_terminal() abort
   if has('nvim')
     terminal
@@ -76,6 +84,7 @@ function! s:open_terminal() abort
   endif
   wincmd p
 endfunction
+
 
 function! s:change_directory(path) abort
   wincmd p
