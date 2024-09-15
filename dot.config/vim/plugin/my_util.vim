@@ -1,3 +1,5 @@
+set tabline=%!my_util#tabline()
+
 augroup MyUtil
   autocmd!
   autocmd BufEnter * checktime
