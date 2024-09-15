@@ -66,29 +66,27 @@ function! my_statusline#tabline() abort
   " https://qiita.com/wadako111/items/755e753677dd72d8036d
   let l:ret = ''
   for l:i in range(1, tabpagenr('$'))
-    let l:bufnrs = tabpagebuflist(l:i)
-    let l:bufnr = l:bufnrs[tabpagewinnr(l:i) - 1]
-    let l:no = l:i
-    let l:title = fnamemodify(bufname(l:bufnr), ':t')
-    if empty(l:title)
-      let l:title = '[No Name]'
+    let l:tab_no_i = l:i
+    let l:bufnr_i = tabpagebuflist(l:tab_no_i)[tabpagewinnr(l:tab_no_i) - 1]
+
+    let l:mod_i = (getbufvar(l:bufnr_i, '&modified') ? '[+]' : '')
+    let l:mod_i ..= (getbufvar(l:bufnr_i, '&readonly') ? '[-]' : '')
+
+    let l:bufname_i = fnamemodify(bufname(l:bufnr_i), ':t')
+    if empty(l:bufname_i)
+      let l:bufname_i = '[No Name]'
     endif
-    let l:mod = (getbufvar(l:bufnr, '&modified') ? '[+]' : '')
-    let l:mod ..= (getbufvar(l:bufnr, '&readonly') ? '[-]' : '')
 
-    let l:content = l:i
-    let l:content ..= ' '
-    let l:content ..= strcharpart(l:mod .. l:title .. '               ', 0, 15)
+    let l:tabname_i = l:tab_no_i .. ' ' .. l:mod_i .. l:bufname_i
+    let l:tabname_i = strcharpart(l:tabname_i .. '               ', 0, 15)
 
-    let l:ret ..= '%' .. l:i .. 'T'
-    let l:ret ..= '%#' .. (l:i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
-    let l:ret ..= (((l:i > 1 ) && (l:i > tabpagenr())) ? '|' : '')
-    let l:ret ..= l:content
-    let l:ret ..= (((l:i < tabpagenr()) && (l:i < tabpagenr('$'))) ? '|' : '')
-    let l:ret ..= '%#TabLineFill#'
+    let l:ret ..= '%' .. l:tab_no_i .. 'T'
+    let l:ret ..= '%#' .. (l:tab_no_i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'
+    let l:ret ..= l:tabname_i
+    let l:ret ..= '%#TabLine#|'
   endfor
 
-  let l:ret ..= '%#TabLineFill#%T%=%#TabLineFill#'
+  let l:ret ..= '%#TabLine#%T%=%#TabLineFill#'
   if exists('*MyStatuslineRightTabline')
     let l:ret ..= MyStatuslineRightTabline()
   endif
