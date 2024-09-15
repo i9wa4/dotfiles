@@ -1,4 +1,6 @@
 let s:tabstop2_lang_list = []
+
+
 function! my_filetype#init() abort
   if !empty(&buftype)
     return
@@ -23,6 +25,7 @@ function! my_filetype#init() abort
     " Do nothing.
   endif
 endfunction
+
 
 function! my_filetype#set_tabstop2_lang_list(list) abort
   let s:tabstop2_lang_list = a:list

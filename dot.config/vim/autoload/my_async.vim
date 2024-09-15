@@ -20,6 +20,7 @@ function! my_async#jobstart(cmd) abort
   endif
 endfunction
 
+
 function! s:get_msg(ch, msg) abort
   if has('nvim')
     if len(a:msg) > 1
@@ -39,6 +40,7 @@ function! s:get_msg(ch, msg) abort
     call add(s:result, l:msg)
   endif
 endfunction
+
 
 function! s:exit_cb(job, status) abort
   if len(s:result) > 0
