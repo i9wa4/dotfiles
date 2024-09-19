@@ -37,7 +37,8 @@ set virtualedit=block
 
 " Search
 if executable('rg')
-  let &grepprg = 'rg --vimgrep --no-heading'
+  " let &grepprg = 'rg --vimgrep --no-heading'
+  let &grepprg = 'rg --vimgrep --no-heading -uu --glob=!.git/'
   set grepformat=%f:%l:%c:%m
 endif
 set hlsearch
