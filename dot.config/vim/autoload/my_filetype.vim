@@ -6,6 +6,8 @@ function! my_filetype#init() abort
     return
   endif
 
+  " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
+  setlocal list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
   setlocal nofoldenable autoindent expandtab
   setlocal shiftwidth=4 softtabstop=4 tabstop=4
   setlocal spelllang+=cjk spell

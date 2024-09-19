@@ -50,11 +50,9 @@ set wrapscan
 
 " View
 set ambiwidth=double
-" space:\\u2423,extends:\\u00BB,precedes:\\u00AB
-set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
-set nowrap
 set number
 set relativenumber
+set wrap
 
 " Window
 set noequalalways
