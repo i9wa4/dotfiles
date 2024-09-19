@@ -4,7 +4,7 @@ let g:vim_indent = #{
 
 augroup MyFiletype
   autocmd!
-  autocmd BufNewFile,BufReadPost,BufEnter,FileType * call my_filetype#init()
+  autocmd BufEnter,FileType * call my_filetype#init()
   autocmd BufNewFile,BufReadPost *.zshrc,*.zshenv
   \ setfiletype zsh
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
