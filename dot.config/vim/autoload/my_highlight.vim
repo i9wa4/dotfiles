@@ -22,7 +22,7 @@ function! my_highlight#highlight() abort
   call matchadd('HlSA', 'HlSA')
   call matchadd('HlSV', 'HlSV')
 
-  call matchadd('HlSA', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|# %%\|\[ \]')
+  call matchadd('HlSA', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
 
   call matchadd('HlEC', strftime('%Y%m%d',    localtime() - 1 * 24 * 60 * 60))
   call matchadd('HlEC', strftime('%Y-%m-%d',  localtime() - 1 * 24 * 60 * 60))
