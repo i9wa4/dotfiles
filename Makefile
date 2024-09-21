@@ -194,8 +194,7 @@ package-ubuntu:
 	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
 	&& unzip awscliv2.zip \
 	&& sudo ./aws/install \
-	&& rm awscliv2.zip \
-	&& cd -
+	&& rm awscliv2.zip
 	# gcloud CLI
 	sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
@@ -220,7 +219,6 @@ package-ubuntu-update:
 	&& unzip -fo awscliv2.zip \
 	&& sudo ./aws/install --update \
 	&& rm awscliv2.zip \
-	&& cd -
 
 package-ubuntu-desktop:
 	sudo add-apt-repository -y ppa:aslatter/ppa
@@ -234,7 +232,6 @@ package-ubuntu-desktop:
 	&& fc-cache -fv \
 	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM \
-	&& cd -
 
 package-ubuntu-server:
 	# Settings --> Accessibility --> Large Text
@@ -358,7 +355,6 @@ vim-build:  ## build Vim
 	&& make \
 	&& make install \
 	&& hash -r \
-	&& cd -
 
 nvim-build:  ## build Neovim
 	# make distclean
@@ -370,7 +366,6 @@ nvim-build:  ## build Neovim
 	  CMAKE_INSTALL_PREFIX="$${HOME}" \
 	&& make install \
 	&& hash -r \
-	&& cd -
 
 docker-init-ubuntu:
 	# https://docs.docker.com/engine/install/ubuntu
