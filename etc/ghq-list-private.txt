@@ -2,11 +2,7 @@ github.com/i9wa4/dotfiles
 github.com/i9wa4/i9wa4
 github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/internal
-github.com/i9wa4/minecraft-bedrock-server-setup
 github.com/i9wa4/private
-github.com/i9wa4/terraform-aws-mwaa
-github.com/i9wa4/terraform-sfn-handson
-github.com/i9wa4/vim-markdown-number-header
 github.com/neovim/neovim
 github.com/skk-dev/dict
 github.com/tfutils/tfenv
