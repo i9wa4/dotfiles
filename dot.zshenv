@@ -12,17 +12,16 @@ if [[ "$0" == *"zsh"* ]]; then
   # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
 fi
 
-# Package Manager
-#   Homebrew
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-export PATH=/opt/homebrew/bin:"${PATH}"
-
 # Common
 export LC_ALL=C.UTF-8
 export EDITOR=vim
 export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
 export PATH="${HOME}"/bin:"${PATH}"
+
+# Homebrew
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+export PATH=/opt/homebrew/bin:"${PATH}"
 
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
