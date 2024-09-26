@@ -342,14 +342,14 @@ git-config:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
-	# make distclean
 	cd ~/src/github.com/vim/vim/src \
 	&& git checkout master \
+	&& make distclean \
 	&& ./configure \
 	  --disable-gui \
-	  --enable-multibyte \
 	  --enable-fail-if-missing \
-	  --enable-python3interp \
+	  --enable-multibyte \
+	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}" \
 	  --with-features=huge \
 	&& make \
@@ -357,9 +357,9 @@ vim-build:  ## build Vim
 	&& hash -r \
 
 nvim-build:  ## build Neovim
-	# make distclean
 	cd ~/src/github.com/neovim/neovim \
 	&& git checkout refs/tags/stable \
+	&& make distclean \
 	&& make \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
