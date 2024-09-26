@@ -23,7 +23,7 @@ ubuntu-server: ubuntu package-ubuntu-server  ## init for Ubuntu Server
 
 ubuntu-desktop: ubuntu package-ubuntu-desktop  ## init for Ubuntu Desktop
 
-wsl: ubuntu-minimal copy-win  ## init for WSL2 Ubuntu
+wsl: ubuntu-minimal win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt install -y wslu
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
@@ -60,14 +60,14 @@ export WSLCONFIG_IN_WINDOWS
 
 MF_WIN_UTIL_DIR := /mnt/c/work/util
 
-copy-win:  ## copy config files for Windows
+win-copy:  ## copy config files for Windows
 	# WSL2
 	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
 	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows copy
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/copy-win.bat   $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/win-copy.bat   $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
