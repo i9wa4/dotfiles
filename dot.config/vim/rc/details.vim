@@ -196,6 +196,7 @@ command! CreateLocalVim
 function! s:set_register() abort
   if empty(&buftype)
     call setreg('a', '%'->expand()->fnamemodify(':p:~'))
+    call setreg('b', '%'->expand()->fnamemodify(':p:~:t'))
 
     let l:status = (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
     let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
