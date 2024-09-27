@@ -55,18 +55,15 @@ nnoremap <Plug>(my-Gin)la <Cmd>call <SID>my_gin_log_all()<CR>
 nnoremap <Plug>(my-Gin)lo <Cmd>call <SID>my_gin_log()<CR>
 nnoremap <Plug>(my-Gin)p  <Cmd>execute 'Gin push'<CR>
 nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
+'''
 
-augroup my_gin_component
-  autocmd!
-  " autocmd User GinComponentPost redrawstatus
-  " Or if you use tabline instead
-  autocmd User GinComponentPost redrawtabline
-augroup END
-
+[[plugins]]
+repo = 'i9wa4/vim-get-git-branch-name'
+on_event = ['BufEnter']
+hook_source = '''
 function! MyStatuslineRightTabline() abort
-  let l:name = gin#component#worktree#name()
-  let l:branch = gin#component#branch#ascii()
-  let l:traffic = gin#component#traffic#ascii()
+  let l:name = branch_name#get_current_repo_root_name()
+  let l:branch = branch_name#get_current_branch_name()
 
   let l:ret = ''
   if !empty(l:name)
@@ -75,12 +72,8 @@ function! MyStatuslineRightTabline() abort
   if !empty(l:branch)
     let l:ret ..= ' ' .. '(' .. l:branch .. ')'
   endif
-  if !empty(l:traffic)
-    let l:ret ..= ' ' .. '[' .. l:traffic .. ']'
-  endif
   return l:ret
 endfunction
-
 '''
 
 # --------------------------------------
