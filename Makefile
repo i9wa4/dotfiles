@@ -440,6 +440,7 @@ matplotlib
 numpy
 pandas
 py
+pyautogui
 pynvim
 python-lsp-server[all]
 quarto-cli
