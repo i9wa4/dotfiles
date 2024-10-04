@@ -79,13 +79,9 @@
     exit
     ```
 
-1. Run `C:\work\util\copy_win.bat`.
+1. Run `C:\work\util\win-copy.bat`.
 
-1. (Optional) Install Alacritty.
-
-    ```dosbat
-    winget install Alacritty.Alacritty
-    ```
+1. Run `C:\work\util\bin\winget-upgrade.bat`.
 
 ## 3. Post installation
 
