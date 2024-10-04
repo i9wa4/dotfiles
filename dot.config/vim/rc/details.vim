@@ -95,6 +95,7 @@ nnoremap <expr> j (v:count == 0) ? 'gj' : 'j'
 nnoremap <expr> k (v:count == 0) ? 'gk' : 'k'
 xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
 xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
+nnoremap gf gF
 
 " Insert Mode
 " i_CTRL-T Insert one indent
