@@ -51,6 +51,7 @@ snippets:
       && cd ~/src/github.com/i9wa4/dotfiles
       && make package-update
       && zinit self-update
+      && zinit update --parallel
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
