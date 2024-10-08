@@ -274,7 +274,8 @@ ghq-backup-private:
 	ghq list > etc/ghq-list-private.txt
 
 ghq-backup-company:
-	ghq list > ~/str/etc/ghq-list-company.txt
+	mkdir -p ~/str/etc \
+	&& ghq list > ~/str/etc/ghq-list-company.txt
 
 git-config:
 	git config --global gpg.format ssh
