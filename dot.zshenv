@@ -13,8 +13,8 @@ if [[ "$0" == *"zsh"* ]]; then
 fi
 
 # Common
-export LC_ALL=C.UTF-8
 export EDITOR=vim
+export LC_ALL=en_US.UTF-8
 export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
 export PATH="${HOME}"/bin:"${PATH}"
