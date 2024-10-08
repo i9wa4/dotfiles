@@ -38,42 +38,6 @@ mac: package-mac common  ## init for Mac
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
 	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
 
-define WSLCONF_IN_WSL
-[boot]
-systemd=true
-
-[interop]
-appendWindowsPath=true
-endef
-export WSLCONF_IN_WSL
-
-define WSLCONFIG_IN_WINDOWS
-[wsl2]
-localhostForwarding=true
-processors=2
-swap=0
-
-[experimental]
-autoMemoryReclaim=gradual
-endef
-export WSLCONFIG_IN_WINDOWS
-
-MF_WIN_UTIL_DIR := /mnt/c/work/util
-
-win-copy:  ## copy config files for Windows
-	# WSL2
-	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
-	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
-	# Windows copy
-	rm -rf $(MF_WIN_UTIL_DIR)
-	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/win-copy.bat   $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
-	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
-
 
 init-zsh-ubuntu:
 	sudo apt install -y zsh
@@ -142,7 +106,7 @@ package-update:
 	make package-go
 	make package-rust
 	make volta-update
-	git -C "$${HOME}"/.pyenv pull
+	make pyenv-update
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -428,6 +392,9 @@ pyenv-list:  ## show installed Python versions
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
+pyenv-update:  ## update pyenv
+	git -C "$${HOME}"/.pyenv pull
+
 define REQUIREMENTS_PY_VENV_MYENV
 autopep8
 charset-normalizer<3,>=2
@@ -487,6 +454,44 @@ volta-init:
 
 volta-update:
 	curl https://get.volta.sh | bash
+
+define WSLCONF_IN_WSL
+[boot]
+systemd=true
+
+[interop]
+appendWindowsPath=true
+endef
+export WSLCONF_IN_WSL
+
+define WSLCONFIG_IN_WINDOWS
+[wsl2]
+localhostForwarding=true
+processors=2
+swap=0
+
+[experimental]
+autoMemoryReclaim=gradual
+endef
+export WSLCONFIG_IN_WINDOWS
+
+MF_WIN_UTIL_DIR := /mnt/c/work/util
+
+win-copy:  ## copy config files for Windows
+	# WSL2
+	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
+	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	# Windows copy
+	rm -rf $(MF_WIN_UTIL_DIR)
+	mkdir -p $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/win-copy.bat   $(MF_WIN_UTIL_DIR)
+	rm -f   $(MF_WIN_UTIL_DIR)/bin/windows/win-copy.bat
+	echo "$${REQUIREMENTS_PY_VENV_MYENV}" | tee $(MF_WIN_UTIL_DIR)/etc/requirements.txt
+	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help
 	@echo 'Usage: make [target]'
