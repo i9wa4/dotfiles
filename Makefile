@@ -142,6 +142,7 @@ package-update:
 	make package-go
 	make package-rust
 	make volta-update
+	git -C "$${HOME}"/.pyenv pull
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -207,9 +208,6 @@ package-ubuntu-update:
 	sudo apt upgrade -y
 	# Deno
 	deno upgrade
-	# pyenv
-	cd "$${HOME}"/.pyenv \
-	&& git pull
 	# Rust
 	rustup update
 	# AWS CLI
@@ -289,9 +287,6 @@ package-mac:
 package-mac-update:
 	brew update
 	brew upgrade
-	# pyenv
-	cd "$${HOME}"/.pyenv \
-	&& git pull
 
 package-go:
 	go install github.com/evilmartians/lefthook@latest
