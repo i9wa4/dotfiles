@@ -273,7 +273,9 @@ package-mac:
 	brew install deno
 	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	brew install pyenv
+	sudo rm -rf "$${HOME}"/.pyenv
+	curl https://pyenv.run | bash
+	# brew install pyenv
 	brew install openssl readline sqlite3 xz zlib tcl-tk
 	# Go
 	brew install go
@@ -287,6 +289,9 @@ package-mac:
 package-mac-update:
 	brew update
 	brew upgrade
+	# pyenv
+	cd "$${HOME}"/.pyenv \
+	&& git pull
 
 package-go:
 	go install github.com/evilmartians/lefthook@latest
