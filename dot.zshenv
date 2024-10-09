@@ -5,11 +5,11 @@ if [[ "$0" == *"zsh"* ]]; then
   # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
   setopt no_global_rcs
   # missing paths for macOS:
-  # /System/Cryptexes/App/usr/bin
-  # /usr/local/bin
-  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
-  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
-  # /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
+  #   /System/Cryptexes/App/usr/bin
+  #   /usr/local/bin
+  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
+  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
+  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
 fi
 
 # Common
@@ -19,8 +19,11 @@ export XDG_CONFIG_HOME="${HOME}"/.config
 export PATH="${HOME}"/bin:"${PATH}"
 
 # Locale
-# export LC_ALL=en_US.UTF-8
-export LC_ALL=C.UTF-8
+if locale -a | grep -q 'en_US.UTF-8'; then
+  export LC_ALL=en_US.UTF-8
+else
+  export LC_ALL=C.UTF-8
+fi
 
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
@@ -42,7 +45,7 @@ export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 export AWS_DEFAULT_PROFILE=
 
 # Deno
-export DENO_TLS_CA_STORE="system"
+# export DENO_TLS_CA_STORE="system"
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
