@@ -376,10 +376,17 @@ nix-install-ubuntu:  ## install Nix
 	# uninstall:
 	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
 
-pyenv-install: pyenv-list  ## install Python
+pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& pyenv install "$${PY_VER_MINOR}" \
-	&& pyenv global "$${PY_VER_MINOR}" \
+	&& pyenv install "$(PY_VER_PATCH)" \
+	&& pyenv global "$(PY_VER_PATCH)" \
+	&& pyenv versions \
+	&& python -m pip config --site set global.require-virtualenv true
+
+pyenv-install-latest: pyenv-list  ## install latest Python
+	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
+	&& pyenv install "$${_py_ver_latest}" \
+	&& pyenv global "$${_py_ver_latest}" \
 	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
 
@@ -387,9 +394,11 @@ pyenv-list:  ## show installed Python versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
+	&& mkdir -p "$${HOME}"/.cache \
 	&& echo "$${available_versions}" | tail -n +$$( \
-	  echo "$${available_versions}" \
-	  | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1) \
+	    echo "$${available_versions}" \
+	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
+	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
 	&& echo "[pyenv] Installed Python versions:" \
 	&& pyenv versions
 
@@ -438,13 +447,21 @@ tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
+tfenv-install-latest: tfenv-list  ## install latest Terraform
+	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
+	&& tfenv install "$${_tf_ver_latest}" \
+	&& tfenv use "$${_tf_ver_latest}" \
+	&& terraform version
+
 tfenv-list:  ## show installed Terraform versions
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
+	&& mkdir -p "$${HOME}"/.cache \
 	&& echo "$${available_versions}" | tail -n +$$( \
-	  echo "$${available_versions}" \
-	  | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | head -n1) \
+	    echo "$${available_versions}" \
+	    | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | head -n1 \
+	  ) | tee "$${HOME}"/.cache/tfenv-list.txt \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 

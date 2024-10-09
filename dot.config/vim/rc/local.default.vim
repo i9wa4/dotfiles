@@ -23,8 +23,8 @@ call my_filetype#set_tabstop2_lang_list([
 \ ])
 
 " Python
-if !($PY_VENV_MYENV->empty()) && !($PY_VER_MINOR->empty())
-  let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python' .. $PY_VER_MINOR
+if !($PY_VENV_MYENV->empty())
+  let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python'
   call my_util#add_path([$PY_VENV_MYENV->expand() .. '/bin'])
 endif
 
