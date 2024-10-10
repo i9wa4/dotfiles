@@ -45,7 +45,7 @@ export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 export AWS_DEFAULT_PROFILE=
 
 # Deno
-# export DENO_TLS_CA_STORE="system"
+export DENO_TLS_CA_STORE='system'
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 
