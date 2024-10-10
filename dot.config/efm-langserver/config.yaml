@@ -31,9 +31,9 @@ tools:
       - '%f:%l:%c: %tarning: %m'
       - '%f:%l:%c: %tote: %m'
 
-  terraform-fmt: &terraform-fmt
-    format-command: 'terraform fmt -list=false -write=false ${INPUT}'
-    format-stdin: true
+  # terraform-fmt: &terraform-fmt
+  #   format-command: 'terraform fmt -list=false -write=false ${INPUT}'
+  #   format-stdin: true
 
 languages:
   dockerfile:
