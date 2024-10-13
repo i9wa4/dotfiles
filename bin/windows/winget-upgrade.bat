@@ -19,5 +19,7 @@ exit /b
     winget install --ignore-security-hash --exact --id Zoom.Zoom.EXE
     winget upgrade --ignore-security-hash --all
 
+    wsl --update
+
     pause
 exit /b
