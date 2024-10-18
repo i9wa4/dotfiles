@@ -210,6 +210,8 @@ package-mac:
 	brew install --cask alacritty
 	# Rectangle
 	brew install --cask rectangle
+	# Arc
+	brew install --cask arc
 	# CLI
 	brew -v
 	brew update
