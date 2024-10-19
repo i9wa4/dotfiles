@@ -115,6 +115,23 @@ nnoremap <S-Up>    <C-w>1+
 nnoremap <S-Right> <C-w>5>
 nnoremap <S-Left>  <C-w>5<
 
+" https://zenn.dev/vim_jp/articles/43d021f461f3a4
+nnoremap Y y$
+nnoremap x "_d
+nnoremap X "_D
+xnoremap x "_x
+onoremap x d
+onoremap i<space> iW
+xnoremap i<space> iW
+xnoremap < <gv
+xnoremap > >gv
+nnoremap <expr> <C-k> $'<Cmd>move-1-{v:count1}<CR>=l'
+nnoremap <expr> <C-j> $'<Cmd>move+{v:count1}<CR>=l'
+xnoremap <silent><C-k> :move'<-2<CR>gv=gv
+xnoremap <silent><C-j> :move'>+1<CR>gv=gv
+nnoremap p ]p`]
+nnoremap P ]P`]
+
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
 nnoremap <Plug>(my-Edit) <Nop>
