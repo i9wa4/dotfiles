@@ -117,10 +117,10 @@ nnoremap <S-Left>  <C-w>5<
 
 " https://zenn.dev/vim_jp/articles/43d021f461f3a4
 nnoremap Y y$
-nnoremap x "_d
-nnoremap X "_D
-xnoremap x "_x
-onoremap x d
+" nnoremap x "_d
+" nnoremap X "_D
+" xnoremap x "_x
+" onoremap x d
 onoremap i<space> iW
 xnoremap i<space> iW
 xnoremap < <gv
