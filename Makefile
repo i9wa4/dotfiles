@@ -15,7 +15,7 @@ common: init-zshrc unlink link git-config \
 	volta-init
 
 ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
-	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "general.import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu
 
@@ -33,7 +33,7 @@ wsl: ubuntu-minimal win-copy  ## init for WSL2 Ubuntu
 mac: package-mac common  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	killall Finder > /dev/null 2>&1
-	echo "import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "general.import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
 	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
