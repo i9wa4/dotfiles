@@ -14,8 +14,7 @@ common: init-zshrc unlink link git-config \
 	vim-build nvim-build pyenv-install pyenv-vmu \
 	volta-init
 
-ubuntu-minimal: init-zsh-ubuntu package-ubuntu common
-	echo "general.import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/ubuntu.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
+ubuntu-minimal: init-zsh-ubuntu package-ubuntu common alacritty-ubuntu
 
 ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu
 
@@ -30,10 +29,9 @@ wsl: ubuntu-minimal win-copy  ## init for WSL2 Ubuntu
 	eval `ssh-agent`
 	echo "Restart WSL2"
 
-mac: package-mac common  ## init for Mac
+mac: package-mac common alacritty-mac  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	killall Finder > /dev/null 2>&1
-	echo "general.import = ['~/.config/alacritty/common.toml', '~/.config/alacritty/mac.toml']" > "$${HOME}"/.config/alacritty/alacritty.toml
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
 	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
@@ -50,6 +48,30 @@ init-zshrc:
 	# Zsh
 	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+
+define ALACRITTY_UBUNTU
+[general]
+import = [
+    '~/.config/alacritty/common.toml',
+    '~/.config/alacritty/ubuntu.toml'
+]
+endef
+export ALACRITTY_UBUNTU
+
+define ALACRITTY_MAC
+[general]
+import = [
+    '~/.config/alacritty/common.toml',
+    '~/.config/alacritty/mac.toml'
+]
+endef
+export ALACRITTY_MAC
+
+alacritty-ubuntu:
+	echo "$${ALACRITTY_UBUNTU}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
+
+alacritty-mac:
+	echo "$${ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
 
 link:  ## make symbolic links
 	# dotfiles
