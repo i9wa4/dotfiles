@@ -3,8 +3,8 @@ SHELL := /usr/bin/env bash
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
-
 # all targets are phony
+
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
@@ -31,6 +31,7 @@ wsl: ubuntu-minimal win-copy  ## init for WSL2 Ubuntu
 
 mac: package-mac common alacritty-mac  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
+	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
@@ -228,17 +229,14 @@ package-ubuntu-server:
 package-mac:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# https://namileriblog.com/mac/rust_alacritty/
-	brew install --cask alacritty
-	# Rectangle
-	brew install --cask rectangle
-	# Arc
-	brew install --cask arc
-	# CLI
-	brew -v
-	brew update
-	brew upgrade
-	brew install \
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& brew -v \
+	&& brew update \
+	&& brew upgrade \
+	&& brew install --cask alacritty \
+	&& brew install --cask rectangle \
+	&& brew install --cask arc \
+	&& brew install \
 	  fd \
 	  fzf \
 	  gh \
@@ -251,26 +249,16 @@ package-mac:
 	  tmux \
 	  vim \
 	  wget \
-	  zsh
-	# Neovim
-	# https://github.com/neovim/neovim/blob/master/BUILD.md
-	brew install ninja cmake gettext curl
-	# Deno
-	brew install deno
-	# pyenv
-	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	sudo rm -rf "$${HOME}"/.pyenv
-	curl https://pyenv.run | bash
-	# brew install pyenv
-	brew install openssl readline sqlite3 xz zlib tcl-tk
-	# Go
-	brew install go
-	# Rust
-	brew install rustup-init && rustup-init
-	# AWS CLI
-	brew install awscli
-	# gcloud CLI
-	brew install --cask google-cloud-sdk
+	  zsh \
+	&& brew install ninja cmake gettext curl \
+	&& brew install deno \
+	&& sudo rm -rf "$${HOME}"/.pyenv \
+	&& curl https://pyenv.run | bash \
+	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
+	&& brew install go \
+	&& brew install rustup-init && rustup-init \
+	&& brew install awscli \
+	&& brew install --cask google-cloud-sdk
 
 package-mac-update:
 	brew update
@@ -283,7 +271,8 @@ package-go:
 	go install github.com/x-motemen/ghq@latest
 
 package-rust:
-	cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-readonly:
 	cat etc/ghq-list-readonly.txt | ghq get -p
@@ -331,9 +320,9 @@ git-config:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
+	# && make distclean
 	cd ~/src/github.com/vim/vim/src \
 	&& git checkout master \
-	&& make distclean \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
