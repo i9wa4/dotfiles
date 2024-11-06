@@ -234,8 +234,8 @@ package-mac:
 	&& brew update \
 	&& brew upgrade \
 	&& brew install --cask alacritty \
-	&& brew install --cask rectangle \
 	&& brew install --cask arc \
+	&& brew install --cask rectangle \
 	&& brew install \
 	  fd \
 	  fzf \
@@ -258,7 +258,8 @@ package-mac:
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
-	&& brew install --cask google-cloud-sdk
+	&& brew install --cask google-cloud-sdk \
+	&& brew install --cask aws-vpn-client
 
 package-mac-update:
 	brew update
