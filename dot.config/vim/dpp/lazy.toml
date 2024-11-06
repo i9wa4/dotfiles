@@ -1,6 +1,5 @@
 [[plugins]]
 repo = 'github/copilot.vim'
-if = 0
 on_event = ['VimEnter']
 
 [[plugins]]
