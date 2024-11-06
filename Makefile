@@ -249,8 +249,8 @@ package-mac:
 	  shellcheck \
 	  tmux \
 	  vim \
-	  wget \
 	  zsh \
+	  wget \
 	&& brew install ninja cmake gettext curl \
 	&& brew install deno \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
@@ -259,8 +259,9 @@ package-mac:
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
+	&& brew install --cask aws-vpn-client \
 	&& brew install --cask google-cloud-sdk \
-	&& brew install --cask aws-vpn-client
+	&& brew install --cask snowflake-snowsql
 
 package-mac-update:
 	brew update
