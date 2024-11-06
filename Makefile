@@ -236,6 +236,7 @@ package-mac:
 	&& brew install --cask alacritty \
 	&& brew install --cask arc \
 	&& brew install --cask rectangle \
+	&& brew install visual-studio-code \
 	&& brew install \
 	  fd \
 	  fzf \
