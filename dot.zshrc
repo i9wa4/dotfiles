@@ -97,6 +97,7 @@ zinit light zsh-users/zsh-completions
 _UNAME="$(uname -a)"
 if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
   echo 'Hello, macOS!'
+  alias snowsql=/Applications/SnowSQL.app/Contents/MacOS/snowsql
 elif [ "$(echo "${_UNAME}" | grep Ubuntu)" ]; then
   echo 'Hello, Ubuntu'
   alias pbcopy='xclip -selection clipboard'
