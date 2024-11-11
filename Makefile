@@ -423,6 +423,7 @@ pyenv-update:  ## update pyenv
 
 define REQUIREMENTS_PY_VENV_MYENV
 autopep8
+black
 charset-normalizer<3,>=2
 flake8
 ipykernel
@@ -433,7 +434,6 @@ matplotlib
 numpy
 pandas
 py
-pyautogui
 pynvim
 python-lsp-server[all]
 quarto-cli
