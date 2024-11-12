@@ -247,10 +247,11 @@ package-mac:
 	  nvim \
 	  ripgrep \
 	  shellcheck \
+	  tflint \
 	  tmux \
 	  vim \
-	  zsh \
 	  wget \
+	  zsh \
 	&& brew install ninja cmake gettext curl \
 	&& brew install deno \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
