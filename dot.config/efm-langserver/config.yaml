@@ -6,6 +6,8 @@ lint-debounce: 1s
 tools:
   dockerfile-hadolint: &dockerfile-hadolint
     lint-command: 'hadolint --no-color'
+    lint-source: 'hadolint'
+    lint-stdin: true
     lint-formats:
       - '%f:%l %m'
 
@@ -17,8 +19,13 @@ tools:
     format-command: 'autopep8 -'
     format-stdin: true
 
+  python-black: &python-black
+    format-command: 'black --quiet -'
+    format-stdin: true
+
   python-flake8: &python-flake8
     lint-command: 'flake8 --stdin-display-name ${INPUT} -'
+    lint-source: 'flake8'
     lint-stdin: true
     lint-formats:
       - '%f:%l:%c: %m'
@@ -30,6 +37,13 @@ tools:
       - '%f:%l:%c: %trror: %m'
       - '%f:%l:%c: %tarning: %m'
       - '%f:%l:%c: %tote: %m'
+
+  terraform-tflint: &terraform-tflint
+    lint-command: 'tflint --format compact --filter ${INPUT}'
+    lint-source: 'tflint'
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m'
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
@@ -43,11 +57,13 @@ languages:
     - <<: *json-jq
 
   python:
-    - <<: *python-autopep8
-    # - <<: *python-flake8
+    # - <<: *python-autopep8
+    - <<: *python-black
+    - <<: *python-flake8
 
   sh:
     - <<: *sh-shellcheck
 
   terraform:
+    - <<: *terraform-tflint
     - <<: *terraform-fmt
