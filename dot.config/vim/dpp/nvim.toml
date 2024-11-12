@@ -12,7 +12,7 @@ vim.keymap.set('n', '<space>lf', vim.diagnostic.open_float, opts)
 
 local lspconfig = require('lspconfig')
 lspconfig.efm.setup{}
-lspconfig.pylsp.setup{}
+-- lspconfig.pylsp.setup{}
 -- lspconfig.denols.setup{}
 
 -- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
