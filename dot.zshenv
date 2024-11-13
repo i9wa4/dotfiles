@@ -41,6 +41,9 @@ export TF_VER_MINOR=1.9
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
+# act
+export PATH="${HOME}"/src/github.com/nektos/act/dist/local:"${PATH}"
+
 # AWS
 export AWS_DEFAULT_PROFILE=
 
