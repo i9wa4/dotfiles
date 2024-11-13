@@ -46,6 +46,7 @@ export PATH="${HOME}"/src/github.com/nektos/act/dist/local:"${PATH}"
 
 # AWS
 export AWS_DEFAULT_PROFILE=
+export AWS_PROFILE=
 
 # Deno
 export DENO_TLS_CA_STORE='system'
