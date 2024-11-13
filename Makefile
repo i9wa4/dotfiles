@@ -350,6 +350,10 @@ nvim-build:  ## build Neovim
 	&& make install \
 	&& hash -r \
 
+act-build:  ## build act
+	cd ~/src/github.com/nektos/act \
+	&& make build
+
 docker-init-ubuntu:
 	# https://docs.docker.com/engine/install/ubuntu
 	# Uninstall old versions
