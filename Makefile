@@ -271,9 +271,10 @@ package-mac-update:
 package-go:
 	go install github.com/evilmartians/lefthook@latest
 	go install github.com/mattn/efm-langserver@latest
+	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install github.com/rhysd/vim-startuptime@latest
 	go install github.com/x-motemen/ghq@latest
-	go install github.com/rhysd/actionlint/cmd/actionlint@latest
+	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-rust:
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \

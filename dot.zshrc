@@ -30,8 +30,6 @@ add-zsh-hook precmd _vcs_precmd
 
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 # prompt bigfade
-# PROMPT='%B%F{blue}█▓▒░%B%F{white}%K{blue}%n@%m%b%k%f%F{blue}%K{black}░▒▓█%b%f%k%F{blue}%K{black}█▓▒░%B%F{white}%K{black} %D{%a %b %d} %D{%I:%M:%S%P}
-# %}%B%F{yellow}%K{black}%d>%b%f%k'
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
   PROMPT="%F{red}█▓▒░%f%F{black}%K{red}%n@%m%k%f%F{red}░▒▓█%f%F{white}█▓▒░ %f"
