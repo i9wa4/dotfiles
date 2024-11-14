@@ -10,6 +10,7 @@ if [[ "$0" == *"zsh"* ]]; then
   #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
   #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
   #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
+  export PATH=/usr/local/bin:"${PATH}"
 fi
 
 # Common
