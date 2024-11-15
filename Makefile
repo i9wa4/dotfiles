@@ -223,8 +223,8 @@ package-ubuntu-server:
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
 	sudo apt install -y openssh-server
 	sudo systemctl daemon-reload
-	sudo systemctl enable ssh.service
 	sudo systemctl start ssh.service
+	sudo systemctl enable ssh.service
 
 package-mac:
 	# https://brew.sh/
@@ -253,17 +253,17 @@ package-mac:
 	  vim \
 	  wget \
 	  zsh \
-	&& brew install ninja cmake gettext curl \
-	&& brew install deno \
-	&& sudo rm -rf "$${HOME}"/.pyenv \
+	&& brew install ninja cmake gettext curl \  # Neovim
+	&& brew install deno \  # Deno
+	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
 	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
-	&& brew install go \
-	&& brew install rustup-init && rustup-init \
-	&& brew install awscli \
+	&& brew install go \  # Go
+	&& brew install rustup-init && rustup-init \  # Rust
+	&& brew install awscli \  # AWS CLI
 	&& brew install --cask aws-vpn-client \
-	&& brew install --cask google-cloud-sdk \
-	&& brew install --cask snowflake-snowsql
+	&& brew install --cask google-cloud-sdk \  # gcloud CLI
+	&& brew install --cask snowflake-snowsql  # SnowSQL
 
 package-mac-update:
 	brew update
