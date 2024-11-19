@@ -7,6 +7,7 @@ let g:my_temp_path = '~/work/temp.md'->expand()
 call my_filetype#set_tabstop2_lang_list([
 \   'bash',
 \   'css',
+\   'hcl',
 \   'json',
 \   'liquid',
 \   'mermaid',
