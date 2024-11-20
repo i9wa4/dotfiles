@@ -27,6 +27,9 @@ snippets:
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
+  - name: (Python venv) activate dbtenv
+    keyword: pvda
+    snippet: . "${PY_VENV_DBTENV}"/bin/activate
   # - name: (Python) jupyter-lab
   #   keyword: pjl
   #   snippet:
