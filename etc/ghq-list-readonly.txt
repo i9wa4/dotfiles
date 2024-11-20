@@ -1,6 +1,6 @@
+github.com/arrow2nd/skk-jisyo-emoji-ja
 github.com/nektos/act
 github.com/neovim/neovim
 github.com/skk-dev/dict
 github.com/tfutils/tfenv
-github.com/uasi/skk-emoji-jisyo
 github.com/vim/vim

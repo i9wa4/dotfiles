@@ -126,7 +126,7 @@ on_source = ['ddc.vim']
 # [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
 hook_source = '''
 let s:skk_dev_path = '~/src/github.com/skk-dev/dict/'->expand()
-let s:skk_emoji_path = '~/src/github.com/uasi/skk-emoji-jisyo/'->expand()
+let s:skk_emoji_path = '~/src/github.com/arrow2nd/skk-jisyo-emoji-ja'->expand()
 let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict'
 call skkeleton#config({
 \   'globalDictionaries': [
