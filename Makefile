@@ -451,6 +451,7 @@ export REQUIREMENTS_PY_VENV_MYENV
 
 pyenv-vmu:  ## update venv named myenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
+	# echo "$${REQUIREMENTS_PY_VENV_MYENV}" | xargs python -m pip install
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
@@ -460,7 +461,23 @@ pyenv-vmu:  ## update venv named myenv
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& echo "$${REQUIREMENTS_PY_VENV_MYENV}" | xargs python -m pip install \
+	&& python -m pip install --requirement "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt \
+	&& python -m pip check \
+	&& python --version \
+	&& deactivate
+
+pyenv-vdu:  ## update venv named dbtenv
+	# https://dev.classmethod.jp/articles/change-venv-python-version/
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& if [ -d "$${PY_VENV_DBTENB}" ]; then \
+	  python -m venv "$${PY_VENV_DBTENB}" --clear; \
+	else \
+	  python -m venv "$${PY_VENV_DBTENB}"; \
+	fi \
+	&& . "$${PY_VENV_DBTENB}"/bin/activate \
+	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python -m pip install --upgrade pip setuptools wheel \
+	&& python -m pip install --requirement "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
