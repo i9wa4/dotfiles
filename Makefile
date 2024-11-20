@@ -469,12 +469,12 @@ pyenv-vmu:  ## update venv named myenv
 pyenv-vdu:  ## update venv named dbtenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& if [ -d "$${PY_VENV_DBTENB}" ]; then \
-	  python -m venv "$${PY_VENV_DBTENB}" --clear; \
+	&& if [ -d "$${PY_VENV_DBTENV}" ]; then \
+	  python -m venv "$${PY_VENV_DBTENV}" --clear; \
 	else \
-	  python -m venv "$${PY_VENV_DBTENB}"; \
+	  python -m venv "$${PY_VENV_DBTENV}"; \
 	fi \
-	&& . "$${PY_VENV_DBTENB}"/bin/activate \
+	&& . "$${PY_VENV_DBTENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
 	&& python -m pip install --requirement "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt \
