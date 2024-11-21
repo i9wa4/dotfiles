@@ -29,10 +29,12 @@ let g:lsp_settings = {
 \   },
 \ }
 
-" augroup MyLspSetting
-"   autocmd!
-"   autocmd BufWritePre * execute 'LspDocumentFormatSync'
-" augroup END
+augroup MyLspSetting
+  autocmd!
+  autocmd BufWritePre * execute 'LspDocumentFormatSync'
+augroup END
+
+nnoremap <Plug>(my-Edit)f <Cmd>execute 'LspDocumentFormatSync'<CR>
 '''
 
 [[plugins]]
