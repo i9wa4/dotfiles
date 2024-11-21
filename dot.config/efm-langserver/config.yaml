@@ -42,6 +42,10 @@ tools:
     format-command: 'shfmt -ci -s -bn'
     format-stdin: true
 
+  sql-sqlfmt: &sql-sqlfmt
+    format-command: 'sqlfmt -'
+    format-stdin: true
+
   terraform-tflint: &terraform-tflint
     lint-command: 'tflint --format compact --filter ${INPUT}'
     lint-source: 'tflint'
@@ -68,6 +72,9 @@ languages:
   sh:
     - <<: *sh-shellcheck
     - <<: *sh-shfmt
+
+  sql:
+    - <<: *sql-sqlfmt
 
   terraform:
     - <<: *terraform-tflint
