@@ -5,24 +5,34 @@ lua_source = '''
 -- https://github.com/uga-rosa/ddc-source-lsp-setup
 require('ddc_source_lsp_setup').setup()
 
--- https://github.com/neovim/nvim-lspconfig/blob/master/test/minimal_init.lua
--- Mappings.
-local opts = { buffer = bufnr, noremap = true, silent = true }
-vim.keymap.set('n', '<space>lf', vim.diagnostic.open_float, opts)
-
+-- https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#configuration
 local lspconfig = require('lspconfig')
-
 lspconfig.efm.setup{}
 -- lspconfig.pylsp.setup{}
 -- lspconfig.denols.setup{}
 
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+-- :help lsp-defaults-disable
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    -- unset
+    vim.bo[ev.buf].formatexpr = nil
+    vim.bo[ev.buf].omnifunc = nil
+
+    -- unmap
+    -- vim.keymap.del('n', 'K', { buffer = ev.buf })
+
+    -- map
+    local opts = { buffer = bufnr, noremap = true, silent = true }
+    vim.keymap.set('n', '<space>lf', vim.diagnostic.open_float, opts)
+    vim.keymap.set('n', '<Plug>(my-Edit)f', vim.lsp.buf.format, opts)
+  end,
+})
+
+vim.api.nvim_create_autocmd('BufWritePre', {
   callback = function()
     vim.lsp.buf.format()
   end,
 })
-
-vim.keymap.set('n', '<Plug>(my-Edit)f', vim.lsp.buf.format, opts)
 '''
 
 [[plugins]]
