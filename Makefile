@@ -235,9 +235,11 @@ package-mac:
 	&& brew upgrade \
 	&& brew install --cask alacritty \
 	&& brew install --cask arc \
+	&& brew install --cask docker \
+	&& brew install --cask font-myricam \
 	&& brew install --cask rectangle \
-	&& brew install --cask zoom \
 	&& brew install --cask visual-studio-code \
+	&& brew install --cask zoom \
 	&& brew install \
 	  fd \
 	  fzf \
