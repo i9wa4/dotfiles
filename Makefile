@@ -118,6 +118,7 @@ package-update:
 	elif [ "$$(echo "$${_UNAME}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make package-ubuntu-update; \
+	  make win-copy; \
 	elif [ "$$(echo "$${_UNAME}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_UNAME}" | grep el7)" ]; then \
