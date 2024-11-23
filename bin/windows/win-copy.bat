@@ -8,6 +8,8 @@ exit /b
     chcp 65001>nul
     cd /d %~dp0
 
+    cd ..\..
+
     @REM %USERPROFILE%
     copy /y ".\etc\windows\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 
