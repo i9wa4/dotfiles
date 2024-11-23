@@ -79,7 +79,7 @@
     exit
     ```
 
-1. Run `C:\work\util\win-copy.bat`.
+1. Run `C:\work\util\bin\win-copy.bat`.
 
 1. Run `C:\work\util\bin\winget-upgrade.bat`.
 

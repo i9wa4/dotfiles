@@ -5,7 +5,7 @@ endif
 
 function s:init_plugin(plugin)
   " Search from ~/work directory
-  let s:dir = '~/work/git/plugins'->expand() .. a:plugin->fnamemodify(':t')
+  let s:dir = '~/work/plugins'->expand() .. a:plugin->fnamemodify(':t')
   if !s:dir->isdirectory()
     " Search from $CACHE directory
     let s:dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin

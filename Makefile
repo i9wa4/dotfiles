@@ -426,29 +426,9 @@ pyenv-list:  ## show installed Python versions
 pyenv-update:  ## update pyenv
 	git -C "$${HOME}"/.pyenv pull
 
-define REQUIREMENTS_PY_VENV_MYENV
-autopep8
-black
-charset-normalizer<3,>=2
-flake8
-ipykernel
-japanize-matplotlib
-jupyterlab
-jupytext
-matplotlib
-numpy
-pandas
-py
-pynvim
-python-lsp-server[all]
-quarto-cli
-scikit-learn
-endef
-export REQUIREMENTS_PY_VENV_MYENV
-
 pyenv-vmu:  ## update venv named myenv
-	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	# echo "$${REQUIREMENTS_PY_VENV_MYENV}" | xargs python -m pip install
+	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
@@ -535,18 +515,14 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 win-copy:  ## copy config files for Windows
 	# WSL2
-	# sudo cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/wsl.conf /etc/wsl.conf
 	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
-	# Windows copy
+	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                        $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                 $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                        $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/i9wa4/dotfiles/bin/windows/win-copy.bat   $(MF_WIN_UTIL_DIR)
-	rm -f   $(MF_WIN_UTIL_DIR)/bin/windows/win-copy.bat
-	echo "$${REQUIREMENTS_PY_VENV_MYENV}" | tee $(MF_WIN_UTIL_DIR)/etc/requirements.txt
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin            $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config     $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode     $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc            $(MF_WIN_UTIL_DIR)
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help
