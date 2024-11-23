@@ -287,18 +287,12 @@ package-rust:
 ghq-get-readonly:
 	cat etc/ghq-list-readonly.txt | ghq get -p
 
-ghq-get-private:
-	cat etc/ghq-list-private.txt | ghq get -p
+ghq-get-local:
+	cat ~/str/etc/ghq-list-local.txt | ghq get -p
 
-ghq-get-company:
-	cat ~/str/etc/ghq-list-company.txt | ghq get -p
-
-ghq-backup-private:
-	ghq list > etc/ghq-list-private.txt
-
-ghq-backup-company:
+ghq-backup-local:
 	mkdir -p ~/str/etc \
-	&& ghq list > ~/str/etc/ghq-list-company.txt
+	&& ghq list > ~/str/etc/ghq-list-local.txt
 
 git-config:
 	git config --global gpg.format ssh
