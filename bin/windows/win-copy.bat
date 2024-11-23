@@ -11,7 +11,7 @@ exit /b
     cd ..\..
 
     @REM %USERPROFILE%
-    copy /y ".\etc\windows\dot.wslconfig" "%USERPROFILE%\.wslconfig"
+    copy /y ".\etc\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 
     @REM Alacritty
     set ALACRITTY_DIR=%APPDATA%\alacritty
