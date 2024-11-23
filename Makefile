@@ -519,10 +519,10 @@ win-copy:  ## copy config files for Windows
 	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin            $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config     $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode     $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc            $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/bin         $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config  $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode  $(MF_WIN_UTIL_DIR)
+	cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/etc         $(MF_WIN_UTIL_DIR)
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help
