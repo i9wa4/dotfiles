@@ -20,6 +20,4 @@ exit /b
     winget upgrade --ignore-security-hash --all
 
     wsl --update
-
-    pause
 exit /b
