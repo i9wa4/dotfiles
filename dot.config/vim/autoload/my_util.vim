@@ -132,3 +132,11 @@ function! my_util#add_path(path_list) abort
   endfor
   call setenv('PATH', join(l:path_list, l:separator))
 endfunction
+
+
+function! my_util#add_python_venv(venv_path) abort
+  if !(a:venv_path->empty())
+    let g:python3_host_prog = a:venv_path->expand() .. '/bin/python'
+    call my_util#add_path([a:venv_path->expand() .. '/bin'])
+  endif
+endfunction

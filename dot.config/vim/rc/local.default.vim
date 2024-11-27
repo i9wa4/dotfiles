@@ -24,10 +24,7 @@ call my_filetype#set_tabstop2_lang_list([
 \ ])
 
 " Python
-if !($PY_VENV_MYENV->empty())
-  let g:python3_host_prog = $PY_VENV_MYENV->expand() .. '/bin/python'
-  call my_util#add_path([$PY_VENV_MYENV->expand() .. '/bin'])
-endif
+call my_util#add_python_venv($PY_VENV_MYENV)
 
 " Denops Plugin Development
 " let g:denops#debug = 1
