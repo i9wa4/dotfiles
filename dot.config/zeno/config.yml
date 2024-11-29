@@ -58,7 +58,7 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
-      && make ghq-get-readonly
+      && make ghq-get-essential
       && make pyenv-list
       && make tfenv-list
       && cd -
