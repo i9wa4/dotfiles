@@ -114,5 +114,6 @@ on_ft = ['terraform', 'terraform-vars', 'tf']
 #
 [[plugins]]
 repo = 'i9wa4/vim-dbt-jump2def'
+depends = ['denops.vim']
 # on_ft = ['sql']
-on_event = ['VimEnter']
+on_event = ['BufEnter']

@@ -120,7 +120,7 @@ function! my_util#add_path(path_list) abort
     let l:separator = ";"
   endif
 
-  let l:path_list = split(getenv('PATH'), l:separator)
+  let l:path_list = uniq(split(getenv('PATH'), l:separator))
   for l:item in reverse(a:path_list)
     let l:index = index(l:path_list, l:item)
     if l:index < 0
