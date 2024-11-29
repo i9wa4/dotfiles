@@ -4,8 +4,8 @@ if !$CACHE->isdirectory()
 endif
 
 function s:init_plugin(plugin)
-  " Search from ~/work directory
-  let s:dir = '~/work/plugins'->expand() .. a:plugin->fnamemodify(':t')
+  " Search from ~/src directory
+  let s:dir = '~/src/github.com/'->expand() .. a:plugin->fnamemodify(':t')
   if !s:dir->isdirectory()
     " Search from $CACHE directory
     let s:dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin
@@ -33,7 +33,7 @@ call s:init_plugin('Shougo/dpp.vim')
 " dpp configurations.
 "
 " Set dpp base path (required)
-const s:dpp_base = '~/.cache/dpp'->expand()
+const s:dpp_base = $CACHE .. '/dpp'
 let $BASE_DIR = '<sfile>'->expand()->fnamemodify(':h')
 
 if has('nvim')
