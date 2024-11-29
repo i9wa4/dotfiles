@@ -285,14 +285,22 @@ package-rust:
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-essential:
-	cat etc/ghq-list-essential.txt | ghq get -p
+	_LIST_PATH=etc/ghq-list-essential.txt \
+	&& if [ -f "$${_LIST_PATH}" ]; then \
+	  cat "$${_LIST_PATH}" | ghq get -p; \
+	fi
 
 ghq-get-local:
-	cat ~/str/etc/ghq-list-local.txt | ghq get -p
+	_LIST_PATH=~/str/etc/ghq-list-local.txt \
+	&& if [ -f "$${_LIST_PATH}" ]; then \
+	  cat "$${_LIST_PATH}" | ghq get -p; \
+	fi
 
 ghq-backup-local:
-	mkdir -p ~/str/etc \
-	&& ghq list > ~/str/etc/ghq-list-local.txt
+	_LIST_PATH=~/str/etc/ghq-list-local.txt \
+	&& mkdir -p ~/str/etc \
+	&& ghq list >> "$${_LIST_PATH}" \
+	&& sort --unique "$${_LIST_PATH}" -o "$${_LIST_PATH}"
 
 git-config:
 	git config --global gpg.format ssh
