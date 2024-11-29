@@ -1,7 +1,9 @@
 github.com/arrow2nd/skk-jisyo-emoji-ja
+github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/vim-dbt-jump2def
 github.com/i9wa4/vim-get-git-branch-name
 github.com/i9wa4/vim-markdown-number-header
+github.com/i9wa4/zenn-i9wa4
 github.com/nektos/act
 github.com/neovim/neovim
 github.com/skk-dev/dict
