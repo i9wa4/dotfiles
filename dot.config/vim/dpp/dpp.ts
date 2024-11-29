@@ -39,7 +39,6 @@ export class Config extends BaseConfig {
 
     const [context, options] = await args.contextBuilder.get(args.denops);
 
-
     // Load toml plugins
     const tomls: Toml[] = [];
     for (
@@ -124,7 +123,7 @@ export class Config extends BaseConfig {
       "local",
       "local",
       {
-        directory: "~/work/plugins",
+        directory: "~/src/github.com/i9wa4",
         options: {
           frozen: true,
           merged: false,

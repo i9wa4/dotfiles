@@ -10,7 +10,7 @@ SHELL := /usr/bin/env bash
 
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
-	ghq-get-readonly \
+	ghq-get-essential \
 	vim-build nvim-build pyenv-install pyenv-vmu \
 	volta-init
 
@@ -284,8 +284,8 @@ package-rust:
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
-ghq-get-readonly:
-	cat etc/ghq-list-readonly.txt | ghq get -p
+ghq-get-essential:
+	cat etc/ghq-list-essential.txt | ghq get -p
 
 ghq-get-local:
 	cat ~/str/etc/ghq-list-local.txt | ghq get -p

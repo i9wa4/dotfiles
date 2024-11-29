@@ -108,3 +108,10 @@ augroup END
 [[plugins]]
 repo = 'hashivim/vim-terraform'
 on_ft = ['terraform', 'terraform-vars', 'tf']
+
+# --------------------------------------
+# dbt
+#
+[[plugins]]
+repo = 'i9wa4/vim-dbt-jump2def'
+on_ft = ['sql']

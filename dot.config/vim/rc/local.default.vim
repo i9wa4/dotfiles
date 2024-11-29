@@ -27,5 +27,5 @@ call my_filetype#set_tabstop2_lang_list([
 call my_util#add_python_venv($PY_VENV_MYENV)
 
 " Denops Plugin Development
-" let g:denops#debug = 1
+let g:denops#debug = 1
 " set runtimepath^=~/src/github.com/i9wa4/vim-markdown-number-header
