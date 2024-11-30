@@ -7,9 +7,9 @@ require('ddc_source_lsp_setup').setup()
 
 -- https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#configuration
 local lspconfig = require('lspconfig')
-lspconfig.efm.setup{}
 -- lspconfig.pylsp.setup{}
--- lspconfig.denols.setup{}
+lspconfig.denols.setup{}
+lspconfig.efm.setup{}
 
 -- :help lsp-defaults-disable
 vim.api.nvim_create_autocmd('LspAttach', {
