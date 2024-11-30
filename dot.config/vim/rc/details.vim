@@ -55,6 +55,7 @@ set ambiwidth=double
 set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
 set number
 set relativenumber
+set signcolumn=number
 set wrap
 
 " Window

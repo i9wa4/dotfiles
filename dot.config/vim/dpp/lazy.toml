@@ -24,7 +24,7 @@ repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['BufEnter']
 hook_source = '''
-let g:gin_proxy_apply_without_confirm = 1
+let g:gin_proxy_apply_without_confirm = v:true
 
 function! s:my_gin_log() abort
   let g:gin_log_default_args = [
