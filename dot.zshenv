@@ -36,7 +36,7 @@ export PYENV_ROOT="${HOME}"/.pyenv
 
 # tfenv
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
-export TF_VER_MINOR=1.10
+export TF_VER_MINOR=1.9
 
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
