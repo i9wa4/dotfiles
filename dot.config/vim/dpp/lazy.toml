@@ -115,8 +115,7 @@ on_ft = ['terraform', 'terraform-vars', 'tf']
 [[plugins]]
 repo = 'i9wa4/vim-dbt-jump2def'
 depends = ['denops.vim']
-# on_ft = ['sql']
-on_event = ['BufEnter']
+on_ft = ['sql']
 hook_source = '''
-nnoremap <Space>lj <Cmd>execute 'DbtJump2ModelDef'<CR>
+nnoremap <Space>dj <Cmd>execute 'DbtJump2ModelDef'<CR>
 '''

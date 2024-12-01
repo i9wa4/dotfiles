@@ -2,8 +2,8 @@
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
-
 # all targets are phony
+
 
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
@@ -238,6 +238,7 @@ package-mac:
 	&& brew install --cask arc \
 	&& brew install --cask docker \
 	&& brew install --cask font-myricam \
+	&& brew install --cask google-drive \
 	&& brew install --cask rectangle \
 	&& brew install --cask visual-studio-code \
 	&& brew install --cask zoom \
