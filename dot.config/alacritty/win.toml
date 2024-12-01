@@ -1,5 +1,5 @@
-[terminal.shell]
-program = "wsl"
+# [terminal.shell]
+# program = "wsl"
 
 [font]
 size = 20
