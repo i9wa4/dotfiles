@@ -112,6 +112,7 @@ package-update:
 	if [ "$$(echo "$${_UNAME}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  make package-mac-update; \
+	  make mac-copy; \
 	elif [ "$$(echo "$${_UNAME}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	  make package-ubuntu-update; \
@@ -499,6 +500,12 @@ volta-init:
 
 volta-update:
 	curl https://get.volta.sh | bash
+
+mac-copy:  ## copy files for Mac
+	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
+	&& if [ -d "$${_google_drive_dir}" ]; then \
+	  cp -rf "$${HOME}"/str "$${_google_drive_dir}"; \
+	fi
 
 define WSLCONF_IN_WSL
 [boot]
