@@ -35,7 +35,14 @@ mac: package-mac common alacritty-mac  ## init for Mac
 	killall Finder > /dev/null 2>&1
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
-	find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
+	# find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
+	fd --no-ignore ".DS_Store" "$${HOME}" | xargs rm -f
+
+mac-copy:  ## copy files for Mac
+	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
+	&& if [ -d "$${_google_drive_dir}" ]; then \
+	  cp -rf "$${HOME}"/str "$${_google_drive_dir}"; \
+	fi
 
 
 init-zsh-ubuntu:
@@ -500,12 +507,6 @@ volta-init:
 
 volta-update:
 	curl https://get.volta.sh | bash
-
-mac-copy:  ## copy files for Mac
-	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
-	&& if [ -d "$${_google_drive_dir}" ]; then \
-	  cp -rf "$${HOME}"/str "$${_google_drive_dir}"; \
-	fi
 
 define WSLCONF_IN_WSL
 [boot]
