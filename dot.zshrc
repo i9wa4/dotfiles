@@ -4,7 +4,9 @@ compinit
 promptinit
 
 # Keybind
+# https://bbs.archlinux.org/viewtopic.php?id=52173
 bindkey -v
+bindkey '\e[3~' delete-char
 
 
 # Git

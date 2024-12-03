@@ -32,5 +32,4 @@ exit /b
 
     @REM CorvusSKK
     set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
-    copy /y
 exit /b
