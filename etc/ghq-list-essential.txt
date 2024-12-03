@@ -1,4 +1,4 @@
-github.com/arrow2nd/skk-jisyo-emoji-ja
+github.com/uasi/skk-emoji-jisyo
 github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/vim-dbt-jump2def
 github.com/i9wa4/vim-get-git-branch-name

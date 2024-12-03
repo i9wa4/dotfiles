@@ -15,7 +15,6 @@ exit /b
 
     @REM Alacritty
     set ALACRITTY_DIR=%APPDATA%\alacritty
-    rmdir /q /s "%ALACRITTY_DIR%"
     xcopy /e /i /y ".\dot.config\alacritty" "%ALACRITTY_DIR%"
     echo [general]>                                 "%ALACRITTY_DIR%\alacritty.toml"
     echo import = [>>                               "%ALACRITTY_DIR%\alacritty.toml"
