@@ -32,4 +32,6 @@ exit /b
 
     @REM CorvusSKK
     set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
+    copy /y ".\dot.config\skk\mydict.utf8" "%CORVUS_SKK_DIR%\userdict.txt"
+    xcopy /e /i /y ".\skk" "%CORVUS_SKK_DIR%"
 exit /b

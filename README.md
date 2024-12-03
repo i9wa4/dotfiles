@@ -62,10 +62,9 @@
 
 1. Install CorvusSKK.
     - <https://github.com/nathancorvussolis/corvusskk>
-1. Enable the Dictionaries.
-    - `%APPDATA%\CorvusSKK`
+1. Load the dictionaries in `%APPDATA%\CorvusSKK`.
 1. Configure sticky shift.
-    - "設定" --> "キー1" --> "変換位置": ";"
+    - 「設定」 -> 「キー1」 -> 「変換位置 `;`」
 
 ### 4.3. macOS
 
