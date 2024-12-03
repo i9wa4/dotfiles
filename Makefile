@@ -43,6 +43,13 @@ mac-copy:  ## copy files for Mac
 	&& if [ -d "$${_google_drive_dir}" ]; then \
 	  cp -rf "$${HOME}"/str "$${_google_drive_dir}"; \
 	fi
+	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
+	&& rm -rf "$${_macskk_dict_dir}" \
+	&& mkdir -p "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8            "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
+	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                             "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                        "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/src/github.com/arrow2nd/skk-jisyo-emoji-ja/skk-jisyo-emoji-ja.utf8  "$${_macskk_dict_dir}"
 
 
 init-zsh-ubuntu:
@@ -81,8 +88,6 @@ alacritty-ubuntu:
 alacritty-mac:
 	echo "$${ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
 
-MACSKK_DICT_DIR := "${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries
-
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
@@ -104,11 +109,6 @@ link:  ## make symbolic links
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  make mac-copy; \
-	  mkdir -p "$(MACSKK_DICT_DIR)"; \
-	  cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8            "$(MACSKK_DICT_DIR)"/skk-jisyo.utf8; \
-	  cp -rf "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                             "$(MACSKK_DICT_DIR)"; \
-	  cp -rf "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                        "$(MACSKK_DICT_DIR)"; \
-	  cp -rf "$${HOME}"/src/github.com/arrow2nd/skk-jisyo-emoji-ja/skk-jisyo-emoji-ja.utf8  "$(MACSKK_DICT_DIR)"; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
@@ -136,22 +136,6 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];                 then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
-	# OS-specific unlink & delete
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
-	  rm -rf "$(MACSKK_DICT_DIR)"; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
-	else \
-	  echo 'Which OS are you using?'; \
-	fi
 
 package-update:
 	# OS-specific update
