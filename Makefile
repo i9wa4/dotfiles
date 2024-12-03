@@ -81,6 +81,8 @@ alacritty-ubuntu:
 alacritty-mac:
 	echo "$${ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
 
+MACSKK_DICT_DIR := "${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries
+
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
@@ -97,6 +99,28 @@ link:  ## make symbolic links
 	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno              "$${XDG_CONFIG_HOME}"
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	# OS-specific link & copy
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  make mac-copy; \
+	  mkdir -p "$(MACSKK_DICT_DIR)"; \
+	  cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8            "$(MACSKK_DICT_DIR)"/skk-jisyo.utf8; \
+	  cp -rf "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                             "$(MACSKK_DICT_DIR)"; \
+	  cp -rf "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                        "$(MACSKK_DICT_DIR)"; \
+	  cp -rf "$${HOME}"/src/github.com/arrow2nd/skk-jisyo-emoji-ja/skk-jisyo-emoji-ja.utf8  "$(MACSKK_DICT_DIR)"; \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	  make win-copy; \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
 
 unlink:  ## unlink symbolic links
 	# dotfiles
@@ -112,24 +136,38 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];                then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];                 then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];                then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	# OS-specific unlink & delete
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  rm -rf "$(MACSKK_DICT_DIR)"; \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
 
 package-update:
 	# OS-specific update
-	_UNAME="$$(uname -a)"; \
-	if [ "$$(echo "$${_UNAME}" | grep Darwin)" ]; then \
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  make package-mac-update; \
-	  make mac-copy; \
-	elif [ "$$(echo "$${_UNAME}" | grep Ubuntu)" ]; then \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	  make package-ubuntu-update; \
-	elif [ "$$(echo "$${_UNAME}" | grep WSL2)" ]; then \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make package-ubuntu-update; \
-	  make win-copy; \
-	elif [ "$$(echo "$${_UNAME}" | grep arm)" ]; then \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_UNAME}" | grep el7)" ]; then \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
 	  echo 'Hello, CentOS!'; \
 	else \
 	  echo 'Which OS are you using?'; \
@@ -242,14 +280,16 @@ package-mac:
 	&& brew -v \
 	&& brew update \
 	&& brew upgrade \
-	&& brew install --cask alacritty \
-	&& brew install --cask arc \
-	&& brew install --cask docker \
-	&& brew install --cask font-myricam \
-	&& brew install --cask google-drive \
-	&& brew install --cask rectangle \
-	&& brew install --cask visual-studio-code \
-	&& brew install --cask zoom \
+	&& brew install --cask \
+	  alacritty \
+	  arc \
+	  docker \
+	  font-myricam \
+	  google-drive \
+	  mtgto/macskk/macskk \
+	  rectangle \
+	  visual-studio-code \
+	  zoom \
 	&& brew install \
 	  fd \
 	  fzf \
@@ -294,22 +334,22 @@ package-rust:
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-essential:
-	_LIST_PATH=etc/ghq-list-essential.txt \
-	&& if [ -f "$${_LIST_PATH}" ]; then \
-	  cat "$${_LIST_PATH}" | ghq get -p; \
+	_list_path=etc/ghq-list-essential.txt \
+	&& if [ -f "$${_list_path}" ]; then \
+	  cat "$${_list_path}" | ghq get -p; \
 	fi
 
 ghq-get-local:
-	_LIST_PATH=~/str/etc/ghq-list-local.txt \
-	&& if [ -f "$${_LIST_PATH}" ]; then \
-	  cat "$${_LIST_PATH}" | ghq get -p; \
+	_list_path=~/str/etc/ghq-list-local.txt \
+	&& if [ -f "$${_list_path}" ]; then \
+	  cat "$${_list_path}" | ghq get -p; \
 	fi
 
 ghq-backup-local:
-	_LIST_PATH=~/str/etc/ghq-list-local.txt \
+	_list_path=~/str/etc/ghq-list-local.txt \
 	&& mkdir -p ~/str/etc \
-	&& ghq list >> "$${_LIST_PATH}" \
-	&& sort --unique "$${_LIST_PATH}" -o "$${_LIST_PATH}"
+	&& ghq list >> "$${_list_path}" \
+	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-config:
 	git config --global gpg.format ssh
