@@ -24,8 +24,8 @@ call ddc#custom#patch_global('sourceOptions', #{
 call ddc#custom#patch_global('sourceOptions', #{
 \   around: #{
 \     mark: 'around',
-\   },
 \ })
+  \   },
 call ddc#custom#patch_global('sourceOptions', #{
 \   denippet: #{
 \     mark: 'denippet',
@@ -49,8 +49,8 @@ call ddc#custom#patch_global('sourceOptions', {
 \ }})
 call ddc#custom#patch_filetype(
 \   ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
-\   'sourceOptions': {
 \     'file': {
+\   'sourceOptions': {
 \       'forceCompletionPattern': '\S\\\S*',
 \     },
 \   },
@@ -126,13 +126,13 @@ on_source = ['ddc.vim']
 # [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
 hook_source = '''
 let s:skk_dev_path = '~/src/github.com/skk-dev/dict/'->expand()
-let s:skk_emoji_path = '~/src/github.com/arrow2nd/skk-jisyo-emoji-ja/'->expand()
+let s:skk_emoji_path = '~/src/github.com/uasi/skk-emoji-jisyo'->expand()
 let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict.utf8'
 call skkeleton#config({
 \   'globalDictionaries': [
 \     s:skk_dev_path .. 'SKK-JISYO.L',
 \     s:skk_dev_path .. 'SKK-JISYO.jinmei',
-\     s:skk_emoji_path .. 'skk-jisyo-emoji-ja.utf8',
+\     s:skk_emoji_path .. 'SKK-JISYO.emoji.utf8',
 \   ],
 \   'immediatelyDictionaryRW': v:false,
 \   'userDictionary': s:dict_path,

@@ -46,10 +46,10 @@ mac-copy:  ## copy files for Mac
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
-	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8            "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
-	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                             "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                        "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/src/github.com/arrow2nd/skk-jisyo-emoji-ja/skk-jisyo-emoji-ja.utf8  "$${_macskk_dict_dir}"
+	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8    "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
+	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                     "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo                         "$${_macskk_dict_dir}"
 
 
 init-zsh-ubuntu:
@@ -564,7 +564,7 @@ win-copy:  ## copy config files for Windows
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                             $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                             $(MF_WIN_UTIL_DIR)
 	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                                    $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/arrow2nd/skk-jisyo-emoji-ja/skk-jisyo-emoji-ja.utf8   $(MF_WIN_UTIL_DIR)/skk
+	cp -f   "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8             $(MF_WIN_UTIL_DIR)/skk
 	cp -f   "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                              $(MF_WIN_UTIL_DIR)/skk
 	cp -f   "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                         $(MF_WIN_UTIL_DIR)/skk
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
