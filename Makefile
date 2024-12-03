@@ -41,7 +41,7 @@ mac-delete-ds_store:  ## delete .DS_Store in ~/src
 mac-copy:  ## copy files for Mac
 	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
 	&& if [ -d "$${_google_drive_dir}" ]; then \
-	  cp -rf "$${HOME}"/str "$${_google_drive_dir}"; \
+	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
 	fi
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
 	&& mkdir -p "$${_macskk_dict_dir}" \
