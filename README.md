@@ -6,7 +6,7 @@
 - Ubuntu 24.04 LTS
 - Ubuntu 24.04 LTS (Windows, WSL2)
 
-## 2. Pre Installation
+## 2. OS-specific Pre Installation
 
 ### 2.1. Windows
 
@@ -33,7 +33,7 @@
     && _uname="$$(uname -a)"; \
     if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
       echo 'Hello, macOS!'; \
-      make mac;
+      make mac; \
     elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
       echo 'Hello, Ubuntu'; \
       sudo apt install -y make; \
@@ -62,9 +62,12 @@
 
 1. Install CorvusSKK.
     - <https://github.com/nathancorvussolis/corvusskk>
+1. Enable the Dictionaries.
+    - `%APPDATA%\CorvusSKK`
 1. Configure sticky shift.
+    - "設定" --> "キー1" --> "変換位置": ";"
 
-### macOS
+### 4.3. macOS
 
 #### 4.3.1. macSKK
 
@@ -82,9 +85,15 @@
     - [Authenticating using IAM user credentials for the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)
     - Follow the instroctions of "Access Keys".
 
-### 5.2. Arc
+### 5.2. gh
 
-#### 5.2.1. Search Engine
+1. Choose SSH for Git operation protocol.
+1. Skip uploading SSH public key.
+1. Login with a web browser: <https://github.com/login/device>.
+
+### 5.3. Arc
+
+#### 5.3.1. Search Engine
 
 - Google Japanese Search
     - `https://www.google.com/search?q=%s`
@@ -94,20 +103,3 @@
     - `https://duckduckgo.com/?q=%s&kl=jp-jp&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
 - DuckDuckGo English Search
     - `https://duckduckgo.com/?q=%s&kl=us-en&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
-
-### 5.3. gh
-
-1. Choose SSH for Git operation protocol.
-1. Skip uploading SSH public key.
-1. Login with a web browser: <https://github.com/login/device>.
-
-### 5.4. Zsh
-
-- When the history search does not work with `<Ctrl-R>`, add the followings to `~/.zshrc`.
-
-    ```sh
-    # <https://bbs.archlinux.org/viewtopic.php?id=52173>
-    bindkey -v
-    bindkey '\e[3~' delete-char
-    bindkey '^R' history-incremental-search-backward
-    ```
