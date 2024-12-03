@@ -29,4 +29,8 @@ exit /b
     mkdir "%CODE_DIR%\snippets"
     copy /y ".\dot.vscode\settings.json" "%CODE_DIR%\settings.json"
     xcopy /e /i /y ".\dot.config\vim\snippet" "%CODE_DIR%\snippets"
+
+    @REM CorvusSKK
+    set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
+    copy /y
 exit /b
