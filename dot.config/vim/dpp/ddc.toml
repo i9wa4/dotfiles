@@ -127,7 +127,7 @@ on_source = ['ddc.vim']
 hook_source = '''
 let s:skk_dev_path = '~/src/github.com/skk-dev/dict/'->expand()
 let s:skk_emoji_path = '~/src/github.com/arrow2nd/skk-jisyo-emoji-ja/'->expand()
-let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict'
+let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict.utf8'
 call skkeleton#config({
 \   'globalDictionaries': [
 \     s:skk_dev_path .. 'SKK-JISYO.L',
