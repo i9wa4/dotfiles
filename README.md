@@ -58,7 +58,7 @@
 1. Run `C:\work\util\bin\win-copy.bat`.
 1. Run `C:\work\util\bin\winget-upgrade.bat`.
 
-### 4.2. CorvusSKK
+#### 4.1.1. CorvusSKK
 
 1. Install CorvusSKK.
     - <https://github.com/nathancorvussolis/corvusskk>
@@ -66,11 +66,11 @@
 1. Configure sticky shift.
     - 「設定」 -> 「キー1」 -> 「変換位置 `;`」
 
-### 4.3. macOS
+### 4.2. macOS
 
-#### 4.3.1. macSKK
+#### 4.2.1. macSKK
 
-1. Enable the Dictionaries.
+1. Enable the dictionaries.
 
 ## 5. OS-common Post Installation
 
