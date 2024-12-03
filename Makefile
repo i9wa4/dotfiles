@@ -43,8 +43,9 @@ mac-copy:  ## copy files for Mac
 	&& if [ -d "$${_google_drive_dir}" ]; then \
 	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
 	fi
+
+mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
-	&& mkdir -p "$${_macskk_dict_dir}" \
 	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8            "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
 	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                             "$${_macskk_dict_dir}" \
 	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                        "$${_macskk_dict_dir}" \
