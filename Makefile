@@ -35,7 +35,6 @@ mac: package-mac common alacritty-mac  ## init for Mac
 	killall Finder > /dev/null 2>&1
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
-	# find "$${HOME}"/src -name ".DS_Store" -type f -ls -delete
 	fd ".DS_Store" "$${HOME}" --hidden --exclude "Library/**" | xargs rm -f
 
 mac-copy:  ## copy files for Mac
