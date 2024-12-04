@@ -49,7 +49,7 @@ mac-skk-copy:  ## copy SKK dictionaries for Mac
 	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8    "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
 	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                     "$${_macskk_dict_dir}" \
 	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo                         "$${_macskk_dict_dir}"
+	&& cp -f "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8    "$${_macskk_dict_dir}"
 
 
 init-zsh-ubuntu:
