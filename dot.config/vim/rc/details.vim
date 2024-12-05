@@ -126,10 +126,10 @@ onoremap i<space> iW
 xnoremap i<space> iW
 " xnoremap < <gv
 " xnoremap > >gv
-nnoremap <expr> <C-j> $'<Cmd>move+{v:count1}<CR>=l'
-nnoremap <expr> <C-k> $'<Cmd>move-1-{v:count1}<CR>=l'
-xnoremap <silent><C-j> :move'>+1<CR>gv=gv
-xnoremap <silent><C-k> :move'<-2<CR>gv=gv
+" nnoremap <expr> <C-j> $'<Cmd>move+{v:count1}<CR>=l'
+" nnoremap <expr> <C-k> $'<Cmd>move-1-{v:count1}<CR>=l'
+" xnoremap <silent><C-j> :move'>+1<CR>gv=gv
+" xnoremap <silent><C-k> :move'<-2<CR>gv=gv
 " nnoremap p ]p`]
 " nnoremap P ]P`]
 
