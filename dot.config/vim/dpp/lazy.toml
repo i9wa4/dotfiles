@@ -47,7 +47,7 @@ endfunction
 
 nnoremap <Plug>(my-Gin) <Nop>
 nmap <Space>g <Plug>(my-Gin)
-nnoremap <Plug>(my-Gin)aa <Cmd>execute 'Gin add .'<CR>
+nnoremap <Plug>(my-Gin)aa <Cmd>execute 'Gin add -A'<CR>
 nnoremap <Plug>(my-Gin)au <Cmd>execute 'Gin add -u'<CR>
 nnoremap <Plug>(my-Gin)c  <Cmd>execute 'Gin commit'<CR>
 nnoremap <Plug>(my-Gin)d  <Cmd>execute 'GinDiff'<CR>
