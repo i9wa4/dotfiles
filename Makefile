@@ -440,14 +440,14 @@ nix-install-ubuntu:  ## install Nix
 
 pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& pyenv install "$(PY_VER_PATCH)" \
+	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
 	&& pyenv global "$(PY_VER_PATCH)" \
 	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-install-latest: pyenv-list  ## install latest Python
 	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
-	&& pyenv install "$${_py_ver_latest}" \
+	&& pyenv install "$${_py_ver_latest}" --skip-existing \
 	&& pyenv global "$${_py_ver_latest}" \
 	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
