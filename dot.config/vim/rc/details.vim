@@ -145,7 +145,6 @@ nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_dict_path<CR>
-nnoremap <Plug>(my-Filer)g <Cmd>execute 'edit' g:my_gtd_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
 nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_temp_path<CR>
