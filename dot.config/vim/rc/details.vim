@@ -70,9 +70,11 @@ set cmdheight=1
 set noshowcmd
 
 " StatusLine
-set laststatus=0
+" set laststatus=0
+set laststatus=2
 set noshowmode
-set statusline=%{'\ '->repeat(&columns)}
+" set statusline=%{'\ '->repeat(&columns)}
+set statusline=%F
 
 " TabLine
 set showtabline=2
