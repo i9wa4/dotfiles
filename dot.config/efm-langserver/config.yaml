@@ -12,7 +12,7 @@ tools:
       - '%f:%l %m'
 
   json-jq: &json-jq
-    format-command: 'jq'
+    format-command: 'jq .'
     format-stdin: true
 
   python-autopep8: &python-autopep8
