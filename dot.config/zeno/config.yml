@@ -64,3 +64,23 @@ snippets:
       && make pyenv-list
       && make tfenv-list
       && cd -
+  - name: update all
+    keyword: upa
+    snippet:
+      cd ~/src/github.com/i9wa4/dotfiles
+      && make package-update
+      && zinit self-update
+      && zinit update --parallel
+      && make unlink
+      && ghq list | ghq get --update --parallel
+      && make link
+      && make ghq-get-essential
+      && make ghq-get-local
+      && make ghq-backup-local
+      && make vim-build
+      && make nvim-build
+      && make pyenv-vdu
+      && make pyenv-vmu
+      && make pyenv-list
+      && make tfenv-list
+      && cd -
