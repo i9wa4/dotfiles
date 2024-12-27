@@ -13,12 +13,6 @@ if [[ "$0" == *"zsh"* ]]; then
   export PATH=/usr/local/bin:"${PATH}"
 fi
 
-# Common
-export EDITOR=vim
-export VISUAL=vim
-export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${HOME}"/bin:"${PATH}"
-
 # Locale
 if locale -a | grep -q 'en_US.UTF-8'; then
   export LC_ALL=en_US.UTF-8
@@ -66,3 +60,9 @@ export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 
 # Rust
 if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
+
+# Common
+export EDITOR=vim
+export VISUAL=vim
+export XDG_CONFIG_HOME="${HOME}"/.config
+export PATH="${HOME}"/bin:"${PATH}"
