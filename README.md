@@ -64,14 +64,19 @@
     - <https://github.com/nathancorvussolis/corvusskk>
 1. Load the dictionaries in `%APPDATA%\CorvusSKK`.
 1. Configuration:
-    - 「設定」 -> 「キー1」 -> 「変換位置 `;`」
-    - 「設定」 -> 「キー2」 -> 「`;`」
+    - キー1
+        - 変換位置 `;`
+    - キー2
+        - ひらがな `C\x4B` (`<C-k>`)
 
 ### 4.2. macOS
 
 #### 4.2.1. macSKK
 
 1. Enable the dictionaries.
+1. Configuration:
+    - キーバインド
+        - ひらがなモード `C-k`
 
 ## 5. OS-common Post Installation
 
