@@ -137,8 +137,8 @@ call skkeleton#config({
 \   'userDictionary': s:dict_path,
 \ })
 call skkeleton#register_keymap('input', ';', 'henkanPoint')
-imap <C-j> <Plug>(skkeleton-enable)
-cmap <C-j> <Plug>(skkeleton-enable)
+imap <C-k> <Plug>(skkeleton-enable)
+cmap <C-k> <Plug>(skkeleton-enable)
 '''
 
 [[plugins]]
