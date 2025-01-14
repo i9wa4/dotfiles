@@ -4,8 +4,8 @@ compinit
 promptinit
 
 # Keybind
-# https://bbs.archlinux.org/viewtopic.php?id=52173
 bindkey -v
+# https://bbs.archlinux.org/viewtopic.php?id=52173
 bindkey '\e[3~' delete-char
 
 
@@ -91,6 +91,8 @@ fi
 zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
+zinit ice depth=1
+zinit light jeffreytse/zsh-vi-mode
 
 # https://obel.hatenablog.jp/entry/20200214/1581620400
 # https://qiita.com/reoring/items/47689c23d2e31035720b
