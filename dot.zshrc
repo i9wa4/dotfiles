@@ -91,8 +91,10 @@ fi
 zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
+
 zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
+ZVM_CURSOR_STYLE_ENABLED=false
 
 # https://obel.hatenablog.jp/entry/20200214/1581620400
 # https://qiita.com/reoring/items/47689c23d2e31035720b
