@@ -1,7 +1,8 @@
 import datetime
-import pyautogui
 import random
 import time
+
+import pyautogui
 
 loop = 0
 
