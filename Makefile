@@ -163,7 +163,7 @@ package-update:
 	make pyenv-update
 	# Deno
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
-	&& deno upgrade "$${DENO_VER_MINOR}"
+	&& deno upgrade "$${DENO_VER_PATCH}"
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
