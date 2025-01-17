@@ -30,6 +30,10 @@ tools:
     lint-formats:
       - '%f:%l:%c: %m'
 
+  python-isort: &python-isort
+    format-command: 'isort -'
+    format-stdin: true
+
   sh-shellcheck: &sh-shellcheck
     lint-command: 'shellcheck -f gcc -x'
     lint-source: 'shellcheck'
@@ -68,6 +72,7 @@ languages:
     # - <<: *python-autopep8
     - <<: *python-black
     - <<: *python-flake8
+    - <<: *python-isort
 
   sh:
     - <<: *sh-shellcheck

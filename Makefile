@@ -90,7 +90,7 @@ alacritty-mac:
 
 link:  ## make symbolic links
 	# dotfiles
-	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore "$${HOME}"/.gitignore
+	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore   "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
