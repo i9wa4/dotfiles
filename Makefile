@@ -161,6 +161,9 @@ package-update:
 	make package-rust
 	make volta-update
 	make pyenv-update
+	# Deno
+	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	&& deno upgrade "$${DENO_VER_MINOR}"
 
 package-ubuntu:
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -224,8 +227,6 @@ package-ubuntu:
 package-ubuntu-update:
 	sudo apt update
 	sudo apt upgrade -y
-	# Deno
-	deno upgrade
 	# Rust
 	rustup update
 	# AWS CLI
@@ -290,7 +291,7 @@ package-mac:
 	  wget \
 	  zsh \
 	&& brew install ninja cmake gettext curl \  # Neovim
-	&& brew install deno \  # Deno
+	&& if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi \  # Deno
 	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
 	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
