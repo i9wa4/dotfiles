@@ -47,6 +47,7 @@ export AWS_PROFILE=
 export DENO_TLS_CA_STORE='system'
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
+export DENO_VER_PATCH=2.1.5
 
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
