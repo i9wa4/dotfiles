@@ -1,6 +1,7 @@
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
-.SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
+# .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
+.SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c -o verbose -o xtrace
 .DEFAULT_GOAL := help
 # all targets are phony
 
@@ -176,6 +177,7 @@ package-ubuntu:
 	  fzf \
 	  gh \
 	  jq \
+	  luajit \
 	  nkf \
 	  ripgrep \
 	  shellcheck \
@@ -367,11 +369,27 @@ git-config:
 
 vim-build:  ## build Vim
 	# && make distclean
-	cd ~/src/github.com/vim/vim/src \
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  _lua_prefix="$$(brew --prefix)"; \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi \
+	&& cd ~/src/github.com/vim/vim/src \
 	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
+	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
 	  --enable-multibyte \
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}" \

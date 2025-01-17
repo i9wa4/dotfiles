@@ -98,19 +98,19 @@ ZVM_CURSOR_STYLE_ENABLED=false
 
 # https://obel.hatenablog.jp/entry/20200214/1581620400
 # https://qiita.com/reoring/items/47689c23d2e31035720b
-_UNAME="$(uname -a)"
-if [ "$(echo "${_UNAME}" | grep Darwin)" ]; then
+_uname="$(uname -a)"
+if [ "$(echo "${_uname}" | grep Darwin)" ]; then
   echo 'Hello, macOS!'
   alias snowsql=/Applications/SnowSQL.app/Contents/MacOS/snowsql
-elif [ "$(echo "${_UNAME}" | grep Ubuntu)" ]; then
+elif [ "$(echo "${_uname}" | grep Ubuntu)" ]; then
   echo 'Hello, Ubuntu'
   alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo "${_UNAME}" | grep WSL2)" ]; then
+elif [ "$(echo "${_uname}" | grep WSL2)" ]; then
   echo 'Hello, WSL2!'
   alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo "${_UNAME}" | grep arm)" ]; then
+elif [ "$(echo "${_uname}" | grep arm)" ]; then
   echo 'Hello, Raspberry Pi!'
-elif [ "$(echo "${_UNAME}" | grep el7)" ]; then
+elif [ "$(echo "${_uname}" | grep el7)" ]; then
   echo 'Hello, CentOS!'
 else
   echo 'Which OS are you using?'
