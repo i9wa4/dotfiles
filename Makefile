@@ -1,11 +1,11 @@
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
-.SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c -o verbose -o xtrace
+.SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
+
+
 # all targets are phony
-
-
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
