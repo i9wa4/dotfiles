@@ -375,8 +375,10 @@ vim-build:  ## build Vim
 	  _lua_prefix="$$(brew --prefix)"; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
+	  _lua_prefix="/usr"; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
+	  _lua_prefix="/usr"; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
