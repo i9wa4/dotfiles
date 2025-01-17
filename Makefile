@@ -474,7 +474,7 @@ pyenv-install-latest: pyenv-list  ## install latest Python
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-list:  ## show installed Python versions
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	@. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
 	&& mkdir -p "$${HOME}"/.cache \
@@ -534,7 +534,7 @@ tfenv-install-latest: tfenv-list  ## install latest Terraform
 	&& terraform version
 
 tfenv-list:  ## show installed Terraform versions
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	@. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
 	&& mkdir -p "$${HOME}"/.cache \
