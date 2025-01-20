@@ -1,6 +1,6 @@
 # loaded /etc/zsh/zshenv
 
-if [[ "$0" == *"zsh"* ]]; then
+if [ "$(uname -a | grep Darwin)" ]; then
   typeset -U path PATH
   # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
   setopt no_global_rcs
@@ -35,9 +35,9 @@ export PATH="${HOME}"/go/bin:"${PATH}"
 
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
-[[ -d "${PYENV_ROOT}"/bin ]] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
+[ -d "${PYENV_ROOT}"/bin ] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
 # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-[[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
+[ -n "$(command -v pyenv)" ] && eval "$(pyenv init --path)"
 
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
