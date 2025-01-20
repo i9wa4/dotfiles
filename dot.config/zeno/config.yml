@@ -24,6 +24,16 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
+  - name: (Prompt) toggle
+    keyword: pt
+    snippet:
+      if [ -n "${_PROMPT_SAVE}" ]; then
+        PROMPT="${_PROMPT_SAVE}";
+        unset _PROMPT_SAVE;
+      else
+        export _PROMPT_SAVE="${PROMPT}";
+        PROMPT="$ ";
+      fi
   - name: (Python venv) activate myenv
     keyword: pvma
     snippet: . "${PY_VENV_MYENV}"/bin/activate
