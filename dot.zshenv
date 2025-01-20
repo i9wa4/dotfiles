@@ -13,13 +13,6 @@ if [[ "$0" == *"zsh"* ]]; then
   export PATH=/usr/local/bin:"${PATH}"
 fi
 
-# Locale
-if locale -a | grep -q 'en_US.UTF-8'; then
-  export LC_ALL=en_US.UTF-8
-else
-  export LC_ALL=C.UTF-8
-fi
-
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
@@ -27,6 +20,8 @@ export PATH=/opt/homebrew/bin:"${PATH}"
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
 [[ -d "${PYENV_ROOT}"/bin ]] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
+# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+[[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
 
 # tfenv
 export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
@@ -36,12 +31,16 @@ export TF_VER_MINOR=1.9
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
-# act
-export PATH="${HOME}"/src/github.com/nektos/act/dist/local:"${PATH}"
+
+# ---
+
 
 # AWS
 export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
+
+# act
+export PATH="${HOME}"/src/github.com/nektos/act/dist/local:"${PATH}"
 
 # Deno
 export DENO_TLS_CA_STORE='system'
@@ -62,8 +61,18 @@ export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 # Rust
 if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
 
+
+# ---
+
+
 # Common
 export EDITOR=vim
 export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
 export PATH="${HOME}"/.local/bin:"${PATH}"
+
+if locale -a | grep -q 'en_US.UTF-8'; then
+  export LC_ALL=en_US.UTF-8
+else
+  export LC_ALL=C.UTF-8
+fi

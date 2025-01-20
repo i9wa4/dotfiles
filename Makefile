@@ -453,12 +453,6 @@ docker-systemd-ubuntu:
 	sudo systemctl start docker
 	sudo systemctl enable docker
 
-nix-install-ubuntu:  ## install Nix
-	# curl -L https://nixos.org/nix/install | sh
-	curl -L https://nixos.org/nix/install | sh -s -- --daemon
-	# uninstall:
-	# https://github.com/NixOS/nix/issues/1402#issuecomment-312496360
-
 pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
