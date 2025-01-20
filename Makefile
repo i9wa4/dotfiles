@@ -35,7 +35,7 @@ mac: package-mac common alacritty-mac  ## init for Mac
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
-mac-delete-ds_store:  ## delete .DS_Store in ~/src
+mac-delete-ds_store:  ## delete .DS_Store
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 
 mac-copy:  ## copy files for Mac
