@@ -46,10 +46,10 @@ mac-copy:  ## copy files for Mac
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
-	&& cp -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8    "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
-	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                     "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8    "$${_macskk_dict_dir}"
+	&& cp -f "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/skk/mydict.utf8    "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
+	&& cp -f "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.L                     "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.jinmei                "$${_macskk_dict_dir}" \
+	&& cp -f "$${HOME}"/ghq/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8    "$${_macskk_dict_dir}"
 
 
 init-zsh-ubuntu:
@@ -61,8 +61,8 @@ init-zshrc:
 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 	# Zsh
-	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	echo "if test -f "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; then . "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "if test -f "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv; then . "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	echo "if test -f "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshrc; then . "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 
 define ALACRITTY_UBUNTU
 [general]
@@ -90,20 +90,20 @@ alacritty-mac:
 
 link:  ## make symbolic links
 	# dotfiles
-	ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.gitignore   "$${HOME}"/.gitignore
+	ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.gitignore   "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/alacritty         "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/efm-langserver    "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/nvim              "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/skk               "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/tmux              "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/vim               "$${XDG_CONFIG_HOME}" \
-	&& ln -fs "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/zeno              "$${XDG_CONFIG_HOME}"
-	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
-	# && cp -rf "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty         "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/efm-langserver    "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/nvim              "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/skk               "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/tmux              "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/vim               "$${XDG_CONFIG_HOME}" \
+	&& ln -fs "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/zeno              "$${XDG_CONFIG_HOME}"
+	# && cp -rf "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
+	# && cp -rf "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 	# OS-specific link & copy
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -129,7 +129,7 @@ unlink:  ## unlink symbolic links
 	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];           then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];      then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];                then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
@@ -163,7 +163,7 @@ package-update:
 	make volta-update
 	make pyenv-update
 	# Deno
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
 
 package-ubuntu:
@@ -263,7 +263,7 @@ package-ubuntu-server:
 package-mac:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& brew -v \
 	&& brew update \
 	&& brew upgrade \
@@ -317,7 +317,7 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-rust:
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-essential:
@@ -356,7 +356,7 @@ git-config:
 	git config --global diff.tool vimdiff
 	git config --global difftool.prompt false
 	git config --global difftool.vimdiff.path vim
-	git config --global ghq.root ~/src
+	git config --global ghq.root ~/ghq
 	git config --global grep.lineNumber true
 	git config --global http.sslVerify false
 	git config --global init.defaultBranch main
@@ -386,7 +386,7 @@ vim-build:  ## build Vim
 	else \
 	  echo 'Which OS are you using?'; \
 	fi \
-	&& cd ~/src/github.com/vim/vim/src \
+	&& cd ~/ghq/github.com/vim/vim/ghq \
 	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
@@ -401,7 +401,7 @@ vim-build:  ## build Vim
 	&& hash -r \
 
 nvim-build:  ## build Neovim
-	cd ~/src/github.com/neovim/neovim \
+	cd ~/ghq/github.com/neovim/neovim \
 	&& git checkout refs/tags/stable \
 	&& make distclean \
 	&& make \
@@ -412,7 +412,7 @@ nvim-build:  ## build Neovim
 	&& hash -r \
 
 act-build:  ## build act
-	cd ~/src/github.com/nektos/act \
+	cd ~/ghq/github.com/nektos/act \
 	&& make build
 
 docker-init-ubuntu:
@@ -454,7 +454,7 @@ docker-systemd-ubuntu:
 	sudo systemctl enable docker
 
 pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
 	&& pyenv global "$(PY_VER_PATCH)" \
 	&& pyenv versions \
@@ -468,7 +468,7 @@ pyenv-install-latest: pyenv-list  ## install latest Python
 	&& python -m pip config --site set global.require-virtualenv true
 
 pyenv-list:  ## show installed Python versions
-	@. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	@. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
 	&& mkdir -p "$${HOME}"/.cache \
@@ -484,7 +484,7 @@ pyenv-update:  ## update pyenv
 
 pyenv-vmu:  ## update venv named myenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
 	  python -m venv "$${PY_VENV_MYENV}" --clear; \
 	else \
@@ -493,14 +493,14 @@ pyenv-vmu:  ## update venv named myenv
 	&& . "$${PY_VENV_MYENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install --requirement "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt \
+	&& python -m pip install --requirement "$${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
 
 pyenv-vdu:  ## update venv named dbtenv
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_DBTENV}" ]; then \
 	  python -m venv "$${PY_VENV_DBTENV}" --clear; \
 	else \
@@ -509,13 +509,13 @@ pyenv-vdu:  ## update venv named dbtenv
 	&& . "$${PY_VENV_DBTENV}"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install --requirement "$${HOME}"/src/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt \
+	&& python -m pip install --requirement "$${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
 
 tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
-	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& tfenv install "$(TF_VER_PATCH)" \
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
@@ -527,7 +527,7 @@ tfenv-install-latest: tfenv-list  ## install latest Terraform
 	&& terraform version
 
 tfenv-list:  ## show installed Terraform versions
-	@. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
+	@. "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
 	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
 	&& mkdir -p "$${HOME}"/.cache \
@@ -574,13 +574,13 @@ win-copy:  ## copy config files for Windows
 	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)/skk
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/bin                                    $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config                             $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.vscode                             $(MF_WIN_UTIL_DIR)
-	cp -rf  "$${HOME}"/src/github.com/i9wa4/dotfiles/etc                                    $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/src/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8             $(MF_WIN_UTIL_DIR)/skk
-	cp -f   "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.L                              $(MF_WIN_UTIL_DIR)/skk
-	cp -f   "$${HOME}"/src/github.com/skk-dev/dict/SKK-JISYO.jinmei                         $(MF_WIN_UTIL_DIR)/skk
+	cp -rf  "$${HOME}"/ghq/github.com/i9wa4/dotfiles/bin                                    $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config                             $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.vscode                             $(MF_WIN_UTIL_DIR)
+	cp -rf  "$${HOME}"/ghq/github.com/i9wa4/dotfiles/etc                                    $(MF_WIN_UTIL_DIR)
+	cp -f   "$${HOME}"/ghq/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8             $(MF_WIN_UTIL_DIR)/skk
+	cp -f   "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.L                              $(MF_WIN_UTIL_DIR)/skk
+	cp -f   "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.jinmei                         $(MF_WIN_UTIL_DIR)/skk
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help

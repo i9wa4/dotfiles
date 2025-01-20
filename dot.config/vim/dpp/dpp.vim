@@ -4,8 +4,8 @@ if !$CACHE->isdirectory()
 endif
 
 function s:init_plugin(plugin)
-  " Search from ~/src directory
-  let s:dir = '~/src/github.com/'->expand() .. a:plugin->fnamemodify(':t')
+  " Search from ~/ghq directory
+  let s:dir = '~/ghq/github.com/'->expand() .. a:plugin->fnamemodify(':t')
   if !s:dir->isdirectory()
     " Search from $CACHE directory
     let s:dir = $CACHE .. '/dpp/repos/github.com/' .. a:plugin

@@ -22,7 +22,7 @@ export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
 
 # act
-export PATH="${HOME}"/src/github.com/nektos/act/dist/local:"${PATH}"
+export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Deno
 export DENO_TLS_CA_STORE='system'
@@ -50,7 +50,7 @@ export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
 
 # tfenv
-export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
+export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
 export TF_VER_MINOR=1.9
 
 # Volta
