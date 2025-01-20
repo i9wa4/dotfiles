@@ -17,24 +17,6 @@ fi
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
 
-# pyenv
-export PYENV_ROOT="${HOME}"/.pyenv
-[[ -d "${PYENV_ROOT}"/bin ]] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
-# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-[[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
-
-# tfenv
-export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
-export TF_VER_MINOR=1.9
-
-# Volta
-export VOLTA_HOME="${HOME}"/.volta
-export PATH="${VOLTA_HOME}"/bin:"${PATH}"
-
-
-# ---
-
-
 # AWS
 export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
@@ -51,6 +33,12 @@ export DENO_VER_PATCH=2.1.5
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
+# pyenv
+export PYENV_ROOT="${HOME}"/.pyenv
+[[ -d "${PYENV_ROOT}"/bin ]] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
+# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+[[ -n "$(command -v pyenv)" ]] && eval "$(pyenv init --path)"
+
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
@@ -61,9 +49,13 @@ export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 # Rust
 if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
 
+# tfenv
+export PATH="${HOME}"/src/github.com/tfutils/tfenv/bin:"${PATH}"
+export TF_VER_MINOR=1.9
 
-# ---
-
+# Volta
+export VOLTA_HOME="${HOME}"/.volta
+export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
 # Common
 export EDITOR=vim
