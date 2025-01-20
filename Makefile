@@ -36,7 +36,7 @@ mac: package-mac common alacritty-mac  ## init for Mac
 	killall Finder > /dev/null 2>&1
 
 mac-delete-ds_store:  ## delete .DS_Store in ~/src
-	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs rm -f
+	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 
 mac-copy:  ## copy files for Mac
 	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
@@ -483,7 +483,6 @@ pyenv-update:  ## update pyenv
 	git -C "$${HOME}"/.pyenv pull
 
 pyenv-vmu:  ## update venv named myenv
-	# echo "$${REQUIREMENTS_PY_VENV_MYENV}" | xargs python -m pip install
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. "$${HOME}"/src/github.com/i9wa4/dotfiles/dot.zshenv \
 	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
