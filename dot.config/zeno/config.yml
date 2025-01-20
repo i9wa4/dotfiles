@@ -45,7 +45,7 @@ snippets:
   #   snippet:
   #     jupyter-lab
   #       --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-  #       --config="$${HOME}"/src/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
+  #       --config="$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Quarto) preview
     keyword: qp
     snippet: quarto preview
@@ -61,7 +61,7 @@ snippets:
   - name: update
     keyword: up
     snippet:
-      cd ~/src/github.com/i9wa4/dotfiles
+      cd ~/ghq/github.com/i9wa4/dotfiles
       && make package-update
       && zinit self-update
       && zinit update --parallel
@@ -77,7 +77,7 @@ snippets:
   - name: update all
     keyword: upa
     snippet:
-      cd ~/src/github.com/i9wa4/dotfiles
+      cd ~/ghq/github.com/i9wa4/dotfiles
       && make package-update
       && zinit self-update
       && zinit update --parallel

@@ -28,8 +28,8 @@
 1. Execute the following command.
 
     ```sh
-    git clone git@github.com:i9wa4/dotfiles ~/src/github.com/i9wa4/dotfiles \
-    && cd ~/src/github.com/i9wa4/dotfiles \
+    git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles \
+    && cd ~/ghq/github.com/i9wa4/dotfiles \
     && _uname="$$(uname -a)"; \
     if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
       echo 'Hello, macOS!'; \

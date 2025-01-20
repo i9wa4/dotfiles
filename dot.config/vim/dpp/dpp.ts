@@ -123,7 +123,7 @@ export class Config extends BaseConfig {
       "local",
       "local",
       {
-        directory: "~/src/github.com/i9wa4",
+        directory: "~/ghq/github.com/i9wa4",
         options: {
           frozen: true,
           merged: false,
