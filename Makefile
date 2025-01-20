@@ -394,7 +394,7 @@ vim-build:  ## build Vim
 	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
 	  --enable-multibyte \
 	  --enable-python3interp=dynamic \
-	  --prefix="$${HOME}" \
+	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
 	&& make \
 	&& make install \
@@ -407,7 +407,7 @@ nvim-build:  ## build Neovim
 	&& make \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
-	  CMAKE_INSTALL_PREFIX="$${HOME}" \
+	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
 	&& make install \
 	&& hash -r \
 
