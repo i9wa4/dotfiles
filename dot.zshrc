@@ -52,7 +52,7 @@ _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # $ "
 PROMPT="
 ${PROMPT}[%~]%f "'${vcs_info_msg_0_}'"
-$ "
+%F{#696969}$%f "
 
 
 # Git
