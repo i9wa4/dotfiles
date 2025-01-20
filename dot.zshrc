@@ -38,15 +38,20 @@ setopt share_history
 # prompt bigfade
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  PROMPT="%K{red}"
+  # PROMPT="%K{red}"
+  PROMPT="%F{red}"
 else
   # local host
-  PROMPT="%K{blue}"
+  # PROMPT="%K{blue}"
+  PROMPT="%F{blue}"
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+# PROMPT="
+# ${PROMPT}%F{black}%D{[%Y-%m-%dT%H:%M:%S]}%f%k %F{#696969}(${_shell_type}-lv%L)%f
+# %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
+# $ "
 PROMPT="
-${PROMPT}%F{black}%D{[%Y-%m-%dT%H:%M:%S]}%f%k %F{#696969}(${_shell_type}-lv%L)%f
-%F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
+${PROMPT}[%~]%f "'${vcs_info_msg_0_}'"
 $ "
 
 
