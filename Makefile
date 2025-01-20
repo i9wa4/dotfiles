@@ -386,7 +386,7 @@ vim-build:  ## build Vim
 	else \
 	  echo 'Which OS are you using?'; \
 	fi \
-	&& cd ~/ghq/github.com/vim/vim/ghq \
+	&& cd ~/ghq/github.com/vim/vim/src \
 	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
