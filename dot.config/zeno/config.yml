@@ -83,3 +83,6 @@ snippets:
       && make pyenv-list
       && make tfenv-list
       && cd -
+  - name: vim startuptime
+    keyword: vs
+    snippet: vim-startuptime -count 10 -vimpath vim
