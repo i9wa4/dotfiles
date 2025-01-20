@@ -44,7 +44,8 @@ else
   PROMPT="%K{blue}"
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT="${PROMPT}%F{black}%D{[%Y-%m-%dT%H:%M:%S]}%f%k %F{#696969}(${_shell_type}-lv%L)%f
+PROMPT="
+${PROMPT}%F{black}%D{[%Y-%m-%dT%H:%M:%S]}%f%k %F{#696969}(${_shell_type}-lv%L)%f
 %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
 $ "
 
