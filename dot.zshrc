@@ -1,10 +1,10 @@
-# keybind
+# Keybind
 bindkey -v
 # https://bbs.archlinux.org/viewtopic.php?id=52173
 bindkey '\e[3~' delete-char
 
 
-# completion
+# Completion
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit promptinit
 compinit
@@ -18,7 +18,7 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 
-# history
+# History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
@@ -33,7 +33,7 @@ setopt hist_verify
 setopt share_history
 
 
-# prompt
+# Prompt
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 # prompt bigfade
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
@@ -94,7 +94,7 @@ zinit ice depth=1
 zinit light jeffreytse/zsh-vi-mode
 ZVM_CURSOR_STYLE_ENABLED=false
 
-# other zsh plugins
+# Other Plugins
 zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 # zinit light zsh-users/zsh-syntax-highlighting
@@ -121,7 +121,7 @@ else
   echo 'Which OS are you using?'
 fi
 
-# end of settings
+# End of Settings
 cd
 
 # tmux

@@ -211,7 +211,7 @@ command! CreateLocalVim
 
 
 " --------------------------------------
-" Aucocommand
+" Autocommand
 "
 function! s:set_register() abort
   if empty(&buftype)
