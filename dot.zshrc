@@ -38,17 +38,12 @@ setopt share_history
 # prompt bigfade
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  # PROMPT="%F{red}█▓▒░%f%F{black}%K{red}%n@%m%k%f%F{red}░▒▓█%f%F{white}█▓▒░ %f"
-  PROMPT="%F{red}█▓▒░%f%F{black}%K{red}%m%k%f%F{red}░▒▓█%f%F{white}█▓▒░ %f"
+  PROMPT="%F{black}%K{red}%D{[%Y-%m-%dT%H:%M:%S.%2.]} (%x-%L)%k%f"
 else
   # local host
-  # PROMPT="%F{green}█▓▒░%f%F{black}%K{green}%n@%m%k%f%F{green}░▒▓█%f%F{white}█▓▒░ %f"
-  PROMPT="%F{blue}█▓▒░%f%F{black}%K{blue}%m%k%f%F{blue}░▒▓█%f%F{white}█▓▒░ %f"
+  PROMPT="%F{black}%K{blue}%D{[%Y-%m-%dT%H:%M:%S.%2.]} (%x-%L)%k%f"
 fi
-# _SHELL_TYPE="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_SHELL_TYPE}-%L)%f
-PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (%x-%L)%f
-%F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
+PROMPT="${PROMPT}"" %F{yellow}[%~]%f "'${vcs_info_msg_0_}'"
 $ "
 
 
@@ -64,12 +59,12 @@ zstyle ':vcs_info:*' actionformats '[%b|%a] %F{#696969}%m%f'
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
-# zstyle ':vcs_info:git+set-message:*' hooks git-config-user
-# function +vi-git-config-user(){
-#   hook_com[misc]+='<'`git config user.name`'>'
-#   hook_com[misc]+=' '
-#   hook_com[misc]+='<'`git config user.email`'>'
-# }
+zstyle ':vcs_info:git+set-message:*' hooks git-config-user
+function +vi-git-config-user(){
+  hook_com[misc]+='<'`git config user.name`'>'
+  hook_com[misc]+=' '
+  hook_com[misc]+='<'`git config user.email`'>'
+}
 _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
 
