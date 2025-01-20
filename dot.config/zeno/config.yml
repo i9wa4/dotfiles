@@ -32,7 +32,7 @@ snippets:
         unset _PROMPT_SAVE;
       else
         export _PROMPT_SAVE="${PROMPT}";
-        PROMPT="$ ";
+        PROMPT=$'\n'"$ ";
       fi
   - name: (Python venv) activate myenv
     keyword: pvma
