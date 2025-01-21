@@ -38,15 +38,15 @@ setopt share_history
 # prompt bigfade
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   # remote host
-  PROMPT="%F{red}"
+  PROMPT="%F{#696969}%M%f "
 else
   # local host
-  PROMPT="%F{blue}"
+  PROMPT=""
 fi
 # _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # PROMPT="%D{[%Y-%m-%dT%H:%M:%S]} (${_shell_type}-lv%L) $ "
 PROMPT="
-${PROMPT}[%~]%f "'${vcs_info_msg_0_}'"
+${PROMPT}%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
@@ -58,7 +58,7 @@ autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
 zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%m%f"
-zstyle ':vcs_info:*' actionformats '[%b|%a] %F{#696969}%m%f'
+zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %F{#696969}%m%f'
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
