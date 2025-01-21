@@ -335,7 +335,7 @@ ghq-get-local:
 ghq-backup-local:
 	_list_path=~/str/etc/ghq-list-local.txt \
 	&& mkdir -p ~/str/etc \
-	&& ghq list >> "$${_list_path}" \
+	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-config:
