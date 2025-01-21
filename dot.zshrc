@@ -62,7 +62,27 @@ zstyle ':vcs_info:*' actionformats '[%b|%a] %F{#696969}%m%f'
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
-# zstyle ':vcs_info:git+set-message:*' hooks git-config-user
+zstyle ':vcs_info:git+set-message:*' hooks \
+  git-push-status
+function +vi-git-push-status() {
+  # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+  if [[ "$1" != "1" ]]; then
+    return 0
+  fi
+  if [[ "${hook_com[branch]}" != "master" ]]; then
+    # master ブランチでない場合は何もしない
+    return 0
+  fi
+  # push していないコミット数を取得する
+  local ahead
+  ahead=$(command git rev-list origin/master..master 2>/dev/null \
+    | wc -l \
+    | tr -d ' ')
+  if [[ "$ahead" -gt 0 ]]; then
+    # misc (%m) に追加
+    hook_com[misc]+="(p${ahead})"
+  fi
+}
 # function +vi-git-config-user(){
 #   hook_com[misc]+='<'`git config user.name`'> <'`git config user.email`'>'
 # }
