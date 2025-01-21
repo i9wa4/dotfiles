@@ -35,6 +35,20 @@ endfunction
 
 
 " --------------------------------------
+" StatusLine
+"
+function! my_util#statusline() abort
+  let l:status = '%t |%< %F%=Ln %l/%L, Col %-4c'
+  let l:status ..= (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+  let l:status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
+  return l:status
+endfunction
+
+
+" --------------------------------------
 " Viminfo
 "
 function! my_util#restore_cursor() abort

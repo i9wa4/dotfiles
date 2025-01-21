@@ -72,7 +72,6 @@ function! MyStatuslineRightTabline() abort
   if !empty(l:branch)
     let l:ret ..= ' ' .. '(' .. l:branch .. ')'
   endif
-  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
   return l:ret
 endfunction
 '''

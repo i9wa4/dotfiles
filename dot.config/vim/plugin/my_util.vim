@@ -1,3 +1,5 @@
+" let &statusline = ' '->repeat(&columns)
+set statusline=%!my_util#statusline()
 set tabline=%!my_util#tabline()
 
 augroup MyUtil
