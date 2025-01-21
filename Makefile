@@ -43,6 +43,7 @@ mac-copy:  ## copy files for Mac
 	&& if [ -d "$${_google_drive_dir}" ]; then \
 	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
 	fi
+	cp -f "$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.vscode/settings.json "$${HOME}""/Library/Application Support/Code/User/"
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
