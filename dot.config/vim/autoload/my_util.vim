@@ -29,6 +29,7 @@ function! my_util#tabline() abort
   if exists('*MyStatuslineRightTabline')
     let l:ret ..= MyStatuslineRightTabline()
   endif
+  let l:ret ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
 
   return l:ret
 endfunction
@@ -41,11 +42,10 @@ function! my_util#statusline() abort
   let l:status = substitute('%'->expand()->fnamemodify(':p'), getcwd()->expand()->fnamemodify(':p'), '', '')
   let l:status ..= '%<%='
   let l:status ..= 'Ln %l/%L, Col %-4c'
-  let l:status ..= (&expandtab ? 'Spaces:' : 'TabSize:') .. &tabstop
+  let l:status ..= (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
   let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
   let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
   let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
-  let l:status ..= '  ' .. (has('nvim') ? '[N]' : '[V]')
   return l:status
 endfunction
 
