@@ -1,5 +1,7 @@
 # Keybind
 bindkey -v
+# https://wayohoo.com/article/6922
+bindkey '\e[3~' delete-char
 
 
 # Completion
@@ -69,6 +71,15 @@ _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
 
 
+# zsh-vi-mode
+zinit ice depth=1
+zinit light jeffreytse/zsh-vi-mode
+ZVM_CURSOR_STYLE_ENABLED=false
+
+# Other Plugins
+zinit light zsh-users/zsh-completions
+zinit light zdharma-continuum/fast-syntax-highlighting
+
 # zeno.zsh
 zinit ice lucid depth"1" blockf
 zinit light yuki-yano/zeno.zsh
@@ -81,22 +92,8 @@ if [ -n "${ZENO_LOADED}" ]; then
   bindkey '^r' zeno-history-selection
   bindkey '^x' zeno-insert-snippet
 else
-  echo "ZENO_NOT_LOADED"
-  # https://wayohoo.com/article/6922
-  bindkey '\e[3~' delete-char
   bindkey '^r' history-incremental-search-backward
-  bindkey '^s' history-incremental-search-forward
 fi
-
-# zsh-vi-mode
-zinit ice depth=1
-zinit light jeffreytse/zsh-vi-mode
-ZVM_CURSOR_STYLE_ENABLED=false
-
-# Other Plugins
-zinit light zsh-users/zsh-completions
-# zinit light zsh-users/zsh-autosuggestions
-# zinit light zsh-users/zsh-syntax-highlighting
 
 
 # OS-specific settings
@@ -120,8 +117,10 @@ else
   echo 'Which OS are you using?'
 fi
 
+
 # End of Settings
 cd
+
 
 # tmux
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
