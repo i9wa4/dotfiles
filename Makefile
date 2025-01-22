@@ -13,6 +13,11 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
 
 
+echo:
+	@echo "$${HOME}"
+	@echo $(MF_GITHUB_DIR)
+	@echo $(MF_DOTFILES_DIR)
+
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
 	ghq-get-essential \
