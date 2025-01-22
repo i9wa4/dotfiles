@@ -1,16 +1,13 @@
 # loaded /etc/zsh/zshenv
 
-if [[ "$(uname -a | grep Darwin)" && "$-" == "*i*" ]]; then
-  typeset -U path PATH
-  # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
+typeset -U path PATH
+
+# https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
+if [ "$(uname -a | grep Darwin)" ]; then
   setopt no_global_rcs
-  # missing paths for macOS:
-  #   /System/Cryptexes/App/usr/bin
-  #   /usr/local/bin
-  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
-  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
-  #   /var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
-  export PATH=/usr/local/bin:"${PATH}"
+  if [ -x /usr/libexec/path_helper ]; then
+      eval `/usr/libexec/path_helper -s`
+  fi
 fi
 
 # Homebrew
