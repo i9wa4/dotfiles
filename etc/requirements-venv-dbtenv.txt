@@ -1,5 +1,6 @@
+databricks-cli
 dbt-core==1.7.0
 dbt-databricks==1.7.17
-dbt-snowflake==1.7.1
 dbt-osmosis
+dbt-snowflake==1.7.1
 shandy-sqlfmt[jinjafmt]
