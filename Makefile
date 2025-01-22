@@ -12,9 +12,6 @@ SHELL := /usr/bin/env bash
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
 
-temp:
-	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshenv; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/str/temp.md
-	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshrc; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/str/temp.md
 
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
@@ -77,29 +74,29 @@ init-zshrc:
 	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshenv; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshrc; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 
-define ALACRITTY_UBUNTU
+define MF_ALACRITTY_UBUNTU
 [general]
 import = [
     '~/.config/alacritty/common.toml',
     '~/.config/alacritty/ubuntu.toml'
 ]
 endef
-export ALACRITTY_UBUNTU
+export MF_ALACRITTY_UBUNTU
 
-define ALACRITTY_MAC
+define MF_ALACRITTY_MAC
 [general]
 import = [
     '~/.config/alacritty/common.toml',
     '~/.config/alacritty/mac.toml'
 ]
 endef
-export ALACRITTY_MAC
+export MF_ALACRITTY_MAC
 
 alacritty-ubuntu:
-	echo "$${ALACRITTY_UBUNTU}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "$${MF_ALACRITTY_UBUNTU}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
 
 alacritty-mac:
-	echo "$${ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "$${MF_ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
 
 link:  ## make symbolic links
 	# dotfiles
@@ -559,16 +556,16 @@ volta-init:
 volta-update:
 	curl https://get.volta.sh | bash
 
-define WSLCONF_IN_WSL
+define MF_WSLCONF_IN_WSL
 [boot]
 systemd=true
 
 [interop]
 appendWindowsPath=true
 endef
-export WSLCONF_IN_WSL
+export MF_WSLCONF_IN_WSL
 
-define WSLCONFIG_IN_WINDOWS
+define MF_WSLCONFIG_IN_WINDOWS
 [wsl2]
 localhostForwarding=true
 processors=2
@@ -577,24 +574,24 @@ swap=0
 [experimental]
 autoMemoryReclaim=gradual
 endef
-export WSLCONFIG_IN_WINDOWS
+export MF_WSLCONFIG_IN_WINDOWS
 
 MF_WIN_UTIL_DIR := /mnt/c/work/util
 
 win-copy:  ## copy config files for Windows
 	# WSL2
-	echo "$${WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
 	mkdir -p $(MF_WIN_UTIL_DIR)/skk
-	cp -rf  $(MF_DOTFILES_DIR)/bin $(MF_WIN_UTIL_DIR)
-	cp -rf  $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
-	cp -rf  $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
-	cp -rf  $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
-	cp -f   $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
-	cp -f   $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
-	cp -f   $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
-	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
+	cp -rf $(MF_DOTFILES_DIR)/bin $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
+	cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
+	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
+	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
+	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help
 	@echo 'Usage: make [target]'
