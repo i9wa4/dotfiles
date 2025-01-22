@@ -1,6 +1,6 @@
 # loaded /etc/zsh/zshenv
 
-if [ "$(uname -a | grep Darwin)" ]; then
+if [[ "$(uname -a | grep Darwin)" && "$-" == "*i*" ]]; then
   typeset -U path PATH
   # https://qiita.com/eumesy/items/3bb39fc783c8d4863c5f
   setopt no_global_rcs
