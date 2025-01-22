@@ -1,7 +1,5 @@
 # Keybind
 bindkey -v
-# https://bbs.archlinux.org/viewtopic.php?id=52173
-bindkey '\e[3~' delete-char
 
 
 # Completion
@@ -75,7 +73,7 @@ add-zsh-hook precmd _vcs_precmd
 zinit ice lucid depth"1" blockf
 zinit light yuki-yano/zeno.zsh
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
-if [[ -n "${ZENO_LOADED}" ]]; then
+if [ -n "${ZENO_LOADED}" ]; then
   bindkey ' '  zeno-auto-snippet
   bindkey '^m' zeno-auto-snippet-and-accept-line
   bindkey '^i' zeno-completion
@@ -83,6 +81,7 @@ if [[ -n "${ZENO_LOADED}" ]]; then
   bindkey '^r' zeno-history-selection
   bindkey '^x' zeno-insert-snippet
 else
+  echo "ZENO_NOT_LOADED"
   # https://wayohoo.com/article/6922
   bindkey '\e[3~' delete-char
   bindkey '^r' history-incremental-search-backward
