@@ -24,6 +24,9 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
+  - name: (PATH) display
+    keyword: pd
+    snippet: echo "${PATH}" | sed -e 's/:/\n/g'
   - name: (Prompt) toggle
     keyword: pt
     snippet:
