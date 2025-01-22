@@ -30,6 +30,9 @@ export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 export DENO_VER_PATCH=2.1.5
 
+# fzf
+export FZF_DEFAULT_OPTS='--reverse'
+
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
