@@ -4,6 +4,12 @@ bindkey -v
 bindkey '\e[3~' delete-char
 
 
+# Edit Command Line
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -a 'v' edit-command-line
+
+
 # Completion
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit promptinit
@@ -71,15 +77,6 @@ _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
 
 
-# zsh-vi-mode
-zinit ice depth=1
-zinit light jeffreytse/zsh-vi-mode
-ZVM_CURSOR_STYLE_ENABLED=false
-
-# Other Plugins
-zinit light zsh-users/zsh-completions
-zinit light zdharma-continuum/fast-syntax-highlighting
-
 # zeno.zsh
 zinit ice lucid depth"1" blockf
 zinit light yuki-yano/zeno.zsh
@@ -94,6 +91,12 @@ if [ -n "${ZENO_LOADED}" ]; then
 else
   bindkey '^r' history-incremental-search-backward
 fi
+
+
+# Other Plugins
+zinit light zsh-users/zsh-completions
+# zinit light zsh-users/zsh-autosuggestions
+zinit light zdharma-continuum/fast-syntax-highlighting
 
 
 # OS-specific settings

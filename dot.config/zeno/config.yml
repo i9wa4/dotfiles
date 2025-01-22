@@ -40,12 +40,12 @@ snippets:
   - name: (Python venv) activate dbtenv
     keyword: pvda
     snippet: . "${PY_VENV_DBTENV}"/bin/activate
-  # - name: (Python) jupyter-lab
-  #   keyword: pjl
-  #   snippet:
-  #     jupyter-lab
-  #       --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-  #       --config="$${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
+  - name: (Python) jupyter-lab
+    keyword: pjl
+    snippet:
+      jupyter-lab
+        --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
+        --config="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Quarto) preview
     keyword: qp
     snippet: quarto preview
