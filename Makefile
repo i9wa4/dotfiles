@@ -9,7 +9,8 @@ SHELL := /usr/bin/env bash
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
 
-MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
+MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
+MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
 
 temp:
 	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshenv; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/str/temp.md
@@ -59,9 +60,9 @@ mac-copy:  ## copy files for Mac
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.config/skk/mydict.utf8 "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
-	&& cp -f "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.L "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.jinmei "$${_macskk_dict_dir}" \
-	&& cp -f "$${HOME}"/ghq/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 "$${_macskk_dict_dir}"
+	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L "$${_macskk_dict_dir}" \
+	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei "$${_macskk_dict_dir}" \
+	&& cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 "$${_macskk_dict_dir}"
 
 
 init-zsh-ubuntu:
@@ -398,7 +399,7 @@ vim-build:  ## build Vim
 	else \
 	  echo 'Which OS are you using?'; \
 	fi \
-	&& cd ~/ghq/github.com/vim/vim/src \
+	&& cd $(MF_GITHUB_DIR)/vim/vim/src \
 	&& git checkout master \
 	&& ./configure \
 	  --disable-gui \
@@ -413,7 +414,7 @@ vim-build:  ## build Vim
 	&& hash -r \
 
 nvim-build:  ## build Neovim
-	cd ~/ghq/github.com/neovim/neovim \
+	cd $(MF_GITHUB_DIR)/neovim/neovim \
 	&& git checkout refs/tags/stable \
 	&& make distclean \
 	&& make \
@@ -424,7 +425,7 @@ nvim-build:  ## build Neovim
 	&& hash -r \
 
 act-build:  ## build act
-	cd ~/ghq/github.com/nektos/act \
+	cd $(MF_GITHUB_DIR)/nektos/act \
 	&& make build
 
 docker-init-ubuntu:
@@ -590,9 +591,9 @@ win-copy:  ## copy config files for Windows
 	cp -rf  $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
 	cp -rf  $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
 	cp -rf  $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
-	cp -f   "$${HOME}"/ghq/github.com/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
-	cp -f   "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
-	cp -f   "$${HOME}"/ghq/github.com/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
+	cp -f   $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
+	cp -f   $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
+	cp -f   $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
 	echo "$${WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 help:  ## print this help

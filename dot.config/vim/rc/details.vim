@@ -119,20 +119,8 @@ nnoremap <S-Left>  <C-w>5<
 
 " https://zenn.dev/vim_jp/articles/43d021f461f3a4
 nnoremap Y y$
-" nnoremap x "_d
-" nnoremap X "_D
-" xnoremap x "_x
-" onoremap x d
 onoremap i<space> iW
 xnoremap i<space> iW
-" xnoremap < <gv
-" xnoremap > >gv
-" nnoremap <expr> <C-j> $'<Cmd>move+{v:count1}<CR>=l'
-" nnoremap <expr> <C-k> $'<Cmd>move-1-{v:count1}<CR>=l'
-" xnoremap <silent><C-j> :move'>+1<CR>gv=gv
-" xnoremap <silent><C-k> :move'<-2<CR>gv=gv
-" nnoremap p ]p`]
-" nnoremap P ]P`]
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
@@ -205,7 +193,7 @@ function s:copy2clip_wsl(...) abort
   endif
 endfunction
 
-command! CreateLocalVim
+command! CreateLocalVimrc
 \ call system('echo "let g:mnh_header_level_shift = 7" > ./local.vim')
 
 
@@ -230,7 +218,6 @@ function! s:my_asyncjob_on_save() abort
     " Do nothing.
   endif
 endfunction
-
 
 augroup MyVimrc
   autocmd!
