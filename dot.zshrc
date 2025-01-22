@@ -1,3 +1,9 @@
+# https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
+if [ -r /etc/zshrc ]; then
+  . /etc/zshrc
+fi
+
+
 # Keybind
 bindkey -v
 # https://wayohoo.com/article/6922
