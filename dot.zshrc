@@ -48,7 +48,9 @@ setopt share_history
 # Prompt
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 # prompt bigfade
-if { [ -n "${SSH_CONNECTION}" ] } || { [ -n "${SSH_TTY}" ] } || { [ -n "${SSH_CLIENT}" ] }; then
+if { [ -n "${SSH_CONNECTION}" ] } \
+  || { [ -n "${SSH_TTY}" ] } \
+  || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
   PROMPT="%F{#696969}%M%f "
 else
@@ -111,7 +113,6 @@ zinit light zdharma-continuum/fast-syntax-highlighting
 _uname="$(uname -a)"
 if [ "$(echo "${_uname}" | grep Darwin)" ]; then
   echo 'Hello, macOS!'
-  alias snowsql=/Applications/SnowSQL.app/Contents/MacOS/snowsql
 elif [ "$(echo "${_uname}" | grep Ubuntu)" ]; then
   echo 'Hello, Ubuntu'
   alias pbcopy='xclip -selection clipboard'
@@ -132,8 +133,11 @@ cd
 
 
 # tmux
-if { [ -n "${SSH_CONNECTION}" ] } || { [ -n "${SSH_TTY}" ] } || { [ -n "${SSH_CLIENT}" ] }; then
+if { [ -n "${SSH_CONNECTION}" ] } \
+  || { [ -n "${SSH_TTY}" ] } \
+  || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
+  echo "This is a remote host. Run tmux manually on your local host."
 else
   # local host
   if [ "${SHLVL}" -eq 1 ]; then
