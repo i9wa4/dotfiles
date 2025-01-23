@@ -1,9 +1,8 @@
 # loaded /etc/zsh/zshenv
 
-typeset -U path PATH
-
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-if [ "$(uname -a | grep Darwin)" ]; then
+if { [ "$(uname -a | grep Darwin)" ] } && { [ "$0" = "*zsh" ] }; then
+  typeset -U path PATH
   setopt no_global_rcs
   if [ -x /usr/libexec/path_helper ]; then
       eval `/usr/libexec/path_helper -s`
@@ -47,7 +46,7 @@ export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 
 # Rust
-if test -f "${HOME}"/.cargo/env; then . "${HOME}"/.cargo/env; fi
+if [ -r "${HOME}"/.cargo/env ]; then . "${HOME}"/.cargo/env; fi
 
 # tfenv
 export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"

@@ -48,7 +48,7 @@ setopt share_history
 # Prompt
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 # prompt bigfade
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+if { [ -n "${SSH_CONNECTION}" ] } || { [ -n "${SSH_TTY}" ] } || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
   PROMPT="%F{#696969}%M%f "
 else
@@ -132,7 +132,7 @@ cd
 
 
 # tmux
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+if { [ -n "${SSH_CONNECTION}" ] } || { [ -n "${SSH_TTY}" ] } || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
 else
   # local host
