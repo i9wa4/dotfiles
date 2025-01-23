@@ -1,11 +1,16 @@
 # loaded /etc/zsh/zshenv
 
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-if { [ "$(uname -a | grep Darwin)" ] } && { [ "$0" = "*zsh" ] }; then
+if [ -n "${ZSH_VERSION}" ]; then
+  echo Zsh!
   typeset -U path PATH
-  setopt no_global_rcs
-  if [ -x /usr/libexec/path_helper ]; then
-      eval `/usr/libexec/path_helper -s`
+
+  if [ "$(uname -s)" = "Darwin" ]; then
+    echo macOS!
+    setopt no_global_rcs
+    if [ -x /usr/libexec/path_helper ]; then
+        eval `/usr/libexec/path_helper -s`
+    fi
   fi
 fi
 

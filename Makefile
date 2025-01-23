@@ -17,6 +17,7 @@ debug:
 	@echo uname: "$$(uname -a)"
 	@echo dotfiles: $(MF_DOTFILES_DIR)
 	@echo shell: "$$0"
+	@echo .zshenv load test:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 
 common: init-zshrc unlink link git-config \
