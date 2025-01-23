@@ -1,8 +1,7 @@
 # loaded /etc/zsh/zshenv
 
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-set +u
-if [ -n "${ZSH_VERSION}" ]; then
+if [ -n "${ZSH_VERSION:-}" ]; then
   typeset -U path PATH
 
   if [ "$(uname -s)" = "Darwin" ]; then
@@ -12,7 +11,6 @@ if [ -n "${ZSH_VERSION}" ]; then
     fi
   fi
 fi
-set -u
 
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
