@@ -1,7 +1,7 @@
 # loaded /etc/zsh/zshenv
 
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-if [ -n "${ZSH_VERSION}" ]; then
+if [ -z "${ZSH_VERSION}" ]; then
   typeset -U path PATH
 
   if [ "$(uname -s)" = "Darwin" ]; then
