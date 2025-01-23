@@ -141,6 +141,6 @@ if { [ -n "${SSH_CONNECTION}" ] } \
 else
   # local host
   if [ "${SHLVL}" -eq 1 ]; then
-    tmux
+    tmux new-session -s main
   fi
 fi
