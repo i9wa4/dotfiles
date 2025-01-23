@@ -13,10 +13,11 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
 
 
-echo:
-	@echo "$${HOME}"
-	@echo $(MF_GITHUB_DIR)
-	@echo $(MF_DOTFILES_DIR)
+debug:
+	@echo uname: "$$(uname -a)"
+	@echo dotfiles: $(MF_DOTFILES_DIR)
+	@echo shell: "$$0"
+	. $(MF_DOTFILES_DIR)/dot.zshenv
 
 common: init-zshrc unlink link git-config \
 	package-go package-rust \
@@ -76,8 +77,8 @@ init-zshrc:
 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 	# Zsh
-	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshenv; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	echo "if test -f $(MF_DOTFILES_DIR)/dot.zshrc; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 
 define MF_ALACRITTY_UBUNTU
 [general]
