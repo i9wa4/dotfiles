@@ -57,8 +57,7 @@ mac-copy:  ## copy files for Mac
 	&& rm -rf "$${_code_dir}"/snippets \
 	&& mkdir -p "$${_code_dir}"/snippets \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_dir}" \
-	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_dir}"/snippets \
-	&& cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
+	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_dir}"/snippets
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
@@ -108,6 +107,7 @@ link:  ## make symbolic links
 	# dotfiles
 	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
+	cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
