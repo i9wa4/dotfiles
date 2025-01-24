@@ -45,8 +45,10 @@ mac: package-mac common alacritty-mac  ## init for Mac
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
-mac-delete-ds_store:  ## delete .DS_Store
+mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
+	xattr -rc $(MF_DOTFILES_DIR)
+	xattr -rc "$${HOME}"/str
 
 mac-copy:  ## copy files for Mac
 	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
@@ -124,7 +126,7 @@ link:  ## make symbolic links
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  make mac-delete-ds_store; \
+	  make mac-clean; \
 	  make mac-copy; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
