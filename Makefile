@@ -109,7 +109,7 @@ link:  ## make symbolic links
 	# dotfiles
 	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
-	cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
+	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
@@ -128,11 +128,17 @@ link:  ## make symbolic links
 	  echo 'Hello, macOS!'; \
 	  make mac-clean; \
 	  make mac-copy; \
+	  _code_settings_dir="$${HOME}""/Library/Application Support/Code/User"; \
+	  mkdir -p "$${_code_settings_dir}"; \
+	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_settings_dir}"; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make win-copy; \
+	  _code_settings_dir="$${HOME}"/.vscode-server/data/Machine; \
+	  mkdir -p "$${_code_settings_dir}"; \
+	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_settings_dir}"; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
