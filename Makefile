@@ -329,6 +329,7 @@ package-mac-update:
 package-go:
 	go install github.com/evilmartians/lefthook@latest
 	go install github.com/mattn/efm-langserver@latest
+	go install github.com/mikefarah/yq/v4@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
 	go install github.com/rhysd/vim-startuptime@latest
 	go install github.com/x-motemen/ghq@latest
