@@ -65,7 +65,7 @@ export VISUAL=vim
 export XDG_CONFIG_HOME="${HOME}"/.config
 export PATH="${HOME}"/.local/bin:"${PATH}"
 
-if locale -a | grep -q 'en_US.UTF-8'; then
+if locale -a | grep -q "en_US.UTF-8"; then
   export LC_ALL=en_US.UTF-8
 else
   export LC_ALL=C.UTF-8
