@@ -12,7 +12,7 @@
     "settings": {
         "breadcrumbs.enabled": false,
         "editor.fontFamily": "'MyricaM M', monospace",
-        "editor.fontSize": 20,
+        "editor.fontSize": 22,
         "editor.mouseWheelZoom": true,
         "editor.renderWhitespace": "all",
         "extensions.ignoreRecommendations": false,
@@ -30,7 +30,8 @@
             "github.copilot",
             "github.copilot-chat",
             "jebbs.plantuml",
-            "mechatroner.rainbow-csv"
+            "mechatroner.rainbow-csv",
+            "ms-vscode-remote.remote-wsl"
         ]
     }
 }
