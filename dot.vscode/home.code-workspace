@@ -30,8 +30,7 @@
             "github.copilot",
             "github.copilot-chat",
             "jebbs.plantuml",
-            "mechatroner.rainbow-csv",
-            "ms-vscode-remote.remote-wsl"
+            "mechatroner.rainbow-csv"
         ]
     }
 }
