@@ -249,6 +249,8 @@ package-ubuntu-update:
 	sudo apt upgrade -y
 	# Rust
 	rustup update
+
+package-ubuntu-update-awscli:  ## update AWS CLI
 	# AWS CLI
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 	cd \
