@@ -73,13 +73,15 @@ init-zsh-ubuntu:
 	sudo apt install -y zsh
 	chsh -s "$$(which zsh)"
 
-init-zshrc:
-	# Zinit
-	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
+init-zshrc: init-zinit
 	# Zsh
 	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+
+init-zinit:
+	# Zinit
+	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 
 define MF_ALACRITTY_UBUNTU
 [general]

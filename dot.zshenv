@@ -59,6 +59,9 @@ export TF_VER_MINOR=1.9
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
+# zeno.zsh
+export ZENO_DISABLE_TMUX_SESSION_RENAME=1
+
 # Common
 export EDITOR=vim
 export VISUAL=vim
