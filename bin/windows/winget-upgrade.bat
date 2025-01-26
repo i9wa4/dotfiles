@@ -13,9 +13,10 @@ exit /b
 
     winget install --ignore-security-hash --exact --id Alacritty.Alacritty
     winget install --ignore-security-hash --exact --id Amazon.Kindle
+    winget install --ignore-security-hash --exact --id Google.Chrome
     winget install --ignore-security-hash --exact --id Microsoft.VisualStudioCode
     winget install --ignore-security-hash --exact --id TheBrowserCompany.Arc
-    winget install --ignore-security-hash --exact --id Zoom.Zoom.EXE
+    winget install --ignore-security-hash --exact --id Zoom.Zoom
 
     winget upgrade --ignore-security-hash --all
 
