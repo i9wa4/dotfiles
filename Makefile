@@ -135,7 +135,7 @@ link:  ## make symbolic links
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make win-copy; \
-	  _code_settings_dir="$${HOME}"/.vscode-server/data/Machine; \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	  rm -rf "$${_code_setting_dir}"/snippets; \
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
 	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
