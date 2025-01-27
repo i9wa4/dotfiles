@@ -96,7 +96,7 @@
 1. Skip uploading SSH public key.
 1. Login with a web browser: <https://github.com/login/device>.
 
-### 5.3. Arc
+### 5.3. Web Browser
 
 #### 5.3.1. Search Engine
 
