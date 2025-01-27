@@ -56,6 +56,7 @@ mac-copy:  ## copy files for Mac
 	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
 	fi
 	_code_dir="$${HOME}"'/Library/Application Support/Code/User' \
+	&& rm -f "$${_code_dir}"/settings.json \
 	&& rm -rf "$${_code_dir}"/snippets \
 	&& mkdir -p "$${_code_dir}"/snippets \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_dir}" \
@@ -111,7 +112,7 @@ link:  ## make symbolic links
 	# dotfiles
 	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
-	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
+	cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
