@@ -1,1 +1,14 @@
-{}
+{
+    "breadcrumbs.enabled": false,
+    "editor.fontFamily": "'MyricaM M', monospace",
+    "editor.fontSize": 22,
+    "editor.mouseWheelZoom": true,
+    "editor.renderWhitespace": "all",
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.enable": {
+        "*": true,
+        "markdown": true,
+        "plaintext": true,
+        "scminput": false
+    }
+}
