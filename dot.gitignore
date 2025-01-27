@@ -1,11 +1,9 @@
-.ipynb_checkpoints/
-.virtual_documents/
 node_modules/
 .DS_Store
-.netrwbook
-.netrwhist
-alacritty.toml
-local.vim
+
+# Python
+.ipynb_checkpoints/
+.virtual_documents/
 
 # Terraform
 .terraform.lock.hcl
@@ -14,3 +12,9 @@ terraform.tfstate
 
 # Terragrunt
 .terragrunt-cache/
+
+# Vim
+.netrwbook
+.netrwhist
+alacritty.toml
+local.vim
