@@ -5,9 +5,10 @@ lint-debounce: 1s
 
 tools:
   dockerfile-hadolint: &dockerfile-hadolint
-    lint-command: 'hadolint --no-color'
+    lint-command: 'hadolint --no-color ${INPUT}'
     lint-source: 'hadolint'
-    lint-stdin: true
+    lint-stdin: false
+    lint-ignore-exit-code: true
     lint-formats:
       - '%f:%l %m'
 
@@ -33,7 +34,7 @@ tools:
     #     E203,
     #     # E701: Multiple statements on one line (colon)
     #     E701
-    lint-command: 'flake8 --max-line-length 88 --extend-ignore E203,E701 --stdin-display-name ${INPUT} -'
+    lint-command: 'flake8 --max-line-length 88 --extend-ignore E203,E701 --stdin-display-name -'
     lint-source: 'flake8'
     lint-stdin: true
     lint-formats:
@@ -46,6 +47,8 @@ tools:
   sh-shellcheck: &sh-shellcheck
     lint-command: 'shellcheck -f gcc -x'
     lint-source: 'shellcheck'
+    lint-stdin: true
+    lint-ignore-exit-code: true
     lint-formats:
       - '%f:%l:%c: %trror: %m'
       - '%f:%l:%c: %tarning: %m'
@@ -59,12 +62,13 @@ tools:
     format-command: 'sqlfmt -'
     format-stdin: true
 
-  terraform-tflint: &terraform-tflint
-    lint-command: 'tflint --format compact --filter ${INPUT}'
-    lint-source: 'tflint'
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m'
+  # terraform-tflint: &terraform-tflint
+  #   lint-command: 'tflint --format compact --recursive'
+  #   lint-source: 'tflint'
+  #   lint-stdin: false
+  #   lint-ignore-exit-code: true
+  #   lint-formats:
+  #     - '%f:%l:%c: %m'
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
@@ -91,5 +95,5 @@ languages:
     - <<: *sql-sqlfmt
 
   terraform:
-    - <<: *terraform-tflint
+    # - <<: *terraform-tflint
     - <<: *terraform-fmt
