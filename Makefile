@@ -48,13 +48,12 @@ mac: package-mac common alacritty-mac  ## init for Mac
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_DOTFILES_DIR)
-	xattr -rc "$${HOME}"/str
 
-mac-copy:  ## copy files for Mac
-	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
-	&& if [ -d "$${_google_drive_dir}" ]; then \
-	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
-	fi
+# mac-copy:  ## copy files for Mac
+# 	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
+# 	&& if [ -d "$${_google_drive_dir}" ]; then \
+# 	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
+# 	fi
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
@@ -123,7 +122,6 @@ link:  ## make symbolic links
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  make mac-clean; \
-	  make mac-copy; \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
 	  rm -rf "$${_code_setting_dir}"/snippets; \
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
