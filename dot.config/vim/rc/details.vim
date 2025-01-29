@@ -134,8 +134,8 @@ nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_dict_path<CR>
-nnoremap <Plug>(my-Filer)i <Cmd>execute 'edit' g:my_internal_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
+nnoremap <Plug>(my-Filer)m <Cmd>execute 'edit' g:my_main_path<CR>
 nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_temp_md_path<CR>
 nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC<CR>
@@ -195,7 +195,8 @@ function s:copy2clip_wsl(...) abort
 endfunction
 
 command! CreateLocalVimrc
-\ call system('echo "let g:mnh_header_level_shift = 7" > ./local.vim')
+\   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
+\|  call system('echo "\" let g:mnh_header_level_shift = 7" >> ./local.vim')
 
 
 " --------------------------------------

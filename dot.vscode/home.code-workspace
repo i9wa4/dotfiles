@@ -3,10 +3,6 @@
         {
             "name": "GitHub",
             "path": "ghq/github.com"
-        },
-        {
-            "name": "str",
-            "path": "str"
         }
     ],
     "settings": {},
