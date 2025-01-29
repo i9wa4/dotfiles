@@ -358,7 +358,6 @@ ghq-get-local:
 ghq-backup-local:
 	. "$${HOME}"/.zshenv \
 	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
-	&& echo "$${_list_path}" \
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
