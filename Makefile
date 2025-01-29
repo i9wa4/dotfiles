@@ -1,5 +1,6 @@
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
+# .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
@@ -48,12 +49,6 @@ mac: package-mac common alacritty-mac  ## init for Mac
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_DOTFILES_DIR)
-
-# mac-copy:  ## copy files for Mac
-# 	_google_drive_dir="$${HOME}"'/Google Drive/マイドライブ' \
-# 	&& if [ -d "$${_google_drive_dir}" ]; then \
-# 	  rsync -avr --delete "$${HOME}"/str "$${_google_drive_dir}"; \
-# 	fi
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
@@ -348,20 +343,22 @@ package-rust:
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 ghq-get-essential:
-	_list_path=etc/ghq-list-essential.txt \
+	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
 	&& if [ -f "$${_list_path}" ]; then \
 	  cat "$${_list_path}" | ghq get -p; \
 	fi
 
 ghq-get-local:
-	_list_path=~/str/etc/ghq-list-local.txt \
+	. "$${HOME}"/.zshenv \
+	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
 	&& if [ -f "$${_list_path}" ]; then \
 	  cat "$${_list_path}" | ghq get -p; \
 	fi
 
 ghq-backup-local:
-	_list_path=~/str/etc/ghq-list-local.txt \
-	&& mkdir -p ~/str/etc \
+	. "$${HOME}"/.zshenv \
+	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
+	&& echo "$${_list_path}" \
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
