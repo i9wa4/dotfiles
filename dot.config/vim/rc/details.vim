@@ -204,8 +204,9 @@ command! CreateLocalVimrc
 "
 function! s:set_register() abort
   if empty(&buftype)
-    call setreg('a', '%'->expand()->fnamemodify(':p:~'))
-    call setreg('b', '%'->expand()->fnamemodify(':p:~:t'))
+    call setreg('a', '%'->expand()->fnamemodify(':p'))
+    call setreg('b', '%'->expand()->fnamemodify(':p:~'))
+    call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
   endif
 endfunction
 
