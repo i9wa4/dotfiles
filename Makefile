@@ -368,7 +368,6 @@ ghq-backup-local:
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-config:
-	git config --global gpg.format ssh
 	git config --global color.ui auto
 	git config --global commit.gpgsign true
 	git config --global commit.verbose true
@@ -386,6 +385,7 @@ git-config:
 	git config --global difftool.prompt false
 	git config --global difftool.vimdiff.path vim
 	git config --global ghq.root ~/ghq
+	git config --global gpg.format ssh
 	git config --global grep.lineNumber true
 	git config --global http.sslVerify false
 	git config --global init.defaultBranch main
@@ -394,6 +394,7 @@ git-config:
 	git config --global mergetool.prompt false
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
+	git config --global user.email "127664533+i9wa4@users.noreply.github.com"
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim

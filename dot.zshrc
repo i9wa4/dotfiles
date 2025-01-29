@@ -76,11 +76,13 @@ zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %F{#696969}%m%f'
 zstyle ':vcs_info:git:*' check-for-changes true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
-# zstyle ':vcs_info:git+set-message:*' hooks \
-#   git-config-user
-# function +vi-git-config-user(){
-#   hook_com[misc]+='<'`git config user.name`'> <'`git config user.email`'>'
-# }
+zstyle ':vcs_info:git+set-message:*' hooks \
+  git-config-user
+function +vi-git-config-user(){
+  hook_com[misc]+='<'`git config user.name`'>'
+  # hook_com[misc]+=' '
+  # hook_com[misc]+='<'`git config user.email`'>'
+}
 _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
 
