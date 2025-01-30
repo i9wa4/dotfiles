@@ -71,6 +71,8 @@
 
 ### 4.2. macOS
 
+[Mac 環境構築手順 – uma-chan’s page](https://i9wa4.github.io/blog/2024-06-17-setup-mac.html)
+
 #### 4.2.1. macSKK
 
 1. Enable the dictionaries.
