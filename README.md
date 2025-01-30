@@ -113,3 +113,9 @@
 - Slack
     - GitHub notifications
         - `/github subscribe owner/repo reviews,comments,branches,commits:*`
+
+#### 5.3.2. Extension
+
+- Markdown Preview Plus
+- Page Sidebar
+    - Google Calendar Embedded Link
