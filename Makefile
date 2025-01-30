@@ -392,7 +392,6 @@ git-config:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
-	# && make distclean
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
@@ -412,6 +411,7 @@ vim-build:  ## build Vim
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim/src \
 	&& git checkout master \
+	&& make distclean \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
