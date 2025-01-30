@@ -89,8 +89,8 @@ add-zsh-hook precmd _vcs_precmd
 
 # zeno.zsh
 zinit ice lucid depth"1" blockf
-# zinit light yuki-yano/zeno.zsh
-zinit light i9wa4/zeno.zsh
+zinit light yuki-yano/zeno.zsh
+# zinit light i9wa4/zeno.zsh
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
 if [ -n "${ZENO_LOADED}" ]; then
   bindkey ' '  zeno-auto-snippet
