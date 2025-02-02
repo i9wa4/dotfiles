@@ -21,14 +21,8 @@ else
   set clipboard^=unnamedplus
 endif
 set autoread
-" backup
-set backupdir=~/.cache/vim
 set nobackup
-" swap
-set directory=~/.cache/vim
 set noswapfile
-" undo
-set undodir=~/.cache/vim
 set noundofile
 
 
