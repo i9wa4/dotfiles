@@ -52,7 +52,7 @@ if { [ -n "${SSH_CONNECTION}" ] } \
   || { [ -n "${SSH_TTY}" ] } \
   || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
-  PROMPT="%F{#696969}%M%f "
+  PROMPT="%K{#FFB6C1}%F{#000000}[%M]%f%k "
 else
   # local host
   PROMPT=""
