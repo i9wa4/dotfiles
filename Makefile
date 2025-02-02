@@ -290,7 +290,6 @@ package-mac:
 	&& brew upgrade \
 	&& brew install --cask \
 	  alacritty \
-	  arc \
 	  docker \
 	  font-myricam \
 	  google-drive \
