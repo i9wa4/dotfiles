@@ -110,12 +110,14 @@
     - `https://duckduckgo.com/?q=%s&kl=jp-jp&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
 - DuckDuckGo English Search
     - `https://duckduckgo.com/?q=%s&kl=us-en&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
-- Slack
-    - GitHub notifications
-        - `/github subscribe owner/repo reviews,comments,branches,commits:*`
 
 #### 5.3.2. Extension
 
 - Markdown Preview Plus
 - Page Sidebar
     - Google Calendar Embedded Link
+
+### 5.4. Slack
+
+- GitHub Notifications
+    - `/github subscribe owner/repo reviews,comments,branches,commits:*`
