@@ -388,7 +388,6 @@ git-config:
 	git config --global mergetool.prompt false
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
-	git config --global user.email "127664533+i9wa4@users.noreply.github.com"
 	git config --global user.signingkey ~/.ssh/github.pub
 
 vim-build:  ## build Vim
