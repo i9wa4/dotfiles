@@ -48,7 +48,7 @@ mac: package-mac common alacritty-mac  ## init for Mac
 
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
-	xattr -rc $(MF_DOTFILES_DIR)
+	xattr -rc $(MF_GITHUB_DIR)
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
