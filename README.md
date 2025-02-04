@@ -33,15 +33,15 @@
     && _uname="$$(uname -a)"; \
     if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
       echo 'Hello, macOS!'; \
-      make mac; \
+      make mac-init; \
     elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
       echo 'Hello, Ubuntu'; \
       sudo apt install -y make; \
-      make ubuntu; \
+      make ubuntu-server-init; \
     elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
       echo 'Hello, WSL2!'; \
       sudo apt install -y make; \
-      make wsl2; \
+      make wsl-init; \
     elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
       echo 'Hello, Raspberry Pi!'; \
     elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
