@@ -1,0 +1,9 @@
+# https://engineering.konso.me/articles/iterm2-to-ghostty/
+font-family = "MyricaM M"
+font-size = 24
+
+font-feature = "-calt"
+font-feature = "-dlig"
+font-feature = "-liga"
+
+term = "xterm-256color"

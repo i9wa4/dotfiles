@@ -84,8 +84,7 @@ export MF_ALACRITTY_UBUNTU
 define MF_ALACRITTY_MAC
 [general]
 import = [
-    '~/.config/alacritty/common.toml',
-    '~/.config/alacritty/mac.toml'
+    '~/.config/alacritty/common.toml'
 ]
 endef
 export MF_ALACRITTY_MAC
@@ -105,6 +104,7 @@ link:  ## make symbolic links
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux "$${XDG_CONFIG_HOME}" \
@@ -149,6 +149,7 @@ unlink:  ## unlink symbolic links
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ]; then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]; then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ]; then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ]; then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ]; then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
@@ -290,6 +291,7 @@ package-mac:
 	  alacritty \
 	  docker \
 	  font-myricam \
+	  font-jetbrains-mono \
 	  ghostty \
 	  google-drive \
 	  mtgto/macskk/macskk \
