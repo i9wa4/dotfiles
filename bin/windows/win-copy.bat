@@ -19,7 +19,7 @@ exit /b
     echo [general]>                                 "%ALACRITTY_DIR%\alacritty.toml"
     echo import = [>>                               "%ALACRITTY_DIR%\alacritty.toml"
     echo     "%ALACRITTY_DIR:\=/%/common.toml",>>   "%ALACRITTY_DIR%\alacritty.toml"
-    echo     "%ALACRITTY_DIR:\=/%/win.toml", >>     "%ALACRITTY_DIR%\alacritty.toml"
+    echo     "%ALACRITTY_DIR:\=/%/windows.toml", >> "%ALACRITTY_DIR%\alacritty.toml"
     echo ]>>                                        "%ALACRITTY_DIR%\alacritty.toml"
 
     @REM VS Code

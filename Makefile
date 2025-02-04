@@ -20,28 +20,13 @@ debug:
 	@echo .zshenv load test:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 
-common: init-zshrc unlink link git-config \
+common-init: zshrc-init unlink link git-config \
 	package-go package-rust \
 	ghq-get-essential \
 	vim-build nvim-build pyenv-install pyenv-vmu \
-	volta-init
+	volta-install
 
-ubuntu-minimal: init-zsh-ubuntu package-ubuntu common alacritty-ubuntu
-
-ubuntu: ubuntu-minimal docker-init-ubuntu docker-systemd-ubuntu
-
-ubuntu-server: ubuntu package-ubuntu-server  ## init for Ubuntu Server
-
-ubuntu-desktop: ubuntu package-ubuntu-desktop  ## init for Ubuntu Desktop
-
-wsl: ubuntu-minimal win-copy  ## init for WSL2 Ubuntu
-	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
-	sudo apt install -y wslu
-	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
-	eval `ssh-agent`
-	echo "Restart WSL2"
-
-mac: package-mac common alacritty-mac  ## init for Mac
+mac-init: package-mac-install common-init alacritty-mac ghostty-mac  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
@@ -57,29 +42,35 @@ mac-skk-copy:  ## copy SKK dictionaries for Mac
 	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei "$${_macskk_dict_dir}" \
 	&& cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 "$${_macskk_dict_dir}"
 
+ubuntu-minimal-init: zsh-ubuntu-install package-ubuntu-install common-init
 
-init-zsh-ubuntu:
-	sudo apt install -y zsh
-	chsh -s "$$(which zsh)"
+ubuntu-init: ubuntu-minimal-init docker-install-ubuntu docker-init-ubuntu
 
-init-zshrc: init-zinit
+ubuntu-server-init: ubuntu-init package-ubuntu-server-install  ## init for Ubuntu Server
+
+ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
+
+wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
+	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
+	sudo apt install -y wslu
+	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
+	eval `ssh-agent`
+	echo "Restart WSL2"
+
+
+zshrc-init: zinit-install
 	# Zsh
 	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
 	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
 
-init-zinit:
+zsh-ubuntu-install:
+	sudo apt install -y zsh
+	chsh -s "$$(which zsh)"
+
+zinit-install:
 	# Zinit
 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
-
-define MF_ALACRITTY_UBUNTU
-[general]
-import = [
-    '~/.config/alacritty/common.toml',
-    '~/.config/alacritty/ubuntu.toml'
-]
-endef
-export MF_ALACRITTY_UBUNTU
 
 define MF_ALACRITTY_MAC
 [general]
@@ -89,11 +80,17 @@ import = [
 endef
 export MF_ALACRITTY_MAC
 
-alacritty-ubuntu:
-	echo "$${MF_ALACRITTY_UBUNTU}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
-
 alacritty-mac:
-	echo "$${MF_ALACRITTY_MAC}" | sudo tee "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "$${MF_ALACRITTY_MAC}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+
+define MF_GHOSTTY_MAC
+config-file = "config-common.toml"
+endef
+export MF_GHOSTTY_MAC
+
+ghostty-mac:
+	echo "$${MF_GHOSTTY_MAC}" | tee "$${HOME}"/.config/ghostty/config.toml
+
 
 link:  ## make symbolic links
 	# dotfiles
@@ -157,6 +154,14 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 
 package-update:
+	# OS common update
+	make package-go
+	make package-rust
+	make volta-update
+	make pyenv-update
+	# Deno
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& deno upgrade "$${DENO_VER_PATCH}"
 	# OS-specific update
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -175,16 +180,56 @@ package-update:
 	else \
 	  echo 'Which OS are you using?'; \
 	fi
-	# OS common update
-	make package-go
-	make package-rust
-	make volta-update
-	make pyenv-update
-	# Deno
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& deno upgrade "$${DENO_VER_PATCH}"
 
-package-ubuntu:
+package-mac-install:
+	# https://brew.sh/
+	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& brew -v \
+	&& brew update \
+	&& brew upgrade \
+	&& brew install --cask \
+	  alacritty \
+	  docker \
+	  font-myricam \
+	  ghostty \
+	  google-drive \
+	  mtgto/macskk/macskk \
+	  rectangle \
+	  visual-studio-code \
+	  zoom \
+	&& brew install \
+	  fd \
+	  fzf \
+	  gh \
+	  git \
+	  hadolint \
+	  jq \
+	  nvim \
+	  ripgrep \
+	  shellcheck \
+	  tflint \
+	  tmux \
+	  vim \
+	  wget \
+	  zsh \
+	&& brew install ninja cmake gettext curl \  # Neovim
+	&& if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi \  # Deno
+	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
+	&& curl https://pyenv.run | bash \
+	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
+	&& brew install go \  # Go
+	&& brew install rustup-init && rustup-init \  # Rust
+	&& brew install awscli \  # AWS CLI
+	&& brew install --cask aws-vpn-client \
+	&& brew install --cask google-cloud-sdk \  # gcloud CLI
+	&& brew install --cask snowflake-snowsql  # SnowSQL
+
+package-mac-update:
+	brew update
+	brew upgrade
+
+package-ubuntu-install:
 	sudo add-apt-repository -y ppa:git-core/ppa
 	sudo apt update
 	sudo apt upgrade -y
@@ -259,10 +304,17 @@ package-ubuntu-update-awscli:  ## update AWS CLI
 	&& sudo ./aws/install --update \
 	&& rm awscliv2.zip \
 
-package-ubuntu-desktop:
+package-ubuntu-server-install:
+	# Settings --> Accessibility --> Large Text
+	# https://zenn.dev/wsuzume/articles/26b26106c3925e
+	sudo apt install -y openssh-server
+	sudo systemctl daemon-reload
+	sudo systemctl start ssh.service
+	sudo systemctl enable ssh.service
+
+package-ubuntu-desktop-install:
 	sudo add-apt-repository -y ppa:aslatter/ppa
 	sudo apt update
-	sudo apt install -y alacritty
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
@@ -271,63 +323,6 @@ package-ubuntu-desktop:
 	&& fc-cache -fv \
 	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM \
-
-package-ubuntu-server:
-	# Settings --> Accessibility --> Large Text
-	# https://zenn.dev/wsuzume/articles/26b26106c3925e
-	sudo apt install -y openssh-server
-	sudo systemctl daemon-reload
-	sudo systemctl start ssh.service
-	sudo systemctl enable ssh.service
-
-package-mac:
-	# https://brew.sh/
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& brew -v \
-	&& brew update \
-	&& brew upgrade \
-	&& brew install --cask \
-	  alacritty \
-	  docker \
-	  font-myricam \
-	  font-jetbrains-mono \
-	  ghostty \
-	  google-drive \
-	  mtgto/macskk/macskk \
-	  rectangle \
-	  visual-studio-code \
-	  zoom \
-	&& brew install \
-	  fd \
-	  fzf \
-	  gh \
-	  git \
-	  hadolint \
-	  jq \
-	  nvim \
-	  ripgrep \
-	  shellcheck \
-	  tflint \
-	  tmux \
-	  vim \
-	  wget \
-	  zsh \
-	&& brew install ninja cmake gettext curl \  # Neovim
-	&& if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi \  # Deno
-	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
-	&& curl https://pyenv.run | bash \
-	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
-	&& brew install go \  # Go
-	&& brew install rustup-init && rustup-init \  # Rust
-	&& brew install awscli \  # AWS CLI
-	&& brew install --cask aws-vpn-client \
-	&& brew install --cask google-cloud-sdk \  # gcloud CLI
-	&& brew install --cask snowflake-snowsql  # SnowSQL
-
-package-mac-update:
-	brew update
-	brew upgrade
 
 package-go:
 	go install github.com/evilmartians/lefthook@latest
@@ -390,6 +385,128 @@ git-config:
 	git config --global push.default current
 	git config --global user.signingkey ~/.ssh/github.pub
 
+act-build:  ## build act
+	cd $(MF_GITHUB_DIR)/nektos/act \
+	&& make build
+
+docker-install-ubuntu:
+	# https://docs.docker.com/engine/install/ubuntu
+	# Uninstall old versions
+	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
+	# Add Docker's official GPG key
+	sudo apt-get update
+	sudo apt-get install -y ca-certificates curl gnupg
+	sudo install -m 0755 -d /etc/apt/keyrings
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	sudo chmod a+r /etc/apt/keyrings/docker.gpg
+	# Add the repository to Apt sources
+	echo \
+	  "deb [arch="$$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+	  "$$(. /etc/os-release && echo "$${VERSION_CODENAME}")" stable" | \
+	  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	sudo apt-get update
+	# Install the Docker packages
+	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+	# https://docs.docker.com/engine/install/linux-postinstall/
+	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
+	# sudo groupadd docker
+	sudo usermod -aG docker "$${USER}"
+	# hadolint
+	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
+	sudo chmod 755 /usr/local/bin/hadolint
+	# Trivy
+	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
+	sudo apt-get install wget apt-transport-https gnupg lsb-release
+	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+	sudo apt-get update
+	sudo apt-get install trivy
+
+docker-init-ubuntu:
+	sudo systemctl daemon-reload
+	sudo systemctl start docker
+	sudo systemctl enable docker
+
+nvim-build:  ## build Neovim
+	cd $(MF_GITHUB_DIR)/neovim/neovim \
+	&& git checkout refs/tags/stable \
+	&& make distclean \
+	&& make \
+	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
+	  CMAKE_BUILD_TYPE=Release \
+	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
+	&& make install \
+	&& hash -r \
+
+pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
+	&& pyenv global "$(PY_VER_PATCH)" \
+	&& pyenv versions \
+	&& python -m pip config --site set global.require-virtualenv true
+
+pyenv-install-latest: pyenv-list  ## install latest Python
+	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
+	&& pyenv install "$${_py_ver_latest}" --skip-existing \
+	&& pyenv global "$${_py_ver_latest}" \
+	&& pyenv versions \
+	&& python -m pip config --site set global.require-virtualenv true
+
+pyenv-list:  ## show installed Python versions
+	@. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
+	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
+	&& mkdir -p "$${HOME}"/.cache \
+	&& echo "$${available_versions}" | tail -n +$$( \
+	    echo "$${available_versions}" \
+	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
+	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
+	&& echo "[pyenv] Installed Python versions:" \
+	&& pyenv versions
+
+pyenv-update:  ## update pyenv
+	git -C "$${HOME}"/.pyenv pull
+
+python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
+	# https://dev.classmethod.jp/articles/change-venv-python-version/
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& if [ -d "$(VENV_PATH)" ]; then \
+	  python -m venv "$(VENV_PATH)" --clear; \
+	else \
+	  python -m venv "$(VENV_PATH)"; \
+	fi \
+	&& . "$(VENV_PATH)"/bin/activate \
+	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
+	&& python -m pip install --upgrade pip setuptools wheel \
+	&& if [ -r "$(REQUIREMENTS)" ]; then python -m pip install --requirement "$(REQUIREMENTS)"; fi \
+	&& python -m pip check \
+	&& python --version \
+	&& deactivate
+
+tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& tfenv install "$(TF_VER_PATCH)" \
+	&& tfenv use "$(TF_VER_PATCH)" \
+	&& terraform version
+
+tfenv-install-latest: tfenv-list  ## install latest Terraform
+	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
+	&& tfenv install "$${_tf_ver_latest}" \
+	&& tfenv use "$${_tf_ver_latest}" \
+	&& terraform version
+
+tfenv-list:  ## show installed Terraform versions
+	@. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
+	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
+	&& mkdir -p "$${HOME}"/.cache \
+	&& echo "$${available_versions}" | tail -n +$$( \
+	    echo "$${available_versions}" \
+	    | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | head -n1 \
+	  ) | tee "$${HOME}"/.cache/tfenv-list.txt \
+	&& echo "[tfenv] Installed Terraform versions:" \
+	&& tfenv list
+
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -423,145 +540,7 @@ vim-build:  ## build Vim
 	&& make install \
 	&& hash -r \
 
-nvim-build:  ## build Neovim
-	cd $(MF_GITHUB_DIR)/neovim/neovim \
-	&& git checkout refs/tags/stable \
-	&& make distclean \
-	&& make \
-	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
-	  CMAKE_BUILD_TYPE=Release \
-	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
-	&& make install \
-	&& hash -r \
-
-act-build:  ## build act
-	cd $(MF_GITHUB_DIR)/nektos/act \
-	&& make build
-
-docker-init-ubuntu:
-	# https://docs.docker.com/engine/install/ubuntu
-	# Uninstall old versions
-	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
-	# Add Docker's official GPG key
-	sudo apt-get update
-	sudo apt-get install -y ca-certificates curl gnupg
-	sudo install -m 0755 -d /etc/apt/keyrings
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-	sudo chmod a+r /etc/apt/keyrings/docker.gpg
-	# Add the repository to Apt sources
-	echo \
-	  "deb [arch="$$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-	  "$$(. /etc/os-release && echo "$${VERSION_CODENAME}")" stable" | \
-	  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	sudo apt-get update
-	# Install the Docker packages
-	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-	# https://docs.docker.com/engine/install/linux-postinstall/
-	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
-	# sudo groupadd docker
-	sudo usermod -aG docker "$${USER}"
-	# hadolint
-	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
-	sudo chmod 755 /usr/local/bin/hadolint
-	# Trivy
-	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
-	sudo apt-get install wget apt-transport-https gnupg lsb-release
-	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-	sudo apt-get update
-	sudo apt-get install trivy
-
-docker-systemd-ubuntu:
-	sudo systemctl daemon-reload
-	sudo systemctl start docker
-	sudo systemctl enable docker
-
-pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
-	&& pyenv global "$(PY_VER_PATCH)" \
-	&& pyenv versions \
-	&& python -m pip config --site set global.require-virtualenv true
-
-pyenv-install-latest: pyenv-list  ## install latest Python
-	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
-	&& pyenv install "$${_py_ver_latest}" --skip-existing \
-	&& pyenv global "$${_py_ver_latest}" \
-	&& pyenv versions \
-	&& python -m pip config --site set global.require-virtualenv true
-
-pyenv-list:  ## show installed Python versions
-	@. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
-	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
-	&& mkdir -p "$${HOME}"/.cache \
-	&& echo "$${available_versions}" | tail -n +$$( \
-	    echo "$${available_versions}" \
-	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
-	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
-	&& echo "[pyenv] Installed Python versions:" \
-	&& pyenv versions
-
-pyenv-update:  ## update pyenv
-	git -C "$${HOME}"/.pyenv pull
-
-pyenv-vmu:  ## update venv named myenv
-	# https://dev.classmethod.jp/articles/change-venv-python-version/
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -d "$${PY_VENV_MYENV}" ]; then \
-	  python -m venv "$${PY_VENV_MYENV}" --clear; \
-	else \
-	  python -m venv "$${PY_VENV_MYENV}"; \
-	fi \
-	&& . "$${PY_VENV_MYENV}"/bin/activate \
-	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install --requirement $(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt \
-	&& python -m pip check \
-	&& python --version \
-	&& deactivate
-
-pyenv-vdu:  ## update venv named dbtenv
-	# https://dev.classmethod.jp/articles/change-venv-python-version/
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -d "$${PY_VENV_DBTENV}" ]; then \
-	  python -m venv "$${PY_VENV_DBTENV}" --clear; \
-	else \
-	  python -m venv "$${PY_VENV_DBTENV}"; \
-	fi \
-	&& . "$${PY_VENV_DBTENV}"/bin/activate \
-	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-	&& python -m pip install --upgrade pip setuptools wheel \
-	&& python -m pip install --requirement $(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt \
-	&& python -m pip check \
-	&& python --version \
-	&& deactivate
-
-tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& tfenv install "$(TF_VER_PATCH)" \
-	&& tfenv use "$(TF_VER_PATCH)" \
-	&& terraform version
-
-tfenv-install-latest: tfenv-list  ## install latest Terraform
-	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
-	&& tfenv install "$${_tf_ver_latest}" \
-	&& tfenv use "$${_tf_ver_latest}" \
-	&& terraform version
-
-tfenv-list:  ## show installed Terraform versions
-	@. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
-	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
-	&& mkdir -p "$${HOME}"/.cache \
-	&& echo "$${available_versions}" | tail -n +$$( \
-	    echo "$${available_versions}" \
-	    | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | head -n1 \
-	  ) | tee "$${HOME}"/.cache/tfenv-list.txt \
-	&& echo "[tfenv] Installed Terraform versions:" \
-	&& tfenv list
-
-volta-init:
+volta-install:
 	curl https://get.volta.sh | bash
 	"$${HOME}"/.volta/bin/volta install node
 	echo "Restart Shell"
