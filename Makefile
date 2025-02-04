@@ -102,6 +102,24 @@ wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	eval `ssh-agent`
 	echo "Restart WSL2"
 
+wsl-ghostty-install:
+	# https://www.virtualizationhowto.com/2024/12/install-ghostty-in-windows-using-wsl/
+	sudo apt install -y \
+	  libadwaita-1-dev \
+	  libgtk-4-dev
+	sudo snap install --beta zig --classic
+	ghq get -p ghostty-org/ghostty
+	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
+	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
+
+define MF_WIN_GHOSTTY
+config-file = "config-common"
+endef
+export MF_WIN_GHOSTTY
+
+win-ghostty-init:
+	echo "$${MF_WIN_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
+
 define MF_WSLCONF_IN_WSL
 [boot]
 systemd=true
