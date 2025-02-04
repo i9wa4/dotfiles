@@ -16,13 +16,6 @@ help:  ## print this help
 	@echo 'Targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-
-# --------------------
-# Variables
-# --------------------
-MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
-MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
-
 debug:
 	@echo uname: "$$(uname -a)"
 	@echo dotfiles: $(MF_DOTFILES_DIR)
@@ -32,9 +25,16 @@ debug:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 
 
-# --------------------
+# --------------------------------------
+# Global Variables
+#
+MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
+MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
+
+
+# --------------------------------------
 # OS-common Initialization
-# --------------------
+#
 common-init: zsh-init zinit-install \
 	unlink link \
 	git-init \
@@ -45,9 +45,9 @@ common-init: zsh-init zinit-install \
 	package-go package-rust \
 	volta-install
 
-# --------------------
+# --------------------------------------
 # Tasks for macOS
-# --------------------
+#
 mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.apple.Finder QuitMenuItem -bool YES
@@ -83,18 +83,18 @@ export MF_MAC_GHOSTTY
 mac-ghostty-init:
 	echo "$${MF_MAC_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
 
-# --------------------
+# --------------------------------------
 # Tasks for Ubuntu
-# --------------------
+#
 ubuntu-minimal-init: package-ubuntu-install common-init
 
 ubuntu-server-init: ubuntu-minimal-init  docker-install-ubuntu docker-init-ubuntu package-ubuntu-server-install  ## init for Ubuntu Server
 
 ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
 
-# --------------------
+# --------------------------------------
 # Tasks for Windows & WSL
-# --------------------
+#
 wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt install -y wslu
@@ -140,9 +140,9 @@ win-copy:  ## copy config files for Windows
 	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
-# --------------------
+# --------------------------------------
 # Symbolic Links
-# --------------------
+#
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
@@ -206,9 +206,9 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 
 
-# --------------------
+# --------------------------------------
 # Package Management
-# --------------------
+#
 package-go:
 	go install github.com/evilmartians/lefthook@latest
 	go install github.com/mattn/efm-langserver@latest
@@ -387,9 +387,9 @@ package-ubuntu-desktop-install:
 	&& rm -rf MyricaM \
 
 
-# --------------------
+# --------------------------------------
 #  Tools
-# --------------------
+#
 act-build:  ## build act
 	cd $(MF_GITHUB_DIR)/nektos/act \
 	&& make build
