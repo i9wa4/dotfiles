@@ -121,7 +121,6 @@ link:  ## make symbolic links
 	  rm -rf "$${_code_setting_dir}"/snippets; \
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
 	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
-	  cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"; \
 	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
@@ -132,7 +131,6 @@ link:  ## make symbolic links
 	  rm -rf "$${_code_setting_dir}"/snippets; \
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
 	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
-	  cp -f $(MF_DOTFILES_DIR)/dot.vscode/home.code-workspace "$${HOME}"; \
 	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
