@@ -1,17 +1,27 @@
+# - [Makefileを自己文書化する | POSTD](https://postd.cc/auto-documented-makefile/)
+# - [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
+# - [Makefile の関数一覧 | 晴耕雨読](https://tex2e.github.io/blog/makefile/functions)
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
 
-
 # all targets are phony
 .PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
 
+help:  ## print this help
+	@echo 'Usage: make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+
+# --------------------
+# Variables
+# --------------------
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
-
 
 debug:
 	@echo uname: "$$(uname -a)"
@@ -21,13 +31,24 @@ debug:
 	@echo .zshenv load test:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 
-common-init: zshrc-init unlink link git-config \
-	package-go package-rust \
+
+# --------------------
+# OS-common Initialization
+# --------------------
+common-init: zsh-init zinit-install \
+	unlink link \
+	git-init \
 	ghq-get-essential \
-	vim-build nvim-build pyenv-install pyenv-vmu \
+	vim-build nvim-build \
+	act-build \
+	pyenv-install \
+	package-go package-rust \
 	volta-install
 
-mac-init: package-mac-install common-init alacritty-mac ghostty-mac  ## init for Mac
+# --------------------
+# Tasks for macOS
+# --------------------
+mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  ## init for Mac
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
@@ -43,14 +64,37 @@ mac-skk-copy:  ## copy SKK dictionaries for Mac
 	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei "$${_macskk_dict_dir}" \
 	&& cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 "$${_macskk_dict_dir}"
 
-ubuntu-minimal-init: zsh-ubuntu-install package-ubuntu-install common-init
+define MF_MAC_ALACRITTY
+[general]
+import = [
+    '~/.config/alacritty/common.toml'
+]
+endef
+export MF_MAC_ALACRITTY
 
-ubuntu-init: ubuntu-minimal-init docker-install-ubuntu docker-init-ubuntu
+mac-alacritty-init:
+	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 
-ubuntu-server-init: ubuntu-init package-ubuntu-server-install  ## init for Ubuntu Server
+define MF_MAC_GHOSTTY
+config-file = "config-common"
+endef
+export MF_MAC_GHOSTTY
+
+mac-ghostty-init:
+	echo "$${MF_MAC_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
+
+# --------------------
+# Tasks for Ubuntu
+# --------------------
+ubuntu-minimal-init: package-ubuntu-install common-init
+
+ubuntu-server-init: ubuntu-minimal-init  docker-install-ubuntu docker-init-ubuntu package-ubuntu-server-install  ## init for Ubuntu Server
 
 ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
 
+# --------------------
+# Tasks for Windows & WSL
+# --------------------
 wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt install -y wslu
@@ -58,41 +102,47 @@ wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	eval `ssh-agent`
 	echo "Restart WSL2"
 
+define MF_WSLCONF_IN_WSL
+[boot]
+systemd=true
 
-zshrc-init: zinit-install
-	# Zsh
-	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
-
-zsh-ubuntu-install:
-	sudo apt install -y zsh
-	chsh -s "$$(which zsh)"
-
-zinit-install:
-	# Zinit
-	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
-
-define MF_ALACRITTY_MAC
-[general]
-import = [
-    '~/.config/alacritty/common.toml'
-]
+[interop]
+appendWindowsPath=true
 endef
-export MF_ALACRITTY_MAC
+export MF_WSLCONF_IN_WSL
 
-alacritty-mac:
-	echo "$${MF_ALACRITTY_MAC}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+define MF_WSLCONFIG_IN_WINDOWS
+[wsl2]
+localhostForwarding=true
+processors=2
+swap=0
 
-define MF_GHOSTTY_MAC
-config-file = "config-common"
+[experimental]
+autoMemoryReclaim=gradual
 endef
-export MF_GHOSTTY_MAC
+export MF_WSLCONFIG_IN_WINDOWS
 
-ghostty-mac:
-	echo "$${MF_GHOSTTY_MAC}" | tee "$${HOME}"/.config/ghostty/config
+MF_WIN_UTIL_DIR := /mnt/c/work/util
+
+win-copy:  ## copy config files for Windows
+	# WSL2
+	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
+	# Windows
+	rm -rf $(MF_WIN_UTIL_DIR)
+	mkdir -p $(MF_WIN_UTIL_DIR)/skk
+	cp -rf $(MF_DOTFILES_DIR)/bin $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
+	cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
+	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
+	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
+	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
+# --------------------
+# Symbolic Links
+# --------------------
 link:  ## make symbolic links
 	# dotfiles
 	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
@@ -138,6 +188,7 @@ link:  ## make symbolic links
 	  echo 'Which OS are you using?'; \
 	fi
 
+
 unlink:  ## unlink symbolic links
 	# dotfiles
 	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
@@ -153,6 +204,23 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ]; then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+
+
+# --------------------
+# Package Management
+# --------------------
+package-go:
+	go install github.com/evilmartians/lefthook@latest
+	go install github.com/mattn/efm-langserver@latest
+	go install github.com/mikefarah/yq/v4@latest
+	go install github.com/rhysd/actionlint/cmd/actionlint@latest
+	go install github.com/rhysd/vim-startuptime@latest
+	go install github.com/x-motemen/ghq@latest
+	go install mvdan.cc/sh/v3/cmd/shfmt@latest
+
+package-rust:
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 package-update:
 	# OS common update
@@ -231,6 +299,8 @@ package-mac-update:
 	brew upgrade
 
 package-ubuntu-install:
+	sudo apt install -y zsh
+	chsh -s "$$(which zsh)"
 	sudo add-apt-repository -y ppa:git-core/ppa
 	sudo apt update
 	sudo apt upgrade -y
@@ -296,15 +366,6 @@ package-ubuntu-update:
 	# Rust
 	rustup update
 
-package-ubuntu-update-awscli:  ## update AWS CLI
-	# AWS CLI
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd \
-	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip -fo awscliv2.zip \
-	&& sudo ./aws/install --update \
-	&& rm awscliv2.zip \
-
 package-ubuntu-server-install:
 	# Settings --> Accessibility --> Large Text
 	# https://zenn.dev/wsuzume/articles/26b26106c3925e
@@ -325,70 +386,22 @@ package-ubuntu-desktop-install:
 	&& rm -f MyricaM.zip \
 	&& rm -rf MyricaM \
 
-package-go:
-	go install github.com/evilmartians/lefthook@latest
-	go install github.com/mattn/efm-langserver@latest
-	go install github.com/mikefarah/yq/v4@latest
-	go install github.com/rhysd/actionlint/cmd/actionlint@latest
-	go install github.com/rhysd/vim-startuptime@latest
-	go install github.com/x-motemen/ghq@latest
-	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
-package-rust:
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
-
-ghq-get-essential:
-	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
-	&& if [ -f "$${_list_path}" ]; then \
-	  cat "$${_list_path}" | ghq get -p; \
-	fi
-
-ghq-get-local:
-	. "$${HOME}"/.zshenv \
-	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
-	&& if [ -f "$${_list_path}" ]; then \
-	  cat "$${_list_path}" | ghq get -p; \
-	fi
-
-ghq-backup-local:
-	. "$${HOME}"/.zshenv \
-	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
-	&& ghq list > "$${_list_path}" \
-	&& sort --unique "$${_list_path}" -o "$${_list_path}"
-
-git-config:
-	git config --global color.ui auto
-	git config --global commit.gpgsign true
-	git config --global commit.verbose true
-	git config --global core.autocrlf input
-	git config --global core.editor vim
-	git config --global core.excludesfile ~/.gitignore
-	git config --global core.ignorecase false
-	git config --global core.pager "LESSCHARSET=utf-8 less"
-	git config --global core.quotepath false
-	git config --global core.safecrlf true
-	git config --global credential.helper store
-	git config --global diff.algorithm histogram
-	git config --global diff.compactionHeuristic true
-	git config --global diff.tool vimdiff
-	git config --global difftool.prompt false
-	git config --global difftool.vimdiff.path vim
-	git config --global ghq.root ~/ghq
-	git config --global gpg.format ssh
-	git config --global grep.lineNumber true
-	git config --global http.sslVerify false
-	git config --global init.defaultBranch main
-	git config --global merge.conflictstyle diff3
-	git config --global merge.tool vimdiff
-	git config --global mergetool.prompt false
-	git config --global mergetool.vimdiff.path vim
-	git config --global push.default current
-	git config --global user.signingkey ~/.ssh/github.pub
-
+# --------------------
+#  Tools
+# --------------------
 act-build:  ## build act
 	cd $(MF_GITHUB_DIR)/nektos/act \
 	&& make build
+
+awscli-update-ubuntu:  ## update AWS CLI for Ubuntu
+	# AWS CLI
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip -fo awscliv2.zip \
+	&& sudo ./aws/install --update \
+	&& rm awscliv2.zip \
 
 docker-install-ubuntu:
 	# https://docs.docker.com/engine/install/ubuntu
@@ -427,6 +440,54 @@ docker-init-ubuntu:
 	sudo systemctl daemon-reload
 	sudo systemctl start docker
 	sudo systemctl enable docker
+
+ghq-get-essential:
+	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
+	&& if [ -f "$${_list_path}" ]; then \
+	  cat "$${_list_path}" | ghq get -p; \
+	fi
+
+ghq-get-local:
+	. "$${HOME}"/.zshenv \
+	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
+	&& if [ -f "$${_list_path}" ]; then \
+	  cat "$${_list_path}" | ghq get -p; \
+	fi
+
+ghq-backup-local:
+	. "$${HOME}"/.zshenv \
+	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
+	&& ghq list > "$${_list_path}" \
+	&& sort --unique "$${_list_path}" -o "$${_list_path}"
+
+git-init:
+	git config --global color.ui auto
+	git config --global commit.gpgsign true
+	git config --global commit.verbose true
+	git config --global core.autocrlf input
+	git config --global core.editor vim
+	git config --global core.excludesfile ~/.gitignore
+	git config --global core.ignorecase false
+	git config --global core.pager "LESSCHARSET=utf-8 less"
+	git config --global core.quotepath false
+	git config --global core.safecrlf true
+	git config --global credential.helper store
+	git config --global diff.algorithm histogram
+	git config --global diff.compactionHeuristic true
+	git config --global diff.tool vimdiff
+	git config --global difftool.prompt false
+	git config --global difftool.vimdiff.path vim
+	git config --global ghq.root ~/ghq
+	git config --global gpg.format ssh
+	git config --global grep.lineNumber true
+	git config --global http.sslVerify false
+	git config --global init.defaultBranch main
+	git config --global merge.conflictstyle diff3
+	git config --global merge.tool vimdiff
+	git config --global mergetool.prompt false
+	git config --global mergetool.vimdiff.path vim
+	git config --global push.default current
+	git config --global user.signingkey ~/.ssh/github.pub
 
 nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
@@ -549,49 +610,12 @@ volta-install:
 volta-update:
 	curl https://get.volta.sh | bash
 
-define MF_WSLCONF_IN_WSL
-[boot]
-systemd=true
+zinit-install:
+	# Zinit
+	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 
-[interop]
-appendWindowsPath=true
-endef
-export MF_WSLCONF_IN_WSL
-
-define MF_WSLCONFIG_IN_WINDOWS
-[wsl2]
-localhostForwarding=true
-processors=2
-swap=0
-
-[experimental]
-autoMemoryReclaim=gradual
-endef
-export MF_WSLCONFIG_IN_WINDOWS
-
-MF_WIN_UTIL_DIR := /mnt/c/work/util
-
-win-copy:  ## copy config files for Windows
-	# WSL2
-	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
-	# Windows
-	rm -rf $(MF_WIN_UTIL_DIR)
-	mkdir -p $(MF_WIN_UTIL_DIR)/skk
-	cp -rf $(MF_DOTFILES_DIR)/bin $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
-	cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
-	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
-	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
-	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
-
-help:  ## print this help
-	@echo 'Usage: make [target]'
-	@echo ''
-	@echo 'Targets:'
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-
-# - [Makefileを自己文書化する | POSTD](https://postd.cc/auto-documented-makefile/)
-# - [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
-# - [Makefile の関数一覧 | 晴耕雨読](https://tex2e.github.io/blog/makefile/functions)
+zsh-init:
+	# Zsh
+	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
+	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
