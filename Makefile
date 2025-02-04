@@ -16,6 +16,7 @@ MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
 debug:
 	@echo uname: "$$(uname -a)"
 	@echo dotfiles: $(MF_DOTFILES_DIR)
+	@echo dotfiles: "$(MF_DOTFILES_DIR)"
 	@echo shell: "$$0"
 	@echo .zshenv load test:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
@@ -467,7 +468,7 @@ pyenv-list:  ## show installed Python versions
 pyenv-update:  ## update pyenv
 	git -C "$${HOME}"/.pyenv pull
 
-python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
+python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& if [ -d "$(VENV_PATH)" ]; then \
@@ -478,7 +479,7 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& . "$(VENV_PATH)"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& if [ -r "$(REQUIREMENTS)" ]; then python -m pip install --requirement "$(REQUIREMENTS)"; fi \
+	&& if [ -r "$(REQUIREMENTS_PATH)" ]; then python -m pip install --requirement "$(REQUIREMENTS_PATH)"; fi \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
