@@ -132,10 +132,11 @@ nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)1 <Cmd>execute 'edit' g:my_job1_path<CR>
-nnoremap <Plug>(my-Filer)2 <Cmd>execute 'edit' g:my_job2_path<CR>
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_dict_path<CR>
+nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
+nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
+nnoremap <Plug>(my-Filer)i3 <Cmd>execute 'edit' g:my_i3_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
 nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_temp_md_path<CR>
