@@ -84,12 +84,12 @@ alacritty-mac:
 	echo "$${MF_ALACRITTY_MAC}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 
 define MF_GHOSTTY_MAC
-config-file = "config-common.toml"
+config-file = "config-common"
 endef
 export MF_GHOSTTY_MAC
 
 ghostty-mac:
-	echo "$${MF_GHOSTTY_MAC}" | tee "$${HOME}"/.config/ghostty/config.toml
+	echo "$${MF_GHOSTTY_MAC}" | tee "$${HOME}"/.config/ghostty/config
 
 
 link:  ## make symbolic links
