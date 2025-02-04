@@ -17,5 +17,5 @@ terraform.tfstate
 # dotfiles
 .netrwbook
 .netrwhist
-alacritty/alacritty.toml
+**/alacritty/alacritty.toml
 local.vim
