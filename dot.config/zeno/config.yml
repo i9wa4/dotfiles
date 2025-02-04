@@ -47,13 +47,13 @@ snippets:
     keyword: pvum
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
-      && make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt
+      && make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt
       && cd -
   - name: (Python venv) update dbtenv
     keyword: pvud
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
-      && make python-venv VENV_PATH="${PY_VENV_DBTENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt
+      && make python-venv VENV_PATH="${PY_VENV_DBTENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt
       && cd -
   - name: (Python) jupyter-lab
     keyword: pjl
