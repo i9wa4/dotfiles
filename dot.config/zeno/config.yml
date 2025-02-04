@@ -38,11 +38,23 @@ snippets:
         PROMPT=$'\n'"%F{#696969}$%f ";
       fi
   - name: (Python venv) activate myenv
-    keyword: pvma
+    keyword: pvam
     snippet: . "${PY_VENV_MYENV}"/bin/activate
   - name: (Python venv) activate dbtenv
-    keyword: pvda
+    keyword: pvad
     snippet: . "${PY_VENV_DBTENV}"/bin/activate
+  - name: (Python venv) update myenv
+    keyword: pvum
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt
+      && cd -
+  - name: (Python venv) update dbtenv
+    keyword: pvud
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make python-venv VENV_PATH="${PY_VENV_DBTENV}" REQUIREMENTS="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt
+      && cd -
   - name: (Python) jupyter-lab
     keyword: pjl
     snippet:
@@ -72,26 +84,7 @@ snippets:
       && ghq list | ghq get --update --parallel
       && make link
       && make ghq-get-essential
-      && make ghq-get-local
       && make ghq-backup-local
-      && make pyenv-list
-      && make tfenv-list
-      && cd -
-  - name: update all
-    keyword: upa
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make package-update
-      && zinit self-update
-      && zinit update --parallel
-      && make unlink
-      && ghq list | ghq get --update --parallel
-      && make link
-      && make ghq-get-essential
-      && make ghq-get-local
-      && make ghq-backup-local
-      && make pyenv-vmu
-      && make pyenv-vdu
       && make pyenv-list
       && make tfenv-list
       && cd -
