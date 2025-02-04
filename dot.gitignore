@@ -15,7 +15,8 @@ terraform.tfstate
 .terragrunt-cache/
 
 # dotfiles
+**/alacritty/alacritty.toml
+**/ghostty/config
 .netrwbook
 .netrwhist
-**/alacritty/alacritty.toml
 local.vim
