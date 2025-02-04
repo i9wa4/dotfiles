@@ -290,6 +290,7 @@ package-mac:
 	  alacritty \
 	  docker \
 	  font-myricam \
+	  ghostty \
 	  google-drive \
 	  mtgto/macskk/macskk \
 	  rectangle \
