@@ -41,7 +41,7 @@ common-init: zsh-init zinit-install \
 	ghq-get-essential \
 	vim-build nvim-build \
 	act-build \
-	pyenv-install \
+	pyenv-python-install \
 	package-go package-rust \
 	volta-install
 
@@ -518,14 +518,14 @@ nvim-build:  ## build Neovim
 	&& make install \
 	&& hash -r \
 
-pyenv-install: pyenv-list  ## install Python (e.g. make pyenv-install PY_VER_PATCH=3.13.0)
+pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
 	&& pyenv global "$(PY_VER_PATCH)" \
 	&& pyenv versions \
 	&& python -m pip config --site set global.require-virtualenv true
 
-pyenv-install-latest: pyenv-list  ## install latest Python
+pyenv-python-install-latest: pyenv-list  ## install latest Python
 	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
 	&& pyenv install "$${_py_ver_latest}" --skip-existing \
 	&& pyenv global "$${_py_ver_latest}" \
@@ -563,13 +563,13 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& python --version \
 	&& deactivate
 
-tfenv-install: tfenv-list  ## install Terraform (e.g. make tfenv-install TF_VER_PATCH=1.9.3)
+tfenv-terraform-install: tfenv-list  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& tfenv install "$(TF_VER_PATCH)" \
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
-tfenv-install-latest: tfenv-list  ## install latest Terraform
+tfenv-terraform-install-latest: tfenv-list  ## install latest Terraform
 	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
 	&& tfenv install "$${_tf_ver_latest}" \
 	&& tfenv use "$${_tf_ver_latest}" \
