@@ -65,10 +65,10 @@ export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 # Common
 export EDITOR=vim
 export VISUAL=vim
-export XDG_CONFIG_HOME="${HOME}"/.config
-export PATH="${HOME}"/.local/bin:"${PATH}"
-export PATH=/snap/bin:"${PATH}"
 export GHQ_LIST_LOCAL_PATH="${HOME}"/ghq-list-local.txt
+export PATH="${HOME}"/.local/bin:"${PATH}"
+export PATH="${PATH}":/snap/bin
+export XDG_CONFIG_HOME="${HOME}"/.config
 
 if locale -a | grep -q "en_US.UTF-8"; then
   export LC_ALL=en_US.UTF-8
