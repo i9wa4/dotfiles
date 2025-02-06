@@ -43,18 +43,6 @@ snippets:
   - name: (Python venv) activate dbtenv
     keyword: pvad
     snippet: . "${PY_VENV_DBTENV}"/bin/activate
-  - name: (Python venv) update myenv
-    keyword: pvum
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt
-      && cd -
-  - name: (Python venv) update dbtenv
-    keyword: pvud
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make python-venv VENV_PATH="${PY_VENV_DBTENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt
-      && cd -
   - name: (Python) jupyter-lab
     keyword: pjl
     snippet:
@@ -85,6 +73,25 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
+      && make pyenv-list
+      && make tfenv-list
+      && cd -
+  - name: update all
+    keyword: upa
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make package-update
+      && zinit self-update
+      && zinit update --parallel
+      && make unlink
+      && ghq list | ghq get --update --parallel
+      && make link
+      && make ghq-get-essential
+      && make ghq-backup-local
+      && make vim-build
+      && make nvim-build
+      && make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt
+      && make python-venv VENV_PATH="${PY_VENV_DBTENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-dbtenv.txt
       && make pyenv-list
       && make tfenv-list
       && cd -
