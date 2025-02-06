@@ -214,20 +214,22 @@ endfunction
 
 function! s:my_asyncjob_on_save() abort
   if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
-    " Jupyter Notebook
-    let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
-    if filereadable(l:ipynb_path) && executable('jupytext')
-      call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
-    endif
-  else
-    " Do nothing.
+    " call s:jupytext_sync()
+  endif
+endfunction
+
+function! s:jupytext_sync() abort
+  let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
+  if filereadable(l:ipynb_path) && executable('jupytext')
+    " call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
+    call my_async#jobstart('jupytext --set-formats ipynb,md --sync ' .. l:ipynb_path)
   endif
 endfunction
 
 augroup MyVimrc
   autocmd!
   autocmd BufEnter * call s:set_register()
-  autocmd BufWritePre * call s:my_asyncjob_on_save()
+  autocmd BufWritePost * call s:my_asyncjob_on_save()
 augroup END
 
 
