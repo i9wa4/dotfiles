@@ -7,9 +7,11 @@ let s:sources_list = [
 \   'around',
 \   'denippet',
 \   'file',
-\   'lsp',
 \   'skkeleton',
 \ ]
+if !has('nvim')
+  call add(s:sources_list, 'lsp')
+endif
 
 call ddc#custom#patch_global('ui', 'pum')
 call ddc#custom#patch_global('sources', s:sources_list)
@@ -58,28 +60,23 @@ call ddc#custom#patch_filetype(
 \       'mode': 'win32',
 \     },
 \ }})
-call ddc#custom#patch_global('sourceOptions', #{
-\   lsp: #{
-\     mark: 'lsp',
-\     forceCompletionPattern: '\.\w*|:\w*|->\w*',
-\   },
-\ })
-call ddc#custom#patch_global('sourceParams', #{
-\   lsp: #{
-\     snippetEngine: denops#callback#register({
-\       body -> denippet#anonymous(body)
-\     }),
-\     enableResolveItem: v:true,
-\     enableAdditionalTextEdit: v:true,
-\   }
-\ })
-if has('nvim')
-"   call ddc#custom#patch_global('sourceParams', #{
-"   \   lsp: #{
-"   \     lspEngine: 'nvim-lsp',
-"   \   }
-"   \ })
-else
+" if has('nvim'), use nvim-lsp as lspEngine.
+if !has('nvim')
+  call ddc#custom#patch_global('sourceOptions', #{
+  \   lsp: #{
+  \     mark: 'lsp',
+  \     forceCompletionPattern: '\.\w*|:\w*|->\w*',
+  \   },
+  \ })
+  call ddc#custom#patch_global('sourceParams', #{
+  \   lsp: #{
+  \     snippetEngine: denops#callback#register({
+  \       body -> denippet#anonymous(body)
+  \     }),
+  \     enableResolveItem: v:true,
+  \     enableAdditionalTextEdit: v:true,
+  \   }
+  \ })
   call ddc#custom#patch_global('sourceParams', #{
   \   lsp: #{
   \     lspEngine: 'vim-lsp',
