@@ -74,11 +74,11 @@ call ddc#custom#patch_global('sourceParams', #{
 \   }
 \ })
 if has('nvim')
-  call ddc#custom#patch_global('sourceParams', #{
-  \   lsp: #{
-  \     lspEngine: 'nvim-lsp',
-  \   }
-  \ })
+"   call ddc#custom#patch_global('sourceParams', #{
+"   \   lsp: #{
+"   \     lspEngine: 'nvim-lsp',
+"   \   }
+"   \ })
 else
   call ddc#custom#patch_global('sourceParams', #{
   \   lsp: #{
