@@ -563,6 +563,14 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& python --version \
 	&& deactivate
 
+python-venv-myenv:
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& make python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
+
+python-venv-dbtenv:
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& make python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
+
 tfenv-terraform-install: tfenv-list  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& tfenv install "$(TF_VER_PATCH)" \
