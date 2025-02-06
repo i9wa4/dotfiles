@@ -19,9 +19,19 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
     context:
       lbuffer: '^git\s'
+  - name: (Git) log 10 lines
+    keyword: lo10
+    snippet: log --graph --oneline -n 10
+    context:
+      lbuffer: '^git\s'
   - name: (Git) graph --all
     keyword: la
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
+    context:
+      lbuffer: '^git\s'
+  - name: (Git) log 10 lines --all
+    keyword: la10
+    snippet: log --graph --oneline -n 10 --all
     context:
       lbuffer: '^git\s'
   - name: (PATH) display
