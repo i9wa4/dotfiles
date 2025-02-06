@@ -241,14 +241,6 @@ package-rust:
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 package-update:
-	# OS common update
-	make package-go
-	make package-rust
-	make volta-update
-	make pyenv-update
-	# Deno
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& deno upgrade "$${DENO_VER_PATCH}"
 	# OS-specific update
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -267,6 +259,14 @@ package-update:
 	else \
 	  echo 'Which OS are you using?'; \
 	fi
+	# OS common update
+	make package-go
+	make package-rust
+	make volta-update
+	make pyenv-update
+	# Deno
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& deno upgrade "$${DENO_VER_PATCH}"
 
 package-mac-install:
 	# https://brew.sh/
