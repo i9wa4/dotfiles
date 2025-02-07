@@ -171,7 +171,7 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim "$${XDG_CONFIG_HOME}" \

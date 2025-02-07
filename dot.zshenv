@@ -35,6 +35,9 @@ export FZF_DEFAULT_OPTS='--reverse'
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
+# Neovim
+export NVIM_APPNAME=nvim
+
 # pyenv
 export PYENV_ROOT="${HOME}"/.pyenv
 [ -d "${PYENV_ROOT}"/bin ] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
