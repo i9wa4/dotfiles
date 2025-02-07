@@ -1,5 +1,5 @@
 " ~/.config/vim/rc/details.vim
-" ~/.config/nvim/init.vim
+" ~/.config/nvim/nvim/init.vim
 set encoding=utf-8
 
 filetype off
