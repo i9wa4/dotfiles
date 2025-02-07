@@ -293,6 +293,7 @@ package-mac-install:
 	  hadolint \
 	  jq \
 	  nvim \
+	  pre-commit \
 	  ripgrep \
 	  shellcheck \
 	  tflint \
