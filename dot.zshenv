@@ -17,7 +17,7 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
 
 # AWS
-export AWS_DEFAULT_PROFILE=
+# export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
 
 # act
