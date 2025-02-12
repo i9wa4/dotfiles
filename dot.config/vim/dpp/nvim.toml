@@ -1,6 +1,5 @@
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-if = 0
 on_event = ['VimEnter']
 lua_source = '''
 -- https://github.com/uga-rosa/ddc-source-lsp-setup
@@ -29,21 +28,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_create_autocmd('BufWritePre', {
-  callback = function()
-    vim.lsp.buf.format()
-  end,
-})
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+--   callback = function()
+--     vim.lsp.buf.format()
+--   end,
+-- })
 '''
 
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
-if = 0
 on_source = ['ddc.vim', 'nvim-lspconfig']
 
 [[plugins]]
 repo = 'uga-rosa/ddc-source-lsp-setup'
-if = 0
 on_source = ['ddc.vim', 'nvim-lspconfig']
 
 [[plugins]]
