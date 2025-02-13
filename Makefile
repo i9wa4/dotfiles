@@ -496,6 +496,7 @@ git-init:
 	git config --global diff.tool vimdiff
 	git config --global difftool.prompt false
 	git config --global difftool.vimdiff.path vim
+	git config --global fetch.prune true
 	git config --global ghq.root ~/ghq
 	git config --global gpg.format ssh
 	git config --global grep.lineNumber true
