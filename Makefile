@@ -30,6 +30,7 @@ debug:
 #
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
+MF_STR_DIR := "$${HOME}"/str
 
 
 # --------------------------------------
@@ -56,6 +57,7 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
+	xattr -rc $(MF_STR_DIR)
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
@@ -188,8 +190,13 @@ link:  ## make symbolic links
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
 	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
 	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
+	  . ~/.zshenv; \
+	  if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH}" ]; then \
+	    ln -fs "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str "$${HOME}"; \
+	  fi; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
+	  mkdir -p $(MF_STR_DIR); \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make win-copy; \
@@ -198,6 +205,7 @@ link:  ## make symbolic links
 	  mkdir -p "$${_code_setting_dir}"/snippets; \
 	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
 	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
+	  mkdir -p $(MF_STR_DIR); \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -222,6 +230,25 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ]; then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	# OS-specific unlink
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
+	  if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
+	  if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
 
 
 # --------------------------------------
@@ -468,14 +495,14 @@ ghq-get-essential:
 
 ghq-get-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
+	&& _list_path=$(MF_STR_DIR)/etc/ghq-list-local.txt \
 	&& if [ -f "$${_list_path}" ]; then \
 	  cat "$${_list_path}" | ghq get -p; \
 	fi
 
 ghq-backup-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path="$${GHQ_LIST_LOCAL_PATH}" \
+	&& _list_path=$(MF_STR_DIR)/etc/ghq-list-local.txt \
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
