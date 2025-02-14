@@ -59,8 +59,7 @@ else
 fi
 # _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # PROMPT="%D{[%Y-%m-%dT%H:%M:%S]} (${_shell_type}-lv%L) $ "
-PROMPT="
-${PROMPT}%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+PROMPT="${PROMPT}%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
