@@ -270,6 +270,7 @@ package-update:
 
 package-mac-install:
 	# https://brew.sh/
+	# mtgto/macskk/macskk
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
@@ -281,7 +282,6 @@ package-mac-install:
 	  font-myricam \
 	  ghostty \
 	  google-drive \
-	  mtgto/macskk/macskk \
 	  rectangle \
 	  visual-studio-code \
 	  zoom \
