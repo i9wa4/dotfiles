@@ -68,7 +68,7 @@ export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 # Common
 export EDITOR=vim
 export VISUAL=vim
-export GHQ_LIST_LOCAL_PATH="${HOME}"/ghq-list-local.txt
+export GHQ_LIST_LOCAL_PATH="${HOME}"/str/etc/ghq-list-local.txt
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="${PATH}":/snap/bin
 export XDG_CONFIG_HOME="${HOME}"/.config
