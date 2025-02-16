@@ -1,14 +1,14 @@
 # dotfiles
 
-## Target OS
+## 1. Target OS
 
 - macOS
 - Ubuntu 24.04 LTS
 - Ubuntu 24.04 LTS (Windows, WSL2)
 
-## OS-specific Pre Installation
+## 2. OS-specific Pre Installation
 
-### Windows
+### 2.1. Windows
 
 1. Install WSL2 and Ubuntu.
     - <https://learn.microsoft.com/en-us/windows/wsl/install>
@@ -19,7 +19,7 @@
     wsl
     ```
 
-## Installation
+## 3. Installation
 
 1. Establish an SSH connection to GitHub.
     - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
@@ -51,14 +51,14 @@
     fi
     ```
 
-## OS-specific Post Installation
+## 4. OS-specific Post Installation
 
-### Windows
+### 4.1. Windows
 
 1. Run `C:\work\util\bin\win-copy.bat`.
 1. Run `C:\work\util\bin\winget-upgrade.bat`.
 
-#### CorvusSKK
+#### 4.1.1. CorvusSKK
 
 1. Install CorvusSKK.
     - <https://github.com/nathancorvussolis/corvusskk>
@@ -69,20 +69,20 @@
     - キー2
         - ひらがな `C\x4B` (`<C-k>`)
 
-### macOS
+### 4.2. macOS
 
 [Mac 環境構築手順 – uma-chan’s page](https://i9wa4.github.io/blog/2024-06-17-setup-mac.html)
 
-#### macSKK
+#### 4.2.1. macSKK
 
 1. Enable the dictionaries.
 1. Configuration:
     - キーバインド
         - ひらがなモード `C-k`
 
-## OS-common Post Installation
+## 5. OS-common Post Installation
 
-### AWS CLI
+### 5.1. AWS CLI
 
 - Authentication with AWS CLI
     - [Configuring IAM Identity Center authentication with the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
@@ -92,15 +92,15 @@
     - [Authenticating using IAM user credentials for the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)
     - Follow the instroctions of "Access Keys".
 
-### gh
+### 5.2. gh
 
 1. Choose SSH for Git operation protocol.
 1. Skip uploading SSH public key.
 1. Login with a web browser: <https://github.com/login/device>.
 
-### Web Browser
+### 5.3. Web Browser
 
-#### Search Engine
+#### 5.3.1. Search Engine
 
 - Google Japanese Search
     - `https://www.google.com/search?q=%s`
@@ -111,13 +111,13 @@
 - DuckDuckGo English Search
     - `https://duckduckgo.com/?q=%s&kl=us-en&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
 
-#### Extension
+#### 5.3.2. Extension
 
 - Markdown Preview Plus
 - Page Sidebar
     - Google Calendar Embedded Link
 
-### Slack
+### 5.4. Slack
 
 - GitHub Notifications
     - `/github subscribe owner/repo reviews,comments,branches,commits:*`
