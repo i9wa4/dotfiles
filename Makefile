@@ -100,6 +100,9 @@ ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init 
 wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt install -y wslu
+	# https://thinkit.co.jp/article/37792
+	# https://thinkit.co.jp/article/37737
+	sudo apt install -U -y nautilus
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
 	echo "Restart WSL2"
