@@ -9,6 +9,8 @@ exit /b
     chcp 65001>nul
     cd /d %~dp0
 
+    wsl --update
+
     @REM winget settings --enable InstallerHashOverride
 
     winget install --ignore-security-hash --exact --id Alacritty.Alacritty
@@ -19,5 +21,5 @@ exit /b
 
     winget upgrade --ignore-security-hash --all
 
-    wsl --update
+    pause
 exit /b
