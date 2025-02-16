@@ -127,7 +127,7 @@ config-file = "config-windows"
 endef
 export MF_WIN_GHOSTTY
 
-win-ghostty-init:
+wsl-ghostty-init:
 	echo "$${MF_WIN_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
 
 define MF_WSLCONF_IN_WSL
