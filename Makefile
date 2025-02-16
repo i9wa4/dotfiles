@@ -64,7 +64,7 @@ mac-copy:
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
-	if [ -d "$${HOME}"/str ]; then xattr -rc "$${HOME}"/str
+	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
