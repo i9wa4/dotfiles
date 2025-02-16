@@ -30,7 +30,7 @@ exit /b
     @REM xcopy /e /i /y ".\dot.config\vim\snippet" "%CODE_DIR%\snippets"
 
     @REM CorvusSKK
-    set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
-    copy /y ".\dot.config\skk\mydict.utf8" "%CORVUS_SKK_DIR%\userdict.txt"
-    xcopy /e /i /y ".\skk" "%CORVUS_SKK_DIR%"
+    @REM set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
+    @REM copy /y ".\dot.config\skk\mydict.utf8" "%CORVUS_SKK_DIR%\userdict.txt"
+    @REM xcopy /e /i /y ".\skk" "%CORVUS_SKK_DIR%"
 exit /b
