@@ -107,7 +107,7 @@ wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	eval `ssh-agent`
 	echo "Restart WSL2"
 
-wsl-ghostty-install:
+wsl-ghostty-install: wsl-ghostty-init
 	# https://www.virtualizationhowto.com/2024/12/install-ghostty-in-windows-using-wsl/
 	sudo apt install -y \
 	  libadwaita-1-dev \
@@ -117,8 +117,13 @@ wsl-ghostty-install:
 	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
 	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
 
+wsl-ghostty-build:
+	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
+	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
+
 define MF_WIN_GHOSTTY
 config-file = "config-common"
+config-file = "config-windows"
 endef
 export MF_WIN_GHOSTTY
 
@@ -424,8 +429,10 @@ package-ubuntu-server-install:
 	sudo systemctl enable ssh.service
 
 package-ubuntu-desktop-install:
+	# Alacritty
 	sudo add-apt-repository -y ppa:aslatter/ppa
 	sudo apt update
+	sudo apt install -y alacritty
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
