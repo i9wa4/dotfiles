@@ -121,6 +121,8 @@ elif [ "$(echo "${_uname}" | grep Ubuntu)" ]; then
 elif [ "$(echo "${_uname}" | grep WSL2)" ]; then
   echo 'Hello, WSL2!'
   alias pbcopy='xclip -selection clipboard'
+  # https://blog.k-bushi.com/post/tech/tips/use-nautilus/
+  ln -fs /mnt/wslg/runtime-dir/wayland-* $XDG_RUNTIME_DIR/
 elif [ "$(echo "${_uname}" | grep arm)" ]; then
   echo 'Hello, Raspberry Pi!'
 elif [ "$(echo "${_uname}" | grep el7)" ]; then
