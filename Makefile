@@ -269,20 +269,19 @@ unlink:  ## unlink symbolic links
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	  if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	  if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
 	  echo 'Hello, CentOS!'; \
 	else \
 	  echo 'Which OS are you using?'; \
-	fi
+	fi \
+	&& [ -L "$${_code_setting_dir}"/settings.json ] && unlink "$${_code_setting_dir}"/settings.json
 
 
 # --------------------------------------
@@ -363,7 +362,7 @@ package-mac-install:
 	  wget \
 	  zsh \
 	&& brew install ninja cmake gettext curl \  # Neovim
-	&& if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi \  # Deno
+	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash  # Deno
 	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
 	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
@@ -619,7 +618,7 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& . "$(VENV_PATH)"/bin/activate \
 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
 	&& python -m pip install --upgrade pip setuptools wheel \
-	&& if [ -r "$(REQUIREMENTS_PATH)" ]; then python -m pip install --requirement "$(REQUIREMENTS_PATH)"; fi \
+	&& [ -r "$(REQUIREMENTS_PATH)" ] && python -m pip install --requirement "$(REQUIREMENTS_PATH)" \
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
@@ -704,5 +703,5 @@ zinit-install:
 
 zsh-init:
 	# Zsh
-	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshenv ]; then . $(MF_DOTFILES_DIR)/dot.zshenv; fi" >> "$${HOME}"/.zshenv
-	echo "if [ -r $(MF_DOTFILES_DIR)/dot.zshrc ]; then . $(MF_DOTFILES_DIR)/dot.zshrc; fi" >> "$${HOME}"/.zshrc
+	echo "[ -r $(MF_DOTFILES_DIR)/dot.zshenv ] && . $(MF_DOTFILES_DIR)/dot.zshenv" >> "$${HOME}"/.zshenv
+	echo "[ -r $(MF_DOTFILES_DIR)/dot.zshrc ] && . $(MF_DOTFILES_DIR)/dot.zshrc" >> "$${HOME}"/.zshrc

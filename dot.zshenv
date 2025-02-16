@@ -52,7 +52,7 @@ export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
 export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 
 # Rust
-if [ -r "${HOME}"/.cargo/env ]; then . "${HOME}"/.cargo/env; fi
+[ -r "${HOME}"/.cargo/env ] && . "${HOME}"/.cargo/env
 
 # tfenv
 export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
