@@ -68,7 +68,6 @@ export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 # Common
 export EDITOR=vim
 export VISUAL=vim
-export GHQ_LIST_LOCAL_PATH="${HOME}"/str/etc/ghq-list-local.txt
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="${PATH}":/snap/bin
 export XDG_CONFIG_HOME="${HOME}"/.config
@@ -78,3 +77,6 @@ if locale -a | grep -q "en_US.UTF-8"; then
 else
   export LC_ALL=C.UTF-8
 fi
+
+# OS-specific settings
+# export GOOGLE_DRIVE_MYDRIVE_PATH=
