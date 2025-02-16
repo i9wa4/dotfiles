@@ -28,9 +28,9 @@ debug:
 # --------------------------------------
 # Global Variables
 #
+MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
+MF_GHQ_BACKUP_LOCAL_DIR := "$${HOME}"/.cache
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
-MF_DOTFILES_DIR := $(MF_GITHUB_DIR)/i9wa4/dotfiles
-MF_STR_DIR := "$${HOME}"/str
 
 
 # --------------------------------------
@@ -46,6 +46,7 @@ common-init: zsh-init zinit-install \
 	package-go package-rust \
 	volta-install
 
+
 # --------------------------------------
 # Tasks for macOS
 #
@@ -54,10 +55,16 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
+mac-copy:
+	. ~/.zshenv \
+	&& if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH:-}" ]; then \
+	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str/etc/; \
+	fi
+
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
-	xattr -rc $(MF_STR_DIR)
+	if [ -d "$${HOME}"/str ]; then xattr -rc "$${HOME}"/str
 
 mac-skk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
@@ -85,6 +92,7 @@ export MF_MAC_GHOSTTY
 mac-ghostty-init:
 	echo "$${MF_MAC_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
 
+
 # --------------------------------------
 # Tasks for Ubuntu
 #
@@ -93,6 +101,42 @@ ubuntu-minimal-init: package-ubuntu-install common-init
 ubuntu-server-init: ubuntu-minimal-init  docker-install-ubuntu docker-init-ubuntu package-ubuntu-server-install  ## init for Ubuntu Server
 
 ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
+
+define MF_UBUNTU_ALACRITTY
+[general]
+import = [
+    '~/.config/alacritty/common.toml',
+    '~/.config/alacritty/ubuntu.toml'
+]
+endef
+export MF_UBUNTU_ALACRITTY
+
+ubuntu-alacritty-init:
+	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+
+ubuntu-ghostty-install:
+	# https://www.virtualizationhowto.com/2024/12/install-ghostty-in-windows-using-wsl/
+	sudo apt install -y \
+	  libadwaita-1-dev \
+	  libgtk-4-dev
+	sudo snap install --beta zig --classic
+	ghq get -p ghostty-org/ghostty
+	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
+	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
+
+ubuntu-ghostty-build:
+	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
+	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
+
+define MF_UBUNTU_GHOSTTY
+config-file = "config-common"
+config-file = "config-ubuntu"
+endef
+export MF_UBUNTU_GHOSTTY
+
+ubuntu-ghostty-init:
+	echo "$${MF_UBUNTU_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
+
 
 # --------------------------------------
 # Tasks for Windows & WSL
@@ -106,20 +150,6 @@ wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
 	echo "Restart WSL2"
-
-wsl-ghostty-install: wsl-ghostty-init
-	# https://www.virtualizationhowto.com/2024/12/install-ghostty-in-windows-using-wsl/
-	sudo apt install -y \
-	  libadwaita-1-dev \
-	  libgtk-4-dev
-	sudo snap install --beta zig --classic
-	ghq get -p ghostty-org/ghostty
-	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
-	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
-
-wsl-ghostty-build:
-	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
-	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
 
 define MF_WIN_GHOSTTY
 config-file = "config-common"
@@ -178,66 +208,62 @@ link:  ## make symbolic links
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno "$${XDG_CONFIG_HOME}"
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty         "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
 	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
-	# OS-specific link & copy
+	# Machine-specific link
+	. ~/.zshenv \
+	&& if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH:-}" ]; then \
+	  ln -fs "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str "$${HOME}"; \
+	fi
+	# OS-specific link
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
+	  make mac-copy; \
 	  make mac-clean; \
-	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	  rm -rf "$${_code_setting_dir}"/snippets; \
-	  mkdir -p "$${_code_setting_dir}"/snippets; \
-	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
-	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
-	  . ~/.zshenv; \
-	  if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH}" ]; then \
-	    ln -fs "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str "$${HOME}"; \
-	  fi; \
+	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
-	  mkdir -p $(MF_STR_DIR); \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make win-copy; \
 	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	  rm -rf "$${_code_setting_dir}"/snippets; \
-	  mkdir -p "$${_code_setting_dir}"/snippets; \
-	  cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets; \
-	  ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"; \
-	  mkdir -p $(MF_STR_DIR); \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
 	  echo 'Hello, CentOS!'; \
 	else \
 	  echo 'Which OS are you using?'; \
-	fi
+	fi \
+	&& rm -rf "$${_code_setting_dir}"/snippets \
+	&& mkdir -p "$${_code_setting_dir}"/snippets \
+	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
 
 
 unlink:  ## unlink symbolic links
 	# dotfiles
-	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
-	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
+	[ -L "$${HOME}"/.gitignore ] && unlink "$${HOME}"/.gitignore
+	[ -L "$${HOME}"/.vim ] && unlink "$${HOME}"/.vim || rm -rf "$${HOME}"/.vim
 	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ]; then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]; then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ]; then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ]; then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ]; then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ]; then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	&& [ -L "$${XDG_CONFIG_HOME}"/alacritty ]       && unlink "$${XDG_CONFIG_HOME}"/alacritty \
+	&& [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]  && unlink "$${XDG_CONFIG_HOME}"/efm-langserver \
+	&& [ -L "$${XDG_CONFIG_HOME}"/ghostty ]         && unlink "$${XDG_CONFIG_HOME}"/ghostty \
+	&& [ -L "$${XDG_CONFIG_HOME}"/nvim ]            && unlink "$${XDG_CONFIG_HOME}"/nvim \
+	&& [ -L "$${XDG_CONFIG_HOME}"/skk ]             && unlink "$${XDG_CONFIG_HOME}"/skk \
+	&& [ -L "$${XDG_CONFIG_HOME}"/tmux ]            && unlink "$${XDG_CONFIG_HOME}"/tmux \
+	&& [ -L "$${XDG_CONFIG_HOME}"/vim ]             && unlink "$${XDG_CONFIG_HOME}"/vim \
+	&& [ -L "$${XDG_CONFIG_HOME}"/zeno ]            && unlink "$${XDG_CONFIG_HOME}"/zeno
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -305,7 +331,7 @@ package-update:
 
 package-mac-install:
 	# https://brew.sh/
-	# mtgto/macskk/macskk
+	# brew install mtgto/macskk/macskk
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
@@ -385,7 +411,7 @@ package-ubuntu-install:
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
 	# Deno
-	if [ -n "$$(command -v deno)" ]; then curl -fsSL https://deno.land/install.sh | bash; fi
+	[ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash
 	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
 	sudo rm -rf "$${HOME}"/.pyenv
@@ -499,20 +525,16 @@ docker-init-ubuntu:
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
-	&& if [ -f "$${_list_path}" ]; then \
-	  cat "$${_list_path}" | ghq get -p; \
-	fi
+	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
 
 ghq-get-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path=$(MF_STR_DIR)/etc/ghq-list-local.txt \
-	&& if [ -f "$${_list_path}" ]; then \
-	  cat "$${_list_path}" | ghq get -p; \
-	fi
+	&& _list_path=$(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt \
+	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
 
 ghq-backup-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path=$(MF_STR_DIR)/etc/ghq-list-local.txt \
+	&& _list_path=$(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt \
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
