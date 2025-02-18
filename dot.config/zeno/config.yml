@@ -34,6 +34,13 @@ snippets:
     snippet: log --graph --oneline -n 10 --all
     context:
       lbuffer: '^git\s'
+  - name: (Mac) backup
+    keyword: mbu
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make mac-clean
+      && make mac-copy
+      && cd -
   - name: (PATH) display
     keyword: pd
     snippet: echo "${PATH}" | sed -e 's/:/\n/g'
