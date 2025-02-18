@@ -55,18 +55,18 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
+mac-clean:  ## delete .DS_Store and Extended Attributes
+	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
+	xattr -rc $(MF_GITHUB_DIR)
+	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
+
 mac-copy:
 	if [ -L "$${HOME}"'/Google Drive' ]; then \
 	  rsync -av --delete "$${HOME}"/str "$${HOME}"'/Google Drive/マイドライブ'; \
 	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${HOME}"'/Google Drive/マイドライブ/str/etc/'; \
 	fi
 
-mac-clean:  ## delete .DS_Store and Extended Attributes
-	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
-	xattr -rc $(MF_GITHUB_DIR)
-	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
-
-mac-skk-copy:  ## copy SKK dictionaries for Mac
+mac-macskk-copy:  ## copy SKK dictionaries for Mac
 	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.config/skk/mydict.utf8 "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
 	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L "$${_macskk_dict_dir}" \
