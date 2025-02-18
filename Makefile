@@ -56,10 +56,9 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 	killall Finder > /dev/null 2>&1
 
 mac-copy:
-	. ~/.zshenv \
-	&& if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH:-}" ]; then \
-	  rsync -av --delete "$${HOME}"/str "$${GOOGLE_DRIVE_MYDRIVE_PATH}"; \
-	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str/etc/; \
+	if [ -L "$${HOME}"'/Google Drive' ]; then \
+	  rsync -av --delete "$${HOME}"/str "$${HOME}"'/Google Drive/マイドライブ'; \
+	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${HOME}"'/Google Drive/マイドライブ/str/etc/'; \
 	fi
 
 mac-clean:  ## delete .DS_Store and Extended Attributes
