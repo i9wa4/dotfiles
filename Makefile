@@ -58,6 +58,7 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 mac-copy:
 	. ~/.zshenv \
 	&& if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH:-}" ]; then \
+	  rsync -av --delete "$${HOME}"/str "$${GOOGLE_DRIVE_MYDRIVE_PATH}"; \
 	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str/etc/; \
 	fi
 
@@ -218,17 +219,12 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
 	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
 	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
-	# Machine-specific link
-	. ~/.zshenv \
-	&& if [ -n "$${GOOGLE_DRIVE_MYDRIVE_PATH:-}" ]; then \
-	  ln -fs "$${GOOGLE_DRIVE_MYDRIVE_PATH}"/str "$${HOME}"; \
-	fi
 	# OS-specific link
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  make mac-copy; \
 	  make mac-clean; \
+	  make mac-copy; \
 	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
