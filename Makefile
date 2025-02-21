@@ -261,6 +261,7 @@ unlink:  ## unlink symbolic links
 	&& [ -L "$${XDG_CONFIG_HOME}"/zeno ]            && unlink "$${XDG_CONFIG_HOME}"/zeno
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
+	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
@@ -268,7 +269,6 @@ unlink:  ## unlink symbolic links
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
