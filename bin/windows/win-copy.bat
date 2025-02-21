@@ -1,10 +1,10 @@
 @echo off
-@REM Run as user.
 
 call :main
 exit /b
 
 :main
+    chcp 437>nul
     chcp 65001>nul
     cd /d %~dp0
 
@@ -33,4 +33,6 @@ exit /b
     @REM set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
     @REM copy /y ".\dot.config\skk\mydict.utf8" "%CORVUS_SKK_DIR%\userdict.txt"
     @REM xcopy /e /i /y ".\skk" "%CORVUS_SKK_DIR%"
+
+    pause
 exit /b
