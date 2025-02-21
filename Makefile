@@ -220,6 +220,7 @@ link:  ## make symbolic links
 	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 	# OS-specific link
 	_uname="$$(uname -a)"; \
+	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  make mac-clean; \
@@ -230,7 +231,6 @@ link:  ## make symbolic links
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  make win-copy; \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
