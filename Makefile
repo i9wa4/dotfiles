@@ -246,19 +246,19 @@ link:  ## make symbolic links
 
 unlink:  ## unlink symbolic links
 	# dotfiles
-	[ -L "$${HOME}"/.gitignore ] && unlink "$${HOME}"/.gitignore
-	[ -L "$${HOME}"/.vim ] && unlink "$${HOME}"/.vim || rm -rf "$${HOME}"/.vim
+	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
+	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& [ -L "$${XDG_CONFIG_HOME}"/alacritty ]       && unlink "$${XDG_CONFIG_HOME}"/alacritty \
-	&& [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]  && unlink "$${XDG_CONFIG_HOME}"/efm-langserver \
-	&& [ -L "$${XDG_CONFIG_HOME}"/ghostty ]         && unlink "$${XDG_CONFIG_HOME}"/ghostty \
-	&& [ -L "$${XDG_CONFIG_HOME}"/nvim ]            && unlink "$${XDG_CONFIG_HOME}"/nvim \
-	&& [ -L "$${XDG_CONFIG_HOME}"/skk ]             && unlink "$${XDG_CONFIG_HOME}"/skk \
-	&& [ -L "$${XDG_CONFIG_HOME}"/tmux ]            && unlink "$${XDG_CONFIG_HOME}"/tmux \
-	&& [ -L "$${XDG_CONFIG_HOME}"/vim ]             && unlink "$${XDG_CONFIG_HOME}"/vim \
-	&& [ -L "$${XDG_CONFIG_HOME}"/zeno ]            && unlink "$${XDG_CONFIG_HOME}"/zeno
+	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ]; then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]; then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ]; then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ]; then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ]; then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ]; then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -276,7 +276,7 @@ unlink:  ## unlink symbolic links
 	else \
 	  echo 'Which OS are you using?'; \
 	fi \
-	&& [ -L "$${_code_setting_dir}"/settings.json ] && unlink "$${_code_setting_dir}"/settings.json
+	&& if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi
 
 
 # --------------------------------------
