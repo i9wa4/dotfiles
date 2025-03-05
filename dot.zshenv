@@ -71,6 +71,7 @@ export VISUAL=vim
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="${PATH}":/snap/bin
 export XDG_CONFIG_HOME="${HOME}"/.config
+export XDG_CACHE_HOME="${HOME}"/.cache
 
 if locale -a | grep -q "en_US.UTF-8"; then
   export LC_ALL=en_US.UTF-8
