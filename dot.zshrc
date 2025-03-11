@@ -57,28 +57,30 @@ else
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_shell_type}-lv%L) %f"
-PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_shell_type}) %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
 # Git
+# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html
 # https://hirooooo-lab.com/development/git-terminal-customize-zsh/
 # https://qiita.com/ono_matope/items/55d9dac8d30b299f590d
 # https://qiita.com/mollifier/items/8d5a627d773758dd8078
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%m%f"
-zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %F{#696969}%m%f'
+zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%8.8i %m%f"
+zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %F{#696969}%8.8i %m%f'
 zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
 zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 zstyle ':vcs_info:git+set-message:*' hooks \
   git-config-user
 function +vi-git-config-user(){
-  hook_com[misc]+='<'`git config user.name`'>'
+  # hook_com[misc]+=`git config user.name`
   # hook_com[misc]+=' '
-  # hook_com[misc]+='<'`git config user.email`'>'
+  # hook_com[misc]+=`git config user.email`
 }
 _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
