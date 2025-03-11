@@ -55,9 +55,9 @@ else
   # local host
   PROMPT=""
 fi
-# _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# PROMPT="%D{[%Y-%m-%dT%H:%M:%S]} (${_shell_type}-lv%L) $ "
-PROMPT="${PROMPT}%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+_shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+# PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_shell_type}-lv%L) %f"
+PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} (${_shell_type}) %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
