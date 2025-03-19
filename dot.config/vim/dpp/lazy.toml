@@ -101,6 +101,10 @@ augroup mnh
 augroup END
 '''
 
+[[plugins]]
+repo = 'gu-fan/riv.vim'
+on_ft = ['markdown', 'quarto', 'rmd']
+
 # --------------------------------------
 # Terraform
 #
