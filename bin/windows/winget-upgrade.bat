@@ -12,11 +12,12 @@ exit /b
 
     @REM winget settings --enable InstallerHashOverride
 
-    winget install --ignore-security-hash --exact --id Alacritty.Alacritty
-    winget install --ignore-security-hash --exact --id Amazon.Kindle
-    winget install --ignore-security-hash --exact --id Google.Chrome
-    winget install --ignore-security-hash --exact --id Microsoft.VisualStudioCode
-    winget install --ignore-security-hash --exact --id Zoom.Zoom
+    winget install --ignore-security-hash --exact ^
+        Alacritty.Alacritty ^
+        Amazon.Kindle ^
+        Google.Chrome ^
+        Microsoft.VisualStudioCode ^
+        Zoom.Zoom
 
     winget upgrade --ignore-security-hash --all
 
