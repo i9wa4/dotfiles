@@ -10,8 +10,6 @@ exit /b
 
     wsl --update
 
-    @REM winget settings --enable InstallerHashOverride
-
     winget install --ignore-security-hash --exact ^
         Alacritty.Alacritty ^
         Amazon.Kindle ^
