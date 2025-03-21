@@ -19,6 +19,11 @@ snippets:
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
     context:
       lbuffer: '^git\s'
+  - name: (Git) delete merged branches
+    keyword: dm
+    snippet: switch main && git pull origin main && git branch --merged | grep -v 'main' | xargs git branch -d
+    context:
+      lbuffer: '^git\s'
   - name: (Git) log 10 lines
     keyword: lo10
     snippet: log --graph --oneline -n 10
