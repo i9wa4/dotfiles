@@ -105,7 +105,7 @@ augroup END
 repo = 'gu-fan/riv.vim'
 on_ft = ['markdown', 'quarto', 'rmd']
 hook_source = '''
-nnoremap <Space>fg :RivTableFormat<CR>
+nnoremap <Space>eg :RivTableFormat<CR>
 '''
 
 # --------------------------------------
