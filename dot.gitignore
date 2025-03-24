@@ -7,12 +7,12 @@ node_modules/
 .virtual_documents/
 
 # Terraform
-# .terraform.lock.hcl
-# terraform.exe
-# terraform.tfstate
+.terraform.lock.hcl
+terraform.exe
+terraform.tfstate
 
 # Terragrunt
-# .terragrunt-cache/
+.terragrunt-cache/
 
 # dotfiles
 **/alacritty/alacritty.toml
