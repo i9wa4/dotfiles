@@ -104,6 +104,9 @@ augroup END
 [[plugins]]
 repo = 'gu-fan/riv.vim'
 on_ft = ['markdown', 'quarto', 'rmd']
+hook_source = '''
+nnoremap <Space>fg :RivTableFormat<CR>
+'''
 
 # --------------------------------------
 # Terraform
