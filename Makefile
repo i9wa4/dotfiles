@@ -224,14 +224,14 @@ link:  ## make symbolic links
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  @$(MAKE) mac-clean; \
-	  @$(MAKE) mac-copy; \
+	  $(MAKE) mac-clean; \
+	  $(MAKE) mac-copy; \
 	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  @$(MAKE) win-copy; \
+	  $(MAKE) win-copy; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -301,13 +301,13 @@ package-update:
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  @$(MAKE) package-mac-update; \
+	  $(MAKE) package-mac-update; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
-	  @$(MAKE) package-ubuntu-update; \
+	  $(MAKE) package-ubuntu-update; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  @$(MAKE) package-ubuntu-update; \
+	  $(MAKE) package-ubuntu-update; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -565,12 +565,12 @@ git-init:
 nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
 	&& git checkout refs/tags/stable \
-	&& @$(MAKE) distclean \
-	&& @$(MAKE) \
+	&& $(MAKE) distclean \
+	&& $(MAKE) \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
-	&& @$(MAKE) install \
+	&& $(MAKE) install \
 	&& hash -r \
 
 pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
@@ -620,11 +620,11 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 
 python-venv-myenv:  ## install/update Python venv for myenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& @$(MAKE) python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
+	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
 
 python-venv-dbtenv:  ## install/update Python venv for dbtenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& @$(MAKE) python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
+	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
 
 tfenv-terraform-install: tfenv-list  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -670,7 +670,7 @@ vim-build:  ## build Vim
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim/src \
 	&& git checkout master \
-	&& @$(MAKE) distclean \
+	&& $(MAKE) distclean \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -679,8 +679,8 @@ vim-build:  ## build Vim
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
-	&& @$(MAKE) \
-	&& @$(MAKE) install \
+	&& $(MAKE) \
+	&& $(MAKE) install \
 	&& hash -r \
 
 volta-install:
