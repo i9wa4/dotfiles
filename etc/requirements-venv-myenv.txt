@@ -1,3 +1,4 @@
+aider-install
 autopep8
 black
 charset-normalizer<3,>=2

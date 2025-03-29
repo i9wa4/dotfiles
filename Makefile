@@ -16,12 +16,13 @@ help:  ## print this help
 	@echo 'Targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-debug:
+test:
+	@echo "$${PATH}" | tr ':' '\n'
 	@echo uname: "$$(uname -a)"
 	@echo dotfiles: $(MF_DOTFILES_DIR)
 	@echo dotfiles: "$(MF_DOTFILES_DIR)"
 	@echo shell: "$$0"
-	@echo .zshenv load test:
+	@echo dot.zshenv load test:
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 
 
@@ -223,14 +224,14 @@ link:  ## make symbolic links
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  make mac-clean; \
-	  make mac-copy; \
+	  @$(MAKE) mac-clean; \
+	  @$(MAKE) mac-copy; \
 	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  make win-copy; \
+	  @$(MAKE) win-copy; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -300,13 +301,13 @@ package-update:
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  make package-mac-update; \
+	  @$(MAKE) package-mac-update; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
-	  make package-ubuntu-update; \
+	  @$(MAKE) package-ubuntu-update; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  make package-ubuntu-update; \
+	  @$(MAKE) package-ubuntu-update; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -315,10 +316,10 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
-	make package-go
-	make package-rust
-	make volta-update
-	make pyenv-update
+	@$(MAKE) package-go
+	@$(MAKE) package-rust
+	@$(MAKE) volta-update
+	@$(MAKE) pyenv-update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
@@ -467,8 +468,7 @@ package-ubuntu-desktop-install:
 #  Tools
 #
 act-build:  ## build act
-	cd $(MF_GITHUB_DIR)/nektos/act \
-	&& make build
+	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
 
 awscli-update-ubuntu:  ## update AWS CLI for Ubuntu
 	# AWS CLI
@@ -565,12 +565,12 @@ git-init:
 nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
 	&& git checkout refs/tags/stable \
-	&& make distclean \
-	&& make \
+	&& @$(MAKE) distclean \
+	&& @$(MAKE) \
 	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
-	&& make install \
+	&& @$(MAKE) install \
 	&& hash -r \
 
 pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
@@ -618,13 +618,13 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& python --version \
 	&& deactivate
 
-python-venv-myenv:
+python-venv-myenv:  ## install/update Python venv for myenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& make python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
+	&& @$(MAKE) python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
 
-python-venv-dbtenv:
+python-venv-dbtenv:  ## install/update Python venv for dbtenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& make python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
+	&& @$(MAKE) python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
 
 tfenv-terraform-install: tfenv-list  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -670,7 +670,7 @@ vim-build:  ## build Vim
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim/src \
 	&& git checkout master \
-	&& make distclean \
+	&& @$(MAKE) distclean \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -679,8 +679,8 @@ vim-build:  ## build Vim
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
-	&& make \
-	&& make install \
+	&& @$(MAKE) \
+	&& @$(MAKE) install \
 	&& hash -r \
 
 volta-install:
