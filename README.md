@@ -114,8 +114,6 @@
 #### 5.3.2. Extension
 
 - Markdown Preview Plus
-- Page Sidebar
-    - Google Calendar Embedded Link
 
 ### 5.4. Slack
 
