@@ -132,6 +132,43 @@
 - GitHub Notifications
     - `/github subscribe owner/repo reviews,comments,branches,commits:*`
 
-### 5.5. SSH Connection to Ubuntu
+### 5.5. SSH Connection to Ubuntu Server
 
-- [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/wsuzume/articles/26b26106c3925e)
+cf. [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/wsuzume/articles/26b26106c3925e)
+
+1. [Server] Set `PasswordAuthentication yes` in `/etc/ssh/sshd_config`.
+1. [Server] Restart ssh.
+
+    ```sh
+    [Server] $ sudo systemctl restart ssh.service
+    ```
+1. Execute the following commands.
+
+    ```sh
+    [Client] $ ssh-keygen -t ed25519
+    [Client] $ ssh -p port username@192.168.xxx.xxx  # or hostname
+    [Server] $ exit
+    [Client] $ scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key
+    [Client] $ ssh -p port username@192.168.xxx.xxx
+    [Server] $ cd ~/.ssh
+    [Server] $ cat register_key >> authorized_keys
+    [Server] $ chmod 600 authorized_keys
+    [Server] $ rm register_key
+    ```
+
+1. [Server] Set `PasswordAuthentication no` in `/etc/ssh/sshd_config`.
+1. [Server] Restart ssh.
+
+    ```sh
+    [Server] $ sudo systemctl restart ssh.service
+    ```
+
+1. [Client] Configure `~/.ssh/config`
+
+    ```sh
+    Host sandbox
+        HostName        192.168.xxx.xxx
+        Port            port
+        IdentityFile    ~/.ssh/id_ed25519
+        User            username
+    ```
