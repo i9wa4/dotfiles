@@ -40,12 +40,12 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 common-init: zsh-init zinit-install \
 	unlink link \
 	git-init \
+	package-go package-rust \
+	volta-install \
 	ghq-get-essential \
 	vim-build nvim-build \
 	act-build \
-	pyenv-python-install \
-	package-go package-rust \
-	volta-install
+	pyenv-python-install
 
 
 # --------------------------------------
@@ -518,8 +518,7 @@ docker-init-ubuntu:
 	sudo systemctl enable docker
 
 ghq-get-essential:
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& _list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
+	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
 
 ghq-get-local:
