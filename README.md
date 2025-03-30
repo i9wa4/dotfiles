@@ -23,8 +23,14 @@
 
 1. Establish an SSH connection to GitHub.
     - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
-1. Add the GitHub Signing Key.
+1. Add the GitHub Signing Keys and Authentication Keys.
     - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
+1. Execute a git command to install Command Line Developer Tools.
+
+    ```sh
+    git --version
+    ```
+
 1. Execute the following command.
 
     ```sh
