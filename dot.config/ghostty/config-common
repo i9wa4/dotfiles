@@ -1,7 +1,7 @@
 # https://engineering.konso.me/articles/iterm2-to-ghostty/
 font-family = "MyricaM M"
 font-size = 24
-adjust-cell-height=50%
+# adjust-cell-height=50%
 
 font-feature = "-calt"
 font-feature = "-dlig"
