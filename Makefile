@@ -357,7 +357,9 @@ package-mac-install:
 	  vim \
 	  wget \
 	  zsh \
-	&& brew install ninja cmake gettext curl \  # Neovim
+	&& brew install ninja gettext curl \  # Neovim
+	&& brew install --formula cmake \  # Neovim https://github.com/orgs/Homebrew/discussions/571
+	&& brew link --overwrite cmake \  # Neovim https://github.com/orgs/Homebrew/discussions/571
 	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash \  # Deno
 	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
 	&& curl https://pyenv.run | bash \
