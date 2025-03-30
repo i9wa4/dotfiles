@@ -37,16 +37,14 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Initialization
 #
-common-init: zsh-init zinit-install \
+common-init: zinit-install zsh-init \
 	unlink link \
 	git-init
 
 common-package-init: package-go package-rust \
 	volta-install \
 	ghq-get-essential \
-	vim-build nvim-build \
-	act-build \
-	pyenv-python-install  ## init for package management
+	vim-build nvim-build  ## init for package management
 
 
 # --------------------------------------
