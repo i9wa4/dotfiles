@@ -131,3 +131,7 @@
 
 - GitHub Notifications
     - `/github subscribe owner/repo reviews,comments,branches,commits:*`
+
+### 5.5. SSH Connection to Ubuntu
+
+- [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/wsuzume/articles/26b26106c3925e)
