@@ -357,19 +357,17 @@ package-mac-install:
 	  vim \
 	  wget \
 	  zsh \
-	&& brew install ninja gettext curl \  # Neovim
-	&& brew install --formula cmake \  # Neovim https://github.com/orgs/Homebrew/discussions/571
-	&& brew link --overwrite cmake \  # Neovim https://github.com/orgs/Homebrew/discussions/571
-	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash \  # Deno
-	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
+	&& brew install ninja cmake gettext curl \
+	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash \
+	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
-	&& brew install go \  # Go
-	&& brew install rustup-init && rustup-init \  # Rust
-	&& brew install awscli \  # AWS CLI
+	&& brew install go \
+	&& brew install rustup-init && rustup-init \
+	&& brew install awscli \
 	&& brew install --cask aws-vpn-client \
-	&& brew install --cask google-cloud-sdk \  # gcloud CLI
-	&& brew install --cask snowflake-snowsql  # SnowSQL
+	&& brew install --cask google-cloud-sdk \
+	&& brew install --cask snowflake-snowsql
 
 package-mac-update:
 	brew update
