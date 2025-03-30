@@ -39,7 +39,9 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 #
 common-init: zsh-init zinit-install \
 	unlink link \
-	git-init \
+	git-init
+
+common-package-init:  ## init for package management
 	package-go package-rust \
 	volta-install \
 	ghq-get-essential \
