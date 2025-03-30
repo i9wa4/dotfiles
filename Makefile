@@ -41,13 +41,12 @@ common-init: zsh-init zinit-install \
 	unlink link \
 	git-init
 
-common-package-init:  ## init for package management
-	package-go package-rust \
+common-package-init: package-go package-rust \
 	volta-install \
 	ghq-get-essential \
 	vim-build nvim-build \
 	act-build \
-	pyenv-python-install
+	pyenv-python-install  ## init for package management
 
 
 # --------------------------------------
