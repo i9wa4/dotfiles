@@ -358,7 +358,7 @@ package-mac-install:
 	  wget \
 	  zsh \
 	&& brew install ninja cmake gettext curl \  # Neovim
-	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash  # Deno
+	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash \  # Deno
 	&& sudo rm -rf "$${HOME}"/.pyenv \  # pyenv
 	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
