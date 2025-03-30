@@ -365,7 +365,7 @@ package-mac-install:
 	&& brew install --cask google-cloud-sdk \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
-	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash
+	&& curl -fsSL https://deno.land/install.sh | sh
 	# brew install --cask aws-vpn-client
 	# brew install --cask snowflake-snowsql
 
@@ -433,7 +433,7 @@ package-ubuntu-install:
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 	# Deno
-	[ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash
+	curl -fsSL https://deno.land/install.sh | sh
 
 package-ubuntu-update:
 	sudo apt update
