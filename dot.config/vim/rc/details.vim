@@ -198,8 +198,7 @@ endfunction
 
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
-\|  call system('echo "\" let g:mnh_header_level_shift = 1" >> ./local.vim')
-\|  call system('echo "\" let g:mnh_header_level_shift = 7" >> ./local.vim')
+\|  call system('echo "\let g:mnh_header_level_shift = 1" >> ./local.vim')
 
 
 " --------------------------------------

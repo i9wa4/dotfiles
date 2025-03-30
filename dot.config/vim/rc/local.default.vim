@@ -1,5 +1,4 @@
 " Global Variables
-" let g:mnh_header_level_shift = 1
 let g:mnh_header_level_shift = 7
 let g:my_dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict.utf8'
 let g:my_i1_path = '~/ghq/github.com/i9wa4/internal/docs/XX/README.md'->expand()
