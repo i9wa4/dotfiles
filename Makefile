@@ -362,12 +362,12 @@ package-mac-install:
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
-	&& brew install --cask aws-vpn-client \
 	&& brew install --cask google-cloud-sdk \
-	&& brew install --cask snowflake-snowsql \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
 	&& [ -n "$$(command -v deno)" ] && curl -fsSL https://deno.land/install.sh | bash
+	# brew install --cask aws-vpn-client
+	# brew install --cask snowflake-snowsql
 
 package-mac-update:
 	brew update
