@@ -57,6 +57,12 @@
     fi
     ```
 
+1. Restart the terminal and execute the following command.
+
+    ```sh
+    cd ~/ghq/github.com/i9wa4/dotfiles && make common-package-init
+    ```
+
 ## 4. OS-specific Post Installation
 
 ### 4.1. Windows
