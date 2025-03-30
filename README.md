@@ -112,7 +112,14 @@
 
 ### 5.3. Web Browser
 
-#### 5.3.1. Search Engine
+#### 5.3.1. Synchronization
+
+- Password: No
+- Address: No
+- Google Pay: No
+- The Others: Yes
+
+#### 5.3.2. Search Engine
 
 - Google Japanese Search
     - `https://www.google.com/search?q=%s`
@@ -123,8 +130,9 @@
 - DuckDuckGo English Search
     - `https://duckduckgo.com/?q=%s&kl=us-en&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
 
-#### 5.3.2. Extension
+#### 5.3.3. Extension
 
+- Flow Chat for YouTube Live
 - Markdown Preview Plus
 
 ### 5.4. Slack
