@@ -336,6 +336,7 @@ package-mac-install:
 	  docker \
 	  font-myricam \
 	  ghostty \
+	  google-chrome \
 	  google-drive \
 	  rectangle \
 	  visual-studio-code \
