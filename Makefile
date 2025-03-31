@@ -621,6 +621,7 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 python-venv-myenv:  ## install/update Python venv for myenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
+	# aider-install
 
 python-venv-dbtenv:  ## install/update Python venv for dbtenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
