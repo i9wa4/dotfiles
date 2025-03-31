@@ -4,6 +4,7 @@ autopep8
 black
 charset-normalizer<3,>=2
 flake8
+google-generativeai
 ipykernel
 japanize-matplotlib
 jupyterlab
