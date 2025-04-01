@@ -10,5 +10,6 @@
         "markdown": true,
         "plaintext": true,
         "scminput": false
-    }
+    },
+    "python.analysis.extraPaths": []
 }
