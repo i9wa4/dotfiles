@@ -333,6 +333,7 @@ package-mac-install:
 	&& brew upgrade \
 	&& brew install --cask \
 	  alacritty \
+	  cursor \
 	  docker \
 	  font-myricam \
 	  ghostty \
