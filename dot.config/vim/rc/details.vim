@@ -226,6 +226,8 @@ augroup MyVimrc
   autocmd!
   autocmd BufEnter * call s:set_register()
   " autocmd BufWritePost * call s:my_asyncjob_on_save()
+  " https://github.com/vim/vim/issues/5571
+  autocmd StdinReadPost * set nomodified
 augroup END
 
 
