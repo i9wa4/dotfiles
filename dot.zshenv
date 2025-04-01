@@ -79,6 +79,3 @@ if locale -a | grep -q "en_US.UTF-8"; then
 else
   export LC_ALL=C.UTF-8
 fi
-
-# OS-specific settings
-# export GOOGLE_DRIVE_MYDRIVE_PATH=
