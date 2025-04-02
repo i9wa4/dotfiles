@@ -28,7 +28,7 @@ export DENO_TLS_CA_STORE='system'
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 export DENO_NO_UPDATE_CHECK=1
-export DENO_VER_PATCH=2.2.2
+export DENO_VER_PATCH=2.2.6
 
 # fzf
 export FZF_DEFAULT_OPTS='--reverse'

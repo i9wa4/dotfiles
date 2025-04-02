@@ -20,3 +20,6 @@ terraform.tfstate
 .netrwbook
 .netrwhist
 local.vim
+
+# Aider
+.aider*
