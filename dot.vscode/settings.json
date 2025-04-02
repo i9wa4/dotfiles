@@ -7,9 +7,10 @@
     "github.copilot.editor.enableAutoCompletions": true,
     "github.copilot.enable": {
         "*": true,
-        "markdown": true,
-        "plaintext": true,
+        "markdown": false,
+        "plaintext": false,
         "scminput": false
     },
-    "python.analysis.extraPaths": []
+    "python.analysis.extraPaths": [],
+    "workbench.colorTheme": "Default Light+"
 }

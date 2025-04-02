@@ -143,7 +143,8 @@ if { [ -n "${SSH_CONNECTION}" ] } \
   echo "This is a remote host. Run tmux manually on your local host."
 else
   # local host
-  if [ "${SHLVL}" -eq 1 ]; then
+  if { [ "${SHLVL}" -eq 1 ] } \
+    && { [ "${TERM_PROGRAM}" != "vscode" ] }; then
     tmux
   fi
 fi
