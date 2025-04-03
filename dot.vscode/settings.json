@@ -5,12 +5,5 @@
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
     "github.copilot.editor.enableAutoCompletions": true,
-    "github.copilot.enable": {
-        "*": true,
-        "markdown": false,
-        "plaintext": false,
-        "scminput": false
-    },
-    "python.analysis.extraPaths": [],
-    "workbench.colorTheme": "Default Light+"
+    "python.analysis.extraPaths": []
 }
