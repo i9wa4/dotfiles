@@ -3,7 +3,8 @@
 
 
 # Keybind
-bindkey -v
+bindkey -d
+bindkey -e
 # https://wayohoo.com/article/6922
 bindkey '\e[3~' delete-char
 
@@ -11,7 +12,8 @@ bindkey '\e[3~' delete-char
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey -a 'v' edit-command-line
+# bindkey -a 'v' edit-command-line
+bindkey '^x^e' edit-command-line
 
 
 # Completion
