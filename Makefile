@@ -331,7 +331,7 @@ package-mac-install:
 	&& brew -v \
 	&& brew update \
 	&& brew upgrade \
-	&& brew install --cask \
+	&& brew install \
 	  alacritty \
 	  cursor \
 	  docker \
@@ -341,6 +341,7 @@ package-mac-install:
 	  google-drive \
 	  rectangle \
 	  visual-studio-code \
+	  visual-studio-code@insiders \
 	  zoom \
 	&& brew install \
 	  fd \
@@ -363,12 +364,12 @@ package-mac-install:
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
-	&& brew install --cask google-cloud-sdk \
+	&& brew install google-cloud-sdk \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
 	&& curl -fsSL https://deno.land/install.sh | sh
-	# brew install --cask aws-vpn-client
-	# brew install --cask snowflake-snowsql
+	# brew install aws-vpn-client
+	# brew install snowflake-snowsql
 
 package-mac-update:
 	brew update
