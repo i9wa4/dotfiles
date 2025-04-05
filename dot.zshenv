@@ -36,6 +36,10 @@ export FZF_DEFAULT_OPTS='--reverse'
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
+# Java
+# https://docs.aws.amazon.com/corretto/latest/corretto-24-ug/macos-install.html
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Contents/Home
+
 # Neovim
 export NVIM_APPNAME=nvim
 
