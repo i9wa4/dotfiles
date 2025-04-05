@@ -36,9 +36,6 @@ export FZF_DEFAULT_OPTS='--reverse'
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
 
-# Java
-export PATH=/opt/homebrew/opt/openjdk/bin:"${PATH}"
-
 # Neovim
 export NVIM_APPNAME=nvim
 
