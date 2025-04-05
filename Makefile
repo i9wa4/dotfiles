@@ -339,6 +339,7 @@ package-mac-install:
 	  ghostty \
 	  google-chrome \
 	  google-drive \
+	  java \
 	  rectangle \
 	  visual-studio-code \
 	  visual-studio-code@insiders \
