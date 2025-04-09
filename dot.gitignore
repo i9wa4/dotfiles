@@ -23,3 +23,7 @@ local.vim
 
 # Aider
 .aider*
+
+# VS Code
+.vscode/
+databricks.yml
