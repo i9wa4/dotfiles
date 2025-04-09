@@ -26,4 +26,7 @@ local.vim
 
 # VS Code
 .vscode/
+
+# Databricks
+.databricks/
 databricks.yml
