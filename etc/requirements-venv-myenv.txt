@@ -10,6 +10,7 @@ japanize-matplotlib
 jupyterlab
 jupytext
 matplotlib
+mcp
 numpy
 pandas
 py
