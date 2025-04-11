@@ -86,7 +86,7 @@ languages:
     # - <<: *python-autopep8
     - <<: *python-black
     - <<: *python-flake8
-    - <<: *python-isort
+    # - <<: *python-isort
 
   sh:
     - <<: *sh-shellcheck
