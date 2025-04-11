@@ -653,6 +653,9 @@ tfenv-list:  ## show installed Terraform versions
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
+uv-install:  ## install uv
+	curl -LsSf https://astral.sh/uv/install.sh | sh
+
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
