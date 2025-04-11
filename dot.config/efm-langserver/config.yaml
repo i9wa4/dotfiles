@@ -41,7 +41,7 @@ tools:
       - '%f:%l:%c: %m'
 
   python-isort: &python-isort
-    format-command: 'isort -'
+    format-command: 'isort --force-single-line -'
     format-stdin: true
 
   sh-shellcheck: &sh-shellcheck
