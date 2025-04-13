@@ -348,6 +348,7 @@ package-mac-install:
 	  fzf \
 	  gh \
 	  git \
+	  grep \
 	  hadolint \
 	  jq \
 	  nvim \
@@ -629,13 +630,13 @@ python-venv-dbtenv:  ## install/update Python venv for dbtenv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
 
-tfenv-terraform-install: tfenv-list  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
+tfenv-terraform-install:  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& tfenv install "$(TF_VER_PATCH)" \
 	&& tfenv use "$(TF_VER_PATCH)" \
 	&& terraform version
 
-tfenv-terraform-install-latest: tfenv-list  ## install latest Terraform
+tfenv-terraform-install-latest:  ## install latest Terraform
 	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
 	&& tfenv install "$${_tf_ver_latest}" \
 	&& tfenv use "$${_tf_ver_latest}" \
