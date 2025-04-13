@@ -71,18 +71,6 @@ snippets:
       jupyter-lab
         --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
         --config="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
-  - name: (Quarto) preview
-    keyword: qp
-    snippet: quarto preview
-  - name: (Quarto) render
-    keyword: qr
-    snippet: quarto render
-  #   # NOTE: Without _quarto.yml, the following command is useful.
-  #   snippet:
-  #     find . -maxdepth 1 -name "*.qmd" -type f -print | while read -r filepath;
-  #     do
-  #       quarto render "${filepath}";
-  #     done
   - name: update
     keyword: up
     snippet:
