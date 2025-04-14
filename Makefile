@@ -30,7 +30,7 @@ test:
 # Global Variables
 #
 MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
-MF_GHQ_BACKUP_LOCAL_DIR := "$${HOME}"/.cache
+MF_GHQ_BACKUP_LOCAL_DIR := "$${HOME}"/str/etc
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 
 
@@ -40,6 +40,8 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 common-init: zinit-install zsh-init \
 	unlink link \
 	git-init
+	mkdir -p $(MF_GHQ_BACKUP_LOCAL_DIR)
+	mkdir -p "$${HOME}"/str/src
 
 common-package-init: package-go package-rust \
 	volta-install \
@@ -63,7 +65,6 @@ mac-clean:  ## delete .DS_Store and Extended Attributes
 mac-copy:
 	if [ -L "$${HOME}"'/Google Drive' ]; then \
 	  rsync -av --delete "$${HOME}"/str "$${HOME}"'/Google Drive/マイドライブ'; \
-	  cp -f $(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt "$${HOME}"'/Google Drive/マイドライブ/str/etc/'; \
 	fi
 
 mac-macskk-copy:  ## copy SKK dictionaries for Mac
