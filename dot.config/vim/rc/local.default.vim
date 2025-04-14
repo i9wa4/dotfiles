@@ -4,7 +4,7 @@ let g:my_dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict.utf8'
 let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/docs/XX/README.md'->expand()
 let g:my_i1_path = '~/ghq/github.com/i9wa4/internal/docs/05/README.md'->expand()
 let g:my_i2_path = '~/ghq/github.com/i9wa4/internal/docs/06/README.md'->expand()
-let g:my_temp_md_path = $HOME->expand() .. '/temp.md'
+let g:my_temp_md_path = $HOME->expand() .. '/str/src/temp.md'
 
 call my_filetype#set_tabstop2_lang_list([
 \   'bash',
