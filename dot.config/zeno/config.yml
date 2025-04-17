@@ -13,7 +13,9 @@ snippets:
       ls -aFlv --color=always --time-style=long-iso -h
   - name: (ghq) update
     keyword: gu
-    snippet: ghq list | ghq get --update --parallel
+    snippet:
+      ghq list | ghq get --update --parallel
+      && ghq list | ghq get --update --parallel --branch main
   - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
@@ -80,6 +82,7 @@ snippets:
       && zinit update --parallel
       && make unlink
       && ghq list | ghq get --update --parallel
+      && ghq list | ghq get --update --parallel --branch main
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
@@ -94,6 +97,7 @@ snippets:
       && zinit update --parallel
       && make unlink
       && ghq list | ghq get --update --parallel
+      && ghq list | ghq get --update --parallel --branch main
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
