@@ -15,15 +15,16 @@ snippets:
     keyword: gu
     snippet:
       ghq list | ghq get --update --parallel
-      && ghq list | ghq get --update --parallel --branch main
   - name: (Git) graph
     keyword: lo
-    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
+    snippet:
+      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
     context:
       lbuffer: '^git\s'
   - name: (Git) delete merged branches
     keyword: dm
-    snippet: switch main && git pull origin main && git branch --merged | grep -v 'main' | xargs git branch -d
+    snippet:
+      switch main && git pull origin main && git branch --merged | grep -v 'main' | xargs git branch -d
     context:
       lbuffer: '^git\s'
   - name: (Git) log 10 lines
@@ -33,12 +34,14 @@ snippets:
       lbuffer: '^git\s'
   - name: (Git) graph --all
     keyword: la
-    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
+    snippet:
+      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
   - name: (Git) log 10 lines --all
     keyword: la10
-    snippet: log --graph --oneline -n 10 --all
+    snippet:
+      log --graph --oneline -n 10 --all
     context:
       lbuffer: '^git\s'
   - name: (Mac) backup
@@ -63,10 +66,12 @@ snippets:
       fi
   - name: (Python venv) activate myenv
     keyword: pvam
-    snippet: . "${PY_VENV_MYENV}"/bin/activate
+    snippet:
+      . "${PY_VENV_MYENV}"/bin/activate
   - name: (Python venv) activate dbtenv
     keyword: pvad
-    snippet: . "${PY_VENV_DBTENV}"/bin/activate
+    snippet:
+      . "${PY_VENV_DBTENV}"/bin/activate
   - name: (Python) jupyter-lab
     keyword: pjl
     snippet:
@@ -82,7 +87,6 @@ snippets:
       && zinit update --parallel
       && make unlink
       && ghq list | ghq get --update --parallel
-      && ghq list | ghq get --update --parallel --branch main
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
@@ -97,7 +101,6 @@ snippets:
       && zinit update --parallel
       && make unlink
       && ghq list | ghq get --update --parallel
-      && ghq list | ghq get --update --parallel --branch main
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
@@ -109,4 +112,5 @@ snippets:
       && cd -
   - name: vim startuptime
     keyword: vs
-    snippet: vim-startuptime -count 10 -vimpath vim
+    snippet:
+      vim-startuptime -count 10 -vimpath vim
