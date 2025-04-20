@@ -93,7 +93,7 @@ nnoremap <Plug>(my-Ddu)h <Cmd>DduHelp<CR>
 nnoremap <Plug>(my-Ddu)rc <Cmd>DduFileRec getcwd()<CR>
 nnoremap <Plug>(my-Ddu)rg <Cmd>DduFileRec '~/ghq/github.com'<CR>
 nnoremap <Plug>(my-Ddu)rr <Cmd>DduFileRec
-\ finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1) .. '/..'<CR>
+\ fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 '''
 
 [[plugins]]
