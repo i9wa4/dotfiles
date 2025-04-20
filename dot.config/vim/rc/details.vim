@@ -133,6 +133,7 @@ nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
+nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_dict_path<CR>
 nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
