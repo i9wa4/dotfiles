@@ -39,8 +39,7 @@ endfunction
 " StatusLine
 "
 function! my_util#statusline() abort
-  " let l:status = substitute('%'->expand()->fnamemodify(':p'), getcwd()->expand()->fnamemodify(':p'), '', '')
-  let l:status = '%'->expand()->fnamemodify(':~:p')
+  let l:status = '%'->expand()->fnamemodify(':~')
   " let l:status = '%t'
   let l:status ..= '%<%='
   let l:status ..= 'Ln %l/%L, Col %-4c'
