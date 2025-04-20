@@ -28,6 +28,11 @@ call ddu#custom#patch_global(#{
 \       matchers: ['matcher_substring'],
 \     },
 \   },
+\   kindOptions: #{
+\     file: #{
+\       defaultAction: 'open',
+\     },
+\   },
 \ })
 
 function! s:ddu_ff_keymaps() abort
@@ -54,9 +59,6 @@ command! DduHelp call ddu#start(#{
 \   sources: [
 \     #{
 \       name: 'help',
-\       options: #{
-\         defaultAction: 'open',
-\       },
 \     }
 \   ],
 \ })
@@ -66,9 +68,6 @@ command! DduFile call ddu#start(#{
 \   sources: [
 \     #{
 \       name: 'file',
-\       options: #{
-\         defaultAction: 'open',
-\       },
 \     }
 \   ],
 \ })
@@ -79,9 +78,23 @@ command! -nargs=1 DduFileRec call ddu#start(#{
 \     #{
 \       name: 'file_rec',
 \       options: #{
-\         defaultAction: 'open',
 \         path: expand(<args>),
 \       },
+\       params: {
+\         'ignoreDirectories': [
+\           '.git',
+\           'node_modules',
+\         ],
+\       },
+\     }
+\   ],
+\ })
+
+" ddu-source-rg
+command! -nargs=0 DduRg call ddu#start(#{
+\   sources: [
+\     #{
+\       name: 'rg',
 \     }
 \   ],
 \ })
@@ -90,8 +103,8 @@ nnoremap <Plug>(my-Ddu) <Nop>
 nmap <Space>d <Plug>(my-Ddu)
 nnoremap <Plug>(my-Ddu)f <Cmd>DduFile<CR>
 nnoremap <Plug>(my-Ddu)h <Cmd>DduHelp<CR>
+nnoremap <Plug>(my-Ddu)g <Cmd>DduRg<CR>
 nnoremap <Plug>(my-Ddu)rc <Cmd>DduFileRec getcwd()<CR>
-nnoremap <Plug>(my-Ddu)rg <Cmd>DduFileRec '~/ghq/github.com'<CR>
 nnoremap <Plug>(my-Ddu)rr <Cmd>DduFileRec
 \ fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 '''
@@ -118,4 +131,8 @@ on_source = ['ddu.vim']
 
 [[plugins]]
 repo = 'matsui54/ddu-source-help'
+on_source = ['ddu.vim']
+
+[[plugins]]
+repo = 'shun/ddu-source-rg'
 on_source = ['ddu.vim']
