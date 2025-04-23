@@ -1,4 +1,5 @@
 databricks-cli
+databricks-sql-cli
 dbt-core
 dbt-databricks
 dbt-osmosis
