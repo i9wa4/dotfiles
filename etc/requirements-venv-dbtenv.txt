@@ -1,7 +1,6 @@
 databricks-cli
-databricks-sql-cli
+databricks-sql-cli==0.1.4
 dbt-core
 dbt-databricks
 dbt-osmosis
-dbt-snowflake
 shandy-sqlfmt[jinjafmt]
