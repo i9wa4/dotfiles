@@ -57,6 +57,10 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	killall Finder > /dev/null 2>&1
 
+mac-vscode-init:
+	rm -rf "$${HOME}"/.vscode
+	rm -rf "$${HOME}"/Library/Application\ Support/Code
+
 mac-clean:  ## delete .DS_Store and Extended Attributes
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
