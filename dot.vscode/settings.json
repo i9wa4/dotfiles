@@ -4,6 +4,11 @@
     "editor.fontSize": 22,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
-    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
     "python.analysis.extraPaths": []
 }
