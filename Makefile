@@ -371,6 +371,7 @@ package-mac-install:
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
 	&& brew install google-cloud-sdk \
+	&& brew tap databricks/tap && brew install databricks \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
 	&& curl -fsSL https://deno.land/install.sh | sh
