@@ -208,7 +208,6 @@ win-copy:  ## copy config files for Windows
 #
 link:  ## make symbolic links
 	# dotfiles
-	ln -fs $(MF_DOTFILES_DIR)/dot.gitignore "$${HOME}"/.gitignore
 	mkdir -p "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -216,6 +215,7 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty         "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
@@ -247,11 +247,11 @@ link:  ## make symbolic links
 	&& mkdir -p "$${_code_setting_dir}"/snippets \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
+	echo "Remove ~/.gitconfig's core.excludesfile!"
 
 
 unlink:  ## unlink symbolic links
 	# dotfiles
-	if [ -L "$${HOME}"/.gitignore ]; then unlink "$${HOME}"/.gitignore; fi
 	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
 	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
@@ -259,6 +259,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ]; then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]; then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ]; then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/git ]; then unlink "$${XDG_CONFIG_HOME}"/git; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ]; then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ]; then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
@@ -542,12 +543,12 @@ ghq-backup-local:
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-init:
+	# git config --global core.excludesfile ~/.gitignore
 	git config --global color.ui auto
 	git config --global commit.gpgsign true
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
 	git config --global core.editor vim
-	git config --global core.excludesfile ~/.gitignore
 	git config --global core.ignorecase false
 	git config --global core.pager "LESSCHARSET=utf-8 less"
 	git config --global core.quotepath false
