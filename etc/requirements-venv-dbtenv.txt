@@ -2,4 +2,3 @@ databricks-cli
 dbt-core
 dbt-databricks
 dbt-osmosis
-shandy-sqlfmt[jinjafmt]
