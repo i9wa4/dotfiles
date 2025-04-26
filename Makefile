@@ -537,6 +537,9 @@ pyenv-list:  ## show installed Python versions
 pyenv-update:  ## update pyenv
 	git -C "$${HOME}"/.pyenv pull
 
+puthon-uv:  ## install/update Python uv
+	# TODO: 調べて書く
+
 python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
