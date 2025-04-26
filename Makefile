@@ -256,15 +256,15 @@ unlink:  ## unlink symbolic links
 	rm -rf "$${HOME}"/.cache/vim
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ]; then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ]; then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ]; then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/git ]; then unlink "$${XDG_CONFIG_HOME}"/git; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ]; then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ]; then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ]; then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ]; then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ]; then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];            then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
