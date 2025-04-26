@@ -293,6 +293,7 @@ package-update:
 	@$(MAKE) package-rust
 	@$(MAKE) volta-update
 	@$(MAKE) pyenv-update
+	uv self update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
@@ -382,7 +383,6 @@ package-ubuntu-install:
 	  xsel \
 	  zip
 	# Vim
-	# sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
 	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
 	sudo apt update
 	sudo apt build-dep -y vim
