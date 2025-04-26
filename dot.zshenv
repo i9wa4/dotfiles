@@ -61,22 +61,22 @@ export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
 
 # tfenv
 export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
-export TF_VER_MINOR=1.9
+export TF_VER_MINOR=1.11
 
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
 # zeno.zsh
-export ZENO_DISABLE_TMUX_SESSION_RENAME=1
+# export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 
 # Common
 export EDITOR=vim
 export VISUAL=vim
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="${PATH}":/snap/bin
-export XDG_CONFIG_HOME="${HOME}"/.config
 export XDG_CACHE_HOME="${HOME}"/.cache
+export XDG_CONFIG_HOME="${HOME}"/.config
 
 if locale -a | grep -q "en_US.UTF-8"; then
   export LC_ALL=en_US.UTF-8
