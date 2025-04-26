@@ -37,16 +37,9 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Initialization
 #
-common-init: zinit-install zsh-init \
-	unlink link \
-	git-init
+common-init: zinit-install zsh-init unlink link git-init
 	mkdir -p $(MF_GHQ_BACKUP_LOCAL_DIR)
 	mkdir -p "$${HOME}"/str/src
-
-common-package-init: package-go package-rust \
-	volta-install \
-	ghq-get-essential \
-	vim-build nvim-build  ## init for package management
 
 
 # --------------------------------------
@@ -61,7 +54,7 @@ mac-vscode-init:
 	rm -rf "$${HOME}"/.vscode
 	rm -rf "$${HOME}"/Library/Application\ Support/Code
 
-mac-clean:  ## delete .DS_Store and Extended Attributes
+mac-clean:
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
 	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
@@ -70,13 +63,6 @@ mac-copy:
 	if [ -L "$${HOME}"'/Google Drive' ]; then \
 	  rsync -av --delete "$${HOME}"/str "$${HOME}"'/Google Drive/マイドライブ'; \
 	fi
-
-mac-macskk-copy:  ## copy SKK dictionaries for Mac
-	_macskk_dict_dir="$${HOME}"/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries \
-	&& cp -f $(MF_DOTFILES_DIR)/dot.config/skk/mydict.utf8 "$${_macskk_dict_dir}"/skk-jisyo.utf8 \
-	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L "$${_macskk_dict_dir}" \
-	&& cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei "$${_macskk_dict_dir}" \
-	&& cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 "$${_macskk_dict_dir}"
 
 define MF_MAC_ALACRITTY
 [general]
@@ -103,9 +89,9 @@ mac-ghostty-init:
 #
 ubuntu-minimal-init: package-ubuntu-install common-init
 
-ubuntu-server-init: ubuntu-minimal-init  docker-install-ubuntu docker-init-ubuntu package-ubuntu-server-install  ## init for Ubuntu Server
+ubuntu-server-init: ubuntu-minimal-init package-ubuntu-server-install  ## init for Ubuntu Server
 
-ubuntu-desktop-init: ubuntu-server-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
+ubuntu-desktop-init: ubuntu-server-init ubuntu-alacritty-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
 
 define MF_UBUNTU_ALACRITTY
 [general]
@@ -119,28 +105,14 @@ export MF_UBUNTU_ALACRITTY
 ubuntu-alacritty-init:
 	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 
-ubuntu-ghostty-install:
-	# https://www.virtualizationhowto.com/2024/12/install-ghostty-in-windows-using-wsl/
-	sudo apt install -y \
-	  libadwaita-1-dev \
-	  libgtk-4-dev
-	sudo snap install --beta zig --classic
-	ghq get -p ghostty-org/ghostty
-	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
-	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
-
-ubuntu-ghostty-build:
-	cd $(MF_GITHUB_DIR)/ghostty-org/ghostty \
-	&& sudo zig build -p "$${HOME}"/.local -Doptimize=ReleaseFast
-
-define MF_UBUNTU_GHOSTTY
-config-file = "config-common"
-config-file = "config-ubuntu"
-endef
-export MF_UBUNTU_GHOSTTY
-
-ubuntu-ghostty-init:
-	echo "$${MF_UBUNTU_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
+ubuntu-awscli-update:
+	# AWS CLI
+	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	cd \
+	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	&& unzip -fo awscliv2.zip \
+	&& sudo ./aws/install --update \
+	&& rm awscliv2.zip \
 
 
 # --------------------------------------
@@ -192,14 +164,10 @@ win-copy:  ## copy config files for Windows
 	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
-	mkdir -p $(MF_WIN_UTIL_DIR)/skk
-	cp -rf $(MF_DOTFILES_DIR)/bin $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.config $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.vscode $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/etc $(MF_WIN_UTIL_DIR)
-	cp -f $(MF_GITHUB_DIR)/uasi/skk-emoji-jisyo/SKK-JISYO.emoji.utf8 $(MF_WIN_UTIL_DIR)/skk
-	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.L $(MF_WIN_UTIL_DIR)/skk
-	cp -f $(MF_GITHUB_DIR)/skk-dev/dict/SKK-JISYO.jinmei $(MF_WIN_UTIL_DIR)/skk
+	cp -rf $(MF_DOTFILES_DIR)/bin           $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.config    $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/dot.vscode    $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_DOTFILES_DIR)/etc           $(MF_WIN_UTIL_DIR)
 	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
@@ -329,9 +297,18 @@ package-update:
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
 
+package-common-install:  ## install common packages
+	# Deno
+	curl -fsSL https://deno.land/install.sh | sh
+	# uv
+	curl -LsSf https://astral.sh/uv/install.sh | sh
+	# Volta
+	curl https://get.volta.sh | bash
+	"$${HOME}"/.volta/bin/volta install node
+	echo "Restart Shell"
+
 package-mac-install:
 	# https://brew.sh/
-	# brew install mtgto/macskk/macskk
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
@@ -347,7 +324,6 @@ package-mac-install:
 	  google-drive \
 	  rectangle \
 	  visual-studio-code \
-	  visual-studio-code@insiders \
 	  zoom \
 	&& brew install \
 	  fd \
@@ -367,7 +343,6 @@ package-mac-install:
 	  wget \
 	  zsh \
 	&& brew install ninja cmake gettext curl \
-	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
 	&& brew install awscli \
@@ -375,7 +350,7 @@ package-mac-install:
 	&& brew tap databricks/tap && brew install databricks \
 	&& sudo rm -rf "$${HOME}"/.pyenv \
 	&& curl https://pyenv.run | bash \
-	&& curl -fsSL https://deno.land/install.sh | sh
+	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
 	# brew install aws-vpn-client
 	# brew install snowflake-snowsql
 
@@ -442,8 +417,6 @@ package-ubuntu-install:
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
 	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-	# Deno
-	curl -fsSL https://deno.land/install.sh | sh
 
 package-ubuntu-update:
 	sudo apt update
@@ -452,14 +425,13 @@ package-ubuntu-update:
 	rustup update
 
 package-ubuntu-server-install:
-	# Settings --> Accessibility --> Large Text
-	# https://zenn.dev/wsuzume/articles/26b26106c3925e
 	sudo apt install -y openssh-server
 	sudo systemctl daemon-reload
 	sudo systemctl start ssh.service
 	sudo systemctl enable ssh.service
 
 package-ubuntu-desktop-install:
+	# Settings --> Accessibility --> Large Text
 	# Alacritty
 	sudo add-apt-repository -y ppa:aslatter/ppa
 	sudo apt update
@@ -479,53 +451,6 @@ package-ubuntu-desktop-install:
 #
 act-build:  ## build act
 	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
-
-awscli-update-ubuntu:  ## update AWS CLI for Ubuntu
-	# AWS CLI
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd \
-	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip -fo awscliv2.zip \
-	&& sudo ./aws/install --update \
-	&& rm awscliv2.zip \
-
-docker-install-ubuntu:
-	# https://docs.docker.com/engine/install/ubuntu
-	# Uninstall old versions
-	for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove "$${pkg}"; done
-	# Add Docker's official GPG key
-	sudo apt-get update
-	sudo apt-get install -y ca-certificates curl gnupg
-	sudo install -m 0755 -d /etc/apt/keyrings
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-	sudo chmod a+r /etc/apt/keyrings/docker.gpg
-	# Add the repository to Apt sources
-	echo \
-	  "deb [arch="$$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-	  "$$(. /etc/os-release && echo "$${VERSION_CODENAME}")" stable" | \
-	  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	sudo apt-get update
-	# Install the Docker packages
-	sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-	# https://docs.docker.com/engine/install/linux-postinstall/
-	# If you're running Linux in a virtual machine, it may be necessary to restart the virtual machine for changes to take effect.
-	# sudo groupadd docker
-	sudo usermod -aG docker "$${USER}"
-	# hadolint
-	sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o /usr/local/bin/hadolint
-	sudo chmod 755 /usr/local/bin/hadolint
-	# Trivy
-	# https://aquasecurity.github.io/trivy/v0.45/getting-started/installation/
-	sudo apt-get install wget apt-transport-https gnupg lsb-release
-	wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-	echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb "$$(lsb_release -sc) main"" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-	sudo apt-get update
-	sudo apt-get install trivy
-
-docker-init-ubuntu:
-	sudo systemctl daemon-reload
-	sudo systemctl start docker
-	sudo systemctl enable docker
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
@@ -660,9 +585,6 @@ tfenv-list:  ## show installed Terraform versions
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
 
-uv-install:  ## install uv
-	curl -LsSf https://astral.sh/uv/install.sh | sh
-
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -695,11 +617,6 @@ vim-build:  ## build Vim
 	&& $(MAKE) \
 	&& $(MAKE) install \
 	&& hash -r \
-
-volta-install:
-	curl https://get.volta.sh | bash
-	"$${HOME}"/.volta/bin/volta install node
-	echo "Restart Shell"
 
 volta-update:
 	curl https://get.volta.sh | bash

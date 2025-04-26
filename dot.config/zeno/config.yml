@@ -11,25 +11,36 @@ snippets:
     keyword: llu
     snippet:
       ls -aFlv --color=always --time-style=long-iso -h
+  - name: update
+    keyword: up
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make package-update
+      && zinit self-update
+      && zinit update --parallel
+      && make unlink
+      && ghq list | ghq get --update --parallel
+      && make link
+      && make ghq-get-essential
+      && make ghq-backup-local
+      && make python-venv-myenv
+      && make python-venv-dbtenv
+      && make pyenv-list
+      && cd -
   - name: (ghq) update
     keyword: gu
     snippet:
       ghq list | ghq get --update --parallel
-  - name: (Git) graph
-    keyword: lo
-    snippet:
-      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
-    context:
-      lbuffer: '^git\s'
   - name: (Git) delete merged branches
     keyword: dm
     snippet:
       switch main && git pull origin main && git branch --merged | grep -v 'main' | xargs git branch -d
     context:
       lbuffer: '^git\s'
-  - name: (Git) log 10 lines
-    keyword: lo10
-    snippet: log --graph --oneline -n 10
+  - name: (Git) graph
+    keyword: lo
+    snippet:
+      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
     context:
       lbuffer: '^git\s'
   - name: (Git) graph --all
@@ -38,22 +49,6 @@ snippets:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
-  - name: (Git) log 10 lines --all
-    keyword: la10
-    snippet:
-      log --graph --oneline -n 10 --all
-    context:
-      lbuffer: '^git\s'
-  - name: (Mac) backup
-    keyword: mbu
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make mac-clean
-      && make mac-copy
-      && cd -
-  - name: (PATH) display
-    keyword: pd
-    snippet: echo "${PATH}" | sed -e 's/:/\n/g'
   - name: (Prompt) toggle
     keyword: pt
     snippet:
@@ -72,12 +67,6 @@ snippets:
     keyword: pvad
     snippet:
       . "${PY_VENV_DBTENV}"/bin/activate
-  - name: (Python) jupyter-lab
-    keyword: pjl
-    snippet:
-      jupyter-lab
-        --FileCheckpoints.checkpoint_dir="${HOME}"/.cache/.ipynb_checkpoints
-        --config="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/jupyter/jupyter_lab_config.py
   - name: (Quarto) preview
     keyword: qp
     snippet:
@@ -86,39 +75,3 @@ snippets:
     keyword: qr
     snippet:
       quarto render
-  - name: update
-    keyword: up
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make package-update
-      && zinit self-update
-      && zinit update --parallel
-      && make unlink
-      && ghq list | ghq get --update --parallel
-      && make link
-      && make ghq-get-essential
-      && make ghq-backup-local
-      && make pyenv-list
-      && cd -
-  - name: update all
-    keyword: upa
-    snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make package-update
-      && zinit self-update
-      && zinit update --parallel
-      && make unlink
-      && ghq list | ghq get --update --parallel
-      && make link
-      && make ghq-get-essential
-      && make ghq-backup-local
-      && make vim-build
-      && make nvim-build
-      && make python-venv-myenv
-      && make python-venv-dbtenv
-      && make pyenv-list
-      && cd -
-  - name: vim startuptime
-    keyword: vs
-    snippet:
-      vim-startuptime -count 10 -vimpath vim
