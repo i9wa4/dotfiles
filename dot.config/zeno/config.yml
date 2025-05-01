@@ -49,6 +49,12 @@ snippets:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
+  - name: (gh) repo view --web
+    keyword: r
+    snippet:
+      repo view --web
+    context:
+      lbuffer: '^gh\s'
   - name: (Prompt) toggle
     keyword: pt
     snippet:
