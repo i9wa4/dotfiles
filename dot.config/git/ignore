@@ -30,3 +30,6 @@ local.vim
 # Databricks
 .databricks/
 databricks.yml
+
+# Personal
+.i9wa4/
