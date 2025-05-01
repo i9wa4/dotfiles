@@ -73,27 +73,9 @@
 1. Run `C:\work\util\bin\win-copy.bat`.
 1. Run `C:\work\util\bin\winget-upgrade.bat`.
 
-#### 4.1.1. CorvusSKK
-
-1. Install CorvusSKK.
-    - <https://github.com/nathancorvussolis/corvusskk>
-1. Load the dictionaries in `%APPDATA%\CorvusSKK`.
-1. Configuration:
-    - キー1
-        - 変換位置 `;`
-    - キー2
-        - ひらがな `C\x4B` (`<C-k>`)
-
 ### 4.2. macOS
 
 [Mac 環境構築手順 – uma-chan’s page](https://i9wa4.github.io/blog/2024-06-17-setup-mac.html)
-
-#### 4.2.1. macSKK
-
-1. Enable the dictionaries.
-1. Configuration:
-    - キーバインド
-        - ひらがなモード `C-k`
 
 ## 5. OS-common Post Installation
 
@@ -115,7 +97,7 @@
 
 ### 5.3. Web Browser
 
-#### 5.3.1. Synchronization
+#### 5.3.1. Setting Synchronization
 
 - Password: No
 - Address: No
