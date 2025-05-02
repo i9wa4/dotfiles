@@ -4,6 +4,7 @@ node_modules/
 
 # Python
 .ipynb_checkpoints/
+.venv/
 .virtual_documents/
 
 # Terraform
