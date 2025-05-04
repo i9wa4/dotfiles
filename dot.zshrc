@@ -1,6 +1,7 @@
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
 [ -r /etc/zshrc ] && . /etc/zshrc
 
+# aaa
 
 # Keybind
 bindkey -d
@@ -45,6 +46,65 @@ setopt hist_verify
 setopt share_history
 
 
+# Git
+# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html
+# https://hirooooo-lab.com/development/git-terminal-customize-zsh/
+# https://qiita.com/ono_matope/items/55d9dac8d30b299f590d
+# https://qiita.com/mollifier/items/8d5a627d773758dd8078
+autoload -Uz add-zsh-hook
+autoload -Uz vcs_info
+setopt prompt_subst
+# zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%8.8i %m%f"
+zstyle ':vcs_info:*' formats "%F{green}(%b)%f %m%F{#696969}%8.8i%f"
+zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %m%F{#696969}%8.8i%f'
+# zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' get-revision true
+# zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
+# zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
+zstyle ':vcs_info:git+set-message:*' hooks \
+  git-status \
+  git-config-user
+
+function +vi-git-status() {
+  local shortstat=$(git diff --shortstat 2>/dev/null)
+  local insertions=0
+  local deletions=0
+  if [[ "${shortstat}" =~ '([0-9]+) insertion' ]]; then
+    insertions="${match[1]}"
+  fi
+  if [[ "${shortstat}" =~ '([0-9]+) deletion' ]]; then
+    deletions="${match[1]}"
+  fi
+
+  local untracked=$(git status --porcelain 2>/dev/null | grep -c "^??")
+  local unstaged=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+
+  if { [[ -n "${untracked}" ]] } \
+    && { [[ "${untracked}" -gt 0 ]] }; then
+    hook_com[misc]+="%F{cyan}?${untracked}%f "
+  fi
+  if { [[ -n "${unstaged}" ]] } \
+    && { [[ "${unstaged}" -gt 0 ]] }; then
+    hook_com[misc]+="%F{red}~${unstaged}%f "
+  fi
+  if [[ "${insertions}" -gt 0 ]]; then
+    hook_com[misc]+="%F{green}+${insertions}%f "
+  fi
+  if [[ "${deletions}" -gt 0 ]]; then
+    hook_com[misc]+="%F{red}-${deletions}%f "
+  fi
+}
+
+function +vi-git-config-user(){
+  # hook_com[misc]+=`git config user.name`
+  # hook_com[misc]+=' '
+  # hook_com[misc]+=`git config user.email`
+}
+
+_vcs_precmd(){ vcs_info }
+add-zsh-hook precmd _vcs_precmd
+
+
 # Prompt
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 # prompt bigfade
@@ -60,31 +120,6 @@ fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
-
-
-# Git
-# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html
-# https://hirooooo-lab.com/development/git-terminal-customize-zsh/
-# https://qiita.com/ono_matope/items/55d9dac8d30b299f590d
-# https://qiita.com/mollifier/items/8d5a627d773758dd8078
-autoload -Uz add-zsh-hook
-autoload -Uz vcs_info
-setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%8.8i %m%f"
-zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %F{#696969}%8.8i %m%f'
-zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git:*' get-revision true
-zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
-zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
-zstyle ':vcs_info:git+set-message:*' hooks \
-  git-config-user
-function +vi-git-config-user(){
-  # hook_com[misc]+=`git config user.name`
-  # hook_com[misc]+=' '
-  # hook_com[misc]+=`git config user.email`
-}
-_vcs_precmd(){ vcs_info }
-add-zsh-hook precmd _vcs_precmd
 
 
 # zeno.zsh

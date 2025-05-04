@@ -470,7 +470,6 @@ ghq-backup-local:
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-init:
-	# git config --global core.excludesfile ~/.gitignore
 	git config --global color.ui auto
 	git config --global commit.gpgsign true
 	git config --global commit.verbose true
