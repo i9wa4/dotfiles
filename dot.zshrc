@@ -1,8 +1,6 @@
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
 [ -r /etc/zshrc ] && . /etc/zshrc
 
-# aaa
-
 # Keybind
 bindkey -d
 bindkey -e
@@ -13,7 +11,6 @@ bindkey '\e[3~' delete-char
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
-# bindkey -a 'v' edit-command-line
 bindkey '^x^e' edit-command-line
 
 
@@ -54,7 +51,7 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{green}%b%f %m%F{#696969}%8.8i%f"
+zstyle ':vcs_info:*' formats "%F{#DAFFF9}%b%f %m%F{#696969}%8.8i%f"
 zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f %m%F{#696969}%8.8i%f'
 zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git+set-message:*' hooks \
@@ -155,10 +152,6 @@ elif [ "$(echo "${_uname}" | grep el7)" ]; then
 else
   echo 'Which OS are you using?'
 fi
-
-
-# End of Settings
-# cd
 
 
 # tmux
