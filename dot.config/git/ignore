@@ -1,6 +1,23 @@
-node_modules/
 .DS_Store
 .env
+.i9wa4/
+node_modules/
+
+# dotfiles
+**/alacritty/alacritty.toml
+**/ghostty/config
+**/tmux/plugins/
+.netrwbook
+.netrwhist
+local.vim
+
+# Aider
+.aider*
+
+# Databricks
+.databricks/
+databricks.yml
+typings/
 
 # Python
 .ipynb_checkpoints/
@@ -12,26 +29,5 @@ node_modules/
 terraform.exe
 terraform.tfstate
 
-# Terragrunt
-.terragrunt-cache/
-
-# dotfiles
-**/alacritty/alacritty.toml
-**/ghostty/config
-.netrwbook
-.netrwhist
-local.vim
-
-# Aider
-.aider*
-
 # VS Code
 .vscode/
-
-# Databricks
-.databricks/
-databricks.yml
-typings/
-
-# Personal
-.i9wa4/

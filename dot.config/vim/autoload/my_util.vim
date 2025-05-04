@@ -2,6 +2,7 @@
 " TabLine
 "
 function! my_util#tabline() abort
+  let l:tab_length = 25
   " https://qiita.com/wadako111/items/755e753677dd72d8036d
   let l:ret = ''
   for l:i in range(1, tabpagenr('$'))
@@ -16,8 +17,8 @@ function! my_util#tabline() abort
       let l:bufname_i = '[No Name]'
     endif
 
-    let l:tabname_i = l:tab_no_i .. ' ' .. l:mod_i .. l:bufname_i
-    let l:tabname_i = strcharpart(l:tabname_i .. '               ', 0, 15)
+    let l:tabname_i = (l:tab_no_i - 1) .. ':' .. l:mod_i .. l:bufname_i
+    let l:tabname_i = strcharpart(l:tabname_i .. repeat(' ', l:tab_length), 0, l:tab_length)
 
     let l:ret ..= '%' .. l:tab_no_i .. 'T'
     let l:ret ..= '%#' .. (l:tab_no_i == tabpagenr() ? 'TabLineSel' : 'TabLine') .. '#'

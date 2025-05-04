@@ -59,6 +59,7 @@ nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
 
 [[plugins]]
 repo = 'i9wa4/vim-get-git-branch-name'
+if = 0
 on_event = ['BufEnter']
 hook_source = '''
 function! MyStatuslineRightTabline() abort

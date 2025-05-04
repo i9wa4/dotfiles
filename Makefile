@@ -37,7 +37,7 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Initialization
 #
-common-init: zinit-install zsh-init unlink link git-init
+common-init: zinit-install zsh-init unlink link git-init tmux-init
 	mkdir -p $(MF_GHQ_BACKUP_LOCAL_DIR)
 	mkdir -p "$${HOME}"/str/src
 
@@ -46,8 +46,10 @@ common-init: zinit-install zsh-init unlink link git-init
 # Tasks for macOS
 #
 mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  ## init for Mac
-	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.apple.Finder QuitMenuItem -bool YES
+	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
+	defaults write com.maisin.boost ApplePressAndHoldEnabled -bool false
+	defaults write com.maisin.boost.helper ApplePressAndHoldEnabled -bool false
 	killall Finder > /dev/null 2>&1
 
 mac-vscode-init:
@@ -587,6 +589,10 @@ tfenv-list:  ## show installed Terraform versions
 	  ) | tee "$${HOME}"/.cache/tfenv-list.txt \
 	&& echo "[tfenv] Installed Terraform versions:" \
 	&& tfenv list
+
+tmux-init:
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	git clone https://github.com/tmux-plugins/tpm "$${XDG_CONFIG_HOME}"/tmux/plugins/tpm
 
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \

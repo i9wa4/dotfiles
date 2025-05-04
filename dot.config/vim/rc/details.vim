@@ -93,11 +93,18 @@ cnoreabbrev w' w
 " --------------------------------------
 " Keymap
 "
-nnoremap <expr> j (v:count == 0) ? 'gj' : 'j'
-nnoremap <expr> k (v:count == 0) ? 'gk' : 'k'
-xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
-xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
 nnoremap gf gF
+
+" https://zenn.dev/mattn/articles/83c2d4c7645faa
+nmap <SID>g <Nop>
+nmap gj gj<SID>g
+nmap gk gk<SID>g
+nnoremap <script> <SID>gj gj<SID>g
+nnoremap <script> <SID>gk gk<SID>g
+" nnoremap <expr> j (v:count == 0) ? 'gj' : 'j'
+" nnoremap <expr> k (v:count == 0) ? 'gk' : 'k'
+" xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
+" xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
 
 " Insert Mode
 " i_CTRL-T Insert one indent
@@ -105,22 +112,23 @@ nnoremap gf gF
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 
-" pair
+" Location List
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
 command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
 nnoremap <C-p> :Lprevious<CR>
 nnoremap <C-n> :Lnext<CR>
 
 " Resize Window
-nnoremap <S-Down>  <C-w>1-
-nnoremap <S-Up>    <C-w>1+
-nnoremap <S-Right> <C-w>5>
-nnoremap <S-Left>  <C-w>5<
-
-" https://zenn.dev/vim_jp/articles/43d021f461f3a4
-nnoremap Y y$
-onoremap i<space> iW
-xnoremap i<space> iW
+" https://zenn.dev/mattn/articles/83c2d4c7645faa
+nmap <C-w>H <C-w><<SID>ws
+nmap <C-w>J <C-w>-<SID>ws
+nmap <C-w>K <C-w>+<SID>ws
+nmap <C-w>L <C-w>><SID>ws
+nmap <SID>ws <Nop>
+nnoremap <script> <SID>wsH <C-w><<SID>ws
+nnoremap <script> <SID>wsJ <C-w>-<SID>ws
+nnoremap <script> <SID>wsK <C-w>+<SID>ws
+nnoremap <script> <SID>wsL <C-w>><SID>ws
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
@@ -210,6 +218,12 @@ function! s:set_register() abort
     call setreg('a', '%'->expand()->fnamemodify(':p'))
     call setreg('b', '%'->expand()->fnamemodify(':p:~'))
     call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
+
+    let l:status = (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
+    let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+    let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+    let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+    call setreg('z', l:status)
   endif
 endfunction
 

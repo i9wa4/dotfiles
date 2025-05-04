@@ -134,7 +134,7 @@ fi
 
 
 # End of Settings
-cd
+# cd
 
 
 # tmux
