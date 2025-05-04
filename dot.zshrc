@@ -54,18 +54,16 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-# zstyle ':vcs_info:*' formats "%F{green}%c%u(%b)%f %F{#696969}%8.8i %m%f"
-zstyle ':vcs_info:*' formats "%F{green}(%b)%f %m%F{#696969}%8.8i%f"
-zstyle ':vcs_info:*' actionformats '%F{red}[%b|%a]%f %m%F{#696969}%8.8i%f'
-# zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:*' formats "%F{green}%b%f %m%F{#696969}%8.8i%f"
+zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f %m%F{#696969}%8.8i%f'
 zstyle ':vcs_info:git:*' get-revision true
-# zstyle ':vcs_info:git:*' stagedstr "%F{yellow}+"
-# zstyle ':vcs_info:git:*' unstagedstr "%F{red}*"
 zstyle ':vcs_info:git+set-message:*' hooks \
-  git-status \
-  git-config-user
+  simple-git-status
 
-function +vi-git-status() {
+function +vi-simple-git-status() {
+  local untracked=$(git status --porcelain 2>/dev/null | grep -c "^??")
+  local unstaged=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+
   local shortstat=$(git diff --shortstat 2>/dev/null)
   local insertions=0
   local deletions=0
@@ -75,9 +73,6 @@ function +vi-git-status() {
   if [[ "${shortstat}" =~ '([0-9]+) deletion' ]]; then
     deletions="${match[1]}"
   fi
-
-  local untracked=$(git status --porcelain 2>/dev/null | grep -c "^??")
-  local unstaged=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
 
   if { [[ -n "${untracked}" ]] } \
     && { [[ "${untracked}" -gt 0 ]] }; then
@@ -93,12 +88,6 @@ function +vi-git-status() {
   if [[ "${deletions}" -gt 0 ]]; then
     hook_com[misc]+="%F{red}-${deletions}%f "
   fi
-}
-
-function +vi-git-config-user(){
-  # hook_com[misc]+=`git config user.name`
-  # hook_com[misc]+=' '
-  # hook_com[misc]+=`git config user.email`
 }
 
 _vcs_precmd(){ vcs_info }
