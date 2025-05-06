@@ -1,0 +1,25 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# top-most EditorConfig file
+root = true
+
+# https://github.com/editorconfig/editorconfig-vim
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 80
+trim_trailing_whitespace = true
+
+# 2 space indentation
+[{*.{css,mmd,sh,tf,tftpl,tfvars,toml,ts,vim,yaml,zshenv,zshrc},vimrc}]
+indent_size = 2
+
+# Tab indentation (no size specified)
+[{*.go,Makefile}]
+indent_style = tab
+
+# Windows
+[{*.{bat,cmd}]
+end_of_line = crlf

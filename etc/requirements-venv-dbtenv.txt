@@ -1,4 +1,0 @@
-databricks-cli
-dbt-core
-dbt-databricks
-dbt-osmosis
