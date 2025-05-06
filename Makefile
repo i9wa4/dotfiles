@@ -296,7 +296,7 @@ package-update:
 	@$(MAKE) package-rust
 	@$(MAKE) volta-update
 	@$(MAKE) pyenv-update
-	uv self update
+	# uv self update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
