@@ -26,7 +26,7 @@ call my_filetype#set_tabstop2_lang_list([
 \ ])
 
 " Python
-call my_util#add_python_venv($PY_VENV_MYENV)
+call my_util#add_python_venv($PY_VENV_MAIN)
 
 " Denops Plugin Development
 let g:denops#debug = 1
