@@ -3,7 +3,7 @@
 "
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
-let g:netrw_dirhistmax = 1
+let g:netrw_dirhistmax = 0
 let g:netrw_hide = 0
 let g:netrw_liststyle = 0
 
@@ -142,7 +142,6 @@ nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
 nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
-nnoremap <Plug>(my-Filer)d <Cmd>execute 'edit' g:my_dict_path<CR>
 nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
 nnoremap <Plug>(my-Filer)i3 <Cmd>execute 'edit' g:my_i3_path<CR>

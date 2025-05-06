@@ -178,7 +178,7 @@ win-copy:  ## copy config files for Windows
 #
 link:  ## make symbolic links
 	# dotfiles
-	mkdir -p "$${HOME}"/.cache/vim
+	ln -fs $(MF_DOTFILES_DIR)/dot.editorconfig              "$${HOME}"/.editorconfig
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
@@ -191,8 +191,6 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
-	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter "$${XDG_CONFIG_HOME}" \
-	# && cp -rf $(MF_DOTFILES_DIR)/dot.config/jupyter/* "$${PY_VENV_MYENV}"/share/jupyter
 	# OS-specific link
 	_uname="$$(uname -a)"; \
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
@@ -222,8 +220,7 @@ link:  ## make symbolic links
 
 unlink:  ## unlink symbolic links
 	# dotfiles
-	if [ -L "$${HOME}"/.vim ]; then unlink "$${HOME}"/.vim; else rm -rf "$${HOME}"/.vim; fi
-	rm -rf "$${HOME}"/.cache/vim
+	if [ -L "$${HOME}"/.editorconfig ];                 then unlink "$${HOME}"/.editorconfig; fi
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
@@ -349,8 +346,6 @@ package-mac-install:
 	&& brew install google-cloud-sdk \
 	&& brew tap databricks/tap && brew install databricks \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
-	# sudo rm -rf "$${HOME}"/.pyenv
-	# && curl https://pyenv.run | bash
 	# brew install aws-vpn-client
 	# brew install snowflake-snowsql
 
@@ -408,10 +403,6 @@ package-ubuntu-install:
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 	sudo apt-get update && sudo apt-get install -y google-cloud-cli
-	# pyenv
-	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	# sudo rm -rf "$${HOME}"/.pyenv
-	# curl https://pyenv.run | bash
 	sudo apt install -y \
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
@@ -505,35 +496,6 @@ nvim-build:  ## build Neovim
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
 	&& $(MAKE) install \
 	&& hash -r \
-
-# pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
-# 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-# 	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
-# 	&& pyenv global "$(PY_VER_PATCH)" \
-# 	&& pyenv versions \
-# 	&& python -m pip config --site set global.require-virtualenv true
-
-# pyenv-python-install-latest: pyenv-list  ## install latest Python
-# 	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
-# 	&& pyenv install "$${_py_ver_latest}" --skip-existing \
-# 	&& pyenv global "$${_py_ver_latest}" \
-# 	&& pyenv versions \
-# 	&& python -m pip config --site set global.require-virtualenv true
-
-# pyenv-list:  ## show installed Python versions
-# 	@. $(MF_DOTFILES_DIR)/dot.zshenv \
-# 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
-# 	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
-# 	&& mkdir -p "$${HOME}"/.cache \
-# 	&& echo "$${available_versions}" | tail -n +$$( \
-# 	    echo "$${available_versions}" \
-# 	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
-# 	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
-# 	&& echo "[pyenv] Installed Python versions:" \
-# 	&& pyenv versions
-
-# pyenv-update:  ## update pyenv
-# 	git -C "$${HOME}"/.pyenv pull
 
 # python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
 # 	# https://dev.classmethod.jp/articles/change-venv-python-version/

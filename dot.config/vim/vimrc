@@ -11,7 +11,7 @@ syntax off
 " Minimum setting
 "
 " Variable
-let g:netrw_home = $HOME->expand() .. '/.cache/vim'
+" let g:netrw_home = $HOME->expand() .. '/.cache/vim'
 
 " System
 set clipboard&
