@@ -295,8 +295,6 @@ package-update:
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
 	@$(MAKE) volta-update
-	@$(MAKE) pyenv-update
-	# uv self update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
@@ -304,8 +302,6 @@ package-update:
 package-common-install:  ## install common packages
 	# Deno
 	curl -fsSL https://deno.land/install.sh | sh
-	# uv
-	curl -LsSf https://astral.sh/uv/install.sh | sh
 	# Volta
 	curl https://get.volta.sh | bash
 	"$${HOME}"/.volta/bin/volta install node
@@ -352,9 +348,9 @@ package-mac-install:
 	&& brew install awscli \
 	&& brew install google-cloud-sdk \
 	&& brew tap databricks/tap && brew install databricks \
-	&& sudo rm -rf "$${HOME}"/.pyenv \
-	&& curl https://pyenv.run | bash \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
+	# sudo rm -rf "$${HOME}"/.pyenv
+	# && curl https://pyenv.run | bash
 	# brew install aws-vpn-client
 	# brew install snowflake-snowsql
 
@@ -414,8 +410,8 @@ package-ubuntu-install:
 	sudo apt-get update && sudo apt-get install -y google-cloud-cli
 	# pyenv
 	# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-	sudo rm -rf "$${HOME}"/.pyenv
-	curl https://pyenv.run | bash
+	# sudo rm -rf "$${HOME}"/.pyenv
+	# curl https://pyenv.run | bash
 	sudo apt install -y \
 	  build-essential libssl-dev zlib1g-dev \
 	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
@@ -510,34 +506,34 @@ nvim-build:  ## build Neovim
 	&& $(MAKE) install \
 	&& hash -r \
 
-pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
-	&& pyenv global "$(PY_VER_PATCH)" \
-	&& pyenv versions \
-	&& python -m pip config --site set global.require-virtualenv true
+# pyenv-python-install: pyenv-list  ## install Python (e.g. make pyenv-python-install PY_VER_PATCH=3.13.0)
+# 	. $(MF_DOTFILES_DIR)/dot.zshenv \
+# 	&& pyenv install "$(PY_VER_PATCH)" --skip-existing \
+# 	&& pyenv global "$(PY_VER_PATCH)" \
+# 	&& pyenv versions \
+# 	&& python -m pip config --site set global.require-virtualenv true
 
-pyenv-python-install-latest: pyenv-list  ## install latest Python
-	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
-	&& pyenv install "$${_py_ver_latest}" --skip-existing \
-	&& pyenv global "$${_py_ver_latest}" \
-	&& pyenv versions \
-	&& python -m pip config --site set global.require-virtualenv true
+# pyenv-python-install-latest: pyenv-list  ## install latest Python
+# 	_py_ver_latest="$$(tail -n1 "$${HOME}"/.cache/pyenv-list.txt)" \
+# 	&& pyenv install "$${_py_ver_latest}" --skip-existing \
+# 	&& pyenv global "$${_py_ver_latest}" \
+# 	&& pyenv versions \
+# 	&& python -m pip config --site set global.require-virtualenv true
 
-pyenv-list:  ## show installed Python versions
-	@. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
-	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
-	&& mkdir -p "$${HOME}"/.cache \
-	&& echo "$${available_versions}" | tail -n +$$( \
-	    echo "$${available_versions}" \
-	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
-	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
-	&& echo "[pyenv] Installed Python versions:" \
-	&& pyenv versions
+# pyenv-list:  ## show installed Python versions
+# 	@. $(MF_DOTFILES_DIR)/dot.zshenv \
+# 	&& echo "[pyenv] Installable Python "$${PY_VER_MINOR}" or newer versions:" \
+# 	&& available_versions="$$(pyenv install --list | sed 's/ //g' | grep -v '[a-zA-Z]' | sort -V)" \
+# 	&& mkdir -p "$${HOME}"/.cache \
+# 	&& echo "$${available_versions}" | tail -n +$$( \
+# 	    echo "$${available_versions}" \
+# 	    | grep -n '^'"$${PY_VER_MINOR}" | cut -f1 -d: | head -n1 \
+# 	  ) | tee "$${HOME}"/.cache/pyenv-list.txt \
+# 	&& echo "[pyenv] Installed Python versions:" \
+# 	&& pyenv versions
 
-pyenv-update:  ## update pyenv
-	git -C "$${HOME}"/.pyenv pull
+# pyenv-update:  ## update pyenv
+# 	git -C "$${HOME}"/.pyenv pull
 
 python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
 	# https://dev.classmethod.jp/articles/change-venv-python-version/
@@ -554,14 +550,6 @@ python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${
 	&& python -m pip check \
 	&& python --version \
 	&& deactivate
-
-python-venv-myenv:  ## install/update Python venv for myenv
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_MYENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-myenv.txt
-
-python-venv-dbtenv:  ## install/update Python venv for dbtenv
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& $(MAKE) python-venv VENV_PATH="$${PY_VENV_DBTENV}" REQUIREMENTS_PATH=$(MF_DOTFILES_DIR)/etc/requirements-venv-dbtenv.txt
 
 tfenv-terraform-install:  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -590,6 +578,11 @@ tfenv-list:  ## show installed Terraform versions
 tmux-init:
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	git clone https://github.com/tmux-plugins/tpm "$${XDG_CONFIG_HOME}"/tmux/plugins/tpm
+
+uv-venv-install:  ## install/update Python venv for uv (e.g. make uv-venv-install VENV_NAME=default)
+	uv venv .venv-$(VENV_NAME) \
+	&& uv pip install -p .venv-$(VENV_NAME) ".[$(VENV_NAME)]" \
+	&& uv sync
 
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \

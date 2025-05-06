@@ -44,17 +44,16 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 export NVIM_APPNAME=nvim
 
 # pyenv
-export PYENV_ROOT="${HOME}"/.pyenv
-[ -d "${PYENV_ROOT}"/bin ] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
-# https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-[ -n "$(command -v pyenv)" ] && eval "$(pyenv init --path)"
+# export PYENV_ROOT="${HOME}"/.pyenv
+# [ -d "${PYENV_ROOT}"/bin ] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
+# # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
+# [ -n "$(command -v pyenv)" ] && eval "$(pyenv init --path)"
 
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
-export PY_VER_MINOR=3.13
-export PY_VENV_MYENV="${HOME}"/.venv/myenv"${PY_VER_MINOR}"
-export PY_VENV_DBTENV="${HOME}"/.venv/dbtenv"${PY_VER_MINOR}"
+export PY_VENV_MAIN="$(dirname "$0")"/.venv-main
+export PY_VENV_DBT="$(dirname "$0")"/.venv-dbt
 
 # Rust
 [ -r "${HOME}"/.cargo/env ] && . "${HOME}"/.cargo/env

@@ -4,11 +4,6 @@
 node_modules/
 
 # dotfiles
-**/alacritty/alacritty.toml
-**/ghostty/config
-**/tmux/plugins/
-.netrwbook
-.netrwhist
 local.vim
 
 # Aider
@@ -21,7 +16,6 @@ typings/
 
 # Python
 .ipynb_checkpoints/
-.venv/
 .virtual_documents/
 
 # Terraform
