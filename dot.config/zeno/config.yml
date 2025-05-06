@@ -85,4 +85,4 @@ snippets:
       && make uv-venv-install VENV_NAME=main
       && make uv-venv-install VENV_NAME=dbt
       && uv tool install --force --python python3.12 aider-chat@latest
-      && cd -
+      && echo 'If uv.lock changed, commit it!'
