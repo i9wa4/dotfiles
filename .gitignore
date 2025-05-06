@@ -1,0 +1,8 @@
+.netrwbook
+.netrwhist
+/dot.config/alacritty/alacritty.toml
+/dot.config/ghostty/config
+
+# uv
+/build/
+/dotfiles.egg-info/

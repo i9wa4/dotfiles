@@ -1,0 +1,26 @@
+[project]
+name = "dotfiles"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.optional-dependencies]
+main = [
+  "black",
+  "flake8",
+  "isort",
+  "mcp[cli]",
+  "pynvim",
+  "python-dotenv",
+  "python-lsp-server[all]",
+  "quarto-cli",
+  "shandy-sqlfmt[jinjafmt]",
+]
+dbt = [
+  "databricks-cli",
+  "dbt-core",
+  "dbt-databricks",
+  "dbt-osmosis",
+]

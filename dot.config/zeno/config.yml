@@ -23,9 +23,9 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
-      && make python-venv-myenv
-      && make python-venv-dbtenv
-      && make pyenv-list
+      && make uv-venv-install VENV_NAME=main
+      && make uv-venv-install VENV_NAME=dbt
+      && uv tool install aider-chat@latest
       && cd -
   - name: (ghq) update
     keyword: gu
@@ -65,14 +65,14 @@ snippets:
         export _PROMPT_SAVE="${PROMPT}";
         PROMPT=$'\n'"%F{#696969}$%f ";
       fi
-  - name: (Python venv) activate myenv
+  - name: (Python venv) activate main
     keyword: pvam
     snippet:
-      . "${PY_VENV_MYENV}"/bin/activate
-  - name: (Python venv) activate dbtenv
+      . "${PY_VENV_MAIN}"/bin/activate
+  - name: (Python venv) activate dbt
     keyword: pvad
     snippet:
-      . "${PY_VENV_DBTENV}"/bin/activate
+      . "${PY_VENV_DBT}"/bin/activate
   - name: (Quarto) preview
     keyword: qp
     snippet:
