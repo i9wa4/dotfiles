@@ -497,22 +497,6 @@ nvim-build:  ## build Neovim
 	&& $(MAKE) install \
 	&& hash -r \
 
-# python-venv:  ## install/update Python venv (e.g. make python-venv VENV_PATH="${PY_VENV_MYENV}" REQUIREMENTS_PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/etc/requirements-venv-myenv.txt)
-# 	# https://dev.classmethod.jp/articles/change-venv-python-version/
-# 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-# 	&& if [ -d "$(VENV_PATH)" ]; then \
-# 	  python -m venv "$(VENV_PATH)" --clear; \
-# 	else \
-# 	  python -m venv "$(VENV_PATH)"; \
-# 	fi \
-# 	&& . "$(VENV_PATH)"/bin/activate \
-# 	&& python -m pip config --site set global.trusted-host "pypi.org pypi.python.org files.pythonhosted.org" \
-# 	&& python -m pip install --upgrade pip setuptools wheel \
-# 	&& [ -r "$(REQUIREMENTS_PATH)" ] && python -m pip install --requirement "$(REQUIREMENTS_PATH)" \
-# 	&& python -m pip check \
-# 	&& python --version \
-# 	&& deactivate
-
 tfenv-terraform-install:  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& tfenv install "$(TF_VER_PATCH)" \
