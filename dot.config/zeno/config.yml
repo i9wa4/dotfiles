@@ -23,9 +23,6 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
-      && make uv-venv-install VENV_NAME=main
-      && make uv-venv-install VENV_NAME=dbt
-      && uv tool install aider-chat@latest
       && cd -
   - name: (ghq) update
     keyword: gu
@@ -81,3 +78,11 @@ snippets:
     keyword: qr
     snippet:
       quarto render
+  - name: (uv) update
+    keyword: uu
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles
+      && make uv-venv-install VENV_NAME=main
+      && make uv-venv-install VENV_NAME=dbt
+      && uv tool install --force --python python3.12 aider-chat@latest
+      && cd -
