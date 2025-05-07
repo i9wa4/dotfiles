@@ -19,8 +19,7 @@ main = [
   "shandy-sqlfmt[jinjafmt]",
 ]
 dbt = [
-  "databricks-cli",
-  "dbt-core",
-  "dbt-databricks",
+  "dbt-core~=1.9",
+  "dbt-databricks~=1.10",
   "dbt-osmosis",
 ]
