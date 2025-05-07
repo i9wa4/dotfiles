@@ -265,6 +265,7 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-rust:
+	rustup update
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei \
 	&& cargo install --git https://github.com/astral-sh/uv uv
@@ -411,8 +412,6 @@ package-ubuntu-install:
 package-ubuntu-update:
 	sudo apt update
 	sudo apt upgrade -y
-	# Rust
-	rustup update
 
 package-ubuntu-server-install:
 	sudo apt install -y openssh-server
