@@ -82,7 +82,8 @@ snippets:
     keyword: uu
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
-      && make uv-venv-install VENV_NAME=main
-      && make uv-venv-install VENV_NAME=dbt
+      && uv lock --upgrade
+      && echo "main"    | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
+      && echo "dbt"     | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
       && uv tool install --force --python python3.12 aider-chat@latest
       && echo 'If uv.lock changed, commit it!'

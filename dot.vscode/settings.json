@@ -10,5 +10,5 @@
         "markdown": false,
         "scminput": false
     },
-    "python.analysis.extraPaths": []
+    "terminal.integrated.fontSize": 16
 }
