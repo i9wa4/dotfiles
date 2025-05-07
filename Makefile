@@ -523,11 +523,6 @@ tfenv-list:  ## show installed Terraform versions
 tmux-init:
 	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
-uv-venv-install:  ## install/update Python venv for uv (e.g. make uv-venv-install VENV_NAME=default)
-	uv venv .venv-$(VENV_NAME) \
-	&& uv pip install -p .venv-$(VENV_NAME) ".[$(VENV_NAME)]" \
-	&& uv sync
-
 vim-build:  ## build Vim
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
