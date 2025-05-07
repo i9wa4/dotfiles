@@ -521,8 +521,7 @@ tfenv-list:  ## show installed Terraform versions
 	&& tfenv list
 
 tmux-init:
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	git clone https://github.com/tmux-plugins/tpm "$${XDG_CONFIG_HOME}"/tmux/plugins/tpm
+	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 uv-venv-install:  ## install/update Python venv for uv (e.g. make uv-venv-install VENV_NAME=default)
 	uv venv .venv-$(VENV_NAME) \
