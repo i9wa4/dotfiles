@@ -20,11 +20,6 @@ let g:auto_reload = timer_start(
 call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/rc/local.default.vim')
 
 " --------------------------------------
-" EditorConfig
-"
-packadd! editorconfig
-
-" --------------------------------------
 " Option
 "
 " Edit
@@ -74,8 +69,7 @@ set cmdheight=1
 set noshowcmd
 
 " StatusLine
-" set laststatus=0
-set laststatus=2
+set laststatus=0
 set noshowmode
 
 
