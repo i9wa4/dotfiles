@@ -7,6 +7,10 @@ repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+on_event = ['VimEnter']
+
+[[plugins]]
 repo = 'monaqa/dps-dial.vim'
 depends = ['denops.vim']
 on_event = ['BufEnter']
