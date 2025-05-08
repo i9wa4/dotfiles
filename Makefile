@@ -54,7 +54,11 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 
 mac-vscode-init:
 	rm -rf "$${HOME}"/.vscode
-	rm -rf "$${HOME}"/Library/Application\ Support/Code
+	rm -rf "$${HOME}"'/Library/Application Support/Code'
+
+mac-vscode-insiders-init:
+	rm -rf "$${HOME}"/.vscode-insiders
+	rm -rf "$${HOME}"'/Library/Application Support/Code - Insiders'
 
 mac-clean:
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
