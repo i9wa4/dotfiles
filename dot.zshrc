@@ -34,8 +34,8 @@ bindkey -M menuselect '^p' up-line-or-history
 
 # History
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=1000000
+SAVEHIST=1000000
 setopt append_history
 setopt extended_history
 setopt hist_allow_clobber
