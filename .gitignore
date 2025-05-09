@@ -1,6 +1,7 @@
 .netrwbook
 .netrwhist
 /dot.config/alacritty/alacritty.toml
+/dot.config/alacritty/themes/
 /dot.config/ghostty/config
 
 # uv

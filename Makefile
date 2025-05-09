@@ -80,6 +80,8 @@ export MF_MAC_ALACRITTY
 
 mac-alacritty-init:
 	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
 define MF_MAC_GHOSTTY
 config-file = "config-common"
