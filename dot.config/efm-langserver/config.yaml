@@ -56,7 +56,7 @@ tools:
       - '%f:%l:%c: %tote: %m'
 
   sh-shfmt: &sh-shfmt
-    format-command: 'shfmt -ci -s -bn'
+    format-command: 'shfmt -ci -i 2 -s -bn'
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
