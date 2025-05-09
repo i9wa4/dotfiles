@@ -8,6 +8,10 @@ bindkey -e
 bindkey '\e[3~' delete-char
 
 
+# Alacritty
+setopt IGNORE_EOF
+
+
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -51,7 +55,7 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{#DAFFF9}%b%f %m%F{#696969}%8.8i%f"
+zstyle ':vcs_info:*' formats "%F{green}%b%f %m%F{#696969}%8.8i%f"
 zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f %m%F{#696969}%8.8i%f'
 zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git+set-message:*' hooks \
