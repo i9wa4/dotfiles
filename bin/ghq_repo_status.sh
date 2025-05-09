@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# set -o errexit
-# set -o nounset
-# set -o pipefail
-# set -o posix
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 # ghqのルートパスをスクリプト開始時に一度だけ取得
 GHQ_ROOT_RAW=$(ghq root 2>/dev/null)
@@ -25,7 +25,12 @@ get_repo_status_info() {
 
   # サブシェル内でリポジトリのディレクトリに移動して情報を取得
   (
-    cd "$repo_full_path" || return 1
+    # エラー発生時にデバッグ情報を表示しやすくするため、cd の前にパスを表示
+    # echo "DEBUG: Attempting to cd into '$repo_full_path' for repo '$repo_short_name'" >&2
+    cd "$repo_full_path" || {
+      # echo "DEBUG: Failed to cd into '$repo_full_path'" >&2
+      return 1
+    }
 
     local branch_name
     # 現在のブランチ名を取得
@@ -38,10 +43,10 @@ get_repo_status_info() {
         if [[ -n $short_hash ]]; then
           branch_name="$short_hash"
         else
-          branch_name="-"
+          branch_name="-" # detached HEAD, but no short hash
         fi
       elif [[ -z $branch_name ]]; then
-        branch_name="-"
+        branch_name="-" # Not on a branch, not detached HEAD (e.g. new repo)
       fi
     fi
 
@@ -86,24 +91,25 @@ get_repo_status_info() {
 
     # 出力行を組み立てる
     local output_line
-    # リポジトリ名を指定幅で左詰めし、その後ろにスペース、"(ブランチ名)" を続ける
-    # フィールド幅 (例: 50) は、リポジトリ名の最大長を考慮して調整してください。
     output_line=$(printf "%-50s (%s)" "$repo_short_name" "$branch_name")
 
     local joined_status=""
     if [[ ${#status_parts[@]} -gt 0 ]]; then
       joined_status="${status_parts[*]}"
-      # ステータス情報があれば、スペースを1つ挟んで出力行に追加
       output_line+=" $joined_status"
     fi
 
     echo "$output_line"
-  )
+  ) # サブシェルの終了
 }
 
 # メインループ
-while IFS= read -r repo_path_from_ghq_loop; do
+ghq list -p | while IFS= read -r repo_path_from_ghq_loop; do
   if [[ -n $repo_path_from_ghq_loop && -d "$repo_path_from_ghq_loop/.git" ]]; then
-    get_repo_status_info "$repo_path_from_ghq_loop"
+    # get_repo_status_info の呼び出しでエラーが発生してもスクリプトを止めないようにする
+    get_repo_status_info "$repo_path_from_ghq_loop" || {
+      echo "Warning: Failed to process repository '$repo_path_from_ghq_loop'" >&2
+      # このリポジトリの処理でエラーが起きても、次のリポジトリの処理は継続する
+    }
   fi
-done < <(ghq list -p)
+done
