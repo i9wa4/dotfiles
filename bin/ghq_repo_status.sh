@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-# set -o errexit
-# set -o nounset
-# set -o pipefail
-# set -o posix
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 # ghqのルートパスをスクリプト開始時に一度だけ取得
 GHQ_ROOT_RAW=$(ghq root 2>/dev/null)
-if [[ -z "$GHQ_ROOT_RAW" ]]; then
+if [[ -z $GHQ_ROOT_RAW ]]; then
   echo "Error: Could not determine ghq root. Make sure ghq is installed and configured." >&2
   exit 1
 fi
 # ghq rootのパスの末尾にスラッシュがない場合は追加（後のパス操作のため）
 GHQ_ROOT="$GHQ_ROOT_RAW"
-[[ "$GHQ_ROOT" != */ ]] && GHQ_ROOT="$GHQ_ROOT/"
-
+[[ $GHQ_ROOT != */ ]] && GHQ_ROOT="$GHQ_ROOT/"
 
 # 各リポジトリの情報を取得して表示する関数
 get_repo_status_info() {
@@ -24,7 +23,6 @@ get_repo_status_info() {
   local repo_rel_to_ghq_root="${repo_full_path#$GHQ_ROOT}"
   local repo_short_name="${repo_rel_to_ghq_root#*/}"
 
-
   # サブシェル内でリポジトリのディレクトリに移動して情報を取得
   (
     cd "$repo_full_path" || return 1
@@ -32,17 +30,17 @@ get_repo_status_info() {
     local branch_name
     # 現在のブランチ名を取得
     branch_name=$(git symbolic-ref --short HEAD 2>/dev/null)
-    if [[ -z "$branch_name" ]]; then
+    if [[ -z $branch_name ]]; then
       branch_name=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-      if [[ "$branch_name" == "HEAD" ]]; then
+      if [[ $branch_name == "HEAD" ]]; then
         local short_hash
         short_hash=$(git rev-parse --short HEAD 2>/dev/null)
-        if [[ -n "$short_hash" ]]; then
+        if [[ -n $short_hash ]]; then
           branch_name="$short_hash"
         else
           branch_name="-"
         fi
-      elif [[ -z "$branch_name" ]]; then
+      elif [[ -z $branch_name ]]; then
         branch_name="-"
       fi
     fi
@@ -52,7 +50,7 @@ get_repo_status_info() {
     # ?x: Untracked files
     local untracked_count
     untracked_count=$(git status --porcelain=v1 2>/dev/null | grep -c "^??")
-    if [[ "$untracked_count" -gt 0 ]]; then
+    if [[ $untracked_count -gt 0 ]]; then
       status_parts+=("?${untracked_count}")
     fi
 
@@ -61,7 +59,7 @@ get_repo_status_info() {
     unstaged_files_count_raw=$(git diff --name-only 2>/dev/null | wc -l)
     local unstaged_files_count
     unstaged_files_count=$(echo "$unstaged_files_count_raw" | tr -d '[:space:]')
-    if [[ "$unstaged_files_count" -gt 0 ]]; then
+    if [[ $unstaged_files_count -gt 0 ]]; then
       status_parts+=("~${unstaged_files_count}")
     fi
 
@@ -71,18 +69,18 @@ get_repo_status_info() {
     local insertions_unstaged=0
     local deletions_unstaged=0
 
-    if [[ "$shortstat_unstaged" =~ ([0-9]+)\ insertion(s)?\(\+\) ]]; then
+    if [[ $shortstat_unstaged =~ ([0-9]+)\ insertion(s)?\(\+\) ]]; then
       insertions_unstaged="${BASH_REMATCH[1]}"
     fi
 
-    if [[ "$shortstat_unstaged" =~ ([0-9]+)\ deletion(s)?\(\-\) ]]; then
+    if [[ $shortstat_unstaged =~ ([0-9]+)\ deletion(s)?\(\-\) ]]; then
       deletions_unstaged="${BASH_REMATCH[1]}"
     fi
 
-    if [[ "$insertions_unstaged" -gt 0 ]]; then
+    if [[ $insertions_unstaged -gt 0 ]]; then
       status_parts+=("+${insertions_unstaged}")
     fi
-    if [[ "$deletions_unstaged" -gt 0 ]]; then
+    if [[ $deletions_unstaged -gt 0 ]]; then
       status_parts+=("-${deletions_unstaged}")
     fi
 
@@ -105,7 +103,7 @@ get_repo_status_info() {
 
 # メインループ
 while IFS= read -r repo_path_from_ghq_loop; do
-  if [[ -n "$repo_path_from_ghq_loop" && -d "$repo_path_from_ghq_loop/.git" ]]; then
+  if [[ -n $repo_path_from_ghq_loop && -d "$repo_path_from_ghq_loop/.git" ]]; then
     get_repo_status_info "$repo_path_from_ghq_loop"
   fi
 done < <(ghq list -p)
