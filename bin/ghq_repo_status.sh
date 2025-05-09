@@ -32,54 +32,54 @@ get_repo_status_info() {
       return 1
     }
 
-  local branch_name
-  # 現在のブランチ名を取得
-  branch_name=$(git symbolic-ref --short HEAD 2>/dev/null)
-  if [[ -z "$branch_name" ]]; then # 通常のブランチ名が取得できなかった場合 (デタッチドHEADなど)
-   # まず、現在のコミットに完全に一致するタグがあるか試す
-   local exact_tag
-   exact_tag=$(git describe --tags --exact-match HEAD 2>/dev/null)
+    local branch_name
+    # 現在のブランチ名を取得
+    branch_name=$(git symbolic-ref --short HEAD 2>/dev/null)
+    if [[ -z $branch_name ]]; then # 通常のブランチ名が取得できなかった場合 (デタッチドHEADなど)
+      # まず、現在のコミットに完全に一致するタグがあるか試す
+      local exact_tag
+      exact_tag=$(git describe --tags --exact-match HEAD 2>/dev/null)
 
-   if [[ -n "$exact_tag" ]]; then
-    branch_name="$exact_tag"
-   else
-    # 一致するタグがない場合、最も近いタグからの説明を試す
-    local described_state
-    described_state=$(git describe --tags HEAD 2>/dev/null)
-    if [[ -n "$described_state" ]]; then
-     branch_name="$described_state"
-    else
-     # タグ情報も得られない場合は、コミットハッシュの短縮形
-     local short_hash
-     short_hash=$(git rev-parse --short HEAD 2>/dev/null)
-     if [[ -n "$short_hash" ]]; then
-      branch_name="$short_hash"
-     else
-      branch_name="-" # 何らかの理由で情報が取れない場合
-     fi
+      if [[ -n $exact_tag ]]; then
+        branch_name="$exact_tag"
+      else
+        # 一致するタグがない場合、最も近いタグからの説明を試す
+        local described_state
+        described_state=$(git describe --tags HEAD 2>/dev/null)
+        if [[ -n $described_state ]]; then
+          branch_name="$described_state"
+        else
+          # タグ情報も得られない場合は、コミットハッシュの短縮形
+          local short_hash
+          short_hash=$(git rev-parse --short HEAD 2>/dev/null)
+          if [[ -n $short_hash ]]; then
+            branch_name="$short_hash"
+          else
+            branch_name="-" # 何らかの理由で情報が取れない場合
+          fi
+        fi
+      fi
+      # もし git symbolic-ref も git describe も git rev-parse も失敗するような状況 (例: .git ディレクトリがない、など)
+      # の場合は、ここでさらにフォールバックが必要かもしれないが、通常は上記でカバーされる
+      if [[ -z $branch_name ]]; then # まだ branch_name が空なら (非常に稀なケース)
+        local rev_parse_abbrev_ref
+        rev_parse_abbrev_ref=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+        if [[ -n $rev_parse_abbrev_ref && $rev_parse_abbrev_ref != "HEAD" ]]; then
+          branch_name="$rev_parse_abbrev_ref"
+        elif [[ -n $rev_parse_abbrev_ref && $rev_parse_abbrev_ref == "HEAD" ]]; then
+          # HEAD の場合、再度 short_hash を試みる (上のロジックでカバーされているはずだが念のため)
+          local fallback_short_hash
+          fallback_short_hash=$(git rev-parse --short HEAD 2>/dev/null)
+          if [[ -n $fallback_short_hash ]]; then
+            branch_name="$fallback_short_hash"
+          else
+            branch_name="-"
+          fi
+        else
+          branch_name="-" # Not on a branch, not detached HEAD (e.g. new repo, or error)
+        fi
+      fi
     fi
-   fi
-   # もし git symbolic-ref も git describe も git rev-parse も失敗するような状況 (例: .git ディレクトリがない、など)
-   # の場合は、ここでさらにフォールバックが必要かもしれないが、通常は上記でカバーされる
-   if [[ -z "$branch_name" ]]; then # まだ branch_name が空なら (非常に稀なケース)
-    local rev_parse_abbrev_ref
-    rev_parse_abbrev_ref=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [[ -n "$rev_parse_abbrev_ref" && "$rev_parse_abbrev_ref" != "HEAD" ]]; then
-     branch_name="$rev_parse_abbrev_ref"
-    elif [[ -n "$rev_parse_abbrev_ref" && "$rev_parse_abbrev_ref" == "HEAD" ]]; then
-     # HEAD の場合、再度 short_hash を試みる (上のロジックでカバーされているはずだが念のため)
-     local fallback_short_hash
-     fallback_short_hash=$(git rev-parse --short HEAD 2>/dev/null)
-     if [[ -n "$fallback_short_hash" ]]; then
-      branch_name="$fallback_short_hash"
-     else
-      branch_name="-"
-     fi
-    else
-     branch_name="-" # Not on a branch, not detached HEAD (e.g. new repo, or error)
-    fi
-   fi
-  fi
 
     local status_parts=() # ステータス情報 (?x, ~yなど) を格納する配列
 
