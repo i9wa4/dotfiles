@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-set -o posix
+# set -o errexit
+# set -o nounset
+# set -o pipefail
+# set -o posix
 
 # ghqのルートパスをスクリプト開始時に一度だけ取得
 GHQ_ROOT_RAW=$(ghq root 2>/dev/null)
