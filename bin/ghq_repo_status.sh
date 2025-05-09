@@ -122,7 +122,7 @@ get_repo_status_info() {
 
     # 出力行を組み立てる
     local output_line
-    output_line=$(printf "%-50s (%s)" "$repo_short_name" "$branch_name")
+    output_line=$(printf "%-40s (%s)" "$repo_short_name" "$branch_name")
 
     local joined_status=""
     if [[ ${#status_parts[@]} -gt 0 ]]; then
