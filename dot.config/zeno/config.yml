@@ -23,6 +23,7 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
+      && bash bin/ghq_repo_status.sh
       && cd -
   - name: (ghq) update
     keyword: gu
