@@ -47,6 +47,10 @@ snippets:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
     context:
       lbuffer: '^git\s'
+  - name: (Git) status
+    keyword: gs
+    snippet:
+      bash ~/ghq/github.com/i9wa4/dotfiles/bin/ghq_repo_status.sh
   - name: (gh) repo view --web
     keyword: r
     snippet:
