@@ -134,6 +134,7 @@ nnoremap <Plug>(my-Edit) <Nop>
 nmap <Space>e <Plug>(my-Edit)
 nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
 nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
+nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
 
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
