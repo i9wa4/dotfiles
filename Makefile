@@ -61,7 +61,7 @@ mac-vscode-insiders-init:
 	rm -rf "$${HOME}"'/Library/Application Support/Code - Insiders'
 
 mac-clean:
-	fd ".DS_Store" "$${HOME}" --hidden --no-ignore --exclude "Library/**" | xargs -t rm -f
+	fd ".DS_Store" $(MF_GITHUB_DIR) --hidden --no-ignore | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
 	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
 
