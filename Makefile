@@ -492,15 +492,16 @@ git-init:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 nvim-build:  ## build Neovim
+	# $(MAKE) distclean
+	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
-	&& git checkout refs/tags/stable \
-	&& $(MAKE) distclean \
+	&& git fetch --all \
+	&& git restore . \
+	&& git switch refs/tags/nightly --detach \
 	&& $(MAKE) \
-	  BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF' \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
-	&& $(MAKE) install \
-	&& hash -r \
+	&& $(MAKE) install
 
 tfenv-terraform-install:  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -530,6 +531,7 @@ tmux-init:
 	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 vim-build:  ## build Vim
+	# && $(MAKE) distclean
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
@@ -547,9 +549,10 @@ vim-build:  ## build Vim
 	else \
 	  echo 'Which OS are you using?'; \
 	fi \
-	&& cd $(MF_GITHUB_DIR)/vim/vim/src \
-	&& git checkout master \
-	&& $(MAKE) distclean \
+	&& cd $(MF_GITHUB_DIR)/vim/vim \
+	&& git restore . \
+	&& git switch master \
+	&& cd src \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
@@ -559,8 +562,7 @@ vim-build:  ## build Vim
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
 	&& $(MAKE) \
-	&& $(MAKE) install \
-	&& hash -r \
+	&& $(MAKE) install
 
 volta-update:
 	curl https://get.volta.sh | bash
