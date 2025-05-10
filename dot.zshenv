@@ -24,11 +24,11 @@ export AWS_PROFILE=
 export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Deno
-export DENO_TLS_CA_STORE='system'
+# export DENO_TLS_CA_STORE='system'
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
-export DENO_NO_UPDATE_CHECK=1
-export DENO_VER_PATCH=2.2.6
+# export DENO_NO_UPDATE_CHECK=1
+export DENO_VER_PATCH=2.3.1
 
 # fzf
 export FZF_DEFAULT_OPTS='--reverse'
@@ -52,8 +52,6 @@ export NVIM_APPNAME=nvim
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
-export PY_VENV_MAIN="$(dirname "$0")"/.venv-main
-export PY_VENV_DBT="$(dirname "$0")"/.venv-dbt
 
 # Rust
 [ -r "${HOME}"/.cargo/env ] && . "${HOME}"/.cargo/env
