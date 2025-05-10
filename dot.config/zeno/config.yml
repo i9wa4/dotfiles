@@ -70,11 +70,11 @@ snippets:
   - name: (Python venv) activate main
     keyword: pvam
     snippet:
-      . "${PY_VENV_MAIN}"/bin/activate
+      . ~/ghq/github.com/i9wa4/dotfiles/.venv-main/bin/activate
   - name: (Python venv) activate dbt
     keyword: pvad
     snippet:
-      . "${PY_VENV_DBT}"/bin/activate
+      . ~/ghq/github.com/i9wa4/dotfiles/.venv-dbt/bin/activate
   - name: (Quarto) preview
     keyword: qp
     snippet:
