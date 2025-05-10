@@ -68,7 +68,6 @@ export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 # export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 
 # Common
-export EDITOR=vim
 export VISUAL=vim
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="${PATH}":/snap/bin
