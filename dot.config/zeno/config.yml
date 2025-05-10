@@ -23,6 +23,8 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
+      && uv python install "${PY_VER_MINOR}"
+      && uv tool install --force --python python3.12 aider-chat@latest
       && bash bin/ghq_repo_status.sh
       && cd -
   - name: (ghq) update
@@ -67,14 +69,10 @@ snippets:
         export _PROMPT_SAVE="${PROMPT}";
         PROMPT=$'\n'"%F{#696969}$%f ";
       fi
-  - name: (Python venv) activate main
-    keyword: pvam
+  - name: (Python venv) activate
+    keyword: pva
     snippet:
-      . ~/ghq/github.com/i9wa4/dotfiles/.venv-main/bin/activate
-  - name: (Python venv) activate dbt
-    keyword: pvad
-    snippet:
-      . ~/ghq/github.com/i9wa4/dotfiles/.venv-dbt/bin/activate
+      . ~/ghq/github.com/i9wa4/dotfiles/.venv-{{}}/bin/activate
   - name: (Quarto) preview
     keyword: qp
     snippet:
@@ -88,7 +86,4 @@ snippets:
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
       && uv lock --upgrade
-      && echo "main"    | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
-      && echo "dbt"     | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
-      && uv tool install --force --python python3.12 aider-chat@latest
-      && echo 'If uv.lock changed, commit it!'
+      && echo "{{}}" | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
