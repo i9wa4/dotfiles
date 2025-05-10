@@ -52,6 +52,7 @@ export NVIM_APPNAME=nvim
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
+export PY_VER_MINOR=3.13
 
 # Rust
 [ -r "${HOME}"/.cargo/env ] && . "${HOME}"/.cargo/env
