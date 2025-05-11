@@ -18,10 +18,5 @@ typings/
 .ipynb_checkpoints/
 .virtual_documents/
 
-# Terraform
-.terraform.lock.hcl
-terraform.exe
-terraform.tfstate
-
 # VS Code
 .vscode/
