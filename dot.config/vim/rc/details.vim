@@ -77,7 +77,6 @@ set noshowmode
 set showtabline=2
 
 " Highlight
-set colorcolumn=""
 set cursorcolumn
 set cursorline
 set diffopt=internal,filler,algorithm:histogram,indent-heuristic
