@@ -53,6 +53,9 @@ function! my_highlight#highlight() abort
   highlight clear CursorLine
   highlight CursorLine guibg=#404040
 
+  " colorcolumn
+  highlight clear ColorColumn
+
   " transparent background
   " highlight TabLine guibg=NONE
   " highlight TabLineFill guibg=NONE
