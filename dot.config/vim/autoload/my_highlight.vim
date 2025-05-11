@@ -66,4 +66,6 @@ function! my_highlight#highlight() abort
   highlight StatusLine guibg=NONE
   highlight StatusLineNC guibg=NONE
   highlight VertSplit guibg=NONE
+  highlight TabLine guibg=NONE guifg=white
+  highlight TabLineFill guibg=NONE guifg=white
 endfunction
