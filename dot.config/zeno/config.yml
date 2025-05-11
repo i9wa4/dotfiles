@@ -26,10 +26,12 @@ snippets:
       && uv tool install --force --python python3.12 aider-chat@latest
       && bash bin/ghq_repo_status.sh
       && cd -
-  - name: (ghq) update
-    keyword: gu
+  - name: (gh) repo view --web
+    keyword: r
     snippet:
-      ghq list | ghq get --update --parallel
+      repo view --web
+    context:
+      lbuffer: '^gh\s'
   - name: (Git) delete merged branches
     keyword: dm
     snippet:
@@ -52,12 +54,6 @@ snippets:
     keyword: gs
     snippet:
       bash ~/ghq/github.com/i9wa4/dotfiles/bin/ghq_repo_status.sh
-  - name: (gh) repo view --web
-    keyword: r
-    snippet:
-      repo view --web
-    context:
-      lbuffer: '^gh\s'
   - name: (Prompt) toggle
     keyword: pt
     snippet:
@@ -68,10 +64,6 @@ snippets:
         export _PROMPT_SAVE="${PROMPT}";
         PROMPT=$'\n'"%F{#696969}$%f ";
       fi
-  - name: (Python venv) activate
-    keyword: pva
-    snippet:
-      . ~/ghq/github.com/i9wa4/dotfiles/.venv-{{}}/bin/activate
   - name: (Quarto) preview
     keyword: qp
     snippet:
@@ -80,6 +72,10 @@ snippets:
     keyword: qr
     snippet:
       quarto render
+  - name: (uv) activate
+    keyword: ua
+    snippet:
+      . ~/ghq/github.com/i9wa4/dotfiles/.venv-{{}}/bin/activate
   - name: (uv) update
     keyword: uu
     snippet:
