@@ -54,6 +54,8 @@ function! my_highlight#highlight() abort
   highlight CursorLine guibg=#404040
 
   " transparent background
+  " highlight TabLine guibg=NONE
+  " highlight TabLineFill guibg=NONE
   highlight EndOfBuffer guibg=NONE
   highlight Folded guibg=NONE
   highlight Identifier guibg=NONE
@@ -61,5 +63,7 @@ function! my_highlight#highlight() abort
   highlight NonText guibg=NONE
   highlight Normal guibg=NONE
   highlight Special guibg=NONE
+  highlight StatusLine guibg=NONE
+  highlight StatusLineNC guibg=NONE
   highlight VertSplit guibg=NONE
 endfunction
