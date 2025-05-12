@@ -273,8 +273,8 @@ package-go:
 package-rust:
 	rustup update
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& cargo install --git https://github.com/XAMPPRocky/tokei.git tokei \
-	&& cargo install --git https://github.com/astral-sh/uv uv
+	&& cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei \
+	&& cargo install --locked --git https://github.com/astral-sh/uv uv
 
 package-update:
 	# OS-specific update
