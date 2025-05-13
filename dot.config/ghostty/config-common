@@ -8,3 +8,5 @@ font-feature = "-dlig"
 font-feature = "-liga"
 
 term = "xterm-256color"
+
+background-opacity = 0.80
