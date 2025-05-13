@@ -41,13 +41,13 @@ snippets:
   - name: (Git) graph
     keyword: lo
     snippet:
-      log --graph --name-status --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'
+      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status
     context:
       lbuffer: '^git\s'
   - name: (Git) graph --all
     keyword: la
     snippet:
-      log --graph --name-status --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --all
+      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
     context:
       lbuffer: '^git\s'
   - name: (Git) status
