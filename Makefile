@@ -500,7 +500,7 @@ nvim-build:  ## build Neovim
 	&& git fetch --all \
 	&& git restore . \
 	&& git switch refs/tags/nightly --detach \
-	&& $(MAKE) distclean
+	&& $(MAKE) distclean \
 	&& $(MAKE) \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
