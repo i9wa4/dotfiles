@@ -57,8 +57,8 @@ function! my_highlight#highlight() abort
   highlight clear ColorColumn
 
   " transparent background
-  " highlight TabLine guibg=NONE
-  " highlight TabLineFill guibg=NONE
+  " highlight TabLine guibg=NONE guifg=white
+  " highlight TabLineFill guibg=NONE guifg=white
   highlight EndOfBuffer guibg=NONE
   highlight Folded guibg=NONE
   highlight Identifier guibg=NONE
@@ -69,6 +69,4 @@ function! my_highlight#highlight() abort
   highlight StatusLine guibg=NONE
   highlight StatusLineNC guibg=NONE
   highlight VertSplit guibg=NONE
-  highlight TabLine guibg=NONE guifg=white
-  highlight TabLineFill guibg=NONE guifg=white
 endfunction
