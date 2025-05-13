@@ -495,12 +495,12 @@ git-init:
 	git config --global user.signingkey ~/.ssh/github.pub
 
 nvim-build:  ## build Neovim
-	# $(MAKE) distclean
 	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
 	&& git fetch --all \
 	&& git restore . \
 	&& git switch refs/tags/nightly --detach \
+	&& $(MAKE) distclean
 	&& $(MAKE) \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
@@ -534,7 +534,6 @@ tmux-init:
 	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 vim-build:  ## build Vim
-	# && $(MAKE) distclean
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
@@ -556,6 +555,7 @@ vim-build:  ## build Vim
 	&& git restore . \
 	&& git switch master \
 	&& cd src \
+	&& $(MAKE) distclean \
 	&& ./configure \
 	  --disable-gui \
 	  --enable-fail-if-missing \
