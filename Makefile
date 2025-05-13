@@ -273,8 +273,7 @@ package-go:
 package-rust:
 	rustup update
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei \
-	&& cargo install --locked --git https://github.com/astral-sh/uv uv
+	&& cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
 
 package-update:
 	# OS-specific update
@@ -302,10 +301,14 @@ package-update:
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
+	# uv
+	uv self update
 
 package-common-install:  ## install common packages
 	# Deno
 	curl -fsSL https://deno.land/install.sh | sh
+	# uv
+	curl -LsSf https://astral.sh/uv/install.sh | sh
 	# Volta
 	curl https://get.volta.sh | bash
 	"$${HOME}"/.volta/bin/volta install node
