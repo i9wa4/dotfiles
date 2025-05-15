@@ -12,6 +12,8 @@ main = [
   "flake8",
   "isort",
   "mcp[cli]",
+  "numpy",
+  "pandas",
   "pynvim",
   "python-dotenv",
   "python-lsp-server[all]",
