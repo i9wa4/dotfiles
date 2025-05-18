@@ -342,6 +342,7 @@ package-mac-install:
 	  grep \
 	  hadolint \
 	  jq \
+	  make \
 	  nvim \
 	  pre-commit \
 	  ripgrep \
