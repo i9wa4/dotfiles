@@ -332,7 +332,6 @@ package-mac-install:
 	  google-chrome \
 	  google-drive \
 	  nikitabobko/tap/aerospace \
-	  rectangle \
 	  visual-studio-code \
 	  zoom \
 	&& brew install \
