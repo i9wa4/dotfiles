@@ -353,6 +353,7 @@ package-mac-install:
 	  vim \
 	  wget \
 	  zsh \
+	&& brew tap jameswoolfenden/homebrew-tap && bres install jameswoolfenden/tap/pike \
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
