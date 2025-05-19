@@ -334,6 +334,7 @@ package-mac-install:
 	  nikitabobko/tap/aerospace \
 	  visual-studio-code \
 	  zoom \
+	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
 	  fd \
 	  fzf \
