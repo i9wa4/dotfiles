@@ -328,6 +328,7 @@ package-mac-install:
 	  cursor \
 	  docker \
 	  font-myricam \
+	  font-noto-sans-jp \
 	  ghostty \
 	  google-chrome \
 	  google-drive \
