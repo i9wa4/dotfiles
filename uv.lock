@@ -376,28 +376,30 @@ pyarrow = [
 
 [[package]]
 name = "dbt-adapters"
-version = "1.14.8"
+version = "1.15.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agate" },
     { name = "dbt-common" },
+    { name = "dbt-protos" },
     { name = "mashumaro", extra = ["msgpack"] },
     { name = "protobuf" },
     { name = "pytz" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/08/c6/f225a96ae4328c313c7e62f3c3cd59fdd5a87507360f465ea58d4b0f9c35/dbt_adapters-1.14.8.tar.gz", hash = "sha256:968c283f9372e6439b28cbac71e71252ea905c6ec6c440e56e9f074242e27c17", size = 134052, upload-time = "2025-04-25T23:29:23.674Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/b0/b4084abbe0c2347e40e9b4308a9023e1a7a4a27a1639cd73f4a8053f351f/dbt_adapters-1.15.3.tar.gz", hash = "sha256:76cf5757b107ae27292ef2a9f50aeea7182aca2f95da50d85da2791dd459a11e", size = 128801, upload-time = "2025-05-20T16:18:31.083Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/31/4e3f80f4289f354db876514d7aa7dd33234298484be51884a3f6cf0db34f/dbt_adapters-1.14.8-py3-none-any.whl", hash = "sha256:3c3a4873c87832b9b17308c33afd3458530d3778c025b0eb609e4bdd9846440b", size = 172754, upload-time = "2025-04-25T23:29:21.49Z" },
+    { url = "https://files.pythonhosted.org/packages/09/93/bd887b22fdf91b129edfa14c2524c80179428058e5fb7797cc02ed9e6817/dbt_adapters-1.15.3-py3-none-any.whl", hash = "sha256:8419db1ccb19de28791350aa17e96724ab5b73748e755e8ac73e5bc05c0150fc", size = 166278, upload-time = "2025-05-20T16:18:29.299Z" },
 ]
 
 [[package]]
 name = "dbt-common"
-version = "1.24.0"
+version = "1.25.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agate" },
     { name = "colorama" },
+    { name = "dbt-protos" },
     { name = "deepdiff" },
     { name = "isodate" },
     { name = "jinja2" },
@@ -409,9 +411,9 @@ dependencies = [
     { name = "requests" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/4d/049d86537b36390263d15654ec7f227ac4733b0765816ff26fe95cb74535/dbt_common-1.24.0.tar.gz", hash = "sha256:f160d859cca81192d62ef74120a21c7be9a2fc36dac7860eb72696b8b006a2b8", size = 85867, upload-time = "2025-05-09T18:08:38.678Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/1c/6837f98b328da87f96624135dcb785e25ebe2ba0f7f764308fee61d46f02/dbt_common-1.25.0.tar.gz", hash = "sha256:b65097b624e9833762a7892a6054fc6d75618bd4f7e58c6859468cefc859d40b", size = 83679, upload-time = "2025-05-20T16:11:21.599Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2b/9a/acf04c254873fdd59db129577dd798a9641b00cd36706183664c9bce1e0e/dbt_common-1.24.0-py3-none-any.whl", hash = "sha256:8b39e2a84ac32638d680b5371069df16383629ddba57bb3f66544b6cf9276052", size = 88461, upload-time = "2025-05-09T18:08:36.95Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/04/6bf085ef439300fca6cc72b5e81b55de7fc0709155f4715f725a270feb41/dbt_common-1.25.0-py3-none-any.whl", hash = "sha256:857a206efccbe9754787f2b9baa9040ba1f1ddfd04168440224d3864e943251e", size = 85951, upload-time = "2025-05-20T16:11:20.17Z" },
 ]
 
 [[package]]
@@ -501,6 +503,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ec/34/fbd6ba89a9dba15268fa95e35d0b473cc8229df702bdd456d71af28ae77f/dbt_osmosis-1.1.17.tar.gz", hash = "sha256:0d332e18157b4f7a5c5347ead800779a5615a9ce7384726b9298433f21123e4f", size = 2795781, upload-time = "2025-04-23T22:49:51.657Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/0a/e1750acdb5a7a2665994423607558a6b9d703aa181aa9e1efb34ca3cf891/dbt_osmosis-1.1.17-py3-none-any.whl", hash = "sha256:bfe3a53e6f633836eb0c09923aa244037f0416c568bb5c42047128b0cef42183", size = 55961, upload-time = "2025-04-23T22:49:49.356Z" },
+]
+
+[[package]]
+name = "dbt-protos"
+version = "1.0.305"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/20/2d/630427059bc56dc9cd0b2d6ec4acddf13be12bd917b84ac3c405ab2c5a85/dbt_protos-1.0.305.tar.gz", hash = "sha256:540be5a7b9126d3420450b48dc8e7b3fe7fe5eb9047a1cb6ec1a1fe8809cd677", size = 65971, upload-time = "2025-05-20T17:20:53.855Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3c/e1/c0f227a6472173db2d67543fab61e60ebc822931e17ff0169f017f6bec6a/dbt_protos-1.0.305-py3-none-any.whl", hash = "sha256:24dad5ff5348286994a24486894928de5b1dffa7cb5e0a8bac7a502b1efc1cc3", size = 75918, upload-time = "2025-05-20T17:20:52.448Z" },
 ]
 
 [[package]]
@@ -2334,11 +2348,11 @@ wheels = [
 
 [[package]]
 name = "setuptools"
-version = "80.7.1"
+version = "80.8.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9e/8b/dc1773e8e5d07fd27c1632c45c1de856ac3dbf09c0147f782ca6d990cf15/setuptools-80.7.1.tar.gz", hash = "sha256:f6ffc5f0142b1bd8d0ca94ee91b30c0ca862ffd50826da1ea85258a06fd94552", size = 1319188, upload-time = "2025-05-15T02:41:00.955Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/d2/ec1acaaff45caed5c2dedb33b67055ba9d4e96b091094df90762e60135fe/setuptools-80.8.0.tar.gz", hash = "sha256:49f7af965996f26d43c8ae34539c8d99c5042fbff34302ea151eaa9c207cd257", size = 1319720, upload-time = "2025-05-20T14:02:53.503Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/18/0e835c3a557dc5faffc8f91092f62fc337c1dab1066715842e7a4b318ec4/setuptools-80.7.1-py3-none-any.whl", hash = "sha256:ca5cc1069b85dc23070a6628e6bcecb3292acac802399c7f8edc0100619f9009", size = 1200776, upload-time = "2025-05-15T02:40:58.887Z" },
+    { url = "https://files.pythonhosted.org/packages/58/29/93c53c098d301132196c3238c312825324740851d77a8500a2462c0fd888/setuptools-80.8.0-py3-none-any.whl", hash = "sha256:95a60484590d24103af13b686121328cc2736bee85de8936383111e421b9edc0", size = 1201470, upload-time = "2025-05-20T14:02:51.348Z" },
 ]
 
 [[package]]
