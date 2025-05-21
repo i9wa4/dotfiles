@@ -334,6 +334,7 @@ package-mac-install:
 	  google-drive \
 	  nikitabobko/tap/aerospace \
 	  visual-studio-code \
+	  visual-studio-code@insiders \
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
