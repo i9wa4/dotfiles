@@ -319,6 +319,8 @@ package-common-install:  ## install common packages
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	# ghostty
+	# visual-studio-code@insiders
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -329,12 +331,10 @@ package-mac-install:
 	  docker \
 	  font-myricam \
 	  font-noto-sans-jp \
-	  ghostty \
 	  google-chrome \
 	  google-drive \
 	  nikitabobko/tap/aerospace \
 	  visual-studio-code \
-	  visual-studio-code@insiders \
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
