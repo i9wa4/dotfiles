@@ -24,7 +24,6 @@ export AWS_PROFILE=
 export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Deno
-# export DENO_TLS_CA_STORE='system'
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 # export DENO_NO_UPDATE_CHECK=1
@@ -43,12 +42,6 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 # Neovim
 export NVIM_APPNAME=nvim
 
-# pyenv
-# export PYENV_ROOT="${HOME}"/.pyenv
-# [ -d "${PYENV_ROOT}"/bin ] && export PATH="${PYENV_ROOT}"/bin:"${PATH}"
-# # https://github.com/pyenv/pyenv?tab=readme-ov-file#set-up-your-shell-environment-for-pyenv
-# [ -n "$(command -v pyenv)" ] && eval "$(pyenv init --path)"
-
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
@@ -63,9 +56,6 @@ export TF_VER_MINOR=1.11
 # Volta
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
-
-# zeno.zsh
-# export ZENO_DISABLE_TMUX_SESSION_RENAME=1
 
 # Common
 export VISUAL=vim
