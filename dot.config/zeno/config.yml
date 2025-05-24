@@ -79,6 +79,9 @@ snippets:
   - name: (uv) update
     keyword: uu
     snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && uv lock --upgrade
-      && echo "{{}}" | xargs -I{} sh -c 'uv venv .venv-{} && uv pip install -p .venv-{} ".[{}]" && uv sync'
+      cd ~/ghq/github.com/i9wa4/dotfiles &&
+      echo "{{}}" | xargs -I{} sh -c '
+        uv venv ".venv-{}" &&
+        uv pip compile pyproject.toml --extra "{}" -o "requirements-{}.txt" --upgrade &&
+        uv pip install --python ".venv-{}/bin/python" --requirement "requirements-{}.txt"
+      '
