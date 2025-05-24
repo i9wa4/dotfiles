@@ -25,7 +25,7 @@ let g:my_temp_md_path = $HOME->expand() .. '/str/src/temp.md'
 "\ ])
 
 " Python
-call my_util#add_python_venv('~/ghq/github.com/i9wa4/dotfiles/.venv-main')
+call my_util#add_python_venv('~/ghq/github.com/i9wa4/dotfiles/.venv.main')
 
 " Denops Plugin Development
 let g:denops#debug = 1
