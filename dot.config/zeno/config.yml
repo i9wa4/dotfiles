@@ -75,7 +75,7 @@ snippets:
   - name: (uv) activate
     keyword: ua
     snippet:
-      . ~/ghq/github.com/i9wa4/dotfiles/.venv-{{}}/bin/activate
+      . ~/ghq/github.com/i9wa4/dotfiles/.venv.{{}}/bin/activate
   - name: (uv) update
     keyword: uu
     snippet:
