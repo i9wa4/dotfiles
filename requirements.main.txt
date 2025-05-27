@@ -9,8 +9,6 @@ anyio==4.9.0
     #   mcp
     #   sse-starlette
     #   starlette
-appnope==0.1.4
-    # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -135,7 +133,7 @@ json5==0.12.0
     # via jupyterlab-server
 jsonpointer==3.0.0
     # via jsonschema
-jsonschema==4.23.0
+jsonschema==4.24.0
     # via
     #   jupyter-events
     #   jupyterlab-server
@@ -152,7 +150,7 @@ jupyter-client==8.6.3
     #   nbclient
 jupyter-console==6.6.3
     # via jupyter
-jupyter-core==5.7.2
+jupyter-core==5.8.1
     # via
     #   ipykernel
     #   jupyter-client
@@ -175,7 +173,7 @@ jupyter-server==2.16.0
     #   notebook-shim
 jupyter-server-terminals==0.5.3
     # via jupyter-server
-jupyterlab==4.4.2
+jupyterlab==4.4.3
     # via
     #   jupyter
     #   notebook
@@ -227,7 +225,7 @@ nbformat==5.10.4
     #   nbconvert
 nest-asyncio==1.6.0
     # via ipykernel
-notebook==7.4.2
+notebook==7.4.3
     # via jupyter
 notebook-shim==0.2.4
     # via
@@ -372,7 +370,7 @@ rpds-py==0.25.1
     #   referencing
 send2trash==1.8.3
     # via jupyter-server
-setuptools==80.8.0
+setuptools==80.9.0
     # via jupyterlab
 shandy-sqlfmt==0.26.0
     # via dotfiles (pyproject.toml)
@@ -430,7 +428,7 @@ traitlets==5.14.3
     #   nbclient
     #   nbconvert
     #   nbformat
-typer==0.15.3
+typer==0.16.0
     # via mcp
 types-python-dateutil==2.9.0.20250516
     # via arrow
@@ -476,5 +474,5 @@ widgetsnbextension==4.0.14
     # via ipywidgets
 yapf==0.43.0
     # via python-lsp-server
-zipp==3.21.0
+zipp==3.22.0
     # via importlib-metadata

@@ -17,6 +17,8 @@ cachetools==5.5.2
     # via google-auth
 certifi==2025.4.26
     # via requests
+cffi==1.17.1
+    # via cryptography
 charset-normalizer==3.4.2
     # via requests
 click==8.2.1
@@ -26,6 +28,8 @@ click==8.2.1
     #   dbt-semantic-interfaces
 colorama==0.4.6
     # via dbt-common
+cryptography==45.0.3
+    # via secretstorage
 daff==1.4.2
     # via dbt-core
 databricks-sdk==0.47.0
@@ -83,12 +87,16 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
+jeepney==0.9.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.6
     # via
     #   dbt-common
     #   dbt-core
     #   dbt-semantic-interfaces
-jsonschema==4.23.0
+jsonschema==4.24.0
     # via
     #   dbt-common
     #   dbt-semantic-interfaces
@@ -156,6 +164,8 @@ pyasn1==0.6.1
     #   rsa
 pyasn1-modules==0.4.2
     # via google-auth
+pycparser==2.22
+    # via cffi
 pydantic==2.11.5
     # via
     #   dbt-databricks
@@ -206,6 +216,8 @@ ruamel-yaml==0.18.11
     # via dbt-osmosis
 ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
+secretstorage==3.3.3
+    # via keyring
 six==1.17.0
     # via
     #   isodate
@@ -213,7 +225,7 @@ six==1.17.0
     #   thrift
 snowplow-tracker==1.1.0
     # via dbt-core
-sqlglot==26.20.0
+sqlglot==26.21.0
     # via mysql-mimic
 sqlparams==6.2.0
     # via dbt-spark
@@ -242,5 +254,5 @@ urllib3==2.4.0
     # via
     #   databricks-sql-connector
     #   requests
-zipp==3.21.0
+zipp==3.22.0
     # via importlib-metadata
