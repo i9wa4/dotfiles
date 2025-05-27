@@ -30,7 +30,6 @@ test:
 # Global Variables
 #
 MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
-MF_GHQ_BACKUP_LOCAL_DIR := "$${HOME}"/str/etc
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 
 
@@ -38,7 +37,6 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # OS-common Initialization
 #
 common-init: zinit-install zsh-init unlink link git-init tmux-init
-	mkdir -p $(MF_GHQ_BACKUP_LOCAL_DIR)
 	mkdir -p "$${HOME}"/str/src
 
 
@@ -463,12 +461,12 @@ ghq-get-essential:
 
 ghq-get-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path=$(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt \
+	&& _list_path="$${XDG_CACHE_HOME}"/ghq-list-local.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
 
 ghq-backup-local:
 	. "$${HOME}"/.zshenv \
-	&& _list_path=$(MF_GHQ_BACKUP_LOCAL_DIR)/ghq-list-local.txt \
+	&& _list_path="$${XDG_CACHE_HOME}"/ghq-list-local.txt \
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
