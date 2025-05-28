@@ -43,7 +43,7 @@ dbt-common==1.25.0
     #   dbt-core
     #   dbt-databricks
     #   dbt-spark
-dbt-core==1.9.4
+dbt-core==1.9.5
     # via
     #   dotfiles (pyproject.toml)
     #   dbt-databricks
@@ -55,7 +55,7 @@ dbt-extractor==0.6.0
     # via dbt-core
 dbt-osmosis==1.1.17
     # via dotfiles (pyproject.toml)
-dbt-protos==1.0.315
+dbt-protos==1.0.317
     # via
     #   dbt-adapters
     #   dbt-common
@@ -213,7 +213,7 @@ six==1.17.0
     #   thrift
 snowplow-tracker==1.1.0
     # via dbt-core
-sqlglot==26.21.0
+sqlglot==26.22.0
     # via mysql-mimic
 sqlparams==6.2.0
     # via dbt-spark
