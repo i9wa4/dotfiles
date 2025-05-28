@@ -146,7 +146,7 @@ nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
 nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
 nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_temp_md_path<CR>
+nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_tp_path<CR>
 nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC<CR>
 
 " eNcoding
