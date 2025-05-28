@@ -3,7 +3,7 @@ let g:mnh_header_level_shift = 7
 let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/docs/00.qmd'->expand()
 let g:my_i1_path = '~/ghq/github.com/i9wa4/internal/docs/05.qmd'->expand()
 let g:my_i2_path = '~/ghq/github.com/i9wa4/internal/docs/07.qmd'->expand()
-let g:my_temp_md_path = $HOME->expand() .. '/str/src/temp.md'
+let g:my_tp_path = '~/ghq/github.com/i9wa4/internal/temp/temp.qmd'->expand()
 
 " call my_filetype#set_tabstop2_lang_list([
 "\   'bash',
