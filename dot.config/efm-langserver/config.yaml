@@ -16,10 +16,6 @@ tools:
     format-command: 'jq --indent 4 .'
     format-stdin: true
 
-  python-autopep8: &python-autopep8
-    format-command: 'autopep8 -'
-    format-stdin: true
-
   python-black: &python-black
     format-command: 'black --preview --enable-unstable-feature string_processing --quiet -'
     format-stdin: true
@@ -63,14 +59,6 @@ tools:
     format-command: 'sqlfmt -'
     format-stdin: true
 
-  # terraform-tflint: &terraform-tflint
-  #   lint-command: 'tflint --format compact --recursive'
-  #   lint-source: 'tflint'
-  #   lint-stdin: false
-  #   lint-ignore-exit-code: true
-  #   lint-formats:
-  #     - '%f:%l:%c: %m'
-
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
     format-stdin: true
@@ -83,7 +71,6 @@ languages:
     - <<: *json-jq
 
   python:
-    # - <<: *python-autopep8
     - <<: *python-black
     - <<: *python-flake8
     - <<: *python-isort
@@ -96,5 +83,4 @@ languages:
     - <<: *sql-sqlfmt
 
   terraform:
-    # - <<: *terraform-tflint
     - <<: *terraform-fmt
