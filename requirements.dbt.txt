@@ -120,7 +120,7 @@ msgpack==1.1.0
     # via mashumaro
 mysql-mimic==2.6.4
     # via dbt-osmosis
-networkx==3.4.2
+networkx==3.5
     # via dbt-core
 numpy==2.2.6
     # via pandas
@@ -142,7 +142,7 @@ pathspec==0.12.1
     #   dbt-core
 pluggy==1.6.0
     # via dbt-osmosis
-protobuf==5.29.4
+protobuf==5.29.5
     # via
     #   dbt-adapters
     #   dbt-common
@@ -213,7 +213,7 @@ six==1.17.0
     #   thrift
 snowplow-tracker==1.1.0
     # via dbt-core
-sqlglot==26.22.0
+sqlglot==26.23.0
     # via mysql-mimic
 sqlparams==6.2.0
     # via dbt-spark
@@ -232,6 +232,7 @@ typing-extensions==4.13.2
     #   mashumaro
     #   pydantic
     #   pydantic-core
+    #   referencing
     #   snowplow-tracker
     #   typing-inspection
 typing-inspection==0.4.1
