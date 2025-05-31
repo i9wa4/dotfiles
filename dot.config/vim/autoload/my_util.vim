@@ -42,12 +42,12 @@ endfunction
 function! my_util#statusline() abort
   let l:status = '%'->expand()->fnamemodify(':~')
   " let l:status = '%t'
-  let l:status ..= '%<%='
-  let l:status ..= 'Ln %l/%L, Col %-4c'
-  let l:status ..= (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
-  let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-  let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-  let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+  " let l:status ..= '%<%='
+  " let l:status ..= 'Ln %l/%L, Col %-4c'
+  " let l:status ..= (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
+  " let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+  " let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+  " let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
   return l:status
 endfunction
 
