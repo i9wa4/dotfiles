@@ -36,7 +36,7 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Initialization
 #
-common-init: zinit-install zsh-init unlink link git-init tmux-init
+common-init: zinit-install zsh-init unlink link git-init tmux-init ghq-get-essential
 	mkdir -p "$${HOME}"/str/src
 
 
