@@ -21,7 +21,6 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
-      && make ghq-get-essential
       && make ghq-backup-local
       && uv lock --upgrade
       && uv sync --frozen
