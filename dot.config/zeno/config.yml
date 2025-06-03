@@ -23,6 +23,8 @@ snippets:
       && make link
       && make ghq-get-essential
       && make ghq-backup-local
+      && uv lock --upgrade
+      && uv sync --frozen
       && uv tool install --force --python python3.12 aider-chat@latest
       && bash bin/ghq_repo_status.sh
       && cd -
