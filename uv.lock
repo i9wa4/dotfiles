@@ -632,14 +632,16 @@ main = [
     { name = "black" },
     { name = "flake8" },
     { name = "isort" },
-    { name = "mcp", extra = ["cli"] },
-    { name = "numpy" },
-    { name = "pandas" },
     { name = "pynvim" },
-    { name = "python-dotenv" },
     { name = "python-lsp-server", extra = ["all"] },
     { name = "quarto-cli" },
     { name = "shandy-sqlfmt", extra = ["jinjafmt"] },
+]
+mcp = [
+    { name = "mcp", extra = ["cli"] },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -650,16 +652,16 @@ requires-dist = [
     { name = "dbt-osmosis", marker = "extra == 'dbt'" },
     { name = "flake8", marker = "extra == 'main'" },
     { name = "isort", marker = "extra == 'main'" },
-    { name = "mcp", extras = ["cli"], marker = "extra == 'main'" },
-    { name = "numpy", marker = "extra == 'main'" },
-    { name = "pandas", marker = "extra == 'main'" },
+    { name = "mcp", extras = ["cli"], marker = "extra == 'mcp'" },
+    { name = "numpy", marker = "extra == 'mcp'" },
+    { name = "pandas", marker = "extra == 'mcp'" },
     { name = "pynvim", marker = "extra == 'main'" },
-    { name = "python-dotenv", marker = "extra == 'main'" },
+    { name = "python-dotenv", marker = "extra == 'mcp'" },
     { name = "python-lsp-server", extras = ["all"], marker = "extra == 'main'" },
     { name = "quarto-cli", marker = "extra == 'main'" },
     { name = "shandy-sqlfmt", extras = ["jinjafmt"], marker = "extra == 'main'" },
 ]
-provides-extras = ["main", "dbt"]
+provides-extras = ["main", "dbt", "mcp"]
 
 [[package]]
 name = "et-xmlfile"
