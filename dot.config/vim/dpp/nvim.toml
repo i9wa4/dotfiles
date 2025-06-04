@@ -24,7 +24,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- map
     local opts = { buffer = bufnr, noremap = true, silent = true }
     vim.keymap.set('n', '<space>lf', vim.diagnostic.open_float, opts)
-    vim.keymap.set('n', '<Plug>(my-Edit)f', vim.lsp.buf.format, opts)
   end,
 })
 
