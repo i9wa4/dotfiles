@@ -23,7 +23,7 @@ snippets:
       && make link
       && make ghq-backup-local
       && uv lock --upgrade
-      && uv sync --frozen
+      && uv sync --frozen --all-extras
       && uv tool install --force --python python3.12 aider-chat@latest
       && bash bin/ghq_repo_status.sh
       && cd -
@@ -77,12 +77,8 @@ snippets:
     keyword: ua
     snippet:
       . ~/ghq/github.com/i9wa4/dotfiles/.venv.{{}}/bin/activate
-  - name: (uv) update
+  - name: (uv) upgrade
     keyword: uu
     snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && echo "{{}}" | xargs -I{} sh -c '
-        uv venv ".venv.{}"
-        && uv pip compile pyproject.toml --extra "{}" --output-file "requirements.{}.txt" --upgrade
-        && uv pip install --python ".venv.{}/bin/python" --requirement "requirements.{}.txt"
-      '
+      uv lock --upgrade
+      && uv sync --frozen --all-extras
