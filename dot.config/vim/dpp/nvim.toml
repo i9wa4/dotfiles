@@ -30,7 +30,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 vim.api.nvim_create_autocmd('BufWritePost', {
   callback = function()
-    vim.lsp.buf.format()
+    if vim.v.cmdbang == 0 then
+      vim.lsp.buf.format()
+    end
   end,
 })
 '''
