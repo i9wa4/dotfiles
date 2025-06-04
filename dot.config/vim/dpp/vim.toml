@@ -34,8 +34,6 @@ augroup MyLspSetting
   autocmd!
   autocmd BufWritePost * if !v:cmdbang | execute 'LspDocumentFormatSync' | endif
 augroup END
-
-nnoremap <Plug>(my-Edit)f <Cmd>execute 'LspDocumentFormatSync'<CR>
 '''
 
 [[plugins]]
