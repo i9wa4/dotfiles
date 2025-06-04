@@ -12,11 +12,7 @@ main = [
   "black",
   "flake8",
   "isort",
-  "mcp[cli]",
-  "numpy",
-  "pandas",
   "pynvim",
-  "python-dotenv",
   "python-lsp-server[all]",
   "quarto-cli",
   "shandy-sqlfmt[jinjafmt]",
@@ -25,4 +21,10 @@ dbt = [
   "dbt-core~=1.9",
   "dbt-databricks~=1.10",
   "dbt-osmosis",
+]
+mcp = [
+  "mcp[cli]",
+  "numpy",
+  "pandas",
+  "python-dotenv",
 ]
