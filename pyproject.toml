@@ -3,7 +3,7 @@ name = "dotfiles"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = "~=3.13.0"
 dependencies = [
 ]
 
@@ -18,8 +18,8 @@ main = [
   "shandy-sqlfmt[jinjafmt]",
 ]
 dbt = [
-  "dbt-core~=1.9",
-  "dbt-databricks~=1.10",
+  "dbt-core~=1.9.0",
+  "dbt-databricks~=1.10.0",
   "dbt-osmosis",
 ]
 mcp = [
