@@ -22,7 +22,6 @@ snippets:
       && ghq list | ghq get --update --parallel
       && make link
       && make ghq-backup-local
-      && uv lock --upgrade
       && uv sync --frozen --all-extras
       && uv tool install --force --python python3.12 aider-chat@latest
       && bash bin/ghq_repo_status.sh
