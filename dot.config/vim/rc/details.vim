@@ -67,12 +67,12 @@ set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
 
 " CommandLine
 set cmdheight=1
-set noshowcmd
+set showcmd
 
 " StatusLine
 " set laststatus=0
 set laststatus=2
-set noshowmode
+" set noshowmode
 
 
 " TabLine
