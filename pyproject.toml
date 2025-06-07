@@ -17,11 +17,6 @@ main = [
   "quarto-cli",
   "shandy-sqlfmt[jinjafmt]",
 ]
-dbt = [
-  "dbt-core~=1.9.0",
-  "dbt-databricks~=1.10.0",
-  "dbt-osmosis",
-]
 mcp = [
   "mcp[cli]",
   "numpy",
