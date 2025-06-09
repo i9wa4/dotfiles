@@ -81,3 +81,4 @@ snippets:
     snippet:
       uv lock --upgrade
       && uv sync --frozen --all-extras
+      && uv python install 3.12 --default --preview
