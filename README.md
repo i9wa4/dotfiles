@@ -118,6 +118,7 @@
 
 - Flow Chat for YouTube Live
 - Markdown Preview Plus
+- Slack Channels Grouping
 
 ### 5.4. Slack
 
