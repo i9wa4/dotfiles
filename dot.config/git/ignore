@@ -5,6 +5,7 @@ node_modules/
 
 # dotfiles
 local.vim
+.efm-use-*
 
 # Aider
 .aider*
