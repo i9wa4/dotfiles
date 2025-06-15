@@ -24,6 +24,7 @@ snippets:
       && make ghq-backup-local
       && uv sync --frozen --all-extras
       && uv tool install --force --python python3.12 aider-chat@latest
+      && uv python install 3.12 --default --preview
       && bash bin/ghq_repo_status.sh
       && cd -
   - name: (gh) repo view --web
@@ -81,4 +82,3 @@ snippets:
     snippet:
       uv lock --upgrade
       && uv sync --frozen --all-extras
-      && uv python install 3.12 --default --preview

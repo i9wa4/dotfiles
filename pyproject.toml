@@ -14,7 +14,6 @@ main = [
   "isort",
   "pynvim",
   "python-lsp-server[all]",
-  "quarto-cli",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",
 ]
