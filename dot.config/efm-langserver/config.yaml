@@ -58,6 +58,16 @@ tools:
   sql-sqlfmt: &sql-sqlfmt
     format-command: 'sqlfmt -'
     format-stdin: true
+    require-marker: true
+    root-markers:
+      - .efm-use-sqlfmt
+
+  sql-sqlfluff-format: &sql-sqlfluff-format
+    format-command: 'sqlfluff fix -'
+    format-stdin: true
+    require-marker: true
+    root-markers:
+      - .sqlfluff
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
