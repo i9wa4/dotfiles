@@ -25,7 +25,8 @@ let g:my_tp_path = '~/ghq/github.com/i9wa4/dotfiles/.i9wa4/temp.qmd'->expand()
 "\ ])
 
 " Python
-call my_util#add_python_venv('~/ghq/github.com/i9wa4/dotfiles/.venv')
+" call my_util#add_python_venv('~/ghq/github.com/i9wa4/dotfiles/.venv')
+" call my_util#add_python_venv(expand('<sfile>:p:h') .. '/.venv')
 
 " Denops Plugin Development
 let g:denops#debug = 1
