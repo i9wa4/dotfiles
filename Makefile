@@ -270,6 +270,12 @@ package-go:
 	go install github.com/x-motemen/ghq@latest
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
+package-npm-install:
+	npm install -g @anthropic-ai/claude-code
+
+package-npm-update:
+	npm update -g @anthropic-ai/claude-code
+
 package-rust:
 	rustup update
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -297,6 +303,7 @@ package-update:
 	# OS common update
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
+	@$(MAKE) package-npm-update
 	@$(MAKE) volta-update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -454,12 +461,6 @@ package-ubuntu-desktop-install:
 #
 act-build:  ## build act
 	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
-
-aider-install:
-	uv tool install --force --python python3.12 aider-chat@latest
-
-claude-install:
-	npm install -g @anthropic-ai/claude-code
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
