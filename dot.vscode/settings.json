@@ -1,15 +1,13 @@
 {
     "breadcrumbs.enabled": false,
+    "chat.editor.fontSize": 18,
+    "chat.tools.autoApprove": true,
     "editor.fontFamily": "'MyricaM M', monospace",
     "editor.fontSize": 22,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
-    "github.copilot.enable": {
-        "*": true,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    },
-    "terminal.integrated.fontSize": 16,
-    "python.analysis.extraPaths": []
+    "github.copilot.chat.agent.thinkingTool": true,
+    "github.copilot.chat.codesearch.enabled": true,
+    "terminal.integrated.fontSize": 18,
+    "github.copilot.nextEditSuggestions.enabled": true
 }
