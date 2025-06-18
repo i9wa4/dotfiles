@@ -455,6 +455,12 @@ package-ubuntu-desktop-install:
 act-build:  ## build act
 	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
 
+aider-install:
+	uv tool install --force --python python3.12 aider-chat@latest
+
+claude-install:
+	npm install -g @anthropic-ai/claude-code
+
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
