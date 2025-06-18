@@ -10,12 +10,19 @@
 
 ### 2.1. コマンド利用方法全般
 
-- man や git diff など pager を利用するコマンドでは pager を利用しないよう工夫する
+- 以下のコマンドではpagerが起動することがあるため、pagerを利用しないよう対策する
+    - `git diff` / `git log` / `git show`: `git --no-pager [コマンド]` または `git [コマンド] | cat` を使用
+    - `diff`: `diff file1 file2 | cat` を使用
+    - `man`: `man -P cat [コマンド]` を使用
+    - `less`: 代わりに `cat` を使用
+    - `more`: 代わりに `cat` を使用
+    - `grep` (大量の結果時): `grep [オプション] | cat` を使用
+    - `mysql`/`psql` (インタラクティブクエリ): `-e`/`-c` オプションを使用してワンライナーで実行
 
 ### 2.2. Git 利用方法
 
 - add, commit, push は私が指示したときに限り実行する
 - コミットメッセージは Conventional Commits に沿った形式で、日本語で記述する
-  - 例: `feat: 日次KPIのMAU率・累計会員数の箇所修正`
-  - 例: `fix: ブラウザ名の不一致と日付キャストの問題に対応`
-  - 例: `chore: ディレクトリ構造とREADME.mdの更新`
+    - 例: `feat: 日次KPIのMAU率・累計会員数の箇所修正`
+    - 例: `fix: ブラウザ名の不一致と日付キャストの問題に対応`
+    - 例: `chore: ディレクトリ構造とREADME.mdの更新`
