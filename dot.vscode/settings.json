@@ -1,5 +1,6 @@
 {
     "breadcrumbs.enabled": false,
+    "chat.editor.fontFamily": "'MyricaM M', monospace",
     "chat.editor.fontSize": 18,
     "chat.tools.autoApprove": true,
     "editor.fontFamily": "'MyricaM M', monospace",
@@ -8,6 +9,7 @@
     "editor.renderWhitespace": "all",
     "github.copilot.chat.agent.thinkingTool": true,
     "github.copilot.chat.codesearch.enabled": true,
+    "terminal.integrated.fontFamily": "'MyricaM M', monospace",
     "terminal.integrated.fontSize": 18,
     "github.copilot.nextEditSuggestions.enabled": true
 }
