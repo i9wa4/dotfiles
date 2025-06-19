@@ -158,3 +158,66 @@ function! my_util#add_python_venv(venv_path) abort
     call my_util#add_path([a:venv_path->expand() .. '/bin'])
   endif
 endfunction
+
+
+" --------------------------------------
+" Claude Code Integration
+"
+function! my_util#send_yanked_to_claude_code() abort
+  " ヤンクした内容を既に起動中のClaude Codeの入力欄に直接送信
+  let l:text = getreg('*')
+  if empty(l:text)
+    echo "No yanked text found in * register"
+    return
+  endif
+
+  " とりあえず決め打ちで、現在のウィンドウの1番ペイン（dotfiles:0.1）に送信
+  let l:target = 'dotfiles:0.1'
+
+  " テキストを行ごとに送信（Ctrl+Jで改行）
+  let l:lines = split(l:text, '\n')
+  for l:line in l:lines
+    let l:cmd = 'tmux send-keys -t ' . l:target . ' ' . shellescape(l:line)
+    call system(l:cmd)
+    " 最後の行以外はCtrl+Jで改行
+    if l:line != l:lines[-1]
+      call system('tmux send-keys -t ' . l:target . ' C-j')
+    endif
+  endfor
+
+  " Enterキーを送信
+  let l:enter_cmd = 'tmux send-keys -t ' . l:target . ' Enter'
+  call system(l:enter_cmd)
+
+  echo "Sent yanked text to Claude Code (target: " . l:target . ")"
+endfunction
+
+
+function! my_util#send_buffer_to_claude_code() abort
+  " バッファ全体をClaude Codeに送信
+  let l:text = join(getline(1, '$'), "\n")
+  if empty(l:text)
+    echo "Buffer is empty"
+    return
+  endif
+
+  " とりあえず決め打ちで、現在のウィンドウの1番ペイン（dotfiles:0.1）に送信
+  let l:target = 'dotfiles:0.1'
+
+  " テキストを行ごとに送信（Ctrl+Jで改行）
+  let l:lines = split(l:text, '\n')
+  for l:line in l:lines
+    let l:cmd = 'tmux send-keys -t ' . l:target . ' ' . shellescape(l:line)
+    call system(l:cmd)
+    " 最後の行以外はCtrl+Jで改行
+    if l:line != l:lines[-1]
+      call system('tmux send-keys -t ' . l:target . ' C-j')
+    endif
+  endfor
+
+  " Enterキーを送信
+  let l:enter_cmd = 'tmux send-keys -t ' . l:target . ' Enter'
+  call system(l:enter_cmd)
+
+  echo "Sent entire buffer to Claude Code (target: " . l:target . ")"
+endfunction
