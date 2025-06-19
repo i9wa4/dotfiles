@@ -135,3 +135,12 @@ on_event = ['BufEnter']
 hook_source = '''
 nnoremap <Space>dj <Cmd>execute 'DbtJump2ModelDef'<CR>
 '''
+
+[[plugins]]
+repo = 'i9wa4/vim-tmux-send-to-claude-code'
+on_event = ['VimEnter']
+hook_source = '''
+nmap <Space>cy <Plug>(send-to-claude-code-yanked)
+nmap <Space>cb <Plug>(send-to-claude-code-buffer)
+vmap <Space>cv <Plug>(send-to-claude-code-visual)
+'''
