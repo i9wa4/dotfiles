@@ -3,6 +3,9 @@
 .i9wa4/
 node_modules/
 
+# Dev Container
+.devcontainer/
+
 # dotfiles
 local.vim
 .efm-use-*

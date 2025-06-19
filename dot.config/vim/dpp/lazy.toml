@@ -1,4 +1,8 @@
 [[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+on_event = ['VimEnter']
+
+[[plugins]]
 repo = 'github/copilot.vim'
 on_event = ['VimEnter']
 
@@ -7,7 +11,7 @@ repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
-repo = 'editorconfig/editorconfig-vim'
+repo = 'thinca/vim-qfreplace'
 on_event = ['VimEnter']
 
 [[plugins]]
