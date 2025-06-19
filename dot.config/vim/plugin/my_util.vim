@@ -10,3 +10,7 @@ augroup MyUtil
   \ call my_util#source_local_vimrc('<afile>:p'->expand())
   autocmd VimLeave * call my_util#clean_viminfo()
 augroup END
+
+" Claude Code Integration キーマッピング
+nnoremap <Space>cy <Cmd>call my_util#send_yanked_to_claude_code()<CR>
+nnoremap <Space>cb <Cmd>call my_util#send_buffer_to_claude_code()<CR>
