@@ -54,3 +54,27 @@ ddc_previewer_floating.setup({
   ui = "pum",
 })
 '''
+
+[[plugins]]
+repo = 'yuki-yano/smart-tmux-nav.nvim'
+on_event = ['VimEnter']
+lua_source = '''
+require('smart-tmux-nav').setup({
+  -- Enable the plugin
+  enable = true,
+
+  -- Custom keybindings (set to false to disable default mappings)
+  keybindings = {
+    left = '<M-Left>',
+    down = '<M-Down>',
+    up = '<M-Up>',
+    right = '<M-Right>',
+  },
+
+  -- Modes for keybindings
+  modes = { 'n', 't' },
+
+  -- Enable debug mode
+  debug = false,
+})
+'''
