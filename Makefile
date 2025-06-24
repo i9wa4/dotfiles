@@ -51,7 +51,7 @@ mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  #
 	# normal minimum is 15 (225 ms)
 	defaults write -g InitialKeyRepeat -int 15
 	# normal minimum is 2 (30 ms)
-	defaults write -g KeyRepeat -int 2
+	defaults write -g KeyRepeat -int 1
 	killall Finder > /dev/null 2>&1
 
 mac-vscode-init:
