@@ -26,6 +26,7 @@
     - 例: `feat: 日次KPIのMAU率・累計会員数の箇所修正`
     - 例: `fix: ブラウザ名の不一致と日付キャストの問題に対応`
     - 例: `chore: ディレクトリ構造とREADME.mdの更新`
+- コミットメッセージには Co-Authored-By を含めない
 - GitHub のPRを確認する際は `gh` コマンドを使用する
     - 例: `gh pr view 78`
 
