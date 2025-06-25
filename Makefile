@@ -463,6 +463,9 @@ package-ubuntu-desktop-install:
 # --------------------------------------
 #  Tools
 #
+act-install:  ## install act
+	ghq get -p nektos/act
+
 act-build:  ## build act
 	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
 
