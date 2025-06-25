@@ -24,3 +24,6 @@ typings/
 
 # VS Code
 .vscode/
+
+# Claude Code
+**/.claude/settings.local.json
