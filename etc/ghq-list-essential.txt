@@ -1,6 +1,3 @@
-github.com/LucasHild/mcp-server-bigquery
-github.com/i9wa4/mcp-databricks-server
-github.com/nektos/act
 github.com/neovim/neovim
 github.com/skk-dev/dict
 github.com/tfutils/tfenv
