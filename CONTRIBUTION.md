@@ -18,6 +18,11 @@
     - `more`: 代わりに `cat` を使用
     - `grep` (大量の結果時): `grep [オプション] | cat` を使用
     - `mysql`/`psql` (インタラクティブクエリ): `-e`/`-c` オプションを使用してワンライナーで実行
+- コマンドの出力は必ず `/tmp` ディレクトリにリダイレクトする。ファイル名は適宜変えてよい。
+
+    ```bash
+    echo "test" | tee /tmp/out.txt 2>&1
+    ```
 
 ### 2.2. Git 利用方法
 
@@ -53,22 +58,57 @@
             dbt compile
             ```
 
-## 3. VS Code GitHub Copilot Chat 専用ルール
+### 2.4. プロジェクト固有ルールの管理
 
-### 3.1. ターミナル出力のトレース方法
+- 作業中に気づいたプロジェクト特有のルールは必ず `.i9wa4/CLAUDE.md` に追記する
+    - 今後の作業で同じルールを忘れないようにするため
+    - 一般的なルールは本ファイル（CONTRIBUTION.md）に追記
+    - プロジェクト固有のルールは各リポジトリの `.i9wa4/CLAUDE.md` に追記
 
-長い出力や複雑なコマンド実行結果を VS Code GitHub Copilot Chat で確実にトレースするために以下の手順を使用する
+### 2.5. Databricks CLI の利用方法
 
-1. コマンド実行前に必ず `.i9wa4` ディレクトリの存在を確認し、なければ作成する
+#### 2.5.1. warehouse_idについて
 
-    ```bash
-    mkdir -p .i9wa4
+- warehouse_idは `~/.databrickscfg` に設定されているものを使用する
+- 注意: databricks CLIは設定ファイルのwarehouse_idを自動読み込みしないため、毎回JSONに明示的に含める必要がある
+
+#### 2.5.2. 基本的な使い方
+
+```sh
+# クエリ実行
+databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
+  "warehouse_id": "xxxxxxxxxx",
+  "catalog": "catalog_name",
+  "schema": "schema_name",
+  "statement": "select * from table_name limit 10"
+}'
+
+# 結果取得（statement_idは実行時に返される値）
+databricks api get /api/2.0/sql/statements/{statement_id} --profile "DEFAULT"
+```
+
+#### 2.5.3. `databricks` コマンドのコツ
+
+1. クエリ実行のフロー
+    - `post`でクエリ実行 → `statement_id`が返る
+    - `get`で結果取得（`state`が`SUCCEEDED`になるまで待つ）
+    - 長いクエリは`sleep`を挟んで再試行
+2. エラー対策
+    - `state: CLOSED`: 結果取得が遅すぎた場合。早めに`get`を実行
+    - `state: FAILED`: SQLエラー。error_messageを確認
+    - `state: RUNNING`: まだ実行中。少し待ってから再度`get`
+    - タイムアウト: 大量データの場合は`limit`を付けて確認
+3. 結果の読み方
+    - `data_array`: 実際のデータ（2次元配列）
+    - `schema.columns`: カラム名と型情報
+    - `total_row_count`: 総件数（limitかかってても表示）
+    - `state`: クエリの実行状態
+4. パラメータ付きクエリ
+
+    ```sh
+    databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
+        "warehouse_id": "xxxxxxxxxx",
+        "statement": "select * from table where date >= :start_date",
+        "parameters": [{"name": "start_date", "value": "2025-01-01", "type": "DATE"}]
+    }'
     ```
-
-2. コマンドの出力を `.i9wa4/vscode-output.txt` にリダイレクトする。ファイル名は特に指示がない限り同じにすることで余計なファイル生成を抑制する。
-
-    ```bash
-    コマンド > .i9wa4/vscode-output.txt 2>&1
-    ```
-
-3. 実行後、出力ファイルを必要に応じて読み込んで確認する
