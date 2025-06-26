@@ -199,8 +199,7 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_GITHUB_DIR)/i9wa4/internal/docs          "$${HOME}"
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
 	# OS-specific link
 	_uname="$$(uname -a)"; \
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
@@ -242,8 +241,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi \
-	&& if [ -L "$${HOME}"/docs ];                       then unlink "$${HOME}"/docs; fi
+	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
