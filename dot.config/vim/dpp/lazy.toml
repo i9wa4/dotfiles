@@ -7,11 +7,12 @@ repo = 'github/copilot.vim'
 on_event = ['VimEnter']
 
 [[plugins]]
-repo = 'i9wa4/vim-tmux-send-to-claude-code'
-on_event = ['VimEnter'] hook_source = '''
-nmap <Space>cy <Plug>(send-to-claude-code-yanked)
-nmap <Space>cb <Plug>(send-to-claude-code-buffer)
-vmap <Space>cv <Plug>(send-to-claude-code-visual)
+repo = 'i9wa4/vim-tmux-send-to-ai-cli'
+on_event = ['VimEnter']
+hook_source = '''
+nmap <Space>ay <Plug>(send-to-ai-cli-yanked)
+nmap <Space>ab <Plug>(send-to-ai-cli-buffer)
+vmap <Space>av <Plug>(send-to-ai-cli-visual)
 '''
 
 [[plugins]]
