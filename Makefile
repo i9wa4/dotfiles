@@ -278,9 +278,11 @@ package-go:
 
 package-npm-install:
 	npm install -g @anthropic-ai/claude-code
+	npm install -g @google/gemini-cli
 
 package-npm-update:
 	npm update -g @anthropic-ai/claude-code
+	npm update -g @google/gemini-cli
 
 package-rust:
 	rustup update
