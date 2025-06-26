@@ -46,7 +46,7 @@ let g:gin_proxy_apply_without_confirm = v:true
 function! s:my_gin_log() abort
   let g:gin_log_default_args = [
   \   "--graph",
-  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
+  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
   \   "--name-status"
   \ ]
   execute 'GinLog'
@@ -57,7 +57,7 @@ function! s:my_gin_log_all() abort
   let g:gin_log_default_args = [
   \   "--graph",
   \   "--all",
-  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n        %C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
+  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
   \   "--name-status"
   \ ]
   execute 'GinLog'
