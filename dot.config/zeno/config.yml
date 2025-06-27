@@ -66,11 +66,11 @@ snippets:
   - name: (Quarto) preview
     keyword: qp
     snippet:
-      quarto preview
+      uv run quarto preview
   - name: (Quarto) render
     keyword: qr
     snippet:
-      quarto render
+      uv run quarto render
   - name: (uv) activate
     keyword: ua
     snippet:
