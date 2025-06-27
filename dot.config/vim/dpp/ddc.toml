@@ -128,6 +128,7 @@ call skkeleton#config({
 \   'globalDictionaries': [
 \     s:skk_dev_path .. '/SKK-JISYO.L',
 \     s:skk_dev_path .. '/SKK-JISYO.jinmei',
+\     s:skk_dev_path .. '/SKK-JISYO.assoc',
 \     s:skk_emoji_path .. '/SKK-JISYO.emoji.utf8',
 \   ],
 \   'immediatelyDictionaryRW': v:false,
