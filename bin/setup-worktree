@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# git worktree 用のセットアップスクリプト
+# 新しい worktree を作成した後に .i9wa4 ディレクトリと temp.md を自動生成
+
+set -euo pipefail
+
+# 関数定義
+usage() {
+  cat <<EOF
+Usage: $0 [OPTIONS]
+
+git worktree 用のセットアップスクリプト
+新しい worktree ディレクトリに .i9wa4 ディレクトリと temp.md を作成
+
+OPTIONS:
+    -h, --help     このヘルプを表示
+    -d, --dir DIR  対象ディレクトリを指定（省略時は現在のディレクトリ）
+
+EXAMPLES:
+    $0                    # 現在のディレクトリにセットアップ
+    $0 -d /path/to/dir    # 指定ディレクトリにセットアップ
+EOF
+}
+
+create_i9wa4_directory() {
+  local target_dir="$1"
+  local i9wa4_dir="$target_dir/.i9wa4"
+
+  echo "Creating .i9wa4 directory in: $target_dir"
+
+  # .i9wa4 ディレクトリ作成
+  mkdir -p "$i9wa4_dir"
+
+  # temp.md ファイル作成
+  cat >"$i9wa4_dir/temp.md" <<'EOF'
+@~/ghq/github.com/i9wa4/internal/docs/CONTRIBUTING.md
+
+# 作業メモ
+
+このファイルは git worktree 用のセットアップスクリプトで自動生成されました。
+
+## Vim 設定
+
+- temp ファイルパス: `let g:my_tp_path = './.i9wa4/temp.md'->expand()`
+
+## 作業内容
+
+（ここに作業内容を記載）
+
+EOF
+
+  echo "Created: $i9wa4_dir/temp.md"
+}
+
+create_local_vimrc() {
+  local target_dir="$1"
+  local vimrc_file="$target_dir/.vimrc"
+
+  echo "Creating local .vimrc..."
+
+  cat >"$vimrc_file" <<'EOF'
+" Local vimrc for git worktree
+" temp ファイルのパス設定
+let g:my_tp_path = './.i9wa4/temp.md'->expand()
+
+" その他のローカル設定があれば追加
+EOF
+
+  echo "Created: $vimrc_file"
+}
+
+# メイン処理
+main() {
+  local target_dir="$(pwd)"
+
+  # 引数解析
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      -d | --dir)
+        target_dir="$2"
+        shift 2
+        ;;
+      *)
+        echo "Unknown option: $1" >&2
+        usage >&2
+        exit 1
+        ;;
+    esac
+  done
+
+  # 対象ディレクトリの存在確認
+  if [[ ! -d $target_dir ]]; then
+    echo "Error: Directory does not exist: $target_dir" >&2
+    exit 1
+  fi
+
+  # 絶対パスに変換
+  target_dir="$(cd "$target_dir" && pwd)"
+
+  echo "Setting up git worktree environment in: $target_dir"
+
+  # .i9wa4 ディレクトリが既に存在する場合は確認
+  if [[ -d "$target_dir/.i9wa4" ]]; then
+    echo "Warning: .i9wa4 directory already exists"
+    read -p "Overwrite? (y/N): " response
+    if [[ ! $response =~ ^[yY]$ ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+  fi
+
+  # セットアップ実行
+  create_i9wa4_directory "$target_dir"
+  create_local_vimrc "$target_dir"
+
+  echo ""
+  echo "Setup completed successfully!"
+  echo ""
+  echo "Next steps:"
+  echo "1. cd $target_dir"
+  echo "2. vim でファイルを開いて :CreateLocalVimrc を実行（必要に応じて）"
+  echo "3. 作業開始"
+}
+
+# スクリプト実行
+main "$@"
