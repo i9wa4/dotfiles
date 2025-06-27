@@ -35,19 +35,9 @@ create_i9wa4_directory() {
   # temp.md ファイル作成
   cat >"$i9wa4_dir/temp.md" <<'EOF'
 @~/ghq/github.com/i9wa4/internal/docs/CONTRIBUTING.md
+@CONTRIBUTING.md (if exists)
 
-# 作業メモ
-
-このファイルは git worktree 用のセットアップスクリプトで自動生成されました。
-
-## Vim 設定
-
-- temp ファイルパス: `let g:my_tp_path = './.i9wa4/temp.md'->expand()`
-
-## 作業内容
-
-（ここに作業内容を記載）
-
+まずこれらを読んでください。
 EOF
 
   echo "Created: $i9wa4_dir/temp.md"
@@ -55,9 +45,9 @@ EOF
 
 create_local_vimrc() {
   local target_dir="$1"
-  local vimrc_file="$target_dir/.vimrc"
+  local vimrc_file="$target_dir/local.vim"
 
-  echo "Creating local .vimrc..."
+  echo "Creating local vimrc..."
 
   cat >"$vimrc_file" <<'EOF'
 " Local vimrc for git worktree
@@ -120,11 +110,6 @@ main() {
 
   echo ""
   echo "Setup completed successfully!"
-  echo ""
-  echo "Next steps:"
-  echo "1. cd $target_dir"
-  echo "2. vim でファイルを開いて :CreateLocalVimrc を実行（必要に応じて）"
-  echo "3. 作業開始"
 }
 
 # スクリプト実行
