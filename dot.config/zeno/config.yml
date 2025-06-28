@@ -11,6 +11,10 @@ snippets:
     keyword: llu
     snippet:
       ls -aFlv --color=always --time-style=long-iso -h
+  - name: path
+    keyword: path
+    snippet:
+      echo "${PATH}" | sed "s/\:/\n/g"
   - name: update
     keyword: up
     snippet:
@@ -25,12 +29,6 @@ snippets:
       && uv sync --frozen --all-extras
       && bash bin/ghq_repo_status.sh
       && cd -
-  - name: (gh) repo view --web
-    keyword: r
-    snippet:
-      repo view --web
-    context:
-      lbuffer: '^gh\s'
   - name: (Git) delete merged branches
     keyword: dm
     snippet:
@@ -49,10 +47,6 @@ snippets:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
     context:
       lbuffer: '^git\s'
-  - name: (Git) status
-    keyword: gs
-    snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/bin/ghq_repo_status.sh
   - name: (Prompt) toggle
     keyword: pt
     snippet:
