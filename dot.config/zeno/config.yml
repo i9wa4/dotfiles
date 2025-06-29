@@ -27,7 +27,7 @@ snippets:
       && make link
       && make ghq-backup-local
       && uv sync --frozen --all-extras
-      && bash bin/ghq_repo_status.sh
+      && ghq_repo_status
       && cd -
   - name: (Git) delete merged branches
     keyword: dm
