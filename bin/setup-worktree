@@ -50,11 +50,9 @@ create_local_vimrc() {
   echo "Creating local vimrc..."
 
   cat >"$vimrc_file" <<'EOF'
-" Local vimrc for git worktree
-" temp ファイルのパス設定
-let g:my_tp_path = './.i9wa4/temp.md'->expand()
-
-" その他のローカル設定があれば追加
+" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
+let g:mnh_header_level_shift = 1
+let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
 
   echo "Created: $vimrc_file"
