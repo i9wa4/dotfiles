@@ -34,7 +34,7 @@ create_i9wa4_directory() {
 
   # temp.md ファイル作成
   cat >"$i9wa4_dir/temp.md" <<'EOF'
-@~/ghq/github.com/i9wa4/internal/docs/CONTRIBUTING.md
+@../../i9wa4/internal/docs/CONTRIBUTING.md
 @CONTRIBUTING.md (if exists)
 
 まずこれらを読んでください。
