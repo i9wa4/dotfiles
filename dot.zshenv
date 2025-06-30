@@ -21,7 +21,7 @@ export PATH=/opt/homebrew/bin:"${PATH}"
 export AWS_PROFILE=
 
 # act
-export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
+# export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Deno
 export DENO_INSTALL="${HOME}"/.deno
