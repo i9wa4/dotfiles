@@ -4,6 +4,8 @@ description: "learn BigQuery"
 
 # learn-bigquery
 
+BigQuery について学ぼう！
+
 ## 1. bq コマンド (BigQuery)
 
 ```sh
