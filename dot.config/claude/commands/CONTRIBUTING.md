@@ -18,11 +18,11 @@ description: "global CONTRIBUTING.md"
 
 ## 3. プロジェクト固有ルールの管理
 
-- プロジェクトルートに配置されている `./CONTRIBUTING.md` と `./.i9wa4/AGENT.md` をこの順に必ず確認する
-    - すなわち記述内容に被りがあった場合の優先度は以下となる
-        1. `./.i9wa4/AGENT.md`
-        2. `./CONTRIBUTING.md`
-        3. 本ファイル (`CONTRIBUTING.md`)
+- プロジェクトルートに `./CONTRIBUTING.md` や `./.i9wa4/AGENT.md` が存在する場合は必ず確認する
+    - 記述内容に被りがあった場合の優先度は以下となる
+        1. `./.i9wa4/AGENT.md` (プロジェクトルート)
+        2. `./CONTRIBUTING.md` (プロジェクトルート)
+        3. `CONTRIBUTING.md` (このファイル)
 - 作業中に気づいたプロジェクト特有のルールは必ず `.i9wa4/AGENT.md` に記載する
 
 ## 4. ツール利用方法
