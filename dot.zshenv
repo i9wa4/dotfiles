@@ -23,6 +23,9 @@ export AWS_PROFILE=
 # act
 # export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
+# Claude
+export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
+
 # Deno
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
