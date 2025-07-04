@@ -4,6 +4,8 @@ description: "global CONTRIBUTING.md"
 
 # CONTRIBUTING
 
+一般的な作業ルールをまとめています。読んでから作業を開始してください。
+
 ## 1. 一般ルール
 
 - 必ず日本語で回答する
@@ -60,23 +62,24 @@ description: "global CONTRIBUTING.md"
 
 ### 4.3. Python 環境の利用方法
 
-- Pythonコマンドを実行する際は、以下の手順で仮想環境を利用する
-    - プロジェクトルートに `uv.lock` ファイルが存在する場合
-        - `uv` を利用して以下のようにコマンドを実行する。
+#### 4.3.1. 仮想環境利用方法
 
-            ```sh
-            uv run dbt debug --profiles-dir ~/.dbt
-            ```
+- プロジェクトルートに `uv.lock` ファイルが存在する場合
+    - `uv` を利用して以下のように Python コマンドを実行する。
 
-    - プロジェクトルートに `uv.lock` ファイルが存在しない場合
-        1. 以下のコマンドで仮想環境を有効化する
+        ```sh
+        uv run dbt debug --profiles-dir ~/.dbt
+        ```
 
-            ```sh
-            source .venv/bin/activate
-            ```
+- プロジェクトルートに `uv.lock` ファイルが存在しない場合
+    1. 仮想環境を有効化する
 
-        2. 仮想環境が有効化された状態で、必要なコマンドを実行する。
+        ```sh
+        source .venv/bin/activate
+        ```
 
-            ```sh
-            dbt debug --profiles-dir ~/.dbt
-            ```
+    2. Python コマンドを実行する
+
+        ```sh
+        dbt debug --profiles-dir ~/.dbt
+        ```

@@ -4,6 +4,8 @@ description: "learn Databricks"
 
 # learn-databricks
 
+Databricks について学ぼう！
+
 ## 1. Databricks CLI の利用方法
 
 ### 1.1. warehouse_idについて

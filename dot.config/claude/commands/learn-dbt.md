@@ -4,6 +4,8 @@ description: "learn dbt"
 
 # learn-dbt
 
+dbt について学ぼう！
+
 ## 1. dbt利用方法
 
 ### 1.1. 基本事項
