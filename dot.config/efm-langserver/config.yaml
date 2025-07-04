@@ -56,11 +56,11 @@ tools:
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
-    format-command: 'uv run sqlfmt -'
+    format-command: 'sqlfmt -'
     format-stdin: true
     require-marker: true
-    root-markers:
-      - .efm-use-sqlfmt
+    # root-markers:
+    #   - .efm-use-sqlfmt
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
