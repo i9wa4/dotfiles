@@ -34,10 +34,8 @@ create_i9wa4_directory() {
 
   # temp.md ファイル作成
   cat >"$i9wa4_dir/temp.md" <<'EOF'
-@../../i9wa4/internal/docs/CONTRIBUTING.md
 @CONTRIBUTING.md (if exists)
-
-まずこれらを読んでください。
+@.i9wa4/AGENT.md (if exists)
 EOF
 
   echo "Created: $i9wa4_dir/temp.md"
