@@ -575,8 +575,6 @@ vim-build:  ## build Vim
 	  echo 'Which OS are you using?'; \
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim \
-	&& git restore . \
-	&& git switch master \
 	&& cd src \
 	&& $(MAKE) distclean \
 	&& ./configure \
