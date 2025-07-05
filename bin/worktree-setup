@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # git worktree 用のセットアップスクリプト
 # 新しい worktree を作成した後に .i9wa4 ディレクトリと temp.md を自動生成
