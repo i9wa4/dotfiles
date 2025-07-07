@@ -25,6 +25,7 @@ GitHubのissueから作業用ファイルを作成するカスタムコマンド
 4. `.i9wa4/pr.md`に統合形式（PR本文 + 作業ログ）で作成
    - PR本文エリア（GitHubテンプレート準拠）
    - 作業ログエリア（詳細な実装記録）
+5. **実際のPR作成は手動で行う**
 
 ## 4. 実行内容
 
@@ -160,6 +161,13 @@ $(if [ -n "$ISSUE_BODY" ]; then echo "* $ISSUE_BODY"; fi)
 EOF
 
 echo "✓ 統合形式のpr.mdを作成しました: .i9wa4/pr.md"
+echo ""
+echo "次のステップ:"
+echo "1. 実装を進めて .i9wa4/pr.md の作業ログエリアに詳細を記録"
+echo "2. 実装完了後、PR本文エリアを編集"
+echo "3. 手動でpushとPR作成を実行"
+echo "   - git push -u origin \$(git branch --show-current)"
+echo "   - gh pr create (PR本文は .i9wa4/pr.md の上部から取得)"
 ```
 
 ## 5. 統合形式でのワークフロー
@@ -175,7 +183,9 @@ echo "✓ 統合形式のpr.mdを作成しました: .i9wa4/pr.md"
    - やったこと: 作業ログから主要な変更を転記
    - 動作確認: テスト結果を記載
    - 特に確認してほしい箇所: 重要なポイントを記載
-3. **PR作成**: 区切り線より上（PR本文エリア）をコピーしてPR作成
+3. **手動でPR作成**:
+   - `git push -u origin $(git branch --show-current)`
+   - `gh pr create` でPR作成（本文は下記方法で取得）
 
 ### 5.3. PR本文の取得方法
 
@@ -184,9 +194,26 @@ echo "✓ 統合形式のpr.mdを作成しました: .i9wa4/pr.md"
 sed '/<!-- ===== 作業ログエリア/q' .i9wa4/pr.md | head -n -1 > /tmp/pr_body.md
 ```
 
-### 5.4. メリット
+### 5.4. 手動でのPR作成手順
+
+```bash
+# 1. ブランチをpush
+git push -u origin $(git branch --show-current)
+
+# 2. PR本文を一時ファイルに抽出
+sed '/<!-- ===== 作業ログエリア/q' .i9wa4/pr.md | head -n -1 > /tmp/pr_body.md
+
+# 3. PR作成
+gh pr create --title "$(head -n 1 .i9wa4/pr.md | sed 's/# PR: //')" --body-file /tmp/pr_body.md
+
+# 4. 一時ファイルを削除
+rm /tmp/pr_body.md
+```
+
+### 5.5. メリット
 
 - **1ファイル完結**: 情報が分散しない
 - **リアルタイム更新**: 実装と並行してPR本文も更新
 - **情報の整合性**: PR本文と実装内容の乖離がない
 - **シンプルな管理**: 複数ファイルの同期不要
+- **安全性**: 意図しないpushやPR作成を防止
