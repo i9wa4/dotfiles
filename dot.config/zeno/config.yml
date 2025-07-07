@@ -25,12 +25,12 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
+      && make ghq-backup-local
       && make vim-build
       && make nvim-build
-      && make ghq-backup-local
       && uv sync --frozen --all-extras
-      && ghq-repo-status
       && cd -
+      && ghq-repo-status
   - name: (Git) delete merged branches
     keyword: dm
     snippet:
