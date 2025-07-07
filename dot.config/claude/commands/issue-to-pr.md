@@ -66,7 +66,7 @@ if [ -d "$WORKTREE_PATH" ]; then
     cd $WORKTREE_PATH
 else
     echo "新しいworktreeを作成します。"
-    
+
     # リモートブランチの存在確認
     git fetch origin
     if git show-ref --verify --quiet refs/remotes/origin/$BRANCH_NAME; then
@@ -78,7 +78,7 @@ else
         cd $WORKTREE_PATH
         git push -u origin $BRANCH_NAME
     fi
-    
+
     cd $WORKTREE_PATH
 fi
 
@@ -132,28 +132,3 @@ EOF
 
 echo "pr.mdを作成しました: .i9wa4/pr.md"
 ```
-
-## 学んだこと・ベストプラクティス
-
-### 冪等性実装のポイント
-1. **処理状態の明確な管理**
-   - 成功・失敗・処理中の状態を明確に区別
-   - 失敗時は再処理可能な状態にする
-   
-2. **最小限の変更で最大の効果**
-   - 大きな機能追加よりも、核心的な問題解決に集中
-   - 既存データとの後方互換性を維持
-
-3. **テストファイルの適切な配置**
-   - コミットしないファイルは`.i9wa4/`ディレクトリに配置
-   - 実装メモやテストケースを整理して記録
-
-### DynamoDBでの状態管理
-- `Status`フィールドで処理状態を管理
-- `COMPLETED`（成功）、`FAILED`（失敗）の2状態で十分
-- 既存データは`COMPLETED`として扱い後方互換性を保つ
-
-### エラーハンドリング
-- 複雑なロールバック機能より、明確な失敗状態記録が重要
-- 個別ファイル処理失敗時に`continue`で次のファイルに進む
-- 失敗したファイルは`FAILED`状態で記録し次回再処理対象とする
