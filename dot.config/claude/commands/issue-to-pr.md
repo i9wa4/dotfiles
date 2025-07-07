@@ -134,6 +134,83 @@ $(if [ -n "$ISSUE_BODY" ]; then echo "* $ISSUE_BODY"; fi)
 - [ ] テスト
 - [ ] ドキュメント更新
 
+## テストファイル
+
+<details>
+<summary>📋 テストファイルテンプレート</summary>
+
+- ファイル名: `.i9wa4/test_\${ISSUE_NUMBER}.py`
+- 以下の内容でテストファイルを作成可能
+
+\`\`\`python
+#!/usr/bin/env python3
+\"\"\"
+Issue #\${ISSUE_NUMBER} のテストファイル
+\${ISSUE_TITLE}
+\"\"\"
+
+import os
+import sys
+import unittest
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime, timezone
+
+# パスを調整してmain scriptをimport
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+# TODO: テスト対象の関数をimportまたは定義
+
+
+class Test\${ISSUE_NUMBER}(unittest.TestCase):
+    \"\"\"Issue #\${ISSUE_NUMBER} のテストクラス\"\"\"
+
+    def setUp(self):
+        \"\"\"テストセットアップ\"\"\"
+        pass
+
+    def test_basic_functionality(self):
+        \"\"\"基本機能のテスト\"\"\"
+        # TODO: テストケースを実装
+        self.assertTrue(True)
+
+    def test_error_handling(self):
+        \"\"\"エラーハンドリングのテスト\"\"\"
+        # TODO: エラーケースのテスト実装
+        pass
+
+
+def run_tests():
+    \"\"\"テスト実行関数\"\"\"
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+
+    suite.addTests(loader.loadTestsFromTestCase(Test\${ISSUE_NUMBER}))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+
+    print(f\"\\n{'='*60}\")
+    print(f\"テスト結果: {result.testsRun}件実行, {len(result.failures)}件失敗, {len(result.errors)}件エラー\")
+    print(f\"{'='*60}\")
+
+    return result.wasSuccessful()
+
+
+if __name__ == \"__main__\":
+    print(\"Issue #\${ISSUE_NUMBER} のテスト実行\")
+    print(\"=\" * 60)
+    success = run_tests()
+
+    if success:
+        print(\"\\n✅ すべてのテストが正常に完了しました\")
+        sys.exit(0)
+    else:
+        print(\"\\n❌ テストが失敗しました\")
+        sys.exit(1)
+\`\`\`
+
+</details>
+
 ## 調査結果
 
 <!-- 調査した内容を記載 -->
@@ -161,11 +238,94 @@ $(if [ -n "$ISSUE_BODY" ]; then echo "* $ISSUE_BODY"; fi)
 EOF
 
 echo "✓ 統合形式のpr.mdを作成しました: .i9wa4/pr.md"
+
+# 5. テストファイルのテンプレートを作成
+TEST_FILE=".i9wa4/test_${ISSUE_NUMBER}.py"
+if [ ! -f "$TEST_FILE" ]; then
+    echo "テストファイルのテンプレートを作成中..."
+
+    cat > "$TEST_FILE" << 'TESTEOF'
+#!/usr/bin/env python3
+"""
+Issue #${ISSUE_NUMBER} のテストファイル
+${ISSUE_TITLE}
+"""
+
+import os
+import sys
+import unittest
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime, timezone
+
+# パスを調整してmain scriptをimport
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+# TODO: テスト対象の関数をimportまたは定義
+
+
+class Test${ISSUE_NUMBER}(unittest.TestCase):
+    """Issue #${ISSUE_NUMBER} のテストクラス"""
+
+    def setUp(self):
+        """テストセットアップ"""
+        pass
+
+    def test_basic_functionality(self):
+        """基本機能のテスト"""
+        # TODO: テストケースを実装
+        self.assertTrue(True)
+
+    def test_error_handling(self):
+        """エラーハンドリングのテスト"""
+        # TODO: エラーケースのテスト実装
+        pass
+
+
+def run_tests():
+    """テスト実行関数"""
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+
+    suite.addTests(loader.loadTestsFromTestCase(Test${ISSUE_NUMBER}))
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+
+    print(f"\n{'='*60}")
+    print(f"テスト結果: {result.testsRun}件実行, {len(result.failures)}件失敗, {len(result.errors)}件エラー")
+    print(f"{'='*60}")
+
+    return result.wasSuccessful()
+
+
+if __name__ == "__main__":
+    print("Issue #${ISSUE_NUMBER} のテスト実行")
+    print("=" * 60)
+    success = run_tests()
+
+    if success:
+        print("\n✅ すべてのテストが正常に完了しました")
+        sys.exit(0)
+    else:
+        print("\n❌ テストが失敗しました")
+        sys.exit(1)
+TESTEOF
+
+    # 変数を置換
+    sed -i '' "s/\${ISSUE_NUMBER}/${ISSUE_NUMBER}/g" "$TEST_FILE"
+    sed -i '' "s/\${ISSUE_TITLE}/${ISSUE_TITLE}/g" "$TEST_FILE"
+
+    echo "✓ テストファイルテンプレートを作成しました: $TEST_FILE"
+else
+    echo "✓ テストファイルは既に存在します: $TEST_FILE"
+fi
+
 echo ""
 echo "次のステップ:"
 echo "1. 実装を進めて .i9wa4/pr.md の作業ログエリアに詳細を記録"
-echo "2. 実装完了後、PR本文エリアを編集"
-echo "3. 手動でpushとPR作成を実行"
+echo "2. テストケースを $TEST_FILE に実装"
+echo "3. 実装完了後、PR本文エリアを編集"
+echo "4. 手動でpushとPR作成を実行"
 echo "   - git push -u origin \$(git branch --show-current)"
 echo "   - gh pr create (PR本文は .i9wa4/pr.md の上部から取得)"
 ```
@@ -175,15 +335,17 @@ echo "   - gh pr create (PR本文は .i9wa4/pr.md の上部から取得)"
 ### 5.1. ファイル構成
 
 - `.i9wa4/pr.md`: 前半がPR本文、後半が作業ログの統合形式
+- `.i9wa4/test_[issue番号].py`: テストファイルテンプレート（自動生成）
 
 ### 5.2. 作業手順
 
 1. **実装中**: `.i9wa4/pr.md`の作業ログエリア（後半）に詳細を記録
-2. **実装完了**: PR本文エリア（前半）を編集
+2. **テスト実装**: `.i9wa4/test_[issue番号].py`にテストケースを実装
+3. **実装完了**: PR本文エリア（前半）を編集
    - やったこと: 作業ログから主要な変更を転記
-   - 動作確認: テスト結果を記載
+   - 動作確認: テスト結果を記載（テストファイルの実行結果を含む）
    - 特に確認してほしい箇所: 重要なポイントを記載
-3. **手動でPR作成**:
+4. **手動でPR作成**:
    - `git push -u origin $(git branch --show-current)`
    - `gh pr create` でPR作成（本文は下記方法で取得）
 
@@ -217,3 +379,4 @@ rm /tmp/pr_body.md
 - **情報の整合性**: PR本文と実装内容の乖離がない
 - **シンプルな管理**: 複数ファイルの同期不要
 - **安全性**: 意図しないpushやPR作成を防止
+- **テスト統合**: テストファイルも自動生成され、テスト駆動開発を促進
