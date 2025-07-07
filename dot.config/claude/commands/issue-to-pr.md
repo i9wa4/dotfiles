@@ -92,8 +92,8 @@ elif [ -f docs/pull_request_template.md ]; then
     PR_TEMPLATE="docs/pull_request_template.md"
 fi
 
-# 6. .i9wa4ディレクトリを作成
-mkdir -p .i9wa4
+# 6. .i9wa4ディレクトリ作成等 (自作コマンド)
+wokrtree-setup
 
 # 7. pr.mdを作成
 cat > .i9wa4/pr.md << 'EOF'
