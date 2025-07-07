@@ -27,7 +27,6 @@ snippets:
       && make link
       && make ghq-backup-local
       && make vim-build
-      && make nvim-build
       && uv sync --frozen --all-extras
       && cd -
       && ghq-repo-status
