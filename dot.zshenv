@@ -12,6 +12,17 @@ if [ -n "${ZSH_VERSION:-}" ]; then
   fi
 fi
 
+# Common
+export VISUAL=vim
+export XDG_CACHE_HOME="${HOME}"/.cache
+export XDG_CONFIG_HOME="${HOME}"/.config
+
+if locale -a | grep -q "en_US.UTF-8"; then
+  export LC_ALL=en_US.UTF-8
+else
+  export LC_ALL=C.UTF-8
+fi
+
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
@@ -61,18 +72,7 @@ export TF_VER_MINOR=1.11
 export VOLTA_HOME="${HOME}"/.volta
 export PATH="${VOLTA_HOME}"/bin:"${PATH}"
 
-# Common
-export VISUAL=vim
-export PATH="${HOME}"/.local/bin:"${PATH}"
+# First Priority Paths
 export PATH="${PATH}":/snap/bin
-export XDG_CACHE_HOME="${HOME}"/.cache
-export XDG_CONFIG_HOME="${HOME}"/.config
-
-# dotfiles bin
+export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="$(dirname "$0")/bin":"${PATH}"
-
-if locale -a | grep -q "en_US.UTF-8"; then
-  export LC_ALL=en_US.UTF-8
-else
-  export LC_ALL=C.UTF-8
-fi
