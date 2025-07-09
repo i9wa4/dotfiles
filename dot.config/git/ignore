@@ -3,9 +3,6 @@
 .i9wa4/
 node_modules/
 
-# Dev Container
-.devcontainer/
-
 # dotfiles
 local.vim
 .efm-use-*
@@ -14,6 +11,7 @@ local.vim
 .aider*
 
 # Claude
+**/.claude/settings.local.json
 .claude/
 
 # Databricks
@@ -21,12 +19,12 @@ local.vim
 databricks.yml
 typings/
 
+# Dev Container
+.devcontainer/
+
 # Python
 .ipynb_checkpoints/
 .virtual_documents/
 
 # VS Code
 .vscode/
-
-# Claude Code
-**/.claude/settings.local.json
