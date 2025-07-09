@@ -13,6 +13,9 @@ local.vim
 # Aider
 .aider*
 
+# Claude
+.claude/
+
 # Databricks
 .databricks/
 databricks.yml
