@@ -4,7 +4,7 @@ description: "Issue to PR (arg: Issue number)"
 
 # issue-to-pr
 
-GitHubのissueから作業用ファイルを作成するカスタムコマンド
+GitHub の issue から作業用ファイルを作成するカスタムコマンド
 
 ## 1. 前提条件
 
