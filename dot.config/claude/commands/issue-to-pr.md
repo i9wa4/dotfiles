@@ -328,6 +328,9 @@ echo "3. 実装完了後、PR本文エリアを編集"
 echo "4. 手動でpushとPR作成を実行"
 echo "   - git push -u origin \$(git branch --show-current)"
 echo "   - gh pr create (PR本文は .i9wa4/pr.md の上部から取得)"
+echo ""
+echo "重要: このコマンドは作業ファイルの準備のみを行います。"
+echo "     実際のPR作成は手動で行ってください。"
 ```
 
 ## 5. 統合形式でのワークフロー
