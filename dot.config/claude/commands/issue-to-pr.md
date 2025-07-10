@@ -20,7 +20,7 @@ GitHub の issue から作業用ファイルを作成するカスタムコマン
 ## 3. 処理フロー
 
 1. 既存の作業再開か新規作業かを判定
-2. 指定されたissue番号の内容を取得
+2. 指定されたissue番号の内容をコメント含めて全文取得
 3. PRテンプレートがあれば読み込み
 4. `.i9wa4/pr.md`に統合形式（PR本文 + 作業ログ）で作成
    - PR本文エリア（GitHubテンプレート準拠）
@@ -58,17 +58,54 @@ ISSUE_NUMBER="{{ISSUE_NUMBER}}"
 
 # issue内容を取得
 echo "Issue情報を取得中..."
-ISSUE_DATA=$(gh issue view "$ISSUE_NUMBER" --json title,body,number,assignees,labels 2>/dev/null)
+TEMP_JSON="/tmp/issue_${ISSUE_NUMBER}.json"
 
-if [ $? -eq 0 ]; then
-    ISSUE_TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
-    ISSUE_BODY=$(echo "$ISSUE_DATA" | jq -r '.body // ""')
+# Get issue data directly to file
+gh issue view "$ISSUE_NUMBER" --comments --json title,body,number,assignees,labels,comments,state,author,createdAt,updatedAt,milestone,projectItems,reactionGroups,url > "$TEMP_JSON" 2>/dev/null
+
+if [ -f "$TEMP_JSON" ] && [ -s "$TEMP_JSON" ]; then
+    ISSUE_TITLE=$(jq -r '.title' "$TEMP_JSON")
+    ISSUE_BODY=$(jq -r '.body // ""' "$TEMP_JSON")
+    ISSUE_STATE=$(jq -r '.state // "unknown"' "$TEMP_JSON")
+    ISSUE_AUTHOR=$(jq -r '.author.login // "unknown"' "$TEMP_JSON")
+    ISSUE_CREATED=$(jq -r '.createdAt // ""' "$TEMP_JSON")
+    ISSUE_UPDATED=$(jq -r '.updatedAt // ""' "$TEMP_JSON")
+    ISSUE_MILESTONE=$(jq -r '.milestone.title // "なし"' "$TEMP_JSON")
+    ISSUE_URL=$(jq -r '.url // ""' "$TEMP_JSON")
+    
+    # Assignees
+    ISSUE_ASSIGNEES=$(jq -r '.assignees[]?.login' "$TEMP_JSON" 2>/dev/null | paste -sd ', ' -)
+    [ -z "$ISSUE_ASSIGNEES" ] && ISSUE_ASSIGNEES="未割り当て"
+    
+    # Labels
+    ISSUE_LABELS=$(jq -r '.labels[]?.name' "$TEMP_JSON" 2>/dev/null | paste -sd ', ' -)
+    [ -z "$ISSUE_LABELS" ] && ISSUE_LABELS="なし"
+    
+    # Comments - format each comment properly
+    ISSUE_COMMENTS=$(jq -r '.comments[]? | "[\(.author.login) - \(.createdAt | split("T")[0])]\n\(.body)\n"' "$TEMP_JSON" 2>/dev/null)
+    
+    # Clean up temp file
+    rm -f "$TEMP_JSON"
+    
     echo "✓ Issue情報を取得しました"
     echo "タイトル: ${ISSUE_TITLE}"
+    echo "状態: ${ISSUE_STATE}"
+    echo "作成者: ${ISSUE_AUTHOR}"
+    echo "担当者: ${ISSUE_ASSIGNEES}"
+    echo "ラベル: ${ISSUE_LABELS}"
 else
     echo "⚠ Issue情報の取得に失敗しました（手動で設定してください）"
     ISSUE_TITLE="Issue #${ISSUE_NUMBER}"
     ISSUE_BODY=""
+    ISSUE_STATE="unknown"
+    ISSUE_AUTHOR="unknown"
+    ISSUE_CREATED=""
+    ISSUE_UPDATED=""
+    ISSUE_MILESTONE="なし"
+    ISSUE_URL=""
+    ISSUE_ASSIGNEES="未割り当て"
+    ISSUE_LABELS="なし"
+    ISSUE_COMMENTS=""
 fi
 
 # 3. PRテンプレートを確認
@@ -124,6 +161,29 @@ $(if [ -n "$ISSUE_BODY" ]; then echo "* $ISSUE_BODY"; fi)
 * 実装詳細は下記の作業ログを参照
 
 <!-- ===== 作業ログエリア（ここから下は内部用） ===== -->
+
+---
+
+## Issue詳細情報
+
+* **Issue番号**: #${ISSUE_NUMBER}
+* **URL**: ${ISSUE_URL}
+* **タイトル**: ${ISSUE_TITLE}
+* **状態**: ${ISSUE_STATE}
+* **作成者**: @${ISSUE_AUTHOR}
+* **作成日**: ${ISSUE_CREATED}
+* **更新日**: ${ISSUE_UPDATED}
+* **担当者**: ${ISSUE_ASSIGNEES}
+* **ラベル**: ${ISSUE_LABELS}
+* **マイルストーン**: ${ISSUE_MILESTONE}
+
+### Issue本文
+
+${ISSUE_BODY}
+
+### Issueコメント
+
+${ISSUE_COMMENTS}
 
 ---
 
