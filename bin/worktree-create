@@ -1,224 +1,37 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
-# Git worktree作成スクリプト
-# 指定されたissue番号に基づいてworktreeを作成し、作業環境をセットアップ
+issue_number="${1:-}"
+[[ -z $issue_number || ! $issue_number =~ ^[0-9]+$ ]] && echo "Usage: $0 <issue_number>" >&2 && exit 1
 
-set -euo pipefail
+# 基本設定
+repo_name=$(basename "$(git rev-parse --show-toplevel)")
+branch_name="issue-${issue_number}"
+worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
-# 関数定義
-usage() {
-  cat <<EOF
-Usage: $0 <issue_number>
+# 既存worktreeチェック
+if [[ -d $worktree_path ]]; then
+  echo "✓ 既存のworktreeに移動: ${worktree_path}"
+  cd "$worktree_path"
+else
+  # リモート情報取得
+  git fetch origin
 
-指定されたissue番号に基づいてgit worktreeを作成し、作業環境をセットアップ
-
-ARGUMENTS:
-    issue_number    Issue番号（数値）
-
-OPTIONS:
-    -h, --help     このヘルプを表示
-
-EXAMPLES:
-    $0 590        # issue-590ブランチのworktreeを作成
-EOF
-}
-
-validate_issue_number() {
-  local issue_number="$1"
-  
-  if [[ -z "$issue_number" ]]; then
-    echo "Error: Issue番号を指定してください" >&2
-    usage >&2
-    exit 1
-  fi
-  
-  if ! [[ "$issue_number" =~ ^[0-9]+$ ]]; then
-    echo "Error: Issue番号は数値で指定してください" >&2
-    exit 1
-  fi
-}
-
-check_git_repo() {
-  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "Error: Gitリポジトリではありません" >&2
-    exit 1
-  fi
-}
-
-setup_i9wa4_directory() {
-  local target_dir="$1"
-  local i9wa4_dir="$target_dir/.i9wa4"
-
-  echo "Creating .i9wa4 directory in: $target_dir"
-
-  # .i9wa4 ディレクトリ作成
-  mkdir -p "$i9wa4_dir"
-
-  # temp.md ファイル作成
-  cat >"$i9wa4_dir/temp.md" <<'EOF'
-@CONTRIBUTING.md (if exists)
-@.i9wa4/AGENT.md (if exists)
-EOF
-
-  echo "Created: $i9wa4_dir/temp.md"
-  
-  # local.vim ファイル作成
-  cat >"$target_dir/local.vim" <<'EOF'
-" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
-let g:mnh_header_level_shift = 1
-let g:my_tp_path = '.i9wa4/temp.md'->expand()
-EOF
-
-  echo "Created: $target_dir/local.vim"
-}
-
-create_worktree() {
-  local issue_number="$1"
-  local repo_name branch_name parent_dir worktree_path
-  
-  # 基本設定
-  repo_name=$(basename "$(git rev-parse --show-toplevel)")
-  branch_name="issue-${issue_number}"
-  parent_dir=$(dirname "$(pwd)")
-  worktree_path="${parent_dir}/${repo_name}-${branch_name}"
-  
-  echo "=== Git Worktree セットアップ ==="
-  echo "Issue番号: ${issue_number}"
-  echo "ブランチ名: ${branch_name}"
-  echo "Worktreeパス: ${worktree_path}"
-  echo
-  
-  # 既存worktreeチェック
-  if [[ -d "$worktree_path" ]]; then
-    echo "✓ 既存のworktreeが見つかりました"
-    echo "ディレクトリ: ${worktree_path}"
-    
-    cd "$worktree_path"
-    
-    # 現在のブランチ確認
-    local current_branch
-    current_branch=$(git branch --show-current)
-    if [[ "$current_branch" == "$branch_name" ]]; then
-      echo "✓ 正しいブランチにいます: ${current_branch}"
-    else
-      echo "⚠ 異なるブランチにいます: ${current_branch}"
-      echo "  期待するブランチ: ${branch_name}"
-    fi
-    
-    echo "✓ worktreeディレクトリに移動しました"
-    
+  # worktree作成
+  if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
+    git worktree add "$worktree_path" "$branch_name"
   else
-    echo "新しいworktreeを作成します..."
-    
-    # リモートの最新情報を取得
-    echo "リモート情報を取得中..."
-    git fetch origin
-    
-    # リモートブランチの存在確認
-    if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
-      echo "✓ リモートブランチが存在します: origin/${branch_name}"
-      echo "リモートブランチをチェックアウト中..."
-      
-      git worktree add "$worktree_path" "$branch_name"
-      local worktree_result=$?
-      
-    else
-      echo "新しいブランチを作成します: ${branch_name}"
-      
-      git worktree add -b "$branch_name" "$worktree_path"
-      local worktree_result=$?
-      
-      if [[ $worktree_result -eq 0 ]]; then
-        cd "$worktree_path"
-        echo "リモートブランチをプッシュ中..."
-        git push -u origin "$branch_name"
-        local push_result=$?
-        
-        if [[ $push_result -eq 0 ]]; then
-          echo "✓ リモートブランチを作成しました"
-        else
-          echo "⚠ リモートブランチのプッシュに失敗しました"
-        fi
-      fi
-    fi
-    
-    if [[ $worktree_result -eq 0 ]]; then
-      cd "$worktree_path"
-      echo "✓ worktreeを作成し、ディレクトリに移動しました"
-    else
-      echo "✗ worktreeの作成に失敗しました" >&2
-      exit 1
-    fi
+    git worktree add -b "$branch_name" "$worktree_path"
+    cd "$worktree_path"
+    git push -u origin "$branch_name"
   fi
-  
-  # .i9wa4ディレクトリのセットアップ
-  echo
-  echo "基本セットアップを実行中..."
-  setup_i9wa4_directory "$worktree_path"
-  
-  echo
-  echo "=== セットアップ完了 ==="
-  echo "作業ディレクトリ: ${worktree_path}"
-  echo "現在のブランチ: $(git branch --show-current)"
-  
-  local change_count
-  change_count=$(git status --porcelain | wc -l | tr -d ' ')
-  echo "Git状態: ${change_count} 個の変更"
-  
-  # 作業ディレクトリ情報をファイルに保存（他のコマンドから参照用）
-  mkdir -p .claude
-  cat > .claude/worktree_info << EOF
-ISSUE_NUMBER=${issue_number}
-BRANCH_NAME=${branch_name}
-WORKTREE_PATH=${worktree_path}
-CREATED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-EOF
-  
-  echo "✓ worktree情報を保存しました: .claude/worktree_info"
-  
-  # 次のステップの案内
-  echo
-  echo "=== 次のステップ ==="
-  echo "1. Issue作業環境をセットアップ: /setup-issue-work ${issue_number}"
-  echo "2. または手動でファイル作成を開始"
-  echo
-  echo "現在のディレクトリ: $(pwd)"
-  echo "作成されたファイル:"
-  echo "  - .i9wa4/temp.md"
-  echo "  - local.vim"
-  echo "  - .claude/worktree_info"
-}
 
-# メイン処理
-main() {
-  # 引数解析
-  while [[ $# -gt 0 ]]; do
-    case $1 in
-      -h | --help)
-        usage
-        exit 0
-        ;;
-      -*)
-        echo "Unknown option: $1" >&2
-        usage >&2
-        exit 1
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-  
-  # Issue番号の取得と検証
-  local issue_number="${1:-}"
-  validate_issue_number "$issue_number"
-  
-  # Git リポジトリチェック
-  check_git_repo
-  
-  # Worktree作成
-  create_worktree "$issue_number"
-}
+  cd "$worktree_path"
+  echo "✓ worktreeを作成: ${worktree_path}"
+fi
 
-# スクリプト実行
-main "$@"
+echo "✓ ブランチ: $(git branch --show-current)"
+echo "→ 次は: repo-setup"

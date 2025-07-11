@@ -1,5 +1,5 @@
 ---
-description: "learn dbt"
+description: "Learn dbt"
 ---
 
 # learn-dbt

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# .i9wa4ディレクトリとファイルを作成
+mkdir -p .i9wa4
+
+cat >.i9wa4/temp.md <<'EOF'
+ultrathink
+EOF
+
+cat >local.vim <<'EOF'
+" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
+let g:mnh_header_level_shift = 1
+let g:my_tp_path = '.i9wa4/temp.md'->expand()
+EOF
+
+# Gitリポジトリの場合は情報を保存
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  branch_name=$(git branch --show-current)
+  issue_number=""
+  [[ $branch_name =~ ^issue-([0-9]+)$ ]] && issue_number="${BASH_REMATCH[1]}"
+
+  cat >.i9wa4/repo-info <<EOF
+ISSUE_NUMBER=${issue_number}
+BRANCH_NAME=${branch_name}
+REPO_PATH=$(pwd)
+CREATED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+EOF
+fi
+
+echo "✓ セットアップ完了"

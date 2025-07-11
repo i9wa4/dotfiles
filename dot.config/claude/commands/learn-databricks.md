@@ -1,5 +1,5 @@
 ---
-description: "learn Databricks"
+description: "Learn Databricks"
 ---
 
 # learn-databricks
