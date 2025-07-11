@@ -2,6 +2,7 @@
 /dot.config/alacritty/themes/
 /dot.config/ghostty/config
 .netrwhist
+!.devcontainer/
 
 # uv
 /build/
