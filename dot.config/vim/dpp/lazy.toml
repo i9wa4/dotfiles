@@ -1,5 +1,5 @@
 [[plugins]]
-repo = 'editorconfig/editorconfig-vim'
+repo = 'saccarosium/netrw.vim'
 on_event = ['VimEnter']
 
 [[plugins]]

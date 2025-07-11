@@ -250,5 +250,8 @@ augroup END
 "
 let s:dpp_path = $XDG_CONFIG_HOME->expand() .. '/vim/dpp/dpp.vim'
 if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
+  let g:loaded_netrw = 1
+  let g:loaded_netrwPlugin = 1
+  packadd editorconfig
   execute 'source' s:dpp_path
 endif
