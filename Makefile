@@ -475,6 +475,9 @@ act-install:  ## install act
 act-build:  ## build act
 	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
 
+claude-config:  ## configure Claude Code
+	claude config set --global preferredNotifChannel terminal_bell
+
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p

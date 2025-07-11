@@ -30,6 +30,12 @@ snippets:
       && uv sync --frozen --all-extras
       && cd -
       && ghq-repo-status
+  - name: (Claude Code) yolo
+    keyword: y
+    snippet:
+      --dangerously-skip-permissions
+    context:
+      lbuffer: '^claude\s'
   - name: (Git) delete merged branches
     keyword: dm
     snippet:

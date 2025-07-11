@@ -1,5 +1,5 @@
 ---
-description: "learn BigQuery"
+description: "Learn BigQuery"
 ---
 
 # learn-bigquery

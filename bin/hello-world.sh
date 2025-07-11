@@ -10,5 +10,3 @@ cd $HOME
 cd "$(dirname "$0")"
 
 echo "Hello, World!"
-sleep 1
-echo "Done."
