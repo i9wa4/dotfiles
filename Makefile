@@ -43,7 +43,7 @@ common-init: zinit-install zsh-init unlink link git-init tmux-init ghq-get-essen
 # --------------------------------------
 # Tasks for macOS
 #
-mac-init: package-mac-install common-init mac-alacritty-init mac-ghostty-init  ## init for Mac
+mac-init: package-mac-install common-init mac-alacritty-init  ## init for Mac
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.maisin.boost ApplePressAndHoldEnabled -bool false
@@ -75,7 +75,8 @@ mac-copy:
 define MF_MAC_ALACRITTY
 [general]
 import = [
-    '~/.config/alacritty/common.toml'
+    '~/.config/alacritty/common.toml',
+    '~/.config/alacritty/macos.toml'
 ]
 endef
 export MF_MAC_ALACRITTY
@@ -84,14 +85,6 @@ mac-alacritty-init:
 	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
-
-define MF_MAC_GHOSTTY
-config-file = "config-common"
-endef
-export MF_MAC_GHOSTTY
-
-mac-ghostty-init:
-	echo "$${MF_MAC_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
 
 
 # --------------------------------------
@@ -137,15 +130,6 @@ wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
 	echo "Restart WSL2"
-
-define MF_WIN_GHOSTTY
-config-file = "config-common"
-config-file = "config-windows"
-endef
-export MF_WIN_GHOSTTY
-
-wsl-ghostty-init:
-	echo "$${MF_WIN_GHOSTTY}" | tee "$${HOME}"/.config/ghostty/config
 
 define MF_WSLCONF_IN_WSL
 [boot]
@@ -194,7 +178,6 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/ghostty         "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
@@ -334,7 +317,6 @@ package-common-install:  ## install common packages
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# ghostty
 	# visual-studio-code@insiders
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
