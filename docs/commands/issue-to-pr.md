@@ -166,7 +166,6 @@ EOF
                 echo "2. /commit でコミット作業へ"
                 echo ""
                 echo "pr.mdの実装進捗・変更ファイルセクションを更新済みであることを確認してください。"
-                rm -f .i9wa4/phase
                 exit 0
                 ;;
         esac
