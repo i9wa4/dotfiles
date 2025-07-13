@@ -1,6 +1,8 @@
 " --------------------------------------
 " Variable
 "
+let g:loaded_netrw = 0
+let g:loaded_netrwPlugin = 0
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 0
@@ -250,8 +252,6 @@ augroup END
 "
 let s:dpp_path = $XDG_CONFIG_HOME->expand() .. '/vim/dpp/dpp.vim'
 if filereadable(s:dpp_path) && !exists('*dpp#min#load_state')
-  let g:loaded_netrw = 1
-  let g:loaded_netrwPlugin = 1
   packadd editorconfig
   execute 'source' s:dpp_path
 endif

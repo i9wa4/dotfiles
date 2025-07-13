@@ -12,6 +12,8 @@ syntax off
 "
 " Variable
 " let g:netrw_home = $HOME->expand() .. '/.cache/vim'
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 
 " System
 set clipboard&
