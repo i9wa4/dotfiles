@@ -1,13 +1,12 @@
 " --------------------------------------
 " Variable
 "
-let g:loaded_netrw = 0
-let g:loaded_netrwPlugin = 0
+let g:loaded_netrw = 1
+let g:loaded_netrwPlugin = 1
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 0
 let g:netrw_hide = 0
-let g:netrw_home = $XDG_CACHE_HOME->expand()
 let g:netrw_liststyle = 0
 
 let g:auto_reload = timer_start(

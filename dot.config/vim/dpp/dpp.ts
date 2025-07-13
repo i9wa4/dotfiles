@@ -116,30 +116,40 @@ export class Config extends BaseConfig {
       }
     }
 
-    const localPlugins = await args.dpp.extAction(
-      args.denops,
-      context,
-      options,
-      "local",
-      "local",
-      {
-        directory: "~/ghq/github.com/i9wa4",
-        options: {
-          frozen: true,
-          merged: false,
-        },
-      },
-    ) as Plugin[] | undefined;
+    // ローカルプラグインを優先させたいディレクトリのリスト
+    // 上から順に優先度が高い（同名のプラグインがある場合、上のディレクトリが優先される）
+    const localPluginDirs = [
+      "~/ghq/github.com/i9wa4",
+      "~/ghq/github.com/saccarosium",
+    ];
 
-    if (localPlugins) {
-      for (const plugin of localPlugins) {
-        if (plugin.name in recordPlugins) {
-          recordPlugins[plugin.name] = Object.assign(
-            recordPlugins[plugin.name],
-            plugin,
-          );
-        } else {
-          recordPlugins[plugin.name] = plugin;
+    // 各ディレクトリからローカルプラグインを読み込む（逆順で処理）
+    for (const directory of localPluginDirs.slice().reverse()) {
+      const localPlugins = await args.dpp.extAction(
+        args.denops,
+        context,
+        options,
+        "local",
+        "local",
+        {
+          directory: directory,
+          options: {
+            frozen: true,
+            merged: false,
+          },
+        },
+      ) as Plugin[] | undefined;
+
+      if (localPlugins) {
+        for (const plugin of localPlugins) {
+          if (plugin.name in recordPlugins) {
+            recordPlugins[plugin.name] = Object.assign(
+              recordPlugins[plugin.name],
+              plugin,
+            );
+          } else {
+            recordPlugins[plugin.name] = plugin;
+          }
         }
       }
     }
