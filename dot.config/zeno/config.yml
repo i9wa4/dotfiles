@@ -36,6 +36,10 @@ snippets:
       --dangerously-skip-permissions
     context:
       lbuffer: '^claude\s'
+  - name: (ghq) update
+    keyword: gu
+    snippet:
+      ghq list | ghq get --update --parallel
   - name: (Git) delete merged branches
     keyword: dm
     snippet:
