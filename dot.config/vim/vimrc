@@ -21,6 +21,7 @@ else
   set clipboard^=unnamedplus
 endif
 set autoread
+set belloff=all
 set nobackup
 set noswapfile
 set noundofile
