@@ -111,6 +111,7 @@ nnoremap <script> <SID>gk gk<SID>g
 " i_CTRL-D Delete one indent
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
+inoremap ,cmd <C-r>=fnamemodify("docs/commands/", ":p:~")<CR>
 
 " Location List
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
