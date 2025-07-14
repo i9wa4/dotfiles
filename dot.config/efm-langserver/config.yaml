@@ -56,11 +56,23 @@ tools:
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
-    format-command: 'sqlfmt -'
+    format-command: 'sqlfmt-wrapper'
     format-stdin: true
-    require-marker: true
-    # root-markers:
-    #   - .efm-use-sqlfmt
+
+  sql-sqlfluff-lint: &sql-sqlfluff-lint
+    lint-command: 'sqlfluff-lint-wrapper'
+    lint-source: 'sqlfluff'
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m'
+    root-markers:
+      - .sqlfluff
+
+  sql-sqlfluff-fix: &sql-sqlfluff-fix
+    format-command: 'sqlfluff-fix-wrapper'
+    format-stdin: true
+    root-markers:
+      - .sqlfluff
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
@@ -83,7 +95,11 @@ languages:
     - <<: *sh-shfmt
 
   sql:
-    - <<: *sql-sqlfmt
+    - <<: *sql-sqlfluff-fix
+    - <<: *sql-sqlfluff-lint
 
   terraform:
     - <<: *terraform-fmt
+
+  =:
+    - <<: *sql-sqlfmt
