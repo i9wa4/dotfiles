@@ -1,0 +1,15 @@
+#!/bin/bash
+# sqlfluff lint用ラッパースクリプト
+# uvプロジェクトの場合はuv run sqlfluffを、それ以外は直接sqlfluffを実行
+
+# プロジェクトルートを探す（.gitディレクトリまたは現在のディレクトリ）
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+
+# uv.lockファイルが存在するかチェック
+if [ -f "$PROJECT_ROOT/uv.lock" ]; then
+    # uvプロジェクトの場合
+    cd "$PROJECT_ROOT" && uv run sqlfluff lint --format=line --dialect postgres --disable-progress-bar -
+else
+    # 通常のプロジェクトの場合
+    sqlfluff lint --format=line --dialect postgres --disable-progress-bar -
+fi
