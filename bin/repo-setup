@@ -7,6 +7,12 @@ set -o posix
 # .i9wa4ディレクトリとファイルを作成
 mkdir -p .i9wa4
 
+# .devcontainerディレクトリをコピー（存在する場合はスキップ）
+if [ ! -d ".devcontainer" ] && [ -d "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" ]; then
+  cp -r "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" .
+  echo "✓ .devcontainerディレクトリをコピーしました"
+fi
+
 cat >.i9wa4/temp.md <<'EOF'
 ultrathink
 EOF
