@@ -22,6 +22,10 @@ vmap <Space>av <Plug>(send-to-ai-cli-visual)
 '''
 
 [[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+on_event = ['VimEnter']
+
+[[plugins]]
 repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
 
