@@ -28,6 +28,26 @@ call ddu#custom#patch_global(#{
 \       matchers: ['matcher_substring'],
 \     },
 \   },
+\   sourceParams: #{
+\     file_rec: #{
+\       ignoreDirectories: [
+\         '.coverage',
+\         '.env',
+\         '.git',
+\         '.mypy_cache',
+\         '.pytest_cache',
+\         '.tox',
+\         '.venv',
+\         '__pycache__',
+\         'build',
+\         'dist',
+\         'env',
+\         'node_modules',
+\         'target',
+\         'venv',
+\       ],
+\     },
+\   },
 \   kindOptions: #{
 \     file: #{
 \       defaultAction: 'open',
@@ -102,10 +122,9 @@ command! -nargs=0 DduRg call ddu#start(#{
 nnoremap <Plug>(my-Ddu) <Nop>
 nmap <Space>u <Plug>(my-ddU)
 nnoremap <Plug>(my-ddU)f <Cmd>DduFile<CR>
-nnoremap <Plug>(my-ddU)h <Cmd>DduHelp<CR>
 nnoremap <Plug>(my-ddU)g <Cmd>DduRg<CR>
-nnoremap <Plug>(my-ddU)rc <Cmd>DduFileRec getcwd()<CR>
-nnoremap <Plug>(my-ddU)rr <Cmd>DduFileRec
+nnoremap <Plug>(my-ddU)h <Cmd>DduHelp<CR>
+nnoremap <Plug>(my-ddU)r <Cmd>DduFileRec
 \ fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 '''
 
