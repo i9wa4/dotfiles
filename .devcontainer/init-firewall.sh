@@ -60,8 +60,8 @@ for domain in \
     "pypi.org" \
     "files.pythonhosted.org"; do
     echo "Resolving $domain..."
-    # Use dig with +short to get A records only, following CNAMEs
-    ips=$(dig +short "$domain" | grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
+    # Use dig with +short A to explicitly get A records (IPv4), following CNAMEs
+    ips=$(dig +short A "$domain")
     if [ -z "$ips" ]; then
         echo "ERROR: Failed to resolve $domain"
         exit 1
@@ -73,7 +73,7 @@ for domain in \
             exit 1
         fi
         echo "Adding $ip for $domain"
-        ipset add allowed-domains "$ip" 2>/dev/null || echo "  (IP $ip already in set)"
+        ipset add --exist allowed-domains "$ip"
     done < <(echo "$ips")
 done
 
