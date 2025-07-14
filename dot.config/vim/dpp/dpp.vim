@@ -86,3 +86,9 @@ command! DppUpdate
 
 command! DppMakeState
 \ call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
+
+augroup DppAutoRecache
+  autocmd!
+  autocmd BufWritePost */dpp/*.toml,*/dpp/*.ts,*/dpp/*.vim
+  \ call dpp#make_state(s:dpp_base, '$BASE_DIR/dpp.ts'->expand(), s:profile)
+augroup END
