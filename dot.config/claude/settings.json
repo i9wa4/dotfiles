@@ -3,8 +3,7 @@
         "allow": [
         ],
         "deny": [
-            "Bash(rm:*)",
-            "WebFetch(domain:github.com)"
+            "Bash(rm:*)"
         ]
     },
     "env": {
