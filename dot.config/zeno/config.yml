@@ -37,13 +37,17 @@ snippets:
     context:
       lbuffer: '^claude\s'
   - name: (Docker) remove all containers
-    keyword: drc
+    keyword: rm
     snippet:
-      docker rm -f $(docker ps -aq)
+      rm -f $(docker ps -aq)
+    context:
+      lbuffer: '^docker\s'
   - name: (Docker) remove all images
-    keyword: dri
+    keyword: rmi
     snippet:
-      docker rmi -f $(docker images -aq)
+      rmi -f $(docker images -aq)
+    context:
+      lbuffer: '^docker\s'
   - name: (ghq) update
     keyword: gu
     snippet:
