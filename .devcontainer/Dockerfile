@@ -87,7 +87,7 @@ COPY --chown=node:node uv.loc[k] pyproject.tom[l] ./
 # Run uv sync if uv.lock exists with optimizations
 RUN --mount=type=cache,target=/root/.cache/uv \
     if [ -f uv.lock ]; then \
-    uv sync --frozen --compile-bytecode && \
+    uv sync --frozen --all-extras --compile-bytecode && \
     chown -R node:node .venv; \
   fi
 
