@@ -2,14 +2,20 @@
 # sqlfluff fix用ラッパースクリプト
 # uvプロジェクトの場合はuv run sqlfluffを、それ以外は直接sqlfluffを実行
 
+set -euo pipefail
+
 # プロジェクトルートを探す（.gitディレクトリまたは現在のディレクトリ）
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 
 # uv.lockファイルが存在するかチェック
 if [ -f "$PROJECT_ROOT/uv.lock" ]; then
-    # uvプロジェクトの場合
-    cd "$PROJECT_ROOT" && uv run sqlfluff fix --dialect postgres --disable-progress-bar -
+  # uvプロジェクトの場合
+  cd "$PROJECT_ROOT" && uv run sqlfluff fix --dialect postgres --disable-progress-bar -
+elif command -v sqlfluff >/dev/null 2>&1; then
+  # 通常のプロジェクトの場合（sqlfluffがインストールされている）
+  sqlfluff fix --dialect postgres --disable-progress-bar -
 else
-    # 通常のプロジェクトの場合
-    sqlfluff fix --dialect postgres --disable-progress-bar -
+  # sqlfluffが見つからない場合はエラーメッセージ
+  echo "Error: sqlfluff not found. Please install it with 'pip install sqlfluff'" >&2
+  exit 1
 fi

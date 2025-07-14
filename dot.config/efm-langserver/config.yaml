@@ -58,6 +58,8 @@ tools:
   sql-sqlfmt: &sql-sqlfmt
     format-command: 'sqlfmt-wrapper'
     format-stdin: true
+    root-markers:
+      - pyproject.toml
 
   sql-sqlfluff-lint: &sql-sqlfluff-lint
     lint-command: 'sqlfluff-lint-wrapper'
@@ -97,9 +99,7 @@ languages:
   sql:
     - <<: *sql-sqlfluff-fix
     - <<: *sql-sqlfluff-lint
+    - <<: *sql-sqlfmt
 
   terraform:
     - <<: *terraform-fmt
-
-  =:
-    - <<: *sql-sqlfmt
