@@ -61,19 +61,34 @@ for domain in \
     "files.pythonhosted.org"; do
     echo "Resolving $domain..."
     # Use dig with +short A to explicitly get A records (IPv4), following CNAMEs
-    ips=$(dig +short A "$domain")
+    # First try to get the final A records, following all CNAMEs
+    ips=$(dig +short "$domain" | grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
+    
+    # If no IPs found directly, try to follow CNAMEs and get their IPs
     if [ -z "$ips" ]; then
-        echo "ERROR: Failed to resolve $domain"
-        exit 1
+        cnames=$(dig +short "$domain" | grep -v -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
+        for cname in $cnames; do
+            echo "Following CNAME $cname for $domain..."
+            cname_ips=$(dig +short "$cname" | grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
+            if [ -n "$cname_ips" ]; then
+                ips="$ips$cname_ips"$'\n'
+            fi
+        done
+    fi
+    
+    if [ -z "$ips" ]; then
+        echo "WARNING: Failed to resolve $domain - skipping"
+        continue
     fi
     
     while read -r ip; do
-        if [[ ! "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-            echo "ERROR: Invalid IP from DNS for $domain: $ip"
-            exit 1
+        # Skip CNAME records and only process IP addresses
+        if [[ "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            echo "Adding $ip for $domain"
+            ipset add --exist allowed-domains "$ip"
+        else
+            echo "Skipping non-IP entry for $domain: $ip"
         fi
-        echo "Adding $ip for $domain"
-        ipset add --exist allowed-domains "$ip"
     done < <(echo "$ips")
 done
 
