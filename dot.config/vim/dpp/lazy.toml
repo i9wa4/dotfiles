@@ -15,10 +15,11 @@ on_event = ['VimEnter']
 repo = 'i9wa4/vim-tmux-send-to-ai-cli'
 on_event = ['VimEnter']
 hook_source = '''
-nmap <Space>ab <Plug>(send-to-ai-cli-buffer)
-nmap <Space>al <Plug>(send-to-ai-cli-current-line)
 nmap <Space>ay <Plug>(send-to-ai-cli-yanked)
+nmap <Space>ab <Plug>(send-to-ai-cli-buffer)
 vmap <Space>av <Plug>(send-to-ai-cli-visual)
+nmap <Space>al <Plug>(send-to-ai-cli-current-line)
+nmap <Space>ap <Plug>(send-to-ai-cli-paragraph)
 '''
 
 [[plugins]]
