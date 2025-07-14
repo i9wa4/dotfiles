@@ -56,25 +56,10 @@ tools:
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
-    format-command: 'sqlfmt-wrapper'
+    format-command: 'sh -c "if [ -f \"${ROOT}/.sqlfluff\" ]; then cat; elif [ -f \"${ROOT}/uv.lock\" ]; then cd \"${ROOT}\" && uv run sqlfmt -; else sqlfmt -; fi"'
     format-stdin: true
     root-markers:
       - pyproject.toml
-
-  sql-sqlfluff-lint: &sql-sqlfluff-lint
-    lint-command: 'sqlfluff-lint-wrapper'
-    lint-source: 'sqlfluff'
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m'
-    root-markers:
-      - .sqlfluff
-
-  sql-sqlfluff-fix: &sql-sqlfluff-fix
-    format-command: 'sqlfluff-fix-wrapper'
-    format-stdin: true
-    root-markers:
-      - .sqlfluff
 
   terraform-fmt: &terraform-fmt
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
@@ -97,8 +82,6 @@ languages:
     - <<: *sh-shfmt
 
   sql:
-    - <<: *sql-sqlfluff-fix
-    - <<: *sql-sqlfluff-lint
     - <<: *sql-sqlfmt
 
   terraform:
