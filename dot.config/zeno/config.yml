@@ -36,6 +36,14 @@ snippets:
       --dangerously-skip-permissions
     context:
       lbuffer: '^claude\s'
+  - name: (Docker) remove all containers
+    keyword: drc
+    snippet:
+      docker rm -f $(docker ps -aq)
+  - name: (Docker) remove all images
+    keyword: dri
+    snippet:
+      docker rmi -f $(docker images -aq)
   - name: (ghq) update
     keyword: gu
     snippet:
