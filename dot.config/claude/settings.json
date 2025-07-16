@@ -1,14 +1,14 @@
 {
-    "permissions": {
-        "allow": [
-        ],
-        "deny": [
-            "Bash(rm:*)"
-        ]
-    },
-    "env": {
-        "BASH_DEFAULT_TIMEOUT_MS": 300000,
-        "BASH_MAX_TIMEOUT_MS": 300000
-    },
-    "includeCoAuthoredBy": false
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "BASH_MAX_TIMEOUT_MS": "300000"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash(rm:*)"
+    ]
+  },
+  "model": "Sonnet"
 }
