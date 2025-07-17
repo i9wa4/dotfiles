@@ -1,9 +1,5 @@
-/dot.config/alacritty/alacritty.toml
-/dot.config/alacritty/themes/
-/dot.config/ghostty/config
-.netrwhist
 !.devcontainer/
 
 # uv
-/build/
 /dotfiles.egg-info/
+/build/

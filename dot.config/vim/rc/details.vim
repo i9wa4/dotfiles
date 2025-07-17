@@ -109,9 +109,9 @@ nnoremap <script> <SID>gk gk<SID>g
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
-inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
-inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 inoremap ,cmd <C-r>=fnamemodify("dot.config/claude/commands", ":p:~")<CR>
+inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
+inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 
 " Location List
 command! Lprevious  try | lprevious | catch | llast   | catch | endtry
@@ -140,17 +140,18 @@ nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
 
 " Filer
+" nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)c <Cmd>15Lexplore<CR>
-nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
+nnoremap <Plug>(my-Filer)ac <Cmd>execute 'edit' g:my_ac_path<CR>
+nnoremap <Plug>(my-Filer)c  <Cmd>execute '15Lexplore'<CR>
 nnoremap <Plug>(my-Filer)i0 <Cmd>execute 'edit' g:my_i0_path<CR>
 nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
-nnoremap <Plug>(my-Filer)l <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
-nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <Plug>(my-Filer)t <Cmd>execute 'edit' g:my_tp_path<CR>
-nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC<CR>
+nnoremap <Plug>(my-Filer)l  <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
+nnoremap <Plug>(my-Filer)o  <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
+nnoremap <Plug>(my-Filer)t  <Cmd>execute 'edit' g:my_tp_path<CR>
+nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
 
 " eNcoding
 nnoremap <Plug>(my-eNcoding) <Nop>

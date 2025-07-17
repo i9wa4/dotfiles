@@ -1,11 +1,10 @@
 .DS_Store
 .env
-.i9wa4/
 node_modules/
 
 # dotfiles
+.i9wa4/
 local.vim
-.efm-use-*
 
 # Aider
 .aider*
