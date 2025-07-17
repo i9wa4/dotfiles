@@ -109,7 +109,7 @@ nnoremap <script> <SID>gk gk<SID>g
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
-inoremap ,cmd <C-r>=fnamemodify("dot.config/claude/commands", ":p:~")<CR>
+inoremap ,cmd <C-r>=fnamemodify("~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands", ":p:~")<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 

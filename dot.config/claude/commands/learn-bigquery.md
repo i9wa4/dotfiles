@@ -33,4 +33,3 @@ WITH dau AS (
 SELECT * FROM dau LIMIT 10
 "
 ```
-
