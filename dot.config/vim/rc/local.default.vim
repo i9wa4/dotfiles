@@ -1,5 +1,6 @@
 " Global Variables
 let g:mnh_header_level_shift = 7
+let g:my_ac_path = '~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands/CONTRIBUTING.md'->expand()
 let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/docs/00.md'->expand()
 let g:my_i1_path = '~/ghq/github.com/i9wa4/internal/docs/05.md'->expand()
 let g:my_i2_path = '~/ghq/github.com/i9wa4/internal/docs/07.md'->expand()
