@@ -107,6 +107,8 @@ export MF_UBUNTU_ALACRITTY
 
 ubuntu-alacritty-init:
 	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
 ubuntu-awscli-update:
 	# AWS CLI
