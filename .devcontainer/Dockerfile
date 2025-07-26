@@ -21,7 +21,6 @@ RUN apt update && apt install -y less \
   aggregate \
   jq
 
-
 # Ensure default node user has access to /usr/local/share
 RUN mkdir -p /usr/local/share/npm-global && \
   chown -R node:node /usr/local/share
@@ -42,7 +41,6 @@ RUN mkdir -p /workspace /home/node/.claude && \
   chown -R node:node /workspace /home/node/.claude
 
 WORKDIR /workspace
-
 
 RUN ARCH=$(dpkg --print-architecture) && \
   wget "https://github.com/dandavison/delta/releases/download/0.18.2/git-delta_0.18.2_${ARCH}.deb" && \
@@ -81,14 +79,5 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
 # Python environment setup (if needed)
 # Copy uv binary from official image
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-# Copy Python dependency files if they exist
-# Using a trick to avoid build failure when files don't exist
-COPY --chown=node:node uv.loc[k] pyproject.tom[l] ./
-# Run uv sync if uv.lock exists with optimizations
-RUN --mount=type=cache,target=/root/.cache/uv \
-    if [ -f uv.lock ]; then \
-    uv sync --frozen --all-extras --compile-bytecode && \
-    chown -R node:node .venv; \
-  fi
 
 USER node
