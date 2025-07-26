@@ -19,6 +19,9 @@ local.vim
 databricks.yml
 typings/
 
+# Dev Container
+.devcontainer/
+
 # Python
 .ipynb_checkpoints/
 .virtual_documents/
