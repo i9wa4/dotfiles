@@ -50,6 +50,5 @@
     },
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
     "workspaceFolder": "/workspace",
-    "postStartCommand": "uv sync --frozen",
-    "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh"
+    "postStartCommand": "uv sync --frozen"
 }
