@@ -176,11 +176,11 @@ link:  ## make symbolic links
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
+	&& cp -rf $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/aerospace       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
@@ -483,6 +483,7 @@ git-init:
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
 	git config --global core.editor vim
+	git config --global core.excludesfile '~/.config/git/ignore'
 	git config --global core.ignorecase false
 	git config --global core.pager "LESSCHARSET=utf-8 less"
 	git config --global core.quotepath false
@@ -494,7 +495,7 @@ git-init:
 	git config --global difftool.prompt false
 	git config --global difftool.vimdiff.path vim
 	git config --global fetch.prune true
-	git config --global ghq.root ~/ghq
+	git config --global ghq.root '~/ghq'
 	git config --global gpg.format ssh
 	git config --global grep.lineNumber true
 	git config --global http.sslVerify false
@@ -504,7 +505,7 @@ git-init:
 	git config --global mergetool.prompt false
 	git config --global mergetool.vimdiff.path vim
 	git config --global push.default current
-	git config --global user.signingkey ~/.ssh/github.pub
+	git config --global user.signingkey '~/.ssh/github.pub'
 
 nvim-build:  ## build Neovim
 	# git clean -ffdx

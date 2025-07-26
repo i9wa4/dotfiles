@@ -1,9 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -o errexit
 
 # JupyterLab起動スクリプト
 # Databricks Connect環境での快適な開発用
-
-set -e
 
 echo "🔥 Databricks JupyterLab 環境を起動中..."
 
