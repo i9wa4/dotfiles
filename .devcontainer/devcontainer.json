@@ -14,6 +14,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
+                "editorconfig.editorconfig",
                 "ms-python.python",
                 "ms-toolsai.jupyter"
             ],
@@ -33,17 +34,17 @@
     },
     "remoteUser": "node",
     "mounts": [
-        "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-        "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume",
         "source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/node/.claude,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.config/git,target=/home/node/.config/git,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.databrickscfg,target=/home/node/.databrickscfg,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.dbt,target=/home/node/.dbt,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
-        "source=${localEnv:XDG_CONFIG_HOME},target=/home/node/.config,type=bind,consistency=cached"
+        "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume"
     ],
     "remoteEnv": {
         "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-        "GH_TOKEN": "${localEnv:GH_TOKEN}",
         "NODE_OPTIONS": "--max-old-space-size=4096",
         "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
         "UV_LINK_MODE": "copy"

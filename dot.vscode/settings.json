@@ -11,5 +11,6 @@
     "github.copilot.chat.codesearch.enabled": true,
     "terminal.integrated.fontFamily": "'MyricaM M', monospace",
     "terminal.integrated.fontSize": 18,
-    "github.copilot.nextEditSuggestions.enabled": true
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "remote.autoForwardPortsSource": "hybrid"
 }
