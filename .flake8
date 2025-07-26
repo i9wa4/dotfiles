@@ -1,0 +1,13 @@
+[flake8]
+# NOTE: Black との整合性を確保するために flake8 の設定を一部緩和させている
+#   https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#minimal-configuration
+max-line-length = 120
+extend-exclude =
+    .venv
+extend-ignore =
+    # E203: Whitespace before ':'
+    E203,
+    # E701: Multiple statements on one line (colon)
+    E701,
+    # F821: undefined name (Databricks環境で定義されるグローバル変数)
+    F821

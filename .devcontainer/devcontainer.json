@@ -15,6 +15,7 @@
         "vscode": {
             "extensions": [
                 "editorconfig.editorconfig",
+                "elagil.pre-commit-helper",
                 "ms-python.python",
                 "ms-toolsai.jupyter"
             ],
@@ -51,5 +52,5 @@
     },
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
     "workspaceFolder": "/workspace",
-    "postStartCommand": "uv sync --frozen"
+    "postStartCommand": "uv sync --frozen --group dev && uv run pre-commit install"
 }
