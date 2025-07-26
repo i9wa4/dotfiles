@@ -96,7 +96,7 @@
 1. You can use the following command to login with a token.
 
     ```sh
-    $ echo $TOKEN | gh auth login --with-token
+    $ gh auth status --show-token | gh auth login --with-token
     ```
 
 ### 5.3. Web Browser

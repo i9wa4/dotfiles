@@ -60,16 +60,27 @@ for domain in \
   "pypi.org" \
   "files.pythonhosted.org"; do
   echo "Resolving $domain..."
-  ips=$(dig +short A "$domain")
+  # Try multiple approaches to get IP addresses, filtering out CNAME records
+  ips=$(dig +short A "$domain" | grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$' || true)
+  # If no IPs found with A record, try following CNAME chain
   if [ -z "$ips" ]; then
-    echo "ERROR: Failed to resolve $domain"
-    exit 1
+    cname=$(dig +short CNAME "$domain" | head -1)
+    if [ -n "$cname" ]; then
+      echo "Following CNAME for $domain: $cname"
+      ips=$(dig +short A "$cname" | grep -E '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$' || true)
+    fi
+  fi
+  
+  if [ -z "$ips" ]; then
+    echo "WARNING: Failed to resolve $domain, skipping..."
+    continue
   fi
 
   while read -r ip; do
+    # Skip CNAME records and only process actual IP addresses
     if [[ ! $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-      echo "ERROR: Invalid IP from DNS for $domain: $ip"
-      exit 1
+      echo "Skipping non-IP DNS record for $domain: $ip (likely CNAME)"
+      continue
     fi
     echo "Adding $ip for $domain"
     ipset add allowed-domains "$ip"
