@@ -3,26 +3,21 @@
     "build": {
         "dockerfile": "Dockerfile",
         "args": {
-            "TZ": "${localEnv:TZ:America/Los_Angeles}"
+            "TZ": "${localEnv:TZ:Asia/Tokyo}"
         }
     },
     "runArgs": [
         "--cap-add=NET_ADMIN",
-        "--cap-add=NET_RAW"
+        "--cap-add=NET_RAW",
+        "--network=host"
     ],
     "customizations": {
         "vscode": {
             "extensions": [
-                "dbaeumer.vscode-eslint",
-                "esbenp.prettier-vscode",
-                "eamodio.gitlens"
+                "ms-python.python",
+                "ms-toolsai.jupyter"
             ],
             "settings": {
-                "editor.formatOnSave": true,
-                "editor.defaultFormatter": "esbenp.prettier-vscode",
-                "editor.codeActionsOnSave": {
-                    "source.fixAll.eslint": "explicit"
-                },
                 "terminal.integrated.defaultProfile.linux": "zsh",
                 "terminal.integrated.profiles.linux": {
                     "bash": {
@@ -40,19 +35,21 @@
     "mounts": [
         "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
         "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume",
-        "source=${localEnv:HOME}/ghq/github.com/i9wa4/dotfiles/dot.config/claude,target=/home/node/.claude,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,consistency=cached",
+        "source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/node/.claude,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.databrickscfg,target=/home/node/.databrickscfg,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.dbt,target=/home/node/.dbt,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.config/gcloud,target=/home/node/.config/gcloud,type=bind,consistency=cached"
+        "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
+        "source=${localEnv:XDG_CONFIG_HOME},target=/home/node/.config,type=bind,consistency=cached"
     ],
     "remoteEnv": {
-        "NODE_OPTIONS": "--max-old-space-size=4096",
         "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+        "GH_TOKEN": "${localEnv:GH_TOKEN}",
+        "NODE_OPTIONS": "--max-old-space-size=4096",
         "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
-        "GH_TOKEN": "${localEnv:GH_TOKEN}"
+        "UV_LINK_MODE": "copy"
     },
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
     "workspaceFolder": "/workspace",
+    "postStartCommand": "uv sync --frozen",
     "postCreateCommand": "sudo /usr/local/bin/init-firewall.sh"
 }

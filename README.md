@@ -93,6 +93,11 @@
 1. Choose SSH for Git operation protocol.
 1. Skip uploading SSH public key.
 1. Login with a web browser: <https://github.com/login/device>.
+1. You can use the following command to login with a token.
+
+    ```sh
+    $ echo $TOKEN | gh auth login --with-token
+    ```
 
 ### 5.3. Web Browser
 

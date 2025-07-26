@@ -13,6 +13,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then
 fi
 
 # Common
+export TZ="Asia/Tokyo"
 export VISUAL=vim
 export XDG_CACHE_HOME="${HOME}"/.cache
 export XDG_CONFIG_HOME="${HOME}"/.config
