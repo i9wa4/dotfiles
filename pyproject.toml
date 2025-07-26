@@ -5,21 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "~=3.13.0"
 dependencies = [
+  "numpy",
+  "pandas",
+  "pynvim",
+  "python-dotenv",
+  "python-lsp-server[all]",
 ]
 
-[project.optional-dependencies]
-main = [
+[dependency-groups]
+dev = [
   "black",
   "flake8",
   "isort",
-  "pynvim",
-  "python-lsp-server[all]",
+  "pre-commit",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",
-]
-mcp = [
-  "mcp[cli]",
-  "numpy",
-  "pandas",
-  "python-dotenv",
 ]
