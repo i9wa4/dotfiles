@@ -36,6 +36,18 @@ snippets:
       --dangerously-skip-permissions
     context:
       lbuffer: '^claude\s'
+  - name: (Dev Container CLI) build
+    keyword: dcb
+    snippet:
+      devcontainer build --workspace-folder .
+  - name: (Dev Container CLI) up
+    keyword: dcu
+    snippet:
+      devcontainer up --workspace-folder .
+  - name: (Dev Container CLI) exec Claude Code
+    keyword: dcc
+    snippet:
+      devcontainer exec --workspace-folder . claude --dangerously-skip-permissions
   - name: (Docker) remove all containers
     keyword: rm
     snippet:
@@ -46,6 +58,18 @@ snippets:
     keyword: rmi
     snippet:
       rmi -f $(docker images -aq)
+    context:
+      lbuffer: '^docker\s'
+  - name: (Docker) stop all containers
+    keyword: s
+    snippet:
+      stop $(docker ps -aq)
+    context:
+      lbuffer: '^docker\s'
+  - name: (Docker) df
+    keyword: df
+    snippet:
+      system df
     context:
       lbuffer: '^docker\s'
   - name: (ghq) update
