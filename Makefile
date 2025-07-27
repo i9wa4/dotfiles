@@ -298,6 +298,7 @@ package-update:
 	# OS common update
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
+	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 	@$(MAKE) volta-update
 	# Deno
