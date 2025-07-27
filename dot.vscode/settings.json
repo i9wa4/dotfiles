@@ -7,10 +7,10 @@
     "editor.fontSize": 22,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
-    "github.copilot.chat.agent.thinkingTool": true,
-    "github.copilot.chat.codesearch.enabled": true,
+    "notebook.markup.fontSize": 18,
+    "notebook.output.fontFamily": "'MyricaM M', monospace",
+    "notebook.output.fontSize": 18,
+    "remote.autoForwardPortsSource": "hybrid",
     "terminal.integrated.fontFamily": "'MyricaM M', monospace",
-    "terminal.integrated.fontSize": 18,
-    "github.copilot.nextEditSuggestions.enabled": true,
-    "remote.autoForwardPortsSource": "hybrid"
+    "terminal.integrated.fontSize": 18
 }

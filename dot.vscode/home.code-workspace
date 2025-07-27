@@ -8,8 +8,10 @@
     "settings": {},
     "extensions": {
         "recommendations": [
-            "github.copilot",
-            "github.copilot-chat"
+                "editorconfig.editorconfig",
+                "elagil.pre-commit-helper",
+                "ms-python.python",
+                "ms-toolsai.jupyter"
         ]
     }
 }
