@@ -36,7 +36,7 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Initialization
 #
-common-init: zinit-install zsh-init unlink link git-init tmux-init ghq-get-essential
+common-init: zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
 	mkdir -p "$${HOME}"/str/src
 
 
@@ -477,7 +477,7 @@ ghq-backup-local:
 	&& ghq list > "$${_list_path}" \
 	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
-git-init:
+git-config:
 	git config --global color.ui auto
 	git config --global commit.gpgsign true
 	git config --global commit.verbose true
