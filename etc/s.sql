@@ -1,1 +1,0 @@
-select aaaaaaaaa, bbbbbbbbbbbb,ccccc,ddddddddddddddddddd,eeeeeeeeeeeeeee,fffffffffffffffffff,gggggggggggggggggg from t1

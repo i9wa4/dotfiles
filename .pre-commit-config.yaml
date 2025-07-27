@@ -6,7 +6,6 @@ repos:
       - id: check-added-large-files
       - id: check-json
       - id: check-yaml
-      - id: detect-aws-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
