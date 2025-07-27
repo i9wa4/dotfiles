@@ -158,5 +158,3 @@ function! my_util#add_python_venv(venv_path) abort
     call my_util#add_path([a:venv_path->expand() .. '/bin'])
   endif
 endfunction
-
-

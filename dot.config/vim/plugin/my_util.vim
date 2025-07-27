@@ -10,4 +10,3 @@ augroup MyUtil
   \ call my_util#source_local_vimrc('<afile>:p'->expand())
   autocmd VimLeave * call my_util#clean_viminfo()
 augroup END
-
