@@ -1,24 +1,19 @@
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: trailing-whitespace
-        # markdownのhard linebreakはそのまま保持する
-        args: [--markdown-linebreak-ext=md]
-      - id: end-of-file-fixer
-      # 大きすぎるファイルをコミットを禁止する
       - id: check-added-large-files
-      # ファイルの改行コードが統一されているかチェックする
+      - id: check-json
+      - id: check-yaml
+      - id: detect-aws-credentials
+      - id: detect-private-key
+      - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=no]
-      # YAML構文チェック
-      - id: check-yaml
-      # JSON構文チェック
-      - id: check-json
-  # python formatter(black)
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+
   - repo: local
     hooks:
       - id: black
@@ -26,9 +21,7 @@ repos:
         entry: uv run black
         language: system
         types: [python]
-        require_serial: false
-  # python formatter(isort)
-  # https://pycqa.github.io/isort/
+
   - repo: local
     hooks:
       - id: isort
@@ -36,8 +29,7 @@ repos:
         entry: uv run isort
         language: system
         types: [python]
-        require_serial: false
-  # python linter(flake8) https://flake8.pycqa.org/en/latest/
+
   - repo: local
     hooks:
       - id: flake8
@@ -45,9 +37,15 @@ repos:
         entry: uv run flake8
         language: system
         types: [python]
-        require_serial: false
-  # クレデンシャルのハードコードをチェック
-  # https://gitleaks.io/
+
+  - repo: local
+    hooks:
+      - id: sqlfmt
+        name: sqlfmt
+        entry: uv run sqlfmt
+        language: system
+        types: [sql]
+
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.28.0
     hooks:
