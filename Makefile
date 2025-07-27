@@ -1,6 +1,7 @@
 # - [Makefileを自己文書化する | POSTD](https://postd.cc/auto-documented-makefile/)
 # - [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
 # - [Makefile の関数一覧 | 晴耕雨読](https://tex2e.github.io/blog/makefile/functions)
+# - [Makefileでシェルスクリプトを便利にする.ONESHELL](https://zenn.dev/mirablue/articles/20241208-make-oneshell)
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
