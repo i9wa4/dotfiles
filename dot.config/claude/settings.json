@@ -1,26 +1,26 @@
 {
-    "env": {
-        "BASH_DEFAULT_TIMEOUT_MS": "300000",
-        "BASH_MAX_TIMEOUT_MS": "300000"
-    },
-    "includeCoAuthoredBy": false,
-    "model": "Sonnet",
-    "permissions": {
-        "allow": [],
-        "deny": [
-            "Bash(git push:*)",
-            "Bash(git rebase:*)",
-            "Bash(git reset:*)",
-            "Bash(rm -rf:*)",
-            "Bash(rm:*)",
-            "Bash(sudo:*)",
-            "Read(**/*key*)",
-            "Read(**/*token*)",
-            "Read(.env.*)",
-            "Read(id_ed25519)",
-            "Read(id_rsa)",
-            "Write(**/secrets/**)",
-            "Write(.env*)"
-        ]
-    }
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "BASH_MAX_TIMEOUT_MS": "300000"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Read(**/*key*)",
+      "Read(**/*token*)",
+      "Read(.env.*)",
+      "Read(id_ed25519)",
+      "Read(id_rsa)",
+      "Write(**/secrets/**)",
+      "Write(.env*)"
+    ]
+  },
+  "model": "Opus"
 }
