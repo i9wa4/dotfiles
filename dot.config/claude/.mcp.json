@@ -1,0 +1,33 @@
+{
+    "mcpServers": {
+        "atlassian": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "mcp-remote",
+                "https://mcp.atlassian.com/v1/sse"
+            ],
+            "disabled": false,
+            "autoApprove": []
+        },
+        "awslabs.aws-documentation-mcp-server": {
+            "command": "uvx",
+            "args": [
+                "awslabs.aws-documentation-mcp-server@latest"
+            ],
+            "env": {
+                "FASTMCP_LOG_LEVEL": "ERROR"
+            },
+            "disabled": false,
+            "autoApprove": []
+        },
+        "human-in-the-loop": {
+            "command": "uvx",
+            "args": [
+                "hitl-mcp-server"
+            ],
+            "disabled": false,
+            "autoApprove": []
+        }
+    }
+}
