@@ -468,6 +468,9 @@ claude-config:  ## configure Claude Code
 	claude mcp add -s user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
 	claude mcp add -s user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
 	claude mcp add -s user "human-in-the-loop" -- uvx hitl-mcp-server
+	claude mcp add -s user "context7" -- npx -y @upstash/context7-mcp
+	claude mcp add -s user "serena" -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant
+	# claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant --project $(pwd)
 
 
 ghq-get-essential:
