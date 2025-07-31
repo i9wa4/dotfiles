@@ -356,6 +356,7 @@ package-mac-install:
 	  vim \
 	  wget \
 	  zsh \
+	&& brew install python-tk@3.12 \
 	&& brew tap jameswoolfenden/homebrew-tap && bres install jameswoolfenden/tap/pike \
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
@@ -366,6 +367,7 @@ package-mac-install:
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
 	# brew install aws-vpn-client
 	# brew install snowflake-snowsql
+	# python-tk@3.12 for https://github.com/GongRzhe/Human-In-the-Loop-MCP-Server
 
 package-mac-update:
 	brew update
