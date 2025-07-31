@@ -15,7 +15,13 @@ setopt IGNORE_EOF
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey '^x^e' edit-command-line
+edit_current_line() {
+  EDITOR="vim -c 'normal! G$' -c 'setfiletype zsh'" \
+    zle edit-command-line
+}
+zle -N edit_current_line
+bindkey '^xe' edit_current_line
+bindkey '^x^e' edit_current_line
 
 
 # Completion
