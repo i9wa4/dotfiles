@@ -465,6 +465,10 @@ act-build:  ## build act
 
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
+	claude mcp add -s user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+	claude mcp add -s user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
+	claude mcp add -s user "human-in-the-loop" -- uvx hitl-mcp-server
+
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
