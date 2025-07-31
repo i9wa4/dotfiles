@@ -13,6 +13,7 @@ local.vim
 **/.claude/settings.local.json
 .claude/
 .mcp.json
+.serena/
 
 # Databricks
 .databricks/
