@@ -86,9 +86,28 @@ description: "global CONTRIBUTING.md"
         dbt debug --profiles-dir ~/.dbt
         ```
 
-### 3.5. Jupyter Notebook
+### 3.5. Serena メモリー管理
 
-#### 3.5.1. デフォルトの実行方法
+#### 3.5.1. worktreeで作業中にメモリーが存在しない場合
+
+worktreeディレクトリにはSerenaのメモリーが存在しないため、元のプロジェクトのメモリーを参照する
+
+1. worktreeディレクトリ名から元のプロジェクト名を推測
+    - 例: genda-databricks-notebook-issue-24 で作業中の場合
+        - ディレクトリ名から "-issue-数字" を除去
+        - genda-databricks-notebook が元のプロジェクト名
+2. 目的のプロジェクトをアクティベートしてメモリーを読む
+    1. mcp__serena__activate_project で推測したプロジェクト名をアクティベート
+    2. mcp__serena__read_memory でメモリーを読む
+    3. 必要に応じて元のプロジェクトに戻す
+3. 注意事項
+    - 作業ディレクトリとアクティブプロジェクトが異なることを意識する
+    - ファイル操作は現在の作業ディレクトリで行われる
+    - Serenaのシンボル操作はアクティブプロジェクトに対して行われる
+
+### 3.6. Jupyter Notebook
+
+#### 3.6.1. デフォルトの実行方法
 
 Notebook全体を実行する指示を受けた際は、以下のコマンドを使用する
 
@@ -96,21 +115,21 @@ Notebook全体を実行する指示を受けた際は、以下のコマンドを
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300
 ```
 
-#### 3.5.2. 使用例
+#### 3.6.2. 使用例
 
 ```bash
 # databricks-connect-sample.ipynbを実行
 uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks-connect-sample.ipynb --inplace --ExecutePreprocessor.timeout=300
 ```
 
-##### 3.5.2.1. オプション説明
+##### 3.6.2.1. オプション説明
 
 - `--to notebook`: Notebook形式で出力
 - `--execute`: セルを実際に実行
 - `--inplace`: 元のファイルに実行結果を上書き
 - `--ExecutePreprocessor.timeout=300`: タイムアウトを300秒に設定
 
-#### 3.5.3. 実行ログの確認
+#### 3.6.3. 実行ログの確認
 
 実行時のログを確認したい場合は以下のように実行する
 
@@ -118,7 +137,7 @@ uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300 2>&1 | tee /tmp/notebook_execution.log
 ```
 
-#### 3.5.4. 注意事項
+#### 3.6.4. 注意事項
 
 - 実行前に必要な環境変数（`.env`ファイル等）が適切に設定されていることを確認する
 - 長時間実行されるセルがある場合は`--ExecutePreprocessor.timeout`の値を調整する
