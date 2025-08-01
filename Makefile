@@ -465,14 +465,13 @@ act-build:  ## build act
 
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
-	claude mcp add -s user "github" -- npx -y @modelcontextprotocol/server-github
-	claude mcp add -s user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
-	claude mcp add -s user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
-	claude mcp add -s user "human-in-the-loop" -- uvx hitl-mcp-server
-	claude mcp add -s user "context7" -- npx -y @upstash/context7-mcp
-	claude mcp add -s user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
-	claude mcp add -s user "serena" -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant
-	# claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant --project $(pwd)
+	claude mcp add --scope user "github" -- npx -y @modelcontextprotocol/server-github
+	claude mcp add --scope user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
+	claude mcp add --scope user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
+	claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
+	claude mcp add --scope user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
+	# claude mcp add --scope user "serena" -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
+	claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
 
 
 ghq-get-essential:
