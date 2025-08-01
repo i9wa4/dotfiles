@@ -59,8 +59,8 @@ jobs:
 
       - name: Install pre-commit
         run: |
-          uv run pre-commit install
+          uv run --no-sync pre-commit install
 
       - name: Run pre-commit
         run: |
-          uv run pre-commit run --all-files
+          uv run --no-sync pre-commit run --all-files
