@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: black
         name: black
-        entry: uv run black
+        entry: uv run --no-sync black
         language: system
         types: [python]
 
@@ -25,7 +25,7 @@ repos:
     hooks:
       - id: isort
         name: isort (python)
-        entry: uv run isort
+        entry: uv run --no-sync isort
         language: system
         types: [python]
 
@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: flake8
         name: flake8
-        entry: uv run flake8
+        entry: uv run --no-sync flake8
         language: system
         types: [python]
 
@@ -41,7 +41,7 @@ repos:
     hooks:
       - id: sqlfmt
         name: sqlfmt
-        entry: uv run sqlfmt
+        entry: uv run --no-sync sqlfmt
         language: system
         types: [sql]
 
