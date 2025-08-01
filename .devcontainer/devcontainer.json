@@ -1,56 +1,56 @@
 {
-    "name": "Claude Code Sandbox",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "TZ": "${localEnv:TZ:Asia/Tokyo}"
+  "name": "Claude Code Sandbox",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "TZ": "${localEnv:TZ:Asia/Tokyo}"
+    }
+  },
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=NET_RAW",
+    "--network=host"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "elagil.pre-commit-helper",
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
         }
-    },
-    "runArgs": [
-        "--cap-add=NET_ADMIN",
-        "--cap-add=NET_RAW",
-        "--network=host"
-    ],
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "editorconfig.editorconfig",
-                "elagil.pre-commit-helper",
-                "ms-python.python",
-                "ms-toolsai.jupyter"
-            ],
-            "settings": {
-                "terminal.integrated.defaultProfile.linux": "zsh",
-                "terminal.integrated.profiles.linux": {
-                    "bash": {
-                        "path": "bash",
-                        "icon": "terminal-bash"
-                    },
-                    "zsh": {
-                        "path": "zsh"
-                    }
-                }
-            }
-        }
-    },
-    "remoteUser": "node",
-    "mounts": [
-        "source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/node/.claude,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.config/git,target=/home/node/.config/git,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.databrickscfg,target=/home/node/.databrickscfg,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.dbt,target=/home/node/.dbt,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
-        "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume"
-    ],
-    "remoteEnv": {
-        "CLAUDE_CONFIG_DIR": "/home/node/.claude",
-        "NODE_OPTIONS": "--max-old-space-size=4096",
-        "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
-        "UV_LINK_MODE": "copy"
-    },
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
-    "workspaceFolder": "/workspace",
-    "postStartCommand": "uv sync --frozen --group dev && uv run pre-commit install"
+      }
+    }
+  },
+  "remoteUser": "node",
+  "mounts": [
+    "source=${localEnv:CLAUDE_CONFIG_DIR},target=/home/node/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/git,target=/home/node/.config/git,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.databrickscfg,target=/home/node/.databrickscfg,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.dbt,target=/home/node/.dbt,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached",
+    "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume"
+  ],
+  "remoteEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/node/.claude",
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+    "UV_LINK_MODE": "copy"
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
+  "workspaceFolder": "/workspace",
+  "postStartCommand": "uv sync --frozen --group dev && uv run pre-commit install"
 }
