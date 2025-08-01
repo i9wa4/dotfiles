@@ -10,7 +10,7 @@ description: "global CONTRIBUTING.md"
 
 - YOU MUST: 必ず日本語で回答する
 - YOU MUST: 不明点があれば必ず質問する
-- YOU MUST: Serena を利用して全ての作業を行う
+- YOU MUST: MCP サーバーの Serena を経由して作業を行う
 - YOU MUST: すべてのMarkdownヘッダ (#, ##, ### 等) の直後には空行を入れる
 - NEVER: 絵文字は使用しない
 - NEVER: Markdown 記法で太字や斜体は使用しない
