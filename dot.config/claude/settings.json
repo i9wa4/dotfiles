@@ -1,31 +1,32 @@
 {
-    "cleanupPeriodDays": 1,
-    "env": {
-        "BASH_DEFAULT_TIMEOUT_MS": "300000",
-        "BASH_MAX_TIMEOUT_MS": "300000"
-    },
-    "includeCoAuthoredBy": false,
-    "permissions": {
-        "allow": [],
-        "deny": [
-            "Bash(git push:*)",
-            "Bash(git rebase:*)",
-            "Bash(git reset:*)",
-            "Bash(mv:*)",
-            "Bash(rm -rf:*)",
-            "Bash(rm:*)",
-            "Bash(sudo:*)",
-            "Read(**/*key*)",
-            "Read(**/*token*)",
-            "Read(.env.*)",
-            "Read(id_ed25519)",
-            "Read(id_rsa)",
-            "Write(**/secrets/**)",
-            "Write(.env*)"
-        ]
-    },
-    "model": "Opus",
-    "feedbackSurveyState": {
-        "lastShownTime": 1753970946843
-    }
+  "cleanupPeriodDays": 1,
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "300000",
+    "BASH_MAX_TIMEOUT_MS": "300000"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(mv:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Read(**/*key*)",
+      "Read(**/*token*)",
+      "Read(.env.*)",
+      "Read(id_ed25519)",
+      "Read(id_rsa)",
+      "Write(**/secrets/**)",
+      "Write(.env*)"
+    ]
+  },
+  "model": "Opus",
+  "feedbackSurveyState": {
+    "lastShownTime": 1754016475684
+  },
+  "$schema": "https://json.schemastore.org/claude-code-settings.json"
 }
