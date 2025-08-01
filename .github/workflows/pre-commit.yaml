@@ -49,6 +49,14 @@ jobs:
         run: |
           uv sync --only-group dev
 
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
+
       - name: Install pre-commit
         run: |
           uv run pre-commit install
