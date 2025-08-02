@@ -13,7 +13,7 @@ tools:
       - '%f:%l %m'
 
   json-jq: &json-jq
-    format-command: 'jq --indent 2 .'
+    format-command: 'jq --indent 2'
     format-stdin: true
 
   python-black: &python-black
@@ -21,15 +21,6 @@ tools:
     format-stdin: true
 
   python-flake8: &python-flake8
-    # [flake8]
-    # # NOTE: Black との整合性を確保するために flake8 の設定を一部緩和させている
-    # #   https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#minimal-configuration
-    # max-line-length = 88
-    # extend-ignore =
-    #     # E203: Whitespace before ':'
-    #     E203,
-    #     # E701: Multiple statements on one line (colon)
-    #     E701
     lint-command: 'flake8 --max-line-length 88 --extend-ignore E203,E701 --stdin-display-name -'
     lint-source: 'flake8'
     lint-stdin: true

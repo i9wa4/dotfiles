@@ -170,3 +170,20 @@ cf. [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/ws
         IdentityFile    ~/.ssh/id_ed25519
         User            username
     ```
+
+## 6. Python Virtual Environment Update
+
+1. Update `.python-version` or `pyproject.toml` as needed.
+1. Update `uv.lock`.
+
+    ```sh
+    $ uv lock --upgrade
+    ```
+
+1. Update .venv.
+
+    ```sh
+    $ uv sync --frozen
+    # or
+    $ uv sync --frozen --group dev
+    ```
