@@ -21,3 +21,21 @@ dev = [
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",
 ]
+
+[tool.black]
+line-length = 88
+target-version = ['py313']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.flake8]
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#minimal-configuration
+max-line-length = 88
+extend-exclude = [".venv"]
+extend-ignore = [
+    "E203",  # Whitespace before ':'
+    "E701",  # Multiple statements on one line (colon)
+    "F821"   # undefined name (Databricks-specific module)
+]
