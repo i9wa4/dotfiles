@@ -29,15 +29,14 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
 
 # AWS
-# export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
 
 # act
-# export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
+export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Claude
-# export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
-export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}"/claude
+export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
+# export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}"/claude
 
 # Deno
 export DENO_INSTALL="${HOME}"/.deno
