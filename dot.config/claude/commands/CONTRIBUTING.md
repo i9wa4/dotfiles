@@ -49,15 +49,11 @@ description: "global CONTRIBUTING.md"
 ### 3.1. コマンド利用方法全般
 
 - YOU MUST: コマンドの出力は必ず `/tmp` ディレクトリにリダイレクトする
-- YOU MUST: リダイレクトファイル名の末尾（拡張子の前）に実行タイムスタンプを追加する
+- YOU MUST: リダイレクトファイル名の先頭に実行タイムスタンプを追加する
 
     ```sh
-    # 基本的な例
-    echo "test" | tee /tmp/out-$(date +%Y%m%d-%H%M%S).txt 2>&1
-
-    # 実際の使用例
-    databricks api get /api/2.0/sql/statements/xxx --profile "DEFAULT" 2>&1 | tee /tmp/databricks_query_result-$(date +%Y%m%d-%H%M%S).txt
-    gh issue view 761 --repo genda-tech/genda-data-pipeline --json title,body,comments > /tmp/issue_761-$(date +%Y%m%d-%H%M%S).json 2>&1
+    NOW=$(date +%Y%m%d-%H%M%S) && echo ${NOW}
+    echo "test" | tee /tmp/${NOW}-test.txt 2>&1
     ```
 
 ### 3.2. Git
