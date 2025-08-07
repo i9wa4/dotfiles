@@ -1,9 +1,9 @@
 {
-    "cleanupPeriodDays": 1,
+    "cleanupPeriodDays": 365,
     "env": {
-        "BASH_DEFAULT_TIMEOUT_MS": "300000",
-        "BASH_MAX_TIMEOUT_MS": "300000",
-    "DISABLE_AUTOUPDATER": "1"
+        "BASH_DEFAULT_TIMEOUT_MS": "3000000",
+        "BASH_MAX_TIMEOUT_MS": "3000000",
+        "DISABLE_AUTOUPDATER": "1"
     },
     "includeCoAuthoredBy": false,
     "permissions": {
