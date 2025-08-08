@@ -106,6 +106,10 @@ nnoremap <script> <SID>gk gk<SID>g
 " xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
 " xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
 
+" https://blog.atusy.net/2025/08/08/map-minus-to-blackhole-register/
+nnoremap - "_
+xnoremap - "_
+
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
