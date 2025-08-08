@@ -472,7 +472,7 @@ claude-config:  ## configure Claude Code
 	claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
 	claude mcp add --scope user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
 	# claude mcp add --scope user "serena" -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
-	claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
+	# claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
 
 
 ghq-get-essential:
