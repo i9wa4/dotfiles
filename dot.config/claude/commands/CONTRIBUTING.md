@@ -10,7 +10,6 @@ description: "global CONTRIBUTING.md"
 
 - YOU MUST: 必ず日本語で回答する
 - YOU MUST: 不明点があれば必ず質問する
-- YOU MUST: MCP サーバーの Serena を経由して作業を行う
 - YOU MUST: すべてのMarkdownヘッダ (#, ##, ### 等) の直後には空行を入れる
 - NEVER: 絵文字は使用しない
 - NEVER: Markdown 記法で太字や斜体は使用しない
@@ -87,25 +86,6 @@ description: "global CONTRIBUTING.md"
         ```sh
         dbt debug --profiles-dir ~/.dbt
         ```
-
-### 3.5. Serena メモリー管理
-
-#### 3.5.1. worktreeで作業中にメモリーが存在しない場合
-
-worktreeディレクトリにはSerenaのメモリーが存在しないため、元のプロジェクトのメモリーを参照する
-
-1. worktreeディレクトリ名から元のプロジェクト名を推測
-    - 例: genda-databricks-notebook-issue-24 で作業中の場合
-        - ディレクトリ名から "-issue-数字" を除去
-        - genda-databricks-notebook が元のプロジェクト名
-2. 目的のプロジェクトをアクティベートしてメモリーを読む
-    1. mcp__serena__activate_project で推測したプロジェクト名をアクティベート
-    2. mcp__serena__read_memory でメモリーを読む
-    3. 必要に応じて元のプロジェクトに戻す
-3. 注意事項
-    - 作業ディレクトリとアクティブプロジェクトが異なることを意識する
-    - ファイル操作は現在の作業ディレクトリで行われる
-    - Serenaのシンボル操作はアクティブプロジェクトに対して行われる
 
 ### 3.6. Jupyter Notebook
 
