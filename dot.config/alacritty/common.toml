@@ -11,7 +11,7 @@ import = [
 ]
 
 [font]
-size = 24
+size = 26
 
 [font.normal]
 family = "MyricaM M"
