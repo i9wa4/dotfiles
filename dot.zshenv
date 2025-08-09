@@ -42,7 +42,7 @@ export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/clau
 export DENO_INSTALL="${HOME}"/.deno
 export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 # export DENO_NO_UPDATE_CHECK=1
-export DENO_VER_PATCH=2.3.1
+export DENO_VER_PATCH=2.4.3
 
 # fzf
 export FZF_DEFAULT_OPTS='--reverse'
