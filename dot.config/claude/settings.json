@@ -5,7 +5,11 @@
         "BASH_MAX_TIMEOUT_MS": "3000000",
         "DISABLE_AUTOUPDATER": "1"
     },
+    "feedbackSurveyState": {
+        "lastShownTime": 2069451551000
+    },
     "includeCoAuthoredBy": false,
+    "model": "Opus",
     "permissions": {
         "allow": [],
         "deny": [
@@ -25,8 +29,8 @@
             "Write(.env*)"
         ]
     },
-    "model": "Opus",
-    "feedbackSurveyState": {
-        "lastShownTime": 2069451551000
+    "statusLine": {
+        "type": "command",
+        "command": "npx ccusage@latest statusline"
     }
 }
