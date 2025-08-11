@@ -43,18 +43,18 @@ function! my_highlight#highlight() abort
   highlight SpecialKey guifg=#606060
 
   " error
-  highlight clear Error
-  highlight clear ErrorMsg
+  " highlight clear Error
+  " highlight clear ErrorMsg
   call matchadd('Error', '　\|\s\+$')
   " highlight clear SpellBad
   " highlight SpellBad cterm=underline gui=underline
 
   " cursorline
-  highlight clear CursorLine
-  highlight CursorLine guibg=#404040
+  " highlight clear CursorLine
+  " highlight CursorLine guibg=#404040
 
   " colorcolumn
-  highlight clear ColorColumn
+  " highlight clear ColorColumn
 
   " transparent background
   " highlight TabLine guibg=NONE guifg=white
