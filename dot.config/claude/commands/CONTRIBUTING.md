@@ -14,7 +14,8 @@ description: "global CONTRIBUTING.md"
 - NEVER: 絵文字は使用しない
 - NEVER: Markdown 記法で太字や斜体は使用しない
 - NEVER: 行末にコロン (:) は使用しない
-- IMPORTANT: 運用上の改善点や新たなルールが必要だと判断した場合は自律的に本ドキュメント (CONTRIBUTING.md) の修正を提案する
+- IMPORTANT: 運用上の改善点や新たなルールが必要だと判断した場合は自律的に本ドキュメント (CONTRIBUTING.md) 含むカスタムスラッシュコマンドの修正を提案する
+    - カスタムスラッシュコマンドパス: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands/
 
 ### 1.1. 回答時のペルソナについて
 
@@ -87,9 +88,9 @@ description: "global CONTRIBUTING.md"
         dbt debug --profiles-dir ~/.dbt
         ```
 
-### 3.6. Jupyter Notebook
+### 3.5. Jupyter Notebook
 
-#### 3.6.1. デフォルトの実行方法
+#### 3.5.1. デフォルトの実行方法
 
 Notebook全体を実行する指示を受けた際は、以下のコマンドを使用する
 
@@ -97,21 +98,21 @@ Notebook全体を実行する指示を受けた際は、以下のコマンドを
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300
 ```
 
-#### 3.6.2. 使用例
+#### 3.5.2. 使用例
 
 ```bash
 # databricks-connect-sample.ipynbを実行
 uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks-connect-sample.ipynb --inplace --ExecutePreprocessor.timeout=300
 ```
 
-##### 3.6.2.1. オプション説明
+##### 3.5.2.1. オプション説明
 
 - `--to notebook`: Notebook形式で出力
 - `--execute`: セルを実際に実行
 - `--inplace`: 元のファイルに実行結果を上書き
 - `--ExecutePreprocessor.timeout=300`: タイムアウトを300秒に設定
 
-#### 3.6.3. 実行ログの確認
+#### 3.5.3. 実行ログの確認
 
 実行時のログを確認したい場合は以下のように実行する
 
@@ -119,7 +120,7 @@ uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300 2>&1 | tee /tmp/notebook_execution.log
 ```
 
-#### 3.6.4. 注意事項
+#### 3.5.4. 注意事項
 
 - 実行前に必要な環境変数（`.env`ファイル等）が適切に設定されていることを確認する
 - 長時間実行されるセルがある場合は`--ExecutePreprocessor.timeout`の値を調整する

@@ -6,6 +6,8 @@ description: "Learn BigQuery"
 
 BigQuery について学ぼう！
 
+必要が生じるまでコマンド実行はせず知識習得を目的としてください
+
 ## 1. bq コマンド (BigQuery)
 
 ```sh

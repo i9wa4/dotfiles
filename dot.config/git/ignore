@@ -6,19 +6,8 @@ node_modules/
 .i9wa4/
 local.vim
 
-# Aider
-.aider*
-
 # Claude
-**/.claude/settings.local.json
-.claude/
-.mcp.json
-.serena/
-
-# Databricks
-.databricks/
-databricks.yml
-typings/
+# .claude/
 
 # Dev Container
 .devcontainer/

@@ -6,6 +6,8 @@ description: "Learn Databricks"
 
 Databricks について学ぼう！
 
+必要が生じるまでコマンド実行はせず知識習得を目的としてください
+
 ## 1. Databricks CLI の利用方法
 
 ### 1.1. warehouse_idについて
