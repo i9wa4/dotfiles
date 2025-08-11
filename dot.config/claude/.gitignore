@@ -1,3 +1,5 @@
 *
-!commands/
+!.gitignore
 !settings.json
+!commands/
+!commands/**
