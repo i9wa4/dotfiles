@@ -42,10 +42,18 @@ function! my_highlight#highlight() abort
   highlight clear SpecialKey
   highlight SpecialKey guifg=#606060
 
-  " error
+  " error - trailing spaces and zenkaku spaces
   " highlight clear Error
   " highlight clear ErrorMsg
-  call matchadd('Error', '　\|\s\+$')
+  if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
+    let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
+  else
+    " Remove trailing space highlight in ddu windows
+    if exists('w:trailing_space_match_id')
+      silent! call matchdelete(w:trailing_space_match_id)
+      unlet w:trailing_space_match_id
+    endif
+  endif
   " highlight clear SpellBad
   " highlight SpellBad cterm=underline gui=underline
 
