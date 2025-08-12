@@ -19,7 +19,7 @@ size = 26
 family = "MyricaM M"
 
 [window]
-opacity = 0.5
+opacity = 0.6
 
 [keyboard]
 bindings = []
