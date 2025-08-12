@@ -336,6 +336,7 @@ package-mac-install:
 	  google-chrome \
 	  google-drive \
 	  nikitabobko/tap/aerospace \
+	  openvpn-connect \
 	  visual-studio-code \
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
