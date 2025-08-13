@@ -10,9 +10,7 @@ description: "Commit"
 - IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
 - NEVER: コミットメッセージには Co-Authored-By を含めない
 - NEVER: コミットメッセージには「🤖 Generated with [Claude Code]」などのAIツール利用表示も含めない
-- YOU MUST: GitHub の情報取得には `gh` コマンドを利用する
-    - 例: `gh pr view 78`
-    - 例: `gh issue view 87`
+- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 
 ## 2. コミットメッセージの書き方
 
