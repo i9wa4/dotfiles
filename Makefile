@@ -496,10 +496,11 @@ git-config:
 	git config --global commit.gpgsign true
 	git config --global commit.verbose true
 	git config --global core.autocrlf input
+	git config --global core.commentChar ';'
 	git config --global core.editor vim
 	git config --global core.excludesfile '~/.config/git/ignore'
 	git config --global core.ignorecase false
-	git config --global core.pager "LESSCHARSET=utf-8 less"
+	git config --global core.pager 'LESSCHARSET=utf-8 less'
 	git config --global core.quotepath false
 	git config --global core.safecrlf true
 	git config --global credential.helper store
