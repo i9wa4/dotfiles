@@ -59,6 +59,7 @@ description: "global CONTRIBUTING.md"
 ### 3.2. Git
 
 - IMPORTANT: `git add`, `git commit`, `git push` の3コマンドは指示がない限り実行しない
+- IMPORTANT: 特に `git push` は明示的に指示された場合のみ実行する (コミット後に自動で push しない)
 
 ### 3.3. GitHub
 
