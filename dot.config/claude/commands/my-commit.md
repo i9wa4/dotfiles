@@ -10,6 +10,7 @@ description: "Commit"
 - IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
 - NEVER: コミットメッセージには Co-Authored-By を含めない
 - NEVER: コミットメッセージには「🤖 Generated with [Claude Code]」などのAIツール利用表示も含めない
+- NEVER: .i9wa4/ ディレクトリ配下のファイルは global `.gitignore` に追加されているためコミットメッセージ内では言及しない
 - YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 
 ## 2. コミットメッセージの書き方

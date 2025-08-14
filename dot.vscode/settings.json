@@ -7,6 +7,7 @@
     "editor.fontSize": 22,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
+    "git.untrackedChanges": "separate",
     "notebook.markup.fontSize": 20,
     "notebook.output.fontFamily": "'MyricaM M', monospace",
     "notebook.output.fontSize": 20,
