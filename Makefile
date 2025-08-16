@@ -264,7 +264,6 @@ package-go:
 
 package-npm-install:
 	npm install -g @anthropic-ai/claude-code
-	# npm install -g @anthropic-ai/claude-code@1.0.33
 	npm install -g @devcontainers/cli
 	npm install -g @google/gemini-cli
 
