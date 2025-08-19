@@ -6,33 +6,33 @@ description: "Learn dbt"
 
 dbt について学ぼう！
 
-必要が生じるまでコマンド実行はせず知識習得を目的としてください
+このファイルの内容全体を読み取ったら即座にカスタムスラッシュコマンドとしての動作は終了です
 
 ## 1. dbt利用方法
 
 ### 1.1. 基本事項
 
-- dbtコマンドには必ず `--profiles-dir ~/.dbt` を指定する
+- dbtコマンドには必ず `--profiles-dir ~/.dbt --no-use-colors` を指定する
 - 作業開始時にdbtの接続先を確認する
 
     ```sh
-    dbt debug --profiles-dir ~/.dbt
+    dbt debug --profiles-dir ~/.dbt --no-use-colors
     ```
 
 - dbt でアドホッククエリを実行する際は `dbt show` コマンドを使用する
 
     ```sh
     # 基本的なクエリ実行
-    dbt show --inline "select 1 as test, current_timestamp() as now" --profiles-dir ~/.dbt
+    dbt show --inline "select 1 as test, current_timestamp() as now" --profiles-dir ~/.dbt --no-use-colors
 
     # 行数制限の指定（デフォルトは5件）
-    dbt show --inline "select * from table_name" --limit 10 --profiles-dir ~/.dbt
+    dbt show --inline "select * from table_name" --limit 10 --profiles-dir ~/.dbt --no-use-colors
 
     # dbtモデルの参照
-    dbt show --inline "select * from {{ ref('model_name') }}" --profiles-dir ~/.dbt
+    dbt show --inline "select * from {{ ref('model_name') }}" --profiles-dir ~/.dbt --no-use-colors
 
     # catalog.schema.table形式での直接参照
-    dbt show --inline "select * from catalog_name.schema_name.table_name" --limit 3 --profiles-dir ~/.dbt
+    dbt show --inline "select * from catalog_name.schema_name.table_name" --limit 3 --profiles-dir ~/.dbt --no-use-colors
 
     # 注意事項
     # - クエリ内で明示的にLIMITを指定すると `--limit` オプションと重複してエラーになる
@@ -45,7 +45,7 @@ dbt について学ぼう！
     - 本番環境への影響を避けるため、`dbt run` を実行できない環境での動作確認手順
 - 手順
     1. モデルを編集
-    2. `dbt compile --profiles-dir ~/.dbt` でSQLを生成
+    2. `dbt compile --profiles-dir ~/.dbt --no-use-colors` でSQLを生成
     3. 生成されたSQLを `target/compiled/` から取得
     4. `bq query` または `databricks` コマンドで動作確認（LIMIT付きで実行推奨）
 
@@ -55,11 +55,12 @@ dbt について学ぼう！
     - 開発環境やサンドボックス環境で `dbt run` が実行可能な場合の動作確認手順
 - 手順
     1. モデルを編集
-    2. `dbt run --select +model_name --profiles-dir ~/.dbt` で run 実行
-    3. `dbt test --select +model_name --profiles-dir ~/.dbt` で test 実行
+    2. `dbt run --select +model_name --profiles-dir ~/.dbt --no-use-colors` で run 実行
+    3. `dbt test --select +model_name --profiles-dir ~/.dbt --no-use-colors` で test 実行
     4. 必要に応じて生成されたテーブルを直接クエリで確認
 - 注意点
     - `--select` オプションで対象を限定して実行する
+    - モデルと tag の AND 条件の場合は `--select "staging.target,tag:tag_name"` のように指定する
 
 ## 2. dbt 向け Databricks SQL 方言
 
