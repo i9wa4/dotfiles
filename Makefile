@@ -263,12 +263,10 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
-	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @google/gemini-cli
 
 package-npm-update:
-	npm update -g @anthropic-ai/claude-code
 	npm update -g @devcontainers/cli
 	npm update -g @google/gemini-cli
 
@@ -340,6 +338,7 @@ package-mac-install:
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
+	  claude-code \
 	  fd \
 	  fzf \
 	  gh \
