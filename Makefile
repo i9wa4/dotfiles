@@ -583,12 +583,14 @@ vim-build:  ## build Vim
 	&& cd src \
 	&& ./configure \
 	  --disable-gui \
+	  --enable-clipboard \
 	  --enable-fail-if-missing \
 	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
 	  --enable-multibyte \
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
+	  --without-x \
 	&& $(MAKE) \
 	&& $(MAKE) install
 
