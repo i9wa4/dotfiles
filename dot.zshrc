@@ -62,8 +62,8 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{green}%b%f %m%F{#696969}%8.8i%f"
-zstyle ':vcs_info:*' actionformats '%F{red}%b|%a%f %m%F{#696969}%8.8i%f'
+zstyle ':vcs_info:*' formats "%F{#696969}%8.8i%f %F{green}%b%f %m"
+zstyle ':vcs_info:*' actionformats '%F{#696969}%8.8i%f %F{red}%b|%a%f %m'
 zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git+set-message:*' hooks \
   simple-git-status
@@ -115,7 +115,8 @@ else
   PROMPT=""
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
