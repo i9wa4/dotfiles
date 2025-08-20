@@ -88,7 +88,7 @@ function +vi-simple-git-status() {
   fi
   if { [[ -n "${unstaged}" ]] } \
     && { [[ "${unstaged}" -gt 0 ]] }; then
-    hook_com[misc]+="%F{red}~${unstaged}%f "
+    hook_com[misc]+="%F{yellow}~${unstaged}%f "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
     hook_com[misc]+="%F{green}+${insertions}%f "
