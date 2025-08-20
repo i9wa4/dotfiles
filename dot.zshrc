@@ -116,7 +116,15 @@ else
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
-PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
+# パス表示を簡潔にする関数
+setopt prompt_subst
+function _get_simplified_path() {
+  local path="${PWD}"
+  path="${path/#$HOME\/ghq\/github.com\//}"
+  path="${path/#$HOME/~}"
+  echo "${path}"
+}
+PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
 
