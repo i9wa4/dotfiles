@@ -566,23 +566,29 @@ vim-build:  ## build Vim
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  _lua_prefix="$$(brew --prefix)"; \
+	  _config_opts="--enable-darwin --disable-gui"; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
 	  _lua_prefix="/usr"; \
+	  _config_opts="--disable-gui --without-x"; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
 	  _lua_prefix="/usr"; \
+	  _config_opts="--disable-gui --without-x"; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
+	  _config_opts="--disable-gui --without-x"; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
 	  echo 'Hello, CentOS!'; \
+	  _config_opts="--disable-gui --without-x"; \
 	else \
 	  echo 'Which OS are you using?'; \
+	  _config_opts="--disable-gui --without-x"; \
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim \
 	&& cd src \
 	&& ./configure \
-	  --disable-gui \
+	  $${_config_opts} \
 	  --enable-clipboard \
 	  --enable-fail-if-missing \
 	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
@@ -590,7 +596,6 @@ vim-build:  ## build Vim
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
-	  --without-x \
 	&& $(MAKE) \
 	&& $(MAKE) install
 
