@@ -115,7 +115,6 @@ else
   PROMPT=""
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 # パス表示を簡潔にする関数
 setopt prompt_subst
 function _get_simplified_path() {
@@ -124,6 +123,7 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
+# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#198CAA}%F{black}[%~]%f%k "'${vcs_info_msg_0_}'"
 PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
 %F{#696969}$%f "
 
@@ -146,9 +146,8 @@ fi
 
 
 # Other Plugins
-zinit light zsh-users/zsh-completions
-# zinit light zsh-users/zsh-autosuggestions
-zinit light zdharma-continuum/fast-syntax-highlighting
+# zinit light zsh-users/zsh-completions
+# zinit light zdharma-continuum/fast-syntax-highlighting
 
 
 # OS-specific settings
