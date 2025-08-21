@@ -25,10 +25,10 @@ description: "global CONTRIBUTING.md"
     - 例: `$(date +%Y%m%d)-my-document.md` (20231001-my-document.md)
 - YOU MUST: Pull Request 作成時は `.i9wa4/YYYYMMDD-pr.md` ドキュメントのみ作成する
 
-### 2.2. `/tmp` ディレクトリの活用
+### 2.2. `/tmp/` ディレクトリの活用
 
-- YOU MUST: コマンドのリダイレクトを `/tmp` ディレクトリに行う
-- YOU MUST: その他雑多なファイルも `/tmp` ディレクトリに保存する
+- YOU MUST: コマンドのリダイレクトを `/tmp/` ディレクトリに行う
+- YOU MUST: その他雑多なファイルも `/tmp/` ディレクトリに保存する
 
 ### 2.3. Markdown ファイルの作成
 
@@ -45,7 +45,7 @@ description: "global CONTRIBUTING.md"
 
 ### 3.1. コマンド利用方法全般
 
-- YOU MUST: コマンドの出力は必ず `/tmp` ディレクトリにリダイレクトする
+- YOU MUST: コマンドの出力は必ず `/tmp/` ディレクトリにリダイレクトする
 - YOU MUST: リダイレクトファイル名の先頭に実行タイムスタンプを追加する
 
     ```sh
@@ -54,7 +54,7 @@ description: "global CONTRIBUTING.md"
     ```
 
 - NEVER: `rm` コマンドは使用しない
-- IMPORTANT: `rm` はダメだが `mv` で `/tmp` ディレクトリに移動してもよい
+- IMPORTANT: `rm` はダメだが `mv` で `/tmp/` ディレクトリに移動してもよい
 
 ### 3.2. Git
 
