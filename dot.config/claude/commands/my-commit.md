@@ -10,7 +10,9 @@ description: "Commit"
 - IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
 - NEVER: コミットメッセージには Co-Authored-By を含めない
 - NEVER: コミットメッセージには「🤖 Generated with [Claude Code]」などのAIツール利用表示も含めない
-- NEVER: .i9wa4/ ディレクトリ配下のファイルは global `.gitignore` に追加されているためコミットメッセージ内では言及しない
+- NEVER: `.i9wa4/` ディレクトリ配下のファイルは global `.gitignore` に追加されているためコミットメッセージ内では一切言及しない（関連URLセクションも含む）
+- NEVER: `/tmp/` ディレクトリ配下のファイルもコミットメッセージ内では一切言及しない
+- NEVER: ローカルファイルパスは記載しない（例: `.i9wa4/xxx.md`, `/tmp/xxx.log` など）
 - YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 
 ## 2. コミットメッセージの書き方
@@ -48,7 +50,6 @@ Conventional Commits に沿った日本語で記述する
 ## 関連 URL
 
 - <関連 Issue>
-- <Confluence>
-- <Slack>
+- <外部 URL>
 - 他にもあれば
 ```
