@@ -53,6 +53,9 @@ description: "global CONTRIBUTING.md"
     echo $(date) | tee /tmp/${NOW}-now.txt 2>&1
     ```
 
+- NEVER: `rm` コマンドは使用しない
+- IMPORTANT: `rm` はダメだが `mv` で `/tmp` ディレクトリに移動してもよい
+
 ### 3.2. Git
 
 #### 3.2.1. 基本ルール
