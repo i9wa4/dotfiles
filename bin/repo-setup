@@ -4,27 +4,29 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# .i9wa4ディレクトリとファイルを作成
-mkdir -p .i9wa4
-
 # .devcontainerディレクトリをコピー（存在する場合はスキップ）
-if [ ! -d ".devcontainer" ] && [ -d "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" ]; then
-  rm -rf .devcontainer/
-  cp -r "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" .
-  echo "✓ .devcontainer ディレクトリをコピーしました"
-  # cp -f "$HOME/ghq/github.com/i9wa4/dotfiles/dot.config/claude/.mcp.json .
-  # echo "✓ .mcp.json ファイルをコピーしました"
-fi
+# if [ ! -d ".devcontainer" ] && [ -d "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" ]; then
+#   rm -rf .devcontainer/
+#   cp -r "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" .
+#   echo "✓  .devcontainer ディレクトリをコピーしました"
+# fi
 
-cat >.i9wa4/temp.md <<'EOF'
-ultrathink
-EOF
+cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
+echo "✓  .mcp.json ファイルをコピーしました"
 
 cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
 let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
-echo "✓ local.vim ファイルをコピーしました"
+echo "✓  local.vim ファイルをコピーしました"
 
-echo "✓ セットアップ完了"
+# .i9wa4/ ディレクトリとファイルを作成
+mkdir -p .i9wa4/
+echo "✓  .i9wa4/ ディレクトリを作成しました"
+
+cat >.i9wa4/temp.md <<'EOF'
+ultrathink
+EOF
+
+echo "✓  セットアップ完了"
