@@ -146,8 +146,8 @@ fi
 
 
 # Other Plugins
-# zinit light zsh-users/zsh-completions
-# zinit light zdharma-continuum/fast-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zdharma-continuum/fast-syntax-highlighting
 
 
 # OS-specific settings
