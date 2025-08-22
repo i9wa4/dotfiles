@@ -1,0 +1,63 @@
+{
+    "mcpServers": {
+        "atlassian": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "mcp-remote",
+                "https://mcp.atlassian.com/v1/sse"
+            ],
+            "env": {},
+            "disabled": true,
+            "autoApprove": []
+        },
+        "awslabs-aws-documentation-mcp-server": {
+            "type": "stdio",
+            "command": "uvx",
+            "args": [
+                "awslabs.aws-documentation-mcp-server@latest"
+            ],
+            "env": {
+                "FASTMCP_LOG_LEVEL": "ERROR"
+            },
+            "disabled": false,
+            "autoApprove": []
+        },
+        "context7": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@upstash/context7-mcp"
+            ],
+            "env": {},
+            "disabled": false,
+            "autoApprove": []
+        },
+        "github": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-github"
+            ],
+            "env": {},
+            "disabled": true,
+            "autoApprove": []
+        },
+        "terraform": {
+            "type": "stdio",
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "hashicorp/terraform-mcp-server"
+            ],
+            "env": {},
+            "disabled": true,
+            "autoApprove": []
+        }
+    }
+}

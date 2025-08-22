@@ -1,5 +1,6 @@
 *
 !.gitignore
+!dot.mcp.json
 !settings.json
 !commands/
 !commands/**
