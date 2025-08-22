@@ -8,6 +8,7 @@ local.vim
 
 # Claude
 # .claude/
+.mcp.json
 
 # Dev Container
 .devcontainer/
@@ -17,4 +18,4 @@ local.vim
 .virtual_documents/
 
 # VS Code
-.vscode/
+# .vscode/
