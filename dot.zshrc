@@ -26,14 +26,14 @@ bindkey '^x^e' edit_current_line
 
 # Completion
 # https://wiki.archlinux.jp/index.php/Zsh
-autoload -Uz compinit promptinit
+autoload -Uz compinit
 compinit
-promptinit
 # https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
-zstyle ':completion:*' menu select interactive
+zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
-bindkey -M menuselect '^y' accept-and-infer-next-history
+bindkey -M menuselect '^i' accept-and-infer-next-history
+bindkey -M menuselect '^y' accept-line
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
@@ -115,7 +115,7 @@ else
   PROMPT=""
 fi
 _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# パス表示を簡潔にする関数
+# Simplify Path
 setopt prompt_subst
 function _get_simplified_path() {
   local path="${PWD}"
@@ -139,7 +139,7 @@ if [ -n "${ZENO_LOADED}" ]; then
   bindkey '^i' zeno-completion
   bindkey '^g' zeno-ghq-cd
   bindkey '^r' zeno-history-selection
-  bindkey '^x' zeno-insert-snippet
+  # bindkey '^x^s' zeno-insert-snippet
 else
   bindkey '^r' history-incremental-search-backward
 fi
@@ -162,8 +162,6 @@ elif [ "$(echo "${_uname}" | grep Ubuntu)" ]; then
 elif [ "$(echo "${_uname}" | grep WSL2)" ]; then
   echo 'Hello, WSL2!'
   alias pbcopy='xclip -selection clipboard'
-  # https://blog.k-bushi.com/post/tech/tips/use-nautilus/
-  ln -fs /mnt/wslg/runtime-dir/wayland-* $XDG_RUNTIME_DIR/
 elif [ "$(echo "${_uname}" | grep arm)" ]; then
   echo 'Hello, Raspberry Pi!'
 elif [ "$(echo "${_uname}" | grep el7)" ]; then
