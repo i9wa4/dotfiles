@@ -45,7 +45,10 @@ export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 export DENO_VER_PATCH=2.4.4
 
 # fzf
-export FZF_DEFAULT_OPTS='--reverse'
+export FZF_DEFAULT_OPTS="
+  --reverse
+  --bind 'ctrl-y:accept'
+"
 
 # Go
 export PATH="${HOME}"/go/bin:"${PATH}"
