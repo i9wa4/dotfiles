@@ -57,15 +57,20 @@ description: "global CONTRIBUTING.md"
 - NEVER: `rm` コマンドは使用しない
 - IMPORTANT: `rm` はダメだが `mv` で `/tmp/` ディレクトリに移動してもよい
 
-### 3.2. Git
+### 3.2. AWS CLI
 
-#### 3.2.1. 基本ルール
+- NEVER: リソース変更系コマンドは使用しない
+- YOU MUST: --profile xxx もしくは AWS_PROFILE=xxx aws ... の形でプロファイルを指定する
+
+### 3.3. Git
+
+#### 3.3.1. 基本ルール
 
 - YOU MUST: 作業を始めるときは必ずブランチに追加されたコミットの理解から始める
 - YOU MUST: 許可が必要な Git 操作は必ず実行前に許可を得る
 - EXCEPTION: ユーザーが `/my-commit` 等のスラッシュコマンドを実行した場合そのコマンドに関連する Git 操作 (add, commit) は許可されているものとして実行してよい
 
-#### 3.2.2. 禁止コマンド (破壊的操作)
+#### 3.3.2. 禁止コマンド (破壊的操作)
 
 以下のようなコマンドは絶対に実行しないこと
 
@@ -79,7 +84,7 @@ git checkout -b         # ブランチ作成
 git branch -d           # ブランチ削除
 ```
 
-#### 3.2.3. 許可が必要なコマンド (破壊的ではない操作)
+#### 3.3.3. 許可が必要なコマンド (破壊的ではない操作)
 
 以下のコマンドは必ず事前に許可を得る
 
@@ -88,7 +93,7 @@ git add <files>         # ステージング
 git commit -m "msg"     # コミット
 ```
 
-#### 3.2.4. 許可不要なコマンド (読み取り専用)
+#### 3.3.4. 許可不要なコマンド (読み取り専用)
 
 以下のコマンドは自由に実行可能
 
@@ -101,7 +106,7 @@ git show                # コミット詳細
 git remote -v           # リモート確認
 ```
 
-#### 3.2.5. TodoWrite ツールとの連携
+#### 3.3.5. TodoWrite ツールとの連携
 
 TodoWrite ツールでタスクを作成する際許可が必要な Git 操作関連のタスクには必ず (要許可) を付ける
 
@@ -117,13 +122,13 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
     - [ ] 変更内容をコミット ← 許可マークがないため自動実行の危険がある
 ```
 
-### 3.3. GitHub
+### 3.4. GitHub
 
 - YOU MUST: Issue や Pull Request の番号を記載する際 #240 のように `#` をつけ、前後に半角スペースを入れる
 - YOU MUST: GitHub の情報取得は `gh` コマンドを利用する
 - YOU MUST: `gh` で Issue や Pull Request を取得する際必ずコメントも全件取得する
 
-### 3.4. Python 仮想環境
+### 3.5. Python 仮想環境
 
 - プロジェクトルートに `uv.lock` ファイルが存在する場合
     - `uv` を利用して以下のように Python コマンドを実行する
@@ -145,9 +150,9 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
         dbt debug --profiles-dir ~/.dbt
         ```
 
-### 3.5. Jupyter Notebook
+### 3.6. Jupyter Notebook
 
-#### 3.5.1. デフォルトの実行方法
+#### 3.6.1. デフォルトの実行方法
 
 Notebook全体を実行する指示を受けた際は、以下のコマンドを使用する
 
@@ -155,21 +160,21 @@ Notebook全体を実行する指示を受けた際は、以下のコマンドを
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300
 ```
 
-#### 3.5.2. 使用例
+#### 3.6.2. 使用例
 
 ```bash
 # databricks-connect-sample.ipynbを実行
 uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks-connect-sample.ipynb --inplace --ExecutePreprocessor.timeout=300
 ```
 
-##### 3.5.2.1. オプション説明
+#### 3.6.3. オプション説明
 
 - `--to notebook`: Notebook形式で出力
 - `--execute`: セルを実際に実行
 - `--inplace`: 元のファイルに実行結果を上書き
 - `--ExecutePreprocessor.timeout=300`: タイムアウトを300秒に設定
 
-#### 3.5.3. 実行ログの確認
+#### 3.6.4. 実行ログの確認
 
 実行時のログを確認したい場合は以下のように実行する
 
@@ -177,14 +182,8 @@ uv run jupyter nbconvert --to notebook --execute /workspace/notebooks/databricks
 uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --ExecutePreprocessor.timeout=300 2>&1 | tee /tmp/notebook_execution.log
 ```
 
-#### 3.5.4. 注意事項
+#### 3.6.5. 注意事項
 
 - 実行前に必要な環境変数（`.env`ファイル等）が適切に設定されていることを確認する
 - 長時間実行されるセルがある場合は`--ExecutePreprocessor.timeout`の値を調整する
 - VS Codeで開いている場合は実行後にファイルの更新を確認する
-
-### 3.6. AWS CLI
-
-- リソース変更系コマンドは禁止
-- 必ず --profile xxx を毎回指定すること
-- --profile xxx を指定できない場合は AWS_PROFILE=xxx aws ... とすること
