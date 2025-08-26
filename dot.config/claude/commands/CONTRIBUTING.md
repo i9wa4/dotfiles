@@ -181,3 +181,9 @@ uv run jupyter nbconvert --to notebook --execute <notebook_path> --inplace --Exe
 - 実行前に必要な環境変数（`.env`ファイル等）が適切に設定されていることを確認する
 - 長時間実行されるセルがある場合は`--ExecutePreprocessor.timeout`の値を調整する
 - VS Codeで開いている場合は実行後にファイルの更新を確認する
+
+### 3.6. AWS CLI
+
+- リソース変更系コマンドは禁止
+- 必ず --profile xxx を毎回指定すること
+- --profile xxx を指定できない場合は AWS_PROFILE=xxx aws ... とすること
