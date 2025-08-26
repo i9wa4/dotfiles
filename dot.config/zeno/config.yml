@@ -22,9 +22,9 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
+      && zinit self-update
       && zinit delete -y i9wa4/zeno.zsh && zinit load i9wa4/zeno.zsh
       && zinit update --parallel
-      && zinit self-update
       && make package-update
       && make git-config
       && make ghq-backup-local
