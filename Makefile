@@ -326,7 +326,6 @@ package-mac-install:
 	&& brew upgrade \
 	&& brew install \
 	  alacritty \
-	  cursor \
 	  docker \
 	  font-myricam \
 	  font-noto-sans-jp \
