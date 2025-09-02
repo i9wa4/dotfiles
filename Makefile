@@ -173,6 +173,7 @@ win-copy:  ## copy config files for Windows
 #
 link:  ## make symbolic links
 	# dotfiles
+	ln -fs $(MF_DOTFILES_DIR)/dot.config/codex              "$${HOME}"/.codex
 	ln -fs $(MF_DOTFILES_DIR)/dot.editorconfig              "$${HOME}"/.editorconfig
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
@@ -217,6 +218,7 @@ link:  ## make symbolic links
 unlink:  ## unlink symbolic links
 	# dotfiles
 	if [ -L "$${HOME}"/.editorconfig ];                 then unlink "$${HOME}"/.editorconfig; fi
+	if [ -L "$${HOME}"/.codex ];                        then unlink "$${HOME}"/.codex; fi
 	# XDG_CONFIG_HOME
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/aerospace ];       then unlink "$${XDG_CONFIG_HOME}"/aerospace; fi \
@@ -341,6 +343,7 @@ package-mac-install:
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
 	  claude-code \
+	  codex \
 	  fd \
 	  fzf \
 	  gh \
