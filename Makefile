@@ -255,6 +255,7 @@ unlink:  ## unlink symbolic links
 #
 package-go:
 	go install github.com/evilmartians/lefthook@latest
+	go install github.com/jameswoolfenden/pike@latest
 	go install github.com/mattn/efm-langserver@latest
 	go install github.com/mikefarah/yq/v4@latest
 	go install github.com/rhysd/actionlint/cmd/actionlint@latest
@@ -263,10 +264,12 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
+	# npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @google/gemini-cli
 
 package-npm-update:
+	# npm update -g @anthropic-ai/claude-code
 	npm update -g @devcontainers/cli
 	npm update -g @google/gemini-cli
 
@@ -356,7 +359,6 @@ package-mac-install:
 	  wget \
 	  zsh \
 	&& brew install python-tk@3.12 \
-	&& brew tap jameswoolfenden/homebrew-tap && bres install jameswoolfenden/tap/pike \
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
