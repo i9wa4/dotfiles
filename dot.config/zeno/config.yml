@@ -17,19 +17,22 @@ snippets:
       echo "${PATH}" | sed "s/\:/\n/g"
   - name: update
     keyword: up
+    # zinit delete -y i9wa4/zeno.zsh && zinit load i9wa4/zeno.zsh
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
       && zinit self-update
-      && zinit delete -y i9wa4/zeno.zsh && zinit load i9wa4/zeno.zsh
       && zinit update --parallel
       && make package-update
       && make git-config
       && make ghq-backup-local
       && make vim-build
       && uv sync --frozen --all-extras
+      && cd -
+      && cd ~/ghq/github.com/i9wa4/internal
+      && uv run quarto render docs/
       && cd -
       && ghq-repo-status
   - name: (Claude Code) yolo
