@@ -122,8 +122,7 @@
 #### 5.3.3. Extension
 
 - Flow Chat for YouTube Live
-- Markdown Preview Plus
-- Slack Channels Grouping
+- Okta Browser Plugin
 
 ### 5.4. Slack
 
