@@ -22,7 +22,7 @@ get_repo_status_info() {
   local repo_full_path="$1"
 
   # フルパスから 'org/repo' または 'user/repo' 形式の短いリポジトリ名を生成
-  local repo_rel_to_ghq_root="${repo_full_path#$GHQ_ROOT}"
+  local repo_rel_to_ghq_root="${repo_full_path#"$GHQ_ROOT"}"
   local repo_short_name="${repo_rel_to_ghq_root#*/}"
 
   # git status --porcelain=v1 で全ての情報を一度に取得
@@ -82,9 +82,27 @@ get_repo_status_info() {
     fi
   fi
 
+  # 特殊状態の確認
+  local special_tags=""
+
+  # Worktree チェック
+  if is_worktree "$repo_full_path"; then
+    special_tags+="[W]"
+  fi
+
+  # マージ済みチェック
+  if is_branch_merged "$repo_full_path" "$branch_name"; then
+    special_tags+="[M]"
+  fi
+
   # 出力行を組み立てる
   local output_line
   output_line=$(printf "%-${MAX_WIDTH}s (%s)" "$repo_short_name" "$branch_name")
+
+  # 特殊タグを追加
+  if [[ -n $special_tags ]]; then
+    output_line+=" $special_tags"
+  fi
 
   if [[ ${#status_parts[@]} -gt 0 ]]; then
     local joined_status="${status_parts[*]}"
@@ -111,6 +129,48 @@ is_git_repository() {
   return 1
 }
 
+# Worktree かどうかを判定する関数
+is_worktree() {
+  local repo_path="$1"
+
+  # .git がファイルで、gitdir: を含む場合は worktree
+  if [[ -f "$repo_path/.git" ]]; then
+    if grep -q "^gitdir:" "$repo_path/.git" 2>/dev/null; then
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
+# ブランチがマージ済みかどうかを判定する関数
+is_branch_merged() {
+  local repo_path="$1"
+  local branch_name="$2"
+
+  # mainブランチが存在するか確認
+  if git -C "$repo_path" show-ref --verify --quiet refs/heads/main; then
+    local main_branch="main"
+  elif git -C "$repo_path" show-ref --verify --quiet refs/heads/master; then
+    local main_branch="master"
+  else
+    # main/masterが存在しない場合は判定不可
+    return 1
+  fi
+
+  # 現在のブランチがmain/masterの場合はマージ済みとしない
+  if [[ "$branch_name" == "$main_branch" ]]; then
+    return 1
+  fi
+
+  # ブランチがマージ済みか確認
+  if git -C "$repo_path" branch --merged "$main_branch" 2>/dev/null | grep -q "^\*\?\s*${branch_name}$"; then
+    return 0
+  fi
+
+  return 1
+}
+
 # 並列処理用の関数
 process_single_repo() {
   local repo_path="$1"
@@ -128,6 +188,8 @@ MAX_WIDTH=$(ghq list | awk -F/ '{print $(NF-1)"/"$NF}' | wc -L)
 export -f process_single_repo
 export -f get_repo_status_info
 export -f is_git_repository
+export -f is_worktree
+export -f is_branch_merged
 export GHQ_ROOT
 export MAX_WIDTH
 
@@ -135,7 +197,7 @@ export MAX_WIDTH
 
 # 一時ファイルを使用して結果を収集
 TEMP_OUTPUT=$(mktemp)
-trap "rm -f '$TEMP_OUTPUT'" EXIT
+trap 'rm -f "'"$TEMP_OUTPUT"'"' EXIT
 
 # 並列処理で各リポジトリを処理
 ghq list -p | xargs -I {} -P "$PARALLEL_JOBS" bash -c 'process_single_repo "$@"' _ {} >"$TEMP_OUTPUT"
