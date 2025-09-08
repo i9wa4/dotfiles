@@ -82,9 +82,9 @@ snippets:
     snippet:
       ghq list | ghq get --update --parallel
   - name: (Git) delete merged branches
-    keyword: dm
+    keyword: db
     snippet:
-      switch main && git pull origin main && git branch --merged | grep -v 'main' | xargs git branch -d
+      switch main && git fetch --prune && git branch --merged main | grep -v -E '^\*|^\s*main$|^\s*master$' | xargs -n 1 git branch -d 2>/dev/null || true
     context:
       lbuffer: '^git\s'
   - name: (Git) graph
@@ -97,6 +97,12 @@ snippets:
     keyword: la
     snippet:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
+    context:
+      lbuffer: '^git\s'
+  - name: (Git) worktree remove
+    keyword: dw
+    snippet:
+      worktree remove .
     context:
       lbuffer: '^git\s'
   - name: (Prompt) toggle
