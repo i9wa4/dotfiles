@@ -34,4 +34,12 @@ else
 fi
 
 echo "✓ ブランチ: $(git branch --show-current)"
-echo "→ 次は: repo-setup"
+
+# repo-setup を実行
+echo ""
+echo "→ repo-setup を実行中..."
+if command -v repo-setup &>/dev/null; then
+  repo-setup
+else
+  echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
+fi
