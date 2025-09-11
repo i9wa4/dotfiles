@@ -365,7 +365,7 @@ package-mac-install:
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
-	&& brew install awscli \
+	&& brew install awscli session-manager-plugin \
 	&& brew install google-cloud-sdk \
 	&& brew tap databricks/tap && brew install databricks \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
