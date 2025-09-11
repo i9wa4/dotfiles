@@ -43,3 +43,9 @@ if command -v repo-setup &>/dev/null; then
 else
   echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
 fi
+
+echo ""
+echo "✓ Issue 対応環境の準備完了"
+echo "✓ worktree: ${worktree_path}"
+echo "✓ ブランチ: $(git branch --show-current)"
+echo ""
