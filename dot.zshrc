@@ -20,7 +20,7 @@ edit_current_line() {
     zle edit-command-line
 }
 zle -N edit_current_line
-bindkey '^xe' edit_current_line
+# bindkey '^xe' edit_current_line
 bindkey '^x^e' edit_current_line
 
 
@@ -139,7 +139,7 @@ if [ -n "${ZENO_LOADED}" ]; then
   bindkey '^i' zeno-completion
   bindkey '^g' zeno-ghq-cd
   bindkey '^r' zeno-history-selection
-  bindkey '^x^s' zeno-insert-snippet
+  bindkey '^x^i' zeno-insert-snippet
 else
   bindkey '^r' history-incremental-search-backward
 fi
