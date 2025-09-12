@@ -139,7 +139,7 @@ if [ -n "${ZENO_LOADED}" ]; then
   bindkey '^i' zeno-completion
   bindkey '^g' zeno-ghq-cd
   bindkey '^r' zeno-history-selection
-  # bindkey '^x^s' zeno-insert-snippet
+  bindkey '^x^s' zeno-insert-snippet
 else
   bindkey '^r' history-incremental-search-backward
 fi
