@@ -1,13 +1,4 @@
 [[plugins]]
-repo = 'saccarosium/netrw.vim'
-on_event = ['VimEnter']
-hook_source = '''
-" ビルトインのnetrwを無効化した変数をリセット
-unlet! g:loaded_netrw
-unlet! g:loaded_netrwPlugin
-'''
-
-[[plugins]]
 repo = 'github/copilot.vim'
 on_event = ['VimEnter']
 
