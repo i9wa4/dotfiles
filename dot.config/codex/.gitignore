@@ -1,2 +1,4 @@
 *
 !.gitignore
+!config.common.toml
+!generate-projects.sh
