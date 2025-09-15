@@ -41,6 +41,10 @@ snippets:
       --dangerously-skip-permissions
     context:
       lbuffer: '^claude\s'
+  - name: (Codex CLI) start
+    keyword: codex
+    snippet:
+      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/codex/generate-config.sh && codex
   - name: (Dev Container CLI) build
     keyword: dcb
     snippet:
