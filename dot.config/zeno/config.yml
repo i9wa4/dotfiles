@@ -28,7 +28,6 @@ snippets:
       && make package-update
       && make git-config
       && make ghq-backup-local
-      && make vim-build
       && uv sync --frozen --all-extras
       && cd -
       && cd ~/ghq/github.com/i9wa4/internal
