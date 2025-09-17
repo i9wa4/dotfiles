@@ -593,6 +593,7 @@ vim-build:  ## build Vim
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim \
 	&& cd src \
+	&& $(MAKE) distclean \
 	&& ./configure \
 	  $${_config_opts} \
 	  --enable-clipboard \
