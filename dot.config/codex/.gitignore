@@ -1,5 +1,5 @@
 *
 !.gitignore
 !config.common.toml
-!generate-projects.sh
+!generate-config.sh
 !prompts
