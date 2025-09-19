@@ -38,7 +38,6 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # OS-common Initialization
 #
 common-init: zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
-	mkdir -p "$${HOME}"/str/src
 
 
 # --------------------------------------
@@ -66,12 +65,6 @@ mac-vscode-insiders-init:
 mac-clean:
 	fd ".DS_Store" $(MF_GITHUB_DIR) --hidden --no-ignore | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
-	[ -d "$${HOME}"/str ] && xattr -rc "$${HOME}"/str
-
-mac-copy:
-	if [ -L "$${HOME}"'/Google Drive' ]; then \
-	  rsync -av --delete "$${HOME}"/str "$${HOME}"'/Google Drive/マイドライブ'; \
-	fi
 
 define MF_MAC_ALACRITTY
 [general]
@@ -195,7 +188,6 @@ link:  ## make symbolic links
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
 	  $(MAKE) mac-clean; \
-	  $(MAKE) mac-copy; \
 	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
@@ -336,7 +328,6 @@ package-mac-install:
 	  font-noto-sans-jp \
 	  gemini-cli \
 	  google-chrome \
-	  google-drive \
 	  nikitabobko/tap/aerospace \
 	  openvpn-connect \
 	  visual-studio-code \
