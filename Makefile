@@ -268,14 +268,12 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
-	# npm install -g @anthropic-ai/claude-code
-	npm install -g @devcontainers/cli
-	npm install -g @google/gemini-cli
+	# npm install -g @devcontainers/cli
+	npm install -g @aikidosec/safe-chain
 
 package-npm-update:
-	# npm update -g @anthropic-ai/claude-code
-	npm update -g @devcontainers/cli
-	npm update -g @google/gemini-cli
+	# npm update -g @devcontainers/cli
+	npm update -g @aikidosec/safe-chain
 
 package-rust:
 	rustup update
@@ -336,6 +334,7 @@ package-mac-install:
 	  docker \
 	  font-myricam \
 	  font-noto-sans-jp \
+	  gemini-cli \
 	  google-chrome \
 	  google-drive \
 	  nikitabobko/tap/aerospace \
