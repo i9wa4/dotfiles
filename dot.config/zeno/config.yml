@@ -44,6 +44,12 @@ snippets:
     keyword: codex
     snippet:
       bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/codex/generate-config.sh && codex
+  - name: (Codex CLI) yolo
+    keyword: y
+    snippet:
+      --yolo
+    context:
+      lbuffer: 'codex\s'
   - name: (Dev Container CLI) build
     keyword: dcb
     snippet:
