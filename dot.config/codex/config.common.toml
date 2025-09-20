@@ -2,7 +2,7 @@
 hide_agent_reasoning = true
 model = "gpt-5-codex"
 network_access = true
-notify = ["bash", "-lc", "afplay /System/Library/Sounds/Ping.aiff"]
+notify = ["printf", "\\a"]
 
 [tools]
 web_search = true
