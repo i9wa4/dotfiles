@@ -23,41 +23,6 @@
             },
             "disabled": false,
             "autoApprove": []
-        },
-        "context7": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "-y",
-                "@upstash/context7-mcp"
-            ],
-            "env": {},
-            "disabled": false,
-            "autoApprove": []
-        },
-        "github": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-github"
-            ],
-            "env": {},
-            "disabled": true,
-            "autoApprove": []
-        },
-        "terraform": {
-            "type": "stdio",
-            "command": "docker",
-            "args": [
-                "run",
-                "-i",
-                "--rm",
-                "hashicorp/terraform-mcp-server"
-            ],
-            "env": {},
-            "disabled": true,
-            "autoApprove": []
         }
     }
 }
