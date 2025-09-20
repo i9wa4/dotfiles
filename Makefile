@@ -461,22 +461,17 @@ act-build:  ## build act
 
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
-	claude mcp add --scope user "github" -- npx -y @modelcontextprotocol/server-github
+	# claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
+	# claude mcp add --scope user "github" -- npx -y @modelcontextprotocol/server-github
+	# claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
+	# claude mcp add --scope user "serena" -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
+	# claude mcp add --scope user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
 	claude mcp add --scope user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
 	claude mcp add --scope user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
-	claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
-	claude mcp add --scope user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
-	# claude mcp add --scope user "serena" -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
-	# claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
 
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
-	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
-
-ghq-get-local:
-	. "$${HOME}"/.zshenv \
-	&& _list_path="$${XDG_CACHE_HOME}"/ghq-list-local.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
 
 ghq-backup-local:
