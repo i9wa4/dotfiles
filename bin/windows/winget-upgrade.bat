@@ -15,7 +15,7 @@ exit /b
     @REM Zoom.Zoom
     winget install --ignore-security-hash --exact ^
         Alacritty.Alacritty ^
-        Google.Chrome ^
+        Google.Chrome
 
     winget upgrade --ignore-security-hash --all
 
