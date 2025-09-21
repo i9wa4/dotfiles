@@ -10,11 +10,11 @@ exit /b
 
     wsl --update
 
+    @REM Microsoft.VisualStudioCode
     winget install --ignore-security-hash --exact ^
         Alacritty.Alacritty ^
         Amazon.Kindle ^
         Google.Chrome ^
-        Microsoft.VisualStudioCode ^
         Zoom.Zoom
 
     winget upgrade --ignore-security-hash --all
