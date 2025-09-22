@@ -4,9 +4,13 @@ description: "Review (arg: Pull Request number)"
 
 # review
 
-GitHub の PUll Request をレビューするためのカスタムコマンド
+GitHub の Pull Request をレビューするためのカスタムコマンド
 
-## 1. レビュー方法
+## 1. 前提情報
+
+- このブランチは Pull Request 対象のものである
+
+## 2. レビュー方法
 
 - YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 - YOU MUST: あらゆる指摘を詳細に抽出する
