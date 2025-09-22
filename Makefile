@@ -297,11 +297,11 @@ package-update:
 	# OS common update
 	# proto
 	proto upgrade
-	proto install go latest && proto use go latest
+	proto install go && proto use go
 	proto install node stable && proto use node stable  # 22.19.0
 	proto install npm && proto use npm
-	proto install rust latest && proto use rust latest
-	proto install uv latest && proto use uv latest
+	proto install rust && proto use rust
+	proto install uv && proto use uv
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& proto install deno "$${DENO_VER_PATCH}" && proto use deno "$${DENO_VER_PATCH}"
