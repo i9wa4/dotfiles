@@ -39,8 +39,8 @@ export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/clau
 # export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}"/claude
 
 # Deno
-export DENO_INSTALL="${HOME}"/.deno
-export PATH="${DENO_INSTALL}"/bin:"${PATH}"
+# export DENO_INSTALL="${HOME}"/.proto/shims/deno
+# export PATH="${DENO_INSTALL}"/bin:"${PATH}"
 # export DENO_NO_UPDATE_CHECK=1
 export DENO_VER_PATCH=2.4.4
 
@@ -59,6 +59,11 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 
 # Neovim
 export NVIM_APPNAME=nvim
+
+# proto
+export PROTO_HOME="${HOME}"/.proto
+export PATH="${PROTO_HOME}"/shims:"${PROTO_HOME}"/bin:"${PATH}"
+export PATH="${HOME}"/.proto/tools/node/22.19.0/bin:"${PATH}"
 
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents

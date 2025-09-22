@@ -261,7 +261,7 @@ package-go:
 
 package-npm-install:
 	# $(npm config get prefix)/bin/safe-chain setup
-	npm install -g @aikidosec/safe-chain
+	npm install -g @aikidosec/safe-chain && safe-chain setup
 	npm install -g @devcontainers/cli
 
 package-npm-update:
@@ -291,28 +291,26 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
+	# proto
+	proto upgrade
+	proto install go latest && proto use go latest
+	proto install node stable && proto use node stable
+	proto install npm && proto use npm
+	proto install rust latest && proto use rust latest
+	proto install uv latest && proto use uv latest
+	# Deno
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& proto install deno "$${DENO_VER_PATCH}" && proto use deno "$${DENO_VER_PATCH}"
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
-	# Deno
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& deno upgrade "$${DENO_VER_PATCH}"
-	# proto
-	proto upgrade
-	proto install node stable && proto use node stable
-	proto install npm && proto use npm
-	proto install rust stable && proto use rust stable
-	# uv
-	uv self update
 
 package-common-install:  ## install common packages
 	# Deno
 	curl -fsSL https://deno.land/install.sh | sh
 	# proto
 	bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
-	# uv
-	curl -LsSf https://astral.sh/uv/install.sh | sh
 	echo "Restart Shell"
 
 package-mac-install:
@@ -356,7 +354,6 @@ package-mac-install:
 	  wget \
 	  zsh \
 	&& brew install ninja cmake gettext curl \
-	&& brew install go \
 	&& brew install awscli session-manager-plugin \
 	&& brew install google-cloud-sdk \
 	&& brew tap databricks/tap && brew install databricks \
@@ -399,10 +396,6 @@ package-ubuntu-install:
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
-	# Go
-	sudo add-apt-repository -y ppa:longsleep/golang-backports
-	sudo apt update
-	sudo apt install -y golang-go
 	# AWS CLI
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 	cd \
