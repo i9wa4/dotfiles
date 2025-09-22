@@ -260,12 +260,12 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
-	# npm install -g @devcontainers/cli
 	npm install -g @aikidosec/safe-chain
+	npm install -g @devcontainers/cli
 
 package-npm-update:
-	# npm update -g @devcontainers/cli
 	npm update -g @aikidosec/safe-chain
+	npm update -g @devcontainers/cli
 
 package-rust:
 	rustup update
@@ -296,21 +296,24 @@ package-update:
 	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
-	@$(MAKE) volta-update
 	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& deno upgrade "$${DENO_VER_PATCH}"
+	# proto
+	proto upgrade
+	proto install node latest && proto use node latest
+	proto install npm latest && proto use npm latest
+	proto install rust latest && proto use rust latest
 	# uv
 	uv self update
 
 package-common-install:  ## install common packages
 	# Deno
 	curl -fsSL https://deno.land/install.sh | sh
+	# proto
+	bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
 	# uv
 	curl -LsSf https://astral.sh/uv/install.sh | sh
-	# Volta
-	curl https://get.volta.sh | bash
-	"$${HOME}"/.volta/bin/volta install node
 	echo "Restart Shell"
 
 package-mac-install:
@@ -326,7 +329,6 @@ package-mac-install:
 	  docker \
 	  font-myricam \
 	  font-noto-sans-jp \
-	  gemini-cli \
 	  google-chrome \
 	  nikitabobko/tap/aerospace \
 	  openvpn-connect \
@@ -338,6 +340,7 @@ package-mac-install:
 	  codex \
 	  fd \
 	  fzf \
+	  gemini-cli \
 	  gh \
 	  git \
 	  grep \
@@ -353,7 +356,6 @@ package-mac-install:
 	  vim \
 	  wget \
 	  zsh \
-	&& brew install python-tk@3.12 \
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
 	&& brew install rustup-init && rustup-init \
@@ -516,7 +518,7 @@ nvim-build:  ## build Neovim
 	# $(MAKE) distclean
 	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
-	&& git fetch --all \
+	&& git fetch --tags --force \
 	&& git switch refs/tags/nightly --detach \
 	&& $(MAKE) \
 	  CMAKE_BUILD_TYPE=Release \
@@ -590,9 +592,6 @@ vim-build:  ## build Vim
 	  --with-features=huge \
 	&& $(MAKE) \
 	&& $(MAKE) install
-
-volta-update:
-	curl https://get.volta.sh | bash
 
 zinit-install:
 	# Zinit

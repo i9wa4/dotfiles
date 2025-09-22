@@ -71,10 +71,6 @@ export JUPYTER_PLATFORM_DIRS=1
 export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
 export TF_VER_MINOR=1.11
 
-# Volta
-export VOLTA_HOME="${HOME}"/.volta
-export PATH="${VOLTA_HOME}"/bin:"${PATH}"
-
 # First Priority Paths
 export PATH="${PATH}":/snap/bin
 export PATH="${HOME}"/.local/bin:"${PATH}"
