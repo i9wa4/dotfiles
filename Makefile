@@ -294,7 +294,7 @@ package-update:
 	# proto
 	proto upgrade
 	proto install go latest && proto use go latest
-	proto install node stable && proto use node stable
+	proto install node stable && proto use node stable  # 22.19.0
 	proto install npm && proto use npm
 	proto install rust latest && proto use rust latest
 	proto install uv latest && proto use uv latest
