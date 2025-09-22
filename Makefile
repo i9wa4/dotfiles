@@ -300,9 +300,9 @@ package-update:
 	&& deno upgrade "$${DENO_VER_PATCH}"
 	# proto
 	proto upgrade
-	proto install node latest && proto use node latest
-	proto install npm latest && proto use npm latest
-	proto install rust latest && proto use rust latest
+	proto install node stable && proto use node stable
+	proto install npm && proto use npm
+	proto install rust stable && proto use rust stable
 	# uv
 	uv self update
 

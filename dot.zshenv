@@ -64,9 +64,6 @@ export NVIM_APPNAME=nvim
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
 
-# Rust
-[ -r "${HOME}"/.cargo/env ] && . "${HOME}"/.cargo/env
-
 # tfenv
 export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
 export TF_VER_MINOR=1.11
