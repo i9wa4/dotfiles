@@ -320,6 +320,8 @@ package-common-install:  ## install common packages
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	# font-noto-sans-jp
+	# visual-studio-code
 	# visual-studio-code@insiders
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
@@ -329,11 +331,9 @@ package-mac-install:
 	  alacritty \
 	  docker \
 	  font-myricam \
-	  font-noto-sans-jp \
 	  google-chrome \
 	  nikitabobko/tap/aerospace \
 	  openvpn-connect \
-	  visual-studio-code \
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
