@@ -35,13 +35,16 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 
 
 # --------------------------------------
-# OS-common Initialization
+# OS-common Tasks
 #
 common-init: zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
 
+common-clean:
+	rm -rf "$${HOME}"/.npm
+
 
 # --------------------------------------
-# Tasks for macOS
+# macOS Tasks
 #
 mac-init: package-mac-install common-init mac-alacritty-init  ## init for Mac
 	defaults write com.apple.Finder QuitMenuItem -bool YES
@@ -82,7 +85,7 @@ mac-alacritty-init:
 
 
 # --------------------------------------
-# Tasks for Ubuntu
+# Ubuntu Tasks
 #
 ubuntu-minimal-init: package-ubuntu-install common-init
 
@@ -115,7 +118,7 @@ ubuntu-awscli-update:
 
 
 # --------------------------------------
-# Tasks for Windows & WSL
+# Windows & WSL Tasks
 #
 wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
@@ -183,6 +186,7 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
 	# OS-specific link
+	$(MAKE) common-clean
 	_uname="$$(uname -a)"; \
 	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
