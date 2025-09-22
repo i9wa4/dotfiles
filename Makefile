@@ -260,6 +260,7 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
+	# $(npm config get prefix)/bin/safe-chain setup
 	npm install -g @aikidosec/safe-chain
 	npm install -g @devcontainers/cli
 
