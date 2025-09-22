@@ -269,9 +269,7 @@ package-npm-update:
 	npm update -g @devcontainers/cli
 
 package-rust:
-	rustup update
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
+	cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
 
 package-update:
 	# OS-specific update
@@ -359,14 +357,12 @@ package-mac-install:
 	  zsh \
 	&& brew install ninja cmake gettext curl \
 	&& brew install go \
-	&& brew install rustup-init && rustup-init \
 	&& brew install awscli session-manager-plugin \
 	&& brew install google-cloud-sdk \
 	&& brew tap databricks/tap && brew install databricks \
 	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
 	# brew install aws-vpn-client
 	# brew install snowflake-snowsql
-	# python-tk@3.12 for https://github.com/GongRzhe/Human-In-the-Loop-MCP-Server
 
 package-mac-update:
 	brew update
@@ -407,8 +403,6 @@ package-ubuntu-install:
 	sudo add-apt-repository -y ppa:longsleep/golang-backports
 	sudo apt update
 	sudo apt install -y golang-go
-	# Rust
-	curl https://sh.rustup.rs -sSf | sh
 	# AWS CLI
 	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 	cd \
