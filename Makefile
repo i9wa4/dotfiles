@@ -511,6 +511,7 @@ nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim \
 	&& git fetch --tags --force \
 	&& git switch refs/tags/nightly --detach \
+	&& $(MAKE) distclean \
 	&& $(MAKE) \
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
