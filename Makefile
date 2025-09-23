@@ -311,8 +311,6 @@ package-update:
 	@$(MAKE) package-npm-update
 
 package-common-install:  ## install common packages
-	# Deno
-	curl -fsSL https://deno.land/install.sh | sh
 	# proto
 	bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
 	echo "Restart Shell"
