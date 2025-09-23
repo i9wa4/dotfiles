@@ -581,6 +581,7 @@ vim-build:  ## build Vim
 	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
+	  --without-wayland \
 	&& $(MAKE) \
 	&& $(MAKE) install
 
