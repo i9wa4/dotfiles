@@ -111,7 +111,7 @@ snippets:
   - name: (Git) worktree remove
     keyword: dw
     snippet:
-      worktree remove .
+      worktree remove . && cd -
     context:
       lbuffer: '^git\s'
   - name: (Prompt) toggle
