@@ -327,7 +327,6 @@ package-mac-install:
 	&& brew install \
 	  alacritty \
 	  docker \
-	  firefox \
 	  font-myricam \
 	  google-chrome \
 	  nikitabobko/tap/aerospace \
