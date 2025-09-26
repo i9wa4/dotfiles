@@ -20,4 +20,5 @@ GitHub の Pull Request をレビューするためのカスタムコマンド
 ## 3. Markdown 出力について
 
 - YOU MUST: 見出しや箇条書きを活用し Markdown らしい構造にする
+- YOU MUST: ファイル名にあなた (AIエージェント) の名前を含める
 - NEVER: 箇条書きなどで複数文章を1行にするなどして長文化しない
