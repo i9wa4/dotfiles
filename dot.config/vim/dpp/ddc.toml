@@ -117,6 +117,20 @@ inoremap <C-e> <Cmd>call pum#map#cancel()<CR>
 '''
 
 [[plugins]]
+repo = 'uga-rosa/denippet.vim'
+on_source = ['ddc.vim']
+hook_source = '''
+let s:dir = $XDG_CONFIG_HOME->expand() .. '/vim/snippet/'
+for s:file in glob(s:dir . '*.*', 1, 1)
+  call denippet#load(s:file)
+endfor
+'''
+
+[[plugins]]
+repo = 'LumaKernel/ddc-source-file'
+on_source = ['ddc.vim']
+
+[[plugins]]
 repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
 # [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
@@ -132,6 +146,8 @@ call skkeleton#config({
 \     s:skk_emoji_path .. '/SKK-JISYO.emoji.utf8',
 \   ],
 \   'immediatelyDictionaryRW': v:false,
+\   'markerHenkan': '',
+\   'markerHenkanSelect': '',
 \   'userDictionary': s:dict_path,
 \ })
 call skkeleton#register_keymap('input', ';', 'henkanPoint')
@@ -140,15 +156,8 @@ cmap <C-k> <Plug>(skkeleton-enable)
 '''
 
 [[plugins]]
-repo = 'uga-rosa/denippet.vim'
-on_source = ['ddc.vim']
+repo = 'NI57721/skkeleton-henkan-highlight'
+on_source = ['skkeleton']
 hook_source = '''
-let s:dir = $XDG_CONFIG_HOME->expand() .. '/vim/snippet/'
-for s:file in glob(s:dir . '*.*', 1, 1)
-  call denippet#load(s:file)
-endfor
+highlight SkkeletonHenkan term=underline cterm=reverse
 '''
-
-[[plugins]]
-repo = 'LumaKernel/ddc-source-file'
-on_source = ['ddc.vim']

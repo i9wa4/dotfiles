@@ -267,10 +267,12 @@ package-npm-install:
 	# $(npm config get prefix)/bin/safe-chain setup
 	npm install -g @aikidosec/safe-chain && safe-chain setup
 	npm install -g @devcontainers/cli
+	npm install -g @github/copilot
 
 package-npm-update:
 	npm update -g @aikidosec/safe-chain
 	npm update -g @devcontainers/cli
+	npm update -g @github/copilot
 
 package-rust:
 	cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
