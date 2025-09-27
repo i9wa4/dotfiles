@@ -11,8 +11,8 @@ set -o posix
 #   echo "✓  .devcontainer ディレクトリをコピーしました"
 # fi
 
-cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
-echo "✓  .mcp.json ファイルをコピーしました"
+# cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
+# echo "✓  .mcp.json ファイルをコピーしました"
 
 cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
@@ -27,6 +27,14 @@ echo "✓  .i9wa4/ ディレクトリを作成しました"
 
 cat >.i9wa4/temp.md <<'EOF'
 ultrathink
+
+## Common
+
+## Claude Code
+
+## Codex CLI
+
+## GitHub Copilot CLI
 EOF
 
 echo "✓  セットアップ完了"
