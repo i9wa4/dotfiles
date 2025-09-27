@@ -300,12 +300,11 @@ package-update:
 	# proto
 	proto upgrade
 	proto install go && proto use go
-	proto install node stable && proto use node stable  # 22.19.0
 	proto install npm && proto use npm
 	proto install rust && proto use rust
 	proto install uv && proto use uv
-	# Deno
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& proto install node "$${NODE_VER_PATCH}" && proto use node "$${NODE_VER_PATCH}" \
 	&& proto install deno "$${DENO_VER_PATCH}" && proto use deno "$${DENO_VER_PATCH}"
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
@@ -330,7 +329,6 @@ package-mac-install:
 	&& brew install \
 	  alacritty \
 	  docker \
-	  firefox \
 	  font-myricam \
 	  google-chrome \
 	  nikitabobko/tap/aerospace \
