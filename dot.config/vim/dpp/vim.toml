@@ -9,10 +9,12 @@ on_event = ['VimEnter']
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
 on_source = ['vim-lsp']
-hook_source = '''
+hook_add = '''
 let g:lsp_diagnostics_float_cursor = v:true
 let g:lsp_diagnostics_virtual_text_align = "after"
 let g:lsp_diagnostics_virtual_text_wrap = "truncate"
+'''
+hook_source = '''
 let g:lsp_log_file = ''
 let g:lsp_settings_enable_suggestions = v:false
 let g:lsp_settings = {
