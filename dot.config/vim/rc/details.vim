@@ -110,6 +110,10 @@ nnoremap <script> <SID>gk gk<SID>g
 nnoremap - "_
 xnoremap - "_
 
+" Toggle Quote
+nnoremap gqq :call ToggleQuote()<CR>
+vnoremap gqq :call ToggleQuoteRange()<CR>
+
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
@@ -214,6 +218,35 @@ endfunction
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
+
+" Toggle Quote
+function! ToggleQuote() abort
+  let l:line = getline('.')
+  if l:line =~ '^> '
+    " "> "を削除
+    call setline('.', l:line[2:])
+  elseif l:line =~ '^>'
+    " ">"のみを削除
+    call setline('.', l:line[1:])
+  else
+    " "> "を追加
+    call setline('.', '> ' . l:line)
+  endif
+endfunction
+
+" Toggle Quote (Range)
+function! ToggleQuoteRange() range
+  for l:lnum in range(a:firstline, a:lastline)
+    let l:line = getline(l:lnum)
+    if l:line =~ '^> '
+      call setline(l:lnum, l:line[2:])
+    elseif l:line =~ '^>'
+      call setline(l:lnum, l:line[1:])
+    else
+      call setline(l:lnum, '> ' . l:line)
+    endif
+  endfor
+endfunction
 
 
 " --------------------------------------
