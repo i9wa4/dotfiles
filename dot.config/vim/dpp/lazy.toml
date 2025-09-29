@@ -19,6 +19,13 @@ on_event = ['VimEnter']
 [[plugins]]
 repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
+hook_add = '''
+let g:caw_no_default_keymappings = 1
+'''
+hook_source = '''
+nmap gcc <Plug>(caw:hatpos:toggle)
+vmap gcc <Plug>(caw:hatpos:toggle)
+'''
 
 [[plugins]]
 repo = 'thinca/vim-qfreplace'
@@ -41,9 +48,10 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['BufEnter']
-hook_source = '''
+hook_add = '''
 let g:gin_proxy_apply_without_confirm = v:true
-
+'''
+hook_source = '''
 function! s:my_gin_log() abort
   let g:gin_log_default_args = [
   \   "--graph",
@@ -114,8 +122,10 @@ augroup END
 repo = 'i9wa4/vim-markdown-number-header'
 depends = ['denops.vim']
 on_ft = ['markdown', 'quarto', 'rmd']
-hook_source = '''
+hook_add = '''
 let g:mnh_header_level_shift = 1
+'''
+hook_source = '''
 augroup mnh
   autocmd!
   autocmd BufWritePost *.md,*.rmd,*.qmd execute 'NumberHeader'
