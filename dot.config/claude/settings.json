@@ -33,7 +33,6 @@
       "Write(.env*)"
     ]
   },
-  "model": "opusplan",
   "statusLine": {
     "type": "command",
     "command": "npx ccusage@latest statusline"
