@@ -265,7 +265,8 @@ package-go:
 
 package-npm-install:
 	# $(npm config get prefix)/bin/safe-chain setup
-	npm install -g @aikidosec/safe-chain && safe-chain setup
+	npm install -g @aikidosec/safe-chain
+	_prefix=$$(npm config get prefix 2>/dev/null | tail -1) && node "$${_prefix}"/lib/node_modules/@aikidosec/safe-chain/bin/safe-chain.js setup
 	npm install -g @devcontainers/cli
 	npm install -g @github/copilot
 
@@ -299,13 +300,13 @@ package-update:
 	# OS common update
 	# proto
 	proto upgrade
-	proto install go && proto use go
-	proto install npm && proto use npm
-	proto install rust && proto use rust
-	proto install uv && proto use uv
+	proto install go
+	proto install node stable
+	proto install npm
+	proto install rust
+	proto install uv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& proto install node "$${NODE_VER_PATCH}" && proto use node "$${NODE_VER_PATCH}" \
-	&& proto install deno "$${DENO_VER_PATCH}" && proto use deno "$${DENO_VER_PATCH}"
+	&& proto install deno "$${DENO_VER_PATCH}"
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install

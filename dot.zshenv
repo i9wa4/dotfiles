@@ -61,10 +61,8 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 export NVIM_APPNAME=nvim
 
 # proto
-export NODE_VER_PATCH=22.20.0
 export PROTO_HOME="${HOME}"/.proto
 export PATH="${PROTO_HOME}"/shims:"${PROTO_HOME}"/bin:"${PATH}"
-export PATH="${HOME}"/.proto/tools/node/"${NODE_VER_PATCH}"/bin:"${PATH}"
 
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
