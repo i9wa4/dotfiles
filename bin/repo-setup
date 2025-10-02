@@ -33,8 +33,6 @@ ultrathink
 ## Claude Code
 
 ## Codex CLI
-
-## GitHub Copilot CLI
 EOF
 
 echo "✓  セットアップ完了"
