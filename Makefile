@@ -301,12 +301,12 @@ package-update:
 	# proto
 	proto upgrade
 	proto install go
-	proto install node stable
 	proto install npm
 	proto install rust
 	proto install uv
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& proto install deno "$${DENO_VER_PATCH}"
+	&& proto install deno "$${DENO_VER_PATCH}" \
+	&& proto install node "$${NODE_VER_PATCH}"
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install
