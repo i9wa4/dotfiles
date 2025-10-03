@@ -60,6 +60,10 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 # Neovim
 export NVIM_APPNAME=nvim
 
+# Node
+export NODE_VER_PATCH=22.20.0
+export PATH="${PATH}":"${HOME}"/.proto/tools/node/"${NODE_VER_PATCH}"/bin
+
 # proto
 export PROTO_HOME="${HOME}"/.proto
 export PATH="${PROTO_HOME}"/shims:"${PROTO_HOME}"/bin:"${PATH}"
