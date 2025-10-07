@@ -271,6 +271,7 @@ package-npm-install:
 	npm install -g @github/copilot
 	npm install -g @google/gemini-cli
 	npm install -g @openai/codex
+	npm install -g npm
 	npm install -g zenn-cli
 
 package-npm-update:
@@ -280,6 +281,7 @@ package-npm-update:
 	npm update -g @github/copilot
 	npm update -g @google/gemini-cli
 	npm update -g @openai/codex
+	npm update -g npm
 	npm update -g zenn-cli
 
 package-rust:
