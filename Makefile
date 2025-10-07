@@ -255,16 +255,6 @@ unlink:  ## unlink symbolic links
 # --------------------------------------
 # Package Management
 #
-package-go:
-	go install github.com/evilmartians/lefthook@latest
-	go install github.com/jameswoolfenden/pike@latest
-	go install github.com/mattn/efm-langserver@latest
-	go install github.com/mikefarah/yq/v4@latest
-	go install github.com/rhysd/actionlint/cmd/actionlint@latest
-	go install github.com/rhysd/vim-startuptime@latest
-	go install github.com/x-motemen/ghq@latest
-	go install mvdan.cc/sh/v3/cmd/shfmt@latest
-
 package-npm-install:
 	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
@@ -283,9 +273,6 @@ package-npm-update:
 	npm update -g @openai/codex
 	npm update -g npm
 	npm update -g zenn-cli
-
-package-rust:
-	cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
 
 package-update:
 	# OS-specific update
@@ -309,8 +296,6 @@ package-update:
 	# OS common update
 	mise self-update
 	mise upgrade
-	@$(MAKE) package-go
-	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 
