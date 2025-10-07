@@ -180,6 +180,7 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/codex           "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/mise            "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
@@ -225,6 +226,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/mise ];            then unlink "$${XDG_CONFIG_HOME}"/mise; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];            then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
@@ -264,16 +266,23 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
-	# $(npm config get prefix)/bin/safe-chain setup
 	npm install -g @aikidosec/safe-chain
 	_prefix=$$(npm config get prefix 2>/dev/null | tail -1) && node "$${_prefix}"/lib/node_modules/@aikidosec/safe-chain/bin/safe-chain.js setup
+	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @github/copilot
+	npm install -g @google/gemini-cli
+	npm install -g @openai/codex
+	npm install -g zenn-cli
 
 package-npm-update:
 	npm update -g @aikidosec/safe-chain
+	npm update -g @anthropic-ai/claude-code
 	npm update -g @devcontainers/cli
 	npm update -g @github/copilot
+	npm update -g @google/gemini-cli
+	npm update -g @openai/codex
+	npm update -g zenn-cli
 
 package-rust:
 	cargo install --locked --git https://github.com/XAMPPRocky/tokei.git tokei
@@ -299,14 +308,16 @@ package-update:
 	fi
 	# OS common update
 	# proto
-	proto upgrade
-	proto install go
-	proto install npm
-	proto install rust
-	proto install uv
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& proto install deno "$${DENO_VER_PATCH}" \
-	&& proto install node "$${NODE_VER_PATCH}"
+	# proto upgrade
+	# proto install go
+	# proto install npm
+	# proto install rust
+	# proto install uv
+	# . $(MF_DOTFILES_DIR)/dot.zshenv \
+	# && proto install deno "$${DENO_VER_PATCH}" \
+	# && proto install node "$${NODE_VER_PATCH}"
+	mise self-update
+	mise upgrade
 	@$(MAKE) package-go
 	@$(MAKE) package-rust
 	@$(MAKE) package-npm-install
@@ -314,7 +325,9 @@ package-update:
 
 package-common-install:  ## install common packages
 	# proto
-	bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
+	# bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
+	# mise
+	curl https://mise.run | sh
 	echo "Restart Shell"
 
 package-mac-install:
@@ -337,11 +350,8 @@ package-mac-install:
 	  zoom \
 	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
-	  claude-code \
-	  codex \
 	  fd \
 	  fzf \
-	  gemini-cli \
 	  gh \
 	  git \
 	  grep \
