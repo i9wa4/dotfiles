@@ -36,13 +36,6 @@ export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
 
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
-# export CLAUDE_CONFIG_DIR="${XDG_CONFIG_HOME}"/claude
-
-# Deno
-# export DENO_INSTALL="${HOME}"/.proto/shims/deno
-# export PATH="${DENO_INSTALL}"/bin:"${PATH}"
-# export DENO_NO_UPDATE_CHECK=1
-# export DENO_VER_PATCH=2.4.4
 
 # fzf
 export FZF_DEFAULT_OPTS="
@@ -59,14 +52,6 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Conten
 
 # Neovim
 export NVIM_APPNAME=nvim
-
-# Node
-# export NODE_VER_PATCH=22.20.0
-# export PATH="${PATH}":"${HOME}"/.proto/tools/node/"${NODE_VER_PATCH}"/bin
-
-# proto
-# export PROTO_HOME="${HOME}"/.proto
-# export PATH="${PROTO_HOME}"/shims:"${PROTO_HOME}"/bin:"${PATH}"
 
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents

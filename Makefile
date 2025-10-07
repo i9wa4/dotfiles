@@ -266,8 +266,6 @@ package-go:
 	go install mvdan.cc/sh/v3/cmd/shfmt@latest
 
 package-npm-install:
-	npm install -g @aikidosec/safe-chain
-	_prefix=$$(npm config get prefix 2>/dev/null | tail -1) && node "$${_prefix}"/lib/node_modules/@aikidosec/safe-chain/bin/safe-chain.js setup
 	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @github/copilot
@@ -307,15 +305,6 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
-	# proto
-	# proto upgrade
-	# proto install go
-	# proto install npm
-	# proto install rust
-	# proto install uv
-	# . $(MF_DOTFILES_DIR)/dot.zshenv \
-	# && proto install deno "$${DENO_VER_PATCH}" \
-	# && proto install node "$${NODE_VER_PATCH}"
 	mise self-update
 	mise upgrade
 	@$(MAKE) package-go
@@ -324,10 +313,12 @@ package-update:
 	@$(MAKE) package-npm-update
 
 package-common-install:  ## install common packages
-	# proto
-	# bash <(curl -fsSL https://moonrepo.dev/install/proto.sh)
 	# mise
 	curl https://mise.run | sh
+	"$${HOME}"/.local/bin/mise install
+	eval "$$("$${HOME}"/.local/bin/mise activate zsh)"
+	npm install -g @aikidosec/safe-chain
+	safe-chain setup
 	echo "Restart Shell"
 
 package-mac-install:
