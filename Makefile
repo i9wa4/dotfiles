@@ -222,7 +222,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/aerospace ];       then unlink "$${XDG_CONFIG_HOME}"/aerospace; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/claude ];          then unlink "$${XDG_CONFIG_HOME}"/claude; fi \
-    && if [ -L "$${XDG_CONFIG_HOME}"/codex ];           then unlink "$${XDG_CONFIG_HOME}"/codex; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/codex ];           then unlink "$${XDG_CONFIG_HOME}"/codex; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
