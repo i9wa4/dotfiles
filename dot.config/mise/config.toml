@@ -1,6 +1,20 @@
+[settings]
+experimental = true
+
 [tools]
+go = "latest"
+"go:github.com/evilmartians/lefthook"           = "latest"
+"go:github.com/jameswoolfenden/pike"            = "latest"
+"go:github.com/mattn/efm-langserver"            = "latest"
+"go:github.com/mikefarah/yq/v4"                 = "latest"
+"go:github.com/rhysd/actionlint/cmd/actionlint" = "latest"
+"go:github.com/rhysd/vim-startuptime"           = "latest"
+"go:github.com/x-motemen/ghq"                   = "latest"
+"go:mvdan.cc/sh/v3/cmd/shfmt"                   = "latest"
+
+rust = "latest"
+"cargo:https://github.com/XAMPPRocky/tokei" = { version = "branch:master", crate = "tokei", locked = true }
+
 deno  = "2.5.3"
-go    = "latest"
 node  = "22"
-rust  = "latest"
 uv    = "latest"
