@@ -1,0 +1,6 @@
+[tools]
+deno  = "2.5.3"
+go    = "latest"
+node  = "22"
+rust  = "latest"
+uv    = "latest"
