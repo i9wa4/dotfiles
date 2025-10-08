@@ -114,10 +114,10 @@ ubuntu-alacritty-init:
 #
 wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
-	sudo apt install -y wslu
+	sudo apt-get install -y wslu
 	# https://thinkit.co.jp/article/37792
 	# https://thinkit.co.jp/article/37737
-	sudo apt install -U -y nautilus
+	sudo apt-get install -U -y nautilus
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
 	echo "Restart WSL2"
@@ -338,12 +338,12 @@ package-mac-update:
 	brew upgrade
 
 package-ubuntu-install:
-	sudo apt install -y zsh
+	sudo apt-get install -y zsh
 	chsh -s "$$(which zsh)"
 	sudo add-apt-repository -y ppa:git-core/ppa
-	sudo apt update
-	sudo apt upgrade -y
-	sudo apt install -y \
+	sudo apt-get update
+	sudo apt-get upgrade -y
+	sudo apt-get install -y \
 	  htop \
 	  ssh \
 	  unzip \
@@ -351,19 +351,21 @@ package-ubuntu-install:
 	  zip
 	# Vim
 	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
-	sudo apt update
-	sudo apt build-dep -y vim
+	sudo apt-get update
+	sudo apt-get build-dep -y vim
 	# Neovim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
-	sudo apt install -y \
+	sudo apt-get install -y \
 	  ninja-build gettext cmake unzip curl build-essential
+	# tmux
+	sudo apt-get install bison
 
 package-ubuntu-update:
-	sudo apt update
-	sudo apt upgrade -y
+	sudo apt-get update
+	sudo apt-get upgrade -y
 
 package-ubuntu-server-install:
-	sudo apt install -y openssh-server
+	sudo apt-get install -y openssh-server
 	sudo systemctl daemon-reload
 	sudo systemctl start ssh.service
 	sudo systemctl enable ssh.service
@@ -372,8 +374,8 @@ package-ubuntu-desktop-install:
 	# Settings --> Accessibility --> Large Text
 	# Alacritty
 	sudo add-apt-repository -y ppa:aslatter/ppa
-	sudo apt update
-	sudo apt install -y alacritty
+	sudo apt-get update
+	sudo apt-get install -y alacritty
 	# https://myrica.estable.jp/
 	cd \
 	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
