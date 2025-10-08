@@ -31,9 +31,6 @@ export PATH=/opt/homebrew/bin:"${PATH}"
 # AWS
 export AWS_PROFILE=
 
-# act
-export PATH="${HOME}"/ghq/github.com/nektos/act/dist/local:"${PATH}"
-
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
 
@@ -42,9 +39,6 @@ export FZF_DEFAULT_OPTS="
   --reverse
   --bind 'ctrl-y:accept'
 "
-
-# Go
-export PATH="${HOME}"/go/bin:"${PATH}"
 
 # Java
 # https://docs.aws.amazon.com/corretto/latest/corretto-24-ug/macos-install.html
@@ -56,10 +50,6 @@ export NVIM_APPNAME=nvim
 # Python
 export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
 export JUPYTER_PLATFORM_DIRS=1
-
-# tfenv
-export PATH="${HOME}"/ghq/github.com/tfutils/tfenv/bin:"${PATH}"
-export TF_VER_MINOR=1.11
 
 # First Priority Paths
 export PATH="${PATH}":/snap/bin
