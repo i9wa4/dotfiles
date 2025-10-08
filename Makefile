@@ -107,14 +107,6 @@ ubuntu-alacritty-init:
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
-ubuntu-awscli-update:
-	# AWS CLI
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd \
-	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip -fo awscliv2.zip \
-	&& sudo ./aws/install --update \
-	&& rm awscliv2.zip \
 
 
 # --------------------------------------
@@ -314,8 +306,8 @@ package-mac-install:
 	# font-noto-sans-jp
 	# visual-studio-code
 	# visual-studio-code@insiders
-	# nikitabobko/tap/aerospace
-	# brew tap FelixKratz/formulae && brew install borders
+	# aws-vpn-client
+	# snowflake-snowsql
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -328,30 +320,15 @@ package-mac-install:
 	  openvpn-connect \
 	  zoom \
 	&& brew install \
-	  fd \
-	  fzf \
-	  gh \
 	  git \
 	  grep \
-	  hadolint \
-	  jq \
+	  htop \
 	  make \
-	  nvim \
-	  pre-commit \
-	  ripgrep \
-	  shellcheck \
-	  tflint \
-	  tmux \
-	  vim \
 	  wget \
-	  zsh \
-	&& brew install ninja cmake gettext curl \
-	&& brew install awscli session-manager-plugin \
-	&& brew install google-cloud-sdk \
-	&& brew tap databricks/tap && brew install databricks \
-	&& brew install openssl readline sqlite3 xz zlib tcl-tk \
-	# brew install aws-vpn-client
-	# brew install snowflake-snowsql
+	  zsh
+	# Neovim
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& brew install ninja cmake gettext curl git
 
 package-mac-update:
 	brew update
@@ -364,20 +341,9 @@ package-ubuntu-install:
 	sudo apt update
 	sudo apt upgrade -y
 	sudo apt install -y \
-	  bc \
-	  curl \
-	  fd-find \
-	  fzf \
-	  gh \
-	  jq \
-	  luajit \
-	  nkf \
-	  ripgrep \
-	  shellcheck \
+	  htop \
 	  ssh \
-	  tmux \
 	  unzip \
-	  vim \
 	  xsel \
 	  zip
 	# Vim
@@ -388,23 +354,6 @@ package-ubuntu-install:
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt install -y \
 	  ninja-build gettext cmake unzip curl build-essential
-	# AWS CLI
-	# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-	cd \
-	&& curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-	&& unzip awscliv2.zip \
-	&& sudo ./aws/install \
-	&& rm awscliv2.zip
-	# gcloud CLI
-	sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
-	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
-	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-	sudo apt-get update && sudo apt-get install -y google-cloud-cli
-	sudo apt install -y \
-	  build-essential libssl-dev zlib1g-dev \
-	  libbz2-dev libreadline-dev libsqlite3-dev curl git \
-	  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 package-ubuntu-update:
 	sudo apt update
@@ -536,6 +485,7 @@ tmux-init:
 vim-build:  ## build Vim
 	# git clean -ffdx
 	# $(MAKE) distclean
+	# --enable-python3interp=dynamic
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
@@ -568,7 +518,6 @@ vim-build:  ## build Vim
 	  --enable-fail-if-missing \
 	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
 	  --enable-multibyte \
-	  --enable-python3interp=dynamic \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
 	  --without-wayland \
