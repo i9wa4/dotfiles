@@ -22,6 +22,7 @@ jq              = "latest"
 pre-commit      = "latest"
 ripgrep         = "latest"
 shellcheck      = "latest"
+shfmt           = "latest"
 terraform       = "latest"
 tflint          = "latest"
 tmux            = "latest"
@@ -34,7 +35,6 @@ tmux            = "latest"
 "go:github.com/rhysd/actionlint/cmd/actionlint" = { version = "latest" }
 "go:github.com/rhysd/vim-startuptime"           = { version = "latest" }
 "go:github.com/x-motemen/ghq"                   = { version = "latest" }
-"go:mvdan.cc/sh/v3/cmd/shfmt"                   = { version = "latest" }
 
 # Cargo Tools
 "cargo:tokei" = "latest"
