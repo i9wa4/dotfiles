@@ -384,12 +384,6 @@ package-ubuntu-desktop-install:
 # --------------------------------------
 #  Tools
 #
-act-install:  ## install act
-	ghq get -p nektos/act
-
-act-build:  ## build act
-	@$(MAKE) -C $(MF_GITHUB_DIR)/nektos/act build
-
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
 	# claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
@@ -454,30 +448,6 @@ nvim-build:  ## build Neovim
 	  CMAKE_BUILD_TYPE=Release \
 	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
 	&& $(MAKE) install
-
-tfenv-terraform-install:  ## install Terraform (e.g. make tfenv-terraform-install TF_VER_PATCH=1.9.3)
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& tfenv install "$(TF_VER_PATCH)" \
-	&& tfenv use "$(TF_VER_PATCH)" \
-	&& terraform version
-
-tfenv-terraform-install-latest:  ## install latest Terraform
-	_tf_ver_latest="$$(tail -n1 "$${HOME}"/.cache/tfenv-list.txt)" \
-	&& tfenv install "$${_tf_ver_latest}" \
-	&& tfenv use "$${_tf_ver_latest}" \
-	&& terraform version
-
-tfenv-list:  ## show installed Terraform versions
-	@. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& echo "[tfenv] Installable Terraform "${TF_VER_MINOR}" or newer versions:" \
-	&& available_versions="$$(tfenv list-remote | grep -v '[a-zA-Z]' | sort -V)" \
-	&& mkdir -p "$${HOME}"/.cache \
-	&& echo "$${available_versions}" | tail -n +$$( \
-	    echo "$${available_versions}" \
-	    | grep -n '^'"$${TF_VER_MINOR}" | cut -f1 -d: | head -n1 \
-	  ) | tee "$${HOME}"/.cache/tfenv-list.txt \
-	&& echo "[tfenv] Installed Terraform versions:" \
-	&& tfenv list
 
 tmux-init:
 	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm

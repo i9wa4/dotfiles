@@ -10,6 +10,7 @@ rust   = "latest"
 uv     = "latest"
 
 # CLI Tools
+act             = "latest"
 awscli          = "latest"
 databricks-cli  = "latest"
 fd              = "latest"
