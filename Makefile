@@ -248,22 +248,22 @@ unlink:  ## unlink symbolic links
 # Package Management
 #
 package-npm-install:
+	npm install -g npm
 	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @github/copilot
 	npm install -g @google/gemini-cli
 	npm install -g @openai/codex
-	npm install -g npm
 	npm install -g zenn-cli
 
 package-npm-update:
+	npm update -g npm
 	npm update -g @aikidosec/safe-chain
 	npm update -g @anthropic-ai/claude-code
 	npm update -g @devcontainers/cli
 	npm update -g @github/copilot
 	npm update -g @google/gemini-cli
 	npm update -g @openai/codex
-	npm update -g npm
 	npm update -g zenn-cli
 
 package-update:
