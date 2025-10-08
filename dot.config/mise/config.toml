@@ -2,7 +2,30 @@
 experimental = true
 
 [tools]
-go = "latest"
+# Language Runtimes
+deno   = "2.5.3"
+go     = "latest"
+node   = "22"
+rust   = "latest"
+uv     = "latest"
+
+# CLI Tools
+awscli          = "latest"
+databricks-cli  = "latest"
+fd              = "latest"
+fzf             = "latest"
+gcloud          = "latest"
+gh              = "latest"
+hadolint        = "latest"
+jq              = "latest"
+pre-commit      = "latest"
+ripgrep         = "latest"
+shellcheck      = "latest"
+terraform       = "latest"
+tflint          = "latest"
+tmux            = "latest"
+
+# Go Tools
 "go:github.com/evilmartians/lefthook"           = { version = "latest" }
 "go:github.com/jameswoolfenden/pike"            = { version = "latest" }
 "go:github.com/mattn/efm-langserver"            = { version = "latest" }
@@ -12,9 +35,5 @@ go = "latest"
 "go:github.com/x-motemen/ghq"                   = { version = "latest" }
 "go:mvdan.cc/sh/v3/cmd/shfmt"                   = { version = "latest" }
 
-rust = "latest"
+# Cargo Tools
 "cargo:tokei" = "latest"
-
-deno = "2.5.3"
-node = "22"
-uv   = "latest"
