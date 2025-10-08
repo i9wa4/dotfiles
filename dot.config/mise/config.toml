@@ -3,18 +3,18 @@ experimental = true
 
 [tools]
 go = "latest"
-"go:github.com/evilmartians/lefthook"           = "latest"
-"go:github.com/jameswoolfenden/pike"            = "latest"
-"go:github.com/mattn/efm-langserver"            = "latest"
-"go:github.com/mikefarah/yq/v4"                 = "latest"
-"go:github.com/rhysd/actionlint/cmd/actionlint" = "latest"
-"go:github.com/rhysd/vim-startuptime"           = "latest"
-"go:github.com/x-motemen/ghq"                   = "latest"
-"go:mvdan.cc/sh/v3/cmd/shfmt"                   = "latest"
+"go:github.com/evilmartians/lefthook"           = { version = "latest" }
+"go:github.com/jameswoolfenden/pike"            = { version = "latest" }
+"go:github.com/mattn/efm-langserver"            = { version = "latest" }
+"go:github.com/mikefarah/yq/v4"                 = { version = "latest" }
+"go:github.com/rhysd/actionlint/cmd/actionlint" = { version = "latest" }
+"go:github.com/rhysd/vim-startuptime"           = { version = "latest" }
+"go:github.com/x-motemen/ghq"                   = { version = "latest" }
+"go:mvdan.cc/sh/v3/cmd/shfmt"                   = { version = "latest" }
 
 rust = "latest"
-"cargo:https://github.com/XAMPPRocky/tokei" = { version = "branch:master", crate = "tokei", locked = true }
+"cargo:tokei" = "latest"
 
-deno  = "2.5.3"
-node  = "22"
-uv    = "latest"
+deno = "2.5.3"
+node = "22"
+uv   = "latest"
