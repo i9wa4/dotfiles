@@ -14,4 +14,3 @@ args = ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/sse"]
 [mcp_servers.aws_documentation]
 command = "uvx"
 args = ["awslabs.aws-documentation-mcp-server@latest"]
-env = { "FASTMCP_LOG_LEVEL": "ERROR" }
