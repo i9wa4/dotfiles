@@ -20,6 +20,7 @@ family = "MyricaM M"
 
 [window]
 opacity = 1.0
+startup_mode = "Maximized"
 
 [keyboard]
 bindings = []
