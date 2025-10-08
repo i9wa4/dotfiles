@@ -326,6 +326,9 @@ package-mac-install:
 	  make \
 	  wget \
 	  zsh
+	# Vim
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& brew install lua luajit
 	# Neovim
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew install ninja cmake gettext curl git
