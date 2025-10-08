@@ -9,6 +9,30 @@ description: "Issue to PR - 3フェーズで作業管理 (arg: Issue number)"
 
 参考: [Anthropic's Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices#a-explore-plan-code-commit)
 
+## 重要: Todoロードマップ更新時の注意
+
+Todoロードマップコミットを `--amend` する前に、必ずコミット履歴を確認すること
+
+```bash
+git log --oneline -3
+```
+
+直前のコミットが「Phase: XXX → YYY」の場合、amend するとPhase移行コミットが消えるため amend 禁止
+
+OK例: 直前が Phase移行コミットでない
+```
+abc1234 Issue #123 ロードマップ  ← これを amend するのは OK
+def5678 実装コミット
+...
+```
+
+NG例: 直前が Phase移行コミット
+```
+xyz9999 Phase: PLAN → CODE  ← この状態で amend すると消える！
+abc1234 Issue #123 ロードマップ
+...
+```
+
 ## 1. 初回実行
 
 ```bash
