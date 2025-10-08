@@ -314,6 +314,8 @@ package-mac-install:
 	# font-noto-sans-jp
 	# visual-studio-code
 	# visual-studio-code@insiders
+	# nikitabobko/tap/aerospace
+	# brew tap FelixKratz/formulae && brew install borders
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -323,10 +325,8 @@ package-mac-install:
 	  docker \
 	  font-myricam \
 	  google-chrome \
-	  nikitabobko/tap/aerospace \
 	  openvpn-connect \
 	  zoom \
-	&& brew tap FelixKratz/formulae && brew install borders \
 	&& brew install \
 	  fd \
 	  fzf \
