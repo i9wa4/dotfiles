@@ -262,13 +262,7 @@ package-npm-install:
 package-npm-update:
 	npm update -g npm
 	# Other packages
-	npm update -g @aikidosec/safe-chain
-	npm update -g @anthropic-ai/claude-code
-	npm update -g @devcontainers/cli
-	npm update -g @github/copilot
-	npm update -g @google/gemini-cli
-	npm update -g @openai/codex
-	npm update -g zenn-cli
+	npm outdated -g --parseable --depth=0 | cut -d: -f4 | xargs -r npm install -g
 
 package-update:
 	# OS-specific update
