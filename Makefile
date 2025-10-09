@@ -317,15 +317,7 @@ package-mac-install:
 	  visual-studio-code \
 	  zoom \
 	&& brew install \
-	  git \
-	  grep \
-	  htop \
-	  make \
-	  wget \
-	  zsh
-	# Vim
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& brew install lua luajit
+	  git
 	# Neovim
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew install ninja cmake gettext curl git
@@ -342,7 +334,6 @@ package-ubuntu-install:
 	sudo apt-get upgrade -y
 	sudo apt-get install -y \
 	  git \
-	  htop \
 	  ssh \
 	  unzip \
 	  xsel \
@@ -459,6 +450,7 @@ vim-build:  ## build Vim
 	# git clean -ffdx
 	# $(MAKE) distclean
 	# --enable-python3interp=dynamic
+	# --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}"
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
@@ -489,7 +481,6 @@ vim-build:  ## build Vim
 	  $${_config_opts} \
 	  --enable-clipboard \
 	  --enable-fail-if-missing \
-	  --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}" \
 	  --enable-multibyte \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
