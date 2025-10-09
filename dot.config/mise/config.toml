@@ -3,11 +3,11 @@ experimental = true
 
 [tools]
 # Language Runtimes
-deno   = "2.5.3"
-go     = "latest"
-node   = "22"
-rust   = "latest"
-uv     = "latest"
+deno  = "2.5.3"
+go    = "latest"
+node  = "22"
+rust  = "latest"
+uv    = "latest"
 
 # CLI Tools
 act             = "latest"
@@ -25,16 +25,17 @@ shellcheck      = "latest"
 shfmt           = "latest"
 terraform       = "latest"
 tflint          = "latest"
-tmux            = "latest"
-
-# Go Tools
-"go:github.com/evilmartians/lefthook"           = { version = "latest" }
-"go:github.com/jameswoolfenden/pike"            = { version = "latest" }
-"go:github.com/mattn/efm-langserver"            = { version = "latest" }
-"go:github.com/mikefarah/yq/v4"                 = { version = "latest" }
-"go:github.com/rhysd/actionlint/cmd/actionlint" = { version = "latest" }
-"go:github.com/rhysd/vim-startuptime"           = { version = "latest" }
-"go:github.com/x-motemen/ghq"                   = { version = "latest" }
 
 # Cargo Tools
 "cargo:tokei" = "latest"
+
+# Aqua Tools
+"aqua:evilmartians/lefthook"  = "latest"
+"aqua:mikefarah/yq"           = "latest"
+"aqua:rhysd/actionlint"       = "latest"
+"aqua:x-motemen/ghq"          = "latest"
+
+# Go Tools
+"go:github.com/jameswoolfenden/pike"  = { version = "latest" }
+"go:github.com/mattn/efm-langserver"  = { version = "latest" }
+"go:github.com/rhysd/vim-startuptime" = { version = "latest" }

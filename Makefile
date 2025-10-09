@@ -317,7 +317,8 @@ package-mac-install:
 	  visual-studio-code \
 	  zoom \
 	&& brew install \
-	  git
+	  git \
+	  tmux
 	# Neovim
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew install ninja cmake gettext curl git
@@ -335,6 +336,7 @@ package-ubuntu-install:
 	sudo apt-get install -y \
 	  git \
 	  ssh \
+	  tmux \
 	  unzip \
 	  xsel \
 	  zip
