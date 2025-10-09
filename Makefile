@@ -310,7 +310,7 @@ package-mac-install:
 	&& brew upgrade \
 	&& brew install \
 	  alacritty \
-	  docker \
+	  docker-desktop \
 	  font-myricam \
 	  google-chrome \
 	  openvpn-connect \
