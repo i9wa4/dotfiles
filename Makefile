@@ -249,6 +249,9 @@ unlink:  ## unlink symbolic links
 #
 package-npm-install:
 	npm install -g npm
+	npm install -g @aikidosec/safe-chain
+	safe-chain setup
+	# Other packages
 	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
 	npm install -g @github/copilot
@@ -258,6 +261,7 @@ package-npm-install:
 
 package-npm-update:
 	npm update -g npm
+	# Other packages
 	npm update -g @aikidosec/safe-chain
 	npm update -g @anthropic-ai/claude-code
 	npm update -g @devcontainers/cli
@@ -295,19 +299,11 @@ package-common-install:  ## install common packages
 	# mise
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
-	eval "$$("$${HOME}"/.local/bin/mise activate zsh)"
-	npm install -g @aikidosec/safe-chain
-	safe-chain setup
 	echo "Restart Shell"
 
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# font-noto-sans-jp
-	# visual-studio-code
-	# visual-studio-code@insiders
-	# aws-vpn-client
-	# snowflake-snowsql
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -318,6 +314,7 @@ package-mac-install:
 	  font-myricam \
 	  google-chrome \
 	  openvpn-connect \
+	  visual-studio-code \
 	  zoom \
 	&& brew install \
 	  git \
@@ -344,6 +341,7 @@ package-ubuntu-install:
 	sudo apt-get update
 	sudo apt-get upgrade -y
 	sudo apt-get install -y \
+	  git \
 	  htop \
 	  ssh \
 	  unzip \
