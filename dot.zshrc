@@ -129,6 +129,10 @@ PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} %f%K{#FFB6C1}%F{black}[\$(_g
 %F{#696969}$%f "
 
 
+# mise
+eval "$("${HOME}"/.local/bin/mise activate zsh)"
+
+
 # zeno.zsh
 zinit ice depth"1" blockf
 zinit light yuki-yano/zeno.zsh
@@ -170,10 +174,6 @@ elif [ "$(echo "${_uname}" | grep el7)" ]; then
 else
   echo 'Which OS are you using?'
 fi
-
-
-# mise
-eval "$("${HOME}"/.local/bin/mise activate zsh)"
 
 
 # tmux
