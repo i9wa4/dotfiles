@@ -23,6 +23,8 @@ snippets:
       && make unlink
       && ghq list | ghq get --update --parallel
       && make link
+      && zinit self-update
+      && zinit update --parallel
       && make package-update
       && cd ~/ghq/github.com/i9wa4/internal
       && uv run quarto render docs/
