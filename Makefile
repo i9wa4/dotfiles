@@ -292,7 +292,6 @@ package-update:
 	# OS common update
 	mise self-update
 	mise upgrade
-	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 
 package-common-install:  ## install common packages
