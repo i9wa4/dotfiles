@@ -17,15 +17,6 @@ help:  ## print this help
 	@echo 'Targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-test:
-	@echo "$${PATH}" | tr ':' '\n'
-	@echo uname: "$$(uname -a)"
-	@echo dotfiles: $(MF_DOTFILES_DIR)
-	@echo dotfiles: "$(MF_DOTFILES_DIR)"
-	@echo shell: "$$0"
-	@echo dot.zshenv load test:
-	. $(MF_DOTFILES_DIR)/dot.zshenv
-
 
 # --------------------------------------
 # Global Variables
@@ -60,10 +51,6 @@ mac-init: package-mac-install common-init mac-alacritty-init  ## init for Mac
 mac-vscode-init:
 	rm -rf "$${HOME}"/.vscode
 	rm -rf "$${HOME}"'/Library/Application Support/Code'
-
-mac-vscode-insiders-init:
-	rm -rf "$${HOME}"/.vscode-insiders
-	rm -rf "$${HOME}"'/Library/Application Support/Code - Insiders'
 
 mac-clean:
 	fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f
@@ -167,7 +154,6 @@ link:  ## make symbolic links
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& mkdir -p "$${XDG_CONFIG_HOME}" \
 	&& cp -rf $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/aerospace       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/codex           "$${XDG_CONFIG_HOME}" \
@@ -181,28 +167,15 @@ link:  ## make symbolic links
 	# OS-specific link
 	$(MAKE) common-clean
 	_uname="$$(uname -a)"; \
-	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
-	  $(MAKE) mac-clean; \
-	  _code_setting_dir="$${HOME}"'/Library/Application Support/Code/User'; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	  $(MAKE) win-copy; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
+	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
 	else \
-	  echo 'Which OS are you using?'; \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	fi \
 	&& rm -rf "$${_code_setting_dir}"/snippets \
 	&& mkdir -p "$${_code_setting_dir}"/snippets \
 	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
-	echo "Remove ~/.gitconfig's core.excludesfile!"
 
 
 unlink:  ## unlink symbolic links
@@ -226,20 +199,10 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 	# OS-specific unlink
 	_uname="$$(uname -a)"; \
-	_code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
 	else \
-	  echo 'Which OS are you using?'; \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
 	fi \
 	&& if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi
 
@@ -284,6 +247,8 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
+	zinit self-update
+	zinit update --parallel
 	mise self-update
 	mise upgrade
 	@$(MAKE) package-npm-update
@@ -375,11 +340,6 @@ package-ubuntu-desktop-install:
 #
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
-	# claude mcp add --scope user "context7" -- npx -y @upstash/context7-mcp
-	# claude mcp add --scope user "github" -- npx -y @modelcontextprotocol/server-github
-	# claude mcp add --scope user "serena" -- sh -c 'uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"'
-	# claude mcp add --scope user "serena" -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant
-	# claude mcp add --scope user "terraform" -- docker run -i --rm hashicorp/terraform-mcp-server
 	claude mcp add --scope user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
 	claude mcp add --scope user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
 
@@ -387,12 +347,6 @@ claude-config:  ## configure Claude Code
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
 	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
-
-ghq-backup-local:
-	. "$${HOME}"/.zshenv \
-	&& _list_path="$${XDG_CACHE_HOME}"/ghq-list-local.txt \
-	&& ghq list > "$${_list_path}" \
-	&& sort --unique "$${_list_path}" -o "$${_list_path}"
 
 git-config:
 	git config --global color.ui auto
@@ -444,36 +398,17 @@ tmux-init:
 vim-build:  ## build Vim
 	# git clean -ffdx
 	# $(MAKE) distclean
-	# --enable-python3interp=dynamic
-	# --enable-luainterp=dynamic --with-luajit --with-lua-prefix="$${_lua_prefix}"
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
-	  _lua_prefix="$$(brew --prefix)"; \
 	  _config_opts="--enable-darwin --disable-gui"; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
-	  _lua_prefix="/usr"; \
-	  _config_opts="--disable-gui --without-x"; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	  _lua_prefix="/usr"; \
-	  _config_opts="--disable-gui --without-x"; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	  _config_opts="--disable-gui --without-x"; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
-	  _config_opts="--disable-gui --without-x"; \
 	else \
-	  echo 'Which OS are you using?'; \
 	  _config_opts="--disable-gui --without-x"; \
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim \
 	&& cd src \
 	&& $(MAKE) distclean \
 	&& ./configure \
-	  $${_config_opts} \
+	  "$${_config_opts}" \
 	  --enable-clipboard \
 	  --enable-fail-if-missing \
 	  --enable-multibyte \
