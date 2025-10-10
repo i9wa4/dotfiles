@@ -81,8 +81,7 @@ description: "global CONTRIBUTING.md"
 
 ```sh
 git push                # プッシュ
-git reset               # リセット
-git rebase              # リベース
+git reset               # リセット (後述の例外を除く)
 git merge               # マージ
 git stash               # スタッシュ
 git checkout -b         # ブランチ作成
@@ -96,6 +95,7 @@ git branch -d           # ブランチ削除
 ```sh
 git add <files>         # ステージング
 git commit -m "msg"     # コミット
+git rebase              # リベース (途中のコミット修正等)
 ```
 
 #### 3.3.4. 許可不要なコマンド (読み取り専用)
@@ -111,7 +111,37 @@ git show                # コミット詳細
 git remote -v           # リモート確認
 ```
 
-#### 3.3.5. TodoWrite ツールとの連携
+#### 3.3.5. 途中のコミットメッセージを修正する方法 (rebase)
+
+ローカルブランチで途中のコミットメッセージを修正したい場合、interactive rebase を使用できる
+
+前提条件:
+- まだ push していないローカルブランチ
+- 環境変数で対話的操作を自動化する
+- ハッシュ値が変わることを理解している
+
+手順:
+
+```sh
+# 1. 修正したいコミットのハッシュを確認
+git log --oneline -10
+
+# 2. 環境変数で "edit" を指定して rebase 開始
+GIT_SEQUENCE_EDITOR="sed -i '' 's/^pick <HASH>/edit <HASH>/'" git rebase -i <HASH>^
+
+# 3. コミットメッセージを修正
+git commit --amend --allow-empty --no-verify -m "新しいメッセージ"
+
+# 4. rebase 続行 (ユーザーに許可を得る)
+git rebase --continue
+```
+
+注意事項:
+- Interactive rebase (`-i` フラグ) は使用可能だが、対話的操作を環境変数で自動化する必要がある
+- `git rebase --continue` は必ずユーザーの許可を得てから実行する
+- ハッシュ値が変わるため、すでに push 済みのコミットには使用しない
+
+#### 3.3.6. TodoWrite ツールとの連携
 
 TodoWrite ツールでタスクを作成する際許可が必要な Git 操作関連のタスクには必ず (要許可) を付ける
 
