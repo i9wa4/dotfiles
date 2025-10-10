@@ -9,15 +9,14 @@ description: "Issue to PR - 3フェーズで作業管理 (arg: Issue number)"
 
 参考: [Anthropic's Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices#a-explore-plan-code-commit)
 
-## 重要: Todoロードマップ更新時の注意
+## 重要: Todoロードマップ更新方法
 
-Todoロードマップコミットを `--amend` する前に、必ずコミット履歴を確認すること
+### 方法1: 直前のコミットが Phase移行でない場合 (amend)
 
+直前のコミットを確認:
 ```bash
 git log --oneline -3
 ```
-
-直前のコミットが「Phase: XXX → YYY」の場合、amend するとPhase移行コミットが消えるため amend 禁止
 
 OK例: 直前が Phase移行コミットでない
 ```
@@ -26,12 +25,39 @@ def5678 実装コミット
 ...
 ```
 
+この場合は `--amend` で更新可能:
+```bash
+git commit --amend --allow-empty --no-verify -m "新しいロードマップ内容"
+```
+
+### 方法2: 途中のコミット修正 (rebase)
+
 NG例: 直前が Phase移行コミット
 ```
-xyz9999 Phase: PLAN → CODE  ← この状態で amend すると消える！
+xyz9999 Phase: PLAN → CODE  ← amend すると消える！
 abc1234 Issue #123 ロードマップ
 ...
 ```
+
+この場合は **rebase** で途中のコミットを修正:
+
+```bash
+# 1. 修正したいコミットのハッシュを確認
+git log --oneline -10
+
+# 2. 環境変数で "edit" を指定して rebase 開始
+GIT_SEQUENCE_EDITOR="sed -i '' 's/^pick <ROADMAP_HASH>/edit <ROADMAP_HASH>/'" git rebase -i <ROADMAP_HASH>^
+
+# 3. ロードマップコミットメッセージを修正
+git commit --amend --allow-empty --no-verify -m "新しいロードマップ内容"
+
+# 4. rebase 続行 (ユーザーに許可を得る)
+git rebase --continue
+```
+
+注意事項:
+- rebase でハッシュ値が変わる (ローカルのみなら問題なし)
+- `git rebase --continue` は必ずユーザーの許可を得てから実行
 
 ## 1. 初回実行
 
