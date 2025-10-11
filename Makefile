@@ -247,7 +247,7 @@ package-update:
 	  echo 'Which OS are you using?'; \
 	fi
 	# OS common update
-	mise self-update
+	mise self-update --yes
 	mise upgrade
 	@$(MAKE) package-npm-update
 
