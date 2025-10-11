@@ -26,6 +26,7 @@ snippets:
       && zinit self-update
       && zinit update --parallel
       && make package-update
+      && make common-clean
       && cd ~/ghq/github.com/i9wa4/internal
       && uv run quarto render docs/
       && cd -
