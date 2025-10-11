@@ -28,16 +28,93 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Tasks
 #
-common-init: zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
+common-init: package-install zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
 
-common-clean:
+common-clean:  ## clean for all OS
+	# OS-common clean
 	rm -rf "$${HOME}"/.npm
+	# OS-specific clean
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f; \
+	  xattr -rc $(MF_GITHUB_DIR); \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
+
+link:  ## make symbolic links
+	# dotfiles
+	ln -fs $(MF_DOTFILES_DIR)/dot.config/codex              "$${HOME}"/.codex
+	ln -fs $(MF_DOTFILES_DIR)/dot.editorconfig              "$${HOME}"/.editorconfig
+	# XDG_CONFIG_HOME
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& mkdir -p "$${XDG_CONFIG_HOME}" \
+	&& cp -rf $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/codex           "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/mise            "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
+	# OS-specific link
+	# VS Code
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
+	else \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
+	fi \
+	&& rm -rf "$${_code_setting_dir}"/snippets \
+	&& mkdir -p "$${_code_setting_dir}"/snippets \
+	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
+	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
+
+unlink:  ## unlink symbolic links
+	# dotfiles
+	if [ -L "$${HOME}"/.editorconfig ];                 then unlink "$${HOME}"/.editorconfig; fi
+	if [ -L "$${HOME}"/.codex ];                        then unlink "$${HOME}"/.codex; fi
+	# XDG_CONFIG_HOME
+	. $(MF_DOTFILES_DIR)/dot.zshenv \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/aerospace ];       then unlink "$${XDG_CONFIG_HOME}"/aerospace; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/claude ];          then unlink "$${XDG_CONFIG_HOME}"/claude; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/codex ];           then unlink "$${XDG_CONFIG_HOME}"/codex; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/mise ];            then unlink "$${XDG_CONFIG_HOME}"/mise; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];            then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
+	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
+	# OS-specific unlink
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
+	else \
+	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
+	fi \
+	&& if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi
 
 
 # --------------------------------------
 # macOS Tasks
 #
-mac-init: package-mac-install common-init mac-alacritty-init  ## init for Mac
+mac-init: common-init mac-alacritty-init  ## init for Mac
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.maisin.boost ApplePressAndHoldEnabled -bool false
@@ -47,14 +124,6 @@ mac-init: package-mac-install common-init mac-alacritty-init  ## init for Mac
 	# normal minimum is 2 (30 ms)
 	defaults write -g KeyRepeat -int 1
 	killall Finder > /dev/null 2>&1
-
-mac-vscode-init:
-	rm -rf "$${HOME}"/.vscode
-	rm -rf "$${HOME}"'/Library/Application Support/Code'
-
-mac-clean:
-	fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f
-	xattr -rc $(MF_GITHUB_DIR)
 
 define MF_MAC_ALACRITTY
 [general]
@@ -70,15 +139,17 @@ mac-alacritty-init:
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
+mac-vscode-init:
+	rm -rf "$${HOME}"/.vscode
+	rm -rf "$${HOME}"'/Library/Application Support/Code'
+
 
 # --------------------------------------
 # Ubuntu Tasks
 #
-ubuntu-minimal-init: package-ubuntu-install common-init
+ubuntu-server-init: common-init package-ubuntu-server-install  ## init for Ubuntu Server
 
-ubuntu-server-init: ubuntu-minimal-init package-ubuntu-server-install  ## init for Ubuntu Server
-
-ubuntu-desktop-init: ubuntu-server-init ubuntu-alacritty-init package-ubuntu-desktop-install  ## init for Ubuntu Desktop
+ubuntu-desktop-init: common-init package-ubuntu-desktop-install ubuntu-alacritty-init  ## init for Ubuntu Desktop
 
 define MF_UBUNTU_ALACRITTY
 [general]
@@ -93,7 +164,6 @@ ubuntu-alacritty-init:
 	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
-
 
 
 # --------------------------------------
@@ -144,70 +214,6 @@ win-copy:  ## copy config files for Windows
 
 
 # --------------------------------------
-# Symbolic Links
-#
-link:  ## make symbolic links
-	# dotfiles
-	ln -fs $(MF_DOTFILES_DIR)/dot.config/codex              "$${HOME}"/.codex
-	ln -fs $(MF_DOTFILES_DIR)/dot.editorconfig              "$${HOME}"/.editorconfig
-	# XDG_CONFIG_HOME
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& cp -rf $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/codex           "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/mise            "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
-	# OS-specific link
-	$(MAKE) common-clean
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	else \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	fi \
-	&& rm -rf "$${_code_setting_dir}"/snippets \
-	&& mkdir -p "$${_code_setting_dir}"/snippets \
-	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
-
-
-unlink:  ## unlink symbolic links
-	# dotfiles
-	if [ -L "$${HOME}"/.editorconfig ];                 then unlink "$${HOME}"/.editorconfig; fi
-	if [ -L "$${HOME}"/.codex ];                        then unlink "$${HOME}"/.codex; fi
-	# XDG_CONFIG_HOME
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/aerospace ];       then unlink "$${XDG_CONFIG_HOME}"/aerospace; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/claude ];          then unlink "$${XDG_CONFIG_HOME}"/claude; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/codex ];           then unlink "$${XDG_CONFIG_HOME}"/codex; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/mise ];            then unlink "$${XDG_CONFIG_HOME}"/mise; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];            then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
-	# OS-specific unlink
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	else \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	fi \
-	&& if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi
-
-
-# --------------------------------------
 # Package Management
 #
 package-npm-install:
@@ -232,13 +238,16 @@ package-update:
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
 	  echo 'Hello, macOS!'; \
-	  $(MAKE) package-mac-update; \
+	  brew update; \
+	  brew upgrade; \
 	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
 	  echo 'Hello, Ubuntu'; \
-	  $(MAKE) package-ubuntu-update; \
+	  sudo apt-get update; \
+	  sudo apt-get upgrade -y; \
 	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
 	  echo 'Hello, WSL2!'; \
-	  $(MAKE) package-ubuntu-update; \
+	  sudo apt-get update; \
+	  sudo apt-get upgrade -y; \
 	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
 	  echo 'Hello, Raspberry Pi!'; \
 	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
@@ -251,7 +260,25 @@ package-update:
 	mise upgrade
 	@$(MAKE) package-npm-update
 
-package-common-install:  ## install common packages
+package-install:
+	# OS-specific install
+	_uname="$$(uname -a)"; \
+	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	  echo 'Hello, macOS!'; \
+	  $(MAKE) package-mac-install; \
+	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
+	  echo 'Hello, Ubuntu'; \
+	  $(MAKE) package-ubuntu-install; \
+	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
+	  echo 'Hello, WSL2!'; \
+	  $(MAKE) package-ubuntu-install; \
+	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
+	  echo 'Hello, Raspberry Pi!'; \
+	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
+	  echo 'Hello, CentOS!'; \
+	else \
+	  echo 'Which OS are you using?'; \
+	fi
 	# mise
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
@@ -279,10 +306,6 @@ package-mac-install:
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew install ninja cmake gettext curl git
 
-package-mac-update:
-	brew update
-	brew upgrade
-
 package-ubuntu-install:
 	sudo apt-get install -y zsh
 	chsh -s "$$(which zsh)"
@@ -306,10 +329,6 @@ package-ubuntu-install:
 	  ninja-build gettext cmake unzip curl build-essential
 	# tmux
 	sudo apt-get install bison
-
-package-ubuntu-update:
-	sudo apt-get update
-	sudo apt-get upgrade -y
 
 package-ubuntu-server-install:
 	sudo apt-get install -y openssh-server
@@ -338,9 +357,6 @@ package-ubuntu-desktop-install:
 #
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
-	claude mcp add --scope user "atlassian" -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse
-	claude mcp add --scope user "awslabs-aws-documentation-mcp-server" -e FASTMCP_LOG_LEVEL=ERROR -- uvx awslabs.aws-documentation-mcp-server@latest
-
 
 ghq-get-essential:
 	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
