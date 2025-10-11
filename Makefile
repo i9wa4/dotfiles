@@ -260,6 +260,7 @@ package-common-install:  ## install common packages
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	# visual-studio-code
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -270,7 +271,6 @@ package-mac-install:
 	  font-myricam \
 	  google-chrome \
 	  openvpn-connect \
-	  visual-studio-code \
 	  zoom \
 	&& brew install \
 	  git \
