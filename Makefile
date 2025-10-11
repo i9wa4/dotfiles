@@ -234,6 +234,10 @@ package-npm-update:
 	npm outdated -g --parseable --depth=0 | cut -d: -f4 | xargs -r npm install -g
 
 package-update:
+	# OS common update
+	mise self-update --yes
+	mise upgrade
+	@$(MAKE) package-npm-update
 	# OS-specific update
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -255,12 +259,12 @@ package-update:
 	else \
 	  echo 'Which OS are you using?'; \
 	fi
-	# OS common update
-	mise self-update --yes
-	mise upgrade
-	@$(MAKE) package-npm-update
 
 package-install:
+	# OS-common install
+	# mise
+	curl https://mise.run | sh
+	"$${HOME}"/.local/bin/mise install
 	# OS-specific install
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
@@ -279,9 +283,6 @@ package-install:
 	else \
 	  echo 'Which OS are you using?'; \
 	fi
-	# mise
-	curl https://mise.run | sh
-	"$${HOME}"/.local/bin/mise install
 	echo "Restart Shell"
 
 package-mac-install:
