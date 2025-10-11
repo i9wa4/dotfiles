@@ -398,15 +398,16 @@ vim-build:  ## build Vim
 	# $(MAKE) distclean
 	_uname="$$(uname -a)"; \
 	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  _config_opts="--enable-darwin --disable-gui"; \
+	  _config_opts="--enable-darwin"; \
 	else \
-	  _config_opts="--disable-gui --without-x"; \
+	  _config_opts="--without-x"; \
 	fi \
 	&& cd $(MF_GITHUB_DIR)/vim/vim \
 	&& cd src \
 	&& $(MAKE) distclean \
 	&& ./configure \
 	  "$${_config_opts}" \
+	  --disable-gui \
 	  --enable-clipboard \
 	  --enable-fail-if-missing \
 	  --enable-multibyte \
