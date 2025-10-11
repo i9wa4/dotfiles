@@ -133,10 +133,10 @@ augroup END
 '''
 
 [[plugins]]
-repo = 'gu-fan/riv.vim'
+repo = 'previm/previm'
 on_ft = ['markdown', 'quarto', 'rmd']
-hook_source = '''
-nnoremap <Space>eg :RivTableFormat<CR>
+hook_add = '''
+let g:previm_open_cmd = 'open -a Google\ Chrome'
 '''
 
 # --------------------------------------
