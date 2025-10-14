@@ -37,8 +37,9 @@ description: "global CONTRIBUTING.md"
 
 ### 2.2. `.i9wa4/` ディレクトリの活用
 
-- IMPORTANT: `.i9wa4/` ディレクトリはグローバル `.gitignore` に追加されている
-- YOU MUST: 作業で生成するドキュメントのうち特に重要度が高いものは `.i9wa4/` ディレクトリに保存する
+- IMPORTANT: `.i9wa4/` ディレクトリはグローバル `.gitignore` に追加されているので Git 管理しないファイルを保存できる
+- YOU MUST: 作業で生成するドキュメントのうち重要度なものは `.i9wa4/` ディレクトリに保存する
+- YOU MUST: ファイル名の先頭に `date +%Y%m%d` を付与する (例: `.i9wa4/20251015-plan.md`)
 
 ### 2.3. プロジェクト固有ルールの管理
 
