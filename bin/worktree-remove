@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# 引数チェック
+if [ $# -eq 0 ]; then
+  echo "使い方: $0 <repo1> <repo2> ..."
+  echo "例: $0 github.com/genda-tech/genda-data-pipeline-pr-1070 github.com/genda-tech/genda-data-pipeline-pr-1071"
+  exit 1
+fi
+
+# ghqのルートディレクトリを取得
+GHQ_ROOT=$(ghq root)
+
+# 各リポジトリに対して処理
+for repo in "$@"; do
+  REPO_PATH="${GHQ_ROOT}/${repo}"
+
+  echo "処理中: ${repo}"
+
+  # ディレクトリが存在するかチェック
+  if [ ! -d "${REPO_PATH}" ]; then
+    echo "  ⚠ ディレクトリが存在しません: ${REPO_PATH}"
+    continue
+  fi
+
+  # worktreeかどうかチェック (.git がファイルならworktree)
+  if [ -f "${REPO_PATH}/.git" ]; then
+    echo "  → worktreeを削除します"
+
+    # .gitファイルからメインリポジトリのパスを取得
+    MAIN_REPO=$(grep "gitdir:" "${REPO_PATH}/.git" | sed 's/gitdir: //' | sed 's|/.git/worktrees/.*||')
+
+    # メインリポジトリのディレクトリで git worktree remove を実行
+    (cd "${MAIN_REPO}" && git worktree remove --force "${REPO_PATH}")
+  else
+    echo "  ⚠ これはworktreeではありません (通常のリポジトリ)"
+  fi
+
+  echo ""
+done
+
+echo "✓  完了"
