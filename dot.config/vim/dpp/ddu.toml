@@ -88,6 +88,9 @@ command! DduFile call ddu#start(#{
 \   sources: [
 \     #{
 \       name: 'file',
+\       options: #{
+\         path: expand('%:p:h'),
+\       },
 \     }
 \   ],
 \ })
