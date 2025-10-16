@@ -62,25 +62,8 @@ if [ ${#dark_themes[@]} -eq 0 ]; then
     exit 1
 fi
 
-# 現在のテーマを取得
-current_theme=""
-if [ -f "$THEME_FILE" ]; then
-    current_theme=$(grep -oE "[^/]+\.toml" "$THEME_FILE" | head -1)
-fi
-
-# 次のダークテーマを選択
-next_theme="${dark_themes[0]}"  # デフォルトは最初のテーマ
-
-if [[ -n "$current_theme" ]]; then
-    for i in "${!dark_themes[@]}"; do
-        if [[ "${dark_themes[$i]}" == "$current_theme" ]]; then
-            # 次のテーマを選択（最後なら最初に戻る）
-            next_index=$(( (i + 1) % ${#dark_themes[@]} ))
-            next_theme="${dark_themes[$next_index]}"
-            break
-        fi
-    done
-fi
+# ランダムにダークテーマを選択
+next_theme="${dark_themes[$RANDOM % ${#dark_themes[@]}]}"
 
 # theme.toml を更新
 cat > "$THEME_FILE" <<EOF
