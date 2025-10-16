@@ -31,18 +31,14 @@ snippets:
       && uv run quarto render docs/
       && cd -
       && ghq-repo-status
-  - name: (Alacritty) Random
-    keyword: ar
-    snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-random.sh
-  - name: (Alacritty) Light
+  - name: (Alacritty) Light Random
     keyword: al
     snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-light.sh
-  - name: (Alacritty) Dark
+      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-dark.sh
+  - name: (Alacritty) Dark Random
     keyword: ad
     snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-dark.sh
+      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-light.sh
   - name: (Claude Code) yolo
     keyword: y
     snippet:
