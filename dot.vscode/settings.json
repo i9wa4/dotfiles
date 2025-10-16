@@ -13,5 +13,6 @@
     "notebook.output.fontSize": 20,
     "remote.autoForwardPortsSource": "hybrid",
     "terminal.integrated.fontFamily": "'MyricaM M', monospace",
-    "terminal.integrated.fontSize": 20
+    "terminal.integrated.fontSize": 20,
+    "workbench.colorTheme": "Visual Studio Light"
 }
