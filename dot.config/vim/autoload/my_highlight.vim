@@ -39,8 +39,8 @@ function! my_highlight#highlight() abort
   highlight link markdownItalic Normal
 
   " [		  ]
-  highlight clear SpecialKey
-  highlight SpecialKey guifg=#606060
+  " highlight clear SpecialKey
+  " highlight SpecialKey guifg=#606060
 
   " error - trailing spaces and zenkaku spaces
   " highlight clear Error
@@ -65,9 +65,9 @@ function! my_highlight#highlight() abort
   " highlight clear ColorColumn
 
   " transparent background
-  " highlight TabLine guibg=NONE guifg=white
-  " highlight TabLineSel guibg=NONE guifg=white
-  " highlight TabLineFill guibg=NONE guifg=#EBDBB2
+  " highlight TabLine guibg=NONE
+  " highlight TabLineSel guibg=NONE gui=bold,reverse
+  " highlight TabLineFill guibg=NONE
   highlight EndOfBuffer guibg=NONE
   highlight Folded guibg=NONE
   highlight Identifier guibg=NONE
@@ -75,7 +75,7 @@ function! my_highlight#highlight() abort
   highlight NonText guibg=NONE
   highlight Normal guibg=NONE
   highlight Special guibg=NONE
-  " highlight StatusLine guibg=NONE guifg=#EBDBB2
-  " highlight StatusLineNC guibg=NONE guifg=#EBDBB2
+  highlight StatusLine guibg=NONE
+  highlight StatusLineNC guibg=NONE
   highlight VertSplit guibg=NONE
 endfunction
