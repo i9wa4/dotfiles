@@ -10,7 +10,7 @@ size = 26
 family = "MyricaM M"
 
 [window]
-opacity = 0.9
+opacity = 1.0
 startup_mode = "Maximized"
 
 [keyboard]
