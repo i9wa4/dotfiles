@@ -24,9 +24,8 @@ import = [
 ]
 EOF
 
-# 選択されたテーマ名を表示（拡張子なし）
-theme_name="${random_theme%.toml}"
-echo "Theme changed to: $theme_name"
+# Alacritty の設定リロードをトリガーするため、メインの設定ファイルを touch
+touch "$HOME/.config/alacritty/alacritty.toml"
 
 # tmux のステータスバーを更新（tmux が起動している場合）
 if command -v tmux &> /dev/null && tmux list-sessions &> /dev/null; then

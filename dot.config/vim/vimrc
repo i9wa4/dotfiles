@@ -43,7 +43,19 @@ endif
 " --------------------------------------
 " End of settings
 "
-set background=dark
+" Detect background from Alacritty theme
+let s:theme_file = $HOME->expand() .. '/.config/alacritty/theme.toml'
+if filereadable(s:theme_file)
+  let s:theme_type = system('grep "^# TYPE:" ' .. s:theme_file .. ' | cut -d: -f2 | tr -d " \n"')
+  if s:theme_type ==# 'light'
+    set background=light
+  else
+    set background=dark
+  endif
+else
+  set background=dark
+endif
+
 filetype plugin indent on
 syntax enable
 
