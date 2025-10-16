@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -euo pipefail
+
+THEME_DIR="$HOME/.config/alacritty/themes/themes"
+THEME_FILE="$HOME/.config/alacritty/theme.toml"
+
+# テーマファイル一覧を取得（.toml ファイルのみ）
+themes=($(ls "$THEME_DIR"/*.toml | xargs -n 1 basename))
+
+if [ ${#themes[@]} -eq 0 ]; then
+    echo "Error: No theme files found in $THEME_DIR" >&2
+    exit 1
+fi
+
+# ランダムにテーマを選択
+random_theme="${themes[$RANDOM % ${#themes[@]}]}"
+
+# theme.toml を更新
+cat > "$THEME_FILE" <<EOF
+[general]
+import = [
+    '$THEME_DIR/$random_theme'
+]
+EOF
+
+# 選択されたテーマ名を表示（拡張子なし）
+theme_name="${random_theme%.toml}"
+echo "Theme changed to: $theme_name"
+
+# tmux のステータスバーを更新（tmux が起動している場合）
+if command -v tmux &> /dev/null && tmux list-sessions &> /dev/null; then
+    tmux refresh-client -S
+fi
