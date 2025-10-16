@@ -63,4 +63,6 @@ if has('termguicolors')
   set termguicolors
 endif
 
-execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+" Setup colorscheme based on Alacritty theme
+call my_colorscheme#setup()
+" execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
