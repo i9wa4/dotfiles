@@ -1,8 +1,6 @@
 " --------------------------------------
 " Variable
 "
-" let g:loaded_netrw = 1
-" let g:loaded_netrwPlugin = 1
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
 let g:netrw_dirhistmax = 0
