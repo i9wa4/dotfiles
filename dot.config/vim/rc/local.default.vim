@@ -31,3 +31,8 @@ call my_util#add_python_venv('~/ghq/github.com/i9wa4/dotfiles/.venv')
 
 " Denops Plugin Development
 let g:denops#debug = 1
+
+" Tabline
+function! MyStatuslineRightTabline() abort
+  return '[' .. get(g:, 'colors_name', 'default') .. ']'
+endfunction
