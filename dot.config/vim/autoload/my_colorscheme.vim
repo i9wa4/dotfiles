@@ -86,30 +86,3 @@ function! my_colorscheme#setup() abort
     colorscheme retrobox
   endtry
 endfunction
-
-" Display colorscheme name in tabline (called from my_util#tabline)
-function! MyStatuslineRightTabline() abort
-  let l:ret = ''
-
-  " Git branch info (if plugin is enabled)
-  if exists('*branch_name#get_current_repo_root_name')
-    let l:name = branch_name#get_current_repo_root_name()
-    let l:branch = branch_name#get_current_branch_name()
-
-    if !empty(l:name)
-      let l:ret ..= l:name
-    endif
-    if !empty(l:branch)
-      let l:ret ..= ' ' .. '(' .. l:branch .. ')'
-    endif
-
-    if !empty(l:ret)
-      let l:ret ..= '  '
-    endif
-  endif
-
-  " Colorscheme name
-  let l:ret ..= '[' .. g:colors_name .. ']'
-
-  return l:ret
-endfunction

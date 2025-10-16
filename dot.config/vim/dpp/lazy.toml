@@ -85,26 +85,6 @@ nnoremap <Plug>(my-Gin)p  <Cmd>execute 'Gin push'<CR>
 nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
 '''
 
-[[plugins]]
-repo = 'i9wa4/vim-get-git-branch-name'
-if = 0
-on_event = ['BufEnter']
-hook_source = '''
-function! MyStatuslineRightTabline() abort
-  let l:name = branch_name#get_current_repo_root_name()
-  let l:branch = branch_name#get_current_branch_name()
-
-  let l:ret = ''
-  if !empty(l:name)
-    let l:ret ..= l:name
-  endif
-  if !empty(l:branch)
-    let l:ret ..= ' ' .. '(' .. l:branch .. ')'
-  endif
-  return l:ret
-endfunction
-'''
-
 # --------------------------------------
 # Markdown
 #
