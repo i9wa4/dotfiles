@@ -133,8 +133,8 @@ function _get_simplified_path() {
 }
 # PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
 # %F{#696969}$%f "
-PROMPT="%F{#696969}${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
-$%f "
+PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+${PROMPT}$%f "
 
 
 # mise
