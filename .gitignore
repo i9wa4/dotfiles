@@ -1,3 +1,4 @@
 # uv
-/dotfiles.egg-info/
 /build/
+/dotfiles.egg-info/
+__pycache__/
