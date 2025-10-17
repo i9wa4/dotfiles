@@ -1,17 +1,15 @@
 function! my_highlight#highlight() abort
   call clearmatches()
 
-  call matchadd('PmenuSel', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
-
-  call matchadd('PmenuSel', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
-  call matchadd('PmenuSel', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
-  call matchadd('PmenuSel', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('WildMenu', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
+  call matchadd('WildMenu', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
+  call matchadd('WildMenu', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('WildMenu', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
 
   " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal
   highlight link markdownItalic Normal
 
-  " error - trailing spaces and zenkaku spaces
   if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
     let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
   else
@@ -21,18 +19,16 @@ function! my_highlight#highlight() abort
       unlet w:trailing_space_match_id
     endif
   endif
-  highlight clear SpellBad
-  highlight SpellBad cterm=underline gui=underline
 
   " transparent background
-  highlight EndOfBuffer   guibg=NONE
-  highlight Folded        guibg=NONE
-  highlight Identifier    guibg=NONE
-  highlight LineNr        guibg=NONE
-  highlight NonText       guibg=NONE
-  highlight Normal        guibg=NONE
-  highlight Special       guibg=NONE
-  highlight StatusLine    guibg=NONE
-  highlight StatusLineNC  guibg=NONE
-  highlight VertSplit     guibg=NONE
+  " highlight EndOfBuffer   guibg=NONE
+  " highlight Folded        guibg=NONE
+  " highlight Identifier    guibg=NONE
+  " highlight LineNr        guibg=NONE
+  " highlight NonText       guibg=NONE
+  " highlight Normal        guibg=NONE
+  " highlight Special       guibg=NONE
+  " highlight StatusLine    guibg=NONE
+  " highlight StatusLineNC  guibg=NONE
+  " highlight VertSplit     guibg=NONE
 endfunction
