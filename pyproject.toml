@@ -22,6 +22,12 @@ dev = [
   "sqlfluff",
 ]
 
+confluence = [
+  "requests",
+  "beautifulsoup4",
+  "html2text",
+]
+
 [tool.black]
 line-length = 88
 target-version = ['py313']
