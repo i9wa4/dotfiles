@@ -63,8 +63,10 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%F{#696969}%8.8i%f %F{green}%b%f %m"
-zstyle ':vcs_info:*' actionformats '%F{#696969}%8.8i%f %F{red}%b|%a%f %m'
+# zstyle ':vcs_info:*' formats "%F{#696969}%8.8i%f %F{green}%b%f %m"
+# zstyle ':vcs_info:*' actionformats '%F{#696969}%8.8i%f %F{red}%b|%a%f %m'
+zstyle ':vcs_info:*' formats "%8.8i %b %m"
+zstyle ':vcs_info:*' actionformats '%8.8i %b|%a %m'
 zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git+set-message:*' hooks \
   simple-git-status
@@ -85,17 +87,21 @@ function +vi-simple-git-status() {
 
   if { [[ -n "${untracked}" ]] } \
     && { [[ "${untracked}" -gt 0 ]] }; then
-    hook_com[misc]+="%F{cyan}?${untracked}%f "
+    # hook_com[misc]+="%F{cyan}?${untracked}%f "
+    hook_com[misc]+="?${untracked} "
   fi
   if { [[ -n "${unstaged}" ]] } \
     && { [[ "${unstaged}" -gt 0 ]] }; then
-    hook_com[misc]+="%F{yellow}~${unstaged}%f "
+    # hook_com[misc]+="%F{yellow}~${unstaged}%f "
+    hook_com[misc]+="~${unstaged} "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
-    hook_com[misc]+="%F{green}+${insertions}%f "
+    # hook_com[misc]+="%F{green}+${insertions}%f "
+    hook_com[misc]+="+${insertions} "
   fi
   if [[ "${deletions}" -gt 0 ]]; then
-    hook_com[misc]+="%F{red}-${deletions}%f "
+    # hook_com[misc]+="%F{red}-${deletions}%f "
+    hook_com[misc]+="-${deletions} "
   fi
 }
 
@@ -110,7 +116,8 @@ if { [ -n "${SSH_CONNECTION}" ] } \
   || { [ -n "${SSH_TTY}" ] } \
   || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
-  PROMPT="%K{#FFB6C1}%F{#000000}[%M]%f%k "
+  # PROMPT="%K{#FFB6C1}%F{#000000}[%M]%f%k "
+  PROMPT="[%M] "
 else
   # local host
   PROMPT=""
@@ -124,8 +131,10 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
-PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
-%F{#696969}$%f "
+# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
+# %F{#696969}$%f "
+PROMPT="%F{#696969}${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+$%f "
 
 
 # mise
