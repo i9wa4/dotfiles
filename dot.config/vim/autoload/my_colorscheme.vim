@@ -37,19 +37,16 @@ let s:colorschemes_both = [
       \ 'wildcharm',
       \ ]
 
-" Get theme type from Alacritty theme.toml
+" Get theme type from cache
 function! s:get_theme_type() abort
-  let l:theme_file = expand('~/.config/alacritty/theme.toml')
-  if !filereadable(l:theme_file)
-    return 'dark'
+  let l:cache_file = $XDG_CACHE_HOME->expand() .. '/terminal-theme'
+  if filereadable(l:cache_file)
+    let l:theme_type = trim(readfile(l:cache_file)[0])
+    if l:theme_type ==# 'light'
+      return 'light'
+    endif
   endif
-
-  let l:type_line = system('grep "^# TYPE:" ' .. l:theme_file .. ' | cut -d: -f2 | tr -d " \n"')
-  if l:type_line ==# 'light'
-    return 'light'
-  else
-    return 'dark'
-  endif
+  return 'dark'
 endfunction
 
 " Select random colorscheme based on theme type
