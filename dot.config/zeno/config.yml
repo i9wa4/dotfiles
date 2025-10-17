@@ -1,6 +1,3 @@
-options:
-  snippetDefaultBehavior: "strict"
-
 snippets:
   - name: ll
     keyword: ll
@@ -46,18 +43,6 @@ snippets:
       --yolo
     context:
       lbuffer: 'codex\s'
-  - name: (Dev Container CLI) build
-    keyword: dcb
-    snippet:
-      devcontainer build --workspace-folder .
-  - name: (Dev Container CLI) up
-    keyword: dcu
-    snippet:
-      devcontainer up --workspace-folder .
-  - name: (Dev Container CLI) exec Claude Code
-    keyword: dcc
-    snippet:
-      devcontainer exec --workspace-folder . claude --dangerously-skip-permissions
   - name: (Docker) remove all containers
     keyword: rm
     snippet:
@@ -86,12 +71,6 @@ snippets:
     keyword: gu
     snippet:
       ghq list | ghq get --update --parallel
-  - name: (Git) delete merged branches
-    keyword: db
-    snippet:
-      switch main && git fetch --prune && git branch --merged main | grep -v -E '^\*|^\s*main$|^\s*master$' | xargs -n 1 git branch -d 2>/dev/null || true
-    context:
-      lbuffer: '^git\s'
   - name: (Git) graph
     keyword: lo
     snippet:
@@ -104,22 +83,6 @@ snippets:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
     context:
       lbuffer: '^git\s'
-  - name: (Git) worktree remove
-    keyword: dw
-    snippet:
-      worktree remove . && cd -
-    context:
-      lbuffer: '^git\s'
-  - name: (Prompt) toggle
-    keyword: pt
-    snippet:
-      if [ -n "${_PROMPT_SAVE}" ]; then
-        PROMPT="${_PROMPT_SAVE}";
-        unset _PROMPT_SAVE;
-      else
-        export _PROMPT_SAVE="${PROMPT}";
-        PROMPT=$'\n'"%F{#696969}$%f ";
-      fi
   - name: (Quarto) preview
     keyword: qp
     snippet:
