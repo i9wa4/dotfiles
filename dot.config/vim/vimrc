@@ -43,10 +43,10 @@ endif
 " --------------------------------------
 " End of settings
 "
-" Detect background from Alacritty theme
-let s:theme_file = $HOME->expand() .. '/.config/alacritty/theme.toml'
-if filereadable(s:theme_file)
-  let s:theme_type = system('grep "^# TYPE:" ' .. s:theme_file .. ' | cut -d: -f2 | tr -d " \n"')
+" Detect background from terminal theme cache
+let s:cache_file = $XDG_CACHE_HOME->expand() .. '/terminal-theme'
+if filereadable(s:cache_file)
+  let s:theme_type = trim(readfile(s:cache_file)[0])
   if s:theme_type ==# 'light'
     set background=light
   else
