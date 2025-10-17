@@ -69,6 +69,8 @@ link:  ## make symbolic links
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
 	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
+	# Codex CLI
+	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
 	# OS-specific link
 	# VS Code
 	_uname="$$(uname -a)"; \
