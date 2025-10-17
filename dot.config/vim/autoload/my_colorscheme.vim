@@ -69,13 +69,6 @@ function! my_colorscheme#setup() abort
   " Get theme type
   let l:theme_type = s:get_theme_type()
 
-  " Set background
-  if l:theme_type ==# 'light'
-    set background=light
-  else
-    set background=dark
-  endif
-
   " Select and apply random colorscheme
   let l:colorscheme = s:select_random_colorscheme(l:theme_type)
 
