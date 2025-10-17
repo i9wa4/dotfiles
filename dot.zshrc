@@ -194,6 +194,7 @@ else
   # local host
   if { [ "${SHLVL}" -eq 1 ] } \
     && { [ "${TERM_PROGRAM}" != "vscode" ] }; then
+    bash alacritty-theme-switch
     tmux
   fi
 fi
