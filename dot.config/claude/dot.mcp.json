@@ -1,17 +1,5 @@
 {
     "mcpServers": {
-        "atlassian": {
-            "type": "stdio",
-            "command": "npx",
-            "args": [
-                "-y",
-                "mcp-remote",
-                "https://mcp.atlassian.com/v1/sse"
-            ],
-            "env": {},
-            "disabled": true,
-            "autoApprove": []
-        },
         "awslabs-aws-documentation-mcp-server": {
             "type": "stdio",
             "command": "uvx",
