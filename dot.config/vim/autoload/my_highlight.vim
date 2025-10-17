@@ -21,14 +21,14 @@ function! my_highlight#highlight() abort
   endif
 
   " transparent background
-  highlight EndOfBuffer   guibg=NONE
-  highlight Folded        guibg=NONE
-  highlight Identifier    guibg=NONE
-  highlight LineNr        guibg=NONE
-  highlight NonText       guibg=NONE
-  highlight Normal        guibg=NONE
-  highlight Special       guibg=NONE
-  highlight StatusLine    guibg=NONE
-  highlight StatusLineNC  guibg=NONE
-  highlight VertSplit     guibg=NONE
+  " highlight EndOfBuffer   guibg=NONE
+  " highlight Folded        guibg=NONE
+  " highlight Identifier    guibg=NONE
+  " highlight LineNr        guibg=NONE
+  " highlight NonText       guibg=NONE
+  " highlight Normal        guibg=NONE
+  " highlight Special       guibg=NONE
+  " highlight StatusLine    guibg=NONE
+  " highlight StatusLineNC  guibg=NONE
+  " highlight VertSplit     guibg=NONE
 endfunction
