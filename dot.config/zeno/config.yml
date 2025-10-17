@@ -1,3 +1,6 @@
+options:
+  snippetDefaultBehavior: "strict"
+
 snippets:
   - name: ll
     keyword: ll
@@ -34,11 +37,11 @@ snippets:
   - name: (Alacritty) Dark Random
     keyword: ad
     snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-dark.sh
+      bash ~/.config/alacritty/alacritty-theme-dark.sh
   - name: (Alacritty) Light Random
     keyword: al
     snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/alacritty/alacritty-theme-light.sh
+      bash ~/.config/alacritty/alacritty-theme-light.sh
   - name: (Claude Code) yolo
     keyword: y
     snippet:
@@ -46,9 +49,9 @@ snippets:
     context:
       lbuffer: '^claude\s'
   - name: (Codex CLI) start
-    keyword: codex
+    keyword: cs
     snippet:
-      bash ~/ghq/github.com/i9wa4/dotfiles/dot.config/codex/generate-config.sh && codex
+      bash ~/.codex/generate-config.sh && codex
   - name: (Codex CLI) yolo
     keyword: y
     snippet:
