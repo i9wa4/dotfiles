@@ -88,6 +88,7 @@ link:  ## make symbolic links
 	done
 	# ensure XDG_CONFIG_HOME exists and seed git configuration
 	. $(MF_DOTFILES_DIR)/dot.zshenv
+	# ensure XDG_CONFIG_HOME exists and seed git configuration
 	mkdir -p "$${XDG_CONFIG_HOME}"
 	cp -rf $(MF_DOTFILES_DIR)/dot.config/git "$${XDG_CONFIG_HOME}"
 	# create XDG_CONFIG_HOME symlinks listed in MF_LINK_XDG_ROWS
