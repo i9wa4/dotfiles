@@ -346,17 +346,14 @@ git-config:
 	git config --global user.signingkey '~/.ssh/github.pub'
 
 nvim-build:  ## build Neovim
-	# $(MAKE) distclean
-	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
-	cd $(MF_GITHUB_DIR)/neovim/neovim
-	$(MAKE) \
-		CMAKE_BUILD_TYPE=Release \
-		CMAKE_INSTALL_PREFIX="$${HOME}"/.local
+	cd $(MF_GITHUB_DIR)/neovim/neovim && \
+	$(MAKE) distclean || true && \
+	$(MAKE) CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
 	$(MAKE) install
 
 vim-build:  ## build Vim
-	# $(MAKE) distclean
-	cd $(MF_GITHUB_DIR)/vim/vim/src
+	cd $(MF_GITHUB_DIR)/vim/vim/src && \
+	$(MAKE) distclean || true && \
 	./configure \
 		$(MF_VIM_CONFIG_OPTS) \
 		--disable-gui \
@@ -365,8 +362,8 @@ vim-build:  ## build Vim
 		--enable-multibyte \
 		--prefix="$${HOME}"/.local \
 		--with-features=huge \
-		--without-wayland
-	$(MAKE)
+		--without-wayland && \
+	$(MAKE) && \
 	$(MAKE) install
 
 zsh-init:
