@@ -1,8 +1,8 @@
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
 [ -r /etc/zshrc ] && . /etc/zshrc
 
+
 # Keybind
-bindkey -d
 bindkey -e
 # https://wayohoo.com/article/6922
 bindkey '\e[3~' delete-char
@@ -45,13 +45,11 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 setopt append_history
 setopt extended_history
-setopt hist_allow_clobber
 setopt hist_fcntl_lock
 setopt hist_ignore_all_dups
 setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_save_no_dups
-setopt hist_verify
 setopt share_history
 
 
@@ -111,18 +109,16 @@ add-zsh-hook precmd _vcs_precmd
 
 # Prompt
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
-# prompt bigfade
 if { [ -n "${SSH_CONNECTION}" ] } \
   || { [ -n "${SSH_TTY}" ] } \
   || { [ -n "${SSH_CLIENT}" ] }; then
   # remote host
-  # PROMPT="%K{#FFB6C1}%F{#000000}[%M]%f%k "
   PROMPT="[%M] "
 else
   # local host
   PROMPT=""
 fi
-_shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
+# _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
 # Simplify Path
 setopt prompt_subst
 function _get_simplified_path() {
@@ -131,9 +127,7 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
-# PROMPT="${PROMPT}%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} %f%K{#FFB6C1}%F{black}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
-# %F{#696969}$%f "
-PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} ${_shell_type} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
 ${PROMPT}$%f "
 
 
@@ -142,9 +136,7 @@ eval "$("${HOME}"/.local/bin/mise activate zsh)"
 
 
 # zeno.zsh
-zinit ice depth"1" blockf
-zinit light yuki-yano/zeno.zsh
-# zinit light i9wa4/zeno.zsh
+source "${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
 # https://qiita.com/obake_fe/items/da8f861eed607436b91c
 if [ -n "${ZENO_LOADED}" ]; then
   bindkey ' '  zeno-auto-snippet
@@ -156,11 +148,6 @@ if [ -n "${ZENO_LOADED}" ]; then
 else
   bindkey '^r' history-incremental-search-backward
 fi
-
-
-# Other Plugins
-# zinit light zsh-users/zsh-completions
-# zinit light zdharma-continuum/fast-syntax-highlighting
 
 
 # OS-specific settings
@@ -194,7 +181,6 @@ else
   # local host
   if { [ "${SHLVL}" -eq 1 ] } \
     && { [ "${TERM_PROGRAM}" != "vscode" ] }; then
-    bash alacritty-theme-switch
     tmux
   fi
 fi
