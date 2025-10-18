@@ -16,6 +16,14 @@ setopt hist_save_no_dups
 setopt share_history
 
 
+# SSH connection detection
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  _IS_REMOTE=1
+else
+  _IS_REMOTE=0
+fi
+
+
 # Keybind
 bindkey -e
 bindkey '\e[3~' delete-char
@@ -38,7 +46,9 @@ bindkey '^x^e' edit_current_line
 
 # Completion
 autoload -Uz compinit
-compinit -d "${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
+_zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
+mkdir -p "${_zcompdump:h}"
+compinit -d "${_zcompdump}"
 zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
@@ -71,12 +81,10 @@ function +vi-simple-git-status() {
     deletions="${match[1]}"
   fi
 
-  if { [[ -n "${untracked}" ]] } \
-    && { [[ "${untracked}" -gt 0 ]] }; then
+  if [[ "${untracked}" -gt 0 ]]; then
     hook_com[misc]+="?${untracked} "
   fi
-  if { [[ -n "${unstaged}" ]] } \
-    && { [[ "${unstaged}" -gt 0 ]] }; then
+  if [[ "${unstaged}" -gt 0 ]]; then
     hook_com[misc]+="~${unstaged} "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
@@ -92,22 +100,22 @@ add-zsh-hook precmd _vcs_precmd
 
 
 # Prompt
-if { [ -n "${SSH_CONNECTION}" ] } \
-  || { [ -n "${SSH_TTY}" ] } \
-  || { [ -n "${SSH_CLIENT}" ] }; then
-  PROMPT="[%M] "
-else
-  PROMPT=""
-fi
 function _get_simplified_path() {
   local path="${PWD}"
   path="${path/#$HOME\/ghq\/github.com\//}"
   path="${path/#$HOME/~}"
   echo "${path}"
 }
-PROMPT="
+
+if (( _IS_REMOTE )); then
+  PROMPT="
+[%M] %D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+$ "
+else
+  PROMPT="
 %D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
-${PROMPT}$ "
+$ "
+fi
 
 
 # mise
@@ -122,7 +130,7 @@ preexec_functions+=(_mise_preexec)
 _zeno_path="${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
 if [[ -r "${_zeno_path}" ]]; then
   source "${_zeno_path}"
-  if [ -n "${ZENO_LOADED}" ]; then
+  if [[ -n "${ZENO_LOADED}" ]]; then
     bindkey ' '  zeno-auto-snippet
     bindkey '^m' zeno-auto-snippet-and-accept-line
     bindkey '^i' zeno-completion
@@ -136,14 +144,11 @@ fi
 
 
 # tmux
-if { [ -n "${SSH_CONNECTION}" ] } \
-  || { [ -n "${SSH_TTY}" ] } \
-  || { [ -n "${SSH_CLIENT}" ] }; then
-  # remote host
+if (( _IS_REMOTE )); then
+  # Remote host
 else
-  # local host
-  if { [ "${SHLVL}" -eq 1 ] } \
-    && { [ "${TERM_PROGRAM}" != "vscode" ] }; then
+  # Local host
+  if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
   fi
 fi
