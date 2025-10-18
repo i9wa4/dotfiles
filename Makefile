@@ -28,13 +28,13 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 MF_DETECTED_OS := $(shell \
 	_uname="$$(uname -a)"; \
 	if echo "$${_uname}" | grep -q Darwin; then \
-	  echo "macOS"; \
+		echo "macOS"; \
 	elif echo "$${_uname}" | grep -q WSL2; then \
-	  echo "WSL2"; \
+		echo "WSL2"; \
 	elif echo "$${_uname}" | grep -q Ubuntu; then \
-	  echo "Ubuntu"; \
+		echo "Ubuntu"; \
 	else \
-	  echo "Unknown"; \
+		echo "Unknown"; \
 	fi)
 
 ifeq ($(MF_DETECTED_OS),macOS)
@@ -65,6 +65,13 @@ zeno                zeno
 endef
 export MF_LINK_XDG_ROWS
 
+MF_WIN_UTIL_DIR := /mnt/c/work/util
+MF_GHQ_LIST_ESSENTIAL := $(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt
+
+define ensure_line_in_file
+	grep -qxF "$(1)" "$(2)" 2>/dev/null || echo "$(1)" >> "$(2)"
+endef
+
 
 # --------------------------------------
 # OS-common Tasks
@@ -83,8 +90,8 @@ endif
 link:  ## make symbolic links
 	# create $$HOME-level symlinks defined in MF_LINK_HOME_ROWS
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r src dst; do \
-	  [ -z "$$src" ] && continue; \
-	  ln -fs "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
+		[ -z "$$src" ] && continue; \
+		ln -fs "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
 	done
 	# ensure XDG_CONFIG_HOME exists and seed git configuration
 	. $(MF_DOTFILES_DIR)/dot.zshenv
@@ -93,35 +100,38 @@ link:  ## make symbolic links
 	cp -rf $(MF_DOTFILES_DIR)/dot.config/git "$${XDG_CONFIG_HOME}"
 	# create XDG_CONFIG_HOME symlinks listed in MF_LINK_XDG_ROWS
 	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r src dst; do \
-	  [ -z "$$src" ] && continue; \
-	  ln -fs "$(MF_DOTFILES_DIR)/dot.config/$$src" "$${XDG_CONFIG_HOME}/$$dst"; \
+		[ -z "$$src" ] && continue; \
+		ln -fs "$(MF_DOTFILES_DIR)/dot.config/$$src" \
+		"$${XDG_CONFIG_HOME}/$$dst"; \
 	done
 	# refresh Codex CLI configuration and VS Code assets
 	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
 	rm -rf "$(MF_CODE_SETTING_DIR)/snippets"
 	mkdir -p "$(MF_CODE_SETTING_DIR)/snippets"
-	cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$(MF_CODE_SETTING_DIR)/snippets"
-	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$(MF_CODE_SETTING_DIR)"
+	cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* \
+		"$(MF_CODE_SETTING_DIR)/snippets"
+	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json \
+		"$(MF_CODE_SETTING_DIR)"
 
-unlink:  ## unlink symbolic links
+unlink:	## unlink symbolic links
 	# remove the $$HOME-level symlinks created by link
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r _ dst; do \
-	  [ -z "$$dst" ] && continue; \
-	  if [ -L "$${HOME}/$$dst" ]; then \
-	    unlink "$${HOME}/$$dst"; \
-	  fi; \
+		[ -z "$$dst" ] && continue; \
+		if [ -L "$${HOME}/$$dst" ]; then \
+			unlink "$${HOME}/$$dst"; \
+		fi; \
 	done
 	# remove the XDG_CONFIG_HOME symlinks created by link
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r _ dst; do \
-	  [ -z "$$dst" ] && continue; \
-	  if [ -L "$${XDG_CONFIG_HOME}/$$dst" ]; then \
-	    unlink "$${XDG_CONFIG_HOME}/$$dst"; \
-	  fi; \
+		[ -z "$$dst" ] && continue; \
+		if [ -L "$${XDG_CONFIG_HOME}/$$dst" ]; then \
+			unlink "$${XDG_CONFIG_HOME}/$$dst"; \
+		fi; \
 	done
 	# drop the VS Code settings link if present
 	if [ -L "$(MF_CODE_SETTING_DIR)/settings.json" ]; then \
-	  unlink "$(MF_CODE_SETTING_DIR)/settings.json"; \
+		unlink "$(MF_CODE_SETTING_DIR)/settings.json"; \
 	fi
 
 
@@ -149,13 +159,11 @@ endef
 export MF_MAC_ALACRITTY
 
 mac-alacritty-init:
-	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
+	echo "$${MF_MAC_ALACRITTY}" \
+		| tee "$${HOME}"/.config/alacritty/alacritty.toml
 	. $(MF_DOTFILES_DIR)/dot.zshenv
-	git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
-
-mac-vscode-init:
-	rm -rf "$${HOME}"/.vscode
-	rm -rf "$${HOME}"'/Library/Application Support/Code'
+	git clone https://github.com/alacritty/alacritty-theme \
+		"$${XDG_CONFIG_HOME}"/alacritty/themes
 
 
 # --------------------------------------
@@ -197,8 +205,6 @@ autoMemoryReclaim=gradual
 endef
 export MF_WSLCONFIG_IN_WINDOWS
 
-MF_WIN_UTIL_DIR := /mnt/c/work/util
-
 win-copy:  ## copy config files for Windows
 	# WSL2
 	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
@@ -208,7 +214,8 @@ win-copy:  ## copy config files for Windows
 	cp -rf $(MF_DOTFILES_DIR)/dot.config    $(MF_WIN_UTIL_DIR)
 	cp -rf $(MF_DOTFILES_DIR)/dot.vscode    $(MF_WIN_UTIL_DIR)
 	cp -rf $(MF_DOTFILES_DIR)/etc           $(MF_WIN_UTIL_DIR)
-	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
+	echo "$${MF_WSLCONFIG_IN_WINDOWS}" \
+		| tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
 # --------------------------------------
@@ -229,7 +236,8 @@ package-npm-install:
 package-npm-update:
 	npm update -g npm
 	# Other packages
-	npm outdated -g --parseable --depth=0 | cut -d: -f4 | xargs -r npm install -g
+	npm outdated -g --parseable --depth=0 \
+		| cut -d: -f4 | xargs -r npm install -g
 
 package-update:
 	# OS common update
@@ -260,23 +268,25 @@ endif
 
 package-mac-install:
 	# https://brew.sh/
-	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# NOTE: Homebrew PATH is not set yet, so load .zshenv to get expected PATH
+	/bin/bash -c \
+		"$$(curl -fsSL \
+		https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	# NOTE: Load .zshenv to get expected PATH
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 	brew -v
 	brew update
 	brew upgrade
 	brew install \
-	  alacritty \
-	  docker-desktop \
-	  font-myricam \
-	  google-chrome \
-	  openvpn-connect \
-	  visual-studio-code \
-	  zoom \
+		alacritty \
+		docker-desktop \
+		font-myricam \
+		google-chrome \
+		openvpn-connect \
+		visual-studio-code \
+		zoom \
 	brew install \
-	  git \
-	  tmux
+		git \
+		tmux
 	# Neovim
 	brew install ninja cmake gettext curl git
 
@@ -287,20 +297,22 @@ package-ubuntu-install:
 	sudo apt-get update
 	sudo apt-get upgrade -y
 	sudo apt-get install -y \
-	  git \
-	  ssh \
-	  tmux \
-	  unzip \
-	  xsel \
-	  zip
+		git \
+		ssh \
+		tmux \
+		unzip \
+		xsel \
+		zip
 	# Vim
-	sudo sed -i 's/^Types: deb$$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+	sudo sed -i \
+		's/^Types: deb$$/Types: deb deb-src/' \
+		/etc/apt/sources.list.d/ubuntu.sources
 	sudo apt-get update
 	sudo apt-get build-dep -y vim
 	# Neovim
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt-get install -y \
-	  ninja-build gettext cmake unzip curl build-essential
+		ninja-build gettext cmake unzip curl build-essential
 
 package-ubuntu-server-install:
 	sudo apt-get install -y openssh-server
@@ -316,8 +328,9 @@ claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
 
 ghq-get-essential:
-	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt
-	if [ -f "$${_list_path}" ]; then ghq get -p < "$${_list_path}"; fi
+	if [ -f "$(MF_GHQ_LIST_ESSENTIAL)" ]; then \
+		ghq get -p < "$(MF_GHQ_LIST_ESSENTIAL)"; \
+	fi
 
 git-config:
 	git config --global color.ui auto
@@ -357,30 +370,33 @@ nvim-build:  ## build Neovim
 	git switch refs/tags/nightly --detach
 	$(MAKE) distclean
 	$(MAKE) \
-	  CMAKE_BUILD_TYPE=Release \
-	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local
+		CMAKE_BUILD_TYPE=Release \
+		CMAKE_INSTALL_PREFIX="$${HOME}"/.local
 	$(MAKE) install
 
 tmux-init:
-	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
+	git clone \
+		https://github.com/tmux-plugins/tpm \
+		$(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 vim-build:  ## build Vim
-	cd $(MF_GITHUB_DIR)/vim/vim
-	cd src
+	cd $(MF_GITHUB_DIR)/vim/vim/src
 	$(MAKE) distclean
 	./configure \
-	  $(MF_VIM_CONFIG_OPTS) \
-	  --disable-gui \
-	  --enable-clipboard \
-	  --enable-fail-if-missing \
-	  --enable-multibyte \
-	  --prefix="$${HOME}"/.local \
-	  --with-features=huge \
-	  --without-wayland
+		$(MF_VIM_CONFIG_OPTS) \
+		--disable-gui \
+		--enable-clipboard \
+		--enable-fail-if-missing \
+		--enable-multibyte \
+		--prefix="$${HOME}"/.local \
+		--with-features=huge \
+		--without-wayland
 	$(MAKE)
 	$(MAKE) install
 
 zsh-init:
 	# Zsh
-	echo "[ -r $(MF_DOTFILES_DIR)/dot.zshenv ] && . $(MF_DOTFILES_DIR)/dot.zshenv" >> "$${HOME}"/.zshenv
-	echo "[ -r $(MF_DOTFILES_DIR)/dot.zshrc ] && . $(MF_DOTFILES_DIR)/dot.zshrc" >> "$${HOME}"/.zshrc
+	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshenv ] \
+		&& . $(MF_DOTFILES_DIR)/dot.zshenv,$${HOME}/.zshenv)
+	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshrc ] \
+		&& . $(MF_DOTFILES_DIR)/dot.zshrc,$${HOME}/.zshrc)
