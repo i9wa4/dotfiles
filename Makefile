@@ -208,8 +208,8 @@ win-copy:  ## copy config files for Windows
 	cp -rf $(MF_DOTFILES_DIR)/dot.config    $(MF_WIN_UTIL_DIR)
 	cp -rf $(MF_DOTFILES_DIR)/dot.vscode    $(MF_WIN_UTIL_DIR)
 	cp -rf $(MF_DOTFILES_DIR)/etc           $(MF_WIN_UTIL_DIR)
-	echo "$${MF_WSLCONFIG_IN_WINDOWS}" \
-		| tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
+	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | \
+		tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
 
 
 # --------------------------------------
@@ -368,7 +368,7 @@ vim-build:  ## build Vim
 
 zsh-init:
 	# Zsh
-	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshenv ] \
-		&& . $(MF_DOTFILES_DIR)/dot.zshenv,$${HOME}/.zshenv)
-	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshrc ] \
-		&& . $(MF_DOTFILES_DIR)/dot.zshrc,$${HOME}/.zshrc)
+	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshenv ] && \
+		. $(MF_DOTFILES_DIR)/dot.zshenv,$${HOME}/.zshenv)
+	$(call ensure_line_in_file,[ -r $(MF_DOTFILES_DIR)/dot.zshrc ] && \
+		. $(MF_DOTFILES_DIR)/dot.zshrc,$${HOME}/.zshrc)
