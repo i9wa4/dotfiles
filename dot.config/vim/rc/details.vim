@@ -277,9 +277,11 @@ function! s:my_asyncjob_on_save() abort
   endif
 endfunction
 
+command! GetStatus call s:set_register() | reg abcz
+
 augroup MyVimrc
   autocmd!
-  autocmd BufEnter * call s:set_register()
+  " autocmd BufEnter * call s:set_register()
   " autocmd BufWritePost * call s:my_asyncjob_on_save()
   " https://github.com/vim/vim/issues/5571
   autocmd StdinReadPost * set nomodified

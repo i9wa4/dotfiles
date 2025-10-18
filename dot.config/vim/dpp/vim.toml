@@ -1,6 +1,6 @@
 [[plugins]]
 repo = 'rhysd/vim-healthcheck'
-on_event = ['VimEnter']
+on_cmd = ['CheckHealth']
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
