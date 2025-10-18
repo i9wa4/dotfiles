@@ -4,7 +4,8 @@ let g:vim_indent = #{
 
 augroup MyFiletype
   autocmd!
-  autocmd BufEnter,FileType * call my_filetype#init()
+  " autocmd BufEnter,FileType * call my_filetype#init()
+  autocmd FileType * call my_filetype#init()
   autocmd BufNewFile,BufReadPost *.code-workspace,*.tfstate
   \ setfiletype json
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
