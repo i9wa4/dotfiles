@@ -76,7 +76,11 @@ endef
 # --------------------------------------
 # OS-common Tasks
 #
-common-init: package-install zsh-init unlink link git-config tmux-init ghq-get-essential
+common-init: zsh-init unlink link git-config package-install ghq-get-essential
+	git clone https://github.com/alacritty/alacritty-theme \
+		$(MF_DOTFILES_DIR)/dot.config/alacritty/themes
+	git clone https://github.com/tmux-plugins/tpm \
+		$(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 common-clean:  ## clean for all OS
 	# OS-common clean
@@ -138,7 +142,17 @@ unlink:	## unlink symbolic links
 # --------------------------------------
 # macOS Tasks
 #
-mac-init: common-init mac-alacritty-init  ## init for Mac
+define MF_MAC_ALACRITTY
+[general]
+import = [
+    '~/.config/alacritty/common.toml',
+    '~/.config/alacritty/macos.toml'
+]
+endef
+export MF_MAC_ALACRITTY
+
+mac-init: common-init  ## init for Mac
+	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.maisin.boost ApplePressAndHoldEnabled -bool false
@@ -149,27 +163,15 @@ mac-init: common-init mac-alacritty-init  ## init for Mac
 	defaults write -g KeyRepeat -int 1
 	killall Finder > /dev/null 2>&1
 
-define MF_MAC_ALACRITTY
-[general]
-import = [
-    '~/.config/alacritty/common.toml',
-    '~/.config/alacritty/macos.toml'
-]
-endef
-export MF_MAC_ALACRITTY
-
-mac-alacritty-init:
-	echo "$${MF_MAC_ALACRITTY}" \
-		| tee "$${HOME}"/.config/alacritty/alacritty.toml
-	. $(MF_DOTFILES_DIR)/dot.zshenv
-	git clone https://github.com/alacritty/alacritty-theme \
-		"$${XDG_CONFIG_HOME}"/alacritty/themes
-
 
 # --------------------------------------
 # Ubuntu Tasks
 #
-ubuntu-server-init: common-init package-ubuntu-server-install  ## init for Ubuntu Server
+ubuntu-server-init: common-init  ## init for Ubuntu Server
+	sudo apt-get install -y openssh-server
+	sudo systemctl daemon-reload
+	sudo systemctl start ssh.service
+	sudo systemctl enable ssh.service
 
 
 # --------------------------------------
@@ -239,20 +241,6 @@ package-npm-update:
 	npm outdated -g --parseable --depth=0 \
 		| cut -d: -f4 | xargs -r npm install -g
 
-package-update:
-	# OS common update
-	mise self-update --yes
-	mise upgrade
-	@$(MAKE) package-npm-update
-	# OS-specific update
-ifeq ($(MF_DETECTED_OS),macOS)
-	brew update
-	brew upgrade
-else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
-	sudo apt-get update
-	sudo apt-get upgrade -y
-endif
-
 package-install:
 	# OS-common install
 	# mise
@@ -260,13 +248,6 @@ package-install:
 	"$${HOME}"/.local/bin/mise install
 	# OS-specific install
 ifeq ($(MF_DETECTED_OS),macOS)
-	$(MAKE) package-mac-install
-else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
-	$(MAKE) package-ubuntu-install
-endif
-	echo "Restart Shell"
-
-package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c \
 		"$$(curl -fsSL \
@@ -289,8 +270,7 @@ package-mac-install:
 		tmux
 	# Neovim
 	brew install ninja cmake gettext curl git
-
-package-ubuntu-install:
+else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
 	sudo apt-get install -y zsh
 	chsh -s "$$(which zsh)"
 	sudo add-apt-repository -y ppa:git-core/ppa
@@ -313,12 +293,22 @@ package-ubuntu-install:
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt-get install -y \
 		ninja-build gettext cmake unzip curl build-essential
+endif
+	echo "Restart Shell"
 
-package-ubuntu-server-install:
-	sudo apt-get install -y openssh-server
-	sudo systemctl daemon-reload
-	sudo systemctl start ssh.service
-	sudo systemctl enable ssh.service
+package-update:
+	# OS common update
+	mise self-update --yes
+	mise upgrade
+	@$(MAKE) package-npm-update
+	# OS-specific update
+ifeq ($(MF_DETECTED_OS),macOS)
+	brew update
+	brew upgrade
+else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
+	sudo apt-get update
+	sudo apt-get upgrade -y
+endif
 
 
 # --------------------------------------
@@ -373,11 +363,6 @@ nvim-build:  ## build Neovim
 		CMAKE_BUILD_TYPE=Release \
 		CMAKE_INSTALL_PREFIX="$${HOME}"/.local
 	$(MAKE) install
-
-tmux-init:
-	git clone \
-		https://github.com/tmux-plugins/tpm \
-		$(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 vim-build:  ## build Vim
 	cd $(MF_GITHUB_DIR)/vim/vim/src
