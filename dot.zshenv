@@ -13,6 +13,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then
 fi
 
 # Common
+export PATH="${PATH}":/snap/bin
 export TZ="Asia/Tokyo"
 export VISUAL=vim
 export XDG_CACHE_HOME="${HOME}"/.cache
@@ -29,6 +30,7 @@ export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
 
 # AWS
+export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
 
 # Claude
@@ -40,21 +42,12 @@ export FZF_DEFAULT_OPTS="
   --bind 'ctrl-y:accept'
 "
 
-# Java
-# https://docs.aws.amazon.com/corretto/latest/corretto-24-ug/macos-install.html
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Contents/Home
-
 # mise
 export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
 
 # Neovim
 export NVIM_APPNAME=nvim
 
-# Python
-export JP_LSP_VIRTUAL_DIR="${HOME}"/.cache/.virtual_documents
-export JUPYTER_PLATFORM_DIRS=1
-
 # First Priority Paths
-export PATH="${PATH}":/snap/bin
 export PATH="${HOME}"/.local/bin:"${PATH}"
 export PATH="$(dirname "$0")/bin":"${PATH}"
