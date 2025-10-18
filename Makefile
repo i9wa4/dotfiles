@@ -5,7 +5,7 @@
 # MAKEFLAGS += --warn-undefined-variables
 SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
-.SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
+.SHELLFLAGS := -o errexit -o nounset -o pipefail -c
 .DEFAULT_GOAL := help
 .ONESHELL:
 
@@ -81,17 +81,21 @@ ifeq ($(MF_DETECTED_OS),macOS)
 endif
 
 link:  ## make symbolic links
+	# create $$HOME-level symlinks defined in MF_LINK_HOME_ROWS
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r src dst; do \
 	  [ -z "$$src" ] && continue; \
 	  ln -fs "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
 	done
+	# ensure XDG_CONFIG_HOME exists and seed git configuration
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 	mkdir -p "$${XDG_CONFIG_HOME}"
 	cp -rf $(MF_DOTFILES_DIR)/dot.config/git "$${XDG_CONFIG_HOME}"
+	# create XDG_CONFIG_HOME symlinks listed in MF_LINK_XDG_ROWS
 	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r src dst; do \
 	  [ -z "$$src" ] && continue; \
 	  ln -fs "$(MF_DOTFILES_DIR)/dot.config/$$src" "$${XDG_CONFIG_HOME}/$$dst"; \
 	done
+	# refresh Codex CLI configuration and VS Code assets
 	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
 	rm -rf "$(MF_CODE_SETTING_DIR)/snippets"
 	mkdir -p "$(MF_CODE_SETTING_DIR)/snippets"
@@ -99,12 +103,14 @@ link:  ## make symbolic links
 	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$(MF_CODE_SETTING_DIR)"
 
 unlink:  ## unlink symbolic links
+	# remove the $$HOME-level symlinks created by link
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r _ dst; do \
 	  [ -z "$$dst" ] && continue; \
 	  if [ -L "$${HOME}/$$dst" ]; then \
 	    unlink "$${HOME}/$$dst"; \
 	  fi; \
 	done
+	# remove the XDG_CONFIG_HOME symlinks created by link
 	. $(MF_DOTFILES_DIR)/dot.zshenv
 	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r _ dst; do \
 	  [ -z "$$dst" ] && continue; \
@@ -112,6 +118,7 @@ unlink:  ## unlink symbolic links
 	    unlink "$${XDG_CONFIG_HOME}/$$dst"; \
 	  fi; \
 	done
+	# drop the VS Code settings link if present
 	if [ -L "$(MF_CODE_SETTING_DIR)/settings.json" ]; then \
 	  unlink "$(MF_CODE_SETTING_DIR)/settings.json"; \
 	fi
