@@ -106,4 +106,4 @@ if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null; then
   tmux refresh-client -S
 fi
 
-echo "Switched to ${THEME_TYPE} theme: ${next_theme}"
+# echo "Switched to ${THEME_TYPE} theme: ${next_theme}"
