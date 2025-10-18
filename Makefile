@@ -163,27 +163,11 @@ mac-vscode-init:
 #
 ubuntu-server-init: common-init package-ubuntu-server-install  ## init for Ubuntu Server
 
-ubuntu-desktop-init: common-init package-ubuntu-desktop-install ubuntu-alacritty-init  ## init for Ubuntu Desktop
-
-define MF_UBUNTU_ALACRITTY
-[general]
-import = [
-    '~/.config/alacritty/common.toml',
-    '~/.config/alacritty/ubuntu.toml'
-]
-endef
-export MF_UBUNTU_ALACRITTY
-
-ubuntu-alacritty-init:
-	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
-	. $(MF_DOTFILES_DIR)/dot.zshenv
-	git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
-
 
 # --------------------------------------
 # Windows & WSL Tasks
 #
-wsl-init: ubuntu-minimal-init win-copy  ## init for WSL2 Ubuntu
+wsl-init: common-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt-get install -y wslu
 	# https://thinkit.co.jp/article/37792
@@ -317,29 +301,12 @@ package-ubuntu-install:
 	# https://github.com/neovim/neovim/blob/master/BUILD.md
 	sudo apt-get install -y \
 	  ninja-build gettext cmake unzip curl build-essential
-	# tmux
-	sudo apt-get install bison
 
 package-ubuntu-server-install:
 	sudo apt-get install -y openssh-server
 	sudo systemctl daemon-reload
 	sudo systemctl start ssh.service
 	sudo systemctl enable ssh.service
-
-package-ubuntu-desktop-install:
-	# Settings --> Accessibility --> Large Text
-	# Alacritty
-	sudo add-apt-repository -y ppa:aslatter/ppa
-	sudo apt-get update
-	sudo apt-get install -y alacritty
-	# https://myrica.estable.jp/
-	cd "$${HOME}"
-	curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip
-	unzip -d MyricaM MyricaM.zip
-	sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/
-	fc-cache -fv
-	rm -f MyricaM.zip
-	rm -rf MyricaM
 
 
 # --------------------------------------
