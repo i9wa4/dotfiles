@@ -140,7 +140,8 @@ function _get_simplified_path() {
 }
 # PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
 # ${PROMPT}$%f "
-PROMPT="%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+PROMPT="
+%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
 ${PROMPT}$ "
 
 
