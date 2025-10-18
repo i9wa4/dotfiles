@@ -175,7 +175,9 @@ nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
 nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
-nnoremap <Plug>(my-Switch)c <Cmd>call my_colorscheme#setup()<CR>
+nnoremap <Plug>(my-Switch)c
+\ :call my_colorscheme#setup()<CR>
+\ :call my_highlight#highlight()<CR>
 nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! list?<CR>
 nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
 nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
