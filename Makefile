@@ -87,7 +87,7 @@ common-clean:  ## clean for all OS
 	rm -rf "$${HOME}"/.npm
 ifeq ($(MF_DETECTED_OS),macOS)
 	# OS-specific clean
-	fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f
+	fd ".DS_Store" $(MF_GITHUB_DIR) --hidden --no-ignore | xargs -t rm -f
 	xattr -rc $(MF_GITHUB_DIR)
 endif
 
