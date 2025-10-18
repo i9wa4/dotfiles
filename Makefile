@@ -1,10 +1,5 @@
-# - [Makefileを自己文書化する | POSTD](https://postd.cc/auto-documented-makefile/)
-# - [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
-# - [Makefile の関数一覧 | 晴耕雨読](https://tex2e.github.io/blog/makefile/functions)
-# - [Makefileでシェルスクリプトを便利にする.ONESHELL](https://zenn.dev/mirablue/articles/20241208-make-oneshell)
-# MAKEFLAGS += --warn-undefined-variables
+# [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
 SHELL := /usr/bin/env bash
-# .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -c
 .DEFAULT_GOAL := help
 .ONESHELL:
@@ -180,9 +175,6 @@ ubuntu-server-init: common-init  ## init for Ubuntu Server
 wsl-init: common-init win-copy  ## init for WSL2 Ubuntu
 	# https://tech-blog.cloud-config.jp/2024-06-18-wsl2-easiest-github-authentication
 	sudo apt-get install -y wslu
-	# https://thinkit.co.jp/article/37792
-	# https://thinkit.co.jp/article/37737
-	sudo apt-get install -U -y nautilus
 	# https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
 	eval `ssh-agent`
 	echo "Restart WSL2"
