@@ -142,8 +142,8 @@ export MF_MAC_ALACRITTY
 
 mac-alacritty-init:
 	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
+	. $(MF_DOTFILES_DIR)/dot.zshenv
+	git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
 mac-vscode-init:
 	rm -rf "$${HOME}"/.vscode
@@ -168,8 +168,8 @@ export MF_UBUNTU_ALACRITTY
 
 ubuntu-alacritty-init:
 	echo "$${MF_UBUNTU_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
+	. $(MF_DOTFILES_DIR)/dot.zshenv
+	git clone https://github.com/alacritty/alacritty-theme "$${XDG_CONFIG_HOME}"/alacritty/themes
 
 
 # --------------------------------------
@@ -247,8 +247,7 @@ package-update:
 	# OS-specific update
 ifeq ($(MF_DETECTED_OS),macOS)
 	brew update
-	brew upgrade --formula
-	-brew upgrade --cask
+	brew upgrade
 else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
 	sudo apt-get update
 	sudo apt-get upgrade -y
@@ -271,11 +270,11 @@ package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	# NOTE: Homebrew PATH is not set yet, so load .zshenv to get expected PATH
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& brew -v \
-	&& brew update \
-	&& brew upgrade \
-	&& brew install \
+	. $(MF_DOTFILES_DIR)/dot.zshenv
+	brew -v
+	brew update
+	brew upgrade
+	brew install \
 	  alacritty \
 	  docker-desktop \
 	  font-myricam \
@@ -283,12 +282,11 @@ package-mac-install:
 	  openvpn-connect \
 	  visual-studio-code \
 	  zoom \
-	&& brew install \
+	brew install \
 	  git \
 	  tmux
 	# Neovim
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& brew install ninja cmake gettext curl git
+	brew install ninja cmake gettext curl git
 
 package-ubuntu-install:
 	sudo apt-get install -y zsh
@@ -327,13 +325,13 @@ package-ubuntu-desktop-install:
 	sudo apt-get update
 	sudo apt-get install -y alacritty
 	# https://myrica.estable.jp/
-	cd \
-	&& curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip \
-	&& unzip -d MyricaM MyricaM.zip \
-	&& sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/ \
-	&& fc-cache -fv \
-	&& rm -f MyricaM.zip \
-	&& rm -rf MyricaM \
+	cd "$${HOME}"
+	curl -OL https://github.com/tomokuni/Myrica/raw/master/product/MyricaM.zip
+	unzip -d MyricaM MyricaM.zip
+	sudo cp MyricaM/MyricaM.TTC /usr/share/fonts/truetype/
+	fc-cache -fv
+	rm -f MyricaM.zip
+	rm -rf MyricaM
 
 
 # --------------------------------------
@@ -343,8 +341,8 @@ claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
 
 ghq-get-essential:
-	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt \
-	&& [ -f "$${_list_path}" ] && cat "$${_list_path}" | ghq get -p
+	_list_path=$(MF_DOTFILES_DIR)/etc/ghq-list-essential.txt
+	if [ -f "$${_list_path}" ]; then ghq get -p < "$${_list_path}"; fi
 
 git-config:
 	git config --global color.ui auto
@@ -378,28 +376,24 @@ git-config:
 	git config --global user.signingkey '~/.ssh/github.pub'
 
 nvim-build:  ## build Neovim
-	# git clean -ffdx
-	# $(MAKE) distclean
 	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
-	cd $(MF_GITHUB_DIR)/neovim/neovim \
-	&& git fetch --tags --force \
-	&& git switch refs/tags/nightly --detach \
-	&& $(MAKE) distclean \
-	&& $(MAKE) \
+	cd $(MF_GITHUB_DIR)/neovim/neovim
+	git fetch --tags --force
+	git switch refs/tags/nightly --detach
+	$(MAKE) distclean
+	$(MAKE) \
 	  CMAKE_BUILD_TYPE=Release \
-	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local \
-	&& $(MAKE) install
+	  CMAKE_INSTALL_PREFIX="$${HOME}"/.local
+	$(MAKE) install
 
 tmux-init:
 	git clone https://github.com/tmux-plugins/tpm $(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
 vim-build:  ## build Vim
-	# git clean -ffdx
-	# $(MAKE) distclean
-	cd $(MF_GITHUB_DIR)/vim/vim \
-	&& cd src \
-	&& $(MAKE) distclean \
-	&& ./configure \
+	cd $(MF_GITHUB_DIR)/vim/vim
+	cd src
+	$(MAKE) distclean
+	./configure \
 	  $(MF_VIM_CONFIG_OPTS) \
 	  --disable-gui \
 	  --enable-clipboard \
@@ -407,9 +401,9 @@ vim-build:  ## build Vim
 	  --enable-multibyte \
 	  --prefix="$${HOME}"/.local \
 	  --with-features=huge \
-	  --without-wayland \
-	&& $(MAKE) \
-	&& $(MAKE) install
+	  --without-wayland
+	$(MAKE)
+	$(MAKE) install
 
 zsh-init:
 	# Zsh
