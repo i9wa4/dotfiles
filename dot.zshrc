@@ -112,7 +112,11 @@ ${PROMPT}$ "
 
 
 # mise
-eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
+_mise_preexec() {
+  eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
+  preexec_functions=(${preexec_functions:#_mise_preexec})
+}
+preexec_functions+=(_mise_preexec)
 
 
 # zeno.zsh
