@@ -25,10 +25,6 @@ else
   export LC_ALL=C.UTF-8
 fi
 
-# Homebrew
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-export PATH=/opt/homebrew/bin:"${PATH}"
-
 # AWS
 export AWS_DEFAULT_PROFILE=
 export AWS_PROFILE=
@@ -36,22 +32,24 @@ export AWS_PROFILE=
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
 
-# zeno
-if [ -z "${ZENO_DISABLE_EXECUTE_CACHE_COMMAND:-}" ]; then
-  export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
-fi
-
 # fzf
 export FZF_DEFAULT_OPTS="
   --reverse
   --bind 'ctrl-y:accept'
 "
 
+# Homebrew
+export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+export PATH=/opt/homebrew/bin:"${PATH}"
+
 # mise
 export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
 
 # Neovim
 export NVIM_APPNAME=nvim
+
+# zeno.zsh
+export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
 
 # First Priority Paths
 export PATH="${HOME}"/.local/bin:"${PATH}"

@@ -2,15 +2,6 @@
 [ -r /etc/zshrc ] && . /etc/zshrc
 
 
-# Keybind
-bindkey -e
-bindkey '\e[3~' delete-char
-
-
-# Alacritty
-setopt IGNORE_EOF
-
-
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000
@@ -23,6 +14,15 @@ setopt hist_ignore_space
 setopt hist_reduce_blanks
 setopt hist_save_no_dups
 setopt share_history
+
+
+# Keybind
+bindkey -e
+bindkey '\e[3~' delete-char
+
+
+# Alacritty
+setopt IGNORE_EOF
 
 
 # Edit Command Line
@@ -99,7 +99,6 @@ if { [ -n "${SSH_CONNECTION}" ] } \
 else
   PROMPT=""
 fi
-setopt prompt_subst
 function _get_simplified_path() {
   local path="${PWD}"
   path="${path/#$HOME\/ghq\/github.com\//}"
