@@ -1,5 +1,5 @@
 # [タスク・ランナーとしてのMake \#Makefile - Qiita](https://qiita.com/shakiyam/items/cdd3c11eba978202a628)
-SHELL := /usr/bin/env bash
+SHELL := /bin/bash
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -c
 .DEFAULT_GOAL := help
 .ONESHELL:
