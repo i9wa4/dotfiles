@@ -44,6 +44,9 @@ export FZF_DEFAULT_OPTS="
 # https://docs.aws.amazon.com/corretto/latest/corretto-24-ug/macos-install.html
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/amazon-corretto-24.jdk/Contents/Home
 
+# mise
+export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
+
 # Neovim
 export NVIM_APPNAME=nvim
 
