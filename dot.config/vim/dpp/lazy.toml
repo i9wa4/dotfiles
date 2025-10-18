@@ -47,7 +47,7 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 [[plugins]]
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
-on_cmd = ['Gin', 'GinStatus', 'GinDiff', 'GinLog', 'GinBlame', 'GinBranch']
+on_event = ['VimEnter']
 hook_add = '''
 let g:gin_proxy_apply_without_confirm = v:true
 '''
