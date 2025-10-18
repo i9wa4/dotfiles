@@ -36,6 +36,11 @@ export AWS_PROFILE=
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
 
+# zeno
+if [ -z "${ZENO_DISABLE_EXECUTE_CACHE_COMMAND:-}" ]; then
+  export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
+fi
+
 # fzf
 export FZF_DEFAULT_OPTS="
   --reverse
