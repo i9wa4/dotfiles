@@ -7,6 +7,7 @@ SHELL := /usr/bin/env bash
 # .SHELLFLAGS := -o verbose -o xtrace -o errexit -o nounset -o pipefail -o posix -c
 .SHELLFLAGS := -o errexit -o nounset -o pipefail -o posix -c
 .DEFAULT_GOAL := help
+.ONESHELL:
 
 # all targets are phony
 PHONY_TARGETS := $(shell grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
@@ -36,6 +37,34 @@ MF_DETECTED_OS := $(shell \
 	  echo "Unknown"; \
 	fi)
 
+ifeq ($(MF_DETECTED_OS),macOS)
+MF_CODE_SETTING_DIR := $${HOME}/Library/Application Support/Code/User
+MF_VIM_CONFIG_OPTS := --enable-darwin
+else
+MF_CODE_SETTING_DIR := $${HOME}/.vscode-server/data/Machine
+MF_VIM_CONFIG_OPTS := --without-x
+endif
+
+define MF_LINK_HOME_ROWS
+dot.config/codex    .codex
+dot.editorconfig    .editorconfig
+endef
+export MF_LINK_HOME_ROWS
+
+define MF_LINK_XDG_ROWS
+alacritty           alacritty
+claude              claude
+codex               codex
+efm-langserver      efm-langserver
+mise                mise
+nvim/nvim           nvim
+skk                 skk
+tmux                tmux
+vim                 vim
+zeno                zeno
+endef
+export MF_LINK_XDG_ROWS
+
 
 # --------------------------------------
 # OS-common Tasks
@@ -45,70 +74,47 @@ common-init: package-install zsh-init unlink link git-config tmux-init ghq-get-e
 common-clean:  ## clean for all OS
 	# OS-common clean
 	rm -rf "$${HOME}"/.npm
+ifeq ($(MF_DETECTED_OS),macOS)
 	# OS-specific clean
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f; \
-	  xattr -rc $(MF_GITHUB_DIR); \
-	fi
+	fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f
+	xattr -rc $(MF_GITHUB_DIR)
+endif
 
 link:  ## make symbolic links
-	# dotfiles
-	ln -fs $(MF_DOTFILES_DIR)/dot.config/codex              "$${HOME}"/.codex
-	ln -fs $(MF_DOTFILES_DIR)/dot.editorconfig              "$${HOME}"/.editorconfig
-	# XDG_CONFIG_HOME
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& mkdir -p "$${XDG_CONFIG_HOME}" \
-	&& cp -rf $(MF_DOTFILES_DIR)/dot.config/git             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/alacritty       "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/claude          "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/codex           "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/efm-langserver  "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/mise            "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/nvim/nvim       "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/skk             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/tmux            "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/vim             "$${XDG_CONFIG_HOME}" \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.config/zeno            "$${XDG_CONFIG_HOME}"
-	# Codex CLI
+	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r src dst; do \
+	  [ -z "$$src" ] && continue; \
+	  ln -fs "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
+	done
+	. $(MF_DOTFILES_DIR)/dot.zshenv
+	mkdir -p "$${XDG_CONFIG_HOME}"
+	cp -rf $(MF_DOTFILES_DIR)/dot.config/git "$${XDG_CONFIG_HOME}"
+	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r src dst; do \
+	  [ -z "$$src" ] && continue; \
+	  ln -fs "$(MF_DOTFILES_DIR)/dot.config/$$src" "$${XDG_CONFIG_HOME}/$$dst"; \
+	done
 	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
-	# OS-specific link
-	# VS Code
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	else \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	fi \
-	&& rm -rf "$${_code_setting_dir}"/snippets \
-	&& mkdir -p "$${_code_setting_dir}"/snippets \
-	&& cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$${_code_setting_dir}"/snippets \
-	&& ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$${_code_setting_dir}"
+	rm -rf "$(MF_CODE_SETTING_DIR)/snippets"
+	mkdir -p "$(MF_CODE_SETTING_DIR)/snippets"
+	cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* "$(MF_CODE_SETTING_DIR)/snippets"
+	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json "$(MF_CODE_SETTING_DIR)"
 
 unlink:  ## unlink symbolic links
-	# dotfiles
-	if [ -L "$${HOME}"/.editorconfig ];                 then unlink "$${HOME}"/.editorconfig; fi
-	if [ -L "$${HOME}"/.codex ];                        then unlink "$${HOME}"/.codex; fi
-	# XDG_CONFIG_HOME
-	. $(MF_DOTFILES_DIR)/dot.zshenv \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/aerospace ];       then unlink "$${XDG_CONFIG_HOME}"/aerospace; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/alacritty ];       then unlink "$${XDG_CONFIG_HOME}"/alacritty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/claude ];          then unlink "$${XDG_CONFIG_HOME}"/claude; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/codex ];           then unlink "$${XDG_CONFIG_HOME}"/codex; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/efm-langserver ];  then unlink "$${XDG_CONFIG_HOME}"/efm-langserver; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/ghostty ];         then unlink "$${XDG_CONFIG_HOME}"/ghostty; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/git ];             then unlink "$${XDG_CONFIG_HOME}"/git; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/mise ];            then unlink "$${XDG_CONFIG_HOME}"/mise; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/nvim ];            then unlink "$${XDG_CONFIG_HOME}"/nvim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/skk ];             then unlink "$${XDG_CONFIG_HOME}"/skk; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/tmux ];            then unlink "$${XDG_CONFIG_HOME}"/tmux; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
-	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
-	# OS-specific unlink
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
-	else \
-	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
-	fi \
-	&& if [ -L "$${_code_setting_dir}"/settings.json ]; then unlink "$${_code_setting_dir}"/settings.json; fi
+	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r _ dst; do \
+	  [ -z "$$dst" ] && continue; \
+	  if [ -L "$${HOME}/$$dst" ]; then \
+	    unlink "$${HOME}/$$dst"; \
+	  fi; \
+	done
+	. $(MF_DOTFILES_DIR)/dot.zshenv
+	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r _ dst; do \
+	  [ -z "$$dst" ] && continue; \
+	  if [ -L "$${XDG_CONFIG_HOME}/$$dst" ]; then \
+	    unlink "$${XDG_CONFIG_HOME}/$$dst"; \
+	  fi; \
+	done
+	if [ -L "$(MF_CODE_SETTING_DIR)/settings.json" ]; then \
+	  unlink "$(MF_CODE_SETTING_DIR)/settings.json"; \
+	fi
 
 
 # --------------------------------------
@@ -239,13 +245,14 @@ package-update:
 	mise upgrade
 	@$(MAKE) package-npm-update
 	# OS-specific update
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  brew update; \
-	  brew upgrade; \
-	elif [ "$(MF_DETECTED_OS)" = "Ubuntu" ] || [ "$(MF_DETECTED_OS)" = "WSL2" ]; then \
-	  sudo apt-get update; \
-	  sudo apt-get upgrade -y; \
-	fi
+ifeq ($(MF_DETECTED_OS),macOS)
+	brew update
+	brew upgrade --formula
+	-brew upgrade --cask
+else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
+	sudo apt-get update
+	sudo apt-get upgrade -y
+endif
 
 package-install:
 	# OS-common install
@@ -253,17 +260,17 @@ package-install:
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
 	# OS-specific install
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  $(MAKE) package-mac-install; \
-	elif [ "$(MF_DETECTED_OS)" = "Ubuntu" ] || [ "$(MF_DETECTED_OS)" = "WSL2" ]; then \
-	  $(MAKE) package-ubuntu-install; \
-	fi
+ifeq ($(MF_DETECTED_OS),macOS)
+	$(MAKE) package-mac-install
+else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
+	$(MAKE) package-ubuntu-install
+endif
 	echo "Restart Shell"
 
 package-mac-install:
 	# https://brew.sh/
 	/bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-	# visual-studio-code
+	# NOTE: Homebrew PATH is not set yet, so load .zshenv to get expected PATH
 	. $(MF_DOTFILES_DIR)/dot.zshenv \
 	&& brew -v \
 	&& brew update \
@@ -274,6 +281,7 @@ package-mac-install:
 	  font-myricam \
 	  google-chrome \
 	  openvpn-connect \
+	  visual-studio-code \
 	  zoom \
 	&& brew install \
 	  git \
@@ -388,16 +396,11 @@ tmux-init:
 vim-build:  ## build Vim
 	# git clean -ffdx
 	# $(MAKE) distclean
-	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
-	  _config_opts="--enable-darwin"; \
-	else \
-	  _config_opts="--without-x"; \
-	fi \
-	&& cd $(MF_GITHUB_DIR)/vim/vim \
+	cd $(MF_GITHUB_DIR)/vim/vim \
 	&& cd src \
 	&& $(MAKE) distclean \
 	&& ./configure \
-	  "$${_config_opts}" \
+	  $(MF_VIM_CONFIG_OPTS) \
 	  --disable-gui \
 	  --enable-clipboard \
 	  --enable-fail-if-missing \
