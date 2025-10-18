@@ -119,11 +119,12 @@ fi
 
 
 # mise
-_mise_preexec() {
-  eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
-  preexec_functions=(${preexec_functions:#_mise_preexec})
-}
-preexec_functions+=(_mise_preexec)
+# _mise_preexec() {
+#   eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
+#   preexec_functions=(${preexec_functions:#_mise_preexec})
+# }
+# preexec_functions+=(_mise_preexec)
+eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
 
 
 # zeno.zsh
