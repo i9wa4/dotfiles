@@ -49,7 +49,7 @@ _dotfiles_compinit_once() {
   if [[ -s "${_DOTFILES_ZCOMPDUMP_PATH}" ]]; then
     if [[ ! -f "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]] \
       || [[ "${_DOTFILES_ZCOMPDUMP_PATH}" -nt "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]]; then
-      zcompile "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" "${_DOTFILES_ZCOMPDUMP_PATH}"
+      zcompile "${_DOTFILES_ZCOMPDUMP_PATH}"
     fi
   fi
   bindkey -M menuselect '^i' accept-and-infer-next-history
@@ -240,27 +240,6 @@ if [[ -r "${_zeno_path}" ]]; then
   else
     bindkey '^r' history-incremental-search-backward
   fi
-fi
-
-
-# OS-specific settings
-# https://obel.hatenablog.jp/entry/20200214/1581620400
-# https://qiita.com/reoring/items/47689c23d2e31035720b
-_uname="$(uname -a)"
-if [ "$(echo "${_uname}" | grep Darwin)" ]; then
-  echo 'Hello, macOS!'
-elif [ "$(echo "${_uname}" | grep Ubuntu)" ]; then
-  echo 'Hello, Ubuntu'
-  alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo "${_uname}" | grep WSL2)" ]; then
-  echo 'Hello, WSL2!'
-  alias pbcopy='xclip -selection clipboard'
-elif [ "$(echo "${_uname}" | grep arm)" ]; then
-  echo 'Hello, Raspberry Pi!'
-elif [ "$(echo "${_uname}" | grep el7)" ]; then
-  echo 'Hello, CentOS!'
-else
-  echo 'Which OS are you using?'
 fi
 
 
