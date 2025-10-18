@@ -153,17 +153,20 @@ fi
 
 
 # zeno.zsh
-source "${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
-# https://qiita.com/obake_fe/items/da8f861eed607436b91c
-if [ -n "${ZENO_LOADED}" ]; then
-  bindkey ' '  zeno-auto-snippet
-  bindkey '^m' zeno-auto-snippet-and-accept-line
-  bindkey '^i' zeno-completion
-  bindkey '^g' zeno-ghq-cd
-  bindkey '^r' zeno-history-selection
-  bindkey '^x^i' zeno-insert-snippet
-else
-  bindkey '^r' history-incremental-search-backward
+_zeno_path="${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
+if [[ -r "${_zeno_path}" ]]; then
+  source "${_zeno_path}"
+  # https://qiita.com/obake_fe/items/da8f861eed607436b91c
+  if [ -n "${ZENO_LOADED}" ]; then
+    bindkey ' '  zeno-auto-snippet
+    bindkey '^m' zeno-auto-snippet-and-accept-line
+    bindkey '^i' zeno-completion
+    bindkey '^g' zeno-ghq-cd
+    bindkey '^r' zeno-history-selection
+    bindkey '^x^i' zeno-insert-snippet
+  else
+    bindkey '^r' history-incremental-search-backward
+  fi
 fi
 
 
