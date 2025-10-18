@@ -23,6 +23,17 @@ help:  ## print this help
 #
 MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
 MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
+MF_DETECTED_OS := $(shell \
+	_uname="$$(uname -a)"; \
+	if echo "$${_uname}" | grep -q Darwin; then \
+	  echo "macOS"; \
+	elif echo "$${_uname}" | grep -q WSL2; then \
+	  echo "WSL2"; \
+	elif echo "$${_uname}" | grep -q Ubuntu; then \
+	  echo "Ubuntu"; \
+	else \
+	  echo "Unknown"; \
+	fi)
 
 
 # --------------------------------------
@@ -34,21 +45,9 @@ common-clean:  ## clean for all OS
 	# OS-common clean
 	rm -rf "$${HOME}"/.npm
 	# OS-specific clean
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  fd ".DS_Store" "$${HOME}" --hidden --no-ignore | xargs -t rm -f; \
 	  xattr -rc $(MF_GITHUB_DIR); \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
-	else \
-	  echo 'Which OS are you using?'; \
 	fi
 
 link:  ## make symbolic links
@@ -73,8 +72,7 @@ link:  ## make symbolic links
 	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
 	# OS-specific link
 	# VS Code
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
 	else \
 	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
@@ -104,8 +102,7 @@ unlink:  ## unlink symbolic links
 	&& if [ -L "$${XDG_CONFIG_HOME}"/vim ];             then unlink "$${XDG_CONFIG_HOME}"/vim; fi \
 	&& if [ -L "$${XDG_CONFIG_HOME}"/zeno ];            then unlink "$${XDG_CONFIG_HOME}"/zeno; fi
 	# OS-specific unlink
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  _code_setting_dir="$${HOME}""/Library/Application Support/Code/User"; \
 	else \
 	  _code_setting_dir="$${HOME}"/.vscode-server/data/Machine; \
@@ -241,25 +238,12 @@ package-update:
 	mise upgrade
 	@$(MAKE) package-npm-update
 	# OS-specific update
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  brew update; \
 	  brew upgrade; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
+	elif [ "$(MF_DETECTED_OS)" = "Ubuntu" ] || [ "$(MF_DETECTED_OS)" = "WSL2" ]; then \
 	  sudo apt-get update; \
 	  sudo apt-get upgrade -y; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	  sudo apt-get update; \
-	  sudo apt-get upgrade -y; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
-	else \
-	  echo 'Which OS are you using?'; \
 	fi
 
 package-install:
@@ -268,22 +252,10 @@ package-install:
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
 	# OS-specific install
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-	  echo 'Hello, macOS!'; \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  $(MAKE) package-mac-install; \
-	elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-	  echo 'Hello, Ubuntu'; \
+	elif [ "$(MF_DETECTED_OS)" = "Ubuntu" ] || [ "$(MF_DETECTED_OS)" = "WSL2" ]; then \
 	  $(MAKE) package-ubuntu-install; \
-	elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-	  echo 'Hello, WSL2!'; \
-	  $(MAKE) package-ubuntu-install; \
-	elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-	  echo 'Hello, Raspberry Pi!'; \
-	elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-	  echo 'Hello, CentOS!'; \
-	else \
-	  echo 'Which OS are you using?'; \
 	fi
 	echo "Restart Shell"
 
@@ -415,8 +387,7 @@ tmux-init:
 vim-build:  ## build Vim
 	# git clean -ffdx
 	# $(MAKE) distclean
-	_uname="$$(uname -a)"; \
-	if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
+	if [ "$(MF_DETECTED_OS)" = "macOS" ]; then \
 	  _config_opts="--enable-darwin"; \
 	else \
 	  _config_opts="--without-x"; \
@@ -435,11 +406,6 @@ vim-build:  ## build Vim
 	  --without-wayland \
 	&& $(MAKE) \
 	&& $(MAKE) install
-
-# zinit-install:
-# 	# Zinit
-# 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-# 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 
 zsh-init:
 	# Zsh
