@@ -216,6 +216,21 @@ function s:copy2clip_wsl(...) abort
   endif
 endfunction
 
+command! GetStatus call s:set_register() | reg abcz
+function! s:set_register() abort
+  if empty(&buftype)
+    call setreg('a', '%'->expand()->fnamemodify(':p'))
+    call setreg('b', '%'->expand()->fnamemodify(':p:~'))
+    call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
+
+    let l:status = (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
+    let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
+    let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
+    let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
+    call setreg('z', l:status)
+  endif
+endfunction
+
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
@@ -253,36 +268,8 @@ endfunction
 " --------------------------------------
 " Autocommand
 "
-function! s:set_register() abort
-  if empty(&buftype)
-    call setreg('a', '%'->expand()->fnamemodify(':p'))
-    call setreg('b', '%'->expand()->fnamemodify(':p:~'))
-    call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
-
-    let l:status = (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
-    let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-    let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-    let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
-    call setreg('z', l:status)
-  endif
-endfunction
-
-function! s:my_asyncjob_on_save() abort
-  if (&filetype == 'python') || ('%:p:e'->expand() == 'ipynb')
-    let l:ipynb_path = '%:p:r'->expand() .. '.ipynb'
-    if filereadable(l:ipynb_path) && executable('jupytext')
-      " call my_async#jobstart('jupytext --set-formats ipynb,py:percent --sync ' .. l:ipynb_path)
-      call my_async#jobstart('jupytext --set-formats ipynb,md --sync ' .. l:ipynb_path)
-    endif
-  endif
-endfunction
-
-command! GetStatus call s:set_register() | reg abcz
-
 augroup MyVimrc
   autocmd!
-  " autocmd BufEnter * call s:set_register()
-  " autocmd BufWritePost * call s:my_asyncjob_on_save()
   " https://github.com/vim/vim/issues/5571
   autocmd StdinReadPost * set nomodified
 augroup END
