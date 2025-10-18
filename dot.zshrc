@@ -27,28 +27,43 @@ bindkey '^x^e' edit_current_line
 # Completion
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit
-# compinit のキャッシュを使って再生成を抑制
-_zcompdump_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh"
-_zcompdump_path="${_zcompdump_dir}/.zcompdump-${HOST}-${ZSH_VERSION}"
-[[ -d "${_zcompdump_dir}" ]] || mkdir -p "${_zcompdump_dir}"
-if [[ -f "${_zcompdump_path}" ]]; then
-  compinit -C -d "${_zcompdump_path}"
-else
-  compinit -d "${_zcompdump_path}"
-fi
-if [[ -s "${_zcompdump_path}" ]]; then
-  if [[ ! -f "${_zcompdump_path}.zwc" ]] || [[ "${_zcompdump_path}" -nt "${_zcompdump_path}.zwc" ]]; then
-    zcompile "${_zcompdump_path}"
-  fi
-fi
+typeset -g _DOTFILES_ZCOMPDUMP_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh"
+typeset -g _DOTFILES_ZCOMPDUMP_PATH="${_DOTFILES_ZCOMPDUMP_DIR}/.zcompdump-${HOST}-${ZSH_VERSION}"
+typeset -gi _DOTFILES_COMPINIT_LOADED=0
 # https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
 zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
-bindkey -M menuselect '^i' accept-and-infer-next-history
-bindkey -M menuselect '^y' accept-line
-bindkey -M menuselect '^n' down-line-or-history
-bindkey -M menuselect '^p' up-line-or-history
+_dotfiles_compinit_once() {
+  if (( _DOTFILES_COMPINIT_LOADED )); then
+    return
+  fi
+  if [[ ! -d "${_DOTFILES_ZCOMPDUMP_DIR}" ]]; then
+    mkdir -p "${_DOTFILES_ZCOMPDUMP_DIR}"
+  fi
+  if [[ -f "${_DOTFILES_ZCOMPDUMP_PATH}" ]]; then
+    compinit -C -d "${_DOTFILES_ZCOMPDUMP_PATH}"
+  else
+    compinit -d "${_DOTFILES_ZCOMPDUMP_PATH}"
+  fi
+  if [[ -s "${_DOTFILES_ZCOMPDUMP_PATH}" ]]; then
+    if [[ ! -f "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]] \
+      || [[ "${_DOTFILES_ZCOMPDUMP_PATH}" -nt "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]]; then
+      zcompile "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" "${_DOTFILES_ZCOMPDUMP_PATH}"
+    fi
+  fi
+  bindkey -M menuselect '^i' accept-and-infer-next-history
+  bindkey -M menuselect '^y' accept-line
+  bindkey -M menuselect '^n' down-line-or-history
+  bindkey -M menuselect '^p' up-line-or-history
+  _DOTFILES_COMPINIT_LOADED=1
+}
+_dotfiles_expand_or_complete() {
+  _dotfiles_compinit_once
+  zle expand-or-complete "$@"
+}
+zle -N _dotfiles_expand_or_complete
+bindkey '^i' _dotfiles_expand_or_complete
 # Troubleshooting: If you get "no such keymap `menuselect'" error, remove ~/.zcompdump* and restart zsh
 
 
@@ -213,7 +228,12 @@ if [[ -r "${_zeno_path}" ]]; then
   if [ -n "${ZENO_LOADED}" ]; then
     bindkey ' '  zeno-auto-snippet
     bindkey '^m' zeno-auto-snippet-and-accept-line
-    bindkey '^i' zeno-completion
+    _dotfiles_zeno_completion() {
+      _dotfiles_compinit_once
+      zle zeno-completion "$@"
+    }
+    zle -N _dotfiles_zeno_completion
+    bindkey '^i' _dotfiles_zeno_completion
     bindkey '^g' zeno-ghq-cd
     bindkey '^r' zeno-history-selection
     bindkey '^x^i' zeno-insert-snippet
