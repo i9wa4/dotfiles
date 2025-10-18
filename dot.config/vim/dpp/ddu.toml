@@ -1,7 +1,7 @@
 [[plugins]]
 repo = 'Shougo/ddu.vim'
 depends = ['denops.vim']
-on_event = ['BufEnter']
+on_event = ['VimEnter']
 hook_source = '''
 call ddu#custom#patch_global(#{
 \   ui: 'ff',

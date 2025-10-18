@@ -34,7 +34,7 @@ on_event = ['VimEnter']
 [[plugins]]
 repo = 'monaqa/dps-dial.vim'
 depends = ['denops.vim']
-on_event = ['BufEnter']
+on_map = { n = '<C-a>', x = '<C-a>' }
 hook_source = '''
 nmap <C-a>  <Plug>(dps-dial-increment)
 nmap <C-x>  <Plug>(dps-dial-decrement)
@@ -47,7 +47,7 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 [[plugins]]
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
-on_event = ['BufEnter']
+on_cmd = ['Gin', 'GinStatus', 'GinDiff', 'GinLog', 'GinBlame', 'GinBranch']
 hook_add = '''
 let g:gin_proxy_apply_without_confirm = v:true
 '''
@@ -125,15 +125,3 @@ let g:previm_open_cmd = 'open -a Google\ Chrome'
 [[plugins]]
 repo = 'hashivim/vim-terraform'
 on_ft = ['terraform', 'terraform-vars', 'tf']
-
-# --------------------------------------
-# dbt
-#
-[[plugins]]
-repo = 'i9wa4/vim-dbt-jump2def'
-depends = ['denops.vim']
-# on_ft = ['sql']
-on_event = ['BufEnter']
-hook_source = '''
-nnoremap <Space>dj <Cmd>execute 'DbtJump2ModelDef'<CR>
-'''
