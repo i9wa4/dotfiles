@@ -12,6 +12,20 @@ bindkey '\e[3~' delete-char
 setopt IGNORE_EOF
 
 
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=1000000
+setopt append_history
+setopt extended_history
+setopt hist_fcntl_lock
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt share_history
+
+
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -65,20 +79,6 @@ _dotfiles_expand_or_complete() {
 zle -N _dotfiles_expand_or_complete
 bindkey '^i' _dotfiles_expand_or_complete
 # Troubleshooting: If you get "no such keymap `menuselect'" error, remove ~/.zcompdump* and restart zsh
-
-
-# History
-HISTFILE=~/.zsh_history
-HISTSIZE=1000000
-SAVEHIST=1000000
-setopt append_history
-setopt extended_history
-setopt hist_fcntl_lock
-setopt hist_ignore_all_dups
-setopt hist_ignore_space
-setopt hist_reduce_blanks
-setopt hist_save_no_dups
-setopt share_history
 
 
 # Git
