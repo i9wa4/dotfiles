@@ -9,7 +9,8 @@ SHELL := /usr/bin/env bash
 .DEFAULT_GOAL := help
 
 # all targets are phony
-.PHONY: $(grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
+PHONY_TARGETS := $(shell grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sed 's/://')
+.PHONY: $(PHONY_TARGETS)
 
 help:  ## print this help
 	@echo 'Usage: make [target]'
