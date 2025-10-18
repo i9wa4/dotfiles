@@ -3,18 +3,22 @@ snippets:
     keyword: ll
     snippet:
       ls -aFlv
+
   - name: ls for macOS
     keyword: llm
     snippet:
       ls -aFlv --color=always -D "%Y-%m-%d %H:%M:%S" -h
+
   - name: ls for Ubuntu
     keyword: llu
     snippet:
       ls -aFlv --color=always --time-style=long-iso -h
+
   - name: path
     keyword: path
     snippet:
       echo "${PATH}" | sed "s/\:/\n/g"
+
   - name: update
     keyword: up
     snippet:
@@ -28,78 +32,93 @@ snippets:
       && uv run quarto render docs/
       && cd -
       && ghq-repo-status
+
   - name: (Claude Code) yolo
     keyword: y
     snippet:
       --dangerously-skip-permissions
     context:
       lbuffer: '^claude\s'
+
   - name: (Codex CLI) yolo
     keyword: y
     snippet:
       --yolo
     context:
       lbuffer: 'codex\s'
+
   - name: (Docker) remove all containers
     keyword: rm
     snippet:
       rm -f $(docker ps -aq)
     context:
       lbuffer: '^docker\s'
+
   - name: (Docker) remove all images
     keyword: rmi
     snippet:
       rmi -f $(docker images -aq)
     context:
       lbuffer: '^docker\s'
+
   - name: (Docker) stop all containers
     keyword: s
     snippet:
       stop $(docker ps -aq)
     context:
       lbuffer: '^docker\s'
+
   - name: (Docker) df
     keyword: df
     snippet:
       system df
     context:
       lbuffer: '^docker\s'
+
   - name: (ghq) update
     keyword: gu
     snippet:
       ghq list | ghq get --update --parallel
+
   - name: (Git) graph
     keyword: lo
     snippet:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status
     context:
       lbuffer: '^git\s'
+
   - name: (Git) graph --all
     keyword: la
     snippet:
       log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
     context:
       lbuffer: '^git\s'
+
   - name: (Quarto) preview
     keyword: qp
     snippet:
       uv run quarto preview
+
   - name: (Quarto) render
     keyword: qr
     snippet:
       uv run quarto render
+
   - name: (Terminal) Dark
     keyword: td
     snippet:
       echo 'dark' > "${XDG_CACHE_HOME}"/terminal-theme
+
   - name: (Terminal) Light
     keyword: tl
     snippet:
       echo 'light' > "${XDG_CACHE_HOME}"/terminal-theme
+
   - name: (uv) activate
     keyword: ua
     snippet:
       . ~/ghq/github.com/i9wa4/dotfiles/.venv{{}}/bin/activate
+
   - name: (uv) upgrade
     keyword: uu
     snippet:
