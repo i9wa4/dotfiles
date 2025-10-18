@@ -346,19 +346,17 @@ git-config:
 	git config --global user.signingkey '~/.ssh/github.pub'
 
 nvim-build:  ## build Neovim
+	# $(MAKE) distclean
 	# BUNDLED_CMAKE_FLAG='-DUSE_BUNDLED_TS_PARSERS=OFF'
 	cd $(MF_GITHUB_DIR)/neovim/neovim
-	git fetch --tags --force
-	git switch refs/tags/nightly --detach
-	$(MAKE) distclean
 	$(MAKE) \
 		CMAKE_BUILD_TYPE=Release \
 		CMAKE_INSTALL_PREFIX="$${HOME}"/.local
 	$(MAKE) install
 
 vim-build:  ## build Vim
+	# $(MAKE) distclean
 	cd $(MF_GITHUB_DIR)/vim/vim/src
-	$(MAKE) distclean
 	./configure \
 		$(MF_VIM_CONFIG_OPTS) \
 		--disable-gui \
