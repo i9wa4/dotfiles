@@ -4,7 +4,6 @@
 
 # Keybind
 bindkey -e
-# https://wayohoo.com/article/6922
 bindkey '\e[3~' delete-char
 
 
@@ -34,66 +33,29 @@ edit_current_line() {
     zle edit-command-line
 }
 zle -N edit_current_line
-# bindkey '^xe' edit_current_line
 bindkey '^x^e' edit_current_line
 
 
 # Completion
-# https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit
-typeset -g _DOTFILES_ZCOMPDUMP_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh"
-typeset -g _DOTFILES_ZCOMPDUMP_PATH="${_DOTFILES_ZCOMPDUMP_DIR}/.zcompdump-${HOST}-${ZSH_VERSION}"
-typeset -gi _DOTFILES_COMPINIT_LOADED=0
-# https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
+compinit -d "${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
-_dotfiles_compinit_once() {
-  if (( _DOTFILES_COMPINIT_LOADED )); then
-    return
-  fi
-  if [[ ! -d "${_DOTFILES_ZCOMPDUMP_DIR}" ]]; then
-    mkdir -p "${_DOTFILES_ZCOMPDUMP_DIR}"
-  fi
-  if [[ -f "${_DOTFILES_ZCOMPDUMP_PATH}" ]]; then
-    compinit -C -d "${_DOTFILES_ZCOMPDUMP_PATH}"
-  else
-    compinit -d "${_DOTFILES_ZCOMPDUMP_PATH}"
-  fi
-  if [[ -s "${_DOTFILES_ZCOMPDUMP_PATH}" ]]; then
-    if [[ ! -f "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]] \
-      || [[ "${_DOTFILES_ZCOMPDUMP_PATH}" -nt "${_DOTFILES_ZCOMPDUMP_PATH}.zwc" ]]; then
-      zcompile "${_DOTFILES_ZCOMPDUMP_PATH}"
-    fi
-  fi
-  bindkey -M menuselect '^i' accept-and-infer-next-history
-  bindkey -M menuselect '^y' accept-line
-  bindkey -M menuselect '^n' down-line-or-history
-  bindkey -M menuselect '^p' up-line-or-history
-  _DOTFILES_COMPINIT_LOADED=1
-}
-_dotfiles_expand_or_complete() {
-  _dotfiles_compinit_once
-  zle expand-or-complete "$@"
-}
-zle -N _dotfiles_expand_or_complete
-bindkey '^i' _dotfiles_expand_or_complete
-# Troubleshooting: If you get "no such keymap `menuselect'" error, remove ~/.zcompdump* and restart zsh
+bindkey -M menuselect '^i' accept-and-infer-next-history
+bindkey -M menuselect '^y' accept-line
+bindkey -M menuselect '^n' down-line-or-history
+bindkey -M menuselect '^p' up-line-or-history
 
 
 # Git
-# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html
-# https://hirooooo-lab.com/development/git-terminal-customize-zsh/
-# https://qiita.com/ono_matope/items/55d9dac8d30b299f590d
-# https://qiita.com/mollifier/items/8d5a627d773758dd8078
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
 zstyle ':vcs_info:*' formats "%8.8i %b %m"
 zstyle ':vcs_info:*' actionformats '%8.8i %b|%a %m'
 zstyle ':vcs_info:git:*' get-revision true
-zstyle ':vcs_info:git+set-message:*' hooks \
-  simple-git-status
+zstyle ':vcs_info:git+set-message:*' hooks simple-git-status
 
 function +vi-simple-git-status() {
   local untracked=$(git status --porcelain 2>/dev/null | grep -c "^??")
@@ -111,20 +73,16 @@ function +vi-simple-git-status() {
 
   if { [[ -n "${untracked}" ]] } \
     && { [[ "${untracked}" -gt 0 ]] }; then
-    # hook_com[misc]+="%F{cyan}?${untracked}%f "
     hook_com[misc]+="?${untracked} "
   fi
   if { [[ -n "${unstaged}" ]] } \
     && { [[ "${unstaged}" -gt 0 ]] }; then
-    # hook_com[misc]+="%F{yellow}~${unstaged}%f "
     hook_com[misc]+="~${unstaged} "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
-    # hook_com[misc]+="%F{green}+${insertions}%f "
     hook_com[misc]+="+${insertions} "
   fi
   if [[ "${deletions}" -gt 0 ]]; then
-    # hook_com[misc]+="%F{red}-${deletions}%f "
     hook_com[misc]+="-${deletions} "
   fi
 }
@@ -134,18 +92,13 @@ add-zsh-hook precmd _vcs_precmd
 
 
 # Prompt
-# https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Prompt-Expansion
 if { [ -n "${SSH_CONNECTION}" ] } \
   || { [ -n "${SSH_TTY}" ] } \
   || { [ -n "${SSH_CLIENT}" ] }; then
-  # remote host
   PROMPT="[%M] "
 else
-  # local host
   PROMPT=""
 fi
-# _shell_type="$(ps -o comm -p $$ | tail -n 1 | sed -e 's/.*\///g')"
-# Simplify Path
 setopt prompt_subst
 function _get_simplified_path() {
   local path="${PWD}"
@@ -153,87 +106,23 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
-# PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
-# ${PROMPT}$%f "
 PROMPT="
 %D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
 ${PROMPT}$ "
 
 
 # mise
-typeset -gi _MISE_LAZY_LOADED=0
-_mise_lazy_init() {
-  if (( _MISE_LAZY_LOADED )); then
-    return
-  fi
-  if eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"; then
-    if [[ ${precmd_functions[(r)_mise_hook]} == _mise_hook ]]; then
-      precmd_functions=(${precmd_functions:#_mise_hook})
-    fi
-    _MISE_LAZY_LOADED=1
-  fi
-}
-_mise_lazy_preexec() {
-  _mise_lazy_init
-  preexec_functions=(${preexec_functions:#_mise_lazy_preexec})
-}
-typeset -ag preexec_functions
-if [[ ${preexec_functions[(r)_mise_lazy_preexec]} != _mise_lazy_preexec ]]; then
-  preexec_functions+=(_mise_lazy_preexec)
-fi
-mise() {
-  if (( !_MISE_LAZY_LOADED )); then
-    if _mise_lazy_init; then
-      unfunction mise
-      mise "$@"
-      return $?
-    fi
-  fi
-  command "${HOME}"/.local/bin/mise "$@"
-}
-if ! typeset -f command_not_found_handler >/dev/null 2>&1; then
-  command_not_found_handler() {
-    local cmd="$1"
-    shift
-    if (( !_MISE_LAZY_LOADED )) && _mise_lazy_init; then
-      if command -v -- "${cmd}" >/dev/null 2>&1; then
-        "${cmd}" "$@"
-        return $?
-      fi
-    fi
-    print -u2 -- "zsh: command not found: ${cmd}"
-    return 127
-  }
-else
-  functions -c command_not_found_handler _mise_lazy_command_not_found_handler
-  command_not_found_handler() {
-    local cmd="$1"
-    shift
-    if (( !_MISE_LAZY_LOADED )) && _mise_lazy_init; then
-      if command -v -- "${cmd}" >/dev/null 2>&1; then
-        "${cmd}" "$@"
-        return $?
-      fi
-    fi
-    _mise_lazy_command_not_found_handler "${cmd}" "$@"
-  }
-fi
+eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
 
 
 # zeno.zsh
 _zeno_path="${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
 if [[ -r "${_zeno_path}" ]]; then
   source "${_zeno_path}"
-  # https://qiita.com/obake_fe/items/da8f861eed607436b91c
   if [ -n "${ZENO_LOADED}" ]; then
     bindkey ' '  zeno-auto-snippet
     bindkey '^m' zeno-auto-snippet-and-accept-line
-    _dotfiles_zeno_completion() {
-      _dotfiles_compinit_once
-      zle zeno-completion "$@"
-    }
-    zle -N _dotfiles_zeno_completion
-    bindkey '^i' _dotfiles_zeno_completion
+    bindkey '^i' zeno-completion
     bindkey '^g' zeno-ghq-cd
     bindkey '^r' zeno-history-selection
     bindkey '^x^i' zeno-insert-snippet
