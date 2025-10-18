@@ -74,8 +74,6 @@ setopt share_history
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 setopt prompt_subst
-# zstyle ':vcs_info:*' formats "%F{#696969}%8.8i%f %F{green}%b%f %m"
-# zstyle ':vcs_info:*' actionformats '%F{#696969}%8.8i%f %F{red}%b|%a%f %m'
 zstyle ':vcs_info:*' formats "%8.8i %b %m"
 zstyle ':vcs_info:*' actionformats '%8.8i %b|%a %m'
 zstyle ':vcs_info:git:*' get-revision true
@@ -140,15 +138,69 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
-PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
-${PROMPT}$%f "
+# PROMPT="%F{#696969}%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+# ${PROMPT}$%f "
+PROMPT="%D{[%Y-%m-%d %H:%M:%S]} [\$(_get_simplified_path)] "'${vcs_info_msg_0_}'"
+${PROMPT}$ "
 
 
 # mise
-eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
-# precmd から _mise_hook を外し chpwd のみで実行
-if [[ ${precmd_functions[(r)_mise_hook]} == _mise_hook ]]; then
-  precmd_functions=(${precmd_functions:#_mise_hook})
+typeset -gi _MISE_LAZY_LOADED=0
+_mise_lazy_init() {
+  if (( _MISE_LAZY_LOADED )); then
+    return
+  fi
+  if eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"; then
+    if [[ ${precmd_functions[(r)_mise_hook]} == _mise_hook ]]; then
+      precmd_functions=(${precmd_functions:#_mise_hook})
+    fi
+    _MISE_LAZY_LOADED=1
+  fi
+}
+_mise_lazy_preexec() {
+  _mise_lazy_init
+  preexec_functions=(${preexec_functions:#_mise_lazy_preexec})
+}
+typeset -ag preexec_functions
+if [[ ${preexec_functions[(r)_mise_lazy_preexec]} != _mise_lazy_preexec ]]; then
+  preexec_functions+=(_mise_lazy_preexec)
+fi
+mise() {
+  if (( !_MISE_LAZY_LOADED )); then
+    if _mise_lazy_init; then
+      unfunction mise
+      mise "$@"
+      return $?
+    fi
+  fi
+  command "${HOME}"/.local/bin/mise "$@"
+}
+if ! typeset -f command_not_found_handler >/dev/null 2>&1; then
+  command_not_found_handler() {
+    local cmd="$1"
+    shift
+    if (( !_MISE_LAZY_LOADED )) && _mise_lazy_init; then
+      if command -v -- "${cmd}" >/dev/null 2>&1; then
+        "${cmd}" "$@"
+        return $?
+      fi
+    fi
+    print -u2 -- "zsh: command not found: ${cmd}"
+    return 127
+  }
+else
+  functions -c command_not_found_handler _mise_lazy_command_not_found_handler
+  command_not_found_handler() {
+    local cmd="$1"
+    shift
+    if (( !_MISE_LAZY_LOADED )) && _mise_lazy_init; then
+      if command -v -- "${cmd}" >/dev/null 2>&1; then
+        "${cmd}" "$@"
+        return $?
+      fi
+    fi
+    _mise_lazy_command_not_found_handler "${cmd}" "$@"
+  }
 fi
 
 
