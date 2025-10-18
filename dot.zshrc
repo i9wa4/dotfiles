@@ -27,7 +27,20 @@ bindkey '^x^e' edit_current_line
 # Completion
 # https://wiki.archlinux.jp/index.php/Zsh
 autoload -Uz compinit
-compinit
+# compinit のキャッシュを使って再生成を抑制
+_zcompdump_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh"
+_zcompdump_path="${_zcompdump_dir}/.zcompdump-${HOST}-${ZSH_VERSION}"
+[[ -d "${_zcompdump_dir}" ]] || mkdir -p "${_zcompdump_dir}"
+if [[ -f "${_zcompdump_path}" ]]; then
+  compinit -C -d "${_zcompdump_path}"
+else
+  compinit -d "${_zcompdump_path}"
+fi
+if [[ -s "${_zcompdump_path}" ]]; then
+  if [[ ! -f "${_zcompdump_path}.zwc" ]] || [[ "${_zcompdump_path}" -nt "${_zcompdump_path}.zwc" ]]; then
+    zcompile "${_zcompdump_path}"
+  fi
+fi
 # https://qiita.com/ToruIwashita/items/5cfa382e9ae2bd0502be
 zstyle ':completion:*' menu select
 setopt menu_complete
@@ -132,7 +145,11 @@ ${PROMPT}$%f "
 
 
 # mise
-eval "$("${HOME}"/.local/bin/mise activate zsh)"
+eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
+# precmd から _mise_hook を外し chpwd のみで実行
+if [[ ${precmd_functions[(r)_mise_hook]} == _mise_hook ]]; then
+  precmd_functions=(${precmd_functions:#_mise_hook})
+fi
 
 
 # zeno.zsh
