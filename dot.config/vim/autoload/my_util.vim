@@ -30,7 +30,6 @@ function! my_util#tabline() abort
   if exists('*MyStatuslineRightTabline')
     let l:ret ..= MyStatuslineRightTabline()
   endif
-  let l:ret ..= ' ' .. (has('nvim') ? '[N]' : '[V]')
 
   return l:ret
 endfunction
