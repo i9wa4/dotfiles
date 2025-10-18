@@ -18,9 +18,9 @@ set clipboard&
 if has('mac')
   set clipboard+=unnamedplus,unnamed
   " pbcopy/pbpaste integration for macOS
-  " vnoremap <silent> y y:call system('pbcopy', @")<CR>
-  " nnoremap <silent> yy yy:call system('pbcopy', @")<CR>
-  " nnoremap <silent> p :r !pbpaste<CR>
+  vnoremap <silent> y y:call system('pbcopy', @")<CR>
+  nnoremap <silent> yy yy:call system('pbcopy', @")<CR>
+  nnoremap <silent> p :r !pbpaste<CR>
 else
   set clipboard^=unnamedplus
 endif
