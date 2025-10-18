@@ -16,14 +16,6 @@ setopt hist_save_no_dups
 setopt share_history
 
 
-# SSH connection detection
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  _IS_REMOTE=1
-else
-  _IS_REMOTE=0
-fi
-
-
 # Keybind
 bindkey -e
 bindkey '\e[3~' delete-char
@@ -97,6 +89,14 @@ function +vi-simple-git-status() {
 
 _vcs_precmd(){ vcs_info }
 add-zsh-hook precmd _vcs_precmd
+
+
+# SSH connection detection
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  _IS_REMOTE=1
+else
+  _IS_REMOTE=0
+fi
 
 
 # Prompt
