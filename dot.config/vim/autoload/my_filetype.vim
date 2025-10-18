@@ -1,9 +1,9 @@
 function! my_filetype#init() abort
-  if !empty(&buftype)
-    return
-  endif
+  " if !empty(&buftype)
+  "   return
+  " endif
 
-  setlocal nofoldenable autoindent
+  " setlocal nofoldenable autoindent
   setlocal spelllang+=cjk spell
 
   if &diff
