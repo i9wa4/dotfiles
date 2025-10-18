@@ -104,7 +104,8 @@ link:  ## make symbolic links
 		"$${XDG_CONFIG_HOME}/$$dst"; \
 	done
 	# refresh Codex CLI configuration and VS Code assets
-	bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
+	[ -r "$(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh" ] && \
+		bash $(MF_DOTFILES_DIR)/dot.config/codex/generate-config.sh
 	rm -rf "$(MF_CODE_SETTING_DIR)/snippets"
 	mkdir -p "$(MF_CODE_SETTING_DIR)/snippets"
 	cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* \
