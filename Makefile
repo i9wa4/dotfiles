@@ -28,7 +28,7 @@ MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
 # --------------------------------------
 # OS-common Tasks
 #
-common-init: package-install zinit-install zsh-init unlink link git-config tmux-init ghq-get-essential
+common-init: package-install zsh-init unlink link git-config tmux-init ghq-get-essential
 
 common-clean:  ## clean for all OS
 	# OS-common clean
@@ -436,10 +436,10 @@ vim-build:  ## build Vim
 	&& $(MAKE) \
 	&& $(MAKE) install
 
-zinit-install:
-	# Zinit
-	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
+# zinit-install:
+# 	# Zinit
+# 	bash -c "$$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+# 	zsh -c ". "$${HOME}"/.local/share/zinit/zinit.git/zinit.zsh && zinit self-update"
 
 zsh-init:
 	# Zsh
