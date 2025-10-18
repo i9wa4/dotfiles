@@ -87,7 +87,6 @@ next_theme="${themes[RANDOM % ${#themes[@]}]}"
 
 # theme.toml を更新
 cat >"$THEME_FILE" <<EOF
-# TYPE: ${THEME_TYPE}
 [general]
 import = [
     '$THEME_DIR/$next_theme'
