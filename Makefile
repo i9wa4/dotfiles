@@ -90,7 +90,7 @@ link:  ## make symbolic links
 	# create $$HOME-level symlinks defined in MF_LINK_HOME_ROWS
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r src dst; do \
 		[ -z "$$src" ] && continue; \
-		ln -fs "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
+		ln -fsh "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
 	done
 	# ensure XDG_CONFIG_HOME exists and seed git configuration
 	. $(MF_DOTFILES_DIR)/dot.zshenv
@@ -100,7 +100,7 @@ link:  ## make symbolic links
 	# create XDG_CONFIG_HOME symlinks listed in MF_LINK_XDG_ROWS
 	printf '%s\n' "$${MF_LINK_XDG_ROWS}" | while read -r src dst; do \
 		[ -z "$$src" ] && continue; \
-		ln -fs "$(MF_DOTFILES_DIR)/dot.config/$$src" \
+		ln -fsh "$(MF_DOTFILES_DIR)/dot.config/$$src" \
 		"$${XDG_CONFIG_HOME}/$$dst"; \
 	done
 	# refresh Codex CLI configuration and VS Code assets
@@ -110,7 +110,7 @@ link:  ## make symbolic links
 	mkdir -p "$(MF_CODE_SETTING_DIR)/snippets"
 	cp -f $(MF_DOTFILES_DIR)/dot.config/vim/snippet/* \
 		"$(MF_CODE_SETTING_DIR)/snippets"
-	ln -fs $(MF_DOTFILES_DIR)/dot.vscode/settings.json \
+	ln -fsh $(MF_DOTFILES_DIR)/dot.vscode/settings.json \
 		"$(MF_CODE_SETTING_DIR)"
 
 unlink:	## unlink symbolic links
