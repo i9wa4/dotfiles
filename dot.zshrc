@@ -150,6 +150,7 @@ if (( _IS_REMOTE )); then
 else
   # Local host
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
+    alacritty-theme-switch
     tmux
   fi
 fi
