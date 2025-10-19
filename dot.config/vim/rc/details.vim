@@ -99,18 +99,33 @@ nmap gj gj<SID>g
 nmap gk gk<SID>g
 nnoremap <script> <SID>gj gj<SID>g
 nnoremap <script> <SID>gk gk<SID>g
-" nnoremap <expr> j (v:count == 0) ? 'gj' : 'j'
-" nnoremap <expr> k (v:count == 0) ? 'gk' : 'k'
-" xnoremap <expr> j ((v:count == 0) && (mode() ==# 'v')) ? 'gj' : 'j'
-" xnoremap <expr> k ((v:count == 0) && (mode() ==# 'v')) ? 'gk' : 'k'
 
 " https://blog.atusy.net/2025/08/08/map-minus-to-blackhole-register/
 nnoremap - "_
 xnoremap - "_
 
 " Toggle Quote
-nnoremap gqq :call ToggleQuote()<CR>
-vnoremap gqq :call ToggleQuoteRange()<CR>
+nnoremap gqq <Cmd>call <SID>toggle_quote()<CR>
+vnoremap gqq <Cmd>call <SID>toggle_quote()<CR>
+
+function! s:toggle_quote() range abort
+  let l:all_quoted = v:true
+  for l:lnum in range(a:firstline, a:lastline)
+    if getline(l:lnum) !~ '^>'
+      let l:all_quoted = v:false
+      break
+    endif
+  endfor
+
+  for l:lnum in range(a:firstline, a:lastline)
+    let l:line = getline(l:lnum)
+    if l:all_quoted
+      call setline(l:lnum, substitute(l:line, '^>\s\?', '', ''))
+    else
+      call setline(l:lnum, '> ' .. l:line)
+    endif
+  endfor
+endfunction
 
 " Insert Mode
 " i_CTRL-T Insert one indent
@@ -175,9 +190,7 @@ nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
 nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
-nnoremap <Plug>(my-Switch)c
-\ :call my_colorscheme#setup()<CR>
-\ :call my_highlight#highlight()<CR>
+nnoremap <Plug>(my-Switch)c <Cmd>call s:switch_colorscheme()<CR>
 nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! list?<CR>
 nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
 nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
@@ -186,6 +199,10 @@ nnoremap <Plug>(my-Switch)s <Cmd>setlocal spell! spell?<CR>
 nnoremap <Plug>(my-Switch)t <Cmd>setlocal expandtab! expandtab?<CR>
 nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 
+function! s:switch_colorscheme() abort
+  call my_colorscheme#setup()
+  call my_highlight#highlight()
+endfunction
 
 " --------------------------------------
 " Command
@@ -234,35 +251,6 @@ endfunction
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
-
-" Toggle Quote
-function! ToggleQuote() abort
-  let l:line = getline('.')
-  if l:line =~ '^> '
-    " "> "を削除
-    call setline('.', l:line[2:])
-  elseif l:line =~ '^>'
-    " ">"のみを削除
-    call setline('.', l:line[1:])
-  else
-    " "> "を追加
-    call setline('.', '> ' . l:line)
-  endif
-endfunction
-
-" Toggle Quote (Range)
-function! ToggleQuoteRange() range
-  for l:lnum in range(a:firstline, a:lastline)
-    let l:line = getline(l:lnum)
-    if l:line =~ '^> '
-      call setline(l:lnum, l:line[2:])
-    elseif l:line =~ '^>'
-      call setline(l:lnum, l:line[1:])
-    else
-      call setline(l:lnum, '> ' . l:line)
-    endif
-  endfor
-endfunction
 
 
 " --------------------------------------
