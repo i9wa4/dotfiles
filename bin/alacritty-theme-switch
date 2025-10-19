@@ -52,28 +52,32 @@ is_matching_theme() {
   fi
 }
 
-# キャッシュがあればそれを使用、なければ生成
+# キャッシュに有効なデータがあれば利用し、無効なら再生成
+themes=()
 if [[ -f $CACHE_LIST_FILE ]]; then
-  themes=()
   while IFS= read -r line; do
-    themes+=("$line")
+    [[ -z $line ]] && continue
+    if [[ -f "$THEME_DIR/$line" ]]; then
+      themes+=("$line")
+    fi
   done <"$CACHE_LIST_FILE"
-else
+fi
+
+if [[ ${#themes[@]} -eq 0 ]]; then
   # テーマタイプに一致するテーマのリストを作成
-  themes=()
   for theme_file in "$THEME_DIR"/*.toml; do
+    [[ -f $theme_file ]] || continue
     if is_matching_theme "$theme_file" "$THEME_TYPE"; then
       themes+=("$(basename "$theme_file")")
     fi
   done
 
-  # アルファベット順にソート
-  IFS=$'\n' themes=($(sort <<<"${themes[*]}"))
-  unset IFS
-
-  # キャッシュに保存
   if [[ ${#themes[@]} -gt 0 ]]; then
+    IFS=$'\n' themes=($(printf "%s\n" "${themes[@]}" | sort))
+    unset IFS
     printf "%s\n" "${themes[@]}" >"$CACHE_LIST_FILE"
+  else
+    : >"$CACHE_LIST_FILE"
   fi
 fi
 
