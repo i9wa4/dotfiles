@@ -293,6 +293,7 @@ package-update:
 	# OS common update
 	mise self-update --yes
 	mise upgrade
+	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 	# OS-specific update
 ifeq ($(MF_DETECTED_OS),macOS)
