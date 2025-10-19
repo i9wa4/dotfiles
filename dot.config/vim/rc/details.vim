@@ -105,8 +105,8 @@ nnoremap - "_
 xnoremap - "_
 
 " Toggle Quote
-nnoremap gqq <Cmd>call <SID>toggle_quote()<CR>
-vnoremap gqq <Cmd>call <SID>toggle_quote()<CR>
+nnoremap gqq :call <SID>toggle_quote()<CR>
+vnoremap gqq :call <SID>toggle_quote()<CR>
 
 function! s:toggle_quote() range abort
   let l:all_quoted = v:true
