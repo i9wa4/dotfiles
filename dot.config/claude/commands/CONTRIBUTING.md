@@ -58,6 +58,25 @@ description: "global CONTRIBUTING.md"
 - NEVER: `rm` コマンドは使用しない
 - IMPORTANT: 削除の代替として `mv` で `/tmp/` ディレクトリに移動することは許可されている
 
+#### 3.1.1. Bash ツールでの構文制限
+
+Bash ツールには構文上の制限があるため以下に注意する
+
+- NEVER: サブシェル `()` は使用しない (parse error が発生する)
+- YOU MUST: 複数コマンドをグループ化する場合は `{ }` (ブレース) を使用する
+
+良い例
+
+```sh
+NOW=$(date +%Y%m%d-%H%M%S) && { for i in 1 2 3; do echo "$i"; done; } > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
+```
+
+悪い例 (parse error が発生)
+
+```sh
+NOW=$(date +%Y%m%d-%H%M%S) && (for i in 1 2 3; do echo "$i"; done) > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
+```
+
 ### 3.2. Git
 
 #### 3.2.1. 基本ルール
