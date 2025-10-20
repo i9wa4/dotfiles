@@ -15,5 +15,5 @@ let g:denops#debug = 1
 
 " Tabline
 function! MyStatuslineRightTabline() abort
-  return '[' .. get(g:, 'colors_name', 'default') .. ']'
+  return get(g:, 'colors_name', 'default')
 endfunction
