@@ -49,7 +49,6 @@ export MF_LINK_HOME_ROWS
 define MF_LINK_XDG_ROWS
 alacritty           alacritty
 claude              claude
-codex               codex
 efm-langserver      efm-langserver
 mise                mise
 nvim/nvim           nvim
