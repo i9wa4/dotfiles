@@ -107,15 +107,13 @@ function _get_simplified_path() {
   echo "${path}"
 }
 
+PROMPT=""
 if (( _IS_REMOTE )); then
-  PROMPT="
-[%M] %D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
-$ "
-else
-  PROMPT="
-%D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
-$ "
+  PROMPT="[%M] "
 fi
+PROMPT="
+${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
+$ "
 
 
 # mise
