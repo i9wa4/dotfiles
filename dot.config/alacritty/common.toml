@@ -1,6 +1,7 @@
 [general]
 import = [
-    '~/.config/alacritty/theme.toml'
+    '~/.config/alacritty/theme.toml',
+    '~/.config/alacritty/opacity.toml'
 ]
 
 [font]
