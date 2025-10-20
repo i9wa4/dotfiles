@@ -28,7 +28,8 @@ is_matching_theme() {
   local target_type="$2"
 
   # background の色を取得
-  local bg_color=$(grep -E "^\s*background\s*=" "$theme_file" | head -1 | sed -E "s/.*['\"]?(#[0-9a-fA-F]{6})['\"]?.*/\1/")
+  local bg_color
+  bg_color=$(grep -E "^\s*background\s*=" "$theme_file" | head -1 | sed -E "s/.*['\"]?(#[0-9a-fA-F]{6})['\"]?.*/\1/")
 
   if [[ -z $bg_color ]]; then
     # 判定できない場合はダークとみなす
@@ -42,7 +43,8 @@ is_matching_theme() {
   local b=$((16#${bg_color:5:2}))
 
   # 輝度を計算 (0.299*R + 0.587*G + 0.114*B)
-  local brightness=$(echo "scale=2; 0.299*$r + 0.587*$g + 0.114*$b" | bc)
+  local brightness
+  brightness=$(echo "scale=2; 0.299*$r + 0.587*$g + 0.114*$b" | bc)
 
   # 128を境界値として判定
   if [[ $target_type == "light" ]]; then
@@ -73,8 +75,7 @@ if [[ ${#themes[@]} -eq 0 ]]; then
   done
 
   if [[ ${#themes[@]} -gt 0 ]]; then
-    IFS=$'\n' themes=($(printf "%s\n" "${themes[@]}" | sort))
-    unset IFS
+    mapfile -t themes < <(printf "%s\n" "${themes[@]}" | sort)
     printf "%s\n" "${themes[@]}" >"$CACHE_LIST_FILE"
   else
     : >"$CACHE_LIST_FILE"
