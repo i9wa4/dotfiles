@@ -75,7 +75,9 @@ if [[ ${#themes[@]} -eq 0 ]]; then
   done
 
   if [[ ${#themes[@]} -gt 0 ]]; then
-    mapfile -t themes < <(printf "%s\n" "${themes[@]}" | sort)
+    # shellcheck disable=SC2207
+    IFS=$'\n' themes=($(printf "%s\n" "${themes[@]}" | sort))
+    unset IFS
     printf "%s\n" "${themes[@]}" >"$CACHE_LIST_FILE"
   else
     : >"$CACHE_LIST_FILE"

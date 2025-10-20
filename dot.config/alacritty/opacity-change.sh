@@ -6,7 +6,8 @@ set -o posix
 
 OPACITY_FILE="$HOME/.config/alacritty/opacity.toml"
 ALACRITTY_FILE="$HOME/.config/alacritty/alacritty.toml"
-STEP=0.05
+STEP=0.1
+DEFAULT_OPACITY=1.0
 
 # 引数チェック
 if [[ $# -ne 1 ]]; then
@@ -25,7 +26,7 @@ fi
 if [[ -f $OPACITY_FILE ]]; then
   CURRENT_OPACITY=$(grep "^opacity" "$OPACITY_FILE" | sed 's/.*= *//')
 else
-  CURRENT_OPACITY=0.8
+  CURRENT_OPACITY=$DEFAULT_OPACITY
 fi
 
 # 新しい opacity 値を計算
@@ -54,10 +55,4 @@ touch "$ALACRITTY_FILE"
 # tmux のステータスバーを更新
 if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null; then
   tmux refresh-client -S
-fi
-
-# 現在の透過度を表示
-if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null; then
-  OPACITY_PERCENT=$(echo "$NEW_OPACITY * 100" | /usr/bin/bc | sed 's/\..*$//')
-  tmux display-message "Opacity: ${OPACITY_PERCENT}%"
 fi
