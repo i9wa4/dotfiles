@@ -30,13 +30,13 @@ fi
 
 # 新しい opacity 値を計算
 if [[ $DIRECTION == "up" ]]; then
-  NEW_OPACITY=$(echo "$CURRENT_OPACITY + $STEP" | bc)
-  if (( $(echo "$NEW_OPACITY > 1.0" | bc -l) )); then
+  NEW_OPACITY=$(echo "$CURRENT_OPACITY + $STEP" | /usr/bin/bc)
+  if (( $(echo "$NEW_OPACITY > 1.0" | /usr/bin/bc -l) )); then
     NEW_OPACITY=1.0
   fi
 else
-  NEW_OPACITY=$(echo "$CURRENT_OPACITY - $STEP" | bc)
-  if (( $(echo "$NEW_OPACITY < 0.0" | bc -l) )); then
+  NEW_OPACITY=$(echo "$CURRENT_OPACITY - $STEP" | /usr/bin/bc)
+  if (( $(echo "$NEW_OPACITY < 0.0" | /usr/bin/bc -l) )); then
     NEW_OPACITY=0.0
   fi
 fi
@@ -58,6 +58,6 @@ fi
 
 # 現在の透過度を表示
 if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null; then
-  OPACITY_PERCENT=$(echo "$NEW_OPACITY * 100" | bc | sed 's/\..*$//')
+  OPACITY_PERCENT=$(echo "$NEW_OPACITY * 100" | /usr/bin/bc | sed 's/\..*$//')
   tmux display-message "Opacity: ${OPACITY_PERCENT}%"
 fi
