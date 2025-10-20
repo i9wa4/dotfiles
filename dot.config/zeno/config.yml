@@ -105,16 +105,6 @@ snippets:
     snippet:
       uv run quarto render
 
-  - name: (Terminal) Dark
-    keyword: td
-    snippet:
-      echo 'dark' > "${XDG_CACHE_HOME}"/terminal-theme
-
-  - name: (Terminal) Light
-    keyword: tl
-    snippet:
-      echo 'light' > "${XDG_CACHE_HOME}"/terminal-theme
-
   - name: (uv) activate
     keyword: ua
     snippet:
