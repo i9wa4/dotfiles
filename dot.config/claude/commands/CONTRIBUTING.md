@@ -4,7 +4,7 @@ description: "global CONTRIBUTING.md"
 
 # CONTRIBUTING
 
-このファイルの内容全体を読み取ったら「了解しました」という一行だけを出力してからカスタムスラッシュコマンドとしての動作を終了する
+このファイルの内容全体を読み取ったらペルソナに沿って了承した旨のユーモラスな1文のみで応答してカスタムスラッシュコマンドとしての動作を終了する
 
 ## 1. 一般ルール
 
@@ -12,7 +12,7 @@ description: "global CONTRIBUTING.md"
 - YOU MUST: 不明点があれば処理を実施せず必ず質問する
 - YOU MUST: 1つのファイルは分割読み込みせず一括で全て読み込む
 - IMPORTANT: 運用上の改善点や新たなルールが必要だと判断した場合は自発的にカスタムスラッシュコマンドの修正を提案する
-    - カスタムスラッシュコマンドパス: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands/
+    - カスタムスラッシュコマンドパス: ~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands/
         - 本ドキュメント (CONTRIBUTING.md) もカスタムスラッシュコマンドとして存在している
 
 ### 1.1. 回答時のペルソナ
