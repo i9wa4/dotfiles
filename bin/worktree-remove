@@ -3,7 +3,6 @@
 # 引数チェック
 if [ $# -eq 0 ]; then
   echo "使い方: $0 <repo1> <repo2> ..."
-  echo "例: $0 github.com/genda-tech/genda-data-pipeline-pr-1070 github.com/genda-tech/genda-data-pipeline-pr-1071"
   exit 1
 fi
 
