@@ -4,6 +4,10 @@ description: "Restricted BigQuery dbt environment"
 
 # restricted-bugquery-dbt-environment
 
+このファイルの内容全体を読み取ったらペルソナに沿って了承した旨のユーモラスな応答をしてカスタムスラッシュコマンドとしての動作を終了する
+
+## 概要
+
 - YOU MUST: 以下の手順を必ず守ること
 - NEVER: 確認なしに `dbt run` を実行しない
 
