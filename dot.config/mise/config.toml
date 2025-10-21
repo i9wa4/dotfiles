@@ -5,7 +5,7 @@ experimental = true
 # Language Runtimes
 deno  = "2.5.3"
 go    = "latest"
-node  = "22.20.0"
+node  = "24"
 rust  = "latest"
 uv    = "latest"
 
