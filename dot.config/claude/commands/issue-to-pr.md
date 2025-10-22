@@ -1,17 +1,18 @@
 ---
-description: "Issue to PR - 3フェーズで作業管理 (arg: Issue number)"
+description: "Issue to PR - 3フェーズで作業管理"
 ---
 
 # issue-to-pr
 
 - Explore → Plan → Code の3フェーズで作業を管理
 - 空コミットでPR文面・Issue情報・Todoを管理
+- このディレクトリ名もしくはブランチ名から Issue 番号を取得できる
 
 参考: [Anthropic's Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices#a-explore-plan-code-commit)
 
-## 重要: Todoロードマップ更新方法
+## 1. 重要: Todoロードマップ更新方法
 
-### 方法1: 直前のコミットが Phase移行でない場合 (amend)
+### 1.1. 方法1: 直前のコミットが Phase移行でない場合 (amend)
 
 直前のコミットを確認:
 ```bash
@@ -30,7 +31,7 @@ def5678 実装コミット
 git commit --amend --allow-empty --no-verify -m "新しいロードマップ内容"
 ```
 
-### 方法2: 途中のコミット修正 (rebase)
+### 1.2. 方法2: 途中のコミット修正 (rebase)
 
 NG例: 直前が Phase移行コミット
 ```
@@ -59,7 +60,7 @@ git rebase --continue
 - rebase でハッシュ値が変わる (ローカルのみなら問題なし)
 - `git rebase --continue` は必ずユーザーの許可を得てから実行
 
-## 1. 初回実行
+## 2. 初回実行
 
 ```bash
 #!/bin/bash
@@ -164,7 +165,7 @@ Issue 内容に基づいて具体的なタスクに書き換えてください
 fi
 ```
 
-## 2. フェーズ管理
+## 3. フェーズ管理
 
 ```bash
 #!/bin/bash

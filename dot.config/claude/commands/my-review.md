@@ -1,5 +1,5 @@
 ---
-description: "Review (arg: Pull Request number)"
+description: "Review"
 ---
 
 # review
@@ -9,6 +9,7 @@ GitHub の Pull Request をレビューするためのカスタムコマンド
 ## 1. 前提情報
 
 - この Worktree は Pull Request の対象ブランチである
+- このディレクトリ名もしくはブランチ名から Pull Request 番号を取得できる
 
 ## 2. レビュー方法
 
