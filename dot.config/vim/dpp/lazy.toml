@@ -45,6 +45,20 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 '''
 
 [[plugins]]
+repo = 'kamecha/bimove'
+on_event = ['VimEnter']
+hook_source = '''
+nnoremap M <Plug>(bimove-enter)<Plug>(bimove)
+
+nnoremap <Plug>(bimove)H <Plug>(bimove-high)<Plug>(bimove)
+nnoremap <Plug>(bimove)L <Plug>(bimove-low)<Plug>(bimove)
+
+highlight link BimoveHigh Search
+highlight link BimoveCursor Visual
+highlight link BimoveLow Visual
+'''
+
+[[plugins]]
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['VimEnter']
