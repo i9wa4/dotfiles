@@ -35,4 +35,10 @@ ultrathink
 ## Codex CLI
 EOF
 
+# mise.toml が存在する場合は trust する
+if [ -f "mise.toml" ]; then
+  mise trust mise.toml
+  echo "✓  mise.toml を trust しました"
+fi
+
 echo "✓  セットアップ完了"
