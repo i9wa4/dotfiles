@@ -263,10 +263,10 @@ for p in "${PHASES[@]}"; do
         echo "進捗確認: git log --oneline --grep=\"Issue: #${ISSUE_NUMBER}\""
     else
         case "$phase" in
-            EXPLORE) echo "調査完了後: /issue-to-pr $ISSUE_NUMBER next" ;;
-            PLAN) echo "計画完了後: /issue-to-pr $ISSUE_NUMBER next" ;;
-            CODE) echo "実装完了後: /issue-to-pr $ISSUE_NUMBER next" ;;
-            PR) echo "PR作成中... 完了したら: /issue-to-pr $ISSUE_NUMBER next" ;;
+            EXPLORE) echo "調査完了後: /issue-to-pr next" ;;
+            PLAN) echo "計画完了後: /issue-to-pr next" ;;
+            CODE) echo "実装完了後: /issue-to-pr next" ;;
+            PR) echo "PR作成中... 完了したら: /issue-to-pr next" ;;
         esac
     fi
     break
