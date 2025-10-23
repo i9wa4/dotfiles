@@ -11,8 +11,8 @@ set -o posix
 #   echo "✓  .devcontainer ディレクトリをコピーしました"
 # fi
 
-cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
-echo "✓  .mcp.json ファイルをコピーしました"
+# cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
+# echo "✓  .mcp.json ファイルをコピーしました"
 
 cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
