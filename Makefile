@@ -218,7 +218,11 @@ win-copy:  ## copy config files for Windows
 package-npm-install:
 	npm install -g npm
 	npm install -g @aikidosec/safe-chain
-	safe-chain setup
+	if grep -qF "source ~/.safe-chain/scripts/init-posix.sh" "$${HOME}/.zshrc"; then \
+		echo "safe-chain is already configured in ~/.zshrc, skipping setup"; \
+	else \
+		safe-chain setup; \
+	fi
 	# Other packages
 	npm install -g @anthropic-ai/claude-code
 	npm install -g @devcontainers/cli
