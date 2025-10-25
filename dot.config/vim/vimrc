@@ -16,11 +16,7 @@ let g:netrw_home = $XDG_CACHE_HOME->expand()
 " System
 set clipboard&
 if has('mac')
-  set clipboard+=unnamedplus,unnamed
-  " pbcopy/pbpaste integration for macOS
-  vnoremap <silent> y y:call system('pbcopy', @")<CR>
-  nnoremap <silent> yy yy:call system('pbcopy', @")<CR>
-  nnoremap <silent> p :r !pbpaste<CR>
+  set clipboard^=unnamed
 else
   set clipboard^=unnamedplus
 endif
@@ -64,5 +60,5 @@ if has('termguicolors')
 endif
 
 " Setup colorscheme based on Alacritty theme
-execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-" call my_colorscheme#setup()
+" execute 'colorscheme' get(g:, 'colors_name', 'habamax')
+call my_colorscheme#setup()
