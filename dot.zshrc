@@ -40,7 +40,12 @@ bindkey '^x^e' edit_current_line
 autoload -Uz compinit
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 mkdir -p "${_zcompdump:h}"
-compinit -d "${_zcompdump}"
+# 1日1回だけ更新をチェック
+if [[ -n ${_zcompdump}(#qN.mh+24) ]]; then
+  compinit -d "${_zcompdump}"
+else
+  compinit -C -d "${_zcompdump}"
+fi
 zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
@@ -60,21 +65,25 @@ zstyle ':vcs_info:git:*' get-revision true
 zstyle ':vcs_info:git+set-message:*' hooks simple-git-status
 
 function +vi-simple-git-status() {
-  local untracked=$(git status --porcelain 2>/dev/null | grep -c "^??")
-  local unstaged=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+  # git status --porcelain で untracked/staged/unstaged を取得
+  local status_output=$(git status --porcelain 2>/dev/null)
+  local untracked=$(echo "${status_output}" | grep -c "^??")
+  local staged=$(echo "${status_output}" | grep -c "^[MADRC]")
+  local unstaged=$(echo "${status_output}" | grep -c "^.[MD]")
 
-  local shortstat=$(git diff --shortstat 2>/dev/null)
-  local insertions=0
-  local deletions=0
-  if [[ "${shortstat}" =~ '([0-9]+) insertion' ]]; then
-    insertions="${match[1]}"
-  fi
-  if [[ "${shortstat}" =~ '([0-9]+) deletion' ]]; then
-    deletions="${match[1]}"
-  fi
+  # git diff --numstat で insertions/deletions を集計
+  local numstat=$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i, d}')
+  local insertions=$(echo "${numstat}" | awk '{print $1}')
+  local deletions=$(echo "${numstat}" | awk '{print $2}')
+
+  # git log で unpushed commits をカウント
+  local unpushed=$(git log @{u}.. --oneline 2>/dev/null | wc -l | tr -d ' ')
 
   if [[ "${untracked}" -gt 0 ]]; then
     hook_com[misc]+="?${untracked} "
+  fi
+  if [[ "${staged}" -gt 0 ]]; then
+    hook_com[misc]+="S${staged} "
   fi
   if [[ "${unstaged}" -gt 0 ]]; then
     hook_com[misc]+="~${unstaged} "
@@ -84,6 +93,9 @@ function +vi-simple-git-status() {
   fi
   if [[ "${deletions}" -gt 0 ]]; then
     hook_com[misc]+="-${deletions} "
+  fi
+  if [[ "${unpushed}" -gt 0 ]]; then
+    hook_com[misc]+="↑${unpushed} "
   fi
 }
 
