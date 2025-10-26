@@ -268,6 +268,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		font-myricam \
 		google-chrome \
 		openvpn-connect \
+		stow \
 		visual-studio-code \
 		zoom \
 	brew install \
@@ -284,6 +285,7 @@ else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
 	sudo apt-get install -y \
 		git \
 		ssh \
+		stow \
 		tmux \
 		unzip \
 		xsel \
