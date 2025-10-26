@@ -23,14 +23,7 @@ snippets:
     keyword: up
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles
-      && make ghq-get-essential
-      && make unlink
-      && ghq list | ghq get --update --parallel
-      && make link
-      && make package-update
-      && make common-clean
-      && cd ~/ghq/github.com/i9wa4/internal
-      && uv run quarto render docs/
+      && make update
       && cd -
       && ghq-repo-status
 
