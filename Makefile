@@ -70,6 +70,15 @@ endef
 # --------------------------------------
 # OS-common Tasks
 #
+update:
+	@$(MAKE) ghq-get-essential
+	@$(MAKE) unlink
+	ghq list | ghq get --update --parallel
+	@$(MAKE) link
+	@$(MAKE) package-update
+	@$(MAKE) common-clean
+	cd ~/ghq/github.com/i9wa4/internal && uv run quarto render docs/
+
 common-init: zsh-init unlink link git-config package-install ghq-get-essential
 	git clone https://github.com/alacritty/alacritty-theme \
 		$(MF_DOTFILES_DIR)/dot.config/alacritty/themes
