@@ -363,6 +363,7 @@ vim-build:  ## build Vim
 		$(MF_VIM_CONFIG_OPTS) \
 		--disable-gui \
 		--enable-clipboard \
+		--enable-clipboard-provider \
 		--enable-fail-if-missing \
 		--enable-multibyte \
 		--prefix="$${HOME}"/.local \
