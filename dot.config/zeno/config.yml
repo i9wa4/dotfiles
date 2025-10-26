@@ -22,10 +22,10 @@ snippets:
   - name: update
     keyword: up
     snippet:
-      cd ~/ghq/github.com/i9wa4/dotfiles
-      && make update
-      && cd -
-      && ghq-repo-status
+      cd ~/ghq/github.com/i9wa4/dotfiles &&
+      make update &&
+      cd - &&
+      ghq-repo-status
 
   - name: (Claude Code) yolo
     keyword: y
@@ -106,5 +106,5 @@ snippets:
   - name: (uv) upgrade
     keyword: uu
     snippet:
-      uv lock --upgrade
-      && uv sync --frozen --all-extras
+      uv lock --upgrade &&
+      uv sync --frozen --all-extras
