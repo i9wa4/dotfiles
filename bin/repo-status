@@ -53,7 +53,7 @@ unpushed=$(git log '@{u}..' --oneline 2>/dev/null | wc -l | tr -d ' ')
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="${branch} ${commit_hash}"
+output="🌱${branch} 📍${commit_hash}"
 
 if [ "${untracked}" -gt 0 ]; then
   output="${output} 🤷${untracked}"
