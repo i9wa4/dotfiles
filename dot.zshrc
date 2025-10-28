@@ -80,7 +80,7 @@ if (( _IS_REMOTE )); then
   PROMPT="[%M] "
 fi
 PROMPT="
-${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
+${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
 $ "
 
 
