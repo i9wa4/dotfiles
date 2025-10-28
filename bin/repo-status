@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
 # Exit if not in a git repository
-if ! git rev-parse --git-dir > /dev/null 2>&1; then
+if ! git rev-parse --git-dir >/dev/null 2>&1; then
   exit 0
 fi
-
-# Get commit hash (8 characters)
-commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Get git directory (works with worktrees)
 git_dir=$(git rev-parse --git-dir 2>/dev/null)
@@ -46,14 +43,17 @@ staged=$(echo "${status_output}" | grep -c "^[MADRC]" 2>/dev/null)
 unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
 
 # Get insertions/deletions (single git diff call)
-read -r insertions deletions <<< "$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
+read -r insertions deletions <<<"$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
 
 # Get unpushed commits
 unpushed=$(git log '@{u}..' --oneline 2>/dev/null | wc -l | tr -d ' ')
 [ -z "${unpushed}" ] && unpushed=0
 
+# Get commit hash (8 characters)
+commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
+
 # Build output
-output="${commit_hash} ${branch}"
+output="${branch} ${commit_hash}"
 
 if [ "${untracked}" -gt 0 ]; then
   output="${output} 🤷${untracked}"
@@ -74,4 +74,4 @@ if [ "${unpushed}" -gt 0 ]; then
   output="${output} 🔼${unpushed}"
 fi
 
-echo "${output}"
+echo "${output} "
