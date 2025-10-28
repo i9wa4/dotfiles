@@ -80,22 +80,28 @@ function +vi-simple-git-status() {
   local unpushed=$(git log @{u}.. --oneline 2>/dev/null | wc -l | tr -d ' ')
 
   if [[ "${untracked}" -gt 0 ]]; then
-    hook_com[misc]+="?${untracked} "
+    # hook_com[misc]+="?${untracked} "
+    hook_com[misc]+="🤷${untracked} "
   fi
   if [[ "${staged}" -gt 0 ]]; then
-    hook_com[misc]+="S${staged} "
+    # hook_com[misc]+="S${staged} "
+    hook_com[misc]+="✅${staged} "
   fi
   if [[ "${unstaged}" -gt 0 ]]; then
-    hook_com[misc]+="~${unstaged} "
+    # hook_com[misc]+="~${unstaged} "
+    hook_com[misc]+="🟡${unstaged} "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
-    hook_com[misc]+="+${insertions} "
+    # hook_com[misc]+="+${insertions} "
+    hook_com[misc]+="🟢${insertions} "
   fi
   if [[ "${deletions}" -gt 0 ]]; then
-    hook_com[misc]+="-${deletions} "
+    # hook_com[misc]+="-${deletions} "
+    hook_com[misc]+="🔴${deletions} "
   fi
   if [[ "${unpushed}" -gt 0 ]]; then
-    hook_com[misc]+="↑${unpushed} "
+    # hook_com[misc]+="↑${unpushed} "
+    hook_com[misc]+="🔼${unpushed} "
   fi
 }
 
