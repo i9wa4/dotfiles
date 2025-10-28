@@ -56,61 +56,7 @@ bindkey -M menuselect '^p' up-line-or-history
 
 
 # Git
-autoload -Uz add-zsh-hook
-autoload -Uz vcs_info
 setopt prompt_subst
-zstyle ':vcs_info:*' formats "%8.8i %b %m"
-zstyle ':vcs_info:*' actionformats '%8.8i %b|%a %m'
-zstyle ':vcs_info:git:*' get-revision true
-zstyle ':vcs_info:git+set-message:*' hooks simple-git-status
-
-function +vi-simple-git-status() {
-  # git status --porcelain で untracked/staged/unstaged を取得
-  local status_output=$(git status --porcelain 2>/dev/null)
-  local untracked=$(echo "${status_output}" | grep -c "^??")
-  local staged=$(echo "${status_output}" | grep -c "^[MADRC]")
-  local unstaged=$(echo "${status_output}" | grep -c "^.[MD]")
-
-  # git diff --numstat で insertions/deletions を集計
-  local numstat=$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i, d}')
-  local insertions=$(echo "${numstat}" | awk '{print $1}')
-  local deletions=$(echo "${numstat}" | awk '{print $2}')
-
-  # git log で unpushed commits をカウント
-  local unpushed=$(git log @{u}.. --oneline 2>/dev/null | wc -l | tr -d ' ')
-
-  if [[ "${untracked}" -gt 0 ]]; then
-    # hook_com[misc]+="?${untracked} "
-    hook_com[misc]+="🤷${untracked} "
-  fi
-  if [[ "${staged}" -gt 0 ]]; then
-    # hook_com[misc]+="S${staged} "
-    hook_com[misc]+="✅${staged} "
-  fi
-  if [[ "${unstaged}" -gt 0 ]]; then
-    # hook_com[misc]+="~${unstaged} "
-    # hook_com[misc]+="🟡${unstaged} "
-    hook_com[misc]+="📝${unstaged} "
-  fi
-  if [[ "${insertions}" -gt 0 ]]; then
-    # hook_com[misc]+="+${insertions} "
-    # hook_com[misc]+="🟢${insertions} "
-    hook_com[misc]+="📈${insertions} "
-  fi
-  if [[ "${deletions}" -gt 0 ]]; then
-    # hook_com[misc]+="-${deletions} "
-    # hook_com[misc]+="🔴${deletions} "
-    hook_com[misc]+="📉${deletions} "
-  fi
-  if [[ "${unpushed}" -gt 0 ]]; then
-    # hook_com[misc]+="↑${unpushed} "
-    # hook_com[misc]+="📤${unpushed} "
-    hook_com[misc]+="🔼${unpushed} "
-  fi
-}
-
-_vcs_precmd(){ vcs_info }
-add-zsh-hook precmd _vcs_precmd
 
 
 # SSH connection detection
@@ -134,7 +80,7 @@ if (( _IS_REMOTE )); then
   PROMPT="[%M] "
 fi
 PROMPT="
-${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k "'${vcs_info_msg_0_}'"
+${PROMPT}%D{[%Y-%m-%d %H:%M:%S]} %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
 $ "
 
 

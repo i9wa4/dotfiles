@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# Exit if not in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+  exit 0
+fi
+
+# Get commit hash (8 characters)
+commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
+
+# Get git directory (works with worktrees)
+git_dir=$(git rev-parse --git-dir 2>/dev/null)
+
+# Detect action state
+action=""
+if [ -d "${git_dir}/rebase-merge" ]; then
+  action="rebase"
+elif [ -d "${git_dir}/rebase-apply" ]; then
+  action="rebase"
+elif [ -f "${git_dir}/MERGE_HEAD" ]; then
+  action="merge"
+elif [ -f "${git_dir}/CHERRY_PICK_HEAD" ]; then
+  action="cherry-pick"
+elif [ -f "${git_dir}/REVERT_HEAD" ]; then
+  action="revert"
+elif [ -f "${git_dir}/BISECT_LOG" ]; then
+  action="bisect"
+fi
+
+# Get branch name
+branch=$(git branch --show-current 2>/dev/null)
+if [ -z "${branch}" ]; then
+  # Fallback for detached HEAD or worktree
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+fi
+
+# Append action to branch name if present
+if [ -n "${action}" ]; then
+  branch="${branch}|${action}"
+fi
+
+# Get git status counts
+status_output=$(git status --porcelain 2>/dev/null)
+untracked=$(echo "${status_output}" | grep -c "^??" 2>/dev/null)
+staged=$(echo "${status_output}" | grep -c "^[MADRC]" 2>/dev/null)
+unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
+
+# Get insertions/deletions (single git diff call)
+read -r insertions deletions <<< "$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
+
+# Get unpushed commits
+unpushed=$(git log '@{u}..' --oneline 2>/dev/null | wc -l | tr -d ' ')
+[ -z "${unpushed}" ] && unpushed=0
+
+# Build output
+output="${commit_hash} ${branch}"
+
+if [ "${untracked}" -gt 0 ]; then
+  output="${output} 🤷${untracked}"
+fi
+if [ "${staged}" -gt 0 ]; then
+  output="${output} ✅${staged}"
+fi
+if [ "${unstaged}" -gt 0 ]; then
+  output="${output} 📝${unstaged}"
+fi
+if [ "${insertions}" -gt 0 ]; then
+  output="${output} 📈${insertions}"
+fi
+if [ "${deletions}" -gt 0 ]; then
+  output="${output} 📉${deletions}"
+fi
+if [ "${unpushed}" -gt 0 ]; then
+  output="${output} 🔼${unpushed}"
+fi
+
+echo "${output}"
