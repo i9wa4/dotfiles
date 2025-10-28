@@ -21,9 +21,8 @@ GHQ_ROOT="$GHQ_ROOT_RAW"
 get_repo_status_info() {
   local repo_full_path="$1"
 
-  # フルパスから 'org/repo' または 'user/repo' 形式の短いリポジトリ名を生成
-  local repo_rel_to_ghq_root="${repo_full_path#"$GHQ_ROOT"}"
-  local repo_short_name="${repo_rel_to_ghq_root#*/}"
+  # フルパスから 'host.com/org/repo' 形式のリポジトリ名を生成
+  local repo_short_name="${repo_full_path#"$GHQ_ROOT"}"
 
   # git status --porcelain=v1 で全ての情報を一度に取得
   local git_status_output
@@ -182,7 +181,7 @@ process_single_repo() {
 }
 
 # リポジトリ名の最大幅を動的に取得
-MAX_WIDTH=$(ghq list | awk -F/ '{print $(NF-1)"/"$NF}' | wc -L)
+MAX_WIDTH=$(ghq list | wc -L)
 
 # 関数をexportして並列処理で使えるようにする
 export -f process_single_repo
