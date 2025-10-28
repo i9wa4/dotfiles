@@ -89,18 +89,22 @@ function +vi-simple-git-status() {
   fi
   if [[ "${unstaged}" -gt 0 ]]; then
     # hook_com[misc]+="~${unstaged} "
-    hook_com[misc]+="🟡${unstaged} "
+    # hook_com[misc]+="🟡${unstaged} "
+    hook_com[misc]+="📝${unstaged} "
   fi
   if [[ "${insertions}" -gt 0 ]]; then
     # hook_com[misc]+="+${insertions} "
-    hook_com[misc]+="🟢${insertions} "
+    # hook_com[misc]+="🟢${insertions} "
+    hook_com[misc]+="📈${insertions} "
   fi
   if [[ "${deletions}" -gt 0 ]]; then
     # hook_com[misc]+="-${deletions} "
-    hook_com[misc]+="🔴${deletions} "
+    # hook_com[misc]+="🔴${deletions} "
+    hook_com[misc]+="📉${deletions} "
   fi
   if [[ "${unpushed}" -gt 0 ]]; then
     # hook_com[misc]+="↑${unpushed} "
+    # hook_com[misc]+="📤${unpushed} "
     hook_com[misc]+="🔼${unpushed} "
   fi
 }
