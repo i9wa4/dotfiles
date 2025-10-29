@@ -64,6 +64,7 @@ Bash ツールには構文上の制限があるため以下に注意する
 
 - NEVER: サブシェル `()` は使用しない (parse error が発生する)
 - YOU MUST: 複数コマンドをグループ化する場合は `{ }` (ブレース) を使用する
+- YOU MUST: パイプ `|` を含むコマンドをリダイレクトする場合はブレース `{ }` で囲む
 
 良い例
 
@@ -71,10 +72,18 @@ Bash ツールには構文上の制限があるため以下に注意する
 NOW=$(date +%Y%m%d-%H%M%S) && { for i in 1 2 3; do echo "$i"; done; } > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
 ```
 
+```sh
+NOW=$(date +%Y%m%d-%H%M%S) && { git branch -r | grep issue; } > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
+```
+
 悪い例 (parse error が発生)
 
 ```sh
 NOW=$(date +%Y%m%d-%H%M%S) && (for i in 1 2 3; do echo "$i"; done) > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
+```
+
+```sh
+NOW=$(date +%Y%m%d-%H%M%S) && git branch -r | grep issue > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
 ```
 
 ### 3.2. Git
