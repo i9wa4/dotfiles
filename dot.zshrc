@@ -2,6 +2,10 @@
 [ -r /etc/zshrc ] && . /etc/zshrc
 
 
+# Alacritty
+setopt IGNORE_EOF
+
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000
@@ -21,10 +25,6 @@ bindkey -e
 bindkey '\e[3~' delete-char
 
 
-# Alacritty
-setopt IGNORE_EOF
-
-
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -41,7 +41,7 @@ autoload -Uz compinit
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 mkdir -p "${_zcompdump:h}"
 # 1日1回だけ更新をチェック
-if [[ -n ${_zcompdump}(#qN.mh+24) ]]; then
+if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
   compinit -d "${_zcompdump}"
 else
   compinit -C -d "${_zcompdump}"
@@ -55,37 +55,14 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 
-# Git
-setopt prompt_subst
-
-
-# SSH connection detection
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  _IS_REMOTE=1
-else
-  _IS_REMOTE=0
-fi
-
-
-# Prompt
-function _get_simplified_path() {
-  local path="${PWD}"
-  path="${path/#$HOME\/ghq\/github.com\//}"
-  path="${path/#$HOME/~}"
-  echo "${path}"
-}
-
-PROMPT=""
-if (( _IS_REMOTE )); then
-  PROMPT="[%M] "
-fi
-PROMPT="
-${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
-$ "
-
-
 # mise
-eval "$("${HOME}"/.local/bin/mise activate zsh --quiet)"
+_mise_cache="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/mise.zsh"
+if [[ ! -f "${_mise_cache}" || -n "${_mise_cache}"(#qN.mh+24) ]]; then
+  mkdir -p "${_mise_cache:h}"
+  "${HOME}"/.local/bin/mise activate zsh --quiet > "${_mise_cache}"
+  zcompile "${_mise_cache}"
+fi
+source "${_mise_cache}"
 
 
 # zeno.zsh
@@ -105,10 +82,33 @@ if [[ -r "${_zeno_path}" ]]; then
 fi
 
 
-# tmux
-if (( _IS_REMOTE )); then
-  # Remote host
+# Git
+setopt prompt_subst
+
+
+# SSH connection detection
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  _IS_LOCAL=0
 else
+  _IS_LOCAL=1
+fi
+
+
+# Prompt
+function _get_simplified_path() {
+  local path="${PWD}"
+  path="${path/#$HOME\/ghq\/github.com\//}"
+  path="${path/#$HOME/~}"
+  echo "${path}"
+}
+(( _IS_LOCAL )) && PROMPT="" || PROMPT="[%M] "
+PROMPT="
+${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
+$ "
+
+
+# tmux
+if (( _IS_LOCAL )); then
   # Local host
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
