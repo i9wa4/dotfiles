@@ -62,21 +62,28 @@ bindkey -M menuselect '^p' up-line-or-history
 eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
 
 
-# zeno.zsh
-_zeno_path="${HOME}"/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh
-if [[ -r "${_zeno_path}" ]]; then
-  source "${_zeno_path}"
-  if [[ -n "${ZENO_LOADED}" ]]; then
-    bindkey ' '  zeno-auto-snippet
-    bindkey '^m' zeno-auto-snippet-and-accept-line
-    bindkey '^i' zeno-completion
-    bindkey '^g' zeno-ghq-cd
-    bindkey '^r' zeno-history-selection
-    bindkey '^x^i' zeno-insert-snippet
-  else
-    bindkey '^r' history-incremental-search-backward
+# zeno.zsh (lazy loading)
+_zeno_lazy_init() {
+  _zeno_path="${HOME}/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh"
+  if [[ -r "${_zeno_path}" ]]; then
+    source "${_zeno_path}"
+    if [[ -n "${ZENO_LOADED}" ]]; then
+      bindkey ' '  zeno-auto-snippet
+      bindkey '^m' zeno-auto-snippet-and-accept-line
+      bindkey '^i' zeno-completion
+      bindkey '^g' zeno-ghq-cd
+      bindkey '^r' zeno-history-selection
+      bindkey '^x^i' zeno-insert-snippet
+    else
+      bindkey '^r' history-incremental-search-backward
+    fi
   fi
-fi
+  # Remove itself from precmd_functions after execution
+  precmd_functions=("${(@)precmd_functions:#_zeno_lazy_init}")
+}
+
+# Load after first prompt display
+precmd_functions=(_zeno_lazy_init $precmd_functions)
 
 
 # Git
