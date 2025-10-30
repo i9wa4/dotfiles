@@ -52,7 +52,6 @@ fi
 zstyle ':completion:*' menu select
 setopt menu_complete
 zmodload zsh/complist
-bindkey -M menuselect '^i' accept-and-infer-next-history
 bindkey -M menuselect '^y' accept-line
 bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
