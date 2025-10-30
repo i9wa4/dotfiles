@@ -57,8 +57,12 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 
-# mise
-eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
+# SSH connection detection
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  _IS_LOCAL=0
+else
+  _IS_LOCAL=1
+fi
 
 
 # zeno.zsh (lazy loading)
@@ -81,23 +85,9 @@ _zeno_lazy_init() {
   precmd_functions=("${(@)precmd_functions:#_zeno_lazy_init}")
 }
 
-# Load after first prompt display
-precmd_functions=(_zeno_lazy_init $precmd_functions)
-
-
-# Git
-setopt prompt_subst
-
-
-# SSH connection detection
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  _IS_LOCAL=0
-else
-  _IS_LOCAL=1
-fi
-
 
 # Prompt
+setopt prompt_subst
 function _get_simplified_path() {
   local path="${PWD}"
   path="${path/#$HOME\/ghq\/github.com\//}"
@@ -114,5 +104,11 @@ $ "
 if (( _IS_LOCAL )); then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
+  else
+    # mise
+    eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
+
+    # Lazy load zeno.zsh in tmux sessions
+    precmd_functions=(_zeno_lazy_init $precmd_functions)
   fi
 fi
