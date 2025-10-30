@@ -43,7 +43,7 @@ bindkey '^x^e' edit_current_line
 autoload -Uz compinit
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 mkdir -p "${_zcompdump:h}"
-# Update .zcompdump if 24 hours have passed since last update
+# Check for updates once a day
 if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
   compinit -d "${_zcompdump}"
 else
@@ -106,7 +106,6 @@ $ "
 
 # tmux
 if (( _IS_LOCAL )); then
-  # Local host
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
   fi
