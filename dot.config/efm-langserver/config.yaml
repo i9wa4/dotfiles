@@ -56,6 +56,13 @@ tools:
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
     format-stdin: true
 
+  yaml-actionlint: &yaml-actionlint
+    lint-command: 'actionlint -oneline -no-color -'
+    lint-source: 'actionlint'
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m'
+
 languages:
   dockerfile:
     - <<: *dockerfile-hadolint
@@ -77,3 +84,6 @@ languages:
 
   terraform:
     - <<: *terraform-fmt
+
+  yaml:
+    - <<: *yaml-actionlint
