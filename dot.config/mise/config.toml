@@ -27,15 +27,15 @@ terraform       = "latest"
 tflint          = "latest"
 
 # Cargo Tools
-"cargo:tokei" = "latest"
+# "cargo:tokei" = "latest"
 
 # Aqua Tools
-"aqua:evilmartians/lefthook"  = "latest"
-"aqua:mikefarah/yq"           = "latest"
+# "aqua:evilmartians/lefthook"  = "latest"
+# "aqua:mikefarah/yq"           = "latest"
 "aqua:rhysd/actionlint"       = "latest"
 "aqua:x-motemen/ghq"          = "latest"
 
 # Go Tools
-"go:github.com/jameswoolfenden/pike"  = { version = "latest" }
+# "go:github.com/jameswoolfenden/pike"  = { version = "latest" }
 "go:github.com/mattn/efm-langserver"  = { version = "latest" }
-"go:github.com/rhysd/vim-startuptime" = { version = "latest" }
+# "go:github.com/rhysd/vim-startuptime" = { version = "latest" }

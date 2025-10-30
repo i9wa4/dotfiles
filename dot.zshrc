@@ -57,14 +57,6 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 
-# SSH connection detection
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  _IS_LOCAL=0
-else
-  _IS_LOCAL=1
-fi
-
-
 # zeno.zsh (lazy loading)
 _zeno_lazy_init() {
   _zeno_path="${HOME}/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh"
@@ -84,6 +76,14 @@ _zeno_lazy_init() {
   # Remove itself from precmd_functions after execution
   precmd_functions=("${(@)precmd_functions:#_zeno_lazy_init}")
 }
+
+
+# SSH connection detection
+if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+  _IS_LOCAL=0
+else
+  _IS_LOCAL=1
+fi
 
 
 # Prompt
