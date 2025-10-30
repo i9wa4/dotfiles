@@ -1,3 +1,6 @@
+zmodload zsh/zprof
+
+
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
 [ -r /etc/zshrc ] && . /etc/zshrc
 
@@ -56,13 +59,7 @@ bindkey -M menuselect '^p' up-line-or-history
 
 
 # mise
-_mise_cache="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/mise.zsh"
-if [[ ! -f "${_mise_cache}" || -n "${_mise_cache}"(#qN.mh+24) ]]; then
-  mkdir -p "${_mise_cache:h}"
-  "${HOME}"/.local/bin/mise activate zsh --quiet > "${_mise_cache}"
-  zcompile "${_mise_cache}"
-fi
-source "${_mise_cache}"
+eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
 
 
 # zeno.zsh
