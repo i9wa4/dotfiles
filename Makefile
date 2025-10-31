@@ -224,21 +224,38 @@ win-copy:  ## copy config files for Windows
 # --------------------------------------
 # Package Management
 #
+MF_NPM_GLOBAL_PACKAGES := \
+	@anthropic-ai/claude-code \
+	@devcontainers/cli \
+	@github/copilot \
+	@google/gemini-cli \
+	@openai/codex \
+	zenn-cli
+
 package-npm-install:
-	npm install -g npm
-	npm install -g @aikidosec/safe-chain
+	if npm list -g --depth=0 npm >/dev/null 2>&1; then \
+		echo "npm is already installed globally"; \
+	else \
+		npm install -g npm; \
+	fi
+	if npm list -g --depth=0 @aikidosec/safe-chain >/dev/null 2>&1; then \
+		echo "@aikidosec/safe-chain is already installed globally"; \
+	else \
+		npm install -g @aikidosec/safe-chain; \
+	fi
 	if grep -qF "source ~/.safe-chain/scripts/init-posix.sh" "$${HOME}/.zshrc"; then \
 		echo "safe-chain is already configured in ~/.zshrc, skipping setup"; \
 	else \
 		safe-chain setup; \
 	fi
 	# Other packages
-	npm install -g @anthropic-ai/claude-code
-	npm install -g @devcontainers/cli
-	npm install -g @github/copilot
-	npm install -g @google/gemini-cli
-	npm install -g @openai/codex
-	npm install -g zenn-cli
+	for pkg in $(MF_NPM_GLOBAL_PACKAGES); do \
+		if npm list -g --depth=0 "$${pkg}" >/dev/null 2>&1; then \
+			echo "$${pkg} is already installed globally"; \
+		else \
+			npm install -g "$${pkg}"; \
+		fi; \
+	done
 
 package-npm-update:
 	npm update -g npm
