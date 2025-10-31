@@ -4,8 +4,8 @@ model_reasoning_effort = "high"
 network_access = true
 notify = ["printf", "\\a"]
 
-[tools]
-web_search = true
+[features]
+web_search_request = true
 
 [mcp_servers.atlassian]
 command = "npx"
