@@ -40,5 +40,5 @@
   "feedbackSurveyState": {
     "lastShownTime": 2069451551000
   },
-  "model": "sonnet[1m]"
+  "model": "sonnet"
 }
