@@ -1,44 +1,41 @@
 {
-  "cleanupPeriodDays": 3600,
-  "env": {
-    "BASH_DEFAULT_TIMEOUT_MS": "3000000",
-    "BASH_MAX_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
-    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
-    "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
-    "DISABLE_AUTOUPDATER": "true",
-    "DISABLE_ERROR_REPORTING": "true",
-    "DISABLE_INTERLEAVED_THINKING": "true",
-    "DISABLE_MICROCOMPACT": "true",
-    "DISABLE_TELEMETRY": "true"
-  },
-  "includeCoAuthoredBy": false,
-  "permissions": {
-    "allow": [],
-    "deny": [
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(rm:*)",
-      "Bash(sudo:*)",
-      "Read(**/*key*)",
-      "Read(**/*token*)",
-      "Read(.env.*)",
-      "Read(id_ed25519)",
-      "Read(id_rsa)",
-      "Write(**/secrets/**)",
-      "Write(.env*)"
-    ]
-  },
-  "model": "sonnet",
-  "statusLine": {
-    "type": "command",
-    "command": "npx ccusage@latest statusline"
-  },
-  "alwaysThinkingEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  }
+    "cleanupPeriodDays": 3600,
+    "env": {
+        "BASH_DEFAULT_TIMEOUT_MS": "3000000",
+        "BASH_MAX_TIMEOUT_MS": "3000000",
+        "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
+        "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
+        "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
+        "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
+        "DISABLE_AUTOUPDATER": "true",
+        "DISABLE_ERROR_REPORTING": "true",
+        "DISABLE_TELEMETRY": "true"
+    },
+    "feedbackSurveyState": {
+        "lastShownTime": 2069451551000
+    },
+    "includeCoAuthoredBy": false,
+    "model": "sonnet",
+    "permissions": {
+        "allow": [],
+        "deny": [
+            "Bash(git push:*)",
+            "Bash(git rebase:*)",
+            "Bash(git reset:*)",
+            "Bash(rm:*)",
+            "Bash(sudo:*)",
+            "Read(**/*key*)",
+            "Read(**/*token*)",
+            "Read(.env.*)",
+            "Read(id_ed25519)",
+            "Read(id_rsa)",
+            "Write(**/secrets/**)",
+            "Write(.env*)"
+        ]
+    },
+    "statusLine": {
+        "type": "command",
+        "command": "npx ccusage@latest statusline"
+    }
 }
