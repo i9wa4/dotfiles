@@ -57,7 +57,7 @@ tools:
     format-stdin: true
 
   yaml-actionlint: &yaml-actionlint
-    lint-command: 'actionlint -oneline -no-color -'
+    lint-command: 'sh -c "if echo \"${INPUT}\" | grep -q \".github/workflows/\"; then actionlint -oneline -no-color -; else cat > /dev/null; fi"'
     lint-source: 'actionlint'
     lint-stdin: true
     lint-formats:

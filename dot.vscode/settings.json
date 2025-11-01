@@ -2,9 +2,9 @@
     "breadcrumbs.enabled": false,
     "chat.editor.fontFamily": "'MyricaM M', monospace",
     "chat.editor.fontSize": 20,
-    "chat.tools.autoApprove": true,
     "editor.fontFamily": "'MyricaM M', monospace",
     "editor.fontSize": 22,
+    "editor.minimap.enabled": false,
     "editor.mouseWheelZoom": true,
     "editor.renderWhitespace": "all",
     "git.untrackedChanges": "separate",
@@ -14,5 +14,5 @@
     "remote.autoForwardPortsSource": "hybrid",
     "terminal.integrated.fontFamily": "'MyricaM M', monospace",
     "terminal.integrated.fontSize": 20,
-    "workbench.colorTheme": "Visual Studio Light"
+    "workbench.colorTheme": "Default Light Modern"
 }
