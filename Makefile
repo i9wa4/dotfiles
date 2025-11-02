@@ -225,7 +225,6 @@ win-copy:  ## copy config files for Windows
 # Package Management
 #
 MF_NPM_GLOBAL_PACKAGES := \
-	@anthropic-ai/claude-code \
 	@devcontainers/cli \
 	@github/copilot \
 	@google/gemini-cli \
@@ -270,6 +269,7 @@ package-install:
 	"$${HOME}"/.local/bin/mise install
 	# Claude Code
 	curl -fsSL https://claude.ai/install.sh | bash
+	# OS-specific install
 ifeq ($(MF_DETECTED_OS),macOS)
 	# https://brew.sh/
 	/bin/bash -c \
