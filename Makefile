@@ -54,6 +54,7 @@ mise                mise
 nvim                nvim
 skk                 skk
 tmux                tmux
+vde                 vde
 vim                 vim
 zeno                zeno
 endef
