@@ -1,0 +1,41 @@
+presets:
+  dev:
+    name: dev
+    description: dev
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [3, 2]
+          panes:
+            - name: editor
+              command: vim
+              focus: true
+            - name: codex
+              command: codex
+        - name: claude
+          command: claude
+
+  review:
+    name: review
+    description: review
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: editor
+              command: vim
+              focus: true
+            - name: codex
+              command: codex
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: claude
+              command: claude
+            - name: codex
+              command: codex
