@@ -229,6 +229,7 @@ MF_NPM_GLOBAL_PACKAGES := \
 	@github/copilot \
 	@google/gemini-cli \
 	@openai/codex \
+	vde-layout \
 	zenn-cli
 
 package-npm-install:
