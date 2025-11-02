@@ -19,6 +19,6 @@ description: "Review"
 
 ## 3. レビュー結果の Markdown ファイル出力
 
-- YOU MUST: レビュー結果の Markdown ファイルは `.i9wa4/` ディレクトリ内に作成する
+- YOU MUST: レビュー結果の Markdown ファイルは `.i9wa4/` に格納しファイル名は `YYYYMMDD-paneN-review.md` とする
+    - tmux ペイン番号Nは `tmux display-message -p '#{pane_index}'` コマンドで取得できる
 - YOU MUST: 見出しや箇条書きを活用し長文にしないなど Markdown らしい構造にする
-- YOU MUST: ファイル名にあなた (AIエージェント) の名前を含める
