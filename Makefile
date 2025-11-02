@@ -268,7 +268,8 @@ package-install:
 	# mise
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
-	# OS-specific install
+	# Claude Code
+	curl -fsSL https://claude.ai/install.sh | bash
 ifeq ($(MF_DETECTED_OS),macOS)
 	# https://brew.sh/
 	/bin/bash -c \
@@ -322,6 +323,7 @@ package-update:
 	# OS common update
 	mise self-update --yes
 	mise upgrade
+	claude update
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 	# OS-specific update
