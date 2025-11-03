@@ -345,7 +345,7 @@ endif
 #
 claude-config:  ## configure Claude Code
 	claude config set --global preferredNotifChannel terminal_bell
-	claude mcp add codex-mcp codex mcp-server
+	claude mcp add --scope user codex-mcp codex mcp-server
 
 ghq-get-essential:
 	if [ -f "$(MF_GHQ_LIST_ESSENTIAL)" ]; then \
