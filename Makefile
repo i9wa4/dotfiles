@@ -328,7 +328,6 @@ package-update:
 	mise self-update --yes
 	mise upgrade
 	claude update
-	@$(MAKE) claude-config
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 	# OS-specific update
@@ -345,7 +344,6 @@ endif
 #  Tools
 #
 claude-config:  ## configure Claude Code
-	claude config set --global preferredNotifChannel terminal_bell
 	claude mcp add --scope user codex-mcp codex mcp-server
 
 ghq-get-essential:
