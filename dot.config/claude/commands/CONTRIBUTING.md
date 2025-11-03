@@ -213,3 +213,36 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
         ```sh
         dbt debug --profiles-dir ~/.dbt --no-use-colors
         ```
+
+### 3.6. draw.io
+
+#### 3.6.1. 図の作成ルール
+
+- YOU MUST: 図を作成・編集する際は `.drawio` ファイルのみを編集する
+- NEVER: `.drawio.svg` ファイルを直接編集しない
+- IMPORTANT: `.drawio.svg` は pre-commit hook により自動生成される
+
+#### 3.6.2. 自動変換ワークフロー
+
+pre-commit hook により以下の変換が自動的に実行される
+
+1. `.drawio` ファイルを検出
+2. `drawio` CLI で `.drawio.svg` に変換
+3. `inkscape` でテキストをパスに変換 (PDF表示時の文字化け防止)
+4. 生成された `.drawio.svg` を自動的に git add
+
+例
+
+```sh
+# .drawio ファイルを作成・編集
+vim assets/my-diagram.drawio
+
+# コミット時に自動変換される
+git add assets/my-diagram.drawio
+git commit -m "Add diagram"
+# -> assets/my-diagram.drawio.svg が自動生成・ステージングされる
+```
+
+#### 3.6.3. CI での実行
+
+GitHub Actions では drawio と inkscape の処理をスキップする (ローカルで変換済みのため)
