@@ -213,14 +213,3 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
         ```sh
         dbt debug --profiles-dir ~/.dbt --no-use-colors
         ```
-
-### 3.6. draw.io
-
-- YOU MUST: draw.io 図を作成・編集する際は `.drawio` ファイルのみを編集する
-- NEVER: `.drawio.svg` ファイルを直接編集しない
-- IMPORTANT: pre-commit hook により自動生成される `.drawio.svg` をスライド等で利用する
-- IMPORTANT: `.drawio` ファイルを更新した場合は以下のように手動で `.drawio.svg` への変換を実行する
-
-    ```sh
-    mise exec -- pre-commit run --all-files
-    ```

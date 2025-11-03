@@ -285,8 +285,10 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	brew install \
 		alacritty \
 		docker-desktop \
+		drawio \
 		font-myricam \
 		google-chrome \
+		inkscape \
 		openvpn-connect \
 		visual-studio-code \
 		zoom \
