@@ -289,11 +289,11 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		font-myricam \
 		google-chrome \
 		openvpn-connect \
-		poppler \
 		visual-studio-code \
 		zoom \
 	brew install \
 		git \
+		poppler \
 		tmux
 	# Neovim
 	brew install ninja cmake gettext curl git
