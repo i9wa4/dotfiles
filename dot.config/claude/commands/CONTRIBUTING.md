@@ -237,6 +237,9 @@ pre-commit hook により以下の変換が自動的に実行される
 # .drawio ファイルを作成・編集
 vim assets/my-diagram.drawio
 
+# 既存の .drawio ファイルを更新した場合は手動で変換
+mise exec -- pre-commit run --all-files
+
 # コミット時に自動変換される
 git add assets/my-diagram.drawio
 git commit -m "Add diagram"
