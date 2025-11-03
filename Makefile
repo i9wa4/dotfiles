@@ -288,8 +288,8 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		drawio \
 		font-myricam \
 		google-chrome \
-		inkscape \
 		openvpn-connect \
+		poppler \
 		visual-studio-code \
 		zoom \
 	brew install \
