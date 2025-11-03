@@ -41,9 +41,11 @@ description: "global CONTRIBUTING.md"
 - YOU MUST: 作業で生成するドキュメントのうち重要度なものは `.i9wa4/` ディレクトリに保存する
 - YOU MUST: ファイル名の先頭に `date +%Y%m%d` を付与する (例: `.i9wa4/20251015-plan.md`)
 
-### 2.3. プロジェクト固有ルールの管理
+### 2.3. プロジェクト固有ルール
 
-- YOU MUST: プロジェクトルートに `README.md` や `CONTRIBUTING.md` が存在する場合は必ず読み取る
+- YOU MUST: プロジェクト固有ルールを記載した以下のファイルがもし存在すれば優先して従う
+    - @README.md
+    - @CONTRIBUTING.md
 
 ## 3. ツール利用方法
 
