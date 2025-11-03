@@ -328,6 +328,7 @@ package-update:
 	mise self-update --yes
 	mise upgrade
 	claude update
+	@$(MAKE) claude-config
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
 	# OS-specific update
