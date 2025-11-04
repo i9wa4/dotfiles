@@ -31,12 +31,12 @@
     ]
   },
   "model": "sonnet",
-  "preferredNotifChannel": "terminal_bell",
   "statusLine": {
     "type": "command",
     "command": "npx ccusage@latest statusline"
   },
   "alwaysThinkingEnabled": false,
+  "preferredNotifChannel": "terminal_bell",
   "feedbackSurveyState": {
     "lastShownTime": 2069451551000
   }
