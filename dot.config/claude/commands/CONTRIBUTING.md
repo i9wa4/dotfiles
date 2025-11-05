@@ -45,8 +45,8 @@ description: "global CONTRIBUTING.md"
     - `pN`: tmux ペイン番号 (例: `p0`, `p1`, `p2`)
     - `xxxx`: ファイルの目的 (例: `review`, `plan`, `memo`)
     - 例: `.i9wa4/20251105-p2-review.md`
-- IMPORTANT: tmux ペイン番号Nは `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'` で取得する
-    - `$TMUX_PANE` 環境変数を使用することで、ユーザーがどのペインからメッセージを送信しても Claude Code が動作しているペイン番号を正確に取得できる
+- IMPORTANT: tmux ペイン番号Nは `tmux display-message -p -t "$${TMUX_PANE}" '#{pane_index}'` で取得する
+    - `$$TMUX_PANE` 環境変数を使用することで、ユーザーがどのペインからメッセージを送信しても Claude Code が動作しているペイン番号を正確に取得できる
 
 ### 2.3. プロジェクト固有ルール
 
