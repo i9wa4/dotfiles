@@ -7,15 +7,20 @@ presets:
       ratio: [1, 1]
       panes:
         - type: vertical
-          ratio: [3, 2]
+          ratio: [3, 1]
           panes:
             - name: editor
               command: vim
               focus: true
             - name: codex
               command: codex --yolo
-        - name: claude
-          command: claude --dangerously-skip-permissions
+        - type: vertical
+          ratio: [3, 1]
+          panes:
+            - name: claude
+              command: claude --dangerously-skip-permissions
+            - name: codex
+              command: codex --yolo
 
   review:
     name: review
