@@ -18,4 +18,4 @@ description: "Review"
 
 ## 3. レビュー結果の Markdown ファイル出力
 
-- YOU MUST: レビュー結果の Markdown ファイルは `.i9wa4/` に格納する
+- YOU MUST: レビュー結果の Markdown ファイルを `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux ペイン番号) という名前で保存する
