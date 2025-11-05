@@ -26,13 +26,16 @@ mkdir -p .i9wa4/
 echo "✓  .i9wa4/ ディレクトリを作成しました"
 
 cat >.i9wa4/temp.md <<'EOF'
-ultrathink
-
 ## Common
 
 ## Claude Code
 
 ## Codex CLI
+
+## Review
+
+/CONTRIBUTING
+/my-review
 EOF
 
 # mise.toml が存在する場合は trust する
