@@ -12,8 +12,8 @@ Databricks について学ぼう！
 
 ### 1.1. warehouse_idについて
 
-- warehouse_id は `~/.databrickscfg` に設定されているものを使用する
-- 注意: databricks CLIは設定ファイルのwarehouse_idを自動読み込みしないため、毎回JSONに明示的に含める必要がある
+- warehouse_id は Serverless SQL Warehouse を探して1つ選択する
+- 注意: databricks CLIは設定ファイルの warehouse_id を自動読み込みしないため、毎回JSONに明示的に含める必要がある
 
 ### 1.2. 基本的な使い方
 
