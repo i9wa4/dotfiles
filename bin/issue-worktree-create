@@ -4,48 +4,67 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-issue_number="${1:-}"
-[[ -z $issue_number || ! $issue_number =~ ^[0-9]+$ ]] && echo "Usage: $0 <issue_number>" >&2 && exit 1
+# 引数チェック
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <issue_number> [issue_number2 ...]" >&2
+  echo "Example: $0 123" >&2
+  echo "Example: $0 123 456 789" >&2
+  exit 1
+fi
 
 # 基本設定
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
-branch_name="issue-${issue_number}"
-worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
-# 既存worktreeチェック
-if [[ -d $worktree_path ]]; then
-  echo "✓ 既存のworktreeに移動: ${worktree_path}"
-  cd "$worktree_path"
-else
-  # リモート情報取得
-  git fetch origin
+# リモート情報を一度だけ取得
+echo "→ リモート情報を取得中..."
+git fetch origin
+echo ""
 
-  # worktree作成
-  if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
-    git worktree add "$worktree_path" "$branch_name"
-  else
-    git worktree add -b "$branch_name" "$worktree_path"
-    cd "$worktree_path"
-    git push -u origin "$branch_name"
+# 各 Issue 番号に対して処理
+for issue_number in "$@"; do
+  # 番号の妥当性チェック
+  if [[ ! $issue_number =~ ^[0-9]+$ ]]; then
+    echo "Warning: '$issue_number' は無効な Issue 番号です。スキップします。" >&2
+    echo ""
+    continue
   fi
 
-  cd "$worktree_path"
-  echo "✓ worktreeを作成: ${worktree_path}"
-fi
+  echo "=== Issue #${issue_number} の処理開始 ==="
 
-echo "✓ ブランチ: $(git branch --show-current)"
+  branch_name="issue-${issue_number}"
+  worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
-# repo-setup を実行
-echo ""
-echo "→ repo-setup を実行中..."
-if command -v repo-setup &>/dev/null; then
-  repo-setup
-else
-  echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
-fi
+  # 既存worktreeチェック
+  if [[ -d $worktree_path ]]; then
+    echo "✓ 既存のworktreeが存在: ${worktree_path}"
+    echo "✓ ブランチ: ${branch_name}"
+  else
+    # worktree作成
+    if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
+      git worktree add "$worktree_path" "$branch_name"
+      echo "✓ worktreeを作成: ${worktree_path}"
+    else
+      git worktree add -b "$branch_name" "$worktree_path"
+      cd "$worktree_path"
+      git push -u origin "$branch_name"
+      cd - >/dev/null
+      echo "✓ worktreeを作成: ${worktree_path}"
+      echo "✓ ブランチをリモートにpush: ${branch_name}"
+    fi
 
-echo ""
-echo "✓ Issue 対応環境の準備完了"
-echo "✓ worktree: ${worktree_path}"
-echo "✓ ブランチ: $(git branch --show-current)"
+    # repo-setup を実行
+    echo "→ repo-setup を実行中..."
+    cd "$worktree_path"
+    if command -v repo-setup &>/dev/null; then
+      repo-setup
+    else
+      echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
+    fi
+    cd - >/dev/null
+  fi
+
+  echo ""
+done
+
+echo "✓ すべての Issue 対応環境の準備が完了しました"
 echo ""

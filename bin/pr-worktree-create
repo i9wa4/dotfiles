@@ -5,11 +5,10 @@ set -o pipefail
 set -o posix
 
 # 引数チェック
-pr_number="${1:-}"
-
-if [[ -z $pr_number || ! $pr_number =~ ^[0-9]+$ ]]; then
-  echo "Usage: $0 <pr_number>" >&2
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <pr_number> [pr_number2 ...]" >&2
   echo "Example: $0 123" >&2
+  echo "Example: $0 123 456 789" >&2
   exit 1
 fi
 
@@ -19,56 +18,72 @@ if ! command -v gh &>/dev/null; then
   exit 1
 fi
 
-# PR情報を取得してブランチ名を抽出
-echo "→ PR #${pr_number} の情報を取得中..."
-pr_branch=$(gh pr view "${pr_number}" --json headRefName --jq '.headRefName' 2>/dev/null)
-
-if [[ -z $pr_branch ]]; then
-  echo "Error: PR #${pr_number} のブランチ名を取得できませんでした" >&2
-  echo "PR が存在するか、アクセス権限があるか確認してください。" >&2
-  exit 1
-fi
-
-echo "✓ PR #${pr_number} のブランチ: ${pr_branch}"
-
 # 基本設定
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
-worktree_path="$(dirname "$(pwd)")/${repo_name}-pr-${pr_number}"
 
-# 既存worktreeチェック
-if [[ -d $worktree_path ]]; then
-  echo "✓ 既存のworktreeに移動: ${worktree_path}"
-  cd "$worktree_path"
-else
-  # リモート情報取得
-  echo "→ リモート情報を取得中..."
-  git fetch origin
+# リモート情報を一度だけ取得
+echo "→ リモート情報を取得中..."
+git fetch origin
+echo ""
 
-  # worktree作成
-  if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
-    echo "→ worktreeを作成中..."
-    git worktree add "$worktree_path" "origin/${pr_branch}"
-    cd "$worktree_path"
-    git checkout -b "${pr_branch}" "origin/${pr_branch}"
-  else
-    echo "Error: リモートブランチ 'origin/${pr_branch}' が見つかりません" >&2
-    exit 1
+# 各 PR 番号に対して処理
+for pr_number in "$@"; do
+  # 番号の妥当性チェック
+  if [[ ! $pr_number =~ ^[0-9]+$ ]]; then
+    echo "Warning: '$pr_number' は無効な PR 番号です。スキップします。" >&2
+    echo ""
+    continue
   fi
 
-  echo "✓ worktreeを作成: ${worktree_path}"
-fi
+  echo "=== PR #${pr_number} の処理開始 ==="
 
-# repo-setup を実行
-echo ""
-echo "→ repo-setup を実行中..."
-if command -v repo-setup &>/dev/null; then
-  repo-setup
-else
-  echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
-fi
+  # PR情報を取得してブランチ名を抽出
+  echo "→ PR #${pr_number} の情報を取得中..."
+  pr_branch=$(gh pr view "${pr_number}" --json headRefName --jq '.headRefName' 2>/dev/null)
 
-echo ""
-echo "✓ PR レビュー環境の準備完了"
-echo "✓ worktree: ${worktree_path}"
-echo "✓ ブランチ: $(git branch --show-current)"
+  if [[ -z $pr_branch ]]; then
+    echo "Error: PR #${pr_number} のブランチ名を取得できませんでした" >&2
+    echo "PR が存在するか、アクセス権限があるか確認してください。" >&2
+    echo ""
+    continue
+  fi
+
+  echo "✓ PR #${pr_number} のブランチ: ${pr_branch}"
+
+  worktree_path="$(dirname "$(pwd)")/${repo_name}-pr-${pr_number}"
+
+  # 既存worktreeチェック
+  if [[ -d $worktree_path ]]; then
+    echo "✓ 既存のworktreeが存在: ${worktree_path}"
+    cd "$worktree_path"
+    echo "✓ ブランチ: $(git branch --show-current)"
+    cd - >/dev/null
+  else
+    # worktree作成
+    if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
+      echo "→ worktreeを作成中..."
+      git worktree add "$worktree_path" "origin/${pr_branch}"
+      cd "$worktree_path"
+      git checkout -b "${pr_branch}" "origin/${pr_branch}"
+      echo "✓ worktreeを作成: ${worktree_path}"
+
+      # repo-setup を実行
+      echo "→ repo-setup を実行中..."
+      if command -v repo-setup &>/dev/null; then
+        repo-setup
+      else
+        echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
+      fi
+      cd - >/dev/null
+    else
+      echo "Error: リモートブランチ 'origin/${pr_branch}' が見つかりません" >&2
+      echo ""
+      continue
+    fi
+  fi
+
+  echo ""
+done
+
+echo "✓ すべての PR レビュー環境の準備が完了しました"
 echo ""
