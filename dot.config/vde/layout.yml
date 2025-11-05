@@ -2,6 +2,7 @@ presets:
   dev:
     name: dev
     description: dev
+    windowMode: current-window
     layout:
       type: horizontal
       ratio: [1, 1]
@@ -25,12 +26,13 @@ presets:
   review:
     name: review
     description: review
+    windowMode: current-window
     layout:
       type: horizontal
       ratio: [1, 1]
       panes:
         - type: vertical
-          ratio: [1, 1]
+          ratio: [3, 1]
           panes:
             - name: editor
               command: vim
@@ -38,7 +40,7 @@ presets:
             - name: codex
               command: codex --yolo
         - type: vertical
-          ratio: [1, 1]
+          ratio: [3, 1]
           panes:
             - name: claude
               command: claude --dangerously-skip-permissions
