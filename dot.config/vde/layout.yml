@@ -13,9 +13,9 @@ presets:
               command: vim
               focus: true
             - name: codex
-              command: codex
+              command: codex --yolo
         - name: claude
-          command: claude
+          command: claude --dangerously-skip-permissions
 
   review:
     name: review
@@ -31,11 +31,11 @@ presets:
               command: vim
               focus: true
             - name: codex
-              command: codex
+              command: codex --yolo
         - type: vertical
           ratio: [1, 1]
           panes:
             - name: claude
-              command: claude
+              command: claude --dangerously-skip-permissions
             - name: codex
-              command: codex
+              command: codex --yolo
