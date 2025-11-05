@@ -28,6 +28,8 @@ echo "✓  .i9wa4/ ディレクトリを作成しました"
 cat >.i9wa4/temp.md <<'EOF'
 ## Common
 
+/CONTRIBUTING
+
 ## Claude Code
 
 ## Codex CLI
@@ -36,6 +38,7 @@ cat >.i9wa4/temp.md <<'EOF'
 
 /CONTRIBUTING
 /my-review
+/summarize-reviews
 EOF
 
 # mise.toml が存在する場合は trust する
