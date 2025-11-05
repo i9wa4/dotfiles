@@ -108,3 +108,13 @@ snippets:
     snippet:
       uv lock --upgrade &&
       uv sync --frozen --all-extras
+
+  - name: (vde-layout) dev
+    keyword: vd
+    snippet:
+      vde-layout dev
+
+  - name: (vde-layout) review
+    keyword: vr
+    snippet:
+      vde-layout review
