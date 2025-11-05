@@ -13,12 +13,9 @@ description: "Review"
 
 ## 2. レビュー方法
 
-- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 - YOU MUST: あらゆる指摘を詳細に抽出する
 - YOU MUST: 重要度順に指摘を並べる
 
 ## 3. レビュー結果の Markdown ファイル出力
 
-- YOU MUST: レビュー結果の Markdown ファイルは `.i9wa4/` に格納しファイル名は `YYYYMMDD-paneN-review.md` とする
-    - tmux ペイン番号Nは `tmux display-message -p '#{pane_index}'` コマンドで取得できる
-- YOU MUST: 見出しや箇条書きを活用し長文にしないなど Markdown らしい構造にする
+- YOU MUST: レビュー結果の Markdown ファイルは `.i9wa4/` に格納する

@@ -24,8 +24,9 @@ description: "global CONTRIBUTING.md"
 ### 1.2. Markdown ファイル作成時のルール
 
 - YOU MUST: すべてのMarkdownヘッダ (#, ##, ### 等) の直後には空行を入れる
-- NEVER: 絵文字は使用しない
+- YOU MUST: 見出しや箇条書きを活用し長文にしないなど Markdown らしい構造にする
 - NEVER: 太字は使用しない
+- NEVER: 絵文字は使用しない
 - NEVER: 英語的な行末コロン (:) は使用しない
 
 ## 2. ファイル管理とプロジェクト構成
@@ -39,7 +40,13 @@ description: "global CONTRIBUTING.md"
 
 - IMPORTANT: `.i9wa4/` ディレクトリはグローバル `.gitignore` に追加されているので Git 管理しないファイルを保存できる
 - YOU MUST: 作業で生成するドキュメントのうち重要度なものは `.i9wa4/` ディレクトリに保存する
-- YOU MUST: ファイル名の先頭に `date +%Y%m%d` を付与する (例: `.i9wa4/20251015-plan.md`)
+- YOU MUST: ファイル名は `YYYYMMDD-pN-xxxx.md` の形式とする
+    - `YYYYMMDD`: 日付 (例: `20251105`)
+    - `pN`: tmux ペイン番号 (例: `p0`, `p1`, `p2`)
+    - `xxxx`: ファイルの目的 (例: `review`, `plan`, `memo`)
+    - 例: `.i9wa4/20251105-p2-review.md`
+- IMPORTANT: tmux ペイン番号Nは `tmux display-message -p -t "$TMUX_PANE" '#{pane_index}'` で取得する
+    - `$TMUX_PANE` 環境変数を使用することで、ユーザーがどのペインからメッセージを送信しても Claude Code が動作しているペイン番号を正確に取得できる
 
 ### 2.3. プロジェクト固有ルール
 
