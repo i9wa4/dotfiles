@@ -10,6 +10,11 @@ nmap <Space>ab <Plug>(tmux-send-to-ai-cli-buffer)
 nmap <Space>al <Plug>(tmux-send-to-ai-cli-current-line)
 nmap <Space>ap <Plug>(tmux-send-to-ai-cli-paragraph)
 vmap <Space>av <Plug>(tmux-send-to-ai-cli-visual)
+
+nmap <Space>aB <Plug>(tmux-send-to-ai-cli-buffer-all)
+nmap <Space>aL <Plug>(tmux-send-to-ai-cli-current-line-all)
+nmap <Space>aP <Plug>(tmux-send-to-ai-cli-paragraph-all)
+vmap <Space>aV <Plug>(tmux-send-to-ai-cli-visual-all)
 '''
 
 [[plugins]]
