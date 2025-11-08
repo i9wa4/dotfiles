@@ -14,11 +14,6 @@ snippets:
     snippet:
       ls -aFlv --color=always --time-style=long-iso -h
 
-  - name: path
-    keyword: path
-    snippet:
-      echo "${PATH}" | sed "s/\:/\n/g"
-
   - name: update
     keyword: up
     snippet:
@@ -72,7 +67,8 @@ snippets:
   - name: (ghq) update
     keyword: gu
     snippet:
-      ghq list | ghq get --update --parallel
+      # ghq list | ghq get --update --parallel
+      ghq list | ghq get --update
 
   - name: (Git) graph
     keyword: lo

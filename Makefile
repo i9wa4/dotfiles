@@ -71,7 +71,7 @@ endef
 # --------------------------------------
 # OS-common Tasks
 #
-update:
+update:  ## update for all OS
 	@$(MAKE) ghq-get-essential
 	@$(MAKE) unlink
 	ghq list | ghq get --update
@@ -86,7 +86,7 @@ common-init: zsh-init unlink link git-config package-install ghq-get-essential
 	git clone https://github.com/tmux-plugins/tpm \
 		$(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
-common-clean:  ## clean for all OS
+common-clean:
 	# OS-common clean
 	rm -rf "$${HOME}"/.npm
 ifeq ($(MF_DETECTED_OS),macOS)
