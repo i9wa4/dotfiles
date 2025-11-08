@@ -74,7 +74,7 @@ endef
 update:
 	@$(MAKE) ghq-get-essential
 	@$(MAKE) unlink
-	ghq list | ghq get --update --parallel
+	ghq list | ghq get --update
 	@$(MAKE) link
 	@$(MAKE) package-update
 	@$(MAKE) common-clean
