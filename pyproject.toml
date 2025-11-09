@@ -17,7 +17,6 @@ dev = [
   "black",
   "flake8",
   "isort",
-  "pre-commit",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",
 ]
