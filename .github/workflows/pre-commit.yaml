@@ -46,6 +46,14 @@ jobs:
           install_args: --yes
           cache: true
 
+      - name: Cache pre-commit
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-${{ runner.arch }}-
+
       - name: Set up Python
         run: |
           mise exec -- uv sync --only-group dev
