@@ -16,6 +16,15 @@ tools:
     format-command: 'jq --indent 4'
     format-stdin: true
 
+  markdown-rumdl: &markdown-rumdl
+    lint-command: 'rumdl check --stdin ${INPUT}'
+    lint-source: 'rumdl'
+    lint-stdin: true
+    lint-formats:
+      - '%f:%l:%c: %m'
+    format-command: 'rumdl fmt --stdin'
+    format-stdin: true
+
   python-black: &python-black
     format-command: 'black --preview --enable-unstable-feature string_processing --quiet -'
     format-stdin: true
@@ -69,6 +78,9 @@ languages:
 
   json:
     - <<: *json-jq
+
+  markdown:
+    - <<: *markdown-rumdl
 
   python:
     - <<: *python-black

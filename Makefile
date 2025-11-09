@@ -52,6 +52,7 @@ claude              claude
 efm-langserver      efm-langserver
 mise                mise
 nvim                nvim
+rumdl               rumdl
 skk                 skk
 tmux                tmux
 vde                 vde

@@ -26,6 +26,8 @@ mkdir -p .i9wa4/
 echo "✓  .i9wa4/ ディレクトリを作成しました"
 
 cat >.i9wa4/temp.md <<'EOF'
+# temp
+
 ## Common
 
 /CONTRIBUTING
