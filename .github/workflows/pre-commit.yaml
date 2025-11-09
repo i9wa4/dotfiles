@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     permissions:
       contents: read
@@ -40,23 +40,15 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
           persist-credentials: false
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - name: Install mise
+        uses: jdx/mise-action@be3be2260bc02bc3fbf94c5e2fed8b7964baf074 # v3.4.0
         with:
-          version: "0.8.3"
-          enable-cache: true
-
-      - name: Cache uv
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ~/.cache/uv
-          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-
+          install_args: --yes
+          cache: true
 
       - name: Set up Python
         run: |
-          uv sync --only-group dev
+          mise exec -- uv sync --only-group dev
 
       - name: Cache pre-commit
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
@@ -69,4 +61,4 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          uv run --no-sync pre-commit run --all-files
+          mise exec -- pre-commit run --all-files
