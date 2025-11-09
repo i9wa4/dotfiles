@@ -19,7 +19,7 @@ gcloud          = "latest"
 gh              = "latest"
 hadolint        = "latest"
 jq              = "latest"
-pre-commit      = "4.4.0"
+pre-commit      = "latest"
 ripgrep         = "latest"
 shellcheck      = "latest"
 shfmt           = "latest"
@@ -27,8 +27,8 @@ terraform       = "latest"
 tflint          = "latest"
 
 # Cargo Tools
-"cargo:rumdl" = "latest"
 # "cargo:tokei" = "latest"
+"cargo:rumdl" = "latest"
 
 # Aqua Tools
 # "aqua:evilmartians/lefthook"  = "latest"
@@ -41,4 +41,4 @@ tflint          = "latest"
 # Go Tools
 # "go:github.com/jameswoolfenden/pike"  = { version = "latest" }
 "go:github.com/mattn/efm-langserver"  = { version = "latest" }
-# "go:github.com/rhysd/vim-startuptime" = { version = "latest" }
+"go:github.com/rhysd/vim-startuptime" = { version = "latest" }
