@@ -6,7 +6,7 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-cd $HOME
+cd "$HOME"
 cd "$(dirname "$0")"
 
 echo "Hello, World!"
