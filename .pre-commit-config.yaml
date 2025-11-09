@@ -15,30 +15,52 @@ repos:
 
   - repo: local
     hooks:
+      - id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        files: \.sh$
+        pass_filenames: true
+
+      - id: actionlint
+        name: actionlint
+        entry: actionlint
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+        pass_filenames: true
+
+      - id: pinact
+        name: pinact
+        entry: pinact run
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+        pass_filenames: false
+
+      - id: zizmor
+        name: zizmor
+        entry: zizmor
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+        pass_filenames: true
+
       - id: black
         name: black
         entry: uv run --no-sync black
         language: system
         types: [python]
 
-  - repo: local
-    hooks:
       - id: isort
         name: isort (python)
         entry: uv run --no-sync isort
         language: system
         types: [python]
 
-  - repo: local
-    hooks:
       - id: flake8
         name: flake8
         entry: uv run --no-sync flake8
         language: system
         types: [python]
 
-  - repo: local
-    hooks:
       - id: sqlfmt
         name: sqlfmt
         entry: uv run --no-sync sqlfmt
