@@ -20,13 +20,14 @@ fi
 if [ -f "uv.lock" ]; then
   echo "📦 uv環境を使用してJupyterLabを起動します"
   uv sync --frozen
-  nohup uv run jupyter lab --ip=0.0.0.0 --port=${JUPYTER_PORT} --no-browser --allow-root \
+  nohup uv run jupyter lab --ip=0.0.0.0 --port="${JUPYTER_PORT}" --no-browser --allow-root \
     --NotebookApp.token='' --NotebookApp.password='' \
     --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True >/dev/null 2>&1 &
 elif [ -d ".venv" ]; then
   echo "📦 venv環境を使用してJupyterLabを起動します"
+  # shellcheck source=/dev/null
   source .venv/bin/activate
-  nohup jupyter lab --ip=0.0.0.0 --port=${JUPYTER_PORT} --no-browser --allow-root \
+  nohup jupyter lab --ip=0.0.0.0 --port="${JUPYTER_PORT}" --no-browser --allow-root \
     --NotebookApp.token='' --NotebookApp.password='' \
     --ServerApp.allow_origin='*' --ServerApp.disable_check_xsrf=True >/dev/null 2>&1 &
 else
@@ -36,7 +37,7 @@ else
 fi
 
 # 実際に割り当てられたポートを取得（リトライ機能付き）
-for i in {1..10}; do
+for _ in {1..10}; do
   sleep 1
   ACTUAL_PORT=$(ss -tlnp 2>/dev/null | grep jupyter-lab | awk '{print $4}' | cut -d: -f2 | head -1)
   if [ -n "$ACTUAL_PORT" ]; then
