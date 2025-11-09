@@ -27,6 +27,7 @@ terraform       = "latest"
 tflint          = "latest"
 
 # Cargo Tools
+"cargo:rumdl" = "latest"
 # "cargo:tokei" = "latest"
 
 # Aqua Tools
