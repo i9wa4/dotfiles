@@ -210,6 +210,10 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
         uv run dbt debug --profiles-dir ~/.dbt --no-use-colors
         ```
 
+- プロジェクトルートに `poetry.lock` ファイルが存在する場合
+    - 以下のブログ記事を参考に `uv` で仮想環境を作成する
+    - [poetry の pyproject.toml から uv で仮想環境を作成する方法 – uma-chan's page](https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html)
+
 - プロジェクトルートに `uv.lock` ファイルが存在しない場合
     1. 仮想環境を有効化する
 
