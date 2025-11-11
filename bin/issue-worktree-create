@@ -31,7 +31,34 @@ for issue_number in "$@"; do
 
   echo "=== Issue #${issue_number} の処理開始 ==="
 
-  branch_name="issue-${issue_number}"
+  # Issue タイトルを取得してブランチ名のスラッグを生成
+  echo "→ Issue タイトルを取得中..."
+  issue_title=$(gh issue view "${issue_number}" --json title --jq '.title' 2>/dev/null || echo "")
+
+  if [[ -n $issue_title ]]; then
+    echo "→ ブランチ名を生成中..."
+    branch_slug=$(claude --print "以下のIssueタイトルから、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
+- 最大5単語程度
+- 小文字とハイフンのみ使用
+- 特殊文字は除去
+- 動詞から始めることを推奨
+
+Issueタイトル: ${issue_title}
+
+出力は英語のスラッグのみを返してください(説明不要)。" 2>/dev/null | tr -d '\n' || echo "")
+
+    if [[ -n $branch_slug ]]; then
+      branch_name="issue-${issue_number}-${branch_slug}"
+      echo "✓ ブランチ名: ${branch_name}"
+    else
+      branch_name="issue-${issue_number}"
+      echo "Warning: スラッグ生成に失敗しました。デフォルトのブランチ名を使用します: ${branch_name}"
+    fi
+  else
+    branch_name="issue-${issue_number}"
+    echo "Warning: Issue タイトルの取得に失敗しました。デフォルトのブランチ名を使用します: ${branch_name}"
+  fi
+
   worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
   # 既存worktreeチェック
@@ -45,11 +72,8 @@ for issue_number in "$@"; do
       echo "✓ worktreeを作成: ${worktree_path}"
     else
       git worktree add -b "$branch_name" "$worktree_path"
-      cd "$worktree_path"
-      git push -u origin "$branch_name"
-      cd - >/dev/null
       echo "✓ worktreeを作成: ${worktree_path}"
-      echo "✓ ブランチをリモートにpush: ${branch_name}"
+      echo "✓ ローカルブランチを作成: ${branch_name}"
     fi
 
     # repo-setup を実行
