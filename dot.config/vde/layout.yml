@@ -7,21 +7,11 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - type: vertical
-          ratio: [3, 1]
-          panes:
-            - name: editor
-              command: vim
-              focus: true
-            - name: codex
-              command: codex --yolo
-        - type: vertical
-          ratio: [3, 1]
-          panes:
-            - name: claude
-              command: claude --dangerously-skip-permissions
-            - name: codex
-              command: codex --yolo
+        - name: editor
+          command: vim -c "execute 'edit' g:my_tp_path"
+          focus: true
+        - name: claude
+          command: claude --dangerously-skip-permissions
 
   review:
     name: review
