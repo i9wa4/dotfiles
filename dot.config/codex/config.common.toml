@@ -7,11 +7,6 @@ notify = ["printf", "\\a"]
 [features]
 web_search_request = true
 
-[mcp_servers.atlassian]
-command = "npx"
-args = ["-y", "mcp-remote", "https://mcp.atlassian.com/v1/sse"]
-enabled = false
-
 [mcp_servers.aws_documentation]
 command = "uvx"
 args = ["awslabs.aws-documentation-mcp-server@latest"]
