@@ -8,6 +8,7 @@ let s:sources_list = [
 \   'denippet',
 \   'file',
 \   'skkeleton',
+\   'slash_commands',
 \ ]
 if !has('nvim')
   call add(s:sources_list, 'lsp')
@@ -47,6 +48,18 @@ call ddc#custom#patch_global('sourceOptions', {
 \     'mark': 'F',
 \     'isVolatile': v:true,
 \     'forceCompletionPattern': '\S/\S*',
+\ }})
+call ddc#custom#patch_global('sourceOptions', {
+\   'slash_commands': {
+\     'mark': '[cmd]',
+\     'matchers': ['matcher_head'],
+\     'minAutoCompleteLength': 1,
+\     'forceCompletionPattern': '\/\w*',
+\ }})
+call ddc#custom#patch_global('sourceParams', {
+\   'slash_commands': {
+\     'commandsDir': '~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands',
+\     'extensions': ['.md'],
 \ }})
 call ddc#custom#patch_filetype(
 \   ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
@@ -161,3 +174,7 @@ on_source = ['skkeleton']
 hook_source = '''
 highlight SkkeletonHenkan term=underline cterm=reverse
 '''
+
+[[plugins]]
+repo = 'i9wa4/ddc-source-slash-commands'
+on_source = ['ddc.vim']
