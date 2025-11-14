@@ -69,8 +69,8 @@ set cmdheight=1
 set showcmd
 
 " StatusLine
-set laststatus=0
-" set laststatus=2
+" set laststatus=0
+set laststatus=2
 " set noshowmode
 
 
