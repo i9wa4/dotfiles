@@ -1,3 +1,4 @@
+github.com/coderabbitai/git-worktree-runner
 github.com/i9wa4/i9wa4.github.io
 github.com/i9wa4/internal
 github.com/neovim/neovim
