@@ -38,6 +38,9 @@ export FZF_DEFAULT_OPTS="
   --bind 'ctrl-y:accept'
 "
 
+# gtr (git-worktree-runner)
+export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbit/git-worktree-runner/bin
+
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
