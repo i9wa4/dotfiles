@@ -52,9 +52,10 @@ call ddc#custom#patch_global('sourceOptions', {
 call ddc#custom#patch_global('sourceOptions', {
 \   'slash_commands': {
 \     'mark': '[cmd]',
-\     'matchers': ['matcher_head'],
+\     'matchers': ['matcher_fuzzy'],
 \     'minAutoCompleteLength': 1,
-\     'forceCompletionPattern': '\/\w*',
+\     'isVolatile': v:true,
+\     'forceCompletionPattern': '\/[a-zA-Z0-9_-]*',
 \ }})
 call ddc#custom#patch_global('sourceParams', {
 \   'slash_commands': {
@@ -105,6 +106,10 @@ on_source = ['ddc.vim']
 
 [[plugins]]
 repo = 'Shougo/ddc-converter_remove_overlap'
+on_source = ['ddc.vim']
+
+[[plugins]]
+repo = 'tani/ddc-fuzzy'
 on_source = ['ddc.vim']
 
 [[plugins]]
