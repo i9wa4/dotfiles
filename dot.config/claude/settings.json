@@ -30,7 +30,6 @@
       "Write(.env*)"
     ]
   },
-  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "npx ccusage@latest statusline"
