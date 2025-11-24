@@ -1,5 +1,5 @@
 hide_agent_reasoning = true
-model = "gpt-5-codex"
+model = "gpt-5.1-codex-max"
 model_reasoning_effort = "high"
 network_access = true
 notify = ["printf", "\\a"]
