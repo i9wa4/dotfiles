@@ -273,6 +273,8 @@ package-install:
 	"$${HOME}"/.local/bin/mise install
 	# Claude Code
 	curl -fsSL https://claude.ai/install.sh | bash
+	# Cursor CLI
+	curl https://cursor.com/install -fsS | bash
 	# OS-specific install
 ifeq ($(MF_DETECTED_OS),macOS)
 	# https://brew.sh/
