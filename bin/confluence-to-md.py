@@ -19,6 +19,7 @@ import re
 import sys
 import unicodedata
 import urllib.parse
+from datetime import datetime
 from pathlib import Path
 
 import html2text
@@ -387,10 +388,12 @@ def extract_page_id(url: str) -> str:
 
 def save_markdown(title: str, md: str) -> str:
     safe_title = sanitize_filename(title)
-    filename = f"confluence_{safe_title}.md"
-    with open(filename, "w", encoding="utf-8") as f:
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = f"{timestamp}-confluence-{safe_title}.md"
+    output_path = Path.home() / "Downloads" / filename
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(md.rstrip() + "\n")
-    return filename
+    return str(output_path)
 
 
 def main():
