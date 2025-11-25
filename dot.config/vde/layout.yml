@@ -18,21 +18,23 @@ presets:
     description: review
     windowMode: current-window
     layout:
-      type: horizontal
-      ratio: [1, 1]
+      type: vertical
+      ratio: [3, 1]
       panes:
-        - type: vertical
-          ratio: [3, 1]
+        - type: horizontal
+          ratio: [1, 1]
           panes:
             - name: editor
               command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
               focus: true
-            - name: codex
-              command: codex --yolo
-        - type: vertical
-          ratio: [3, 1]
-          panes:
             - name: claude
               command: claude --dangerously-skip-permissions
+        - type: horizontal
+          ratio: [1, 1, 1]
+          panes:
             - name: codex
               command: codex --yolo
+            - name: codex
+              command: codex --yolo
+            - name: claude
+              command: claude --dangerously-skip-permissions
