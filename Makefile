@@ -42,6 +42,7 @@ endif
 
 define MF_LINK_HOME_ROWS
 dot.config/codex    .codex
+dot.config/cursor   .cursor
 dot.editorconfig    .editorconfig
 endef
 export MF_LINK_HOME_ROWS
