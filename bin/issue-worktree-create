@@ -31,21 +31,32 @@ for issue_number in "$@"; do
 
   echo "=== Issue #${issue_number} の処理開始 ==="
 
-  # Issue タイトルを取得してブランチ名のスラッグを生成
-  echo "→ Issue タイトルを取得中..."
-  issue_title=$(gh issue view "${issue_number}" --json title --jq '.title' 2>/dev/null || echo "")
+  # Issue 情報を取得してブランチ名のスラッグを生成
+  echo "→ Issue 情報を取得中..."
+  issue_json=$(gh issue view "${issue_number}" --json title,body,comments 2>/dev/null || echo "{}")
+  issue_title=$(jq -r '.title // empty' <<< "$issue_json" 2>/dev/null || echo "")
+  issue_body=$(jq -r '.body // empty' <<< "$issue_json" 2>/dev/null || echo "")
+  issue_comments=$(jq -r '.comments[]?.body // empty' <<< "$issue_json" 2>/dev/null | head -c 2000 || echo "")
 
   if [[ -n $issue_title ]]; then
     echo "→ ブランチ名を生成中..."
-    branch_slug=$(claude --print "以下のIssueタイトルから、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
+    branch_slug=$(claude --print "以下のIssue情報から、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
 - 最大5単語程度
 - 小文字とハイフンのみ使用
 - 特殊文字は除去
 - 動詞から始めることを推奨
 
-Issueタイトル: ${issue_title}
+出力は英語のスラッグのみを返してください(説明不要)。
 
-出力は英語のスラッグのみを返してください(説明不要)。" 2>/dev/null | tr -d '\n' || echo "")
+---
+Issueタイトル: ${issue_title}
+---
+Issue本文:
+${issue_body}
+---
+Issueコメント:
+${issue_comments}
+---" 2>/dev/null | tr -d '\n' || echo "")
 
     if [[ -n $branch_slug ]]; then
       branch_name="issue-${issue_number}-${branch_slug}"
