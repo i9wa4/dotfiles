@@ -6,6 +6,8 @@ description: "Commit"
 
 ## 1. ルール
 
+- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
+- YOU MUST: 直近のコミットメッセージをいくつか確認し、英語もしくは日本語どちらかに統一する
 - IMPORTANT: 作業再開しやすい粒度: そのコミット内容を見ると作業を再開しやすい粒度を心がける
 - IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
 - NEVER: コミットメッセージには Co-Authored-By を含めない
@@ -13,13 +15,12 @@ description: "Commit"
 - NEVER: `.i9wa4/` ディレクトリ配下のファイルは global `.gitignore` に追加されているためコミットメッセージ内では一切言及しない（関連URLセクションも含む）
 - NEVER: `/tmp/` ディレクトリ配下のファイルもコミットメッセージ内では一切言及しない
 - NEVER: ローカルファイルパスは記載しない（例: `.i9wa4/xxx.md`, `/tmp/xxx.log` など）
-- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 
 ## 2. コミットメッセージの書き方
 
 Conventional Commits に沿った日本語で記述する
 
-```
+```text
 <type>: <簡潔な説明> (#<Issue番号>)
 
 <詳細な説明>
