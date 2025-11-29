@@ -1,6 +1,6 @@
 [tools]
 # Package managers
-uv = "0.9.11"
+uv = "0.9.13"
 
 # Development tools
 pre-commit = "4.5.0"
@@ -8,6 +8,6 @@ shellcheck = "0.11.0"
 
 # Aqua tools
 "aqua:rhysd/actionlint" = "1.7.9"
-"aqua:suzuki-shunsuke/pinact" = "3.4.4"
-"aqua:zizmorcore/zizmor" = "1.16.3"
-"aqua:gitleaks/gitleaks" = "8.29.1"
+"aqua:suzuki-shunsuke/pinact" = "3.4.5"
+"aqua:zizmorcore/zizmor" = "1.17.0"
+"aqua:gitleaks/gitleaks" = "8.30.0"
