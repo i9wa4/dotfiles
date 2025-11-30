@@ -29,7 +29,6 @@ confluence = [
 
 [tool.black]
 line-length = 88
-target-version = ['py313']
 
 [tool.isort]
 profile = "black"
