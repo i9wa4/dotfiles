@@ -271,6 +271,8 @@ package-install:
 	# mise
 	curl https://mise.run | sh
 	"$${HOME}"/.local/bin/mise install
+	# GitHub CLI
+	gh extension install jackchuka/gh-dep
 	# Claude Code
 	curl -fsSL https://claude.ai/install.sh | bash
 	# Cursor CLI
@@ -331,6 +333,7 @@ package-update:
 	# OS common update
 	mise self-update --yes
 	mise upgrade
+	gh extension upgrade --all
 	claude update
 	@$(MAKE) package-npm-install
 	@$(MAKE) package-npm-update
