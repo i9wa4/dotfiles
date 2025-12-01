@@ -31,16 +31,28 @@ for issue_number in "$@"; do
 
   echo "=== Issue #${issue_number} の処理開始 ==="
 
-  # Issue 情報を取得してブランチ名のスラッグを生成
+  # Issue 情報を取得
   echo "→ Issue 情報を取得中..."
-  issue_json=$(gh issue view "${issue_number}" --json title,body,comments 2>/dev/null || echo "{}")
-  issue_title=$(jq -r '.title // empty' <<< "$issue_json" 2>/dev/null || echo "")
-  issue_body=$(jq -r '.body // empty' <<< "$issue_json" 2>/dev/null || echo "")
-  issue_comments=$(jq -r '.comments[]?.body // empty' <<< "$issue_json" 2>/dev/null | head -c 2000 || echo "")
+  if ! issue_json=$(gh issue view "${issue_number}" --json title,body,comments 2>&1); then
+    echo "Error: Issue #${issue_number} の取得に失敗しました。スキップします。" >&2
+    echo "${issue_json}" >&2
+    echo ""
+    continue
+  fi
 
-  if [[ -n $issue_title ]]; then
-    echo "→ ブランチ名を生成中..."
-    branch_slug=$(claude --print "以下のIssue情報から、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
+  issue_title=$(jq -r '.title // empty' <<< "$issue_json")
+  issue_body=$(jq -r '.body // empty' <<< "$issue_json")
+  issue_comments=$(jq -r '.comments[]?.body // empty' <<< "$issue_json" | head -c 2000)
+
+  if [[ -z $issue_title ]]; then
+    echo "Error: Issue #${issue_number} のタイトルが空です。スキップします。" >&2
+    echo ""
+    continue
+  fi
+
+  # ブランチ名を生成
+  echo "→ ブランチ名を生成中..."
+  if ! branch_slug=$(claude --print "以下のIssue情報から、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
 - 最大5単語程度
 - 小文字とハイフンのみ使用
 - 特殊文字は除去
@@ -56,19 +68,13 @@ ${issue_body}
 ---
 Issueコメント:
 ${issue_comments}
----" 2>/dev/null | tr -d '\n' || echo "")
-
-    if [[ -n $branch_slug ]]; then
-      branch_name="issue-${issue_number}-${branch_slug}"
-      echo "✓ ブランチ名: ${branch_name}"
-    else
-      branch_name="issue-${issue_number}"
-      echo "Warning: スラッグ生成に失敗しました。デフォルトのブランチ名を使用します: ${branch_name}"
-    fi
-  else
-    branch_name="issue-${issue_number}"
-    echo "Warning: Issue タイトルの取得に失敗しました。デフォルトのブランチ名を使用します: ${branch_name}"
+---" 2>/dev/null | tr -d '\n') || [[ -z $branch_slug ]]; then
+    echo "Error: Issue #${issue_number} のブランチ名生成に失敗しました。" >&2
+    exit 1
   fi
+
+  branch_name="issue-${issue_number}-${branch_slug}"
+  echo "✓ ブランチ名: ${branch_name}"
 
   worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
