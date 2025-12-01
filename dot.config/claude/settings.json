@@ -1,5 +1,5 @@
 {
-  "cleanupPeriodDays": 3600,
+  "cleanupPeriodDays": 36000,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
