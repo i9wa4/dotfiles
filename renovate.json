@@ -4,13 +4,7 @@
     "config:recommended",
     ":enablePreCommit"
   ],
-  "schedule": [
-    "every weekend"
-  ],
   "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": [
-      "every weekend"
-    ]
+    "enabled": true
   }
 }
