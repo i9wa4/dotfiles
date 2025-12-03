@@ -1,6 +1,6 @@
 [tools]
 # Package managers
-uv = "0.9.13"
+uv = "0.9.15"
 
 # Development tools
 pre-commit = "4.5.0"
