@@ -36,7 +36,5 @@ select = [
     "I",    # isort
 ]
 ignore = [
-    "E203",  # Whitespace before ':'
-    "E701",  # Multiple statements on one line (colon)
     "F821",  # undefined name (Databricks-specific module)
 ]
