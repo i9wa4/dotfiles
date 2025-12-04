@@ -14,9 +14,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "black",
-  "flake8",
-  "isort",
+  "ruff>=0.8.0",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",
 ]
@@ -27,19 +25,18 @@ confluence = [
   "html2text",
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 88
 
-[tool.isort]
-profile = "black"
-line_length = 88
-
-[tool.flake8]
-# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#minimal-configuration
-max-line-length = 88
-extend-exclude = [".venv"]
-extend-ignore = [
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # Pyflakes
+    "I",    # isort
+]
+ignore = [
     "E203",  # Whitespace before ':'
     "E701",  # Multiple statements on one line (colon)
-    "F821"   # undefined name (Databricks-specific module)
+    "F821",  # undefined name (Databricks-specific module)
 ]
