@@ -31,15 +31,12 @@ echo "* Created .i9wa4/ directory"
 cat >.i9wa4/temp.md <<'EOF'
 # temp
 
-## Common
+## 1. Development
 
 /CONTRIBUTING
+/issue-to-pr
 
-## Claude Code
-
-## Codex CLI
-
-## Review
+## 2. Review
 
 /CONTRIBUTING
 /my-review
