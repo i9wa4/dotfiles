@@ -32,12 +32,12 @@ fi
 # 新しい opacity 値を計算
 if [[ $DIRECTION == "up" ]]; then
   NEW_OPACITY=$(echo "$CURRENT_OPACITY + $STEP" | /usr/bin/bc)
-  if (( $(echo "$NEW_OPACITY > 1.0" | /usr/bin/bc -l) )); then
+  if (($(echo "$NEW_OPACITY > 1.0" | /usr/bin/bc -l))); then
     NEW_OPACITY=1.0
   fi
 else
   NEW_OPACITY=$(echo "$CURRENT_OPACITY - $STEP" | /usr/bin/bc)
-  if (( $(echo "$NEW_OPACITY < 0.0" | /usr/bin/bc -l) )); then
+  if (($(echo "$NEW_OPACITY < 0.0" | /usr/bin/bc -l))); then
     NEW_OPACITY=0.0
   fi
 fi
