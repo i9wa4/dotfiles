@@ -4,27 +4,30 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# .devcontainerディレクトリをコピー（存在する場合はスキップ）
-# if [ ! -d ".devcontainer" ] && [ -d "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" ]; then
-#   rm -rf .devcontainer/
-#   cp -r "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" .
-#   echo "✓  .devcontainer ディレクトリをコピーしました"
-# fi
+# Set up repository environment for development.
+# Creates local.vim, .i9wa4/ directory, and trusts mise.toml.
+#
+# Usage:
+#   repo-setup
+#
+# Created files:
+#   - local.vim: Vim local configuration
+#   - .i9wa4/: Working directory (gitignored globally)
+#   - .i9wa4/temp.md: Template file for notes
 
-# cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
-# echo "✓  .mcp.json ファイルをコピーしました"
-
+# Create local.vim
 cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
 let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
-echo "✓  local.vim ファイルをコピーしました"
+echo "* Created local.vim"
 
-# .i9wa4/ ディレクトリとファイルを作成
+# Create .i9wa4/ directory
 mkdir -p .i9wa4/
-echo "✓  .i9wa4/ ディレクトリを作成しました"
+echo "* Created .i9wa4/ directory"
 
+# Create template file
 cat >.i9wa4/temp.md <<'EOF'
 # temp
 
@@ -43,10 +46,10 @@ cat >.i9wa4/temp.md <<'EOF'
 /summarize-reviews
 EOF
 
-# mise.toml が存在する場合は trust する
-if [ -f "mise.toml" ]; then
+# Trust mise.toml if exists
+if [[ -f "mise.toml" ]]; then
   mise trust mise.toml
-  echo "✓  mise.toml を trust しました"
+  echo "* Trusted mise.toml"
 fi
 
-echo "✓  セットアップ完了"
+echo "* Setup complete"

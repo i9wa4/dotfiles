@@ -4,7 +4,17 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# 引数チェック
+# Create a git worktree for the specified GitHub pull request(s).
+# Checks out the PR branch for code review.
+#
+# Usage:
+#   pr-worktree-create <pr_number> [pr_number2 ...]
+#
+# Dependencies:
+#   - gh (GitHub CLI)
+#   - repo-setup (optional)
+
+# Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <pr_number> [pr_number2 ...]" >&2
   echo "Example: $0 123" >&2
@@ -12,71 +22,72 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-# gh コマンドの存在確認
+# Check for gh command
 if ! command -v gh &>/dev/null; then
-  echo "Error: gh コマンドが見つかりません。GitHub CLI をインストールしてください。" >&2
+  echo "Error: gh command not found. Please install GitHub CLI." >&2
   exit 1
 fi
 
-# 基本設定
+# Get repository name
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
 
-# リモート情報を一度だけ取得
-echo "→ リモート情報を取得中..."
+# Fetch remote once
+echo "-> Fetching remote..."
 git fetch origin
 echo ""
 
-# 各 PR 番号に対して処理
+# Process each PR number
 for pr_number in "$@"; do
-  # 番号の妥当性チェック
+  # Validate PR number
   if [[ ! $pr_number =~ ^[0-9]+$ ]]; then
-    echo "Warning: '$pr_number' は無効な PR 番号です。スキップします。" >&2
+    echo "Warning: '$pr_number' is not a valid PR number. Skipping." >&2
     echo ""
     continue
   fi
 
-  echo "=== PR #${pr_number} の処理開始 ==="
+  echo "=== Processing PR #${pr_number} ==="
 
-  # PR情報を取得してブランチ名を抽出
-  echo "→ PR #${pr_number} の情報を取得中..."
+  # Fetch PR branch name
+  echo "-> Fetching PR #${pr_number} info..."
   pr_branch=$(gh pr view "${pr_number}" --json headRefName --jq '.headRefName' 2>/dev/null)
 
   if [[ -z $pr_branch ]]; then
-    echo "Error: PR #${pr_number} のブランチ名を取得できませんでした" >&2
-    echo "PR が存在するか、アクセス権限があるか確認してください。" >&2
+    echo "Error: Could not get branch name for PR #${pr_number}." >&2
+    echo "Please verify the PR exists and you have access." >&2
     echo ""
     continue
   fi
 
-  echo "✓ PR #${pr_number} のブランチ: ${pr_branch}"
+  echo "* PR #${pr_number} branch: ${pr_branch}"
 
   worktree_path="$(dirname "$(pwd)")/${repo_name}-pr-${pr_number}"
 
-  # 既存worktreeチェック
+  # Check for existing worktree
   if [[ -d $worktree_path ]]; then
-    echo "✓ 既存のworktreeが存在: ${worktree_path}"
+    echo "* Worktree already exists: ${worktree_path}"
     cd "$worktree_path"
-    echo "✓ ブランチ: $(git branch --show-current)"
+    echo "* Branch: $(git branch --show-current)"
     cd - >/dev/null
   else
-    # worktree作成
+    # Create worktree
     if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
-      echo "→ worktreeを作成中..."
+      echo "-> Creating worktree..."
       git worktree add "$worktree_path" "origin/${pr_branch}"
       cd "$worktree_path"
       git checkout -b "${pr_branch}" "origin/${pr_branch}"
-      echo "✓ worktreeを作成: ${worktree_path}"
+      echo "* Created worktree: ${worktree_path}"
 
-      # repo-setup を実行
-      echo "→ repo-setup を実行中..."
-      if command -v repo-setup &>/dev/null; then
-        repo-setup
-      else
-        echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
-      fi
       cd - >/dev/null
+
+      # Run repo-setup if available
+      if command -v repo-setup &>/dev/null; then
+        echo "-> Running repo-setup..."
+        cd "$worktree_path"
+        repo-setup
+        cd - >/dev/null
+      fi
     else
-      echo "Error: リモートブランチ 'origin/${pr_branch}' が見つかりません" >&2
+      echo "Error: Remote branch 'origin/${pr_branch}' not found." >&2
       echo ""
       continue
     fi
@@ -85,5 +96,5 @@ for pr_number in "$@"; do
   echo ""
 done
 
-echo "✓ すべての PR レビュー環境の準備が完了しました"
+echo "* All PR review worktrees are ready."
 echo ""

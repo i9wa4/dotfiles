@@ -4,43 +4,62 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# 並列処理数の設定（必要に応じて変更可能）
+# Display status of all ghq-managed repositories.
+# Shows branch name, untracked files, modified files, and diff statistics.
+#
+# Usage:
+#   ghq-repo-status
+#
+# Output format:
+#   github.com/org/repo (branch) [W][M] ?N ~N +N -N
+#     [W] = Worktree
+#     [M] = Merged to main/master
+#     ?N  = Untracked files count
+#     ~N  = Modified files count
+#     +N  = Insertions count
+#     -N  = Deletions count
+#
+# Dependencies:
+#   - ghq
+
+# Number of parallel jobs (adjust as needed)
 PARALLEL_JOBS=1
 
-# ghqのルートパスをスクリプト開始時に一度だけ取得
+# Get ghq root path once at script start
 GHQ_ROOT_RAW=$(ghq root 2>/dev/null)
 if [[ -z $GHQ_ROOT_RAW ]]; then
   echo "Error: Could not determine ghq root. Make sure ghq is installed and configured." >&2
   exit 1
 fi
-# ghq rootのパスの末尾にスラッシュがない場合は追加（後のパス操作のため）
+
+# Ensure trailing slash for path operations
 GHQ_ROOT="$GHQ_ROOT_RAW"
 [[ $GHQ_ROOT != */ ]] && GHQ_ROOT="$GHQ_ROOT/"
 
-# 最適化された各リポジトリの情報を取得して表示する関数
+# Get repository status information
 get_repo_status_info() {
   local repo_full_path="$1"
 
-  # フルパスから 'host.com/org/repo' 形式のリポジトリ名を生成
+  # Generate short repository name from full path
   local repo_short_name="${repo_full_path#"$GHQ_ROOT"}"
 
-  # git status --porcelain=v1 で全ての情報を一度に取得
+  # Get all status info at once with git status --porcelain=v1
   local git_status_output
   git_status_output=$(git -C "$repo_full_path" status --porcelain=v1 2>/dev/null)
 
-  # ブランチ名を効率的に取得
+  # Get branch name efficiently
   local branch_name
   branch_name=$(git -C "$repo_full_path" symbolic-ref --short HEAD 2>/dev/null)
   if [[ -z $branch_name ]]; then
-    # デタッチドHEADの場合のフォールバック（簡略化）
-    branch_name=$(git -C "$repo_full_path" describe --tags --exact-match HEAD 2>/dev/null \
-      || git -C "$repo_full_path" rev-parse --short HEAD 2>/dev/null \
-      || echo "-")
+    # Fallback for detached HEAD
+    branch_name=$(git -C "$repo_full_path" describe --tags --exact-match HEAD 2>/dev/null ||
+      git -C "$repo_full_path" rev-parse --short HEAD 2>/dev/null ||
+      echo "-")
   fi
 
   local status_parts=()
 
-  # git status の出力を解析して統計を一度に計算
+  # Parse git status output and calculate statistics
   local untracked_count=0
   local modified_count=0
 
@@ -52,7 +71,7 @@ get_repo_status_info() {
     fi
   done <<<"$git_status_output"
 
-  # 統計情報の組み立て
+  # Build statistics
   if [[ $untracked_count -gt 0 ]]; then
     status_parts+=("?${untracked_count}")
   fi
@@ -60,7 +79,7 @@ get_repo_status_info() {
     status_parts+=("~${modified_count}")
   fi
 
-  # 必要な場合のみ diff --shortstat を実行
+  # Run diff --shortstat only when needed
   if [[ $modified_count -gt 0 ]]; then
     local shortstat
     shortstat=$(git -C "$repo_full_path" diff --shortstat 2>/dev/null)
@@ -81,24 +100,24 @@ get_repo_status_info() {
     fi
   fi
 
-  # 特殊状態の確認
+  # Check special states
   local special_tags=""
 
-  # Worktree チェック
+  # Worktree check
   if is_worktree "$repo_full_path"; then
     special_tags+="[W]"
   fi
 
-  # マージ済みチェック
+  # Merged branch check
   if is_branch_merged "$repo_full_path" "$branch_name"; then
     special_tags+="[M]"
   fi
 
-  # 出力行を組み立てる
+  # Build output line
   local output_line
   output_line=$(printf "%-${MAX_WIDTH}s (%s)" "$repo_short_name" "$branch_name")
 
-  # 特殊タグを追加
+  # Append special tags
   if [[ -n $special_tags ]]; then
     output_line+=" $special_tags"
   fi
@@ -111,16 +130,16 @@ get_repo_status_info() {
   echo "$output_line"
 }
 
-# Git リポジトリかどうかを判定する関数
+# Check if path is a git repository
 is_git_repository() {
   local repo_path="$1"
 
-  # .git がディレクトリの場合（通常のリポジトリまたは main worktree）
+  # .git is a directory (normal repository or main worktree)
   if [[ -d "$repo_path/.git" ]]; then
     return 0
   fi
 
-  # .git がファイルの場合（git worktree の linked worktree）
+  # .git is a file (linked worktree)
   if [[ -f "$repo_path/.git" ]]; then
     return 0
   fi
@@ -128,11 +147,11 @@ is_git_repository() {
   return 1
 }
 
-# Worktree かどうかを判定する関数
+# Check if path is a worktree
 is_worktree() {
   local repo_path="$1"
 
-  # .git がファイルで、gitdir: を含む場合は worktree
+  # .git is a file containing "gitdir:" = worktree
   if [[ -f "$repo_path/.git" ]]; then
     if grep -q "^gitdir:" "$repo_path/.git" 2>/dev/null; then
       return 0
@@ -142,27 +161,27 @@ is_worktree() {
   return 1
 }
 
-# ブランチがマージ済みかどうかを判定する関数
+# Check if branch is merged to main/master
 is_branch_merged() {
   local repo_path="$1"
   local branch_name="$2"
 
-  # mainブランチが存在するか確認
+  # Check if main branch exists
   if git -C "$repo_path" show-ref --verify --quiet refs/heads/main; then
     local main_branch="main"
   elif git -C "$repo_path" show-ref --verify --quiet refs/heads/master; then
     local main_branch="master"
   else
-    # main/masterが存在しない場合は判定不可
+    # Cannot determine if main/master doesn't exist
     return 1
   fi
 
-  # 現在のブランチがmain/masterの場合はマージ済みとしない
+  # Current branch is main/master = not merged
   if [[ "$branch_name" == "$main_branch" ]]; then
     return 1
   fi
 
-  # ブランチがマージ済みか確認
+  # Check if branch is merged
   if git -C "$repo_path" branch --merged "$main_branch" 2>/dev/null | grep -q "^\*\?\s*${branch_name}$"; then
     return 0
   fi
@@ -170,7 +189,7 @@ is_branch_merged() {
   return 1
 }
 
-# 並列処理用の関数
+# Process single repository (for parallel execution)
 process_single_repo() {
   local repo_path="$1"
   if is_git_repository "$repo_path"; then
@@ -180,10 +199,10 @@ process_single_repo() {
   fi
 }
 
-# リポジトリ名の最大幅を動的に取得
+# Get max width of repository names dynamically
 MAX_WIDTH=$(ghq list | wc -L)
 
-# 関数をexportして並列処理で使えるようにする
+# Export functions for parallel processing
 export -f process_single_repo
 export -f get_repo_status_info
 export -f is_git_repository
@@ -192,14 +211,14 @@ export -f is_branch_merged
 export GHQ_ROOT
 export MAX_WIDTH
 
-# 並列処理でのメインループ
+# Main loop with parallel processing
 
-# 一時ファイルを使用して結果を収集
+# Use temp file to collect results
 TEMP_OUTPUT=$(mktemp)
 trap 'rm -f "'"$TEMP_OUTPUT"'"' EXIT
 
-# 並列処理で各リポジトリを処理
+# Process each repository in parallel
 ghq list -p | xargs -I {} -P "$PARALLEL_JOBS" bash -c 'process_single_repo "$@"' _ {} >"$TEMP_OUTPUT"
 
-# 結果をソートして出力（リポジトリ名でソート）
+# Sort and output results by repository name
 sort "$TEMP_OUTPUT"
