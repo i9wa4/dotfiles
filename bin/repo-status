@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+# Display git repository status with emoji indicators.
+# Designed for shell prompt integration.
+#
+# Usage:
+#   repo-status
+#
+# Output format:
+#   🌱branch 📍hash 🤷N ✅N 📝N 📈N 📉N 🔼N
+#     🌱 = Branch name (with action state if any)
+#     📍 = Commit hash (8 chars)
+#     🤷 = Untracked files count
+#     ✅ = Staged files count
+#     📝 = Unstaged files count
+#     📈 = Insertions count
+#     📉 = Deletions count
+#     🔼 = Unpushed commits count
+
 # Exit if not in a git repository
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
   exit 0

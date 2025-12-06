@@ -45,6 +45,12 @@ repos:
         language: system
         types: [shell]
 
+      - id: shfmt
+        name: shfmt
+        entry: mise exec -- shfmt -i 2 -w
+        language: system
+        types: [shell]
+
       - id: ruff-check
         name: ruff check
         entry: mise exec -- uv run --no-sync ruff check --fix
