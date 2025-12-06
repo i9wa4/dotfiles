@@ -11,10 +11,10 @@ cd "$(dirname "$0")"
 cp -f "${COMMON}" "${OUTPUT}"
 
 # Add project-specific settings
-find "${GHQ_BASE}" -maxdepth 3 -type d -name ".git" 2>/dev/null \
-  | sed 's|\.git$||' \
-  | sort \
-  | while read -r repo; do
+find "${GHQ_BASE}" -maxdepth 3 -type d -name ".git" 2>/dev/null |
+  sed 's|\.git$||' |
+  sort |
+  while read -r repo; do
     [[ -z ${repo} ]] && continue
     echo "
 [projects.\"${repo}\"]
