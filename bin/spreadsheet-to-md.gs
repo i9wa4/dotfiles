@@ -1,19 +1,30 @@
+/**
+ * Export all sheets in the active spreadsheet as a single Markdown file.
+ * Each sheet is converted to a CSV code block.
+ *
+ * Usage:
+ *   Run this function from Google Apps Script editor.
+ *
+ * Output:
+ *   - File saved to Google Drive root
+ *   - Filename: {SpreadsheetName}_{YYYYMMDDHHMMSS}.md
+ */
 function exportAllSheetsAsMarkdown() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheets = ss.getSheets();
   let output = "";
 
-  // タイムスタンプを作成（例: 20251017103725）
+  // Create timestamp (e.g., 20251017103725)
   const now = new Date();
   const pad = n => n.toString().padStart(2, "0");
   const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 
-  // 各シートをMarkdown + CSVブロックとして出力
+  // Export each sheet as Markdown + CSV block
   sheets.forEach(sheet => {
     const lastRow = sheet.getLastRow();
     const lastCol = sheet.getLastColumn();
 
-    if (lastRow === 0 || lastCol === 0) return; // 空シートスキップ
+    if (lastRow === 0 || lastCol === 0) return; // Skip empty sheets
 
     output += `## ${sheet.getName()}\n\n\`\`\`csv\n`;
 
@@ -31,14 +42,14 @@ function exportAllSheetsAsMarkdown() {
     output += "```\n\n";
   });
 
-  // ファイル名: スプレッドシート名_YYYYMMDDHHMMSS.md
+  // Filename: SpreadsheetName_YYYYMMDDHHMMSS.md
   const fileName = `${ss.getName()}_${timestamp}.md`;
 
-  // マイドライブ直下に保存
+  // Save to Google Drive root
   const file = DriveApp.createFile(fileName, output, MimeType.PLAIN_TEXT);
 
-  // 完了通知
+  // Show completion dialog
   SpreadsheetApp.getUi().alert(
-    `全シートをMarkdown形式で出力しました！\n\nファイル: ${fileName}\n\nURL:\n${file.getUrl()}`
+    `Exported all sheets to Markdown!\n\nFile: ${fileName}\n\nURL:\n${file.getUrl()}`
   );
 }
