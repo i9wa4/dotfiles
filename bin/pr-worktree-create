@@ -14,17 +14,19 @@ set -o posix
 #   - gh (GitHub CLI)
 #   - repo-setup (optional)
 
+# Check required dependencies
+for cmd in gh git; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: $cmd command not found. Please install it." >&2
+    exit 1
+  fi
+done
+
 # Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <pr_number> [pr_number2 ...]" >&2
   echo "Example: $0 123" >&2
   echo "Example: $0 123 456 789" >&2
-  exit 1
-fi
-
-# Check for gh command
-if ! command -v gh &>/dev/null; then
-  echo "Error: gh command not found. Please install GitHub CLI." >&2
   exit 1
 fi
 

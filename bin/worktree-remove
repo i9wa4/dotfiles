@@ -4,31 +4,66 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# Remove git worktree(s) by ghq repository path.
+# Remove git worktree(s) by path.
 # Safely removes only worktrees (not regular repositories).
 #
 # Usage:
-#   worktree-remove <ghq_repo_path> [ghq_repo_path2 ...]
+#   worktree-remove <path> [path2 ...]
 #
-# Example:
-#   worktree-remove github.com/org/project-issue-123
+# Path formats:
+#   - ghq path: github.com/org/project-issue-123 (requires ghq)
+#   - Absolute path: /home/user/projects/repo-issue-123
+#   - Relative path: ../repo-issue-123
 #
 # Dependencies:
-#   - ghq
+#   - ghq (optional, for ghq-style paths)
 
-# Check arguments
-if [[ $# -eq 0 ]]; then
-  echo "Usage: $0 <ghq_repo_path> [ghq_repo_path2 ...]" >&2
-  echo "Example: $0 github.com/org/project-issue-123" >&2
+# Check required dependencies
+if ! command -v git &>/dev/null; then
+  echo "Error: git command not found. Please install it." >&2
   exit 1
 fi
 
-# Get ghq root directory
-ghq_root=$(ghq root)
+# Check arguments
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <path> [path2 ...]" >&2
+  echo "" >&2
+  echo "Path formats:" >&2
+  echo "  ghq path:      github.com/org/project-issue-123" >&2
+  echo "  Absolute path: /home/user/projects/repo-issue-123" >&2
+  echo "  Relative path: ../repo-issue-123" >&2
+  exit 1
+fi
+
+# Resolve path: supports ghq paths, absolute paths, and relative paths
+resolve_path() {
+  local input="$1"
+
+  # Absolute path
+  if [[ "$input" = /* ]]; then
+    echo "$input"
+    return
+  fi
+
+  # Relative path (starts with . or ..)
+  if [[ "$input" = .* ]]; then
+    echo "$(cd "$(dirname "$input")" 2>/dev/null && pwd)/$(basename "$input")"
+    return
+  fi
+
+  # ghq-style path (e.g., github.com/org/repo)
+  if command -v ghq &>/dev/null; then
+    echo "$(ghq root)/${input}"
+    return
+  fi
+
+  # Fallback: treat as relative path from current directory
+  echo "$(pwd)/${input}"
+}
 
 # Process each repository
 for repo in "$@"; do
-  repo_path="${ghq_root}/${repo}"
+  repo_path=$(resolve_path "$repo")
 
   echo "Processing: ${repo}"
 
