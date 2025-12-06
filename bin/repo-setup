@@ -6,6 +6,7 @@ set -o posix
 
 # Set up repository environment for development.
 # Creates local.vim, .i9wa4/ directory, and trusts mise.toml.
+# Also runs repository-specific setup based on repo name.
 #
 # Usage:
 #   repo-setup
@@ -14,6 +15,11 @@ set -o posix
 #   - local.vim: Vim local configuration
 #   - .i9wa4/: Working directory (gitignored globally)
 #   - .i9wa4/temp.md: Template file for notes
+
+# Get main repository info (works from worktree too)
+main_repo="$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')"
+repo_name="$(basename "${main_repo}")"
+echo "* Repository: ${repo_name}"
 
 # Create local.vim
 cat >local.vim <<'EOF'
@@ -48,5 +54,24 @@ if [[ -f "mise.toml" ]]; then
   mise trust mise.toml
   echo "* Trusted mise.toml"
 fi
+
+# Repository-specific setup
+case "${repo_name}" in
+# Example: frontend project
+# "my-frontend-app")
+#   npm ci
+#   echo "* Installed npm dependencies"
+#   ;;
+# Example: backend project with .env
+# "my-backend-api")
+#   if [[ -f "${main_repo}/.env" ]] && [[ ! -f .env ]]; then
+#     cp "${main_repo}/.env" .env
+#     echo "* Copied .env from main repository"
+#   fi
+#   ;;
+*)
+  # No repository-specific setup
+  ;;
+esac
 
 echo "* Setup complete"
