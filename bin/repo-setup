@@ -41,6 +41,7 @@ cat >.i9wa4/temp.md <<'EOF'
 
 /CONTRIBUTING
 /issue-to-pr
+/issue-to-pr next
 
 ## 2. Review
 
