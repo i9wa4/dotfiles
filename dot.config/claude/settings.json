@@ -16,6 +16,7 @@
   "permissions": {
     "allow": [],
     "deny": [
+      "Bash(git -C:*)",
       "Bash(git push:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
