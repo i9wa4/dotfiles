@@ -4,7 +4,28 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# 引数チェック
+# Create a git worktree for the specified GitHub issue(s).
+# Uses Claude to generate a descriptive branch name from the issue content.
+# Falls back to title-based naming if Claude is not available.
+#
+# Usage:
+#   issue-worktree-create <issue_number> [issue_number2 ...]
+#
+# Dependencies:
+#   - gh (GitHub CLI)
+#   - jq
+#   - claude (Anthropic CLI, optional)
+#   - repo-setup (optional)
+
+# Check required dependencies
+for cmd in gh jq git; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: $cmd command not found. Please install it." >&2
+    exit 1
+  fi
+done
+
+# Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <issue_number> [issue_number2 ...]" >&2
   echo "Example: $0 123" >&2
@@ -12,100 +33,108 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-# 基本設定
+# Get repository name
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
 
-# リモート情報を一度だけ取得
-echo "→ リモート情報を取得中..."
+# Fetch remote once
+echo "-> Fetching remote..."
 git fetch origin
 echo ""
 
-# 各 Issue 番号に対して処理
+# Process each issue number
 for issue_number in "$@"; do
-  # 番号の妥当性チェック
+  # Validate issue number
   if [[ ! $issue_number =~ ^[0-9]+$ ]]; then
-    echo "Warning: '$issue_number' は無効な Issue 番号です。スキップします。" >&2
+    echo "Warning: '$issue_number' is not a valid issue number. Skipping." >&2
     echo ""
     continue
   fi
 
-  echo "=== Issue #${issue_number} の処理開始 ==="
+  echo "=== Processing Issue #${issue_number} ==="
 
-  # Issue 情報を取得
-  echo "→ Issue 情報を取得中..."
+  # Fetch issue information
+  echo "-> Fetching issue info..."
   if ! issue_json=$(gh issue view "${issue_number}" --json title,body,comments 2>&1); then
-    echo "Error: Issue #${issue_number} の取得に失敗しました。スキップします。" >&2
+    echo "Error: Failed to fetch Issue #${issue_number}. Skipping." >&2
     echo "${issue_json}" >&2
     echo ""
     continue
   fi
 
-  issue_title=$(jq -r '.title // empty' <<< "$issue_json")
-  issue_body=$(jq -r '.body // empty' <<< "$issue_json")
-  issue_comments=$(jq -r '.comments[]?.body // empty' <<< "$issue_json" | head -c 2000)
+  issue_title=$(jq -r '.title // empty' <<<"$issue_json")
+  issue_body=$(jq -r '.body // empty' <<<"$issue_json")
+  issue_comments=$(jq -r '.comments[]?.body // empty' <<<"$issue_json" | head -c 2000)
 
   if [[ -z $issue_title ]]; then
-    echo "Error: Issue #${issue_number} のタイトルが空です。スキップします。" >&2
+    echo "Error: Issue #${issue_number} has no title. Skipping." >&2
     echo ""
     continue
   fi
 
-  # ブランチ名を生成
-  echo "→ ブランチ名を生成中..."
-  if ! branch_slug=$(claude --print "以下のIssue情報から、Gitブランチ名として適切な英語の短いスラッグ(kebab-case)を生成してください。
-- 最大5単語程度
-- 小文字とハイフンのみ使用
-- 特殊文字は除去
-- 動詞から始めることを推奨
+  # Generate branch name
+  echo "-> Generating branch name..."
+  branch_slug=""
 
-出力は英語のスラッグのみを返してください(説明不要)。
+  # Try Claude first if available
+  if command -v claude &>/dev/null; then
+    prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
+- Maximum 5 words
+- Lowercase and hyphens only
+- Remove special characters
+- Start with a verb if possible
+
+Return ONLY the slug (no explanation).
 
 ---
-Issueタイトル: ${issue_title}
+Issue title: ${issue_title}
 ---
-Issue本文:
+Issue body:
 ${issue_body}
 ---
-Issueコメント:
+Issue comments:
 ${issue_comments}
----" 2>/dev/null | tr -d '\n') || [[ -z $branch_slug ]]; then
-    echo "Error: Issue #${issue_number} のブランチ名生成に失敗しました。" >&2
-    exit 1
+---"
+
+    branch_slug=$(claude --print "$prompt" 2>/dev/null | tr -d '\n') || true
   fi
 
-  branch_name="issue-${issue_number}-${branch_slug}"
-  echo "✓ ブランチ名: ${branch_name}"
+  # Fallback: use issue number only
+  if [[ -z $branch_slug ]]; then
+    echo "  (Using fallback: issue number only)"
+    branch_name="issue-${issue_number}"
+  else
+    branch_name="issue-${issue_number}-${branch_slug}"
+  fi
+  echo "* Branch name: ${branch_name}"
 
   worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
 
-  # 既存worktreeチェック
+  # Check for existing worktree
   if [[ -d $worktree_path ]]; then
-    echo "✓ 既存のworktreeが存在: ${worktree_path}"
-    echo "✓ ブランチ: ${branch_name}"
+    echo "* Worktree already exists: ${worktree_path}"
+    echo "* Branch: ${branch_name}"
   else
-    # worktree作成
+    # Create worktree
     if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
       git worktree add "$worktree_path" "$branch_name"
-      echo "✓ worktreeを作成: ${worktree_path}"
+      echo "* Created worktree: ${worktree_path}"
     else
       git worktree add -b "$branch_name" "$worktree_path"
-      echo "✓ worktreeを作成: ${worktree_path}"
-      echo "✓ ローカルブランチを作成: ${branch_name}"
+      echo "* Created worktree: ${worktree_path}"
+      echo "* Created local branch: ${branch_name}"
     fi
 
-    # repo-setup を実行
-    echo "→ repo-setup を実行中..."
-    cd "$worktree_path"
+    # Run repo-setup if available
     if command -v repo-setup &>/dev/null; then
+      echo "-> Running repo-setup..."
+      cd "$worktree_path"
       repo-setup
-    else
-      echo "Warning: repo-setup コマンドが見つかりません。手動でセットアップしてください。"
+      cd - >/dev/null
     fi
-    cd - >/dev/null
   fi
 
   echo ""
 done
 
-echo "✓ すべての Issue 対応環境の準備が完了しました"
+echo "* All issue worktrees are ready."
 echo ""

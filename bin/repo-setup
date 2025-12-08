@@ -4,49 +4,76 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# .devcontainerディレクトリをコピー（存在する場合はスキップ）
-# if [ ! -d ".devcontainer" ] && [ -d "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" ]; then
-#   rm -rf .devcontainer/
-#   cp -r "$HOME/ghq/github.com/i9wa4/dotfiles/.devcontainer" .
-#   echo "✓  .devcontainer ディレクトリをコピーしました"
-# fi
+# Set up repository environment for development.
+# Creates local.vim, .i9wa4/ directory, and trusts mise.toml.
+# Also runs repository-specific setup based on repo name.
+#
+# Usage:
+#   repo-setup
+#
+# Created files:
+#   - local.vim: Vim local configuration
+#   - .i9wa4/: Working directory (gitignored globally)
+#   - .i9wa4/temp.md: Template file for notes
 
-# cp -f "${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude/dot.mcp.json .mcp.json
-# echo "✓  .mcp.json ファイルをコピーしました"
+# Get main repository info (works from worktree too)
+main_repo="$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')"
+repo_name="$(basename "${main_repo}")"
+echo "* Repository: ${repo_name}"
 
+# Create local.vim
 cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
 let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
-echo "✓  local.vim ファイルをコピーしました"
+echo "* Created local.vim"
 
-# .i9wa4/ ディレクトリとファイルを作成
+# Create .i9wa4/ directory
 mkdir -p .i9wa4/
-echo "✓  .i9wa4/ ディレクトリを作成しました"
+echo "* Created .i9wa4/ directory"
 
+# Create template file
 cat >.i9wa4/temp.md <<'EOF'
 # temp
 
-## Common
+## 1. Development
 
 /CONTRIBUTING
+/issue-to-pr
+/issue-to-pr next
+Go on.
 
-## Claude Code
-
-## Codex CLI
-
-## Review
+## 2. Review
 
 /CONTRIBUTING
 /my-review
 /summarize-reviews
 EOF
 
-# mise.toml が存在する場合は trust する
-if [ -f "mise.toml" ]; then
+# Trust mise.toml if exists
+if [[ -f "mise.toml" ]]; then
   mise trust mise.toml
-  echo "✓  mise.toml を trust しました"
+  echo "* Trusted mise.toml"
 fi
 
-echo "✓  セットアップ完了"
+# Repository-specific setup
+case "${repo_name}" in
+# Example: frontend project
+# "my-frontend-app")
+#   npm ci
+#   echo "* Installed npm dependencies"
+#   ;;
+# Example: backend project with .env
+# "my-backend-api")
+#   if [[ -f "${main_repo}/.env" ]] && [[ ! -f .env ]]; then
+#     cp "${main_repo}/.env" .env
+#     echo "* Copied .env from main repository"
+#   fi
+#   ;;
+*)
+  # No repository-specific setup
+  ;;
+esac
+
+echo "* Setup complete"

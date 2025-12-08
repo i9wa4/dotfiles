@@ -1,40 +1,93 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
-# 引数チェック
-if [ $# -eq 0 ]; then
-  echo "使い方: $0 <repo1> <repo2> ..."
+# Remove git worktree(s) by path.
+# Safely removes only worktrees (not regular repositories).
+#
+# Usage:
+#   worktree-remove <path> [path2 ...]
+#
+# Path formats:
+#   - ghq path: github.com/org/project-issue-123 (requires ghq)
+#   - Absolute path: /home/user/projects/repo-issue-123
+#   - Relative path: ../repo-issue-123
+#
+# Dependencies:
+#   - ghq (optional, for ghq-style paths)
+
+# Check required dependencies
+if ! command -v git &>/dev/null; then
+  echo "Error: git command not found. Please install it." >&2
   exit 1
 fi
 
-# ghqのルートディレクトリを取得
-GHQ_ROOT=$(ghq root)
+# Check arguments
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <path> [path2 ...]" >&2
+  echo "" >&2
+  echo "Path formats:" >&2
+  echo "  ghq path:      github.com/org/project-issue-123" >&2
+  echo "  Absolute path: /home/user/projects/repo-issue-123" >&2
+  echo "  Relative path: ../repo-issue-123" >&2
+  exit 1
+fi
 
-# 各リポジトリに対して処理
+# Resolve path: supports ghq paths, absolute paths, and relative paths
+resolve_path() {
+  local input="$1"
+
+  # Absolute path
+  if [[ "$input" = /* ]]; then
+    echo "$input"
+    return
+  fi
+
+  # Relative path (starts with . or ..)
+  if [[ "$input" = .* ]]; then
+    echo "$(cd "$(dirname "$input")" 2>/dev/null && pwd)/$(basename "$input")"
+    return
+  fi
+
+  # ghq-style path (e.g., github.com/org/repo)
+  if command -v ghq &>/dev/null; then
+    echo "$(ghq root)/${input}"
+    return
+  fi
+
+  # Fallback: treat as relative path from current directory
+  echo "$(pwd)/${input}"
+}
+
+# Process each repository
 for repo in "$@"; do
-  REPO_PATH="${GHQ_ROOT}/${repo}"
+  repo_path=$(resolve_path "$repo")
 
-  echo "処理中: ${repo}"
+  echo "Processing: ${repo}"
 
-  # ディレクトリが存在するかチェック
-  if [ ! -d "${REPO_PATH}" ]; then
-    echo "  ⚠ ディレクトリが存在しません: ${REPO_PATH}"
+  # Check if directory exists
+  if [[ ! -d $repo_path ]]; then
+    echo "  Warning: Directory does not exist: ${repo_path}" >&2
     continue
   fi
 
-  # worktreeかどうかチェック (.git がファイルならworktree)
-  if [ -f "${REPO_PATH}/.git" ]; then
-    echo "  → worktreeを削除します"
+  # Check if it's a worktree (.git is a file, not a directory)
+  if [[ -f "${repo_path}/.git" ]]; then
+    echo "  -> Removing worktree..."
 
-    # .gitファイルからメインリポジトリのパスを取得
-    MAIN_REPO=$(grep "gitdir:" "${REPO_PATH}/.git" | sed 's/gitdir: //' | sed 's|/.git/worktrees/.*||')
+    # Extract main repository path from .git file
+    main_repo=$(grep "gitdir:" "${repo_path}/.git" | sed 's/gitdir: //' | sed 's|/.git/worktrees/.*||')
 
-    # メインリポジトリのディレクトリで git worktree remove を実行
-    (cd "${MAIN_REPO}" && git worktree remove --force "${REPO_PATH}")
+    # Run git worktree remove from main repository
+    cd "${main_repo}" && git worktree remove --force "${repo_path}"
+    echo "  * Removed: ${repo_path}"
   else
-    echo "  ⚠ これはworktreeではありません (通常のリポジトリ)"
+    echo "  Warning: Not a worktree (regular repository): ${repo_path}" >&2
   fi
 
   echo ""
 done
 
-echo "✓  完了"
+echo "* Done."

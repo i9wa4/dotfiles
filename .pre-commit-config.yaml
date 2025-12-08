@@ -45,21 +45,21 @@ repos:
         language: system
         types: [shell]
 
-      - id: black
-        name: black
-        entry: mise exec -- uv run --no-sync black
+      - id: shfmt
+        name: shfmt
+        entry: mise exec -- shfmt -i 2 -w
+        language: system
+        types: [shell]
+
+      - id: ruff-check
+        name: ruff check
+        entry: mise exec -- uv run --no-sync ruff check --fix
         language: system
         types: [python]
 
-      - id: isort
-        name: isort (python)
-        entry: mise exec -- uv run --no-sync isort
-        language: system
-        types: [python]
-
-      - id: flake8
-        name: flake8
-        entry: mise exec -- uv run --no-sync flake8
+      - id: ruff-format
+        name: ruff format
+        entry: mise exec -- uv run --no-sync ruff format
         language: system
         types: [python]
 

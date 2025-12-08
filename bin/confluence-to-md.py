@@ -1,14 +1,29 @@
 #!/usr/bin/env python3
-# coding: utf-8
 """
-Confluence ページを Markdown に変換するツール（安定版）
-------------------------------------------------------------
-✔ 箇条書き保持（flatten防止）
-✔ draw.io / 画像対応（完全URL化）
-✔ 水平線（<hr> → ---）
-✔ コードブロック維持
-✔ テーブル精度向上
-✔ ファイル名 = confluence_(タイトル、空白→_) .md
+Convert Confluence pages to Markdown.
+
+Features:
+- Preserves bullet lists (prevents flattening)
+- Supports draw.io diagrams and images (full URL conversion)
+- Converts horizontal rules (<hr> -> ---)
+- Maintains code blocks
+- Improves table formatting accuracy
+- Output filename: {timestamp}-confluence-{title}.md
+
+Usage:
+    confluence-to-md.py <confluence_url>
+    confluence-to-md.py  # Interactive mode
+
+Environment variables (in .env file):
+    CONFLUENCE_BASE: Base URL of Confluence instance
+    CONFLUENCE_EMAIL: User email for authentication
+    CONFLUENCE_API_TOKEN: API token for authentication
+
+Dependencies:
+    - requests
+    - beautifulsoup4
+    - html2text
+    - python-dotenv
 """
 
 from __future__ import annotations
@@ -29,21 +44,22 @@ from dotenv import load_dotenv
 
 
 # =========================================================
-# 環境設定
+# Environment Configuration
 # =========================================================
 def load_env():
+    """Load environment variables from .env file."""
     root_dir = Path(__file__).resolve().parents[1]
     env_path = root_dir / ".env"
     if not env_path.exists():
-        sys.exit(f"❌ .env が見つかりません: {env_path}")
+        sys.exit(f"Error: .env file not found: {env_path}")
     load_dotenv(dotenv_path=env_path)
     base = os.getenv("CONFLUENCE_BASE")
     email = os.getenv("CONFLUENCE_EMAIL")
     token = os.getenv("CONFLUENCE_API_TOKEN")
     if not (base and email and token):
         sys.exit(
-            "❌ .env に CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN"
-            " が設定されていません。"
+            "Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN "
+            "must be set in .env file."
         )
     return base.rstrip("/"), email, token
 
@@ -52,6 +68,7 @@ def load_env():
 # Confluence REST API
 # =========================================================
 def fetch_page_html_and_title(base: str, email: str, token: str, page_id: str):
+    """Fetch page HTML content and title from Confluence API."""
     endpoint = f"{base}/rest/api/content/{page_id}"
     endpoint += "?expand=body.export_view,body.storage"
     auth_header = base64.b64encode(f"{email}:{token}".encode()).decode()
@@ -65,13 +82,14 @@ def fetch_page_html_and_title(base: str, email: str, token: str, page_id: str):
         or body.get("storage", {}).get("value")
         or ""
     )
-    return html, data.get("title", "無題ページ")
+    return html, data.get("title", "Untitled Page")
 
 
 # =========================================================
-# ユーティリティ
+# Utilities
 # =========================================================
 def text_width(text: str) -> int:
+    """Calculate display width of text (considering CJK characters)."""
     width = 0
     for ch in text:
         if unicodedata.east_asian_width(ch) in ("F", "W", "A"):
@@ -82,22 +100,25 @@ def text_width(text: str) -> int:
 
 
 def sanitize_filename(name: str) -> str:
+    """Sanitize string for use as filename."""
     name = re.sub(r"[ 　]+", "_", name)
     name = re.sub(r'[\\/:*?"<>|]', "", name)
     return name.strip("_")
 
 
 # =========================================================
-# テーブル整形
+# Table Formatting
 # =========================================================
 def is_table_block(block: list[str]) -> bool:
+    """Check if lines form a Markdown table."""
     if len(block) < 2:
         return False
-    # 2行目に --- があるときのみテーブル判定
+    # Only detect as table if second line contains ---
     return re.search(r"\|\s*-+\s*\|", block[1]) is not None
 
 
 def align_markdown_table(table_lines: list[str]) -> list[str]:
+    """Align columns in a Markdown table."""
     rows = []
     for line in table_lines:
         parts = [part.strip() for part in line.strip().strip("|").split("|")]
@@ -122,6 +143,7 @@ def align_markdown_table(table_lines: list[str]) -> list[str]:
 
 
 def format_tables_in_markdown(md: str) -> str:
+    """Format all tables in Markdown text."""
     lines = md.splitlines()
     result, buf = [], []
     for line in lines + [""]:
@@ -138,13 +160,15 @@ def format_tables_in_markdown(md: str) -> str:
 
 
 # =========================================================
-# リスト、コード、画像、水平線処理
+# List, Code, Image, Horizontal Rule Processing
 # =========================================================
 def normalize_inline_text(value: str) -> str:
+    """Normalize whitespace in inline text."""
     return re.sub(r"\s+", " ", value).strip()
 
 
 def list_to_markdown(tag, depth=0):
+    """Convert HTML list to Markdown format."""
     is_ordered = tag.name == "ol"
     lines = []
     for index, li in enumerate(tag.find_all("li", recursive=False), start=1):
@@ -176,12 +200,12 @@ def list_to_markdown(tag, depth=0):
 
 
 def preprocess_html(soup: BeautifulSoup, base: str, page_id: str):
-    """draw.io / img / hr / list / code対応"""
-    # 水平線
+    """Preprocess HTML for draw.io, images, hr, lists, and code blocks."""
+    # Horizontal rules
     for hr in soup.find_all("hr"):
         hr.replace_with("\n\n---\n\n")
 
-    # コードブロック
+    # Code blocks
     for pre in soup.find_all("pre"):
         code = pre.get_text("\n").strip()
         pre.replace_with(f"\n```text\n{code}\n```\n")
@@ -201,7 +225,7 @@ def preprocess_html(soup: BeautifulSoup, base: str, page_id: str):
         else:
             ac_img.decompose()
 
-    # 通常の img
+    # Regular img tags
     for img in soup.find_all("img"):
         alt = img.get("alt", "image")
         src = img.get("src", "")
@@ -213,7 +237,7 @@ def preprocess_html(soup: BeautifulSoup, base: str, page_id: str):
         else:
             img.decompose()
 
-    # Confluence のマクロを展開
+    # Unwrap Confluence macros
     for tag in soup.find_all(
         [
             "ac:structured-macro",
@@ -238,14 +262,16 @@ def preprocess_html(soup: BeautifulSoup, base: str, page_id: str):
 
 
 # =========================================================
-# 改行補正（ヘッダ・リスト）
+# Line Break Correction (Headings, Lists)
 # =========================================================
 def is_list_line(line: str) -> bool:
+    """Check if line is a list item."""
     stripped = line.lstrip()
     return bool(re.match(r"([-*+]|\d+\.)\s", stripped))
 
 
 def ensure_list_spacing(md: str) -> str:
+    """Ensure proper spacing around lists."""
     lines = md.splitlines()
     result = []
     i = 0
@@ -287,6 +313,7 @@ def ensure_list_spacing(md: str) -> str:
 
 
 def ensure_table_spacing(md: str) -> str:
+    """Ensure proper spacing around tables."""
     lines = md.splitlines()
     result = []
     i = 0
@@ -317,6 +344,7 @@ def ensure_table_spacing(md: str) -> str:
 
 
 def ensure_heading_spacing(md: str) -> str:
+    """Ensure proper spacing around headings."""
     lines = md.splitlines()
     result = []
     i = 0
@@ -346,9 +374,10 @@ def ensure_heading_spacing(md: str) -> str:
 
 
 # =========================================================
-# HTML → Markdown 変換
+# HTML to Markdown Conversion
 # =========================================================
 def html_to_markdown(html: str, title: str, base: str, page_id: str) -> str:
+    """Convert HTML to Markdown."""
     soup = BeautifulSoup(html, "html.parser")
     list_placeholders = preprocess_html(soup, base, page_id)
 
@@ -368,7 +397,7 @@ def html_to_markdown(html: str, title: str, base: str, page_id: str) -> str:
         md = re.sub(pattern, f"\n{markdown}\n", md)
 
     md = format_tables_in_markdown(md)
-    md = re.sub(r"\\-", "-", md)  # bulletエスケープ解除
+    md = re.sub(r"\\-", "-", md)  # Unescape bullet characters
     md = re.sub(r"\n{3,}", "\n\n", md)
     md = re.sub(r"<\s+(https?://[^>\s]+)\s+>", r"<\1>", md)
     md = ensure_table_spacing(md)
@@ -378,15 +407,17 @@ def html_to_markdown(html: str, title: str, base: str, page_id: str) -> str:
 
 
 # =========================================================
-# 保存・メイン処理
+# Save and Main Processing
 # =========================================================
 def extract_page_id(url: str) -> str:
+    """Extract page ID from Confluence URL."""
     if m := re.search(r"/pages/(\d+)", url):
         return m.group(1)
-    raise ValueError("URL からページIDを抽出できませんでした。")
+    raise ValueError("Could not extract page ID from URL.")
 
 
 def save_markdown(title: str, md: str) -> str:
+    """Save Markdown to file in Downloads directory."""
     safe_title = sanitize_filename(title)
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     filename = f"{timestamp}-confluence-{safe_title}.md"
@@ -397,19 +428,20 @@ def save_markdown(title: str, md: str) -> str:
 
 
 def main():
+    """Main entry point."""
     if len(sys.argv) > 1:
         url = sys.argv[1]
     else:
-        url = input("Confluence URLを入力: ").strip()
+        url = input("Enter Confluence URL: ").strip()
     try:
         base, email, token = load_env()
         page_id = extract_page_id(url)
         html, title = fetch_page_html_and_title(base, email, token, page_id)
         md = html_to_markdown(html, title, base, page_id)
         path = save_markdown(title, md)
-        print(f"\n✅ Markdown 出力完了: {path}\n")
+        print(f"\n* Markdown export complete: {path}\n")
     except Exception as e:
-        print(f"❌ エラー: {e}")
+        print(f"Error: {e}")
         sys.exit(1)
 
 

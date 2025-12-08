@@ -37,7 +37,7 @@ jobs:
         with:
           # プルリクエスト時はソースブランチ(github.head_ref)を、
           # 手動実行時は実行対象ブランチ(github.ref_name)をチェックアウト
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          # ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
           persist-credentials: false
 
       - name: Install mise

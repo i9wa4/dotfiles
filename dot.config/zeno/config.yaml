@@ -114,3 +114,8 @@ snippets:
     keyword: vr
     snippet:
       vde-layout review
+
+  - name: worktree-remove
+    keyword: wr
+    snippet:
+      worktree-remove "$(ghq root)/$(ghq list | fzf)"
