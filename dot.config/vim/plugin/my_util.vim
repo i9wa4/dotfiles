@@ -4,7 +4,8 @@ set tabline=%!my_util#tabline()
 
 augroup MyUtil
   autocmd!
-  autocmd BufEnter * checktime
+  " autocmd BufEnter * checktime
+  autocmd CursorHold * checktime
   autocmd BufReadPost * call my_util#restore_cursor()
   autocmd VimEnter *
   \ call my_util#source_local_vimrc('<afile>:p'->expand())
