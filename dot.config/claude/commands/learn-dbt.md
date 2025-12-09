@@ -62,13 +62,16 @@ dbt について学ぼう！
     - `--select` オプションで対象を限定して実行する
     - モデルと tag の AND 条件の場合は `--select "staging.target,tag:tag_name"` のように指定する
 
-### 1.4. 並行作業のためのターゲット追加
+### 1.4. Issue 作業時のターゲット設定
 
+- YOU MUST: Issue 作業で `dbt run` を実行する前に、必ず Issue 専用ターゲットを自律的に作成する
+- NEVER: ターゲット設定済みかユーザーに確認しない（自分で profiles.yml を読んで判断する）
 - 背景
-    - 複数の issue を並行して作業する場合、スキーマが競合する可能性がある
-    - issue 番号ごとにターゲットを追加することで、スキーマを分離して並行作業が可能になる
+    - スキーマ競合を避けるため、Issue ごとにターゲットを分離する
+    - これは並行作業のためだけでなく、全ての Issue 作業で必須
 - 手順
-    1. `~/.dbt/profiles.yml` に issue 用ターゲットを追加する
+    1. `~/.dbt/profiles.yml` を読み取り、既存の設定を確認する
+    2. 該当 Issue 用ターゲットが存在しなければ、既存の `genda_dev` を参考に追加する
 
         ```yaml
         genda_databricks_dbt:
@@ -76,17 +79,17 @@ dbt について学ぼう！
             genda_dev:
               # 既存の設定...
             issue_123:  # issue番号に応じて命名
-              catalog: genda_dbt_dev_{username}
-              host: dbc-xxxxx.cloud.databricks.com
-              http_path: /sql/1.0/warehouses/xxxxx
+              catalog: genda_dbt_dev_{username}  # genda_dev と同じ
+              host: dbc-xxxxx.cloud.databricks.com  # genda_dev と同じ
+              http_path: /sql/1.0/warehouses/xxxxx  # genda_dev と同じ
               schema: genda_dwh_issue_123  # issue番号をスキーマ名に含める
               threads: 1
-              token: dapixxxxx
+              token: dapixxxxx  # genda_dev と同じ
               type: databricks
           target: genda_dev
         ```
 
-    2. dbt コマンド実行時に `--target` オプションで切り替える
+    3. dbt コマンド実行時に `--target` オプションで切り替える
 
         ```sh
         # issue_123 ターゲットで実行
