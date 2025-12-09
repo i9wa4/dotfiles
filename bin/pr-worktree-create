@@ -70,7 +70,7 @@ for pr_number in "$@"; do
     cd "$worktree_path"
     current_branch=$(git branch --show-current)
     if [[ -z $current_branch ]]; then
-      # detached HEAD の場合、ブランチをチェックアウト
+      # detached HEAD: checkout the branch
       echo "* Detached HEAD detected, checking out branch: ${pr_branch}"
       if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
         git checkout "${pr_branch}"
