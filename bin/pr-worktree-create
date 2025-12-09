@@ -68,7 +68,18 @@ for pr_number in "$@"; do
   if [[ -d $worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
     cd "$worktree_path"
-    echo "* Branch: $(git branch --show-current)"
+    current_branch=$(git branch --show-current)
+    if [[ -z $current_branch ]]; then
+      # detached HEAD の場合、ブランチをチェックアウト
+      echo "* Detached HEAD detected, checking out branch: ${pr_branch}"
+      if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
+        git checkout "${pr_branch}"
+      else
+        git checkout -b "${pr_branch}" "origin/${pr_branch}"
+      fi
+      current_branch=$(git branch --show-current)
+    fi
+    echo "* Branch: ${current_branch}"
     cd - >/dev/null
   else
     # Create worktree
