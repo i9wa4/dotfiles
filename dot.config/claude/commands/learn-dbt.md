@@ -62,6 +62,45 @@ dbt について学ぼう！
     - `--select` オプションで対象を限定して実行する
     - モデルと tag の AND 条件の場合は `--select "staging.target,tag:tag_name"` のように指定する
 
+### 1.4. 並行作業のためのターゲット追加
+
+- 背景
+    - 複数の issue を並行して作業する場合、スキーマが競合する可能性がある
+    - issue 番号ごとにターゲットを追加することで、スキーマを分離して並行作業が可能になる
+- 手順
+    1. `~/.dbt/profiles.yml` に issue 用ターゲットを追加する
+
+        ```yaml
+        genda_databricks_dbt:
+          outputs:
+            genda_dev:
+              # 既存の設定...
+            issue_123:  # issue番号に応じて命名
+              catalog: genda_dbt_dev_{username}
+              host: dbc-xxxxx.cloud.databricks.com
+              http_path: /sql/1.0/warehouses/xxxxx
+              schema: genda_dwh_issue_123  # issue番号をスキーマ名に含める
+              threads: 1
+              token: dapixxxxx
+              type: databricks
+          target: genda_dev
+        ```
+
+    2. dbt コマンド実行時に `--target` オプションで切り替える
+
+        ```sh
+        # issue_123 ターゲットで実行
+        dbt run --select +model_name --target issue_123 --profiles-dir ~/.dbt --no-use-colors
+
+        # 接続先確認
+        dbt debug --target issue_123 --profiles-dir ~/.dbt --no-use-colors
+        ```
+
+- 注意点
+    - ターゲット名と schema 名は issue 番号に合わせて一貫性を持たせる
+    - 作業完了後、不要になったスキーマは手動で削除する
+    - intermediate 層は `{schema}_dbt_intermediates` として自動生成される
+
 ## 2. dbt 向け Databricks SQL 方言
 
 - 全角のカラム名はバッククォートで囲む必要がある
