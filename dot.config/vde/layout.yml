@@ -30,8 +30,10 @@ presets:
             - name: claude
               command: claude --dangerously-skip-permissions
         - type: horizontal
-          ratio: [1, 1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
+            - name: codex
+              command: codex --yolo
             - name: codex
               command: codex --yolo
             - name: codex
