@@ -35,7 +35,7 @@
     "type": "command",
     "command": "npx ccusage@latest statusline"
   },
-  "alwaysThinkingEnabled": true,
+  "alwaysThinkingEnabled": false,
   "preferredNotifChannel": "terminal_bell",
   "feedbackSurveyState": {
     "lastShownTime": 2069451551000
