@@ -15,5 +15,6 @@
     "terminal.integrated.fontFamily": "'MyricaM M', monospace",
     "terminal.integrated.fontSize": 20,
     "workbench.colorTheme": "Default Light Modern",
-    "hediet.vscode-drawio.resizeImages": null
+    "hediet.vscode-drawio.resizeImages": null,
+    "python.defaultInterpreterPath": "/usr/bin/python3"
 }
