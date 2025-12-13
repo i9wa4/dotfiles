@@ -71,13 +71,21 @@ for issue_number in "$@"; do
     continue
   fi
 
-  # Generate branch name
-  echo "-> Generating branch name..."
-  branch_slug=""
+  # Check for existing remote branch with issue number prefix
+  echo "-> Checking for existing remote branch..."
+  existing_branch=$(git branch -r --list "origin/issue-${issue_number}-*" | head -n 1 | sed 's|^[[:space:]]*origin/||')
 
-  # Try Claude first if available
-  if command -v claude &>/dev/null; then
-    prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
+  if [[ -n $existing_branch ]]; then
+    echo "  Found existing remote branch: ${existing_branch}"
+    branch_name="$existing_branch"
+  else
+    # Generate branch name
+    echo "-> Generating branch name..."
+    branch_slug=""
+
+    # Try Claude first if available
+    if command -v claude &>/dev/null; then
+      prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
 - Maximum 5 words
 - Lowercase and hyphens only
 - Remove special characters
@@ -95,15 +103,16 @@ Issue comments:
 ${issue_comments}
 ---"
 
-    branch_slug=$(claude --print "$prompt" 2>/dev/null | tr -d '\n') || true
-  fi
+      branch_slug=$(claude --print "$prompt" 2>/dev/null | tr -d '\n') || true
+    fi
 
-  # Fallback: use issue number only
-  if [[ -z $branch_slug ]]; then
-    echo "  (Using fallback: issue number only)"
-    branch_name="issue-${issue_number}"
-  else
-    branch_name="issue-${issue_number}-${branch_slug}"
+    # Fallback: use issue number only
+    if [[ -z $branch_slug ]]; then
+      echo "  (Using fallback: issue number only)"
+      branch_name="issue-${issue_number}"
+    else
+      branch_name="issue-${issue_number}-${branch_slug}"
+    fi
   fi
   echo "* Branch name: ${branch_name}"
 
