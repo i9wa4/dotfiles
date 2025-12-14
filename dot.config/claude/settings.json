@@ -35,6 +35,10 @@
     "type": "command",
     "command": "npx ccusage@latest statusline"
   },
+  "enabledPlugins": {
+    "example-skills@anthropic-agent-skills": true,
+    "document-skills@anthropic-agent-skills": true
+  },
   "alwaysThinkingEnabled": true,
   "preferredNotifChannel": "terminal_bell",
   "feedbackSurveyState": {
