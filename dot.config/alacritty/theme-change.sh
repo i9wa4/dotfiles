@@ -20,7 +20,7 @@ if [[ $THEME_TYPE != "light" && $THEME_TYPE != "dark" ]]; then
   THEME_TYPE="dark"
 fi
 
-CACHE_LIST_FILE="/tmp/alacritty-themes-${THEME_TYPE}.cache"
+CACHE_LIST_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/alacritty-themes-${THEME_TYPE}"
 
 # 背景色から明るさを判定する関数
 is_matching_theme() {
