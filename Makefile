@@ -41,9 +41,10 @@ MF_VIM_CONFIG_OPTS := --without-x
 endif
 
 define MF_LINK_HOME_ROWS
-dot.config/codex    .codex
-dot.config/cursor   .cursor
-dot.editorconfig    .editorconfig
+dot.config/claude/skills    .claude/skills
+dot.config/codex            .codex
+dot.config/cursor           .cursor
+dot.editorconfig            .editorconfig
 endef
 export MF_LINK_HOME_ROWS
 
