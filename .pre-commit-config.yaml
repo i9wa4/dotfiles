@@ -27,6 +27,12 @@ repos:
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
+      - id: ghalint
+        name: ghalint
+        entry: mise exec -- ghalint run
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
       - id: pinact
         name: pinact
         entry: mise exec -- pinact run
