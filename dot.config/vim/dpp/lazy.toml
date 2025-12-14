@@ -106,6 +106,14 @@ nnoremap <Plug>(my-Gin)p  <Cmd>execute 'Gin push'<CR>
 nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
 '''
 
+[[plugins]]
+repo = 'aiya000/bakaup.vim'
+on_event = ['VimEnter']
+hook_source = '''
+let g:bakaup_auto_backup = 1
+let g:bakaup_backup_dir = '/tmp/bakaup'
+'''
+
 # --------------------------------------
 # Markdown
 #
