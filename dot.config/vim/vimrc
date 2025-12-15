@@ -52,7 +52,8 @@ else
   set background=dark
 endif
 
-filetype plugin indent on
+" filetype plugin indent on
+filetype plugin on
 syntax enable
 
 if has('termguicolors')
