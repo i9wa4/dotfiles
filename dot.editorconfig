@@ -20,6 +20,12 @@ indent_size = 2
 [{*.go,Makefile}]
 indent_style = tab
 
+# Git commit message
+[COMMIT_EDITMSG]
+indent_style = space
+tab_width = 8
+max_line_length = 72
+
 # Windows
 [{*.{bat,cmd}}]
 end_of_line = crlf
