@@ -32,14 +32,16 @@ tflint          = "latest"
 "cargo:tokei"   = "latest"
 
 # Aqua Tools
-"aqua:gitleaks/gitleaks"                = "latest"
-"aqua:mikefarah/yq"                     = "latest"
-"aqua:rhysd/actionlint"                 = "latest"
-"aqua:suzuki-shunsuke/ghalint"          = "latest"
-"aqua:suzuki-shunsuke/github-comment"   = "latest"
-"aqua:suzuki-shunsuke/pinact"           = "latest"
-"aqua:x-motemen/ghq"                    = "latest"
-"aqua:zizmorcore/zizmor"                = "latest"
+"aqua:gitleaks/gitleaks"                                      = "latest"
+"aqua:mikefarah/yq"                                           = "latest"
+"aqua:rhysd/actionlint"                                       = "latest"
+"aqua:suzuki-shunsuke/disable-checkout-persist-credentials"   = "latest"
+"aqua:suzuki-shunsuke/ghalint"                                = "latest"
+"aqua:suzuki-shunsuke/ghatm"                                  = "latest"
+"aqua:suzuki-shunsuke/github-comment"                         = "latest"
+"aqua:suzuki-shunsuke/pinact"                                 = "latest"
+"aqua:x-motemen/ghq"                                          = "latest"
+"aqua:zizmorcore/zizmor"                                      = "latest"
 
 # Go Tools
 "go:github.com/jameswoolfenden/pike"    = { version = "latest" }
