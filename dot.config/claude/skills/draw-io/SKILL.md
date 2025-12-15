@@ -13,14 +13,13 @@ description: draw.io 図の作成・編集・レビューを行う。.drawio フ
 
 ## 2. フォント設定
 
-- Quarto スライドで使用する図は、mxGraphModel タグに
-  `defaultFontFamily` を指定する
+Quarto スライドで使用する図は、mxGraphModel タグに `defaultFontFamily` を指定する
 
 ```xml
 <mxGraphModel defaultFontFamily="Noto Sans JP" ...>
 ```
 
-- 各テキスト要素の style 属性にも明示的に `fontFamily` を指定する
+各テキスト要素の style 属性にも明示的に `fontFamily` を指定する
 
 ```xml
 style="text;html=1;fontSize=27;fontFamily=Noto Sans JP;"
@@ -73,18 +72,55 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 - 要素の中心座標 = `y + (height / 2)`
 - 複数要素を揃える場合は中心座標を計算して合わせる
 
-## 5. ベストプラクティス
+## 5. デザイン原則
 
-### 5.1. 背景色
+### 5.1. 基本原則
+
+- 明確さ: シンプルで視覚的にクリーンな図を作成
+- 一貫性: 色、フォント、アイコンサイズ、線の太さを統一
+- 正確さ: 簡略化のために正確性を犠牲にしない
+
+### 5.2. 構成要素のルール
+
+- すべての要素にラベルを付ける
+- 方向を示す矢印を使用 (双方向より2本の単方向矢印を推奨)
+- 公式アイコンの最新版を使用
+- 凡例を追加してカスタム記号を説明
+
+### 5.3. アクセシビリティ
+
+- 十分な色のコントラストを確保
+- 色だけでなくパターンも併用
+
+### 5.4. プログレッシブディスクロージャー
+
+複雑なシステムは段階的に図を分ける
+
+| 図の種類 | 目的 |
+|----------|------|
+| コンテキスト図 | システムを外部から見た全体像 |
+| システム図 | 主要コンポーネントとその関係 |
+| コンポーネント図 | 技術詳細と統合ポイント |
+| デプロイ図 | インフラストラクチャ構成 |
+| データフロー図 | データの流れと変換 |
+| シーケンス図 | 時系列の相互作用 |
+
+### 5.5. メタデータ
+
+図にはタイトル、説明、最終更新日、作成者、バージョンを記載する。
+
+## 6. ベストプラクティス
+
+### 6.1. 背景色
 
 - `background="#ffffff"` は削除すること
 - 透明背景にすることで、様々なテーマに対応できる
 
-### 5.2. フォントサイズ
+### 6.2. フォントサイズ
 
 - PDF 表示で読みやすくするため、標準フォントサイズの 1.5 倍 (18px 程度) を使用
 
-### 5.3. 日本語テキスト幅
+### 6.3. 日本語テキスト幅
 
 - 1 文字あたり 30〜40px を確保
 - 不足すると意図しない改行が発生する
@@ -94,7 +130,7 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 <mxGeometry x="140" y="60" width="400" height="40" />
 ```
 
-### 5.4. 矢印配置
+### 6.4. 矢印配置
 
 - 矢印は必ず最背面に配置 (XML で Title の直後に配置)
 - 矢印がラベルと被らないように配置
@@ -111,7 +147,7 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 <mxCell id="box1" .../>
 ```
 
-### 5.5. テキストラベルへの矢印接続
+### 6.5. テキストラベルへの矢印接続
 
 テキスト要素への接続は `exitX/exitY` が効かないため、明示的な座標を使用する
 
@@ -129,7 +165,7 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 </mxCell>
 ```
 
-### 5.6. edgeLabel の offset 調整
+### 6.6. edgeLabel の offset 調整
 
 矢印ラベルを矢印から離すには、offset 属性を調整する
 
@@ -141,19 +177,19 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 <mxPoint x="0" y="40" as="offset"/>
 ```
 
-### 5.7. 不要な要素の削除
+### 6.7. 不要な要素の削除
 
 - 文脈に不要な装飾アイコンは削除
 - 例: ECR があれば、別途 Docker アイコンは不要
 
-### 5.8. ラベルと見出し
+### 6.8. ラベルと見出し
 
 - サービス名のみ: 1 行
 - サービス名 + 補足情報: 改行して 2 行
 - 冗長な表記 (例: ECR Container Registry): 短縮して 1 行
 - 改行には `&lt;br&gt;` タグを使用
 
-## 6. リファレンス
+## 7. リファレンス
 
 - [レイアウトガイドライン](references/layout-guidelines.md)
 - [AWS アイコン](references/aws-icons.md)
@@ -166,7 +202,7 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py ec2
 python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 ```
 
-## 7. チェックリスト
+## 8. チェックリスト
 
 - [ ] 背景色が設定されていないか (page="0" であること)
 - [ ] フォントサイズは適切か (大きめ推奨)
@@ -179,7 +215,7 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] 不要な要素が残っていないか
 - [ ] PNG に変換して視覚的に確認したか
 
-## 8. reveal.js スライドでの画像表示
+## 9. reveal.js スライドでの画像表示
 
 YAML ヘッダーに `auto-stretch: false` を追加する
 
