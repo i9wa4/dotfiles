@@ -23,3 +23,9 @@ indent_style = tab
 # Windows
 [{*.{bat,cmd}}]
 end_of_line = crlf
+
+# Git commit message
+[COMMIT_EDITMSG]
+indent_style = space
+tab_width = 8
+max_line_length = 72
