@@ -81,7 +81,7 @@ update:  ## update for all OS
 	@$(MAKE) link
 	@$(MAKE) package-update
 	@$(MAKE) common-clean
-	cd ~/ghq/github.com/i9wa4/internal && uv run quarto render docs/
+	cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work
 
 common-init: zsh-init unlink link git-config package-install ghq-get-essential
 	git clone https://github.com/alacritty/alacritty-theme \

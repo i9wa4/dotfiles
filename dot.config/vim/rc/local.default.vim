@@ -1,7 +1,7 @@
 " Global Variables
 let g:mnh_header_level_shift = 7
 let g:my_ac_path = '~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/CLAUDE.md'->expand()
-let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/docs/00/index.qmd'->expand()
+let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/work/00/index.qmd'->expand()
 let g:my_tp_path = '~/ghq/github.com/i9wa4/dotfiles/.i9wa4/temp.md'->expand()
 
 " Python
