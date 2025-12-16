@@ -57,25 +57,27 @@ bindkey -M menuselect '^n' down-line-or-history
 bindkey -M menuselect '^p' up-line-or-history
 
 
-# zeno.zsh (lazy loading)
-_zeno_lazy_init() {
-  _zeno_path="${HOME}/ghq/github.com/yuki-yano/zeno.zsh/zeno.zsh"
-  if [[ -r "${_zeno_path}" ]]; then
-    source "${_zeno_path}"
+# zinit
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
+
+# zeno.zsh (lazy loading via zinit turbo mode)
+zinit ice wait lucid depth"1" blockf \
+  atload'
     if [[ -n "${ZENO_LOADED}" ]]; then
-      bindkey ' '  zeno-auto-snippet
-      bindkey '^m' zeno-auto-snippet-and-accept-line
-      bindkey '^i' zeno-completion
-      bindkey '^g' zeno-ghq-cd
-      bindkey '^r' zeno-history-selection
-      bindkey '^x^i' zeno-insert-snippet
+      bindkey " "  zeno-auto-snippet
+      bindkey "^m" zeno-auto-snippet-and-accept-line
+      bindkey "^i" zeno-completion
+      bindkey "^g" zeno-ghq-cd
+      bindkey "^r" zeno-history-selection
+      bindkey "^x^i" zeno-insert-snippet
     else
-      bindkey '^r' history-incremental-search-backward
+      bindkey "^r" history-incremental-search-backward
     fi
-  fi
-  # Remove itself from precmd_functions after execution
-  precmd_functions=("${(@)precmd_functions:#_zeno_lazy_init}")
-}
+  '
+zinit light yuki-yano/zeno.zsh
 
 
 # SSH connection detection
@@ -107,8 +109,5 @@ if (( _IS_LOCAL )); then
   else
     # mise
     eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
-
-    # Lazy load zeno.zsh in tmux sessions
-    precmd_functions=(_zeno_lazy_init $precmd_functions)
   fi
 fi
