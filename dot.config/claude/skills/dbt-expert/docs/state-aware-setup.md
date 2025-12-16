@@ -1,0 +1,337 @@
+---
+title: "Setting up state-aware orchestration | dbt Developer Hub"
+source_url: "https://docs.getdbt.com/docs/deploy/state-aware-setup"
+fetched_at: "2025-12-16T14:20:18.809572+00:00"
+---
+
+
+
+* * [Deploy dbt](https://docs.getdbt.com/docs/deploy/deployments)* [State aware](https://docs.getdbt.com/docs/deploy/state-aware-about)* Setting up state-aware
+
+Copy page
+
+Copy page
+
+Copy page as Markdown for LLMs
+
+[Open in ChatGPT
+
+Ask questions about this page](https://chatgpt.com/?hints=search&prompt=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fdocs%2Fdeploy%2Fstate-aware-setup+so+I+can+ask+questions+about+it.)[Open in Claude
+
+Ask questions about this page](https://claude.ai/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fdocs%2Fdeploy%2Fstate-aware-setup+so+I+can+ask+questions+about+it.)[Open in Perplexity
+
+Ask questions about this page](https://www.perplexity.ai/search/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fdocs%2Fdeploy%2Fstate-aware-setup+so+I+can+ask+questions+about+it.)
+
+On this page
+
+Set up state-aware orchestration to automatically determine which models to build by detecting changes in code or data and only building the changed models each time a job is run.
+
+important
+
+The dbt Fusion Engine is currently available for installation in:
+
+* [Local command line interface (CLI) tools](https://docs.getdbt.com/docs/fusion/install-fusion-cli) [Preview](https://docs.getdbt.com/docs/dbt-versions/product-lifecycles "Go to https://docs.getdbt.com/docs/dbt-versions/product-lifecycles")
+* [VS Code and Cursor with the dbt extension](https://docs.getdbt.com/docs/install-dbt-extension) [Preview](https://docs.getdbt.com/docs/dbt-versions/product-lifecycles "Go to https://docs.getdbt.com/docs/dbt-versions/product-lifecycles")
+* [dbt platform environments](https://docs.getdbt.com/docs/dbt-versions/upgrade-dbt-version-in-cloud#dbt-fusion-engine) [Private preview](https://docs.getdbt.com/docs/dbt-versions/product-lifecycles "Go to https://docs.getdbt.com/docs/dbt-versions/product-lifecycles")
+
+Join the conversation in our Community Slack channel [`#dbt-fusion-engine`](https://getdbt.slack.com/archives/C088YCAB6GH).
+
+Read the [Fusion Diaries](https://github.com/dbt-labs/dbt-fusion/discussions/categories/announcements) for the latest updates.
+
+## Prerequisites[​](#prerequisites "Direct link to Prerequisites")
+
+To use state-aware orchestration, make sure you meet these prerequisites:
+
+* You must have a dbt [Enterprise and Enterprise+ accounts](https://www.getdbt.com/signup/) and a [Developer seat license](https://docs.getdbt.com/docs/cloud/manage-access/seats-and-users).
+* You have updated the environment that will run state-aware orchestration to the dbt Fusion engine. For more information, refer to [Upgrading to dbt Fusion engine](https://docs.getdbt.com/docs/dbt-versions/core-upgrade/upgrading-to-fusion).
+* You must have a dbt project connected to a [data platform](https://docs.getdbt.com/docs/cloud/connect-data-platform/about-connections).
+* You must have [access permission](https://docs.getdbt.com/docs/cloud/manage-access/about-user-access) to view, create, modify, or run jobs.
+* You must set up a [deployment environment](https://docs.getdbt.com/docs/deploy/deploy-environments) that is production or staging only.
+* (Optional) To customize behavior, you have configured your model or source data with [advanced configurations](#advanced-configurations).
+
+info
+
+State-aware orchestration is available for SQL models only. Python models are not supported.
+
+## Default settings[​](#default-settings "Direct link to Default settings")
+
+By default, for an Enterprise-tier account upgraded to the dbt Fusion engine, any newly created job will automatically be state-aware. Out of the box, without custom configurations, when you run a job, the job will only build models when either the code has changed, or there’s any new data in a source.
+
+## Create a job[​](#create-a-job "Direct link to Create a job")
+
+New jobs are state-aware by default
+
+For existing jobs, make them state-aware by selecting **Enable Fusion cost optimization features** in the **Job settings** page.
+
+To create a state-aware job:
+
+1. From your deployment environment page, click **Create job** and select **Deploy job**.
+2. Options in the **Job settings** section:
+   * **Job name**: Specify the name, for example, `Daily build`.
+   * (Optional) **Description**: Provide a description of what the job does (for example, what the job consumes and what the job produces).
+   * **Environment**: By default, it’s set to the deployment environment you created the state-aware job from.
+3. Options in the **Execution settings** and **Triggers** sections:
+
+[![Example of Triggers on the Deploy Job page](https://docs.getdbt.com/img/docs/dbt-cloud/using-dbt-cloud/example-triggers-section.png?v=2 "Example of Triggers on the Deploy Job page")](#)Example of Triggers on the Deploy Job page
+
+* **Execution settings** section:
+  + **Commands**: By default, it includes the `dbt build` command. Click **Add command** to add more [commands](https://docs.getdbt.com/docs/deploy/job-commands) that you want to be invoked when the job runs.
+  + **Generate docs on run**: Enable this option if you want to [generate project docs](https://docs.getdbt.com/docs/build/documentation) when this deploy job runs.
+  + **Enable Fusion cost optimization features**: Select this option to enable **State-aware orchestration**. **Efficient testing** is disabled by default. You can expand **More options** to enable or disable individual settings.
+* **Triggers** section:
+  + **Run on schedule**: Run the deploy job on a set schedule.
+    - **Timing**: Specify whether to [schedule](#schedule-days) the deploy job using **Intervals** that run the job every specified number of hours, **Specific hours** that run the job at specific times of day, or **Cron schedule** that run the job specified using [cron syntax](#cron-schedule).
+    - **Days of the week**: By default, it’s set to every day when **Intervals** or **Specific hours** is chosen for **Timing**.
+  + **Run when another job finishes**: Run the deploy job when another *upstream* deploy [job completes](#trigger-on-job-completion).
+    - **Project**: Specify the parent project that has that upstream deploy job.
+    - **Job**: Specify the upstream deploy job.
+    - **Completes on**: Select the job run status(es) that will [enqueue](https://docs.getdbt.com/docs/deploy/job-scheduler#scheduler-queue) the deploy job.
+
+6. (Optional) Options in the **Advanced settings** section:
+
+   * **Environment variables**: Define [environment variables](https://docs.getdbt.com/docs/build/environment-variables) to customize the behavior of your project when the deploy job runs.
+   * **Target name**: Define the [target name](https://docs.getdbt.com/docs/build/custom-target-names) to customize the behavior of your project when the deploy job runs. Environment variables and target names are often used interchangeably.
+   * **Run timeout**: Cancel the deploy job if the run time exceeds the timeout value.
+   * **Compare changes against**: By default, it’s set to **No deferral**. Select either **Environment** or **This Job** to let dbt know what it should compare the changes against.
+7. Click **Save**.
+
+You can see which models dbt builds in the run summary logs. Models that weren't rebuilt during the run are tagged as **Reused** with context about why dbt skipped rebuilding them (and saving you unnecessary compute!). You can also see the reused models under the **Reused** tab.
+
+[![Example logs for state-aware orchestration](https://docs.getdbt.com/img/docs/dbt-cloud/using-dbt-cloud/SAO_logs_view.png?v=2 "Example logs for state-aware orchestration")](#)Example logs for state-aware orchestration
+
+## Delete a job[​](#delete-a-job "Direct link to Delete a job")
+
+To delete a job or multiple jobs in dbt:
+
+1. Click **Deploy** on the navigation header.
+2. Click **Jobs** and select the job you want to delete.
+3. Click **Settings** on the top right of the page and then click **Edit**.
+4. Scroll to the bottom of the page and click **Delete job** to delete the job.
+
+[![Delete a job](https://docs.getdbt.com/img/docs/dbt-cloud/cloud-configuring-dbt-cloud/delete-job.png?v=2 "Delete a job")](#)Delete a job
+
+5. Confirm your action in the pop-up by clicking **Confirm delete** in the bottom right to delete the job immediately. This action cannot be undone. However, you can create a new job with the same information if the deletion was made in error.
+6. Refresh the page, and the deleted job should now be gone. If you want to delete multiple jobs, you'll need to perform these steps for each job.
+
+If you're having any issues, feel free to [contact us](mailto:support@getdbt.com) for additional help.
+
+## Advanced configurations[​](#advanced-configurations "Direct link to Advanced configurations")
+
+By default, we use the warehouse metadata to check if sources (or upstream models in the case of Mesh) are fresh. For more advanced use cases, dbt provides other options that enable you to specify what gets run by state-aware orchestration.
+
+You can customize with:
+
+* `loaded_at_field`: Specify a specific column to use from the data.
+* `loaded_at_query`: Define a custom freshness condition in SQL to account for partial loading or streaming data.
+
+If a source is a view in the data warehouse, dbt can’t track updates from the warehouse metadata when the view changes. Without a `loaded_at_field` or `loaded_at_query`, dbt treats the source as "always fresh” and emits a warning during freshness checks. To check freshness for sources that are views, add a `loaded_at_field` or `loaded_at_query` to your configuration.
+
+note
+
+You can either define `loaded_at_field` or `loaded_at_query` but not both.
+
+You can also customize with:
+
+* `updates_on`: Change the default from `any` to `all` so it doesn’t build unless all upstreams have fresh data reducing compute even more.
+* `build_after`: Don’t build a model more often than every x period to reduce build frequency when you need data less often than sources are fresh.
+
+To learn more about model freshness and build after, refer to [model `freshness` config](https://docs.getdbt.com/reference/resource-configs/freshness). To learn more about source and upstream model freshness configs, refer to [resource `freshness` config](https://docs.getdbt.com/reference/resource-properties/freshness).
+
+## Customizing behavior[​](#customizing-behavior "Direct link to Customizing behavior")
+
+You can optionally configure state-aware orchestration when you want to fine-tune orchestration behavior for these reasons:
+
+* **Defining source freshness:**
+
+  By default, dbt uses metadata from the data warehouse. You can instead:
+
+  + Specify a custom column and dbt will go to that column in the table instead
+  + Specify a custom SQL statement to define what freshness means
+
+  Not all source freshness is equal — especially with partial ingestion pipelines. You may want to delay a model build until your sources have received a larger volume of data or until a specific time window has passed.
+
+  You can define what "fresh" means on a source-by-source basis using a custom freshness query. This lets you:
+
+  + Add a time difference to account for late-arriving data
+  + Delay freshness detection until a threshold is reached (for example, number of records or hours of data)
+* **Reducing model build frequency**
+
+  Some models don’t need to be rebuilt every time their source data is updated. To control this:
+
+  + Set a refresh interval on models, folders, or the project to define how often they should be rebuilt at most
+  + This helps avoid overbuilding and reduces costs by only running what's really needed
+* **Changing the default from `any` to `all`**
+
+  Based on what a model depends on upstream, you may want to wait until all upstream models have been refreshed rather than going as soon as there is any new data.
+
+  + Change what orchestration waits on from any to all for models, folders, or the project to wait until all upstream models have new data
+  + This helps avoid overbuilding and reduces costs by building models once everything has been refreshed
+
+  To configure and customize behavior, you can do so in the following places using the `build_after` config:
+
+  + `dbt_project.yml` at the project level in YAML
+  + `model/properties.yml` at the model level in YAML
+  + `model/model.sql` at the model level in SQL
+    These configurations are powerful because you can define a sensible default at the project level or for specific model folders, and override it for individual models or model groups that require more frequent updates.
+
+## Example[​](#example "Direct link to Example")
+
+Let's use an example to illustrate how to customize our project so a model and its parent model are rebuilt only if they haven't been refreshed in the past 4 hours — even if a job runs more frequently than that.
+
+A Jaffle shop has recently expanded globally and wanted to make savings. To reduce spend, they found out about dbt's state-aware orchestration and want to rebuild models only when needed. Maggie — the analytics engineer — wants to configure her dbt `jaffle_shop` project to only rebuild certain models if they haven't been refreshed in the last 4 hours, even if a job runs more often than that.
+
+To do this, she uses the model `freshness` config. This config helps state-aware orchestration decide *when* a model should be rebuilt.
+
+Note that for every `freshness` config, you're required to set values for both `count` and `period`. This applies to all `freshness` types: `freshness.warn_after`, `freshness.error_after`, and `freshness.build_after`.
+
+Refer to the following samples for using the `freshness` config in the model file, in the project file, and in the `config` block of the `model.sql` file:
+
+* Model YAML* Project file* Config block
+
+models/model.yml
+
+```
+models:
+  - name: dim_wizards
+    config:
+      freshness:
+        build_after:
+          count: 4         # how long to wait before rebuilding
+          period: hour     # unit of time
+          updates_on: all  # only rebuild if all upstream dependencies have new data
+  - name: dim_worlds
+    config:
+      freshness:
+        build_after:
+          count: 4
+          period: hour
+          updates_on: all
+```
+
+dbt\_project.yml
+
+```
+models:
+  <resource-path>:
+    +freshness:
+      build_after:
+        count: 4
+        period: hour
+        updates_on: all
+```
+
+models/<filename>.sql
+
+```
+{{
+    config(
+        freshness={
+            "build_after": {
+                "count": 4,
+                "period": "hour",
+                "updates_on": "all"
+            }
+        }
+    )
+}}
+```
+
+With this config, dbt:
+
+* Checks if there's new data in the upstream sources
+* Checks when `dim_wizards` and `dim_worlds` were last built
+
+If any new data is available *and* at least 4 hours have passed, dbt rebuilds the models.
+
+You can override freshness rules set at higher levels in your dbt project. For example, in the project file, you set:
+
+dbt\_project.yml
+
+```
+models:
+  +freshness:
+    build_after:
+      count: 4
+      period: hour
+  jaffle_shop: # this needs to match your project `name:` in dbt_project.yml
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+```
+
+This configuration means that every model in the project has a `build_after` of 4 hours. To change this for specific models or groups of models, you could set:
+
+dbt\_project.yml
+
+```
+models:
+  +freshness:
+    build_after:
+      count: 4
+      period: hour
+  marts: # only applies to models inside the marts folder
+    +freshness:
+      build_after:
+        count: 1
+        period: hour
+```
+
+If you want to exclude a model from the freshness rule set at a higher level, set `freshness: null` for that model. With freshness disabled, state-aware orchestration falls back to its default behavior and builds the model whenever there’s an upstream code or data change.
+
+### Differences between `all` and `any`[​](#differences-between-all-and-any "Direct link to differences-between-all-and-any")
+
+* Since Maggie configured `updates_on: all`, this means *both* models must have new upstream data to trigger a rebuild. If only one model has fresh data and the other doesn't, nothing is built -- which will massively reduce unnecessary compute costs and save time.
+* If Maggie wanted these models to rebuild more often (for example, if *any* upstream source has new data), she would then use `updates_on: any` instead:
+
+models/model.yml
+
+```
+    freshness:
+      build_after:
+        count: 1
+        period: hour
+        updates_on: any
+```
+
+This way, if either `dim_wizards` or `dim_worlds` has fresh upstream data and enough time passed, dbt rebuilds the models. This method helps when the need for fresher data outweighs the costs.
+
+## Limitation[​](#limitation "Direct link to Limitation")
+
+The following section lists considerations when using state-aware-orchestration:
+
+### Deleted tables[​](#deleted-tables "Direct link to Deleted tables")
+
+If a table was deleted in the warehouse, and neither the model’s code nor the data it depends on has changed, state-aware orchestration does not detect a change and will not rebuild the table. This is because dbt decides what to build based on code and data changes, not by checking whether every table still exists. To build the table, you have the following options:
+
+* **Clear cache and rebuild**: Go to **Orchestration** > **Environments** and click **Clear cache**. The next run will rebuild all models from a clean state.
+* **Temporarily disable state-aware orchestration**: Go to **Orchestration** > **Jobs**. Select your job and click **Edit**. Under **Enable Fusion cost optimization features**, disable **State-aware orchestration** and click **Save**. Run the job to force a full build, then re‑enable the feature after the run.
+
+## Related docs[​](#related-docs "Direct link to Related docs")
+
+* [State-aware orchestration configuration](https://docs.getdbt.com/docs/deploy/state-aware-about)
+* [Artifacts](https://docs.getdbt.com/docs/deploy/artifacts)
+* [Continuous integration (CI) jobs](https://docs.getdbt.com/docs/deploy/ci-jobs)
+* [`freshness`](https://docs.getdbt.com/reference/resource-configs/freshness)
+
+## Was this page helpful?
+
+YesNo
+
+[Privacy policy](https://www.getdbt.com/cloud/privacy-policy)[Create a GitHub issue](https://github.com/dbt-labs/docs.getdbt.com/issues)
+
+This site is protected by reCAPTCHA and the Google [Privacy Policy](https://policies.google.com/privacy) and [Terms of Service](https://policies.google.com/terms) apply.
+
+0
+
+[Previous
+
+About state-aware orchestration](https://docs.getdbt.com/docs/deploy/state-aware-about)[Next
+
+Navigating the interface](https://docs.getdbt.com/docs/deploy/state-aware-interface)
+
+* [Prerequisites](#prerequisites)* [Default settings](#default-settings)* [Create a job](#create-a-job)* [Delete a job](#delete-a-job)* [Advanced configurations](#advanced-configurations)* [Customizing behavior](#customizing-behavior)* [Example](#example)
+              + [Differences between `all` and `any`](#differences-between-all-and-any)* [Limitation](#limitation)
+                + [Deleted tables](#deleted-tables)* [Related docs](#related-docs)
+
+[Edit this page](https://github.com/dbt-labs/docs.getdbt.com/edit/current/website/docs/docs/deploy/state-aware-setup.md)
