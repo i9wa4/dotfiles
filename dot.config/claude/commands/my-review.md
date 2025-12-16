@@ -22,29 +22,44 @@ description: "Review"
 - あらゆる指摘を詳細に抽出する
 - 重要度順に指摘を並べる
 
-## 4. レビュアーエージェント
+## 4. レビュアーの役割
 
-3名のレビュアーエージェントを並列で実行し、それぞれの観点からレビューを行う
+### 4.1. マルチエージェントモード (Claude Code)
 
-| エージェント         | 観点                                   |
-| -------------------- | -------------------------------------- |
-| code-reviewer        | コード品質、可読性、保守性             |
-| security-reviewer    | セキュリティ脆弱性、OWASP Top 10       |
-| architecture-reviewer | 設計パターン、構造、スケーラビリティ   |
+agents/ ディレクトリが利用可能な場合、4名のレビュアーエージェントを並列で実行する
+
+| エージェント          | 観点                                       |
+| --------------------- | ------------------------------------------ |
+| code-reviewer         | コード品質、可読性、保守性                 |
+| security-reviewer     | セキュリティ脆弱性、OWASP Top 10           |
+| architecture-reviewer | 設計パターン、構造、スケーラビリティ       |
+| historian             | Issue/PR履歴、コミット経緯、プロジェクト文脈 |
 
 エージェント定義ファイル
 
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
 
-## 5. レビュー実行手順
+実行手順
 
-1. 上記3つのエージェント定義を読み込む
-2. Task ツールを使って3つのレビューを並列実行する
+1. 上記4つのエージェント定義を読み込む
+2. Task ツールを使って4つのレビューを並列実行する
 3. 各エージェントの結果を統合する
 
-## 6. レビュー結果の Markdown ファイル出力
+### 4.2. シングルモード (Codex CLI / エージェント未使用時)
+
+ペイン番号に応じた役割で単独レビューを実施する
+
+- tmux ペイン番号 N を取得: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- ペイン番号 N に応じて対応するエージェント定義ファイルを読み込む
+    - N % 4 == 0: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
+    - N % 4 == 1: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
+    - N % 4 == 2: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+    - N % 4 == 3: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
+
+## 5. レビュー結果の Markdown ファイル出力
 
 - レビュー結果を以下に保存する
     - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux ペイン番号)

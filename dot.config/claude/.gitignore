@@ -11,5 +11,4 @@ skills/**/*.skill
 !agents/**
 !rules/
 !rules/**
-!cc-current-usage.sh
 !restore-context.sh
