@@ -1,0 +1,100 @@
+---
+title: "Coding contributions | dbt Developer Hub"
+source_url: "https://docs.getdbt.com/community/contributing/contributing-coding"
+fetched_at: "2025-12-16T14:20:18.809572+00:00"
+---
+
+
+
+* * [Contributing](https://docs.getdbt.com/community/contribute)* Coding contributions
+
+Copy page
+
+Copy page
+
+Copy page as Markdown for LLMs
+
+[Open in ChatGPT
+
+Ask questions about this page](https://chatgpt.com/?hints=search&prompt=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fcommunity%2Fcontributing%2Fcontributing-coding+so+I+can+ask+questions+about+it.)[Open in Claude
+
+Ask questions about this page](https://claude.ai/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fcommunity%2Fcontributing%2Fcontributing-coding+so+I+can+ask+questions+about+it.)[Open in Perplexity
+
+Ask questions about this page](https://www.perplexity.ai/search/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Fcommunity%2Fcontributing%2Fcontributing-coding+so+I+can+ask+questions+about+it.)
+
+On this page
+
+### Contribute to dbt Packages[​](#contribute-to-dbt-packages "Direct link to Contribute to dbt Packages")
+
+#### Overview[​](#overview "Direct link to Overview")
+
+[dbt Packages](https://docs.getdbt.com/docs/build/packages) are the easiest way for analytics engineers to get involved with contributing code to the dbt Community, because dbt Packages are just standard [dbt Projects](https://docs.getdbt.com/docs/build/projects). If you can create a dbt Project, write a macro, and ref a model: you can make a dbt Package. Packages function much like libraries do in other programming languages. They allow for prewritten, modularized development of code to solve common problems in analytics engineering. You can view all dbt Packages on the [dbt Package Hub](https://hub.getdbt.com/).
+
+#### Contribution opportunities[​](#contribution-opportunities "Direct link to Contribution opportunities")
+
+* Create a new package for the dbt Package Hub. This might be a new set of macros or tests that have been useful to you in your projects, a set of models for engaging with a commonly used datasource or anything else that can be done from within a dbt project.
+* Improve an existing package: Alternatively you can help improve an existing package. This can be done by creating and engaging with Issues or by functionality to address an existing issue via opening a PR.
+
+#### Sample contributions[​](#sample-contributions "Direct link to Sample contributions")
+
+* [dbt Expectations](https://hub.getdbt.com/calogica/dbt_expectations/latest/)
+* [dbt Artifacts](https://hub.getdbt.com/brooklyn-data/dbt_artifacts/latest/)
+
+#### Get started[​](#get-started "Direct link to Get started")
+
+* Use packages in your own projects! The best way to know how to improve a package is to use it in a production environment then look for ways it can be modified or improved.
+* Read the following resources on package development:
+  + [So You Want to Build a dbt Package](https://docs.getdbt.com/blog/so-you-want-to-build-a-package)
+  + [Package Best Practices](https://github.com/dbt-labs/hubcap/blob/main/package-best-practices.md)
+* Need help: Visit #package-ecosystem in the dbt Slack
+
+### Contribute to dbt open source or source-available software[​](#contribute-to-dbt-open-source-or-source-available-software "Direct link to Contribute to dbt open source or source-available software")
+
+#### Overview[​](#overview-1 "Direct link to Overview")
+
+dbt Core and the dbt Fusion Engine, adapters, tooling, and the sites powering the Package Hub and Developer Hub are all vibrant community projects. Unlike dbt Packages, contributing code to these projects typically requires some working knowledge of programming languages outside of SQL and Jinja, but the supportive community around these repositories can help you advance those skills. Even without contributing code, there are many ways to be part of communal development in these projects, detailed below. You can find a curated list of the most active OSS/SA projects that dbt Labs supports [here](https://docs.getdbt.com/community/resources/oss-sa-projects).
+
+#### Contribution opportunities[​](#contribution-opportunities-1 "Direct link to Contribution opportunities")
+
+There are three primary ways to contribute to the dbt projects. We’ll use the dbt Fusion Engine as an example, as the "front door" to the dbt ecosystem and a great place to start for newcomers:
+
+* [Open an issue](https://github.com/dbt-labs/dbt-fusion/issues/new/choose) to suggest an improvement or give feedback.
+* Comment / engage on existing [issues](https://github.com/dbt-labs/dbt-fusion/issues) or [discussions](https://github.com/dbt-labs/dbt-fuson/discussions). This could be upvoting issues that would be helpful for your organization, commenting to add nuance to a feature request or sharing how a feature would impact your dbt usage.
+* Create a pull request that resolves an open Issue. This involves writing the code and tests that add the feature/resolve the bug described in an Issue, and then going through the code review process asynchronously with a dbt Labs engineer. Note that signed commits are required when contributing to dbt Core. For steps on how to sign commits, see [Signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
+
+#### Sample contributions[​](#sample-contributions-1 "Direct link to Sample contributions")
+
+* Check out [this issue](https://github.com/dbt-labs/dbt-core/issues/3612) about improving error messages and [the PR that the community contributed to fix it](https://github.com/dbt-labs/dbt-core/pull/3703).
+* From the above issue [another issue was generated](https://github.com/dbt-labs/dbt-bigquery/issues/202) to change not just the error message, but improve the behavior. This is the virtuous cycle of community-driven development! Bit by bit we, the community, craft the tool to better fit our needs.
+
+#### Get started[​](#get-started-1 "Direct link to Get started")
+
+* Read the dbt Core [contribution guide](https://github.com/dbt-labs/dbt-core/blob/main/CONTRIBUTING.md) and the [Contributor Expectations](https://docs.getdbt.com/community/resources/contributor-expectations).
+* If contributing to the dbt Fusion Engine, find an issue labeled “[good first issue](https://github.com/dbt-labs/dbt-fusion/issues?q=is%3Aopen+is%3Aissue+label%3Agood_first_issue)”, or look for similar labels on other repositories. If in doubt, also feel free to ask the maintainers for a good first issue, they’ll be excited to welcome you!
+
+#### Need help?[​](#need-help "Direct link to Need help?")
+
+The following channels in the dbt Community Slack are a great place to ask questions:
+
+* #dbt-core-development
+* #adapter-ecosystem
+
+## Was this page helpful?
+
+YesNo
+
+[Privacy policy](https://www.getdbt.com/cloud/privacy-policy)[Create a GitHub issue](https://github.com/dbt-labs/docs.getdbt.com/issues)
+
+This site is protected by reCAPTCHA and the Google [Privacy Policy](https://policies.google.com/privacy) and [Terms of Service](https://policies.google.com/terms) apply.
+
+0
+
+[Previous
+
+Writing contributions](https://docs.getdbt.com/community/contributing/contributing-writing)[Next
+
+Online community building](https://docs.getdbt.com/community/contributing/contributing-online-community)
+
+* [Contribute to dbt Packages](#contribute-to-dbt-packages)* [Contribute to dbt open source or source-available software](#contribute-to-dbt-open-source-or-source-available-software)
+
+[Edit this page](https://github.com/dbt-labs/docs.getdbt.com/edit/current/website/docs/community/contributing/contributing-coding.md)

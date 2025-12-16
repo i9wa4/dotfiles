@@ -6,4 +6,5 @@
 !commands/**
 !skills/
 !skills/**
+skills/**/*.skill
 !cc-current-usage.sh

@@ -1,0 +1,397 @@
+---
+title: "Behavior changes | dbt Developer Hub"
+source_url: "https://docs.getdbt.com/reference/global-configs/behavior-changes"
+fetched_at: "2025-12-16T14:20:18.809572+00:00"
+---
+
+
+
+* * [Commands](https://docs.getdbt.com/reference/dbt-commands)* [Flags (global configs)](https://docs.getdbt.com/reference/global-configs/about-global-configs)* Behavior changes
+
+Copy page
+
+Copy page
+
+Copy page as Markdown for LLMs
+
+[Open in ChatGPT
+
+Ask questions about this page](https://chatgpt.com/?hints=search&prompt=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Freference%2Fglobal-configs%2Fbehavior-changes+so+I+can+ask+questions+about+it.)[Open in Claude
+
+Ask questions about this page](https://claude.ai/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Freference%2Fglobal-configs%2Fbehavior-changes+so+I+can+ask+questions+about+it.)[Open in Perplexity
+
+Ask questions about this page](https://www.perplexity.ai/search/new?q=Read+from+https%3A%2F%2Fdocs.getdbt.com%2Freference%2Fglobal-configs%2Fbehavior-changes+so+I+can+ask+questions+about+it.)
+
+On this page
+
+Most flags exist to configure runtime behaviors with multiple valid choices. The right choice may vary based on the environment, user preference, or the specific invocation.
+
+Another category of flags provides existing projects with a migration window for runtime behaviors that are changing in newer releases of dbt. These flags help us achieve a balance between these goals, which can otherwise be in tension, by:
+
+* Providing a better, more sensible, and more consistent default behavior for new users/projects.
+* Providing a migration window for existing users/projects — nothing changes overnight without warning.
+* Providing maintainability of dbt software. Every fork in behavior requires additional testing & cognitive overhead that slows future development. These flags exist to facilitate migration from "current" to "better," not to stick around forever.
+
+These flags go through three phases of development:
+
+1. **Introduction (disabled by default):** dbt adds logic to support both 'old' and 'new' behaviors. The 'new' behavior is gated behind a flag, disabled by default, preserving the old behavior.
+2. **Maturity (enabled by default):** The default value of the flag is switched, from `false` to `true`, enabling the new behavior by default. Users can preserve the 'old' behavior and opt out of the 'new' behavior by setting the flag to `false` in their projects. They may see deprecation warnings when they do so.
+3. **Removal (generally enabled):** After marking the flag for deprecation, we remove it along with the 'old' behavior it supported from the dbt codebases. We aim to support most flags indefinitely, but we're not committed to supporting them forever. If we choose to remove a flag, we'll offer significant advance notice.
+
+## What is a behavior change?[​](#what-is-a-behavior-change "Direct link to What is a behavior change?")
+
+The same dbt project code and the same dbt commands return one result before the behavior change, and they return a different result after the behavior change.
+
+Examples of behavior changes:
+
+* dbt begins raising a validation *error* that it didn't previously.
+* dbt changes the signature of a built-in macro. Your project has a custom reimplementation of that macro. This could lead to errors, because your custom reimplementation will be passed arguments it cannot accept.
+* A dbt adapter renames or removes a method that was previously available on the `{{ adapter }}` object in the dbt-Jinja context.
+* dbt makes a breaking change to contracted metadata artifacts by deleting a required field, changing the name or type of an existing field, or removing the default value of an existing field ([README](https://github.com/dbt-labs/dbt-core/blob/37d382c8e768d1e72acd767e0afdcb1f0dc5e9c5/core/dbt/artifacts/README.md#breaking-changes)).
+* dbt removes one of the fields from [structured logs](https://docs.getdbt.com/reference/events-logging#structured-logging).
+
+The following are **not** behavior changes:
+
+* Fixing a bug where the previous behavior was defective, undesirable, or undocumented.
+* dbt begins raising a *warning* that it didn't previously.
+* dbt updates the language of human-friendly messages in log events.
+* dbt makes a non-breaking change to contracted metadata artifacts by adding a new field with a default, or deleting a field with a default ([README](https://github.com/dbt-labs/dbt-core/blob/37d382c8e768d1e72acd767e0afdcb1f0dc5e9c5/core/dbt/artifacts/README.md#non-breaking-changes)).
+
+The vast majority of changes are not behavior changes. Because introducing these changes does not require any action on the part of users, they are included in continuous releases of dbt and patch releases of dbt Core.
+
+By contrast, behavior change migrations happen slowly, over the course of months, facilitated by behavior change flags. The flags are loosely coupled to the specific dbt runtime version. By setting flags, users have control over opting in (and later opting out) of these changes.
+
+## Behavior change flags[​](#behavior-change-flags "Direct link to Behavior change flags")
+
+These flags *must* be set in the `flags` dictionary in `dbt_project.yml`. They configure behaviors closely tied to project code, which means they should be defined in version control and modified through pull or merge requests, with the same testing and peer review.
+
+The following example displays the current flags and their current default values in the latest dbt and dbt Core versions. To opt out of a specific behavior change, set the values of the flag to `False` in `dbt_project.yml`. You will continue to see warnings for legacy behaviors you've opted out of, until you either:
+
+* Resolve the issue (by switching the flag to `True`)
+* Silence the warnings using the `warn_error_options.silence` flag
+
+Here's an example of the available behavior change flags with their default values:
+
+dbt\_project.yml
+
+```
+flags:
+  require_explicit_package_overrides_for_builtin_materializations: True
+  require_model_names_without_spaces: True
+  source_freshness_run_project_hooks: True
+  restrict_direct_pg_catalog_access: False
+  skip_nodes_if_on_run_start_fails: False
+  state_modified_compare_more_unrendered_values: False
+  require_yaml_configuration_for_mf_time_spines: False
+  require_batched_execution_for_custom_microbatch_strategy: False
+  require_nested_cumulative_type_params: False
+  validate_macro_args: False
+  require_all_warnings_handled_by_warn_error: False
+  require_generic_test_arguments_property: True
+  require_unique_project_resource_names: False
+```
+
+#### dbt Core behavior changes[​](#dbt-core-behavior-changes "Direct link to dbt Core behavior changes")
+
+This table outlines which month of the "Latest" release track in dbt and which version of dbt Core contains the behavior change's introduction (disabled by default) or maturity (enabled by default).
+
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Flag dbt "Latest": Intro dbt "Latest": Maturity dbt Core: Intro dbt Core: Maturity|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_explicit\_package\_overrides\_for\_builtin\_materializations](#package-override-for-built-in-materialization) 2024.04 2024.06 1.6.14, 1.7.14 1.8.0|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_resource\_names\_without\_spaces](#no-spaces-in-resource-names) 2024.05 2025.05 1.8.0 1.10.0|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [source\_freshness\_run\_project\_hooks](#project-hooks-with-source-freshness) 2024.03 2025.05 1.8.0 1.10.0|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [skip\_nodes\_if\_on\_run\_start\_fails](#failures-in-on-run-start-hooks) 2024.10 TBD\* 1.9.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [state\_modified\_compare\_more\_unrendered\_values](#source-definitions-for-state) 2024.10 TBD\* 1.9.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_yaml\_configuration\_for\_mf\_time\_spines](#metricflow-time-spine-yaml) 2024.10 TBD\* 1.9.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_batched\_execution\_for\_custom\_microbatch\_strategy](#custom-microbatch-strategy) 2024.11 TBD\* 1.9.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_nested\_cumulative\_type\_params](#cumulative-metrics) 2024.11 TBD\* 1.9.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [validate\_macro\_args](#macro-argument-validation) 2025.03 TBD\* 1.10.0 TBD\*|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_all\_warnings\_handled\_by\_warn\_error](#warn-error-handler-for-all-warnings) 2025.06 TBD\* 1.10.0 TBD\*|  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [require\_generic\_test\_arguments\_property](#generic-test-arguments-property) 2025.07 2025.08 1.10.5 1.10.8|  |  |  |  |  | | --- | --- | --- | --- | --- | | [require\_unique\_project\_resource\_names](#unique-project-resource-names) 2025.12 TBD\* 1.11.0 TBD\* | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+||  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| Loading table... | | | | |
+
+#### dbt adapter behavior changes[​](#dbt-adapter-behavior-changes "Direct link to dbt adapter behavior changes")
+
+This table outlines which version of the dbt adapter contains the behavior change's introduction (disabled by default) or maturity (enabled by default).
+
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Flag dbt-ADAPTER: Intro dbt-ADAPTER: Maturity|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [use\_info\_schema\_for\_columns](https://docs.getdbt.com/reference/global-configs/databricks-changes#use-information-schema-for-columns) Databricks 1.9.0 TBD|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [use\_user\_folder\_for\_python](https://docs.getdbt.com/reference/global-configs/databricks-changes#use-users-folder-for-python-model-notebooks) Databricks 1.9.0 TBD|  |  |  |  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [use\_materialization\_v2](https://docs.getdbt.com/reference/global-configs/databricks-changes#use-restructured-materializations) Databricks 1.10.0 TBD|  |  |  |  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | --- | --- | --- | | [enable\_truthy\_nulls\_equals\_macro](https://docs.getdbt.com/reference/global-configs/snowflake-changes#the-enable_truthy_nulls_equals_macro-flag) Snowflake 1.9.0 TBD|  |  |  |  |  |  | | --- | --- | --- | --- | --- | --- | | [restrict\_direct\_pg\_catalog\_access](https://docs.getdbt.com/reference/global-configs/redshift-changes#the-restrict_direct_pg_catalog_access-flag) Redshift 1.9.0 TBD|  |  |  | | --- | --- | --- | | [bigquery\_use\_batch\_source\_freshness](https://docs.getdbt.com/reference/global-configs/bigquery-changes#bigquery-use-batch-source-freshness) BigQuery 1.11.0rc2 TBD | | | | | | | | | | | | | | | | | | | | |
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+||  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| Loading table... | | | | |
+
+When the dbt Maturity is "TBD," it means we have not yet determined the exact date when these flags' default values will change. Affected users will see deprecation warnings in the meantime, and they will receive emails providing advance warning ahead of the maturity date. In the meantime, if you are seeing a deprecation warning, you can either:
+
+* Migrate your project to support the new behavior, and then set the flag to `True` to stop seeing the warnings.
+* Set the flag to `False`. You will continue to see warnings, and you will retain the legacy behavior even after the maturity date (when the default value changes).
+
+### Failures in on-run-start hooks[​](#failures-in-on-run-start-hooks "Direct link to Failures in on-run-start hooks")
+
+The flag is `False` by default.
+
+Set the `skip_nodes_if_on_run_start_fails` flag to `True` to skip all selected resources from running if there is a failure on an `on-run-start` hook.
+
+### Source definitions for state:modified[​](#source-definitions-for-state "Direct link to source-definitions-for-state")
+
+info
+
+You need to build the state directory using dbt v1.9 or higher, or [the dbt "Latest" release track](https://docs.getdbt.com/docs/dbt-versions/cloud-release-tracks), and you need to set `state_modified_compare_more_unrendered_values` to `true` within your dbt\_project.yml.
+
+If the state directory was built with an older dbt version or if the `state_modified_compare_more_unrendered_values` behavior change flag was either not set or set to `false`, you need to rebuild the state directory to avoid false positives during state comparison with `state:modified`.
+
+The flag is `False` by default.
+
+Set `state_modified_compare_more_unrendered_values` to `True` to reduce false positives during `state:modified` checks (especially when configs differ by target environment like `prod` vs. `dev`).
+
+Setting the flag to `True` changes the `state:modified` comparison from using rendered values to unrendered values instead. It accomplishes this by persisting `unrendered_config` during model parsing and `unrendered_database` and `unrendered_schema` configs during source parsing.
+
+### Package override for built-in materialization[​](#package-override-for-built-in-materialization "Direct link to Package override for built-in materialization")
+
+Setting the `require_explicit_package_overrides_for_builtin_materializations` flag to `True` prevents this automatic override.
+
+We have deprecated the behavior where installed packages could override built-in materializations without your explicit opt-in. When this flag is set to `True`, a materialization defined in a package that matches the name of a built-in materialization will no longer be included in the search and resolution order. Unlike macros, materializations don't use the `search_order` defined in the project `dispatch` config.
+
+The built-in materializations are `'view'`, `'table'`, `'incremental'`, `'materialized_view'` for models as well as `'test'`, `'unit'`, `'snapshot'`, `'seed'`, and `'clone'`.
+
+You can still explicitly override built-in materializations, in favor of a materialization defined in a package, by reimplementing the built-in materialization in your root project and wrapping the package implementation.
+
+macros/materialization\_view.sql
+
+```
+{% materialization view, snowflake %}
+  {{ return(my_installed_package_name.materialization_view_snowflake()) }}
+{% endmaterialization %}
+```
+
+In the future, we may extend the project-level [`dispatch` configuration](https://docs.getdbt.com/reference/project-configs/dispatch-config) to support a list of authorized packages for overriding built-in materialization.
+
+### No spaces in resource names[​](#no-spaces-in-resource-names "Direct link to No spaces in resource names")
+
+The `require_resource_names_without_spaces` flag enforces using resource names without spaces.
+
+The names of dbt resources (for example, models) should contain letters, numbers, and underscores. We highly discourage the use of other characters, especially spaces. To that end, we have deprecated support for spaces in resource names. When the `require_resource_names_without_spaces` flag is set to `True`, dbt will raise an exception (instead of a deprecation warning) if it detects a space in a resource name.
+
+models/model name with spaces.sql
+
+```
+-- This model file should be renamed to model_name_with_underscores.sql
+```
+
+### Project hooks with source freshness[​](#project-hooks-with-source-freshness "Direct link to Project hooks with source freshness")
+
+Set the `source_freshness_run_project_hooks` flag to include/exclude "project hooks" ([`on-run-start` / `on-run-end`](https://docs.getdbt.com/reference/project-configs/on-run-start-on-run-end)) in the `dbt source freshness` command execution. The flag is set to `True` (include) by default.
+
+If you have a specific project [`on-run-start` / `on-run-end`](https://docs.getdbt.com/reference/project-configs/on-run-start-on-run-end) hooks that should not run before/after `source freshness` command, you can add a conditional check to those hooks:
+
+dbt\_project.yml
+
+```
+on-run-start:
+  - '{{ ... if flags.WHICH != 'freshness' }}'
+```
+
+### MetricFlow time spine YAML[​](#metricflow-time-spine-yaml "Direct link to MetricFlow time spine YAML")
+
+The `require_yaml_configuration_for_mf_time_spines` flag is set to `False` by default.
+
+In previous versions (dbt Core 1.8 and earlier), the MetricFlow time spine configuration was stored in a `metricflow_time_spine.sql` file.
+
+When the flag is set to `True`, dbt will continue to support the SQL file configuration. When the flag is set to `False`, dbt will raise a deprecation warning if it detects a MetricFlow time spine configured in a SQL file.
+
+The MetricFlow YAML file should have the `time_spine:` field. Refer to [MetricFlow timespine](https://docs.getdbt.com/docs/build/metricflow-time-spine) for more details.
+
+### Custom microbatch strategy[​](#custom-microbatch-strategy "Direct link to Custom microbatch strategy")
+
+The `require_batched_execution_for_custom_microbatch_strategy` flag is set to `False` by default and is only relevant if you already have a custom microbatch macro in your project. If you don't have a custom microbatch macro, you don't need to set this flag as dbt will handle microbatching automatically for any model using the [microbatch strategy](https://docs.getdbt.com/docs/build/incremental-microbatch#how-microbatch-compares-to-other-incremental-strategies).
+
+Set the flag is set to `True` if you have a custom microbatch macro set up in your project. When the flag is set to `True`, dbt will execute the custom microbatch strategy in batches.
+
+If you have a custom microbatch macro and the flag is left as `False`, dbt will issue a deprecation warning.
+
+Previously, users needed to set the `DBT_EXPERIMENTAL_MICROBATCH` environment variable to `True` to prevent unintended interactions with existing custom incremental strategies. But this is no longer necessary, as setting `DBT_EXPERMINENTAL_MICROBATCH` will no longer have an effect on runtime functionality.
+
+### Cumulative metrics[​](#cumulative-metrics "Direct link to Cumulative metrics")
+
+[Cumulative-type metrics](https://docs.getdbt.com/docs/build/cumulative#parameters) are nested under the `cumulative_type_params` field in [the dbt "Latest" release track](https://docs.getdbt.com/docs/dbt-versions/cloud-release-tracks), dbt Core v1.9 and newer. Currently, dbt will warn users if they have cumulative metrics improperly nested. To enforce the new format (resulting in an error instead of a warning), set the `require_nested_cumulative_type_params` to `True`.
+
+Use the following metric configured with the syntax before v1.9 as an example:
+
+```
+    type: cumulative
+    type_params:
+      measure: order_count
+      window: 7 days
+```
+
+If you run `dbt parse` with that syntax on Core v1.9 or [the dbt "Latest" release track](https://docs.getdbt.com/docs/dbt-versions/cloud-release-tracks), you will receive a warning like:
+
+```
+15:36:22  [WARNING]: Cumulative fields `type_params.window` and
+`type_params.grain_to_date` has been moved and will soon be deprecated. Please
+nest those values under `type_params.cumulative_type_params.window` and
+`type_params.cumulative_type_params.grain_to_date`. See documentation on
+behavior changes:
+https://docs.getdbt.com/reference/global-configs/behavior-changes
+```
+
+If you set `require_nested_cumulative_type_params` to `True` and re-run `dbt parse` you will now receive an error like:
+
+```
+21:39:18  Cumulative fields `type_params.window` and `type_params.grain_to_date` should be nested under `type_params.cumulative_type_params.window` and `type_params.cumulative_type_params.grain_to_date`. Invalid metrics: orders_last_7_days. See documentation on behavior changes: https://docs.getdbt.com/reference/global-configs/behavior-changes.
+```
+
+Once the metric is updated, it will work as expected:
+
+```
+    type: cumulative
+    type_params:
+      measure:
+        name: order_count
+      cumulative_type_params:
+        window: 7 days
+```
+
+### Macro argument validation[​](#macro-argument-validation "Direct link to Macro argument validation")
+
+dbt supports optional validation for macro arguments using the `validate_macro_args` flag. By default, the `validate_macro_args` flag is set to `False`, which means that dbt won't validate the names or types of documented macro arguments.
+
+In the past, dbt didn't enforce a standard vocabulary for the [`type`](https://docs.getdbt.com/reference/resource-properties/arguments#type) field on macro arguments in YAML. Because of this, the `type` field was used for documentation only, and dbt didn't check that:
+
+* the argument names matched those in your macro
+* the argument types were valid or consistent with the macro's Jinja definition
+
+Here's an example of a documented macro:
+
+macros/filename.yml
+
+```
+macros:
+  - name: <macro name>
+    arguments:
+      - name: <arg name>
+        type: <string>
+```
+
+When you set the `validate_macro_args` flag to `True`, dbt will:
+
+* Check that all argument names in your YAML match those in the macro definition
+* Raise warnings if the names or types don't match
+* Validate that the [`type` values follow the supported format](https://docs.getdbt.com/reference/resource-properties/arguments#supported-types).
+* If no arguments are documented in the YAML, infer them from the macro and include them in the [`manifest.json` file](https://docs.getdbt.com/reference/artifacts/manifest-json)
+
+### Warn-error handler for all warnings[​](#warn-error-handler-for-all-warnings "Direct link to Warn-error handler for all warnings")
+
+By default, the `require_all_warnings_handled_by_warn_error` flag is set to `False`.
+
+When you set `require_all_warnings_handled_by_warn_error` to `True`, all warnings raised during a run are routed through the `--warn-error` / `--warn-error-options` handler. This ensures consistent behavior when promoting warnings to errors or silencing them. When the flag is `False`, only some warnings are processed by the handler while others may bypass it.
+
+Note that enabling this for projects that use `--warn-error` (or `--warn-error-options='{"error":"all"}'`) may cause builds to fail on warnings that were previously ignored. We recommend enabling it gradually.
+
+ Recommended steps to enable the flag
+
+We recommend the following rollout plan when setting the `require_all_warnings_handled_by_warn_error` flag to `True`:
+
+1. Run a full build without partial parsing to surface parse-time warnings, and confirm it finishes successfully:
+
+   ```
+   dbt build --no-partial-parse
+   ```
+
+   * Some warnings are only emitted at parse time.
+   * If the build fails because warnings are already treated as errors (via `--warn-error` or `--warn-error-options`), fix those first and re-run.
+2. Review the logs:
+
+   * If you have any warnings at this point, it means they weren't handled by `--warn-error`/`--warn-error-options`. Continue to the next step.
+   * If there are no warnings, enable the flag in all environments and that's it!
+3. Enable `require_all_warnings_handled_by_warn_error` in your development environment and fix any warnings that now surface as errors.
+4. Enable the flag in your CI environment (if you have one) and ensure builds pass.
+5. Enable the flag in your production environment.
+
+### Generic test arguments property[​](#generic-test-arguments-property "Direct link to Generic test arguments property")
+
+dbt supports parsing key-value arguments that are inputs to generic tests when specified under the `arguments` property. In the past, dbt didn't support a way to clearly disambiguate between properties that were inputs to generic tests and framework configurations, and only accepted arguments as top-level properties.
+
+In "Latest", the `require_generic_test_arguments_property` flag is set to `True` by default. In dbt Core versions prior to 1.10.8, the default value is `False`. Using the `arguments` property in test definitions is optional in either case.
+
+If you do use `arguments` while the flag is `False`, dbt will recognize it but raise the `ArgumentsPropertyInGenericTestDeprecation` warning. This warning lets you know that the flag will eventually default to `True` across all releases and will be parsed as keyword arguments to the data test.
+
+Here's an example using the new `arguments` property:
+
+model.yml
+
+```
+models:
+  - name: my_model_with_generic_test
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "order_items_subtotal = subtotal"
+```
+
+Here's an example using the alternative `test_name` format:
+
+model.yml
+
+```
+models:
+  - name: my_model_with_generic_test
+    data_tests:
+    - name: arbitrary_name
+      test_name: dbt_utils.expression_is_true
+      arguments:
+         expression: "order_items_subtotal = subtotal"
+      config:
+        where: "1=1"
+```
+
+When you set the `require_generic_test_arguments_property` flag to `True`, dbt will:
+
+* Parse any key-value pairs under `arguments` in generic tests as inputs to the generic test macro.
+* Raise a `MissingArgumentsPropertyInGenericTestDeprecation` warning if additional non-config arguments are specified outside of the `arguments` property.
+
+### Unique project resource names[​](#unique-project-resource-names "Direct link to Unique project resource names")
+
+The `require_unique_project_resource_names` flag enforces uniqueness of resource names within the same package. dbt resources such as models, seeds, snapshots, analyses, tests, and functions share a common namespace. When two resources in the same package have the same name, dbt must decide which one a `ref()` or `source()` refers to. Previously, this check was not always enforced, which meant duplicate names could result in dbt referencing the wrong resource.
+
+The `require_unique_project_resource_names` flag is set to `False` by default. With this setting, if two unversioned resources in the same package share the same name, dbt continues to run and raises a [`DuplicateNameDistinctNodeTypesDeprecation`](https://docs.getdbt.com/reference/deprecations#duplicatenamedistinctnodetypesdeprecation) warning. When set to `True`, dbt raises a `DuplicateResourceNameError` error.
+
+For example, if your project contains a model and a seed named `sales`:
+
+```
+models/sales.sql
+seeds/sales.csv
+```
+
+And a model contains:
+
+```
+select * from {{ ref('sales') }}
+```
+
+When the flag is set to `True`, dbt will raise:
+
+```
+DuplicateResourceNameError: Found resources with the same name 'sales' in package 'project': 'model.project.sales' and 'seed.project.sales'. Please update one of the resources to have a unique name.
+```
+
+When this error is raised, you should rename one of the resources, or refactor the project structure to avoid name conflicts.
+
+## Was this page helpful?
+
+YesNo
+
+[Privacy policy](https://www.getdbt.com/cloud/privacy-policy)[Create a GitHub issue](https://github.com/dbt-labs/docs.getdbt.com/issues)
+
+This site is protected by reCAPTCHA and the Google [Privacy Policy](https://policies.google.com/privacy) and [Terms of Service](https://policies.google.com/terms) apply.
+
+0
+
+[Previous
+
+About flags (global configs)](https://docs.getdbt.com/reference/global-configs/about-global-configs)[Next
+
+Adapter behavior changes](https://docs.getdbt.com/reference/global-configs/adapter-behavior-changes)
+
+* [What is a behavior change?](#what-is-a-behavior-change)* [Behavior change flags](#behavior-change-flags)
+    + [Failures in on-run-start hooks](#failures-in-on-run-start-hooks)+ [Source definitions for state](#source-definitions-for-state)+ [Package override for built-in materialization](#package-override-for-built-in-materialization)+ [No spaces in resource names](#no-spaces-in-resource-names)+ [Project hooks with source freshness](#project-hooks-with-source-freshness)+ [MetricFlow time spine YAML](#metricflow-time-spine-yaml)+ [Custom microbatch strategy](#custom-microbatch-strategy)+ [Cumulative metrics](#cumulative-metrics)+ [Macro argument validation](#macro-argument-validation)+ [Warn-error handler for all warnings](#warn-error-handler-for-all-warnings)+ [Generic test arguments property](#generic-test-arguments-property)+ [Unique project resource names](#unique-project-resource-names)
+
+[Edit this page](https://github.com/dbt-labs/docs.getdbt.com/edit/current/website/docs/reference/global-configs/behavior-changes.md)
