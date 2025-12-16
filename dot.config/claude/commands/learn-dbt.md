@@ -71,22 +71,22 @@ dbt について学ぼう！
     - これは並行作業のためだけでなく、全ての Issue 作業で必須
 - 手順
     1. `~/.dbt/profiles.yml` を読み取り、既存の設定を確認する
-    2. 該当 Issue 用ターゲットが存在しなければ、既存の `genda_dev` を参考に追加する
+    2. 該当 Issue 用ターゲットが存在しなければ、既存の `dev` ターゲットを参考に追加する
 
         ```yaml
-        genda_databricks_dbt:
+        my_databricks_dbt:
           outputs:
-            genda_dev:
+            dev:
               # 既存の設定...
             issue_123:  # issue番号に応じて命名
-              catalog: genda_dbt_dev_{username}  # genda_dev と同じ
-              host: dbc-xxxxx.cloud.databricks.com  # genda_dev と同じ
-              http_path: /sql/1.0/warehouses/xxxxx  # genda_dev と同じ
-              schema: genda_dwh_issue_123  # issue番号をスキーマ名に含める
+              catalog: dbt_dev_{username}  # dev と同じ
+              host: dbc-xxxxx.cloud.databricks.com  # dev と同じ
+              http_path: /sql/1.0/warehouses/xxxxx  # dev と同じ
+              schema: dwh_issue_123  # issue番号をスキーマ名に含める
               threads: 1
-              token: dapixxxxx  # genda_dev と同じ
+              token: dapixxxxx  # dev と同じ
               type: databricks
-          target: genda_dev
+          target: dev
         ```
 
     3. dbt コマンド実行時に `--target` オプションで切り替える
