@@ -24,7 +24,7 @@ description: "global CONTRIBUTING.md"
 
 - YOU MUST: すべてのMarkdownヘッダ (#, ##, ### 等) の直後には空行を入れる
 - YOU MUST: 見出しや箇条書きを活用し長文にしないなど Markdown らしい構造にする
-- YOU MUST: Markdown ドキュメントを新規作成した場合 Formatter を実行して Linter の指摘がないことを確認する
+- YOU MUST: `.i9wa4/` に作成する Markdown では適用外のルールです。Markdown ドキュメントを新規作成した場合 Formatter を実行して Linter の指摘がないことを確認する
 
     ```sh
     # Formatter
