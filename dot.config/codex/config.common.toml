@@ -5,6 +5,7 @@ network_access = true
 notify = ["printf", "\\a"]
 
 [features]
+skills = true
 web_search_request = true
 
 [mcp_servers.aws_documentation]
