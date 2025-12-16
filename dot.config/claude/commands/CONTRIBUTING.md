@@ -277,3 +277,8 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
         ```sh
         dbt debug --profiles-dir ~/.dbt --no-use-colors
         ```
+
+### Claude Code
+
+- Skills 作成時に Web ページ参照する場合は以下を利用してよい
+    - <https://github.com/laiso/site2skill>
