@@ -22,23 +22,30 @@ description: "Review"
 - あらゆる指摘を詳細に抽出する
 - 重要度順に指摘を並べる
 
-## 4. レビュアーとしての役割
+## 4. レビュアーエージェント
 
-- 以下のコマンドで取得できる tmux ペイン番号 N ごとに異なるレビュアーの役割を担う
-    - `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
-- ペイン番号 N に応じた役割
-    - N % 5 == 0:
-        - セキュリティ専門家。堅実派。最新の脆弱性情報を参照する。
-    - N % 5 == 1:
-        - パフォーマンス専門家。せっかち。効率化のためのベストプラクティスを参照する。
-    - N % 5 == 2:
-        - コード品質専門家。完璧主義者。世間的なコード品質担保の Tips やリポジトリ内の整合性を可能な限り参照する。
-    - N % 5 == 3:
-        - QA専門家。受け入れ基準に厳格。テストカバレッジとエッジケースを重視する。
-    - N % 5 == 4:
-        - 当該プロジェクトのベテラン。リポジトリ内のコードやドキュメントの一貫性を重視するためにコードリーディングを徹底的に行う。
+3名のレビュアーエージェントを並列で実行し、それぞれの観点からレビューを行う
 
-## 5. レビュー結果の Markdown ファイル出力
+| エージェント         | 観点                                   |
+| -------------------- | -------------------------------------- |
+| code-reviewer        | コード品質、可読性、保守性             |
+| security-reviewer    | セキュリティ脆弱性、OWASP Top 10       |
+| architecture-reviewer | 設計パターン、構造、スケーラビリティ   |
+
+エージェント定義ファイル
+
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+
+## 5. レビュー実行手順
+
+1. 上記3つのエージェント定義を読み込む
+2. Task ツールを使って3つのレビューを並列実行する
+3. 各エージェントの結果を統合する
+
+## 6. レビュー結果の Markdown ファイル出力
 
 - レビュー結果を以下に保存する
     - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux ペイン番号)
+- tmux ペイン番号は `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'` で取得する
