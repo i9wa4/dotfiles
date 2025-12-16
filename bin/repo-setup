@@ -39,14 +39,11 @@ cat >.i9wa4/temp.md <<'EOF'
 
 ## 1. Development
 
-/CONTRIBUTING
 /issue-to-pr
-/issue-to-pr next
 Go on.
 
 ## 2. Review
 
-/CONTRIBUTING
 /my-review
 /summarize-reviews
 EOF
