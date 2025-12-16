@@ -38,5 +38,5 @@ presets:
               command: codex --yolo
             - name: codex
               command: codex --yolo
-            - name: claude
-              command: claude --dangerously-skip-permissions
+            - name: codex
+              command: codex --yolo
