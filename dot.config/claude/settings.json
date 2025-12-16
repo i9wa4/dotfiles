@@ -1,47 +1,60 @@
 {
-  "cleanupPeriodDays": 36000,
-  "env": {
-    "BASH_DEFAULT_TIMEOUT_MS": "3000000",
-    "BASH_MAX_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
-    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
-    "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
-    "DISABLE_AUTOUPDATER": "true",
-    "DISABLE_ERROR_REPORTING": "true",
-    "DISABLE_TELEMETRY": "true"
-  },
-  "includeCoAuthoredBy": false,
-  "permissions": {
-    "allow": [],
-    "deny": [
-      "Bash(git -C:*)",
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(rm:*)",
-      "Bash(sudo:*)",
-      "Read(**/*key*)",
-      "Read(**/*token*)",
-      "Read(.env.*)",
-      "Read(id_ed25519)",
-      "Read(id_rsa)",
-      "Write(**/secrets/**)",
-      "Write(.env*)"
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "npx ccusage@latest statusline"
-  },
-  "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true,
-    "document-skills@anthropic-agent-skills": true
-  },
-  "alwaysThinkingEnabled": true,
-  "preferredNotifChannel": "terminal_bell",
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  }
+    "alwaysThinkingEnabled": true,
+    "cleanupPeriodDays": 36000,
+    "enabledPlugins": {
+        "example-skills@anthropic-agent-skills": true,
+        "document-skills@anthropic-agent-skills": true
+    },
+    "env": {
+        "BASH_DEFAULT_TIMEOUT_MS": "3000000",
+        "BASH_MAX_TIMEOUT_MS": "3000000",
+        "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
+        "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
+        "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
+        "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
+        "DISABLE_AUTOUPDATER": "true",
+        "DISABLE_ERROR_REPORTING": "true",
+        "DISABLE_TELEMETRY": "true"
+    },
+    "feedbackSurveyState": {
+        "lastShownTime": 2069451551000
+    },
+    "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "compact",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash ${CLAUDE_CONFIG_DIR}/restore-context.sh"
+                    }
+                ]
+            }
+        ]
+    },
+    "includeCoAuthoredBy": false,
+    "permissions": {
+        "allow": [],
+        "deny": [
+            "Bash(git -C:*)",
+            "Bash(git push:*)",
+            "Bash(git rebase:*)",
+            "Bash(git reset:*)",
+            "Bash(rm:*)",
+            "Bash(sudo:*)",
+            "Read(**/*key*)",
+            "Read(**/*token*)",
+            "Read(.env.*)",
+            "Read(id_ed25519)",
+            "Read(id_rsa)",
+            "Write(**/secrets/**)",
+            "Write(.env*)"
+        ]
+    },
+    "preferredNotifChannel": "terminal_bell",
+    "statusLine": {
+        "type": "command",
+        "command": "npx ccusage@latest statusline"
+    }
 }
