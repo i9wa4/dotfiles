@@ -4,7 +4,7 @@ description: "Review"
 
 # my-review
 
-このファイルを読んだら直ちに GitHub Pull Request レビューを実施する
+このファイルを読んだら直ちに GitHub Pull Request レビューを開始すること
 
 ## 1. 事前準備
 
@@ -24,15 +24,17 @@ description: "Review"
 
 ## 4. レビュアーの役割
 
+以下のいずれかの方法でレビュアーを設定する
+
 ### 4.1. マルチエージェントモード (Claude Code)
 
 agents/ ディレクトリが利用可能な場合、4名のレビュアーエージェントを並列で実行する
 
-| エージェント          | 観点                                       |
-| --------------------- | ------------------------------------------ |
-| code-reviewer         | コード品質、可読性、保守性                 |
-| security-reviewer     | セキュリティ脆弱性、OWASP Top 10           |
-| architecture-reviewer | 設計パターン、構造、スケーラビリティ       |
+| エージェント          | 観点                                         |
+| --------------------- | ------------------------------------------   |
+| code-reviewer         | コード品質、可読性、保守性                   |
+| security-reviewer     | セキュリティ脆弱性、OWASP Top 10             |
+| architecture-reviewer | 設計パターン、構造、スケーラビリティ         |
 | historian             | Issue/PR履歴、コミット経緯、プロジェクト文脈 |
 
 エージェント定義ファイル
