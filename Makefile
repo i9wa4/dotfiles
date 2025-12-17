@@ -300,7 +300,8 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		zoom \
 	brew install \
 		git \
-		tmux
+		tmux \
+		wget
 	# Neovim
 	brew install ninja cmake gettext curl git
 else ifneq ($(filter $(MF_DETECTED_OS),Ubuntu WSL2),)
