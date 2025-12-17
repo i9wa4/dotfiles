@@ -14,55 +14,57 @@ description: |
 
 ## 1. 前提条件
 
-gh-furik がインストールされていること。
-
-```bash
-gh extension install kenchan/gh-furik
-```
+- gh CLI がインストールされていること
+- jq がインストールされていること
 
 ## 2. ワークフロー
 
 ### 2.1. GitHub活動の取得
 
-gh-furik を使用して活動を取得する。
+専用スクリプトを使用して活動を取得する。デフォルトで現在時刻から24時間前までの活動を取得する（UTCで正確に計算）。
 
-#### タイムゾーンに関する注意
+#### スクリプトの場所
 
-gh-furik は日付を UTC として扱う（`YYYY-MM-DDT00:00:00Z` 形式）。
-そのため、JST で「今日」の活動を取得するには --from を前日にする必要がある。
-
-例: JST 2025-12-17 の活動を取得する場合
-- `--from 2025-12-17` → `2025-12-17T00:00:00Z` = JST 2025-12-17 09:00（朝9時以前が抜ける）
-- `--from 2025-12-16` → `2025-12-16T00:00:00Z` = JST 2025-12-16 09:00（十分にカバー）
+```
+~/.config/claude/skills/daily-report/scripts/get-activities.sh
+```
 
 #### コマンド例
 
 ```bash
-# 今日の活動（JST対応）
-# --from を前日、--to を当日にすることで JST 00:00-23:59 をカバー
-gh furik --from $(date -v-1d +%Y-%m-%d) --to $(date +%Y-%m-%d)
+# デフォルト: 24時間前から現在まで
+~/.config/claude/skills/daily-report/scripts/get-activities.sh --no-url
 
-# デフォルト（昨日の活動）
-# 内部的に約48時間分を取得するため、多くの場合これで十分
-gh furik
+# 時間を指定: N時間前から現在まで
+~/.config/claude/skills/daily-report/scripts/get-activities.sh --hours 48 --no-url
 
-# 特定期間の活動
-gh furik --from 2025-12-01 --to 2025-12-15
+# 日時を直接指定 (ISO8601形式、UTC)
+~/.config/claude/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
 ```
 
-出力形式:
+#### オプション
+
+| オプション | 説明 |
+| --- | --- |
+| --no-url | URLなしで出力（メンション通知防止、日報向け） |
+| --hours N | N時間前から現在までの活動を取得 |
+| --from | 開始日時（ISO8601形式、例: 2025-12-17T00:00:00Z） |
+| --to | 終了日時（ISO8601形式、例: 2025-12-17T23:59:59Z） |
+| --hostname | GitHub Enterprise Server のホスト名 |
+
+#### 出力形式
 
 ```markdown
 ### repository-owner/repository-name
 
-- [Issue] [owner/repo] Issue title
-- [IssueComment] [owner/repo] Issue title
-- [PullRequest] [owner/repo] PR title
-- [PullRequestComment] [owner/repo] PR title
-- [PullRequestReview] [owner/repo] PR title
+- [Issue] Issue title
+- [IssueComment] Issue title
+- [PullRequest] PR title
+- [PullRequestComment] PR title
+- [PullRequestReview] PR title
 ```
 
-**注意**: URLを削除することでメンション通知を防ぐ。
+**注意**: `--no-url` オプションでURLを省略し、メンション通知を防ぐ。
 
 ### 2.2. 下書き作成
 
