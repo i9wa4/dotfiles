@@ -36,7 +36,12 @@ repo_name=$(basename "$(git rev-parse --show-toplevel)")
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
 git fetch origin
-git fetch origin main:main
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$current_branch" == "main" ]]; then
+  git pull --ff-only origin main
+else
+  git fetch origin main:main
+fi
 echo ""
 
 # Process each PR number
