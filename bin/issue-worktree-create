@@ -36,9 +36,10 @@ fi
 # Get repository name
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
 
-# Fetch remote once
+# Fetch remote and update main branch
 echo "-> Fetching remote..."
 git fetch origin
+git fetch origin main:main
 echo ""
 
 # Process each issue number
@@ -128,9 +129,9 @@ ${issue_comments}
       git worktree add "$worktree_path" "$branch_name"
       echo "* Created worktree: ${worktree_path}"
     else
-      git worktree add -b "$branch_name" "$worktree_path"
+      git worktree add -b "$branch_name" "$worktree_path" main
       echo "* Created worktree: ${worktree_path}"
-      echo "* Created local branch: ${branch_name}"
+      echo "* Created local branch: ${branch_name} (from main)"
     fi
 
     # Run repo-setup if available

@@ -33,9 +33,10 @@ fi
 # Get repository name
 repo_name=$(basename "$(git rev-parse --show-toplevel)")
 
-# Fetch remote once
+# Fetch remote and update main branch
 echo "-> Fetching remote..."
 git fetch origin
+git fetch origin main:main
 echo ""
 
 # Process each PR number
