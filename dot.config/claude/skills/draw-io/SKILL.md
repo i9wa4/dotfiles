@@ -189,6 +189,48 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 - 冗長な表記 (例: ECR Container Registry): 短縮して 1 行
 - 改行には `&lt;br&gt;` タグを使用
 
+### 6.9. 背景枠と内部要素の配置
+
+背景枠（グループ化用のボックス）の中に要素を配置する際は、十分なマージンを確保する。
+
+- YOU MUST: 内部要素は背景枠の境界から最低 30px 以上のマージンを確保
+- YOU MUST: 角丸 (`rounded=1`) やストローク幅 (`strokeWidth`) を考慮して余裕を持たせる
+- YOU MUST: PNG 出力後に必ず視覚的に確認し、はみ出しがないかチェック
+
+座標計算の確認方法
+
+```text
+背景枠: y=20, height=400 → 範囲は y=20〜420
+内部要素の上端: 背景枠の y + 30 以上 (例: y=50)
+内部要素の下端: 背景枠の y + height - 30 以下 (例: y=390 まで)
+```
+
+悪い例（はみ出る可能性あり）
+
+```xml
+<!-- 背景枠 -->
+<mxCell id="bg" style="rounded=1;strokeWidth=3;...">
+  <mxGeometry x="500" y="20" width="560" height="400" />
+</mxCell>
+<!-- テキスト: y=30 は枠の上端(y=20)に近すぎる -->
+<mxCell id="label" value="タイトル" style="text;...">
+  <mxGeometry x="510" y="30" width="540" height="35" />
+</mxCell>
+```
+
+良い例（十分なマージン）
+
+```xml
+<!-- 背景枠 -->
+<mxCell id="bg" style="rounded=1;strokeWidth=3;...">
+  <mxGeometry x="500" y="20" width="560" height="430" />
+</mxCell>
+<!-- テキスト: y=50 は枠の上端(y=20)から30px離れている -->
+<mxCell id="label" value="タイトル" style="text;...">
+  <mxGeometry x="510" y="50" width="540" height="35" />
+</mxCell>
+```
+
 ## 7. リファレンス
 
 - [レイアウトガイドライン](references/layout-guidelines.md)
@@ -210,6 +252,8 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] 矢印がラベルと被っていないか (PNG で確認)
 - [ ] 矢印の起点・終点がラベルから十分離れているか (最低 20px 以上)
 - [ ] 矢印が他のボックスやアイコンを貫通していないか (PNG で確認)
+- [ ] 背景枠の内部要素が枠からはみ出していないか (PNG で確認)
+- [ ] 背景枠と内部要素の間に 30px 以上のマージンがあるか
 - [ ] AWS サービス名が正式名称・正しい略称になっているか
 - [ ] AWS アイコンが最新版 (mxgraph.aws4.*) か
 - [ ] 不要な要素が残っていないか
