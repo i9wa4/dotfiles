@@ -55,6 +55,6 @@
     "preferredNotifChannel": "terminal_bell",
     "statusLine": {
         "type": "command",
-        "command": "npx ccusage@latest statusline"
+        "command": "ccusage statusline"
     }
 }
