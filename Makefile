@@ -233,8 +233,8 @@ MF_NPM_GLOBAL_PACKAGES := \
 	@github/copilot \
 	@google/gemini-cli \
 	@openai/codex \
-	vde-layout \
-	zenn-cli
+	ccusage \
+	vde-layout
 
 package-npm-install:
 	if npm list -g --depth=0 npm >/dev/null 2>&1; then \
