@@ -50,9 +50,9 @@ jobs:
             ~/.cache/pre-commit
             ~/.cache/uv
             .venv
-          key: cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
+          key: cache-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
-            cache-${{ runner.os }}-${{ runner.arch }}-
+            cache-v1-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Run pre-commit
         run: |
