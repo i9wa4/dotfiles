@@ -50,9 +50,12 @@ jobs:
             ~/.cache/pre-commit
             ~/.cache/uv
             .venv
-          key: cache-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
+          key: cache-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
-            cache-v1-${{ runner.os }}-${{ runner.arch }}-
+            cache-v2-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Setup Python environment
+        run: mise exec -- uv sync
 
       - name: Run pre-commit
         run: |
