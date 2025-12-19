@@ -40,8 +40,12 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
         with:
-          install_args: --yes
+          # install_args: --yes
           cache: true
+
+      - name: Set up Python
+        run: |
+          mise exec -- uv sync --only-group dev
 
       - name: Cache pre-commit
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
@@ -50,10 +54,6 @@ jobs:
           key: pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Set up Python
-        run: |
-          mise exec -- uv sync --only-group dev
 
       - name: Run pre-commit
         run: |
