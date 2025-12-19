@@ -36,30 +36,29 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Install mise
         uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
         with:
           cache: true
 
-      - name: Cache pre-commit
+      - name: Cache
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
-          path: ~/.cache/pre-commit
-          key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          path: |
+            ~/.cache/pre-commit
+            ~/.cache/uv
+          key: cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Cache uv
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        with:
-          path: ~/.cache/uv
-          key: |
-            uv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock') }}
-          restore-keys: |
-            uv-${{ runner.os }}-${{ runner.arch }}-
+            cache-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Run pre-commit
         run: |
-          mise exec -- pre-commit run --all-files
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            mise exec -- pre-commit run --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.sha }}
+          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            mise exec -- pre-commit run --from-ref ${{ github.event.before }} --to-ref ${{ github.sha }}
+          else
+            mise exec -- pre-commit run --all-files
+          fi
