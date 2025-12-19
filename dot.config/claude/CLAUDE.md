@@ -40,14 +40,15 @@ Claude Code では自動読み込みされる。Codex CLI では必要に応じ�
 
 スキルは `skills/` ディレクトリに保存され、特定の統合のために手動で呼び出される。
 
-| スキル            | 説明                      |
-| --------          | ------                    |
-| bigquery-expert   | BigQuery 開発ガイド       |
-| databricks-expert | Databricks 開発ガイド     |
-| dbt-expert        | dbt 開発ガイド            |
-| terraform-expert  | Terraform 開発ガイド      |
-| jupyter-notebook  | Jupyter Notebook 実行方法 |
-| draw-io           | draw.io 図の作成・編集    |
+| スキル            | 説明                              |
+| --------          | ------                            |
+| bigquery-expert   | BigQuery 開発ガイド               |
+| databricks-expert | Databricks 開発ガイド             |
+| dbt-expert        | dbt 開発ガイド                    |
+| terraform-expert  | Terraform 開発ガイド              |
+| jupyter-notebook  | Jupyter Notebook 実行方法         |
+| draw-io           | draw.io 図の作成・編集            |
+| confluence-to-md  | Confluence ページを Markdown 変換 |
 
 ### 3.3. Agents
 
@@ -63,8 +64,3 @@ Claude Code では自動読み込みされる。Codex CLI では必要に応じ�
 ### 3.4. Commands
 
 スラッシュコマンドは `commands/` ディレクトリに保存され、呼び出し時のみ読み込まれる。
-
-## 4. 参考リンク
-
-- Claude Code 設定ガイド: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
-- site2skill (Skills 作成ツール): <https://github.com/laiso/site2skill>

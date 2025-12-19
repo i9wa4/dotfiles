@@ -6,6 +6,7 @@
 !commands/**
 !skills/
 !skills/**
+skills/.system/
 skills/**/*.skill
 !agents/
 !agents/**
