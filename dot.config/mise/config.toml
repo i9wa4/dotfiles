@@ -3,7 +3,7 @@ experimental = true
 
 [tools]
 # Language Runtimes
-deno  = "2.6.1"
+deno  = "2.6.2"
 go    = "latest"
 node  = "24"
 rust  = "latest"
