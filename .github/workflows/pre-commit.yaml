@@ -55,9 +55,6 @@ jobs:
           restore-keys: |
             cache-${{ runner.os }}-${{ runner.arch }}-
 
-      - name: Setup Python environment
-        run: mise exec -- uv sync --only-dev
-
       - name: Run pre-commit
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
