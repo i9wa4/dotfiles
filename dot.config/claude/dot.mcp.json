@@ -1,14 +1,14 @@
 {
-    "mcpServers": {
-        "awslabs-aws-documentation-mcp-server": {
-            "type": "stdio",
-            "command": "uvx",
-            "args": [
-                "awslabs.aws-documentation-mcp-server@latest"
-            ],
-            "env": {},
-            "disabled": true,
-            "autoApprove": []
-        }
+  "mcpServers": {
+    "awslabs-aws-documentation-mcp-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-documentation-mcp-server@latest"
+      ],
+      "env": {},
+      "disabled": true,
+      "autoApprove": []
     }
+  }
 }
