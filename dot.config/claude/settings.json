@@ -1,10 +1,5 @@
 {
-  "alwaysThinkingEnabled": true,
   "cleanupPeriodDays": 36000,
-  "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true,
-    "document-skills@anthropic-agent-skills": true
-  },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
@@ -16,22 +11,6 @@
     "DISABLE_AUTOUPDATER": "true",
     "DISABLE_ERROR_REPORTING": "true",
     "DISABLE_TELEMETRY": "true"
-  },
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/restore-context.sh"
-          }
-        ]
-      }
-    ]
   },
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -52,9 +31,34 @@
       "Write(.env*)"
     ]
   },
-  "preferredNotifChannel": "terminal_bell",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_CONFIG_DIR}/restore-context.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "ccusage statusline"
-  }
+  },
+  "enabledPlugins": {
+    "example-skills@anthropic-agent-skills": true,
+    "document-skills@anthropic-agent-skills": true,
+    "commit-commands@claude-code-plugins": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "code-review@claude-code-plugins": true
+  },
+  "alwaysThinkingEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 2069451551000
+  },
+  "preferredNotifChannel": "terminal_bell"
 }
