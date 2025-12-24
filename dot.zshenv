@@ -40,7 +40,7 @@ export FZF_DEFAULT_OPTS="
 "
 
 # gtr (git-worktree-runner)
-export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbit/git-worktree-runner/bin
+export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbitai/git-worktree-runner/bin
 
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
