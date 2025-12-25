@@ -395,7 +395,8 @@ nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim && \
 	$(MAKE) distclean || true && \
 	$(MAKE) CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
-	$(MAKE) install
+	$(MAKE) install && \
+	rm -rf build
 
 vim-build:  ## build Vim
 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
