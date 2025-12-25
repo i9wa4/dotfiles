@@ -2,40 +2,67 @@
 description: "Restricted BigQuery dbt environment"
 ---
 
-# restricted-bugquery-dbt-environment
+# restricted-bigquery-dbt-environment
 
-このファイルの内容全体を読み取ったらペルソナに沿って了承した旨のユーモラスな応答をしてカスタムスラッシュコマンドとしての動作を終了する
+このファイルの内容全体を読み取ったら、以下を実行してからペルソナに沿って了承した旨のユーモラスな応答をする。
 
 ## 概要
 
-- YOU MUST: 以下の手順を必ず守ること
-- NEVER: 確認なしに `dbt run` を実行しない
+ローカル開発時に本番スキーマへの誤書き込みを防ぐため、マクロを安全版に差し替える。
 
-## 1. 安全確認事項
+## 作業開始時に実行するコマンド
 
-### 1.1. 実行前チェックリスト
+以下のコマンドを実行してマクロを安全版に差し替える。
 
-- YOU MUST: `dbt run` 実行前に以下を必ず確認
-  1. 対象モデルに `{{ config(schema='test') }}` が設定されているか
-  2. manifest.json で作成先スキーマを確認済みか
-  3. ユーザーに「xxx スキーマに作成します」と明示的に許可を得たか
-- NEVER: 上記の確認なしに `dbt run` を実行しない
-- YOU MUST: TodoWriteツールで「dbt run実行 (要許可)」と明記する
+```bash
+cat > macros/get_custom_schema.sql << 'EOF'
+{% macro generate_schema_name(custom_schema_name, node) -%}
 
-### 1.2. 誤実行防止
+    {%- set default_schema = target.schema -%}
 
-- IMPORTANT: `config(schema='test')` を削除した直後は特に注意
-- YOU MUST: 各ステップごとに「なぜこれを実行するのか」を明確にする
-- NEVER: PRドキュメントのタスクリストを機械的に実行しない
+    {# ローカル dev 環境では強制的にプレフィックスをつける #}
+    {%- if target.name == 'dev' -%}
+        dev_{{ default_schema }}{% if custom_schema_name %}_{{ custom_schema_name }}{% endif %}
+    {%- else -%}
+        {# 既存ロジック (dbt Cloud 等) #}
+        {%- if custom_schema_name is none -%}
+            {% if node.fqn[1:-1]|length == 0 %}
+                {{ default_schema }}
+            {% else %}
+                {% set suffix = node.fqn[1:-1]|join('_') %}
+                {{ suffix | trim }}
+            {% endif %}
+        {%- else -%}
+            {{ default_schema }}_{{ custom_schema_name | trim }}
+        {%- endif -%}
+    {%- endif -%}
 
-## 2. 作業手順
+{%- endmacro %}
+EOF
+```
 
-1. 対象モデルに `{{ config( schema='test') }}` があるか確認し、なければ追加する
-2. dbt compileを実行してmanifest.jsonで作成先スキーマを確実に確認する
-   ```bash
-   source .venv/bin/activate
-   dbt compile --profiles-dir ~/.dbt --no-use-colors
-   cat target/manifest.json | jq '.nodes."model.pivot_dbt.MODEL_NAME" | {database: .database, schema: .schema, name: .name}'
-   ```
-3. 「テーブル作成先スキーマは xxxx です。dbt run を実行してもよろしいですか？」とユーザーに確認
-4. 許可を得た後に `dbt run --select model_name --profiles-dir ~/.dbt --no-use-colors`
+## 動作確認
+
+マクロ差し替え後、以下で接続先を確認する。
+
+```bash
+uv run dbt debug --profiles-dir ~/.dbt --no-use-colors
+```
+
+## dbt run の実行
+
+- マクロ差し替え済みなら許可なく `dbt run` を実行してよい
+- すべてのモデルが `dev_pivot_dbt` または `dev_pivot_dbt_xxx` スキーマに作成される
+
+## 作業終了時
+
+マクロを元に戻す（コミットしないため）。
+
+```bash
+git checkout macros/get_custom_schema.sql
+```
+
+## 注意事項
+
+- NEVER: マクロの変更をコミットしない
+- NEVER: `git add macros/get_custom_schema.sql` を実行しない
