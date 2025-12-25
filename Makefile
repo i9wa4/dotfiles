@@ -234,7 +234,8 @@ MF_NPM_GLOBAL_PACKAGES := \
 	@google/gemini-cli \
 	@openai/codex \
 	ccusage \
-	vde-layout
+	vde-layout \
+	zenn-cli
 
 package-npm-install:
 	if npm list -g --depth=0 npm >/dev/null 2>&1; then \
