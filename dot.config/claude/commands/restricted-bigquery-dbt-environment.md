@@ -6,11 +6,11 @@ description: "Restricted BigQuery dbt environment"
 
 このファイルの内容全体を読み取ったら、以下を実行してからペルソナに沿って了承した旨のユーモラスな応答をする。
 
-## 概要
+## 1. 概要
 
 ローカル開発時に本番スキーマへの誤書き込みを防ぐため、マクロを安全版に差し替える。
 
-## 1. 環境セットアップ (初回のみ)
+## 2. 環境セットアップ (初回のみ)
 
 pyproject.toml から依存パッケージをインストールする。
 
@@ -18,7 +18,7 @@ pyproject.toml から依存パッケージをインストールする。
 uv pip install --requirement pyproject.toml
 ```
 
-## 2. マクロを安全版に差し替え
+## 3. マクロを安全版に差し替え
 
 以下のコマンドを実行してマクロを安全版に差し替える。
 
@@ -58,7 +58,7 @@ cat > macros/get_custom_schema.sql << 'EOF'
 EOF
 ```
 
-## 3. 動作確認
+## 4. 動作確認
 
 マクロ差し替え後、以下で接続先を確認する。
 
@@ -66,12 +66,11 @@ EOF
 source .venv/bin/activate && dbt debug --profiles-dir ~/.dbt --no-use-colors
 ```
 
-## dbt run の実行
+## 5. dbt run の実行
 
 - YOU MUST: `dbt run` 実行前に manifest.json でスキーマ名を確認し、ユーザーに許可を取る
-- すべてのモデルが `z_dev_stg_ga`, `z_dev_whs_xxx`, `z_dev_mart` 等のスキーマに作成される
 
-## 作業終了時
+## 6. 作業終了時
 
 マクロを元に戻す（コミットしないため）。
 
@@ -79,7 +78,7 @@ source .venv/bin/activate && dbt debug --profiles-dir ~/.dbt --no-use-colors
 git checkout macros/get_custom_schema.sql
 ```
 
-## 注意事項
+## 7. 注意事項
 
 - NEVER: マクロの変更をコミットしない
 - NEVER: `git add macros/get_custom_schema.sql` を実行しない
