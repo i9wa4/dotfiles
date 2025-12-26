@@ -14,6 +14,23 @@ set -o posix
 #   - gh (GitHub CLI)
 #   - repo-setup (optional)
 
+# AGENTS.md source for new worktrees
+AGENTS_SRC="${HOME}/ghq/github.com/i9wa4/dotfiles/dot.config/codex/AGENTS.md"
+
+# Copy AGENTS.md into a newly created worktree (best-effort)
+ensure_agents() {
+  local target_dir="$1"
+  if [[ -f "${target_dir}/AGENTS.md" ]]; then
+    return 0
+  fi
+  if [[ -f $AGENTS_SRC ]]; then
+    cp "$AGENTS_SRC" "${target_dir}/AGENTS.md"
+    echo "* AGENTS.md copied to ${target_dir}"
+  else
+    echo "Warning: AGENTS.md not found at ${AGENTS_SRC}" >&2
+  fi
+}
+
 # Check required dependencies
 for cmd in gh git; do
   if ! command -v "$cmd" &>/dev/null; then
@@ -37,7 +54,7 @@ repo_name=$(basename "$(git rev-parse --show-toplevel)")
 echo "-> Fetching remote..."
 git fetch origin
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [[ "$current_branch" == "main" ]]; then
+if [[ $current_branch == "main" ]]; then
   git pull --ff-only origin main
 else
   git fetch origin main:main
@@ -95,6 +112,8 @@ for pr_number in "$@"; do
       cd "$worktree_path"
       git checkout -b "${pr_branch}" "origin/${pr_branch}"
       echo "* Created worktree: ${worktree_path}"
+
+      ensure_agents "$worktree_path"
 
       cd - >/dev/null
 
