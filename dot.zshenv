@@ -13,6 +13,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then
 fi
 
 # Common
+export EDITOR=vim
 export PATH="${PATH}":/snap/bin
 export TZ="Asia/Tokyo"
 export VISUAL=vim
@@ -39,14 +40,14 @@ export FZF_DEFAULT_OPTS="
 "
 
 # gtr (git-worktree-runner)
-export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbit/git-worktree-runner/bin
+export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbitai/git-worktree-runner/bin
 
 # Homebrew
 export DYLD_LIBRARY_PATH=/opt/homebrew/lib
 export PATH=/opt/homebrew/bin:"${PATH}"
 
 # mise
-export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
+# export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
 
 # Neovim
 export NVIM_APPNAME=nvim
