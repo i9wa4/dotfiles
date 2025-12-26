@@ -234,7 +234,8 @@ MF_NPM_GLOBAL_PACKAGES := \
 	@google/gemini-cli \
 	@openai/codex \
 	ccusage \
-	vde-layout
+	vde-layout \
+	zenn-cli
 
 package-npm-install:
 	if npm list -g --depth=0 npm >/dev/null 2>&1; then \
@@ -394,7 +395,8 @@ nvim-build:  ## build Neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim && \
 	$(MAKE) distclean || true && \
 	$(MAKE) CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
-	$(MAKE) install
+	$(MAKE) install && \
+	rm -rf build
 
 vim-build:  ## build Vim
 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
