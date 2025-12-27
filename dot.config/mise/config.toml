@@ -38,12 +38,9 @@ tflint          = "latest"
 "aqua:x-motemen/ghq"                                          = "latest"
 "aqua:zizmorcore/zizmor"                                      = "latest"
 
-# Cargo Tools
-"cargo:bat"     = "latest"
-"cargo:rumdl"   = "latest"
-"cargo:tokei"   = "latest"
-
-# Go Tools
-"go:github.com/jameswoolfenden/pike"    = { version = "latest" }
-"go:github.com/mattn/efm-langserver"    = { version = "latest" }
-"go:github.com/rhysd/vim-startuptime"   = { version = "latest" }
+# GitHub Tools (prebuilt binaries)
+"github:sharkdp/bat"            = "latest"
+"github:rvben/rumdl"            = "latest"
+"github:jameswoolfenden/pike"   = "latest"
+"github:mattn/efm-langserver"   = "latest"
+"github:rhysd/vim-startuptime"  = "latest"
