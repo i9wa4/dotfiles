@@ -35,7 +35,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
-          fetch-depth: 0
           persist-credentials: false
 
       - name: Install mise
@@ -57,10 +56,4 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            mise exec -- pre-commit run --verbose --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.sha }}
-          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
-            mise exec -- pre-commit run --verbose --from-ref ${{ github.event.before }} --to-ref ${{ github.sha }}
-          else
-            mise exec -- pre-commit run --verbose --all-files
-          fi
+          mise exec -- pre-commit run --all-files
