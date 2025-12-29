@@ -7,6 +7,7 @@
   "lockFileMaintenance": {
     "enabled": true
   },
+  "minimumReleaseAge": "7 days",
   "packageRules": [
     {
       "matchManagers": [
@@ -26,6 +27,16 @@
         "\"github:(?<depName>[^\"]+)\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "mise\\.toml$"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*depName=(?<depName>\\S+)\\ngcloud\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-tags"
     }
   ]
 }
