@@ -45,6 +45,7 @@ dot.config/claude/skills    .claude/skills
 dot.config/codex            .codex
 dot.config/cursor           .cursor
 dot.editorconfig            .editorconfig
+mise.toml                   .config/mise/config.toml
 endef
 export MF_LINK_HOME_ROWS
 
@@ -52,7 +53,6 @@ define MF_LINK_XDG_ROWS
 alacritty           alacritty
 claude              claude
 efm-langserver      efm-langserver
-mise                mise
 nvim                nvim
 rumdl               rumdl
 skk                 skk
