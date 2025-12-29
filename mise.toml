@@ -1,16 +1,43 @@
 [tools]
-# Package managers
-uv = "0.9.18"
+# Language Runtimes
+deno = "2.6.3"
+go   = "1.25.5"
+node = "24.12.0"
+rust = "1.92.0"
+uv   = "0.9.18"
 
-# Development tools
-pre-commit = "4.5.1"
-shellcheck = "0.11.0"
-shfmt = "3.12.0"
+# CLI Tools
+act            = "0.2.83"
+awscli         = "2.32.24"
+databricks-cli = "0.281.0"
+fd             = "10.3.0"
+fzf            = "0.67.0"
+gcloud         = "550.0.0"
+gh             = "2.83.2"
+hadolint       = "2.14.0"
+jq             = "1.8.1"
+pre-commit     = "4.5.1"
+ripgrep        = "15.1.0"
+shellcheck     = "0.11.0"
+shfmt          = "3.12.0"
+terraform      = "1.14.3"
+tflint         = "0.60.0"
 
-# Aqua tools
-"aqua:gitleaks/gitleaks" = "8.30.0"
-"aqua:rhysd/actionlint" = "1.7.9"
-"aqua:suzuki-shunsuke/ghalint" = "1.5.4"
-"aqua:suzuki-shunsuke/ghatm" = "1.0.0"
-"aqua:suzuki-shunsuke/pinact" = "3.7.3"
-"aqua:zizmorcore/zizmor" = "1.19.0"
+# Aqua Tools
+"aqua:gitleaks/gitleaks"                                    = "8.30.0"
+"aqua:mikefarah/yq"                                         = "4.50.1"
+"aqua:rhysd/actionlint"                                     = "1.7.9"
+"aqua:suzuki-shunsuke/disable-checkout-persist-credentials" = "1.0.0"
+"aqua:suzuki-shunsuke/ghalint"                              = "1.5.4"
+"aqua:suzuki-shunsuke/ghatm"                                = "1.0.0"
+"aqua:suzuki-shunsuke/github-comment"                       = "6.4.1"
+"aqua:suzuki-shunsuke/pinact"                               = "3.7.3"
+"aqua:x-motemen/ghq"                                        = "1.8.0"
+"aqua:zizmorcore/zizmor"                                    = "1.19.0"
+
+# GitHub Tools (prebuilt binaries)
+"github:jameswoolfenden/pike"  = "v0.3.87"
+"github:mattn/efm-langserver"  = "v0.0.54"
+"github:rhysd/vim-startuptime" = "v1.3.2"
+"github:rvben/rumdl"           = "v0.0.206"
+"github:sharkdp/bat"           = "v0.26.1"
