@@ -1,10 +1,10 @@
 ---
-description: "Review"
+description: "Code Review"
 ---
 
-# my-review
+# my-code-review
 
-このファイルを読んだら直ちに GitHub Pull Request レビューを開始すること
+このファイルを読んだら直ちに GitHub Pull Request のコードレビューを開始すること
 
 ## 1. 事前準備
 
@@ -28,13 +28,14 @@ description: "Review"
 
 ### 4.1. マルチエージェントモード (Claude Code)
 
-agents/ ディレクトリが利用可能な場合、4名のレビュアーエージェントを並列で実行する
+agents/ ディレクトリが利用可能な場合、5名のレビュアーエージェントを並列で実行する
 
 | エージェント          | 観点                                         |
-| --------------------- | ------------------------------------------   |
+| --------------------- | -------------------------------------------- |
 | code-reviewer         | コード品質、可読性、保守性                   |
 | security-reviewer     | セキュリティ脆弱性、OWASP Top 10             |
 | architecture-reviewer | 設計パターン、構造、スケーラビリティ         |
+| qa-reviewer           | 受け入れ観点、目的達成、エッジケース         |
 | historian             | Issue/PR履歴、コミット経緯、プロジェクト文脈 |
 
 エージェント定義ファイル
@@ -42,12 +43,13 @@ agents/ ディレクトリが利用可能な場合、4名のレビュアーエ�
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
 
 実行手順
 
-1. 上記4つのエージェント定義を読み込む
-2. Task ツールを使って4つのレビューを並列実行する
+1. 上記5つのエージェント定義を読み込む
+2. Task ツールを使って5つのレビューを並列実行する
 3. 各エージェントの結果を統合する
 
 ### 4.2. シングルモード (Codex CLI / エージェント未使用時)
@@ -56,10 +58,11 @@ agents/ ディレクトリが利用可能な場合、4名のレビュアーエ�
 
 - tmux ペイン番号 N を取得: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
 - ペイン番号 N に応じて対応するエージェント定義ファイルを読み込む
-    - N % 4 == 0: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
-    - N % 4 == 1: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
-    - N % 4 == 2: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
-    - N % 4 == 3: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
+    - N % 5 == 0: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
+    - N % 5 == 1: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/code-reviewer.md
+    - N % 5 == 2: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+    - N % 5 == 3: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
+    - N % 5 == 4: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
 
 ## 5. レビュー結果の Markdown ファイル出力
 

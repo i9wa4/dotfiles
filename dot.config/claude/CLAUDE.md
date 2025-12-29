@@ -64,3 +64,32 @@ Claude Code では自動読み込みされる。Codex CLI では必要に応じ�
 ### 3.4. Commands
 
 スラッシュコマンドは `commands/` ディレクトリに保存され、呼び出し時のみ読み込まれる。
+
+## 4. Claude Code Known Issues & Guardrails
+
+[Claude Code の UTF-8 マルチバイト文字パニック #Rust - Qiita](https://qiita.com/yonaka15/items/c4b95b7d9e932c9d3ff2)
+
+### 4.1. UTF-8 Multibyte Character Panic (Issue #14133)
+
+**Context**: Claude Code v2.0.70+ has a bug in Rust string slicing causing crashes on multi-byte characters.
+
+#### 4.1.1. Critical Guardrails
+
+Please follow these rules strictly to prevent the CLI from crashing:
+
+1. **No Full-width Parentheses**:
+   - ❌ `（補足）` `（済）`
+   - ✅ `(補足)` `(済)`
+   - Always use half-width `()` in explanations, todo items, and commit messages.
+
+2. **Bold Formatting Safety**:
+   - Do not place multi-byte characters immediately after bold text.
+   - ❌ `**完了**です`
+   - ✅ `**完了** です` (Insert a space)
+
+3. **TodoWrite Usage**:
+   - When adding tasks via `TodoWrite`, avoid full-width symbols in the description.
+
+#### 4.1.2. Rule
+
+**Replace all full-width `（）` with half-width `()` in your output.**
