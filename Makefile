@@ -102,6 +102,7 @@ link:  ## make symbolic links
 	# create $$HOME-level symlinks defined in MF_LINK_HOME_ROWS
 	printf '%s\n' "$${MF_LINK_HOME_ROWS}" | while read -r src dst; do \
 		[ -z "$$src" ] && continue; \
+		mkdir -p "$$(dirname "$${HOME}/$$dst")"; \
 		ln -fsn "$(MF_DOTFILES_DIR)/$$src" "$${HOME}/$$dst"; \
 	done
 	# ensure XDG_CONFIG_HOME exists and seed git configuration
