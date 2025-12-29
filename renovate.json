@@ -7,6 +7,15 @@
   "lockFileMaintenance": {
     "enabled": true
   },
+  "packageRules": [
+    {
+      "matchManagers": [
+        "mise",
+        "regex"
+      ],
+      "groupName": "mise tools"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
