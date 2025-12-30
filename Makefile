@@ -43,17 +43,14 @@ endif
 define MF_LINK_HOME_ROWS
 dot.config/claude/skills    .claude/skills
 dot.config/codex            .codex
-dot.config/cursor           .cursor
 dot.editorconfig            .editorconfig
 mise.toml                   .config/mise/config.toml
 endef
 export MF_LINK_HOME_ROWS
 
 define MF_LINK_XDG_ROWS
-alacritty           alacritty
 claude              claude
 efm-langserver      efm-langserver
-ghostty             ghostty
 nvim                nvim
 rumdl               rumdl
 skk                 skk
@@ -86,8 +83,6 @@ update:  ## update for all OS
 	cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/
 
 common-init: zsh-init unlink link git-config package-install ghq-get-essential
-	git clone https://github.com/alacritty/alacritty-theme \
-		$(MF_DOTFILES_DIR)/dot.config/alacritty/themes
 	git clone https://github.com/tmux-plugins/tpm \
 		$(MF_DOTFILES_DIR)/dot.config/tmux/plugins/tpm
 
@@ -153,17 +148,7 @@ unlink:	## unlink symbolic links
 # --------------------------------------
 # macOS Tasks
 #
-define MF_MAC_ALACRITTY
-[general]
-import = [
-    '~/.config/alacritty/common.toml',
-    '~/.config/alacritty/macos.toml'
-]
-endef
-export MF_MAC_ALACRITTY
-
 mac-init: common-init  ## init for Mac
-	echo "$${MF_MAC_ALACRITTY}" | tee "$${HOME}"/.config/alacritty/alacritty.toml
 	defaults write com.apple.Finder QuitMenuItem -bool YES
 	defaults write com.apple.desktopservices DSDontWriteNetworkStores True
 	defaults write com.maisin.boost ApplePressAndHoldEnabled -bool false
@@ -294,7 +279,6 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	brew update
 	brew upgrade
 	brew install \
-		alacritty \
 		docker-desktop \
 		drawio \
 		font-udev-gothic \

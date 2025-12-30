@@ -39,18 +39,7 @@ endif
 " --------------------------------------
 " End of settings
 "
-" Detect background from terminal theme cache
-let s:cache_file = $XDG_CACHE_HOME->expand() .. '/terminal-theme'
-if filereadable(s:cache_file)
-  let s:theme_type = trim(readfile(s:cache_file)[0])
-  if s:theme_type ==# 'light'
-    set background=light
-  else
-    set background=dark
-  endif
-else
-  set background=dark
-endif
+set background=dark
 
 " filetype plugin indent on
 filetype plugin on
@@ -60,6 +49,4 @@ if has('termguicolors')
   set termguicolors
 endif
 
-" Setup colorscheme based on Alacritty theme
 execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
-" call my_colorscheme#setup()
