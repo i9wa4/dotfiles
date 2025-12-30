@@ -8,7 +8,7 @@ description: "Restricted BigQuery dbt environment"
 
 ## 1. 概要
 
-ローカル開発時に本番スキーマへの誤書き込みを防ぐため、マクロを安全版に差し替える。
+ローカル開発時に本番スキーマへの誤書き込みを防ぐため、モデルの config に `schema='test'` を一時的に追加する。
 
 ## 2. 環境セットアップ (初回のみ)
 
@@ -18,67 +18,65 @@ pyproject.toml から依存パッケージをインストールする。
 uv pip install --requirement pyproject.toml
 ```
 
-## 3. マクロを安全版に差し替え
+## 3. モデルに schema='test' を追加
 
-以下のコマンドを実行してマクロを安全版に差し替える。
+対象モデルの config に `schema='test'` を追加する。
 
-```bash
-cat > macros/get_custom_schema.sql << 'EOF'
-{% macro generate_schema_name(custom_schema_name, node) -%}
+カンマ差分を抑制するために必ず先頭に追加する。
 
-    {%- set default_schema = target.schema -%}
-
-    {# ローカル dev 環境では強制的にプレフィックスをつける #}
-    {%- if target.name == 'dev' -%}
-        {%- if custom_schema_name is none -%}
-            {% if node.fqn[1:-1]|length == 0 %}
-                z_dev_{{ default_schema }}
-            {% else %}
-                {% set suffix = node.fqn[1:-1]|join('_') %}
-                z_dev_{{ suffix | trim }}
-            {% endif %}
-        {%- else -%}
-            z_dev_{{ default_schema }}_{{ custom_schema_name | trim }}
-        {%- endif -%}
-    {%- else -%}
-        {# 既存ロジック (dbt Cloud 等) #}
-        {%- if custom_schema_name is none -%}
-            {% if node.fqn[1:-1]|length == 0 %}
-                {{ default_schema }}
-            {% else %}
-                {% set suffix = node.fqn[1:-1]|join('_') %}
-                {{ suffix | trim }}
-            {% endif %}
-        {%- else -%}
-            {{ default_schema }}_{{ custom_schema_name | trim }}
-        {%- endif -%}
-    {%- endif -%}
-
-{%- endmacro %}
-EOF
+```sql
+{{
+  config(
+    schema='test',  -- ← これを追加
+    materialized='incremental',
+    ...
+  )
+}}
 ```
+
+これにより、モデルは `test` スキーマに書き込まれる。
 
 ## 4. 動作確認
 
-マクロ差し替え後、以下で接続先を確認する。
+compile でスキーマ名を確認する。
 
 ```bash
-source .venv/bin/activate && dbt debug --profiles-dir ~/.dbt --no-use-colors
+uv run dbt compile --select <model_name> --profiles-dir ~/.dbt --no-use-colors
 ```
+
+出力に `test` スキーマが含まれていることを確認する。
 
 ## 5. dbt run の実行
 
-- YOU MUST: `dbt run` 実行前に manifest.json でスキーマ名を確認し、ユーザーに許可を取る
-
-## 6. 作業終了時
-
-マクロを元に戻す（コミットしないため）。
+- YOU MUST: `dbt run` 実行前にユーザーに許可を取る
+- YOU MUST: 出力スキーマが `test` であることを確認済みであること
 
 ```bash
-git checkout macros/get_custom_schema.sql
+uv run dbt run --select <model_name> --profiles-dir ~/.dbt --no-use-colors
 ```
 
-## 7. 注意事項
+## 6. dbt test の実行
 
-- NEVER: マクロの変更をコミットしない
-- NEVER: `git add macros/get_custom_schema.sql` を実行しない
+```bash
+uv run dbt test --select <model_name> --profiles-dir ~/.dbt --no-use-colors
+```
+
+## 7. コミット前の作業
+
+`schema='test'` を削除してからコミットする。
+
+```sql
+{{
+  config(
+    -- schema='test',  ← 削除
+    materialized='incremental',
+    ...
+  )
+}}
+```
+
+## 8. 注意事項
+
+- NEVER: `schema='test'` を含んだままコミットしない
+- NEVER: `schema='test'` なしで dbt run を実行しない (本番書き込みリスク)
+- YOU MUST: コミット前に `git diff` で `schema='test'` が残っていないことを確認する
