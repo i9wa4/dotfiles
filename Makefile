@@ -278,15 +278,15 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	brew -v
 	brew update
 	brew upgrade
+	# docker-desktop
+	# ghostty
+	# visual-studio-code
 	brew install \
-		docker-desktop \
 		drawio \
 		font-udev-gothic \
-		ghostty \
 		google-chrome \
 		openvpn-connect \
-		visual-studio-code \
-		wezterm@nightly \
+		wezterm \
 		zoom \
 	brew install \
 		git \
