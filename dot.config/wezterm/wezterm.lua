@@ -7,8 +7,23 @@ config.font_size = 24
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Window
-config.window_background_opacity = 0.70
-config.hide_tab_bar_if_only_one_tab = true
+local opacity_default = 0.70
+config.window_background_opacity = opacity_default
+config.hide_tab_bar_if_only_one_tab = false
+
+-- Integrated titlebar (タイトルバーとタブバーを統合、透過)
+config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
+config.show_new_tab_button_in_tab_bar = false
+config.show_tabs_in_tab_bar = false
+
+config.window_frame = {
+	inactive_titlebar_bg = "rgba(0, 0, 0, 0.2)",
+	active_titlebar_bg = "rgba(0, 0, 0, 0.2)",
+	inactive_titlebar_fg = "#ffffff",
+	active_titlebar_fg = "#ffffff",
+	font = wezterm.font("UDEV Gothic 35LG"),
+	font_size = 20,
+}
 
 -- Keybindings
 config.disable_default_key_bindings = true
@@ -18,8 +33,6 @@ config.send_composed_key_when_left_alt_is_pressed = false
 config.send_composed_key_when_right_alt_is_pressed = false
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
-local opacity_default = 0.80
-
 wezterm.on("inc-opacity", function(window, pane)
 	local overrides = window:get_config_overrides() or {}
 	local current = overrides.window_background_opacity or opacity_default
