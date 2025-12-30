@@ -23,6 +23,7 @@ gcloud = "550.0.0"
 
 # Aqua Tools
 "aqua:BurntSushi/ripgrep"                                   = "15.1.0"
+"aqua:JohnnyMorganz/StyLua"                                 = "2.3.1"
 "aqua:cli/cli"                                              = "2.83.2"
 "aqua:gitleaks/gitleaks"                                    = "8.30.0"
 "aqua:junegunn/fzf"                                         = "0.67.0"

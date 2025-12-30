@@ -67,12 +67,19 @@ tools:
     lint-formats:
       - '%f:%l:%c: %m'
 
+  lua-stylua: &lua-stylua
+    format-command: 'stylua --indent-type Spaces --indent-width 2 -'
+    format-stdin: true
+
 languages:
   dockerfile:
     - <<: *dockerfile-hadolint
 
   json:
     - <<: *json-jq
+
+  lua:
+    - <<: *lua-stylua
 
   markdown:
     - <<: *markdown-rumdl

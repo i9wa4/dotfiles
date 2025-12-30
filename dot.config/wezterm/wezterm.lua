@@ -17,12 +17,12 @@ config.show_new_tab_button_in_tab_bar = false
 config.show_tabs_in_tab_bar = false
 
 config.window_frame = {
-	inactive_titlebar_bg = "rgba(0, 0, 0, 0.2)",
-	active_titlebar_bg = "rgba(0, 0, 0, 0.2)",
-	inactive_titlebar_fg = "#ffffff",
-	active_titlebar_fg = "#ffffff",
-	font = wezterm.font("UDEV Gothic 35LG"),
-	font_size = 20,
+  inactive_titlebar_bg = "rgba(0, 0, 0, 0.2)",
+  active_titlebar_bg = "rgba(0, 0, 0, 0.2)",
+  inactive_titlebar_fg = "#ffffff",
+  active_titlebar_fg = "#ffffff",
+  font = wezterm.font("UDEV Gothic 35LG"),
+  font_size = 20,
 }
 
 -- Keybindings
@@ -34,28 +34,28 @@ config.send_composed_key_when_right_alt_is_pressed = false
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
 wezterm.on("inc-opacity", function(window, pane)
-	local overrides = window:get_config_overrides() or {}
-	local current = overrides.window_background_opacity or opacity_default
-	local new_opacity = math.min(current + 0.05, 1.0)
-	overrides.window_background_opacity = new_opacity
-	window:set_config_overrides(overrides)
+  local overrides = window:get_config_overrides() or {}
+  local current = overrides.window_background_opacity or opacity_default
+  local new_opacity = math.min(current + 0.05, 1.0)
+  overrides.window_background_opacity = new_opacity
+  window:set_config_overrides(overrides)
 end)
 
 wezterm.on("dec-opacity", function(window, pane)
-	local overrides = window:get_config_overrides() or {}
-	local current = overrides.window_background_opacity or opacity_default
-	local new_opacity = math.max(current - 0.05, 0.0)
-	overrides.window_background_opacity = new_opacity
-	window:set_config_overrides(overrides)
+  local overrides = window:get_config_overrides() or {}
+  local current = overrides.window_background_opacity or opacity_default
+  local new_opacity = math.max(current - 0.05, 0.0)
+  overrides.window_background_opacity = new_opacity
+  window:set_config_overrides(overrides)
 end)
 
 config.keys = {
-	{ key = "a", mods = "OPT", action = wezterm.action.EmitEvent("inc-opacity") },
-	{ key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
-	{ key = "d", mods = "OPT", action = wezterm.action.IncreaseFontSize },
-	{ key = "f", mods = "OPT", action = wezterm.action.DecreaseFontSize },
-	{ key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
-	{ key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
+  { key = "a", mods = "OPT", action = wezterm.action.EmitEvent("inc-opacity") },
+  { key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
+  { key = "d", mods = "OPT", action = wezterm.action.IncreaseFontSize },
+  { key = "f", mods = "OPT", action = wezterm.action.DecreaseFontSize },
+  { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
+  { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
 }
 
 return config
