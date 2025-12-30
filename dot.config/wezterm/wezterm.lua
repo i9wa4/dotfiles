@@ -3,7 +3,7 @@ local config = wezterm.config_builder()
 
 -- Font
 config.font = wezterm.font("UDEV Gothic 35LG")
-config.font_size = 24
+config.font_size = 22
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Window
@@ -11,7 +11,7 @@ local opacity_default = 0.70
 config.window_background_opacity = opacity_default
 config.hide_tab_bar_if_only_one_tab = false
 
--- Integrated titlebar (タイトルバーとタブバーを統合、透過)
+-- Integrated titlebar
 config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
 config.show_new_tab_button_in_tab_bar = false
 config.show_tabs_in_tab_bar = false
