@@ -122,7 +122,7 @@ ${issue_comments}
   fi
   echo "* Branch name: ${branch_name}"
 
-  worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
+  worktree_path="$(dirname "$(pwd)")/${repo_name}-issue-${issue_number}"
 
   # Check for existing worktree
   if [[ -d $worktree_path ]]; then
