@@ -48,7 +48,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "ccusage statusline"
+    "command": "npx ccusage@latest statusline"
   },
   "enabledPlugins": {
     "example-skills@anthropic-agent-skills": true,
