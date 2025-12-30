@@ -80,3 +80,9 @@ repos:
         entry: mise exec -- uv run sqlfmt
         language: system
         types: [sql]
+
+      - id: stylua
+        name: stylua
+        entry: mise exec -- stylua --indent-type Spaces --indent-width 2
+        language: system
+        files: \.lua$
