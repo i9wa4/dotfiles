@@ -39,6 +39,8 @@ end)
 config.keys = {
 	{ key = "a", mods = "OPT", action = wezterm.action.EmitEvent("inc-opacity") },
 	{ key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
+	{ key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
+	{ key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
 }
 
 return config
