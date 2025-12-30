@@ -5,10 +5,10 @@ import = [
 ]
 
 [font]
-size = 26
+size = 24
 
 [font.normal]
-family = "MyricaM M"
+family = "UDEV Gothic 35LG"
 
 [window]
 startup_mode = "Maximized"
