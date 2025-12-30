@@ -2,7 +2,7 @@
 # Based on old ghostty settings
 
 # Font settings
-font-family = MyricaM M
+font-family = UDEV Gothic 35LG
 font-size = 24
 
 # Disable ligatures (e.g., != => -> etc.)
@@ -11,7 +11,7 @@ font-feature = -liga
 font-feature = -dlig
 
 # Line height adjustment (increase if too narrow)
-adjust-cell-height = 20%
+adjust-cell-height = 30%
 
 # Window settings
 window-save-state = always

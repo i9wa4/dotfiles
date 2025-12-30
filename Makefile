@@ -60,6 +60,7 @@ skk                 skk
 tmux                tmux
 vde                 vde
 vim                 vim
+wezterm             wezterm
 zeno                zeno
 endef
 export MF_LINK_XDG_ROWS
@@ -296,11 +297,12 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		alacritty \
 		docker-desktop \
 		drawio \
-		font-myricam \
+		font-udev-gothic \
 		ghostty \
 		google-chrome \
 		openvpn-connect \
 		visual-studio-code \
+		wezterm@nightly \
 		zoom \
 	brew install \
 		git \
