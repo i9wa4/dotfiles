@@ -1,5 +1,0 @@
-[bell]
-command = { program = "osascript", args = ["-e", "beep"] }
-
-[window]
-option_as_alt = "Both"

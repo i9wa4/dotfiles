@@ -13,24 +13,10 @@ exit /b
     @REM %USERPROFILE%
     copy /y ".\etc\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 
-    @REM Alacritty
-    set ALACRITTY_DIR=%APPDATA%\alacritty
-    xcopy /e /i /y ".\dot.config\alacritty" "%ALACRITTY_DIR%"
-    echo [general]>                                 "%ALACRITTY_DIR%\alacritty.toml"
-    echo import = [>>                               "%ALACRITTY_DIR%\alacritty.toml"
-    echo     "%ALACRITTY_DIR:\=/%/common.toml",>>   "%ALACRITTY_DIR%\alacritty.toml"
-    echo     "%ALACRITTY_DIR:\=/%/windows.toml", >> "%ALACRITTY_DIR%\alacritty.toml"
-    echo ]>>                                        "%ALACRITTY_DIR%\alacritty.toml"
-
     @REM VS Code
     set CODE_DIR=%APPDATA%\Code\User
     @REM rmdir /q /s "%CODE_DIR%"
     mkdir "%CODE_DIR%\snippets"
     copy /y ".\dot.vscode\settings.json" "%CODE_DIR%\settings.json"
     xcopy /e /i /y ".\dot.config\vim\snippet" "%CODE_DIR%\snippets"
-
-    @REM CorvusSKK
-    @REM set CORVUS_SKK_DIR=%APPDATA%\CorvusSKK
-    @REM copy /y ".\dot.config\skk\mydict.utf8" "%CORVUS_SKK_DIR%\userdict.txt"
-    @REM xcopy /e /i /y ".\skk" "%CORVUS_SKK_DIR%"
 exit /b

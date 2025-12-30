@@ -61,7 +61,7 @@ function! s:select_random_colorscheme(theme_type) abort
   return l:schemes[l:index]
 endfunction
 
-" Setup colorscheme based on Alacritty theme
+" Setup colorscheme based on terminal theme
 function! my_colorscheme#setup() abort
   " Get theme type
   let l:theme_type = s:get_theme_type()
