@@ -5,13 +5,9 @@ local config = wezterm.config_builder()
 config.font = wezterm.font("UDEV Gothic 35LG")
 config.font_size = 24
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
--- config.line_height = 1.5
--- config.freetype_load_target = "Light"
--- config.freetype_render_target = "HorizontalLcd"
 
 -- Window
 config.window_background_opacity = 0.80
--- config.macos_window_background_blur = 20
 config.hide_tab_bar_if_only_one_tab = true
 
 -- macOS: Option as Alt
