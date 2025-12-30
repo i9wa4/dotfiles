@@ -1,0 +1,50 @@
+#!/bin/bash
+# tmux theme cycler
+
+THEMES=("default" "nord" "gruvbox" "dracula" "mono")
+
+current=$(tmux show-option -gqv @theme)
+current=${current:-default}
+
+# Find current index and get next
+index=0
+for i in "${!THEMES[@]}"; do
+  if [[ "${THEMES[$i]}" == "$current" ]]; then
+    index=$i
+    break
+  fi
+done
+next_index=$(((index + 1) % ${#THEMES[@]}))
+next="${THEMES[$next_index]}"
+
+# Apply theme
+case "$next" in
+default)
+  tmux set-option -g status-style "bg=default,fg=default"
+  tmux set-option -g pane-border-style "fg=green"
+  tmux set-option -g pane-active-border-style "fg=red"
+  ;;
+nord)
+  tmux set-option -g status-style "bg=colour236,fg=colour117"
+  tmux set-option -g pane-border-style "fg=colour240"
+  tmux set-option -g pane-active-border-style "fg=colour117"
+  ;;
+gruvbox)
+  tmux set-option -g status-style "bg=colour237,fg=colour214"
+  tmux set-option -g pane-border-style "fg=colour239"
+  tmux set-option -g pane-active-border-style "fg=colour214"
+  ;;
+dracula)
+  tmux set-option -g status-style "bg=colour236,fg=colour141"
+  tmux set-option -g pane-border-style "fg=colour240"
+  tmux set-option -g pane-active-border-style "fg=colour141"
+  ;;
+mono)
+  tmux set-option -g status-style "bg=colour235,fg=colour250"
+  tmux set-option -g pane-border-style "fg=colour240"
+  tmux set-option -g pane-active-border-style "fg=colour255"
+  ;;
+esac
+
+tmux set-option -g @theme "$next"
+tmux display-message "Theme: $next"
