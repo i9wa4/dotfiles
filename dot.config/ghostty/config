@@ -1,0 +1,24 @@
+# Ghostty configuration
+# Based on old ghostty settings
+
+# Font settings
+font-family = MyricaM M
+font-size = 24
+
+# Disable ligatures (e.g., != => -> etc.)
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+
+# Line height adjustment (increase if too narrow)
+adjust-cell-height = 20%
+
+# Window settings
+window-save-state = always
+background-opacity = 0.80
+
+# macOS specific
+macos-option-as-alt = true
+
+# SSH compatibility (auto fallback to xterm-256color)
+shell-integration-features = ssh-env,ssh-terminfo

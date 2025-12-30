@@ -53,6 +53,7 @@ define MF_LINK_XDG_ROWS
 alacritty           alacritty
 claude              claude
 efm-langserver      efm-langserver
+ghostty             ghostty
 nvim                nvim
 rumdl               rumdl
 skk                 skk
@@ -296,6 +297,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		docker-desktop \
 		drawio \
 		font-myricam \
+		ghostty \
 		google-chrome \
 		openvpn-connect \
 		visual-studio-code \
