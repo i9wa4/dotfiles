@@ -137,7 +137,7 @@ let g:mnh_header_level_shift = 1
 hook_source = '''
 augroup mnh
   autocmd!
-  autocmd BufWritePost *.md,*.rmd,*.qmd execute 'NumberHeader'
+  autocmd BufWritePre *.md,*.rmd,*.qmd execute 'NumberHeader'
 augroup END
 '''
 

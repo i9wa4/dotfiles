@@ -34,7 +34,7 @@ let g:lsp_settings = {
 
 augroup MyLspSetting
   autocmd!
-  autocmd BufWritePost * if !v:cmdbang | execute 'LspDocumentFormatSync' | endif
+  autocmd BufWritePre * if !v:cmdbang | execute 'LspDocumentFormatSync' | endif
 augroup END
 '''
 
