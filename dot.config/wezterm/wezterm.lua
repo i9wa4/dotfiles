@@ -10,7 +10,7 @@ config.send_composed_key_when_right_alt_is_pressed = false
 
 -- Font
 config.font = wezterm.font("UDEV Gothic 35LG")
-config.font_size = 22
+config.font_size = 20
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Integrated titlebar
@@ -25,7 +25,7 @@ config.window_frame = {
   active_titlebar_fg = "#FFFFFF",
   inactive_titlebar_fg = "#FFFFFF",
   font = wezterm.font("UDEV Gothic 35LG"),
-  font_size = 20,
+  font_size = 20, -- the same as Chrome titlebar height
 }
 
 local opacity_default = 0.70
