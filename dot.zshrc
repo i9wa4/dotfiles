@@ -102,9 +102,6 @@ function _get_simplified_path() {
   echo "${path}"
 }
 (( _IS_LOCAL )) && PROMPT="" || PROMPT="[%M] "
-# PROMPT="
-# ${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %K{#FFB6C1}%F{#606060}[\$(_get_simplified_path)]%f%k \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
-# $ "
 PROMPT="
 ${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
 $ "
