@@ -40,6 +40,7 @@ bindkey '^x^e' edit_current_line
 
 
 # Completion
+setopt extendedglob
 autoload -Uz compinit
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 mkdir -p "${_zcompdump:h}"
@@ -63,8 +64,13 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
+# mise (lazy loading via zinit turbo mode)
+zinit ice wait'0a' lucid \
+  atload'eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"'
+zinit light zdharma-continuum/null
+
 # zeno.zsh (lazy loading via zinit turbo mode)
-zinit ice wait lucid depth"1" blockf \
+zinit ice wait'0b' lucid depth"1" blockf \
   atload'
     if [[ -n "${ZENO_LOADED}" ]]; then
       bindkey " "  zeno-auto-snippet
@@ -78,7 +84,6 @@ zinit ice wait lucid depth"1" blockf \
     fi
   '
 zinit light yuki-yano/zeno.zsh
-
 
 # SSH connection detection
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
@@ -110,7 +115,7 @@ if (( _IS_LOCAL )); then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
   else
-    # mise
-    eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
+    # normal mise setup
+    # eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
   fi
 fi
