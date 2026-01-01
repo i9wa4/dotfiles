@@ -39,25 +39,6 @@ zle -N edit_current_line
 bindkey '^x^e' edit_current_line
 
 
-# Completion
-setopt extendedglob
-autoload -Uz compinit
-_zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
-mkdir -p "${_zcompdump:h}"
-# Check for updates once a day
-if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
-  compinit -d "${_zcompdump}"
-else
-  compinit -C -d "${_zcompdump}"
-fi
-zstyle ':completion:*' menu select
-setopt menu_complete
-zmodload zsh/complist
-bindkey -M menuselect '^y' accept-line
-bindkey -M menuselect '^n' down-line-or-history
-bindkey -M menuselect '^p' up-line-or-history
-
-
 # Zinit (manual install)
 # https://github.com/zdharma-continuum/zinit?tab=readme-ov-file#manual
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -65,13 +46,35 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
-# mise (lazy loading via zinit turbo mode)
+# compinit (lazy loading via zinit turbo mode)
+setopt extendedglob
+_zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
+mkdir -p "${_zcompdump:h}"
 zinit ice wait'0a' lucid \
+  atload'
+    autoload -Uz compinit
+    if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
+      compinit -d "${_zcompdump}"
+    else
+      compinit -C -d "${_zcompdump}"
+    fi
+    zstyle ":completion:*" menu select
+    setopt menu_complete
+    zmodload zsh/complist
+    bindkey -M menuselect "h" vi-backward-char
+    bindkey -M menuselect "j" vi-down-line-or-history
+    bindkey -M menuselect "k" vi-up-line-or-history
+    bindkey -M menuselect "l" vi-forward-char
+  '
+zinit light zdharma-continuum/null
+
+# mise (lazy loading via zinit turbo mode)
+zinit ice wait'0b' lucid \
   atload'eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"'
 zinit light zdharma-continuum/null
 
 # zeno.zsh (lazy loading via zinit turbo mode)
-zinit ice wait'0b' lucid depth"1" blockf \
+zinit ice wait'0c' lucid depth"1" blockf \
   atload'
     if [[ -n "${ZENO_LOADED}" ]]; then
       bindkey " "  zeno-auto-snippet
@@ -112,8 +115,5 @@ $ "
 if (( _IS_LOCAL )); then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
     tmux
-  else
-    # normal mise setup
-    # eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"
   fi
 fi
