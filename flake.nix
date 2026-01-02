@@ -18,11 +18,11 @@
     formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.alejandra;
     formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.alejandra;
 
-    # darwin-rebuild switch --flake .
-    darwinConfigurations."us-MacBook-Air" = nix-darwin.lib.darwinSystem {
+    # darwin-rebuild switch --flake '.#macos-p'
+    darwinConfigurations."macos-p" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [
-        ./configuration.nix
+        ./darwin/configuration.nix
       ];
     };
   };
