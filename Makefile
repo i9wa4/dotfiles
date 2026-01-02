@@ -289,6 +289,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 		wezterm \
 		zoom \
 	brew install \
+		fastfetch \
 		git \
 		tmux \
 		wget
