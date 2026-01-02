@@ -1,0 +1,5 @@
+# Copy this file to user.nix and edit it.
+# user.nix is ignored by git (see .gitignore).
+{
+  username = "your-username";
+}
