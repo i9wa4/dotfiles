@@ -13,8 +13,8 @@
 ### 2.1. Windows
 
 1. Install WSL2 and Ubuntu.
-    - <https://learn.microsoft.com/en-us/windows/wsl/install>
-    - <https://i9wa4.github.io/blog/2024-03-25-setup-wsl2.html>
+   - <https://learn.microsoft.com/en-us/windows/wsl/install>
+   - <https://i9wa4.github.io/blog/2024-03-25-setup-wsl2.html>
 1. Launch Ubuntu with PowerShell.
 
     ```dosbat
@@ -24,9 +24,9 @@
 ## 3. Installation
 
 1. Establish an SSH connection to GitHub.
-    - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
+   - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
 1. Add the GitHub Signing Keys and Authentication Keys.
-    - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
+   - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
 1. Execute a git command to install Command Line Developer Tools.
 
     ```sh
@@ -96,7 +96,7 @@
 1. You can use the following command to login with a token.
 
     ```sh
-    $ gh auth status --show-token | gh auth login --with-token
+    gh auth status --show-token | gh auth login --with-token
     ```
 
 ### 5.3. Web Browser
@@ -176,13 +176,45 @@ cf. [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/ws
 1. Update `uv.lock`.
 
     ```sh
-    $ uv lock --upgrade
+    uv lock --upgrade
     ```
 
 1. Update .venv.
 
     ```sh
-    $ uv sync --frozen
+    uv sync --frozen
     # or
-    $ uv sync --frozen --group dev
+    uv sync --frozen --group dev
     ```
+
+## 7. nix-darwin (macOS)
+
+cf. <https://github.com/i9wa4/dotfiles/issues/69>
+
+### 7.1. Install Nix
+
+> The only prerequisite is a Nix implementation
+>
+> -- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
+
+```sh
+curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+```
+
+cf. [The Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer)
+
+### 7.2. Setup nix-darwin
+
+> Unlike NixOS, nix-darwin does not have an installer, you can just run darwin-rebuild switch to install nix-darwin. As darwin-rebuild won't be installed in your PATH yet, you can use nix run.
+>
+> -- [Package management on macOS with nix-darwin](https://davi.sh/blog/2024/01/nix-darwin/)
+
+```sh
+# Initial installation
+nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/ghq/github.com/i9wa4/dotfiles
+
+# After installation (darwin-rebuild is in PATH)
+darwin-rebuild switch --flake ~/ghq/github.com/i9wa4/dotfiles
+```
+
+cf. [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
