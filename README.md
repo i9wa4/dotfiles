@@ -214,25 +214,22 @@ cf. [Nix Official Download](https://nixos.org/download/)
 cp user.nix.example user.nix
 # Edit user.nix and set your username
 
-# 2. Make user.nix visible to Nix flakes (but not committed)
-git add -f --intent-to-add user.nix
-git update-index --skip-worktree user.nix
-
-# 3. Backup existing shell configs (first time only)
+# 2. Backup existing shell configs (first time only)
 #    nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 #    The error message instructs to rename them with .before-nix-darwin suffix.
 #    cf. https://github.com/nix-darwin/nix-darwin/issues/149
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 
-# 4. Initial installation
-#    Use --no-update-lock-file to use existing flake.lock (reproducible)
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --no-update-lock-file
+# 3. Initial installation
+#    --impure: required to read user.nix (not tracked by git)
+#    --no-update-lock-file: use existing flake.lock (reproducible)
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
 
-# 5. Open a new terminal (darwin-rebuild is now in PATH)
+# 4. Open a new terminal (darwin-rebuild is now in PATH)
 
-# 6. Subsequent updates
-sudo darwin-rebuild switch --flake '.#macos-p'
+# 5. Subsequent updates
+sudo darwin-rebuild switch --flake '.#macos-p' --impure
 ```
 
 cf.
