@@ -2,13 +2,13 @@
   # Nix settings
   nix.settings.experimental-features = "nix-command flakes";
 
+  # Enable zsh (creates /etc/zshenv for nix-darwin environment)
+  programs.zsh.enable = true;
+
   # System packages
   environment.systemPackages = [
     pkgs.vim
   ];
-
-  # Auto upgrade nix package and the daemon service
-  services.nix-daemon.enable = true;
 
   # Set Git commit hash for darwin-hierarchical versioning
   system.configurationRevision = null;
