@@ -211,7 +211,7 @@ cf. [The Determinate Nix Installer](https://github.com/DeterminateSystems/nix-in
 
 ```sh
 # Initial installation
-nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/ghq/github.com/i9wa4/dotfiles
+nix run 'nix-darwin/master#darwin-rebuild' -- switch --flake ~/ghq/github.com/i9wa4/dotfiles
 
 # After installation (darwin-rebuild is in PATH)
 darwin-rebuild switch --flake ~/ghq/github.com/i9wa4/dotfiles
