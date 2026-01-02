@@ -111,6 +111,14 @@ ${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/g
 $ "
 
 
+# AWS SSO profile tracking
+preexec() {
+  if [[ "$1" =~ 'aws sso login --profile ([^ ]+)' ]]; then
+    export MY_AWS_SSO_PROFILE="${match[1]}"
+  fi
+}
+
+
 # tmux
 if (( _IS_LOCAL )); then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
