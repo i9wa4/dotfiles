@@ -198,23 +198,38 @@ cf. <https://github.com/i9wa4/dotfiles/issues/69>
 > -- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
 
 ```sh
-curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 ```
 
-cf. [The Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer)
+cf. [Nix Official Download](https://nixos.org/download/)
 
 ### 7.2. Setup nix-darwin
 
-> Unlike NixOS, nix-darwin does not have an installer, you can just run darwin-rebuild switch to install nix-darwin. As darwin-rebuild won't be installed in your PATH yet, you can use nix run.
+> outputsにdarwinConfigurations.\<host\>に対して構成を定義でき、`sudo darwin-rebuild switch --flake ".#<host>"`コマンドを利用して適用できます。
 >
-> -- [Package management on macOS with nix-darwin](https://davi.sh/blog/2024/01/nix-darwin/)
+> -- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
 
 ```sh
-# Initial installation
-nix run 'nix-darwin/master#darwin-rebuild' -- switch --flake ~/ghq/github.com/i9wa4/dotfiles
+# 1. Backup existing shell configs (first time only)
+#    nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
+#    The error message instructs to rename them with .before-nix-darwin suffix.
+#    cf. https://github.com/nix-darwin/nix-darwin/issues/149
+sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
+sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 
-# After installation (darwin-rebuild is in PATH)
-darwin-rebuild switch --flake ~/ghq/github.com/i9wa4/dotfiles
+# 2. Initial installation
+#    Use --no-update-lock-file to use existing flake.lock (reproducible)
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --no-update-lock-file
+
+# 3. Open a new terminal (darwin-rebuild is now in PATH)
+
+# 4. Subsequent updates
+sudo darwin-rebuild switch --flake '.#macos-p'
 ```
 
-cf. [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
+cf.
+
+- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
+- [nix-darwin issue 149: Allow enforcing linking etc when file exists](https://github.com/nix-darwin/nix-darwin/issues/149)
+- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
+- [Homebrew管理下のGUIもNixに移してみる nix-darwin篇](https://zenn.dev/kawarimidoll/articles/271c339c5392ce)
