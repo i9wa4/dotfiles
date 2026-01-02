@@ -13,6 +13,8 @@
   );
 
   # Home Manager state version
+  # Set to the version of home-manager at initial installation. Do not change.
+  # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
   home.stateVersion = "24.11";
 
   # User packages (managed by home-manager)

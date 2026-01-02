@@ -35,7 +35,11 @@
           else builtins.getEnv "HOME";
       in
         userHome + "/ghq/github.com/i9wa4/dotfiles";
-      userConfig = import (dotfilesDir + "/user.nix");
+      userNixPath = dotfilesDir + "/user.nix";
+      userConfig =
+        if builtins.pathExists userNixPath
+        then import userNixPath
+        else throw "user.nix not found. Run: cp user.nix.example user.nix && edit user.nix";
       username = userConfig.username;
     in
       nix-darwin.lib.darwinSystem {
