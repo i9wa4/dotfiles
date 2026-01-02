@@ -22,6 +22,12 @@ snippets:
       cd - &&
       ghq-repo-status
 
+  - name: (AWS) profile
+    keyword: p
+    snippet: --profile $(aws configure list-profiles | fzf)
+    context:
+      lbuffer: '^aws\s'
+
   - name: (Claude Code) yolo
     keyword: y
     snippet:
@@ -84,6 +90,11 @@ snippets:
     context:
       lbuffer: '^git\s'
 
+  - name: (Git) worktree-remove
+    keyword: wr
+    snippet:
+      worktree-remove "$(ghq root)/$(ghq list | fzf)"
+
   - name: (Quarto) preview
     keyword: qp
     snippet:
@@ -114,8 +125,3 @@ snippets:
     keyword: vr
     snippet:
       vde-layout review
-
-  - name: worktree-remove
-    keyword: wr
-    snippet:
-      worktree-remove "$(ghq root)/$(ghq list | fzf)"
