@@ -203,33 +203,42 @@ sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
 
 cf. [Nix Official Download](https://nixos.org/download/)
 
-### 7.2. Setup nix-darwin
+### 7.2. Setup nix-darwin and home-manager
 
 > outputsにdarwinConfigurations.\<host\>に対して構成を定義でき、`sudo darwin-rebuild switch --flake ".#<host>"`コマンドを利用して適用できます。
 >
 > -- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
 
 ```sh
-# 1. Backup existing shell configs (first time only)
+# 1. Create user.nix from template (contains username, not committed to git)
+cp user.nix.example user.nix
+# Edit user.nix and set your username
+
+# 2. Make user.nix visible to Nix flakes (but not committed)
+git add -f --intent-to-add user.nix
+git update-index --skip-worktree user.nix
+
+# 3. Backup existing shell configs (first time only)
 #    nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 #    The error message instructs to rename them with .before-nix-darwin suffix.
 #    cf. https://github.com/nix-darwin/nix-darwin/issues/149
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
 
-# 2. Initial installation
+# 4. Initial installation
 #    Use --no-update-lock-file to use existing flake.lock (reproducible)
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --no-update-lock-file
 
-# 3. Open a new terminal (darwin-rebuild is now in PATH)
+# 5. Open a new terminal (darwin-rebuild is now in PATH)
 
-# 4. Subsequent updates
+# 6. Subsequent updates
 sudo darwin-rebuild switch --flake '.#macos-p'
 ```
 
 cf.
 
 - [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
+- [home-manager Manual](https://nix-community.github.io/home-manager/)
 - [nix-darwin issue 149: Allow enforcing linking etc when file exists](https://github.com/nix-darwin/nix-darwin/issues/149)
 - [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
 - [Homebrew管理下のGUIもNixに移してみる nix-darwin篇](https://zenn.dev/kawarimidoll/articles/271c339c5392ce)

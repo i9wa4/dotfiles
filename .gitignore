@@ -2,3 +2,6 @@
 /build/
 /dotfiles.egg-info/
 __pycache__/
+
+# nix-darwin user config (contains username)
+user.nix
