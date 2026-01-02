@@ -199,6 +199,9 @@ cf. <https://github.com/i9wa4/dotfiles/issues/69>
 
 ```sh
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
+
+# Verify installation (open a new terminal first)
+nix --version
 ```
 
 cf. [Nix Official Download](https://nixos.org/download/)
@@ -212,14 +215,14 @@ cf. [Nix Official Download](https://nixos.org/download/)
 ```sh
 # 1. Create user.nix from template (contains username, not committed to git)
 cp user.nix.example user.nix
-# Edit user.nix and set your username
+# Edit user.nix and set your username (run `whoami` to get it)
 
 # 2. Backup existing shell configs (first time only)
 #    nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 #    The error message instructs to rename them with .before-nix-darwin suffix.
 #    cf. https://github.com/nix-darwin/nix-darwin/issues/149
-sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
-sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin
+sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
+sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 
 # 3. Initial installation
 #    --impure: required to read user.nix (not tracked by git)
