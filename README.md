@@ -239,3 +239,87 @@ cf.
 - [nix-darwin issue 149: Allow enforcing linking etc when file exists](https://github.com/nix-darwin/nix-darwin/issues/149)
 - [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
 - [Homebrew管理下のGUIもNixに移してみる nix-darwin篇](https://zenn.dev/kawarimidoll/articles/271c339c5392ce)
+
+### 7.3. Importing GUI Settings to nix-darwin
+
+#### 7.3.1. Reading Current Settings
+
+macOS settings are managed via the `defaults` command.
+
+```sh
+# Read settings from major domains
+defaults read com.apple.dock           # Dock
+defaults read com.apple.finder         # Finder
+defaults read NSGlobalDomain           # Global settings (keyboard, trackpad, etc.)
+defaults read com.apple.screencapture  # Screenshot
+defaults read com.apple.menuextra.clock # Menu bar clock
+defaults read com.apple.controlcenter  # Control Center
+defaults read com.apple.WindowManager  # Window management (Stage Manager, etc.)
+
+# Read a specific key
+defaults read com.apple.dock autohide
+defaults read NSGlobalDomain KeyRepeat
+```
+
+#### 7.3.2. Checking nix-darwin Options
+
+1. Check if `system.defaults.*` supports the setting
+   - Supported: Add to `system.defaults` section in `darwin/configuration.nix`
+   - Not supported: Use `defaults write` in `system.activationScripts.postActivation`
+
+2. Domain to nix-darwin option mapping
+
+    | defaults domain | nix-darwin option |
+    |---|---|
+    | `com.apple.dock` | `system.defaults.dock.*` |
+    | `com.apple.finder` | `system.defaults.finder.*` |
+    | `NSGlobalDomain` | `system.defaults.NSGlobalDomain.*` |
+    | `com.apple.menuextra.clock` | `system.defaults.menuExtraClock.*` |
+    | `com.apple.controlcenter` | `system.defaults.controlcenter.*` |
+    | `com.apple.trackpad` | `system.defaults.trackpad.*` |
+
+#### 7.3.3. Adding Settings
+
+```nix
+# darwin/configuration.nix
+
+# If nix-darwin option is available
+system.defaults.dock.autohide = true;
+
+# If nix-darwin option is not available
+system.activationScripts.postActivation.text = ''
+  sudo -u ${username} bash -c '
+    defaults write com.apple.SomeApp SomeKey -bool true
+  '
+'';
+```
+
+#### 7.3.4. Applying Changes
+
+```sh
+sudo darwin-rebuild switch --flake '.#macos-p' --impure
+```
+
+#### 7.3.5. How to Check Default and Current Values
+
+- Current value: `defaults read <domain> <key>`
+- Default value:
+    - See `[default: xxx]` comments in `darwin/configuration.nix`
+    - Web search (e.g., "macOS defaults KeyRepeat default value")
+    - Compare with a fresh Mac using `defaults read`
+
+```sh
+# Check current value
+defaults read com.apple.dock autohide
+# Output: 0 (false) or 1 (true)
+
+# If key doesn't exist, the default value is being used
+defaults read com.apple.dock nonexistent-key
+# Output: The domain/default pair of (com.apple.dock, nonexistent-key) does not exist
+```
+
+#### 7.3.6. Notes
+
+- Some settings require re-login or restart to take effect
+- Settings may not apply if System Settings is open
+- Settings that require manual configuration are listed in `darwin/configuration.nix` comments
