@@ -238,7 +238,7 @@ jobs:
 
                   for tag in $(echo -e "$matched_tags" | sort -V -r | head -10); do
                     [ -z "$tag" ] && continue
-                    release_body=$(echo "$releases_json" | jq -r --arg t "$tag" '.[] | select(.tag_name == $t) | .body // ""' | head -20)
+                    release_body=$(echo "$releases_json" | jq -r --arg t "$tag" '.[] | select(.tag_name == $t) | .body // ""' 2>/dev/null | head -20 || true)
                     pr_body="${pr_body}### [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
                     pr_body="${pr_body}${release_body}\n\n"
                   done
