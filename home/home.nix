@@ -24,9 +24,26 @@ in {
   home.stateVersion = "24.11";
 
   # User packages (managed by home-manager)
+  # For project-specific tools, use devShell or mise instead
   home.packages = [
+    # Version control
     pkgs.git
+    pkgs.gh
+    pkgs.ghq
+    # Search
     pkgs.ripgrep
+    pkgs.fd
+    pkgs.fzf
+    # File viewers
+    pkgs.bat
+    pkgs.jq
+    pkgs.yq-go
+    # Terminal
+    pkgs.tmux
+    # System
+    pkgs.htop
+    pkgs.wget
+    pkgs.fastfetch
   ];
 
   # ============================================================================
@@ -67,4 +84,10 @@ in {
 
   # Let Home Manager manage itself
   programs.home-manager.enable = true;
+
+  # direnv (auto-activate devShell when cd into project)
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
 }

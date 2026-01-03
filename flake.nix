@@ -18,10 +18,35 @@
     nixpkgs,
     nix-darwin,
     home-manager,
-  }: {
+  }: let
+    # Supported systems
+    systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux"];
+    forAllSystems = nixpkgs.lib.genAttrs systems;
+  in {
     # nix fmt
-    formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.alejandra;
-    formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.alejandra;
+    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+
+    # nix develop
+    devShells = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      default = pkgs.mkShell {
+        packages = with pkgs; [
+          # Pre-commit
+          pre-commit
+          # Linters
+          shellcheck
+          actionlint
+          gitleaks
+          # Formatters
+          shfmt
+          stylua
+          # Python (for pre-commit hooks)
+          python3
+          uv
+        ];
+      };
+    });
 
     # darwin-rebuild switch --flake '.#macos-p' --impure
     darwinConfigurations."macos-p" = let
