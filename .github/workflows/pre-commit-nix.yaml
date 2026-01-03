@@ -1,4 +1,4 @@
-name: pre-commit
+name: pre-commit (nix)
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
@@ -27,7 +27,7 @@ concurrency:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       contents: read
 
@@ -37,23 +37,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install mise
-        uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
-        with:
-          cache: true
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
 
-      - name: Cache
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
-        with:
-          path: |
-            ~/.cache/pre-commit
-            ~/.cache/uv
-            .venv
-          key: |
-            cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
-          restore-keys: |
-            cache-${{ runner.os }}-${{ runner.arch }}-
+      - name: Cache Nix
+        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
 
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files
+          nix develop --accept-flake-config --command pre-commit run --all-files
