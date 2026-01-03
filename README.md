@@ -326,3 +326,83 @@ defaults read com.apple.dock nonexistent-key
 - Some settings require re-login or restart to take effect
 - Settings may not apply if System Settings is open
 - Settings that require manual configuration are listed in `darwin/configuration.nix` comments
+
+### 7.4. Zsh Startup and Nix PATH
+
+cf. [Shell Startup - NERSC Documentation](https://docs.nersc.gov/environment/shell_startup/)
+
+#### 7.4.1. Startup Flow
+
+```mermaid
+flowchart TD
+    subgraph "Zsh Startup (Interactive Login Shell)"
+        A[zsh starts] --> B["/etc/zshenv<br/>(nix-darwin managed)"]
+        B --> C["source set-environment<br/>PATH = Nix paths + system paths"]
+        C --> D["~/.zshenv<br/>(user dotfiles)"]
+        D --> E["source dot.zshenv<br/>PATH = Homebrew + ... + PATH"]
+        E --> F["/etc/zprofile"]
+        F --> G["~/.zprofile"]
+        G --> H["/etc/zshrc<br/>(nix-darwin managed)"]
+        H --> I["~/.zshrc<br/>(user dotfiles)"]
+        I --> J["source dot.zshrc"]
+        J --> K[Shell Ready]
+    end
+
+    style B fill:#4c9,stroke:#333
+    style H fill:#4c9,stroke:#333
+    style D fill:#69c,stroke:#333
+    style I fill:#69c,stroke:#333
+```
+
+#### 7.4.2. PATH Construction Order
+
+```mermaid
+flowchart LR
+    subgraph "After /etc/zshenv (nix-darwin)"
+        A1["~/.nix-profile/bin"]
+        A2["/etc/profiles/per-user/$USER/bin"]
+        A3["/run/current-system/sw/bin"]
+        A4["/nix/var/nix/profiles/default/bin"]
+        A5["/usr/local/bin:/usr/bin:/bin"]
+    end
+
+    subgraph "After ~/.zshenv (dot.zshenv)"
+        B1["~/.local/bin"]
+        B2["/opt/homebrew/bin"]
+        B3["(Nix paths)"]
+        B4["(system paths)"]
+    end
+
+    A1 --> A2 --> A3 --> A4 --> A5
+    B1 --> B2 --> B3 --> B4
+
+    style A1 fill:#4c9
+    style A2 fill:#4c9
+    style B1 fill:#69c
+    style B2 fill:#f96
+```
+
+#### 7.4.3. Key Files
+
+| File          | Managed By   | Role                                        |
+| ------        | ------------ | ------                                      |
+| `/etc/zshenv` | nix-darwin   | Sources `set-environment`, sets Nix PATH    |
+| `/etc/zshrc`  | nix-darwin   | Sets history, completion, prompt defaults   |
+| `~/.zshenv`   | dotfiles     | Sources `dot.zshenv`, adds Homebrew to PATH |
+| `~/.zshrc`    | dotfiles     | Sources `dot.zshrc`, user configurations    |
+
+#### 7.4.4. Checking Which Tool is Used
+
+```sh
+# Show all paths for a command
+which -a git
+
+# Example output (Homebrew is prioritized)
+# /opt/homebrew/bin/git      <- Homebrew (used)
+# /usr/bin/git               <- macOS default
+# /etc/profiles/per-user/uma/bin/git  <- Nix (home.packages)
+
+# To prioritize Nix, either:
+# 1. Uninstall from Homebrew: brew uninstall git
+# 2. Adjust PATH order in dot.zshenv
+```
