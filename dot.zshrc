@@ -73,6 +73,11 @@ zinit ice wait'0b' lucid \
   atload'eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"'
 zinit light zdharma-continuum/null
 
+# direnv (lazy loading via zinit turbo mode, after mise to override)
+zinit ice wait'0b' lucid \
+  atload'eval "$(direnv hook zsh)"'
+zinit light zdharma-continuum/null
+
 # zeno.zsh (lazy loading via zinit turbo mode)
 zinit ice wait'0c' lucid depth"1" blockf \
   atload'

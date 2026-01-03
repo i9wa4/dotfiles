@@ -95,6 +95,11 @@ snippets:
     snippet:
       worktree-remove "$(ghq root)/$(ghq list | fzf)"
 
+  - name: (Nix) darwin-rebuild switch
+    keyword: ndr
+    snippet:
+      sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
+
   - name: (Quarto) preview
     keyword: qp
     snippet:
