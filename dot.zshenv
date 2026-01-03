@@ -1,5 +1,12 @@
 # loaded /etc/zsh/zshenv
 
+# Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
+if [ -z "${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
+  if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+  fi
+fi
+
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
 if [ -n "${ZSH_VERSION:-}" ]; then
   typeset -U path PATH
@@ -59,3 +66,7 @@ export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
 export PATH="${HOME}"/.local/bin:"${PATH}"
 # dotfiles bin directory (hardcoded path for Nix compatibility)
 export PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/bin:"${PATH}"
+
+
+# Local config (machine-specific, not version controlled)
+[ -r ~/.zshenv.local ] && source ~/.zshenv.local
