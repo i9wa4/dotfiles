@@ -2,14 +2,20 @@
   description = "i9wa4 dotfiles";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/master";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Homebrew casks as Nix packages (no Homebrew needed)
+    brew-nix = {
+      url = "github:BatteredBunny/brew-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nix-darwin.follows = "nix-darwin";
     };
   };
 
@@ -18,6 +24,7 @@
     nixpkgs,
     nix-darwin,
     home-manager,
+    brew-nix,
   }: let
     # Supported systems
     systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux"];
@@ -74,6 +81,10 @@
           ./darwin/configuration.nix
           home-manager.darwinModules.home-manager
           {
+            # Allow unfree packages (e.g., terraform with BSL license)
+            nixpkgs.config.allowUnfree = true;
+            # Add brew-nix overlay for Homebrew casks as Nix packages
+            nixpkgs.overlays = [brew-nix.overlays.default];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {inherit username;};
