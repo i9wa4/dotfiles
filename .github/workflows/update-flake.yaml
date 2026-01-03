@@ -183,16 +183,17 @@ jobs:
               if [[ "$homepage" == *github.com* ]]; then
                 owner_repo=$(echo "$homepage" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
 
-                # Try to fetch release notes
+                # Try to fetch release notes (Renovate-style)
                 release_body=""
                 for tag_prefix in "v" "" "release-"; do
                   tag="${tag_prefix}${new_ver}"
-                  # Use jq to handle 404 errors gracefully (.body // empty returns "" if .body is null/missing)
-                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // empty' | head -20)
+                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // empty' | head -30) || true
 
                   if [ -n "$release_body" ]; then
-                    pr_body="${pr_body}**Release Notes:** [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
-                    pr_body="${pr_body}\`\`\`\n${release_body}\n\`\`\`\n\n"
+                    pr_body="${pr_body}<details>\n<summary>${pkg}: Release Notes</summary>\n\n"
+                    pr_body="${pr_body}### [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
+                    pr_body="${pr_body}${release_body}\n\n"
+                    pr_body="${pr_body}</details>\n\n"
                     break
                   fi
                 done
