@@ -71,9 +71,9 @@ in {
     pkgs.pre-commit
     # LSP
     pkgs.efm-langserver
-    # Editors
+    # Editors (latest from neovim-nightly-overlay and vim-overlay)
     pkgs.neovim
-    pkgs.vim-full
+    pkgs.vim
     # Build tools
     pkgs.ninja
     pkgs.cmake
