@@ -28,10 +28,17 @@ in {
   # User packages (managed by home-manager)
   # For project-specific tools, use devShell or mise instead
   home.packages = [
+    # Cloud & Infrastructure
+    pkgs.awscli2
+    pkgs.databricks-cli
+    pkgs.google-cloud-sdk
+    pkgs.terraform
+    pkgs.tflint
     # Version control
     pkgs.git
     pkgs.gh
     pkgs.ghq
+    pkgs.gitleaks
     # Search
     pkgs.ripgrep
     pkgs.fd
@@ -46,6 +53,38 @@ in {
     pkgs.htop
     pkgs.wget
     pkgs.fastfetch
+    pkgs.hyperfine
+    # Language runtimes
+    pkgs.deno
+    pkgs.go
+    pkgs.nodejs
+    pkgs.rustup
+    pkgs.uv
+    # Linters & Formatters
+    pkgs.actionlint
+    pkgs.hadolint
+    pkgs.shellcheck
+    pkgs.shfmt
+    pkgs.stylua
+    # CI/CD
+    pkgs.act
+    pkgs.pre-commit
+    # LSP
+    pkgs.efm-langserver
+    # Editors
+    pkgs.neovim
+    pkgs.vim-full
+    # Build tools
+    pkgs.ninja
+    pkgs.cmake
+    pkgs.gettext
+    # GUI applications (via brew-nix)
+    pkgs.brewCasks.drawio
+    pkgs.brewCasks.visual-studio-code
+    pkgs.brewCasks.wezterm
+    pkgs.brewCasks.zoom
+    # NOTE: openvpn-connect is managed via Homebrew (xar archive issues)
+    # NOTE: google-chrome is managed via Homebrew (frequent updates, hash issues)
   ];
 
   # ============================================================================
@@ -83,5 +122,51 @@ in {
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+  };
+
+  # ============================================================================
+  # Activation scripts (run on darwin-rebuild switch / home-manager switch)
+  # ============================================================================
+  home.activation = let
+    npm = "${pkgs.nodejs}/bin/npm";
+    npmPrefix = "${homeDir}/.local";
+  in {
+    # 1. Install/update safe-chain first (security scanner for npm)
+    setupSafeChain = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      mkdir -p ${npmPrefix}
+      export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
+      if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 @aikidosec/safe-chain >/dev/null 2>&1; then
+        echo "Installing @aikidosec/safe-chain..."
+        ${npm} --prefix ${npmPrefix} install -g @aikidosec/safe-chain
+        safe-chain setup
+      else
+        echo "Updating @aikidosec/safe-chain..."
+        ${npm} --prefix ${npmPrefix} update -g @aikidosec/safe-chain
+      fi
+    '';
+
+    # 2. Install/update npm packages (after safe-chain, so they get scanned)
+    installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
+      export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
+      NPM_PACKAGES=(
+        "@devcontainers/cli"
+        "@github/copilot"
+        "@google/gemini-cli"
+        "@openai/codex"
+        "ccusage"
+        "vde-layout"
+        "zenn-cli"
+      )
+
+      for pkg in "''${NPM_PACKAGES[@]}"; do
+        if ${npm} --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+          echo "Updating $pkg..."
+          ${npm} --prefix ${npmPrefix} update -g "$pkg"
+        else
+          echo "Installing $pkg..."
+          ${npm} --prefix ${npmPrefix} install -g "$pkg"
+        fi
+      done
+    '';
   };
 }
