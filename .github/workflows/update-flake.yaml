@@ -184,9 +184,11 @@ jobs:
                 owner_repo=$(echo "$homepage" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
 
                 # Try to fetch release notes
+                release_body=""
                 for tag_prefix in "v" "" "release-"; do
                   tag="${tag_prefix}${new_ver}"
-                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" --jq '.body' 2>/dev/null | head -20 || echo "")
+                  # Use jq to handle 404 errors gracefully (.body // empty returns "" if .body is null/missing)
+                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // empty' | head -20)
 
                   if [ -n "$release_body" ]; then
                     pr_body="${pr_body}**Release Notes:** [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
