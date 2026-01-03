@@ -100,6 +100,11 @@ snippets:
     snippet:
       sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
 
+  - name: (Nix) develop (select from ghq repos)
+    keyword: nd
+    snippet:
+      nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)"
+
   - name: (Quarto) preview
     keyword: qp
     snippet:
