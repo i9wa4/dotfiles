@@ -1,4 +1,5 @@
 name: Update flake.lock
+run-name: ${{ github.event_name }} by @${{ github.actor }}
 
 on:
   schedule:
@@ -16,28 +17,49 @@ on:
         required: false
         type: boolean
         default: false
+      test-old-rev:
+        description: 'Test mode: old nixpkgs rev for comparison'
+        required: false
+        type: string
+      test-new-rev:
+        description: 'Test mode: new nixpkgs rev (dry-run, no PR created)'
+        required: false
+        type: string
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  # Default minimum release age (can be overridden via workflow_dispatch)
-  MINIMUM_RELEASE_AGE_DAYS: ${{ inputs.minimum-release-age-days || 7 }}
+  MINIMUM_RELEASE_AGE_DAYS: ${{ github.event.inputs.minimum-release-age-days || '7' }}
+  TEST_MODE: ${{ github.event.inputs.test-old-rev != '' && github.event.inputs.test-new-rev != '' }}
 
 jobs:
   update:
-    timeout-minutes: 5
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
+
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           persist-credentials: false
 
-      - uses: DeterminateSystems/nix-installer-action@da36cb69b1c3247ad7a1f931ebfd954a1105ef14 # v14
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@da36cb69b1c3247ad7a1f931ebfd954a1105ef14 # v14
 
-      - name: Check nixpkgs release age
+      - name: Check release age
         id: age-check
-        if: ${{ inputs.skip-age-check != true }}
+        if: ${{ inputs.skip-age-check != true && env.TEST_MODE != 'true' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -69,18 +91,29 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Get current package versions
+      - name: Get old versions
         id: old-versions
+        env:
+          TEST_OLD_REV: ${{ github.event.inputs.test-old-rev }}
         run: |
-          # Parse packages from home.nix
-          PACKAGES=$(grep -oE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix \
+          # Parse packages from nix files (exclude brewCasks, stdenv)
+          PACKAGES=$(grep -hoE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix darwin/configuration.nix \
             | sed 's/pkgs\.//' \
-            | grep -v '^stdenv$' \
+            | grep -vE '^(stdenv|brewCasks)$' \
             | sort -u \
             | tr '\n' ' ')
+
+          # Use test-old-rev if in test mode
+          if [ -n "$TEST_OLD_REV" ]; then
+            NIXPKGS_REF="github:NixOS/nixpkgs/${TEST_OLD_REV}"
+            echo "Test mode: using old rev ${TEST_OLD_REV:0:8}"
+          else
+            NIXPKGS_REF="nixpkgs"
+          fi
+
           versions=""
           for pkg in $PACKAGES; do
-            ver=$(nix eval "nixpkgs#${pkg}.version" --raw 2>/dev/null || echo "N/A")
+            ver=$(nix eval "${NIXPKGS_REF}#${pkg}.version" --raw 2>/dev/null || echo "N/A")
             versions="${versions}${pkg}=${ver}\n"
           done
           {
@@ -90,7 +123,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Update flake.lock
-        if: steps.age-check.outputs.should_update != 'false'
+        if: ${{ steps.age-check.outputs.should_update != 'false' && env.TEST_MODE != 'true' }}
         env:
           TARGET_REV: ${{ steps.age-check.outputs.target_rev }}
         run: |
@@ -102,19 +135,28 @@ jobs:
             nix flake update
           fi
 
-      - name: Get new package versions and generate release notes
-        if: steps.age-check.outputs.should_update != 'false'
+      - name: Get new versions
+        if: ${{ steps.age-check.outputs.should_update != 'false' || env.TEST_MODE == 'true' }}
         id: new-versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSIONS_BEFORE_UPDATE: ${{ steps.old-versions.outputs.versions }}
+          TEST_NEW_REV: ${{ github.event.inputs.test-new-rev }}
         run: |
-          # Parse packages from home.nix
-          PACKAGES=$(grep -oE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix \
+          # Parse packages from nix files (exclude brewCasks, stdenv)
+          PACKAGES=$(grep -hoE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix darwin/configuration.nix \
             | sed 's/pkgs\.//' \
-            | grep -v '^stdenv$' \
+            | grep -vE '^(stdenv|brewCasks)$' \
             | sort -u \
             | tr '\n' ' ')
+
+          # Use test-new-rev if in test mode
+          if [ -n "$TEST_NEW_REV" ]; then
+            NIXPKGS_REF="github:NixOS/nixpkgs/${TEST_NEW_REV}"
+            echo "Test mode: using new rev ${TEST_NEW_REV:0:8}"
+          else
+            NIXPKGS_REF="nixpkgs"
+          fi
 
           # Parse old versions (VERSIONS_BEFORE_UPDATE is set via env block)
           declare -A old_versions
@@ -128,7 +170,7 @@ jobs:
           changed_count=0
 
           for pkg in $PACKAGES; do
-            new_ver=$(nix eval "nixpkgs#${pkg}.version" --raw 2>/dev/null || echo "N/A")
+            new_ver=$(nix eval "${NIXPKGS_REF}#${pkg}.version" --raw 2>/dev/null || echo "N/A")
             old_ver="${old_versions[$pkg]:-N/A}"
 
             if [ "$old_ver" != "$new_ver" ]; then
@@ -136,7 +178,7 @@ jobs:
               pr_body="${pr_body}### ${pkg}: \`${old_ver}\` → \`${new_ver}\`\n\n"
 
               # Try to get homepage
-              homepage=$(nix eval "nixpkgs#${pkg}.meta.homepage" --raw 2>/dev/null || echo "")
+              homepage=$(nix eval "${NIXPKGS_REF}#${pkg}.meta.homepage" --raw 2>/dev/null || echo "")
 
               if [[ "$homepage" == *github.com* ]]; then
                 owner_repo=$(echo "$homepage" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
@@ -188,8 +230,19 @@ jobs:
             echo "changed_count=${changed_count}"
           } >> "$GITHUB_OUTPUT"
 
+          # Test mode: print results and skip PR creation
+          if [ -n "$TEST_NEW_REV" ]; then
+            echo ""
+            echo "========== TEST MODE: PR Preview =========="
+            echo "Title: chore(nix): update flake.lock (${pr_title_suffix})"
+            echo ""
+            echo "Body:"
+            echo -e "$pr_body" | sed 's/%0A/\n/g' | sed 's/%25/%/g'
+            echo "============================================"
+          fi
+
       - name: Check for changes
-        if: steps.age-check.outputs.should_update != 'false'
+        if: ${{ steps.age-check.outputs.should_update != 'false' && env.TEST_MODE != 'true' }}
         id: check
         run: |
           if git diff --quiet flake.lock; then
@@ -199,12 +252,12 @@ jobs:
           fi
 
       - name: Create Pull Request
-        if: steps.check.outputs.changed == 'true'
+        if: ${{ steps.check.outputs.changed == 'true' && env.TEST_MODE != 'true' }}
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-flake-lock
-          title: "chore(nix): update flake.lock (${{ steps.new-versions.outputs.pr_title_suffix }})"
+          title: 'chore(nix): update flake.lock${{ steps.new-versions.outputs.pr_title_suffix && format('' ({0})'', steps.new-versions.outputs.pr_title_suffix) || '''' }}'
           body: ${{ steps.new-versions.outputs.pr_body }}
           labels: dependencies,automated
           delete-branch: true
