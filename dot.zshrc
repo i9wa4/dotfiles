@@ -125,3 +125,7 @@ if (( _IS_LOCAL )); then
     tmux
   fi
 fi
+
+
+# Safe-chain
+[ -r ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh
