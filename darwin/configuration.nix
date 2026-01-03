@@ -7,7 +7,20 @@
   system.primaryUser = username;
 
   # Nix settings
-  nix.settings.experimental-features = "nix-command flakes";
+  nix = {
+    settings.experimental-features = "nix-command flakes";
+    # Deduplicate files via hard links (scheduled, not per-build)
+    # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
+    # cf. https://github.com/nix-darwin/nix-darwin/issues/1252
+    optimise.automatic = true;
+    # Garbage collection (weekly on Sunday, delete older than 7 days)
+    # cf. https://mynixos.com/nix-darwin/option/nix.gc.interval
+    gc = {
+      automatic = true;
+      interval = { Weekday = 0; Hour = 3; Minute = 0; };
+      options = "--delete-older-than 7d";
+    };
+  };
 
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
   programs.zsh.enable = true;
@@ -16,6 +29,25 @@
   environment.systemPackages = [
     pkgs.vim
   ];
+
+  # Fonts
+  fonts.packages = [
+    pkgs.udev-gothic
+  ];
+
+  # Homebrew (only for apps with frequent updates / hash issues)
+  homebrew = {
+    enable = true;
+    onActivation = {
+      cleanup = "uninstall";
+      autoUpdate = true;
+      upgrade = true;
+    };
+    casks = [
+      "google-chrome"
+      "openvpn-connect"
+    ];
+  };
 
   # ============================================================================
   # Keyboard
