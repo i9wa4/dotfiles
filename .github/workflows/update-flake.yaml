@@ -103,12 +103,15 @@ jobs:
             | sort -u \
             | tr '\n' ' ')
 
-          # Use test-old-rev if in test mode
+          # Use test-old-rev if in test mode, otherwise extract from flake.lock
           if [ -n "$TEST_OLD_REV" ]; then
             NIXPKGS_REF="github:NixOS/nixpkgs/${TEST_OLD_REV}"
             echo "Test mode: using old rev ${TEST_OLD_REV:0:8}"
           else
-            NIXPKGS_REF="nixpkgs"
+            # Extract nixpkgs rev from flake.lock (follows root.inputs.nixpkgs reference)
+            OLD_REV=$(jq -r '.nodes[.nodes.root.inputs.nixpkgs].locked.rev' flake.lock)
+            NIXPKGS_REF="github:NixOS/nixpkgs/${OLD_REV}"
+            echo "Using nixpkgs from flake.lock: ${OLD_REV:0:8}"
           fi
 
           versions=""
@@ -150,12 +153,15 @@ jobs:
             | sort -u \
             | tr '\n' ' ')
 
-          # Use test-new-rev if in test mode
+          # Use test-new-rev if in test mode, otherwise extract from updated flake.lock
           if [ -n "$TEST_NEW_REV" ]; then
             NIXPKGS_REF="github:NixOS/nixpkgs/${TEST_NEW_REV}"
             echo "Test mode: using new rev ${TEST_NEW_REV:0:8}"
           else
-            NIXPKGS_REF="nixpkgs"
+            # Extract nixpkgs rev from updated flake.lock
+            NEW_REV=$(jq -r '.nodes[.nodes.root.inputs.nixpkgs].locked.rev' flake.lock)
+            NIXPKGS_REF="github:NixOS/nixpkgs/${NEW_REV}"
+            echo "Using nixpkgs from updated flake.lock: ${NEW_REV:0:8}"
           fi
 
           # Parse old versions (VERSIONS_BEFORE_UPDATE is set via env block)
