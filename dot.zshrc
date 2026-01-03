@@ -110,9 +110,12 @@ function _get_simplified_path() {
   path="${path/#$HOME/~}"
   echo "${path}"
 }
+function _get_devshell_indicator() {
+  [[ -n "${DIRENV_DIR}" ]] && echo "(devShell) "
+}
 (( _IS_LOCAL )) && PROMPT="" || PROMPT="[%M] "
 PROMPT="
-${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
+\$(_get_devshell_indicator)${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
 $ "
 
 
@@ -134,3 +137,7 @@ fi
 
 # Safe-chain
 [ -r ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh
+
+
+# Local config (machine-specific, not version controlled)
+[ -r ~/.zshrc.local ] && source ~/.zshrc.local
