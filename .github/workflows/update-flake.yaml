@@ -183,11 +183,22 @@ jobs:
               changed_count=$((changed_count + 1))
               pr_body="${pr_body}### ${pkg}: \`${old_ver}\` → \`${new_ver}\`\n\n"
 
-              # Try to get homepage
+              # Try to get GitHub repo from homepage or changelog
               homepage=$(nix eval "${NIXPKGS_REF}#${pkg}.meta.homepage" --raw 2>/dev/null || echo "")
+              changelog=$(nix eval "${NIXPKGS_REF}#${pkg}.meta.changelog" --raw 2>/dev/null || echo "")
 
+              github_url=""
               if [[ "$homepage" == *github.com* ]]; then
-                owner_repo=$(echo "$homepage" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
+                github_url="$homepage"
+              elif [[ "$changelog" == *github.com* ]]; then
+                github_url="$changelog"
+              fi
+
+              echo "  ${pkg}: homepage=${homepage:-N/A}, changelog=${changelog:-N/A}"
+
+              if [ -n "$github_url" ]; then
+                owner_repo=$(echo "$github_url" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
+                echo "    -> GitHub repo: ${owner_repo}"
 
                 # Try to fetch release notes (Renovate-style)
                 release_body=""
@@ -196,6 +207,7 @@ jobs:
                   release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // empty' | head -30) || true
 
                   if [ -n "$release_body" ]; then
+                    echo "    -> Found release notes for tag: ${tag}"
                     pr_body="${pr_body}<details>\n<summary>${pkg}: Release Notes</summary>\n\n"
                     pr_body="${pr_body}### [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
                     pr_body="${pr_body}${release_body}\n\n"
@@ -205,8 +217,11 @@ jobs:
                 done
 
                 if [ -z "$release_body" ]; then
+                  echo "    -> No release notes found, adding compare link"
                   pr_body="${pr_body}[Compare changes](https://github.com/${owner_repo}/compare/v${old_ver}...v${new_ver})\n\n"
                 fi
+              else
+                echo "    -> No GitHub URL found"
               fi
 
               # Build title suffix (first 3 changes)
@@ -228,7 +243,8 @@ jobs:
 
           pr_body="${pr_body}\n---\n\nAutomated flake.lock update."
 
-          # Escape for GitHub Actions
+          # Convert literal \n to actual newlines, then escape for GitHub Actions
+          pr_body=$(echo -e "$pr_body")
           pr_body="${pr_body//'%'/'%25'}"
           pr_body="${pr_body//$'\n'/'%0A'}"
           pr_body="${pr_body//$'\r'/'%0D'}"
