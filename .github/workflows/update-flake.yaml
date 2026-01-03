@@ -1,0 +1,210 @@
+name: Update flake.lock
+
+on:
+  schedule:
+    # Run weekly on Friday at 06:00 UTC (15:00 JST)
+    - cron: '0 6 * * 5'
+  workflow_dispatch:
+    inputs:
+      minimum-release-age-days:
+        description: 'Minimum release age in days before updating'
+        required: false
+        type: number
+        default: 7
+      skip-age-check:
+        description: 'Skip the minimum release age check'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  # Default minimum release age (can be overridden via workflow_dispatch)
+  MINIMUM_RELEASE_AGE_DAYS: ${{ inputs.minimum-release-age-days || 7 }}
+
+jobs:
+  update:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: DeterminateSystems/nix-installer-action@da36cb69b1c3247ad7a1f931ebfd954a1105ef14 # v14
+
+      - name: Check nixpkgs release age
+        id: age-check
+        if: ${{ inputs.skip-age-check != true }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking nixpkgs release age (minimum: $MINIMUM_RELEASE_AGE_DAYS days)..."
+
+          # Get the latest nixpkgs-unstable commit that is at least N days old
+          cutoff_date=$(date -u -d "$MINIMUM_RELEASE_AGE_DAYS days ago" +%Y-%m-%dT%H:%M:%SZ)
+          echo "Cutoff date: $cutoff_date"
+
+          # Fetch commit from at least N days ago
+          commit_data=$(gh api "repos/NixOS/nixpkgs/commits?sha=nixpkgs-unstable&until=${cutoff_date}&per_page=1" \
+            --jq '.[0] | {sha: .sha, date: .commit.committer.date}')
+
+          target_rev=$(echo "$commit_data" | jq -r '.sha')
+          commit_date=$(echo "$commit_data" | jq -r '.date')
+
+          if [ -z "$target_rev" ] || [ "$target_rev" = "null" ]; then
+            echo "No commits found older than $MINIMUM_RELEASE_AGE_DAYS days"
+            echo "should_update=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Found commit from $commit_date: ${target_rev:0:8}"
+          echo "target_rev=$target_rev" >> "$GITHUB_OUTPUT"
+          echo "should_update=true" >> "$GITHUB_OUTPUT"
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get current package versions
+        id: old-versions
+        run: |
+          # Parse packages from home.nix
+          PACKAGES=$(grep -oE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix \
+            | sed 's/pkgs\.//' \
+            | grep -v '^stdenv$' \
+            | sort -u \
+            | tr '\n' ' ')
+          versions=""
+          for pkg in $PACKAGES; do
+            ver=$(nix eval "nixpkgs#${pkg}.version" --raw 2>/dev/null || echo "N/A")
+            versions="${versions}${pkg}=${ver}\n"
+          done
+          {
+            echo "versions<<EOF"
+            echo -e "$versions"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Update flake.lock
+        if: steps.age-check.outputs.should_update != 'false'
+        env:
+          TARGET_REV: ${{ steps.age-check.outputs.target_rev }}
+        run: |
+          if [ -n "$TARGET_REV" ]; then
+            echo "Updating to nixpkgs commit: ${TARGET_REV:0:8}"
+            nix flake update nixpkgs --override-input nixpkgs "github:NixOS/nixpkgs/${TARGET_REV}"
+          else
+            echo "Updating to latest (age check skipped)"
+            nix flake update
+          fi
+
+      - name: Get new package versions and generate release notes
+        if: steps.age-check.outputs.should_update != 'false'
+        id: new-versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSIONS_BEFORE_UPDATE: ${{ steps.old-versions.outputs.versions }}
+        run: |
+          # Parse packages from home.nix
+          PACKAGES=$(grep -oE 'pkgs\.[a-zA-Z0-9_-]+' home/home.nix \
+            | sed 's/pkgs\.//' \
+            | grep -v '^stdenv$' \
+            | sort -u \
+            | tr '\n' ' ')
+
+          # Parse old versions (VERSIONS_BEFORE_UPDATE is set via env block)
+          declare -A old_versions
+          while IFS='=' read -r pkg ver; do
+            [ -n "$pkg" ] && old_versions[$pkg]=$ver
+          done <<< "$VERSIONS_BEFORE_UPDATE"
+
+          # Build PR body
+          pr_body="## Package Changes\n\n"
+          pr_title_suffix=""
+          changed_count=0
+
+          for pkg in $PACKAGES; do
+            new_ver=$(nix eval "nixpkgs#${pkg}.version" --raw 2>/dev/null || echo "N/A")
+            old_ver="${old_versions[$pkg]:-N/A}"
+
+            if [ "$old_ver" != "$new_ver" ]; then
+              changed_count=$((changed_count + 1))
+              pr_body="${pr_body}### ${pkg}: \`${old_ver}\` → \`${new_ver}\`\n\n"
+
+              # Try to get homepage
+              homepage=$(nix eval "nixpkgs#${pkg}.meta.homepage" --raw 2>/dev/null || echo "")
+
+              if [[ "$homepage" == *github.com* ]]; then
+                owner_repo=$(echo "$homepage" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
+
+                # Try to fetch release notes
+                for tag_prefix in "v" "" "release-"; do
+                  tag="${tag_prefix}${new_ver}"
+                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" --jq '.body' 2>/dev/null | head -20 || echo "")
+
+                  if [ -n "$release_body" ]; then
+                    pr_body="${pr_body}**Release Notes:** [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
+                    pr_body="${pr_body}\`\`\`\n${release_body}\n\`\`\`\n\n"
+                    break
+                  fi
+                done
+
+                if [ -z "$release_body" ]; then
+                  pr_body="${pr_body}[Compare changes](https://github.com/${owner_repo}/compare/v${old_ver}...v${new_ver})\n\n"
+                fi
+              fi
+
+              # Build title suffix (first 3 changes)
+              if [ $changed_count -le 3 ]; then
+                if [ -n "$pr_title_suffix" ]; then
+                  pr_title_suffix="${pr_title_suffix}, ${pkg}"
+                else
+                  pr_title_suffix="${pkg}"
+                fi
+              fi
+            fi
+          done
+
+          if [ $changed_count -eq 0 ]; then
+            pr_body="${pr_body}No tracked package changes.\n"
+          elif [ $changed_count -gt 3 ]; then
+            pr_title_suffix="${pr_title_suffix} +$((changed_count - 3)) more"
+          fi
+
+          pr_body="${pr_body}\n---\n\nAutomated flake.lock update."
+
+          # Escape for GitHub Actions
+          pr_body="${pr_body//'%'/'%25'}"
+          pr_body="${pr_body//$'\n'/'%0A'}"
+          pr_body="${pr_body//$'\r'/'%0D'}"
+
+          {
+            echo "pr_body=${pr_body}"
+            echo "pr_title_suffix=${pr_title_suffix}"
+            echo "changed_count=${changed_count}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check for changes
+        if: steps.age-check.outputs.should_update != 'false'
+        id: check
+        run: |
+          if git diff --quiet flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-flake-lock
+          title: "chore(nix): update flake.lock (${{ steps.new-versions.outputs.pr_title_suffix }})"
+          body: ${{ steps.new-versions.outputs.pr_body }}
+          labels: dependencies,automated
+          delete-branch: true

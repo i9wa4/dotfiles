@@ -78,13 +78,8 @@ in {
     pkgs.ninja
     pkgs.cmake
     pkgs.gettext
-    # GUI applications (via brew-nix)
-    pkgs.brewCasks.drawio
-    pkgs.brewCasks.visual-studio-code
-    pkgs.brewCasks.wezterm
-    pkgs.brewCasks.zoom
-    # NOTE: openvpn-connect is managed via Homebrew (xar archive issues)
-    # NOTE: google-chrome is managed via Homebrew (frequent updates, hash issues)
+    # NOTE: GUI applications are in darwin/configuration.nix (environment.systemPackages)
+    # to appear in /Applications/Nix Apps/
   ];
 
   # ============================================================================
@@ -158,15 +153,20 @@ in {
         "zenn-cli"
       )
 
+      # Install missing packages
       for pkg in "''${NPM_PACKAGES[@]}"; do
-        if ${npm} --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
-          echo "Updating $pkg..."
-          ${npm} --prefix ${npmPrefix} update -g "$pkg"
-        else
+        if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
           echo "Installing $pkg..."
           ${npm} --prefix ${npmPrefix} install -g "$pkg"
         fi
       done
+
+      # Update outdated packages in one batch
+      outdated=$(${npm} --prefix ${npmPrefix} outdated -g --parseable --depth=0 2>/dev/null | cut -d: -f4 || true)
+      if [ -n "$outdated" ]; then
+        echo "Updating outdated packages: $outdated"
+        echo "$outdated" | xargs ${npm} --prefix ${npmPrefix} install -g
+      fi
     '';
   };
 }
