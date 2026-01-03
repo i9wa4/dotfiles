@@ -17,6 +17,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "nix-darwin";
     };
+    # Latest neovim/vim from source
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    vim-overlay.url = "github:kawarimidoll/vim-overlay";
   };
 
   outputs = {
@@ -25,9 +28,11 @@
     nix-darwin,
     home-manager,
     brew-nix,
+    neovim-nightly-overlay,
+    vim-overlay,
   }: let
-    # Supported systems
-    systems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux"];
+    # Supported systems (x86_64-darwin excluded - Apple Silicon only)
+    systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
     # nix fmt
@@ -84,8 +89,15 @@
           {
             # Allow unfree packages (e.g., terraform with BSL license)
             nixpkgs.config.allowUnfree = true;
-            # Add brew-nix overlay for Homebrew casks as Nix packages
-            nixpkgs.overlays = [brew-nix.overlays.default];
+            # Overlays
+            nixpkgs.overlays = [
+              brew-nix.overlays.default
+              neovim-nightly-overlay.overlays.default
+              (vim-overlay.overlays.features {
+                lua = true;
+                python3 = true;
+              })
+            ];
             # Enable brew-nix to symlink apps to /Applications/Nix Apps
             brew-nix.enable = true;
             home-manager.useGlobalPkgs = true;

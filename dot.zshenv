@@ -7,17 +7,18 @@ if [ -z "${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
   fi
 fi
 
+# NOTE: Managed by Nix, not needed anymore
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-if [ -n "${ZSH_VERSION:-}" ]; then
-  typeset -U path PATH
-
-  if [ "$(uname -s)" = "Darwin" ]; then
-    setopt no_global_rcs
-    if [ -x /usr/libexec/path_helper ]; then
-        eval `/usr/libexec/path_helper -s`
-    fi
-  fi
-fi
+# if [ -n "${ZSH_VERSION:-}" ]; then
+#   typeset -U path PATH
+#
+#   if [ "$(uname -s)" = "Darwin" ]; then
+#     setopt no_global_rcs
+#     if [ -x /usr/libexec/path_helper ]; then
+#         eval `/usr/libexec/path_helper -s`
+#     fi
+#   fi
+# fi
 
 # Common
 export EDITOR=vim
