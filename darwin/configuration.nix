@@ -28,6 +28,12 @@
   # System packages
   environment.systemPackages = [
     pkgs.vim
+    # GUI applications (via brew-nix overlay, symlinked to /Applications/Nix Apps/)
+    # NOTE: google-chrome, openvpn-connect are managed via Homebrew due to hash mismatch/xar issues
+    pkgs.brewCasks.drawio
+    pkgs.brewCasks.visual-studio-code
+    pkgs.brewCasks.wezterm
+    pkgs.brewCasks.zoom
   ];
 
   # Fonts
@@ -44,6 +50,7 @@
       upgrade = true;
     };
     casks = [
+      # NOTE: Only apps with brew-nix issues (hash mismatch/xar errors) go here
       "google-chrome"
       "openvpn-connect"
     ];
