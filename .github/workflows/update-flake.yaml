@@ -200,26 +200,55 @@ jobs:
                 owner_repo=$(echo "$github_url" | sed -E 's|https://github.com/([^/]+/[^/]+).*|\1|')
                 echo "    -> GitHub repo: ${owner_repo}"
 
-                # Try to fetch release notes (Renovate-style)
-                release_body=""
-                for tag_prefix in "v" "" "release-"; do
-                  tag="${tag_prefix}${new_ver}"
-                  release_body=$(gh api "repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // empty' | head -30) || true
+                # Fetch all releases and filter versions between old and new (Renovate-style)
+                releases_json=$(gh api "repos/${owner_repo}/releases?per_page=50" 2>/dev/null || echo "[]")
 
-                  if [ -n "$release_body" ]; then
-                    echo "    -> Found release notes for tag: ${tag}"
-                    pr_body="${pr_body}<details>\n<summary>${pkg}: Release Notes</summary>\n\n"
+                # Save releases to temp file for processing
+                tmp_releases="/tmp/releases_${pkg}.txt"
+                echo "$releases_json" | jq -r '.[] | "\(.tag_name)"' > "$tmp_releases"
+
+                # Filter versions: old_ver < tag_ver <= new_ver
+                matched_tags=""
+                while read -r tag; do
+                  [ -z "$tag" ] && continue
+                  tag_ver=$(echo "$tag" | sed -E 's/^(v|release-)//')
+
+                  # Skip if same as old version
+                  [ "$tag_ver" = "$old_ver" ] && continue
+
+                  # Check tag_ver > old_ver (old_ver should be first when sorted)
+                  first=$(printf '%s\n%s' "$old_ver" "$tag_ver" | sort -V | head -1)
+                  [ "$first" != "$old_ver" ] && continue
+
+                  # Check tag_ver <= new_ver (new_ver should be last when sorted)
+                  last=$(printf '%s\n%s' "$tag_ver" "$new_ver" | sort -V | tail -1)
+                  [ "$last" != "$new_ver" ] && continue
+
+                  matched_tags="${matched_tags}${tag}\n"
+                done < "$tmp_releases"
+
+                if [ -n "$matched_tags" ]; then
+                  pr_body="${pr_body}<details>\n<summary>${pkg}: Release Notes (${old_ver} → ${new_ver})</summary>\n\n"
+
+                  # Process matched releases (newest first, limit to 10)
+                  echo -e "$matched_tags" | sort -V -r | head -10 | while read -r tag; do
+                    [ -z "$tag" ] && continue
+                    echo "    -> Found: ${tag}"
+                  done
+
+                  for tag in $(echo -e "$matched_tags" | sort -V -r | head -10); do
+                    [ -z "$tag" ] && continue
+                    release_body=$(echo "$releases_json" | jq -r --arg t "$tag" '.[] | select(.tag_name == $t) | .body // ""' | head -20)
                     pr_body="${pr_body}### [${tag}](https://github.com/${owner_repo}/releases/tag/${tag})\n\n"
                     pr_body="${pr_body}${release_body}\n\n"
-                    pr_body="${pr_body}</details>\n\n"
-                    break
-                  fi
-                done
+                  done
 
-                if [ -z "$release_body" ]; then
+                  pr_body="${pr_body}</details>\n\n"
+                else
                   echo "    -> No release notes found, adding compare link"
                   pr_body="${pr_body}[Compare changes](https://github.com/${owner_repo}/compare/v${old_ver}...v${new_ver})\n\n"
                 fi
+                rm -f "$tmp_releases"
               else
                 echo "    -> No GitHub URL found"
               fi

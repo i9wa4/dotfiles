@@ -17,72 +17,72 @@ repos:
     hooks:
       - id: gitleaks
         name: Detect hardcoded secrets
-        entry: mise exec -- gitleaks protect --verbose --redact --staged
+        entry: gitleaks protect --verbose --redact --staged
         language: system
         pass_filenames: false
 
       - id: actionlint
         name: actionlint
-        entry: mise exec -- actionlint
+        entry: actionlint
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: ghalint
         name: ghalint
-        entry: mise exec -- ghalint run
+        entry: ghalint run
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: ghatm
         name: ghatm
-        entry: mise exec -- ghatm set -t 5
+        entry: ghatm set -t 5
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: pinact
         name: pinact
-        entry: mise exec -- pinact run
+        entry: pinact run
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: zizmor
         name: zizmor
-        entry: mise exec -- zizmor
+        entry: zizmor
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: shellcheck
         name: shellcheck
-        entry: mise exec -- shellcheck
+        entry: shellcheck
         language: system
         types: [shell]
 
       - id: shfmt
         name: shfmt
-        entry: mise exec -- shfmt -i 2 -w
+        entry: shfmt -i 2 -w
         language: system
         types: [shell]
 
       - id: ruff-check
         name: ruff check
-        entry: mise exec -- uv run ruff check --fix
+        entry: uv run ruff check --fix
         language: system
         types: [python]
 
       - id: ruff-format
         name: ruff format
-        entry: mise exec -- uv run ruff format
+        entry: uv run ruff format
         language: system
         types: [python]
 
       - id: sqlfmt
         name: sqlfmt
-        entry: mise exec -- uv run sqlfmt
+        entry: uv run sqlfmt
         language: system
         types: [sql]
 
       - id: stylua
         name: stylua
-        entry: mise exec -- stylua --indent-type Spaces --indent-width 2
+        entry: stylua --indent-type Spaces --indent-width 2
         language: system
         files: \.lua$
