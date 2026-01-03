@@ -57,4 +57,5 @@ export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
 
 # First Priority Paths
 export PATH="${HOME}"/.local/bin:"${PATH}"
-export PATH="$(dirname "$0")/bin":"${PATH}"
+# dotfiles bin directory (hardcoded path for Nix compatibility)
+export PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/bin:"${PATH}"
