@@ -11,7 +11,7 @@ local.vim
 .mcp.json
 
 # Dev Container
-.devcontainer/
+# .devcontainer/
 
 # Python
 .ipynb_checkpoints/
