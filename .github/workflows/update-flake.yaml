@@ -243,14 +243,14 @@ jobs:
 
           pr_body="${pr_body}\n---\n\nAutomated flake.lock update."
 
-          # Convert literal \n to actual newlines, then escape for GitHub Actions
+          # Convert literal \n to actual newlines
           pr_body=$(echo -e "$pr_body")
-          pr_body="${pr_body//'%'/'%25'}"
-          pr_body="${pr_body//$'\n'/'%0A'}"
-          pr_body="${pr_body//$'\r'/'%0D'}"
 
+          # Use HEREDOC syntax for multiline output (GitHub Actions modern format)
           {
-            echo "pr_body=${pr_body}"
+            echo "pr_body<<EOF"
+            echo "$pr_body"
+            echo "EOF"
             echo "pr_title_suffix=${pr_title_suffix}"
             echo "changed_count=${changed_count}"
           } >> "$GITHUB_OUTPUT"
@@ -262,7 +262,7 @@ jobs:
             echo "Title: chore(nix): update flake.lock (${pr_title_suffix})"
             echo ""
             echo "Body:"
-            echo -e "$pr_body" | sed 's/%0A/\n/g' | sed 's/%25/%/g'
+            echo "$pr_body"
             echo "============================================"
           fi
 
