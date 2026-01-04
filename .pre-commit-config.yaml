@@ -23,7 +23,7 @@ repos:
 
       - id: check-external-mention
         name: Check external mention
-        entry: bash bin/check-external-mention
+        entry: bash bin/check-external-mention.sh
         language: system
         stages: [commit-msg]
         always_run: true

@@ -219,3 +219,73 @@ cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106
 6. [Server] `cat ~/.ssh/register_key >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys`
 7. [Server] Set `PasswordAuthentication no` and restart ssh
 8. [Client] Configure `~/.ssh/config`
+
+## 7. Package Management
+
+### 7.1. Overview
+
+This repository uses nix as the source of truth for package versions.
+mise.toml is synced from nix for CI (GitHub Actions) performance.
+
+```text
+nix (source of truth)
+├── flake.lock          # nixpkgs versions
+└── nix/packages/*.nix  # custom package versions
+        ↓ sync
+    mise.toml           # for CI
+```
+
+### 7.2. Check for Updates
+
+```sh
+uv run python bin/nix-update-check.py
+```
+
+### 7.3. Update All Packages
+
+```sh
+uv run python bin/nix-update-all.py
+```
+
+This command:
+
+1. Runs `nix flake update` (updates flake.lock)
+2. Runs `nix-update` for custom packages (updates nix/packages/*.nix)
+3. Syncs versions to mise.toml
+
+### 7.4. Adding a New Package
+
+#### 7.4.1. nixpkgs Package
+
+1. Add to `flake.nix` devShells.ciPackages
+2. Add to `mise.toml`
+
+The nix attribute is auto-inferred from mise key (e.g., `aqua:owner/Repo` -> `repo`).
+
+#### 7.4.2. Custom Package (not in nixpkgs)
+
+1. Create `nix/packages/<name>.nix`
+
+   ```nix
+   {
+     buildGoModule,
+     fetchFromGitHub,
+   }:
+   buildGoModule rec {
+     pname = "<name>";
+     version = "<version>";
+
+     src = fetchFromGitHub {
+       owner = "<owner>";
+       repo = "<repo>";
+       rev = "v${version}";
+       hash = "";  # Run nix build first, get hash from error
+     };
+
+     vendorHash = "";  # Run nix build first, get hash from error
+   }
+   ```
+
+2. Add to `flake.nix` packages and devShells
+3. Add to `mise.toml` with `aqua:<owner>/<repo>` key
+4. Custom packages are auto-detected from nix/packages/*.nix
