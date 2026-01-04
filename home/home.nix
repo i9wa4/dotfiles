@@ -34,8 +34,7 @@ in {
     pkgs.google-cloud-sdk
     pkgs.terraform
     pkgs.tflint
-    # Version control
-    pkgs.git
+    # Version control (git is managed by programs.git)
     pkgs.gh
     pkgs.ghq
     pkgs.gitleaks
@@ -68,6 +67,7 @@ in {
     pkgs.stylua
     # CI/CD
     pkgs.act
+    pkgs.mise
     pkgs.pre-commit
     # LSP
     pkgs.efm-langserver
@@ -99,7 +99,7 @@ in {
   xdg.configFile = {
     "claude".source         = symlink "${dotfilesDir}/dot.config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
-    "git".source            = symlink "${dotfilesDir}/dot.config/git";
+    # git is managed by programs.git (config) + core.excludesfile (ignore)
     "nvim".source           = symlink "${dotfilesDir}/dot.config/nvim";
     "rumdl".source          = symlink "${dotfilesDir}/dot.config/rumdl";
     "skk".source            = symlink "${dotfilesDir}/dot.config/skk";
@@ -119,13 +119,86 @@ in {
     nix-direnv.enable = true;
   };
 
+  # Git configuration (replaces Makefile git-config target)
+  # Note: user.name, user.email are PC-specific, set via `git config --global`
+  # They will be written to ~/.gitconfig which takes precedence
+  programs.git = {
+    enable = true;
+    settings = {
+      color.ui = "auto";
+      commit = {
+        gpgsign = true;
+        verbose = true;
+      };
+      core = {
+        autocrlf = "input";
+        commentChar = ";";
+        editor = "vim";
+        excludesfile = "${dotfilesDir}/dot.config/git/ignore";
+        ignorecase = false;
+        pager = "LESSCHARSET=utf-8 less";
+        quotepath = false;
+        safecrlf = true;
+      };
+      credential.helper = "store";
+      diff = {
+        algorithm = "histogram";
+        compactionHeuristic = true;
+        tool = "vimdiff";
+      };
+      difftool = {
+        prompt = false;
+        vimdiff.path = "vim";
+      };
+      fetch.prune = true;
+      ghq.root = "~/ghq";
+      gpg.format = "ssh";
+      grep.lineNumber = true;
+      http.sslVerify = false;
+      init.defaultBranch = "main";
+      merge = {
+        conflictstyle = "diff3";
+        tool = "vimdiff";
+      };
+      mergetool = {
+        prompt = false;
+        vimdiff.path = "vim";
+      };
+      push.default = "current";
+      user.signingkey = "~/.ssh/github.pub";
+    };
+  };
+
   # ============================================================================
   # Activation scripts (run on darwin-rebuild switch / home-manager switch)
   # ============================================================================
   home.activation = let
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
+    ghq = "${pkgs.ghq}/bin/ghq";
+    git = "${pkgs.git}/bin/git";
+    ghqListEssential = "${dotfilesDir}/etc/ghq-list-essential.txt";
+    tpmDir = "${dotfilesDir}/dot.config/tmux/plugins/tpm";
   in {
+    # 0. Clone essential repositories (ghq-get-essential)
+    # Note: ghq requires git in PATH
+    ghqGetEssential = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      export PATH="${pkgs.git}/bin:$PATH"
+      if [ -f "${ghqListEssential}" ]; then
+        echo "Cloning essential repositories..."
+        ${ghq} get -p < "${ghqListEssential}" || true
+      fi
+    '';
+
+    # 0. Clone tmux plugin manager (tpm)
+    cloneTpm = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      export PATH="${pkgs.git}/bin:$PATH"
+      if [ ! -d "${tpmDir}" ]; then
+        echo "Cloning tmux plugin manager..."
+        ${git} clone https://github.com/tmux-plugins/tpm "${tpmDir}"
+      fi
+    '';
+
     # 1. Install/update safe-chain first (security scanner for npm)
     setupSafeChain = lib.hm.dag.entryAfter ["writeBoundary"] ''
       mkdir -p ${npmPrefix}

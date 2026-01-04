@@ -15,53 +15,21 @@ repos:
 
   - repo: local
     hooks:
+      # ========================================
+      # Local tools (alphabetical order)
+      # ========================================
+      - id: check-external-mention
+        name: Check external mention
+        entry: bash bin/check-external-mention
+        language: system
+        stages: [commit-msg]
+        always_run: true
+
       - id: gitleaks
         name: Detect hardcoded secrets
         entry: gitleaks protect --verbose --redact --staged
         language: system
         pass_filenames: false
-
-      - id: actionlint
-        name: actionlint
-        entry: actionlint
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
-
-      - id: ghalint
-        name: ghalint
-        entry: ghalint run
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
-
-      - id: ghatm
-        name: ghatm
-        entry: ghatm set -t 5
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
-
-      - id: pinact
-        name: pinact
-        entry: pinact run
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
-
-      - id: zizmor
-        name: zizmor
-        entry: zizmor
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
-
-      - id: shellcheck
-        name: shellcheck
-        entry: shellcheck
-        language: system
-        types: [shell]
-
-      - id: shfmt
-        name: shfmt
-        entry: shfmt -i 2 -w
-        language: system
-        types: [shell]
 
       - id: ruff-check
         name: ruff check
@@ -75,6 +43,18 @@ repos:
         language: system
         types: [python]
 
+      - id: shellcheck
+        name: shellcheck
+        entry: shellcheck
+        language: system
+        types: [shell]
+
+      - id: shfmt
+        name: shfmt
+        entry: shfmt -i 2 -w
+        language: system
+        types: [shell]
+
       - id: sqlfmt
         name: sqlfmt
         entry: uv run sqlfmt
@@ -87,9 +67,35 @@ repos:
         language: system
         files: \.lua$
 
-      - id: check-external-mention
-        name: Check external mention
-        entry: bash bin/check-external-mention
+      # ========================================
+      # mise tools (alphabetical order)
+      # ========================================
+      - id: actionlint
+        name: actionlint
+        entry: mise exec -- actionlint
         language: system
-        stages: [commit-msg]
-        always_run: true
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
+      - id: ghalint
+        name: ghalint
+        entry: mise exec -- ghalint run
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
+      - id: ghatm
+        name: ghatm
+        entry: mise exec -- ghatm set -t 5
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
+      - id: pinact
+        name: pinact
+        entry: mise exec -- pinact run
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
+      - id: zizmor
+        name: zizmor
+        entry: mise exec -- zizmor
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
