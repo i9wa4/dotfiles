@@ -1,4 +1,4 @@
-{ ... }: {
+{...}: {
   # EditorConfig is awesome: https://EditorConfig.org
   editorconfig = {
     enable = true;

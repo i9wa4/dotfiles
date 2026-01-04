@@ -32,58 +32,63 @@ in {
 
   # User packages (managed by home-manager)
   # For project-specific tools, use devShell or mise instead
-  home.packages = [
-    # Shell (zsh is default on macOS, needs install on Linux)
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
-    pkgs.zsh
-    pkgs.wslu  # WSL utilities (harmless on non-WSL)
-  ] ++ [
-    # Cloud & Infrastructure
-    pkgs.awscli2
-    pkgs.databricks-cli
-    pkgs.google-cloud-sdk
-    pkgs.terraform
-    pkgs.tflint
-    # Version control (git is managed by programs.git)
-    pkgs.gh
-    pkgs.ghq
-    # Search
-    pkgs.ripgrep
-    pkgs.fd
-    pkgs.fzf
-    # File viewers
-    pkgs.bat
-    pkgs.jq
-    pkgs.yq-go
-    # Terminal
-    pkgs.tmux
-    # System
-    pkgs.htop
-    pkgs.wget
-    pkgs.fastfetch
-    pkgs.hyperfine
-    # Language runtimes
-    pkgs.deno
-    pkgs.go
-    pkgs.nodejs
-    pkgs.rustup
-    # Linters & Formatters (CI tools are managed by mise)
-    pkgs.hadolint
-    # CI/CD
-    pkgs.act
-    pkgs.mise
-    # LSP
-    pkgs.efm-langserver
-    # Editors (latest from neovim-nightly-overlay and vim-overlay)
-    pkgs.neovim
-    pkgs.vim
-    # Build tools
-    pkgs.ninja
-    pkgs.cmake
-    pkgs.gettext
-    # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
-    # to appear in /Applications/Nix Apps/
-  ];
+  home.packages =
+    [
+      # Shell (zsh is default on macOS, needs install on Linux)
+    ]
+    ++ lib.optionals pkgs.stdenv.isLinux [
+      pkgs.zsh
+      pkgs.wslu # WSL utilities (harmless on non-WSL)
+    ]
+    ++ [
+      # Cloud & Infrastructure
+      pkgs.awscli2
+      pkgs.databricks-cli
+      pkgs.google-cloud-sdk
+      pkgs.terraform
+      pkgs.tflint
+      # Version control (git is managed by programs.git)
+      pkgs.gh
+      pkgs.ghq
+      # Search
+      pkgs.ripgrep
+      pkgs.fd
+      pkgs.fzf
+      # File viewers
+      pkgs.bat
+      pkgs.jq
+      pkgs.yq-go
+      # Terminal
+      pkgs.tmux
+      # System
+      pkgs.htop
+      pkgs.wget
+      pkgs.fastfetch
+      pkgs.hyperfine
+      # Language runtimes
+      pkgs.deno
+      pkgs.go
+      pkgs.nodejs
+      pkgs.rustup
+      # Linters & Formatters (CI tools are managed by mise)
+      pkgs.alejandra
+      pkgs.hadolint
+      pkgs.statix
+      # CI/CD
+      pkgs.act
+      pkgs.mise
+      # LSP
+      pkgs.efm-langserver
+      # Editors (latest from neovim-nightly-overlay and vim-overlay)
+      pkgs.neovim
+      pkgs.vim
+      # Build tools
+      pkgs.ninja
+      pkgs.cmake
+      pkgs.gettext
+      # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
+      # to appear in /Applications/Nix Apps/
+    ];
 
   # ============================================================================
   # Dotfiles (direct symlink via mkOutOfStoreSymlink)
@@ -91,24 +96,24 @@ in {
   # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
   # ============================================================================
   home.file = {
-    ".claude/skills".source           = symlink "${dotfilesDir}/dot.config/claude/skills";
-    ".codex".source                   = symlink "${dotfilesDir}/dot.config/codex";
+    ".claude/skills".source = symlink "${dotfilesDir}/dot.config/claude/skills";
+    ".codex".source = symlink "${dotfilesDir}/dot.config/codex";
     ".config/mise/config.toml".source = symlink "${dotfilesDir}/mise.toml";
-    ".zshenv".source                  = symlink "${dotfilesDir}/dot.zshenv";
-    ".zshrc".source                   = symlink "${dotfilesDir}/dot.zshrc";
+    ".zshenv".source = symlink "${dotfilesDir}/dot.zshenv";
+    ".zshrc".source = symlink "${dotfilesDir}/dot.zshrc";
   };
 
   xdg.configFile = {
-    "claude".source         = symlink "${dotfilesDir}/dot.config/claude";
+    "claude".source = symlink "${dotfilesDir}/dot.config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
-    "nvim".source           = symlink "${dotfilesDir}/dot.config/nvim";
-    "rumdl".source          = symlink "${dotfilesDir}/dot.config/rumdl";
-    "skk".source            = symlink "${dotfilesDir}/dot.config/skk";
-    "tmux".source           = symlink "${dotfilesDir}/dot.config/tmux";
-    "vde".source            = symlink "${dotfilesDir}/dot.config/vde";
-    "vim".source            = symlink "${dotfilesDir}/dot.config/vim";
-    "wezterm".source        = symlink "${dotfilesDir}/dot.config/wezterm";
-    "zeno".source           = symlink "${dotfilesDir}/dot.config/zeno";
+    "nvim".source = symlink "${dotfilesDir}/dot.config/nvim";
+    "rumdl".source = symlink "${dotfilesDir}/dot.config/rumdl";
+    "skk".source = symlink "${dotfilesDir}/dot.config/skk";
+    "tmux".source = symlink "${dotfilesDir}/dot.config/tmux";
+    "vde".source = symlink "${dotfilesDir}/dot.config/vde";
+    "vim".source = symlink "${dotfilesDir}/dot.config/vim";
+    "wezterm".source = symlink "${dotfilesDir}/dot.config/wezterm";
+    "zeno".source = symlink "${dotfilesDir}/dot.config/zeno";
   };
 
   # Let Home Manager manage itself
