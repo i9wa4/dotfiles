@@ -94,5 +94,31 @@
           }
         ];
       };
+
+    # home-manager switch --flake '.#ubuntu' --impure
+    # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
+    homeConfigurations."ubuntu" = let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = [
+          neovim-nightly-overlay.overlays.default
+          (vim-overlay.overlays.features {
+            lua = true;
+            python3 = true;
+          })
+        ];
+      };
+      # On Linux, USER is available directly (no sudo needed for home-manager)
+      username = builtins.getEnv "USER";
+    in
+      home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {inherit username;};
+        modules = [
+          ./home/home.nix
+        ];
+      };
   };
 }
