@@ -87,9 +87,9 @@ repos:
         language: system
         files: \.lua$
 
-      - id: check-external-issue-mention
-        name: Check external issue mention
-        entry: ./scripts/check-external-issue-mention.sh
-        language: script
+      - id: check-external-mention
+        name: Check external mention
+        entry: bash bin/check-external-mention
+        language: system
         stages: [commit-msg]
         always_run: true

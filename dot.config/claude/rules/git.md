@@ -90,17 +90,10 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
     - [ ] 変更内容をコミット ← 許可マークがないため自動実行の危険がある
 ```
 
-## GitHub
-
-- YOU MUST: Issue や Pull Request の番号を記載する際 #240 のように `#` をつけ、前後に半角スペースを入れる
-- YOU MUST: GitHub の情報取得は `gh` コマンドを利用する
-- YOU MUST: `gh` で Issue や Pull Request を取得する際必ずコメントも全件取得する
-
 ## コミットメッセージの書き方
 
 基本ルール
 
-- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
 - YOU MUST: 直近のコミットメッセージをいくつか確認し、英語もしくは日本語どちらかに統一する
 - IMPORTANT: 作業再開しやすい粒度: そのコミット内容を見ると作業を再開しやすい粒度を心がける
 - IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
@@ -110,11 +103,15 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
 - NEVER: `/tmp/` ディレクトリ配下のファイルもコミットメッセージ内では一切言及しない
 - NEVER: ローカルファイルパスは記載しない (例: `.i9wa4/xxx.md`, `/tmp/xxx.log` など)
 
-外部 Issue/PR 参照ルール (メンション防止)
+外部リポジトリ参照ルール (メンション防止)
 
-- NEVER: 外部リポジトリの Issue/PR URL を直接記載しない (通知が飛ぶ)
+- NEVER: 外部リポジトリの URL にパスを含めない (通知が飛ぶ)
+    - NG: `https://github.com/owner/repo/issues/123`
+    - NG: `https://github.com/owner/repo/pull/456`
+    - NG: `https://github.com/owner/repo/discussions/789`
 - NEVER: `owner/repo#123` 形式の外部参照を使用しない (通知が飛ぶ)
-- YOU MUST: 外部 Issue を参照する場合は以下の形式を使用する
+- YOU MUST: 外部リポジトリを参照する場合は以下の形式を使用する
+    - リポジトリルート URL のみ (例: `https://github.com/nix-darwin/nix-darwin`)
     - `cf. <repo-name> issue <number>` (例: `cf. nix-darwin issue 149`)
     - バッククォートで囲む (例: `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
 
