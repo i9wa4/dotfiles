@@ -110,6 +110,14 @@ TodoWrite ツールでタスクを作成する際許可が必要な Git 操作�
 - NEVER: `/tmp/` ディレクトリ配下のファイルもコミットメッセージ内では一切言及しない
 - NEVER: ローカルファイルパスは記載しない (例: `.i9wa4/xxx.md`, `/tmp/xxx.log` など)
 
+外部 Issue/PR 参照ルール (メンション防止)
+
+- NEVER: 外部リポジトリの Issue/PR URL を直接記載しない (通知が飛ぶ)
+- NEVER: `owner/repo#123` 形式の外部参照を使用しない (通知が飛ぶ)
+- YOU MUST: 外部 Issue を参照する場合は以下の形式を使用する
+    - `cf. <repo-name> issue <number>` (例: `cf. nix-darwin issue 149`)
+    - バッククォートで囲む (例: `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
+
 フォーマット (Conventional Commits)
 
 ```text
