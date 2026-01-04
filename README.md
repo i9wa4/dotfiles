@@ -4,284 +4,193 @@
 
 ## 1. Target OS
 
-- macOS
-- Ubuntu 24.04 LTS
-- Ubuntu 24.04 LTS (Windows, WSL2)
+- macOS (Apple Silicon)
+- Ubuntu 24.04 LTS (TODO)
+- Ubuntu 24.04 LTS on WSL2 (TODO)
 
-## 2. OS-specific Pre Installation
+## 2. Prerequisites
 
-### 2.1. Windows
+### 2.1. GitHub SSH Key
 
-1. Install WSL2 and Ubuntu.
-   - <https://learn.microsoft.com/en-us/windows/wsl/install>
-   - <https://i9wa4.github.io/blog/2024-03-25-setup-wsl2.html>
-1. Launch Ubuntu with PowerShell.
-
-    ```dosbat
-    wsl
-    ```
-
-## 3. Installation
-
-1. Establish an SSH connection to GitHub.
+1. Generate SSH key and add to GitHub.
    - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
-1. Add the GitHub Signing Keys and Authentication Keys.
+
+### 2.2. GitHub Signing Key
+
+1. Add signing key for commit verification.
    - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
-1. Execute a git command to install Command Line Developer Tools.
 
-    ```sh
-    git --version
-    ```
+## 3. macOS Installation
 
-1. Execute the following command.
+### 3.1. Install Command Line Developer Tools
 
-    ```sh
-    git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles \
-    && cd ~/ghq/github.com/i9wa4/dotfiles \
-    && _uname="$$(uname -a)"; \
-    if [ "$$(echo "$${_uname}" | grep Darwin)" ]; then \
-      echo 'Hello, macOS!'; \
-      make mac-init; \
-    elif [ "$$(echo "$${_uname}" | grep Ubuntu)" ]; then \
-      echo 'Hello, Ubuntu'; \
-      sudo apt install -y make; \
-      make ubuntu-server-init; \
-    elif [ "$$(echo "$${_uname}" | grep WSL2)" ]; then \
-      echo 'Hello, WSL2!'; \
-      sudo apt install -y make; \
-      make wsl-init; \
-    elif [ "$$(echo "$${_uname}" | grep arm)" ]; then \
-      echo 'Hello, Raspberry Pi!'; \
-    elif [ "$$(echo "$${_uname}" | grep el7)" ]; then \
-      echo 'Hello, CentOS!'; \
-    else \
-      echo 'Which OS are you using?'; \
-    fi
-    ```
+```sh
+git --version
+```
 
-1. Restart the terminal and execute the following command.
+### 3.2. Clone dotfiles
 
-    ```sh
-    cd ~/ghq/github.com/i9wa4/dotfiles && make common-package-init
-    ```
+```sh
+git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+cd ~/ghq/github.com/i9wa4/dotfiles
+```
 
-## 4. OS-specific Post Installation
+### 3.3. Install Nix
 
-### 4.1. Windows
+```sh
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
+```
 
-1. Run `C:\work\util\bin\win-copy.bat`.
-1. Run `C:\work\util\bin\winget-upgrade.bat`.
+Open a new terminal to verify:
 
-### 4.2. macOS
+```sh
+nix --version
+```
 
-[Mac 環境構築手順 – uma-chan’s page](https://i9wa4.github.io/blog/2024-06-17-setup-mac.html)
+cf. [Nix Official Download](https://nixos.org/download/)
 
-## 5. OS-common Post Installation
+### 3.4. Install Homebrew
 
-### 5.1. AWS CLI
+nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
 
-- Authentication with AWS CLI
-    - [Configuring IAM Identity Center authentication with the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
-- `~/.aws/config`
-    - [Configuration and credential file settings in the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
-- `~/.aws/credentials`
-    - [Authenticating using IAM user credentials for the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html)
-    - Follow the instroctions of "Access Keys".
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-### 5.2. gh
+cf. [Homebrew](https://brew.sh/)
 
-1. Choose SSH for Git operation protocol.
-1. Skip uploading SSH public key.
-1. Login with a web browser: <https://github.com/login/device>.
-1. You can use the following command to login with a token.
+### 3.5. Create user.nix
 
-    ```sh
-    gh auth status --show-token | gh auth login --with-token
-    ```
+```sh
+cp user.nix.example user.nix
+# Edit user.nix and set your username (run `whoami` to get it)
+```
+
+### 3.6. Backup Shell Configs
+
+nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
+
+```sh
+sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
+sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
+```
+
+cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
+
+### 3.7. Initial darwin-rebuild
+
+```sh
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
+```
+
+Open a new terminal after completion.
+
+### 3.8. Set PC-specific Git Config
+
+```sh
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+```
+
+These are written to ~/.gitconfig, which takes precedence over nix-managed ~/.config/git/config.
+
+## 4. Linux Installation
+
+TODO: Will be added later with home-manager standalone configuration.
+
+## 5. Post Installation
+
+### 5.1. gh (GitHub CLI)
+
+```sh
+gh auth login
+# Choose SSH for Git operation protocol
+# Skip uploading SSH public key
+# Login with a web browser
+```
+
+To copy auth to another machine:
+
+```sh
+gh auth status --show-token | gh auth login --with-token
+```
+
+### 5.2. AWS CLI
+
+- [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
+- [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
 ### 5.3. Web Browser
 
-#### 5.3.1. Setting Synchronization
+#### Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 5.3.2. Search Engine
+#### Search Engine
 
-- Google Japanese Search
-    - `https://www.google.com/search?q=%s`
-- Google English Search
-    - `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
-- DuckDuckGo Japanese Search
-    - `https://duckduckgo.com/?q=%s&kl=jp-jp&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
-- DuckDuckGo English Search
-    - `https://duckduckgo.com/?q=%s&kl=us-en&kz=-1&kav=1&kaf=1&k1=-1&ia=web`
+- Google Japanese: `https://www.google.com/search?q=%s`
+- Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 5.3.3. Extension
+#### Extensions
 
 - Flow Chat for YouTube Live
 - Okta Browser Plugin
 
 ### 5.4. Slack
 
-- GitHub Notifications
-    - `/github subscribe owner/repo reviews,comments,branches,commits:*`
+GitHub Notifications:
 
-### 5.5. SSH Connection to Ubuntu Server
-
-cf. [Linux サーバー：SSH 設定（2024年7月更新）](https://zenn.dev/wsuzume/articles/26b26106c3925e)
-
-1. [Server] Set `PasswordAuthentication yes` in `/etc/ssh/sshd_config`.
-1. [Server] Restart ssh.
-
-    ```sh
-    [Server] $ sudo systemctl restart ssh.service
-    ```
-1. Execute the following commands.
-
-    ```sh
-    [Client] $ ssh-keygen -t ed25519
-    [Client] $ ssh -p port username@192.168.xxx.xxx  # or hostname
-    [Server] $ exit
-    [Client] $ scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key
-    [Client] $ ssh -p port username@192.168.xxx.xxx
-    [Server] $ cd ~/.ssh
-    [Server] $ cat register_key >> authorized_keys
-    [Server] $ chmod 600 authorized_keys
-    [Server] $ rm register_key
-    ```
-
-1. [Server] Set `PasswordAuthentication no` in `/etc/ssh/sshd_config`.
-1. [Server] Restart ssh.
-
-    ```sh
-    [Server] $ sudo systemctl restart ssh.service
-    ```
-
-1. [Client] Configure `~/.ssh/config`
-
-    ```sh
-    Host sandbox
-        HostName        192.168.xxx.xxx
-        Port            port
-        IdentityFile    ~/.ssh/id_ed25519
-        User            username
-    ```
-
-## 6. Python Virtual Environment Update
-
-1. Update `.python-version` or `pyproject.toml` as needed.
-1. Update `uv.lock`.
-
-    ```sh
-    uv lock --upgrade
-    ```
-
-1. Update .venv.
-
-    ```sh
-    uv sync --frozen
-    # or
-    uv sync --frozen --group dev
-    ```
-
-## 7. nix-darwin (macOS)
-
-cf. <https://github.com/i9wa4/dotfiles/issues/69>
-
-### 7.1. Install Nix
-
-> The only prerequisite is a Nix implementation
->
-> -- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
-
-```sh
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
-
-# Verify installation (open a new terminal first)
-nix --version
+```text
+/github subscribe owner/repo reviews,comments,branches,commits:*
 ```
 
-cf. [Nix Official Download](https://nixos.org/download/)
+## 6. Daily Update
 
-### 7.2. Setup nix-darwin and home-manager
-
-> outputsにdarwinConfigurations.\<host\>に対して構成を定義でき、`sudo darwin-rebuild switch --flake ".#<host>"`コマンドを利用して適用できます。
->
-> -- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
+Use zeno snippet `up` or run manually:
 
 ```sh
-# 1. Create user.nix from template (contains username, not committed to git)
-cp user.nix.example user.nix
-# Edit user.nix and set your username (run `whoami` to get it)
-
-# 2. Backup existing shell configs (first time only)
-#    nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
-#    The error message instructs to rename them with .before-nix-darwin suffix.
-#    cf. https://github.com/nix-darwin/nix-darwin/issues/149
-sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
-sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
-
-# 3. Initial installation
-#    --impure: required to read user.nix (not tracked by git)
-#    --no-update-lock-file: use existing flake.lock (reproducible)
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
-
-# 4. Open a new terminal (darwin-rebuild is now in PATH)
-
-# 5. Subsequent updates
+cd ~/ghq/github.com/i9wa4/dotfiles
 sudo darwin-rebuild switch --flake '.#macos-p' --impure
+ghq list | ghq get --update
+cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/
 ```
 
-cf.
-
-- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
-- [home-manager Manual](https://nix-community.github.io/home-manager/)
-- [nix-darwin issue 149: Allow enforcing linking etc when file exists](https://github.com/nix-darwin/nix-darwin/issues/149)
-- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
-- [Homebrew管理下のGUIもNixに移してみる nix-darwin篇](https://zenn.dev/kawarimidoll/articles/271c339c5392ce)
-
-### 7.3. Importing GUI Settings to nix-darwin
-
-#### 7.3.1. Reading Current Settings
-
-macOS settings are managed via the `defaults` command.
+Or use zeno snippet `ndr` for just darwin-rebuild:
 
 ```sh
-# Read settings from major domains
+# ndr expands to:
+sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
+```
+
+## 7. Reference
+
+### 7.1. nix-darwin GUI Settings
+
+#### Reading Current Settings
+
+```sh
 defaults read com.apple.dock           # Dock
 defaults read com.apple.finder         # Finder
-defaults read NSGlobalDomain           # Global settings (keyboard, trackpad, etc.)
-defaults read com.apple.screencapture  # Screenshot
+defaults read NSGlobalDomain           # Global settings
 defaults read com.apple.menuextra.clock # Menu bar clock
 defaults read com.apple.controlcenter  # Control Center
-defaults read com.apple.WindowManager  # Window management (Stage Manager, etc.)
-
-# Read a specific key
-defaults read com.apple.dock autohide
-defaults read NSGlobalDomain KeyRepeat
 ```
 
-#### 7.3.2. Checking nix-darwin Options
+#### Domain to nix-darwin Mapping
 
-1. Check if `system.defaults.*` supports the setting
-   - Supported: Add to `system.defaults` section in `darwin/configuration.nix`
-   - Not supported: Use `defaults write` in `system.activationScripts.postActivation`
+| defaults domain | nix-darwin option |
+|---|---|
+| `com.apple.dock` | `system.defaults.dock.*` |
+| `com.apple.finder` | `system.defaults.finder.*` |
+| `NSGlobalDomain` | `system.defaults.NSGlobalDomain.*` |
+| `com.apple.menuextra.clock` | `system.defaults.menuExtraClock.*` |
+| `com.apple.controlcenter` | `system.defaults.controlcenter.*` |
+| `com.apple.trackpad` | `system.defaults.trackpad.*` |
 
-2. Domain to nix-darwin option mapping
-
-    | defaults domain | nix-darwin option |
-    |---|---|
-    | `com.apple.dock` | `system.defaults.dock.*` |
-    | `com.apple.finder` | `system.defaults.finder.*` |
-    | `NSGlobalDomain` | `system.defaults.NSGlobalDomain.*` |
-    | `com.apple.menuextra.clock` | `system.defaults.menuExtraClock.*` |
-    | `com.apple.controlcenter` | `system.defaults.controlcenter.*` |
-    | `com.apple.trackpad` | `system.defaults.trackpad.*` |
-
-#### 7.3.3. Adding Settings
+#### Adding Settings
 
 ```nix
 # darwin/configuration.nix
@@ -289,7 +198,7 @@ defaults read NSGlobalDomain KeyRepeat
 # If nix-darwin option is available
 system.defaults.dock.autohide = true;
 
-# If nix-darwin option is not available
+# If not available, use activation script
 system.activationScripts.postActivation.text = ''
   sudo -u ${username} bash -c '
     defaults write com.apple.SomeApp SomeKey -bool true
@@ -297,41 +206,7 @@ system.activationScripts.postActivation.text = ''
 '';
 ```
 
-#### 7.3.4. Applying Changes
-
-```sh
-sudo darwin-rebuild switch --flake '.#macos-p' --impure
-```
-
-#### 7.3.5. How to Check Default and Current Values
-
-- Current value: `defaults read <domain> <key>`
-- Default value:
-    - See `[default: xxx]` comments in `darwin/configuration.nix`
-    - Web search (e.g., "macOS defaults KeyRepeat default value")
-    - Compare with a fresh Mac using `defaults read`
-
-```sh
-# Check current value
-defaults read com.apple.dock autohide
-# Output: 0 (false) or 1 (true)
-
-# If key doesn't exist, the default value is being used
-defaults read com.apple.dock nonexistent-key
-# Output: The domain/default pair of (com.apple.dock, nonexistent-key) does not exist
-```
-
-#### 7.3.6. Notes
-
-- Some settings require re-login or restart to take effect
-- Settings may not apply if System Settings is open
-- Settings that require manual configuration are listed in `darwin/configuration.nix` comments
-
-### 7.4. Zsh Startup and Nix PATH
-
-cf. [Shell Startup - NERSC Documentation](https://docs.nersc.gov/environment/shell_startup/)
-
-#### 7.4.1. Startup Flow
+### 7.2. Zsh Startup and Nix PATH
 
 ```mermaid
 flowchart TD
@@ -354,55 +229,41 @@ flowchart TD
     style I fill:#69c,stroke:#333
 ```
 
-#### 7.4.2. PATH Construction Order
+| File | Managed By | Role |
+|------|------------|------|
+| `/etc/zshenv` | nix-darwin | Sources `set-environment`, sets Nix PATH |
+| `/etc/zshrc` | nix-darwin | Sets history, completion, prompt defaults |
+| `~/.zshenv` | dotfiles | Sources `dot.zshenv`, adds Homebrew to PATH |
+| `~/.zshrc` | dotfiles | Sources `dot.zshrc`, user configurations |
 
-```mermaid
-flowchart LR
-    subgraph "After /etc/zshenv (nix-darwin)"
-        A1["~/.nix-profile/bin"]
-        A2["/etc/profiles/per-user/$USER/bin"]
-        A3["/run/current-system/sw/bin"]
-        A4["/nix/var/nix/profiles/default/bin"]
-        A5["/usr/local/bin:/usr/bin:/bin"]
-    end
-
-    subgraph "After ~/.zshenv (dot.zshenv)"
-        B1["~/.local/bin"]
-        B2["/opt/homebrew/bin"]
-        B3["(Nix paths)"]
-        B4["(system paths)"]
-    end
-
-    A1 --> A2 --> A3 --> A4 --> A5
-    B1 --> B2 --> B3 --> B4
-
-    style A1 fill:#4c9
-    style A2 fill:#4c9
-    style B1 fill:#69c
-    style B2 fill:#f96
-```
-
-#### 7.4.3. Key Files
-
-| File          | Managed By   | Role                                        |
-| ------        | ------------ | ------                                      |
-| `/etc/zshenv` | nix-darwin   | Sources `set-environment`, sets Nix PATH    |
-| `/etc/zshrc`  | nix-darwin   | Sets history, completion, prompt defaults   |
-| `~/.zshenv`   | dotfiles     | Sources `dot.zshenv`, adds Homebrew to PATH |
-| `~/.zshrc`    | dotfiles     | Sources `dot.zshrc`, user configurations    |
-
-#### 7.4.4. Checking Which Tool is Used
+### 7.3. Python Virtual Environment
 
 ```sh
-# Show all paths for a command
-which -a git
+# Update lock file
+uv lock --upgrade
 
-# Example output (Homebrew is prioritized)
-# /opt/homebrew/bin/git      <- Homebrew (used)
-# /usr/bin/git               <- macOS default
-# /etc/profiles/per-user/uma/bin/git  <- Nix (home.packages)
-
-# To prioritize Nix, either:
-# 1. Uninstall from Homebrew: brew uninstall git
-# 2. Adjust PATH order in dot.zshenv
+# Sync virtual environment
+uv sync --frozen
+# or with dev dependencies
+uv sync --frozen --group dev
 ```
+
+### 7.4. SSH Connection to Ubuntu Server
+
+cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106c3925e)
+
+1. [Server] Set `PasswordAuthentication yes` in `/etc/ssh/sshd_config`
+2. [Server] `sudo systemctl restart ssh.service`
+3. [Client] `ssh-keygen -t ed25519`
+4. [Client] `ssh -p port username@hostname`
+5. [Client] `scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key`
+6. [Server] `cat ~/.ssh/register_key >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys`
+7. [Server] Set `PasswordAuthentication no` and restart ssh
+8. [Client] Configure `~/.ssh/config`
+
+### 7.5. External Links
+
+- [nix-darwin README](https://github.com/nix-darwin/nix-darwin)
+- [home-manager Manual](https://nix-community.github.io/home-manager/)
+- [2025年のdotfiles](https://zenn.dev/momeemt/articles/dotfiles2025)
+- [Homebrew管理下のGUIもNixに移してみる](https://zenn.dev/kawarimidoll/articles/271c339c5392ce)

@@ -199,15 +199,6 @@ in {
       fi
     '';
 
-    # 0. Render internal quarto site (after ghq-get-essential)
-    quartoRenderInternal = lib.hm.dag.entryAfter ["ghqGetEssential"] ''
-      internalDir="${ghqRoot}/github.com/i9wa4/internal"
-      if [ -d "$internalDir" ]; then
-        echo "Rendering internal quarto site..."
-        cd "$internalDir" && ${pkgs.uv}/bin/uv run quarto render work/ || true
-      fi
-    '';
-
     # 1. Install/update safe-chain first (security scanner for npm)
     setupSafeChain = lib.hm.dag.entryAfter ["writeBoundary"] ''
       mkdir -p ${npmPrefix}
