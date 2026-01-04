@@ -15,66 +15,18 @@ repos:
 
   - repo: local
     hooks:
-      # ========================================
-      # Local tools (alphabetical order)
-      # ========================================
+      - id: actionlint
+        name: actionlint
+        entry: mise exec -- actionlint
+        language: system
+        files: ^\.github/workflows/.*\.(yml|yaml)$
+
       - id: check-external-mention
         name: Check external mention
         entry: bash bin/check-external-mention
         language: system
         stages: [commit-msg]
         always_run: true
-
-      - id: gitleaks
-        name: Detect hardcoded secrets
-        entry: gitleaks protect --verbose --redact --staged
-        language: system
-        pass_filenames: false
-
-      - id: ruff-check
-        name: ruff check
-        entry: uv run ruff check --fix
-        language: system
-        types: [python]
-
-      - id: ruff-format
-        name: ruff format
-        entry: uv run ruff format
-        language: system
-        types: [python]
-
-      - id: shellcheck
-        name: shellcheck
-        entry: shellcheck
-        language: system
-        types: [shell]
-
-      - id: shfmt
-        name: shfmt
-        entry: shfmt -i 2 -w
-        language: system
-        types: [shell]
-
-      - id: sqlfmt
-        name: sqlfmt
-        entry: uv run sqlfmt
-        language: system
-        types: [sql]
-
-      - id: stylua
-        name: stylua
-        entry: stylua --indent-type Spaces --indent-width 2
-        language: system
-        files: \.lua$
-
-      # ========================================
-      # mise tools (alphabetical order)
-      # ========================================
-      - id: actionlint
-        name: actionlint
-        entry: mise exec -- actionlint
-        language: system
-        files: ^\.github/workflows/.*\.(yml|yaml)$
 
       - id: ghalint
         name: ghalint
@@ -88,11 +40,53 @@ repos:
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
+      - id: gitleaks
+        name: Detect hardcoded secrets
+        entry: mise exec -- gitleaks protect --verbose --redact --staged
+        language: system
+        pass_filenames: false
+
       - id: pinact
         name: pinact
         entry: mise exec -- pinact run
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
+
+      - id: ruff-check
+        name: ruff check
+        entry: mise exec -- uv run ruff check --fix
+        language: system
+        types: [python]
+
+      - id: ruff-format
+        name: ruff format
+        entry: mise exec -- uv run ruff format
+        language: system
+        types: [python]
+
+      - id: shellcheck
+        name: shellcheck
+        entry: mise exec -- shellcheck
+        language: system
+        types: [shell]
+
+      - id: shfmt
+        name: shfmt
+        entry: mise exec -- shfmt -i 2 -w
+        language: system
+        types: [shell]
+
+      - id: sqlfmt
+        name: sqlfmt
+        entry: mise exec -- uv run sqlfmt
+        language: system
+        types: [sql]
+
+      - id: stylua
+        name: stylua
+        entry: mise exec -- stylua --indent-type Spaces --indent-width 2
+        language: system
+        files: \.lua$
 
       - id: zizmor
         name: zizmor
