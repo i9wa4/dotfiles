@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # check-external-mention
 # Detect external GitHub URLs that may trigger mentions.
 #
@@ -29,6 +29,7 @@ while IFS= read -r line; do
   fi
 
   # Remove backtick-quoted sections from the line for checking
+  # shellcheck disable=SC2001,SC2016
   cleaned_line=$(echo "$line" | sed 's/`[^`]*`//g')
 
   # Check for external GitHub URLs with path: https://github.com/<owner>/<repo>/<path>
@@ -52,6 +53,6 @@ while IFS= read -r line; do
       EXIT_CODE=1
     fi
   fi
-done < "$COMMIT_MSG_FILE"
+done <"$COMMIT_MSG_FILE"
 
 exit $EXIT_CODE
