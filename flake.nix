@@ -38,20 +38,43 @@
     # nix fmt
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
+    # Custom packages (not in nixpkgs)
+    packages = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      ghalint = pkgs.callPackage ./nix/packages/ghalint.nix {};
+      ghatm = pkgs.callPackage ./nix/packages/ghatm.nix {};
+      pinact = pkgs.callPackage ./nix/packages/pinact.nix {};
+    });
+
     # nix develop
     devShells = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
+      customPkgs = self.packages.${system};
+      ciPackages = [
+        # nixpkgs
+        pkgs.actionlint
+        pkgs.gitleaks
+        pkgs.pre-commit
+        pkgs.python3
+        pkgs.shellcheck
+        pkgs.shfmt
+        pkgs.stylua
+        pkgs.uv
+        pkgs.zizmor
+        # custom packages
+        customPkgs.ghalint
+        customPkgs.ghatm
+        customPkgs.pinact
+      ];
     in {
+      # Local development (includes CI tools)
       default = pkgs.mkShell {
-        packages = with pkgs; [
-          pre-commit
-          shellcheck
-          gitleaks
-          shfmt
-          stylua
-          # Python (for pre-commit hooks)
-          uv
-        ];
+        packages = ciPackages;
+      };
+      # CI environment (minimal)
+      ci = pkgs.mkShell {
+        packages = ciPackages;
       };
     });
 
