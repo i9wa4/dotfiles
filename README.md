@@ -10,15 +10,52 @@
 
 ## 2. Prerequisites
 
-### 2.1. GitHub SSH Key
+### 2.1. GitHub SSH Key & Signing Key
 
-1. Generate SSH key and add to GitHub.
-   - <https://qiita.com/ucan-lab/items/e02f2d3a35f266631f24>
+1. Generate SSH key
 
-### 2.2. GitHub Signing Key
+   ```sh
+   ssh-keygen -t ed25519 -N "" -f ~/.ssh/github
+   ```
 
-1. Add signing key for commit verification.
-   - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
+2. Copy public key
+
+   ```sh
+   # macOS
+   pbcopy < ~/.ssh/github.pub
+
+   # Linux
+   cat ~/.ssh/github.pub
+   ```
+
+3. Add SSH key to GitHub
+   - Go to <https://github.com/settings/keys>
+   - Click "New SSH key"
+   - Title: any name (e.g., PC name)
+   - Key type: Authentication Key
+   - Paste the public key
+
+4. Add Signing key to GitHub
+   - Click "New SSH key" again
+   - Title: any name
+   - Key type: Signing Key
+   - Paste the same public key
+
+5. Configure SSH
+
+   ```sh
+   cat >> ~/.ssh/config << 'EOF'
+   Host github.com
+       IdentityFile ~/.ssh/github
+       User git
+   EOF
+   ```
+
+6. Verify connection
+
+   ```sh
+   ssh -T github.com
+   ```
 
 ## 3. Common Setup
 
@@ -45,7 +82,7 @@ nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-## 4. macOS Installation
+## 4. macOS
 
 ### 4.1. Backup Shell Configs
 
@@ -79,11 +116,12 @@ Open a new terminal after completion.
 ### 4.4. Set PC-specific Git Config
 
 ```sh
+touch ~/.gitconfig
 git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-## 5. Linux Installation (Ubuntu / WSL2)
+## 5. Linux (Ubuntu / WSL2)
 
 ### 5.1. Initial home-manager switch
 
@@ -102,6 +140,7 @@ Open a new terminal after completion.
 ### 5.3. Set PC-specific Git Config
 
 ```sh
+touch ~/.gitconfig
 git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
@@ -112,7 +151,7 @@ git config --global user.email "your@email.com"
 make ubuntu-server-init
 ```
 
-### 5.5. WSL2 Only: Copy Windows Config
+### 5.5. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
