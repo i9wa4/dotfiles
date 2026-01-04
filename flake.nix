@@ -56,23 +56,15 @@
     });
 
     # darwin-rebuild switch --flake '.#macos-p' --impure
+    # Requires --impure because we use builtins.getEnv to read SUDO_USER
     darwinConfigurations."macos-p" = let
-      # When running with sudo, HOME becomes /var/root, so we use SUDO_USER instead
-      # SUDO_USER contains the original username when running under sudo
-      dotfilesDir = let
+      # SUDO_USER is automatically set by sudo to the original username
+      username = let
         sudoUser = builtins.getEnv "SUDO_USER";
-        userHome =
-          if sudoUser != ""
-          then "/Users/${sudoUser}"
-          else builtins.getEnv "HOME";
       in
-        userHome + "/ghq/github.com/i9wa4/dotfiles";
-      userNixPath = dotfilesDir + "/user.nix";
-      userConfig =
-        if builtins.pathExists userNixPath
-        then import userNixPath
-        else throw "user.nix not found. Run: cp user.nix.example user.nix && edit user.nix";
-      username = userConfig.username;
+        if sudoUser != ""
+        then sudoUser
+        else throw "Must run with sudo (SUDO_USER not set). Run: sudo darwin-rebuild switch --flake '.#macos-p' --impure";
     in
       nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin";
