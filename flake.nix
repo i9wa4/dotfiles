@@ -70,7 +70,7 @@
         system = "aarch64-darwin";
         specialArgs = {inherit username;};
         modules = [
-          ./darwin/configuration.nix
+          ./nix/darwin.nix
           home-manager.darwinModules.home-manager
           brew-nix.darwinModules.default
           {
@@ -90,7 +90,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {inherit username;};
-            home-manager.users.${username} = import ./home/home.nix;
+            home-manager.users.${username} = import ./nix/home.nix;
           }
         ];
       };
@@ -117,7 +117,7 @@
         inherit pkgs;
         extraSpecialArgs = {inherit username;};
         modules = [
-          ./home/home.nix
+          ./nix/home.nix
         ];
       };
   };

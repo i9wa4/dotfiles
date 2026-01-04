@@ -30,8 +30,8 @@
     pkgs.vim
     # GUI applications (via brew-nix overlay, symlinked to /Applications/Nix Apps/)
     # NOTE: google-chrome, openvpn-connect are in Homebrew (hash mismatch/xar errors)
+    # NOTE: VS Code is managed by home-manager (nix/vscode.nix)
     pkgs.brewCasks.drawio
-    pkgs.brewCasks.visual-studio-code
     pkgs.brewCasks.wezterm
     pkgs.brewCasks.zoom
   ];

@@ -49,10 +49,10 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 
 ### 4.1. Backup Shell Configs
 
-nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
+nix-darwin will fail if /etc/zshenv or /etc/zshrc exist with unrecognized content.
 
 ```sh
-sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
+sudo mv /etc/zshenv /etc/zshenv.before-nix-darwin 2>/dev/null || true
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
