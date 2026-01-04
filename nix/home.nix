@@ -47,7 +47,6 @@ in {
     # Version control (git is managed by programs.git)
     pkgs.gh
     pkgs.ghq
-    pkgs.gitleaks
     # Search
     pkgs.ripgrep
     pkgs.fd
@@ -68,17 +67,11 @@ in {
     pkgs.go
     pkgs.nodejs
     pkgs.rustup
-    pkgs.uv
-    # Linters & Formatters
-    pkgs.actionlint
+    # Linters & Formatters (CI tools are managed by mise)
     pkgs.hadolint
-    pkgs.shellcheck
-    pkgs.shfmt
-    pkgs.stylua
     # CI/CD
     pkgs.act
     pkgs.mise
-    pkgs.pre-commit
     # LSP
     pkgs.efm-langserver
     # Editors (latest from neovim-nightly-overlay and vim-overlay)
@@ -101,7 +94,6 @@ in {
     ".claude/skills".source           = symlink "${dotfilesDir}/dot.config/claude/skills";
     ".codex".source                   = symlink "${dotfilesDir}/dot.config/codex";
     ".config/mise/config.toml".source = symlink "${dotfilesDir}/mise.toml";
-    # .editorconfig is managed by nix/editorconfig.nix
     ".zshenv".source                  = symlink "${dotfilesDir}/dot.zshenv";
     ".zshrc".source                   = symlink "${dotfilesDir}/dot.zshrc";
   };
@@ -109,7 +101,6 @@ in {
   xdg.configFile = {
     "claude".source         = symlink "${dotfilesDir}/dot.config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
-    # git is managed by nix/git.nix
     "nvim".source           = symlink "${dotfilesDir}/dot.config/nvim";
     "rumdl".source          = symlink "${dotfilesDir}/dot.config/rumdl";
     "skk".source            = symlink "${dotfilesDir}/dot.config/skk";
