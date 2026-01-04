@@ -28,6 +28,11 @@ in {
   # User packages (managed by home-manager)
   # For project-specific tools, use devShell or mise instead
   home.packages = [
+    # Shell (zsh is default on macOS, needs install on Linux)
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
+    pkgs.zsh
+    pkgs.wslu  # WSL utilities (harmless on non-WSL)
+  ] ++ [
     # Cloud & Infrastructure
     pkgs.awscli2
     pkgs.databricks-cli
@@ -213,10 +218,21 @@ in {
       fi
     '';
 
-    # 2. Install/update npm packages (after safe-chain, so they get scanned)
+    # 2. Start ssh-agent if not running (Linux only)
+    # cf. https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
+    startSshAgent = lib.hm.dag.entryAfter ["writeBoundary"] (
+      lib.optionalString pkgs.stdenv.isLinux ''
+        if [ -z "$SSH_AUTH_SOCK" ]; then
+          eval $(${pkgs.openssh}/bin/ssh-agent)
+        fi
+      ''
+    );
+
+    # 3. Install/update npm packages (after safe-chain, so they get scanned)
     installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       NPM_PACKAGES=(
+        "@anthropic-ai/claude-code"
         "@devcontainers/cli"
         "@github/copilot"
         "@google/gemini-cli"

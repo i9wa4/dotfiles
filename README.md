@@ -5,8 +5,8 @@
 ## 1. Target OS
 
 - macOS (Apple Silicon)
-- Ubuntu 24.04 LTS (TODO)
-- Ubuntu 24.04 LTS on WSL2 (TODO)
+- Ubuntu 24.04 LTS
+- Ubuntu 24.04 LTS on WSL2
 
 ## 2. Prerequisites
 
@@ -20,7 +20,7 @@
 1. Add signing key for commit verification.
    - <https://qiita.com/habu1010/items/dbd59495a68a0b9dc953>
 
-## 3. macOS Installation
+## 3. Common Setup
 
 ### 3.1. Install Nix
 
@@ -38,14 +38,16 @@ cf. [Nix Official Download](https://nixos.org/download/)
 
 ### 3.2. Clone dotfiles
 
-Use `nix run` to temporarily get git (no Command Line Developer Tools needed):
+Use `nix run` to temporarily get git (no Command Line Developer Tools needed on macOS):
 
 ```sh
 nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 3.3. Backup Shell Configs
+## 4. macOS Installation
+
+### 4.1. Backup Shell Configs
 
 nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 
@@ -56,7 +58,7 @@ sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 
 cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 3.4. Install Homebrew
+### 4.2. Install Homebrew
 
 nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
 
@@ -66,7 +68,7 @@ nix-darwin manages Homebrew packages, but Homebrew itself must be installed manu
 
 cf. [Homebrew](https://brew.sh/)
 
-### 3.5. Initial darwin-rebuild
+### 4.3. Initial darwin-rebuild
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
@@ -74,20 +76,51 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 
 Open a new terminal after completion.
 
-### 3.6. Set PC-specific Git Config
+### 4.4. Set PC-specific Git Config
 
 ```sh
 git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-## 4. Linux Installation
+## 5. Linux Installation (Ubuntu / WSL2)
 
-TODO: Will be added later with home-manager standalone configuration.
+### 5.1. Initial home-manager switch
 
-## 5. Post Installation
+```sh
+nix run home-manager -- switch --flake '.#ubuntu' --impure
+```
 
-### 5.1. gh (GitHub CLI)
+### 5.2. Set zsh as default shell
+
+```sh
+chsh -s $(which zsh)
+```
+
+Open a new terminal after completion.
+
+### 5.3. Set PC-specific Git Config
+
+```sh
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+```
+
+### 5.4. Ubuntu Server Only: Enable SSH
+
+```sh
+make ubuntu-server-init
+```
+
+### 5.5. WSL2 Only: Copy Windows Config
+
+```sh
+make win-copy
+```
+
+## 6. Post Installation
+
+### 6.1. gh (GitHub CLI)
 
 ```sh
 gh auth login
@@ -102,32 +135,32 @@ To copy auth to another machine:
 gh auth status --show-token | gh auth login --with-token
 ```
 
-### 5.2. AWS CLI
+### 6.2. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 5.3. Web Browser
+### 6.3. Web Browser
 
-#### 5.3.1. Setting Synchronization
+#### 6.3.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 5.3.2. Search Engine
+#### 6.3.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 5.3.3. Extensions
+#### 6.3.3. Extensions
 
 - Flow Chat for YouTube Live
 - Okta Browser Plugin
 - Slack Channels Grouping
 
-### 5.4. Slack
+### 6.4. Slack
 
 GitHub Notifications:
 
@@ -135,7 +168,7 @@ GitHub Notifications:
 /github subscribe owner/repo reviews,comments,branches,commits:*
 ```
 
-### 5.5. SSH Connection to Ubuntu Server
+### 6.5. SSH Connection to Ubuntu Server
 
 cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106c3925e)
 
