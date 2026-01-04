@@ -97,7 +97,8 @@
       # Finder 終了メニューを表示 [default: false]
       QuitMenuItem = true;
       # デフォルトの表示形式 (icnv=アイコン, Nlsv=リスト, clmv=カラム, glyv=ギャラリー) [default: "icnv"]
-      FXPreferredViewStyle = "Nlsv";
+      # FXPreferredViewStyle = "Nlsv";
+      FXPreferredViewStyle = "icnv";
     };
 
     # --------------------------------------------------------------------------
@@ -109,7 +110,6 @@
       # キーリピート開始までの時間 (小さいほど速い) [default: 25]
       InitialKeyRepeat = 15;
       # ナチュラルなスクロール [default: true]
-      # "com.apple.swipescrolldirection" = false;
       "com.apple.swipescrolldirection" = true;
       # 英字入力中にスペルを自動変換 [default: true]
       NSAutomaticSpellingCorrectionEnabled = false;
@@ -123,6 +123,8 @@
       NSAutomaticQuoteSubstitutionEnabled = false;
       # インライン予測テキストを表示 [default: true]
       NSAutomaticInlinePredictionEnabled = false;
+      # ウィンドウ開閉アニメーション [default: true]
+      NSAutomaticWindowAnimationsEnabled = false;
       # トラックパッド速度 (0.0-3.0) [default: 1.0]
       "com.apple.trackpad.scaling" = 3.0;
     };
@@ -165,57 +167,52 @@
     CustomUserPreferences = {
       "com.apple.finder" = {
         # サイドバーを表示 [default: true]
-        ShowSidebar = true;
-      };
-      "com.apple.WindowManager" = {
-        # 壁紙をクリックしてデスクトップを表示 [default: true (常に)]
-        # false = ステージマネージャー使用時のみ
-        EnableStandardClickToShowDesktop = true;
+        # ShowSidebar = true;
       };
       # 日本語入力 (ローマ字入力)
       "com.apple.inputmethod.Kotoeri" = {
         # ライブ変換 [default: 1 (ON)]
         JIMPrefLiveConversionKey = 0;
         # タイプミスを修正 [default: 0 (OFF)]
-        JIMPrefAutocorrectionKey = 1;
+        JIMPrefAutocorrectionKey = 0;
       };
       # Spotlight 検索結果
       # Note: アプリのみ有効、その他は OFF
       "com.apple.Spotlight" = {
         orderedItems = [
           { enabled = 1; name = "APPLICATIONS"; }
-          { enabled = 0; name = "MENU_EXPRESSION"; }
+          { enabled = 0; name = "BOOKMARKS"; }
           { enabled = 0; name = "CONTACT"; }
-          { enabled = 0; name = "MENU_CONVERSION"; }
-          { enabled = 0; name = "MENU_DEFINITION"; }
+          { enabled = 0; name = "DIRECTORIES"; }
           { enabled = 0; name = "DOCUMENTS"; }
           { enabled = 0; name = "EVENT_TODO"; }
-          { enabled = 0; name = "DIRECTORIES"; }
           { enabled = 0; name = "FONTS"; }
           { enabled = 0; name = "IMAGES"; }
+          { enabled = 0; name = "MENU_CONVERSION"; }
+          { enabled = 0; name = "MENU_DEFINITION"; }
+          { enabled = 0; name = "MENU_EXPRESSION"; }
+          { enabled = 0; name = "MENU_OTHER"; }
+          { enabled = 0; name = "MENU_SPOTLIGHT_SUGGESTIONS"; }
           { enabled = 0; name = "MESSAGES"; }
           { enabled = 0; name = "MOVIES"; }
           { enabled = 0; name = "MUSIC"; }
-          { enabled = 0; name = "MENU_OTHER"; }
           { enabled = 0; name = "PDF"; }
           { enabled = 0; name = "PRESENTATIONS"; }
-          { enabled = 0; name = "MENU_SPOTLIGHT_SUGGESTIONS"; }
           { enabled = 0; name = "SPREADSHEETS"; }
           { enabled = 0; name = "SYSTEM_PREFS"; }
           { enabled = 0; name = "TIPS"; }
-          { enabled = 0; name = "BOOKMARKS"; }
         ];
       };
       # Mission Control キーボードショートカット
       # 118: デスクトップ1へ切り替え, 119: デスクトップ2, 120: デスクトップ3
       # parameters: (ASCII code, key code, modifier) / 524288 = Option (Alt)
-      "com.apple.symbolichotkeys" = {
-        AppleSymbolicHotKeys = {
-          "118" = { enabled = 1; value = { parameters = [ 49 18 524288 ]; type = "standard"; }; };
-          "119" = { enabled = 1; value = { parameters = [ 50 19 524288 ]; type = "standard"; }; };
-          "120" = { enabled = 1; value = { parameters = [ 51 20 524288 ]; type = "standard"; }; };
-        };
-      };
+      # "com.apple.symbolichotkeys" = {
+      #   AppleSymbolicHotKeys = {
+      #     "118" = { enabled = 1; value = { parameters = [ 49 18 524288 ]; type = "standard"; }; };
+      #     "119" = { enabled = 1; value = { parameters = [ 50 19 524288 ]; type = "standard"; }; };
+      #     "120" = { enabled = 1; value = { parameters = [ 51 20 524288 ]; type = "standard"; }; };
+      #   };
+      # };
     };
   };
 
@@ -236,25 +233,6 @@
         $'"'"'\033ウィンドウ\033移動とサイズ変更\033右'"'"' "@^l"
       defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
         $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "@^h"
-
-      # ------------------------------------------
-      # Finder: Reset icon view settings to defaults
-      # Prevents accidental changes from persisting
-      # Note: delete + complex plist requires activation script
-      # ------------------------------------------
-      defaults delete com.apple.finder FK_DefaultIconViewSettings 2>/dev/null || true
-      defaults write com.apple.finder StandardViewSettings -dict-add IconViewSettings "
-        <dict>
-          <key>arrangeBy</key><string>none</string>
-          <key>gridSpacing</key><integer>54</integer>
-          <key>iconSize</key><integer>64</integer>
-          <key>labelOnBottom</key><true/>
-          <key>showIconPreview</key><true/>
-          <key>showItemInfo</key><false/>
-          <key>textSize</key><integer>12</integer>
-          <key>viewOptionsVersion</key><integer>1</integer>
-        </dict>
-      "
     '
   '';
 
