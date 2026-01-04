@@ -14,6 +14,16 @@ snippets:
     snippet:
       ls -aFlv --color=always --time-style=long-iso -h
 
+  - name: update
+    keyword: up
+    snippet:
+      cd ~/ghq/github.com/i9wa4/dotfiles &&
+      sudo darwin-rebuild switch --impure --flake '.#macos-p' &&
+      ghq list | ghq get --update &&
+      cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/ &&
+      cd - &&
+      ghq-repo-status
+
   - name: (AWS) profile
     keyword: p
     snippet: --profile $(aws configure list-profiles | fzf)
