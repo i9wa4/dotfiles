@@ -16,6 +16,10 @@
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
 in {
+  imports = [
+    ./editorconfig.nix
+    ./vscode.nix
+  ];
   # User info (username is passed from flake.nix via extraSpecialArgs)
   home.username = username;
   home.homeDirectory = lib.mkForce homeDir;
@@ -83,7 +87,7 @@ in {
     pkgs.ninja
     pkgs.cmake
     pkgs.gettext
-    # NOTE: GUI applications are in darwin/configuration.nix (environment.systemPackages)
+    # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
     # to appear in /Applications/Nix Apps/
   ];
 
@@ -96,7 +100,7 @@ in {
     ".claude/skills".source           = symlink "${dotfilesDir}/dot.config/claude/skills";
     ".codex".source                   = symlink "${dotfilesDir}/dot.config/codex";
     ".config/mise/config.toml".source = symlink "${dotfilesDir}/mise.toml";
-    ".editorconfig".source            = symlink "${dotfilesDir}/dot.editorconfig";
+    # .editorconfig is managed by nix/editorconfig.nix
     ".zshenv".source                  = symlink "${dotfilesDir}/dot.zshenv";
     ".zshrc".source                   = symlink "${dotfilesDir}/dot.zshrc";
   };
@@ -182,7 +186,7 @@ in {
     npmPrefix = "${homeDir}/.local";
     ghq = "${pkgs.ghq}/bin/ghq";
     git = "${pkgs.git}/bin/git";
-    ghqListEssential = "${dotfilesDir}/etc/ghq-list-essential.txt";
+    ghqListEssential = "${dotfilesDir}/nix/ghq-list-essential.txt";
     tpmDir = "${dotfilesDir}/dot.config/tmux/plugins/tpm";
   in {
     # 0. Clone essential repositories (ghq-get-essential)
@@ -228,7 +232,15 @@ in {
       ''
     );
 
-    # 3. Install/update npm packages (after safe-chain, so they get scanned)
+    # 3. Install/update mise tools
+    miseInstall = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      export PATH="${pkgs.mise}/bin:$PATH"
+      echo "Installing/upgrading mise tools..."
+      ${pkgs.mise}/bin/mise install --yes
+      ${pkgs.mise}/bin/mise upgrade --yes
+    '';
+
+    # 4. Install/update npm packages (after safe-chain, so they get scanned)
     installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       NPM_PACKAGES=(
