@@ -22,20 +22,7 @@
 
 ## 3. macOS Installation
 
-### 3.1. Install Command Line Developer Tools
-
-```sh
-git --version
-```
-
-### 3.2. Clone dotfiles
-
-```sh
-git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
-cd ~/ghq/github.com/i9wa4/dotfiles
-```
-
-### 3.3. Install Nix
+### 3.1. Install Nix
 
 ```sh
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
@@ -49,24 +36,21 @@ nix --version
 
 cf. [Nix Official Download](https://nixos.org/download/)
 
-### 3.4. Install Homebrew
-
-nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
+### 3.2. Clone dotfiles
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-cf. [Homebrew](https://brew.sh/)
-
-### 3.5. Create user.nix
+### 3.3. Create user.nix
 
 ```sh
 cp user.nix.example user.nix
 # Edit user.nix and set your username (run `whoami` to get it)
 ```
 
-### 3.6. Backup Shell Configs
+### 3.4. Backup Shell Configs
 
 nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 
@@ -77,7 +61,17 @@ sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 
 cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 3.7. Initial darwin-rebuild
+### 3.5. Install Homebrew
+
+nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+cf. [Homebrew](https://brew.sh/)
+
+### 3.6. Initial darwin-rebuild
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
@@ -85,7 +79,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 
 Open a new terminal after completion.
 
-### 3.8. Set PC-specific Git Config
+### 3.7. Set PC-specific Git Config
 
 ```sh
 git config --global user.name "Your Name"
@@ -122,19 +116,19 @@ gh auth status --show-token | gh auth login --with-token
 
 ### 5.3. Web Browser
 
-#### Setting Synchronization
+#### 5.3.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### Search Engine
+#### 5.3.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### Extensions
+#### 5.3.3. Extensions
 
 - Flow Chat for YouTube Live
 - Okta Browser Plugin
@@ -169,7 +163,7 @@ sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfiguration
 
 ### 7.1. nix-darwin GUI Settings
 
-#### Reading Current Settings
+#### 7.1.1. Reading Current Settings
 
 ```sh
 defaults read com.apple.dock           # Dock
@@ -179,7 +173,7 @@ defaults read com.apple.menuextra.clock # Menu bar clock
 defaults read com.apple.controlcenter  # Control Center
 ```
 
-#### Domain to nix-darwin Mapping
+#### 7.1.2. Domain to nix-darwin Mapping
 
 | defaults domain | nix-darwin option |
 |---|---|
@@ -190,7 +184,7 @@ defaults read com.apple.controlcenter  # Control Center
 | `com.apple.controlcenter` | `system.defaults.controlcenter.*` |
 | `com.apple.trackpad` | `system.defaults.trackpad.*` |
 
-#### Adding Settings
+#### 7.1.3. Adding Settings
 
 ```nix
 # darwin/configuration.nix
