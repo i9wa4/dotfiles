@@ -71,6 +71,17 @@ tools:
     format-command: 'stylua --indent-type Spaces --indent-width 2 -'
     format-stdin: true
 
+  nix-alejandra: &nix-alejandra
+    format-command: 'alejandra -q'
+    format-stdin: true
+
+  nix-statix: &nix-statix
+    lint-command: 'statix check --stdin --format errfmt'
+    lint-source: 'statix'
+    lint-stdin: true
+    lint-formats:
+      - '%f>%l:%c:%t:%n:%m'
+
 languages:
   dockerfile:
     - <<: *dockerfile-hadolint
@@ -83,6 +94,10 @@ languages:
 
   markdown:
     - <<: *markdown-rumdl
+
+  nix:
+    - <<: *nix-statix
+    - <<: *nix-alejandra
 
   python:
     - <<: *python-ruff-check
