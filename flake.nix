@@ -44,17 +44,12 @@
     in {
       default = pkgs.mkShell {
         packages = with pkgs; [
-          # Pre-commit
           pre-commit
-          # Linters
           shellcheck
-          actionlint
           gitleaks
-          # Formatters
           shfmt
           stylua
           # Python (for pre-commit hooks)
-          python3
           uv
         ];
       };
