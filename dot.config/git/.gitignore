@@ -1,4 +1,0 @@
-# Ignore all except explicitly allowed files
-*
-!.gitignore
-!ignore
