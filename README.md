@@ -38,8 +38,10 @@ cf. [Nix Official Download](https://nixos.org/download/)
 
 ### 3.2. Clone dotfiles
 
+Use `nix run` to temporarily get git (no Command Line Developer Tools needed):
+
 ```sh
-git clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
