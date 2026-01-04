@@ -18,6 +18,7 @@
 in {
   imports = [
     ./editorconfig.nix
+    ./git.nix
     ./vscode.nix
   ];
   # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -108,7 +109,7 @@ in {
   xdg.configFile = {
     "claude".source         = symlink "${dotfilesDir}/dot.config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
-    # git is managed by programs.git (config) + core.excludesfile (ignore)
+    # git is managed by nix/git.nix
     "nvim".source           = symlink "${dotfilesDir}/dot.config/nvim";
     "rumdl".source          = symlink "${dotfilesDir}/dot.config/rumdl";
     "skk".source            = symlink "${dotfilesDir}/dot.config/skk";
@@ -126,56 +127,6 @@ in {
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-  };
-
-  # Git configuration (replaces Makefile git-config target)
-  # Note: user.name, user.email are PC-specific, set via `git config --global`
-  # They will be written to ~/.gitconfig which takes precedence
-  programs.git = {
-    enable = true;
-    settings = {
-      color.ui = "auto";
-      commit = {
-        gpgsign = true;
-        verbose = true;
-      };
-      core = {
-        autocrlf = "input";
-        commentChar = ";";
-        editor = "vim";
-        excludesfile = "${dotfilesDir}/dot.config/git/ignore";
-        ignorecase = false;
-        pager = "LESSCHARSET=utf-8 less";
-        quotepath = false;
-        safecrlf = true;
-      };
-      credential.helper = "store";
-      diff = {
-        algorithm = "histogram";
-        compactionHeuristic = true;
-        tool = "vimdiff";
-      };
-      difftool = {
-        prompt = false;
-        vimdiff.path = "vim";
-      };
-      fetch.prune = true;
-      ghq.root = "~/ghq";
-      gpg.format = "ssh";
-      grep.lineNumber = true;
-      http.sslVerify = false;
-      init.defaultBranch = "main";
-      merge = {
-        conflictstyle = "diff3";
-        tool = "vimdiff";
-      };
-      mergetool = {
-        prompt = false;
-        vimdiff.path = "vim";
-      };
-      push.default = "current";
-      user.signingkey = "~/.ssh/github.pub";
-    };
   };
 
   # ============================================================================
