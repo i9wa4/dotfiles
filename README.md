@@ -45,14 +45,7 @@ nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 3.3. Create user.nix
-
-```sh
-cp user.nix.example user.nix
-# Edit user.nix and set your username (run `whoami` to get it)
-```
-
-### 3.4. Backup Shell Configs
+### 3.3. Backup Shell Configs
 
 nix-darwin will fail if /etc/bashrc or /etc/zshrc exist with unrecognized content.
 
@@ -63,7 +56,7 @@ sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 
 cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 3.5. Install Homebrew
+### 3.4. Install Homebrew
 
 nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
 
@@ -73,7 +66,7 @@ nix-darwin manages Homebrew packages, but Homebrew itself must be installed manu
 
 cf. [Homebrew](https://brew.sh/)
 
-### 3.6. Initial darwin-rebuild
+### 3.5. Initial darwin-rebuild
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
@@ -81,7 +74,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 
 Open a new terminal after completion.
 
-### 3.7. Set PC-specific Git Config
+### 3.6. Set PC-specific Git Config
 
 ```sh
 git config --global user.name "Your Name"
