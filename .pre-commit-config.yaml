@@ -86,3 +86,10 @@ repos:
         entry: stylua --indent-type Spaces --indent-width 2
         language: system
         files: \.lua$
+
+      - id: check-external-issue-mention
+        name: Check external issue mention
+        entry: ./scripts/check-external-issue-mention.sh
+        language: script
+        stages: [commit-msg]
+        always_run: true
