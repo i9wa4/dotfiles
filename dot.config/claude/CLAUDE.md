@@ -27,14 +27,15 @@
 
 Claude Code では自動読み込みされる。Codex CLI では必要に応じて参照すること。
 
-| ルール             | 説明                              | 参照するとき    |
-| --------           | ------                            | --------------  |
-| git.md             | Git/GitHub 操作ルール             | Git 操作時      |
-| bash.md            | Bash 構文制限、コマンド実行ルール | コマンド実行時  |
-| python.md          | Python 仮想環境の利用方法         | Python 実行時   |
-| aws.md             | AWS CLI 利用ルール                | AWS 操作時      |
-| markdown.md        | Markdown 作成ルール               | Markdown 作成時 |
-| file-management.md | /tmp/, .i9wa4/ 活用ルール         | ファイル作成時  |
+| ルール             | 説明                              | 参照するとき      |
+| --------           | ------                            | --------------    |
+| git.md             | Git 操作ルール                    | Git 操作時        |
+| github.md          | GitHub 操作ルール                 | GitHub 操作時     |
+| bash.md            | Bash 構文制限、コマンド実行ルール | コマンド実行時    |
+| python.md          | Python 仮想環境の利用方法         | Python 実行時     |
+| aws.md             | AWS CLI 利用ルール                | AWS 操作時        |
+| markdown.md        | Markdown 作成ルール               | Markdown 作成時   |
+| file-management.md | /tmp/, .i9wa4/ 活用ルール         | ファイル作成時    |
 
 ### 3.2. Skills
 
