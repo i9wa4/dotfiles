@@ -1,0 +1,26 @@
+# rumdl configuration file (project-level)
+# This file is used by CI. Global config (~/.config/rumdl/rumdl.toml) is for local use.
+
+[global]
+disable = ["MD013"]
+
+exclude = [
+    ".git",
+    ".github",
+    "node_modules",
+    "vendor",
+    "dist",
+    "build",
+    "dot.config/claude/skills",
+    "CHANGELOG.md",
+    "LICENSE.md",
+]
+
+respect-gitignore = true
+
+[MD007]
+indent = 4
+
+[MD013]
+code-blocks = false
+tables = false
