@@ -7,18 +7,19 @@ if [ -z "${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
   fi
 fi
 
-# NOTE: Managed by Nix, not needed anymore
+# PATH deduplication for zsh
 # https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-# if [ -n "${ZSH_VERSION:-}" ]; then
-#   typeset -U path PATH
 #
-#   if [ "$(uname -s)" = "Darwin" ]; then
-#     setopt no_global_rcs
-#     if [ -x /usr/libexec/path_helper ]; then
-#         eval `/usr/libexec/path_helper -s`
-#     fi
-#   fi
-# fi
+# Background:
+# - On macOS, path_helper is normally called in /etc/zprofile, which reorders
+#   PATH and pushes user-defined paths to the end.
+# - In nix-darwin environment, /etc/zprofile is managed by Nix and path_helper
+#   call is removed, so we don't need setopt no_global_rcs or manual path_helper.
+# - However, PATH duplication still occurs when shells are nested (e.g., tmux).
+# - typeset -U removes duplicates while preserving order.
+if [ -n "${ZSH_VERSION:-}" ]; then
+  typeset -U path PATH
+fi
 
 # Common
 export EDITOR=vim
@@ -47,15 +48,10 @@ export FZF_DEFAULT_OPTS="
   --bind 'ctrl-y:accept'
 "
 
-# gtr (git-worktree-runner)
-export PATH="${PATH}":"${HOME}"/ghq/github.com/coderabbitai/git-worktree-runner/bin
-
 # Homebrew
-export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-export PATH=/opt/homebrew/bin:"${PATH}"
-
-# mise
-# export PATH="${PATH}":"${HOME}"/.local/share/mise/shims
+# NOTE: Managed by nix-darwin. Uncomment if you use Homebrew outside of Nix.
+# export DYLD_LIBRARY_PATH=/opt/homebrew/lib
+# export PATH=/opt/homebrew/bin:"${PATH}"
 
 # Neovim
 export NVIM_APPNAME=nvim
@@ -63,11 +59,13 @@ export NVIM_APPNAME=nvim
 # zeno.zsh
 export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
 
-# First Priority Paths
-export PATH="${HOME}"/.local/bin:"${PATH}"
-# dotfiles bin directory (hardcoded path for Nix compatibility)
-export PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/bin:"${PATH}"
-
+# Home-manager session variables (for home.sessionPath, home.sessionVariables)
+# cf. nix/home.nix home.sessionPath
+if [ -f "/etc/profiles/per-user/${USER}/etc/profile.d/hm-session-vars.sh" ]; then
+  source "/etc/profiles/per-user/${USER}/etc/profile.d/hm-session-vars.sh"
+fi
 
 # Local config (machine-specific, not version controlled)
-[ -r ~/.zshenv.local ] && source ~/.zshenv.local
+if test -f ~/.zshenv.local; then
+  source ~/.zshenv.local
+fi
