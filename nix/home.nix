@@ -76,6 +76,7 @@ in {
       pkgs.deno
       pkgs.go
       pkgs.nodejs
+      pkgs.python3
       pkgs.rustup
       # Linters & Formatters (CI tools are managed by devShell)
       pkgs.alejandra
