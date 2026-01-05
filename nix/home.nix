@@ -30,6 +30,13 @@ in {
   # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
   home.stateVersion = "24.11";
 
+  # PATH additions (prepended to $PATH)
+  # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
+  home.sessionPath = [
+    "${homeDir}/.local/bin"
+    "${dotfilesDir}/bin"
+  ];
+
   # User packages (managed by home-manager)
   # For project-specific tools, use devShell or mise instead
   home.packages =

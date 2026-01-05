@@ -1,11 +1,7 @@
 zmodload zsh/zprof
 
 
-# https://zenn.dev/enchan1207/articles/7b9d7d397b7d0d
-[ -r /etc/zshrc ] && . /etc/zshrc
-
-
-# Alacritty
+# Disable Ctrl-D to exit
 setopt IGNORE_EOF
 
 
@@ -139,8 +135,12 @@ fi
 
 
 # Safe-chain
-[ -r ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh
+if test -f ~/.safe-chain/scripts/init-posix.sh; then
+  source ~/.safe-chain/scripts/init-posix.sh
+fi
 
 
 # Local config (machine-specific, not version controlled)
-[ -r ~/.zshrc.local ] && source ~/.zshrc.local
+if test -f ~/.zshrc.local; then
+  source ~/.zshrc.local
+fi
