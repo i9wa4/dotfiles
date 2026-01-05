@@ -44,7 +44,10 @@
     in {
       ghalint = pkgs.callPackage ./nix/packages/ghalint.nix {};
       ghatm = pkgs.callPackage ./nix/packages/ghatm.nix {};
+      pike = pkgs.callPackage ./nix/packages/pike.nix {};
       pinact = pkgs.callPackage ./nix/packages/pinact.nix {};
+      rumdl = pkgs.callPackage ./nix/packages/rumdl.nix {};
+      vim-startuptime = pkgs.callPackage ./nix/packages/vim-startuptime.nix {};
     });
 
     # nix develop
@@ -66,6 +69,7 @@
         customPkgs.ghalint
         customPkgs.ghatm
         customPkgs.pinact
+        customPkgs.rumdl
       ];
     in {
       # Local development (includes CI tools)

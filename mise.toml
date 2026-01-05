@@ -12,7 +12,6 @@ shellcheck                     = "0.11.0"
 shfmt                          = "3.12.0"
 uv                             = "0.9.18"
 
-# Tools not in nixpkgs
-"github:jameswoolfenden/pike"  = "0.3.87"
-"github:rhysd/vim-startuptime" = "1.3.2"
-"github:rvben/rumdl"           = "0.0.206"
+# Custom packages (nix/packages/*.nix)
+"aqua:rvben/rumdl"             = "0.0.206"
+"aqua:rhysd/vim-startuptime"   = "1.3.2"
