@@ -272,6 +272,18 @@
           }
         ];
       };
+      # 通知センター
+      "com.apple.ncprefs" = {
+        # プレビューを表示 (0=常に, 1=ロックされていないときのみ, 2=しない)
+        content_visibility = 1;
+      };
+      # .DS_Store ファイルを作成しない
+      "com.apple.desktopservices" = {
+        # ネットワークドライブ [default: false]
+        DSDontWriteNetworkStores = true;
+        # USB ドライブ [default: false]
+        DSDontWriteUSBStores = true;
+      };
       # Mission Control キーボードショートカット
       # 118: デスクトップ1へ切り替え, 119: デスクトップ2, 120: デスクトップ3
       # parameters: (ASCII code, key code, modifier) / 524288 = Option (Alt)
@@ -302,6 +314,12 @@
         $'"'"'\033ウィンドウ\033移動とサイズ変更\033右'"'"' "@^l"
       defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
         $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "@^h"
+
+      # ------------------------------------------
+      # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
+      # Note: -currentHost required for per-machine settings
+      # ------------------------------------------
+      defaults -currentHost write com.apple.screensaver idleTime -int 1800
     '
   '';
 
@@ -315,15 +333,16 @@
   #     - バッテリーの状態
   #         - バッテリー充電の最適化
   # - ディスプレイ
+  #     - 内蔵ディスプレイ 1900 x 1200
   #     - Night Shift
   #         - カスタム 5:00-4:59
   #         - 色温度 中央と右端の間
   # - 通知
   #     - 通知センター
-  #         - プレビューを表示 ロックされていないときのみ表示
-  #         - 通知を表示 OFF
-  # - ロック画面
-  #     - 時間設定 30分
+  #         - 通知を表示
+  #             - ディスプレイがスリープ中のとき OFF
+  #             - 画面がロックされているとき OFF
+  #             - ディスプレイをミラーリング中または共有中 通知オフ
   # - プライバシーとセキュリティ
   #     - 画面収録とシステムオーディオ録音
   #         - Web ブラウザ
