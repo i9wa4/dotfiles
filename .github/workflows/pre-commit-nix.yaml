@@ -3,16 +3,16 @@ run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.acto
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types:
-  #     - opened
-  #     - synchronize
-  #     - reopened
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions: {}
 
@@ -53,7 +53,7 @@ jobs:
             ~/.cache/uv
             .venv
           key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
+            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', '.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-${{ runner.arch }}-
 
