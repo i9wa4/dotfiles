@@ -64,6 +64,18 @@ repos:
         language: system
         types: [python]
 
+      - id: rumdl-check
+        name: rumdl check
+        entry: rumdl check
+        language: system
+        files: \.md$
+
+      - id: rumdl-fmt
+        name: rumdl fmt
+        entry: rumdl fmt
+        language: system
+        files: \.md$
+
       - id: shellcheck
         name: shellcheck
         entry: shellcheck

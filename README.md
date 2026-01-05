@@ -75,7 +75,8 @@ cf. [Nix Official Download](https://nixos.org/download/)
 
 ### 3.2. Clone dotfiles
 
-Use `nix run` to temporarily get git (no Command Line Developer Tools needed on macOS):
+Use `nix run` to temporarily get git
+(no Command Line Developer Tools needed on macOS):
 
 ```sh
 nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
@@ -86,7 +87,8 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 
 ### 4.1. Backup Shell Configs
 
-nix-darwin will fail if /etc/zshenv or /etc/zshrc exist with unrecognized content.
+nix-darwin will fail if /etc/zshenv or /etc/zshrc exist
+with unrecognized content.
 
 ```sh
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
@@ -97,7 +99,8 @@ cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
 ### 4.2. Install Homebrew
 
-nix-darwin manages Homebrew packages, but Homebrew itself must be installed manually.
+nix-darwin manages Homebrew packages,
+but Homebrew itself must be installed manually.
 
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -215,8 +218,11 @@ cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106
 2. [Server] `sudo systemctl restart ssh.service`
 3. [Client] `ssh-keygen -t ed25519`
 4. [Client] `ssh -p port username@hostname`
-5. [Client] `scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key`
-6. [Server] `cat ~/.ssh/register_key >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys`
+5. [Client] Copy public key to server:
+   `scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key`
+6. [Server] Add to authorized_keys:
+   `cat ~/.ssh/register_key >> ~/.ssh/authorized_keys`
+   `chmod 600 ~/.ssh/authorized_keys`
 7. [Server] Set `PasswordAuthentication no` and restart ssh
 8. [Client] Configure `~/.ssh/config`
 
@@ -225,15 +231,21 @@ cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106
 ### 7.1. Overview
 
 This repository uses nix as the source of truth for package versions.
-mise.toml is synced from nix for CI (GitHub Actions) performance.
 
 ```text
 nix (source of truth)
 ├── flake.lock          # nixpkgs versions
 └── nix/packages/*.nix  # custom package versions
         ↓ sync
-    mise.toml           # for CI
+    mise.toml           # for CI (GitHub Actions)
 ```
+
+Environment separation:
+
+| Environment | Tool Provider |
+|-------------|---------------|
+| Local | devShell (auto-activated by direnv) |
+| CI | mise.toml (`mise install`) |
 
 ### 7.2. Check for Updates
 
@@ -260,11 +272,14 @@ This command:
 1. Add to `flake.nix` devShells.ciPackages
 2. Add to `mise.toml`
 
-The nix attribute is auto-inferred from mise key (e.g., `aqua:owner/Repo` -> `repo`).
+The nix attribute is auto-inferred from mise key
+(e.g., `aqua:owner/Repo` -> `repo`).
 
 #### 7.4.2. Custom Package (not in nixpkgs)
 
-1. Create `nix/packages/<name>.nix`
+1. Create `nix/packages/<name>.nix` with empty hashes
+
+   Go package:
 
    ```nix
    {
@@ -279,13 +294,94 @@ The nix attribute is auto-inferred from mise key (e.g., `aqua:owner/Repo` -> `re
        owner = "<owner>";
        repo = "<repo>";
        rev = "v${version}";
-       hash = "";  # Run nix build first, get hash from error
+       hash = "";
      };
 
-     vendorHash = "";  # Run nix build first, get hash from error
+     vendorHash = "";
+
+     meta = {
+       description = "<description>";
+       homepage = "https://github.com/<owner>/<repo>";
+     };
    }
    ```
 
-2. Add to `flake.nix` packages and devShells
-3. Add to `mise.toml` with `aqua:<owner>/<repo>` key
-4. Custom packages are auto-detected from nix/packages/*.nix
+   Rust package:
+
+   ```nix
+   {
+     rustPlatform,
+     fetchFromGitHub,
+   }:
+   rustPlatform.buildRustPackage rec {
+     pname = "<name>";
+     version = "<version>";
+
+     src = fetchFromGitHub {
+       owner = "<owner>";
+       repo = "<repo>";
+       rev = "v${version}";
+       hash = "";
+     };
+
+     cargoHash = "";
+
+     meta = {
+       description = "<description>";
+       homepage = "https://github.com/<owner>/<repo>";
+     };
+   }
+   ```
+
+2. Add to `flake.nix` packages section
+
+   ```nix
+   packages = forAllSystems (system: let
+     pkgs = nixpkgs.legacyPackages.${system};
+   in {
+     # ... existing packages ...
+     <name> = pkgs.callPackage ./nix/packages/<name>.nix {};
+   });
+   ```
+
+3. Stage and build to get hashes
+
+   ```sh
+   git add nix/packages/<name>.nix flake.nix
+   nix build .#<name>
+   ```
+
+   The build will fail with hash mismatch errors. Copy the "got" hash:
+
+   ```text
+   error: hash mismatch in fixed-output derivation:
+            specified: sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+               got:    sha256-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX=
+   ```
+
+4. Update `hash` in nix file, rebuild,
+   then update `vendorHash` (Go) or `cargoHash` (Rust)
+
+5. Verify build succeeds
+
+   ```sh
+   git add nix/packages/<name>.nix
+   nix build .#<name>
+   ./result/bin/<name> --version
+   ```
+
+6. Add to devShells if needed (CI tools)
+
+7. Add to `mise.toml` with `aqua:<owner>/<repo>` key
+
+8. Custom packages are auto-detected from `nix/packages/*.nix`
+   by `bin/nix_packages.py`
+
+#### 7.4.3. Custom Package (packages only, no mise)
+
+For rarely used tools, add only to `flake.nix` packages section.
+You can run them without installation:
+
+```sh
+nix run .#<name> -- <args>
+```
