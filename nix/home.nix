@@ -114,7 +114,7 @@ in {
     "claude".source = symlink "${dotfilesDir}/dot.config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
     "nvim".source = symlink "${dotfilesDir}/dot.config/nvim";
-    "rumdl".source = symlink "${dotfilesDir}/dot.config/rumdl";
+    "rumdl/rumdl.toml".source = symlink "${dotfilesDir}/.rumdl.toml";
     "skk".source = symlink "${dotfilesDir}/dot.config/skk";
     "tmux".source = symlink "${dotfilesDir}/dot.config/tmux";
     "vde".source = symlink "${dotfilesDir}/dot.config/vde";
