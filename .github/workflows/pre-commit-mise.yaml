@@ -1,4 +1,4 @@
-name: pre-commit (nix)
+name: pre-commit (mise)
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
@@ -27,7 +27,7 @@ concurrency:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     permissions:
       contents: read
 
@@ -37,20 +37,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@4e002c8ec80594ecd40e759629461e26c8abed15 # v31.9.0
+      - name: Install mise
+        uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
         with:
-          github_access_token: ${{ github.token }}
+          cache: true
 
-      - name: Cache Nix store
-        uses: nix-community/cache-nix-action@b426b118b6dc86d6952988d396aa7c6b09776d08 # v7.0.0
-        with:
-          primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
-
-      - name: Load Nix environment
-        run: nix develop .#ci --command true
-
-      - name: Cache pre-commit
+      - name: Cache
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: |
@@ -58,10 +50,10 @@ jobs:
             ~/.cache/uv
             .venv
           key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', '.pre-commit-config.yaml', 'uv.lock') }}
+            cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-
+            cache-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Run pre-commit
         run: |
-          nix develop .#ci --command pre-commit run --all-files
+          pre-commit run --all-files

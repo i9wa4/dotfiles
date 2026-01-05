@@ -1,4 +1,4 @@
-name: pre-commit (nix-arm)
+name: pre-commit (Nix ubuntu-24.04-arm)
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
