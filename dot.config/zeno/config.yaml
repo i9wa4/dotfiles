@@ -18,8 +18,8 @@ snippets:
     keyword: up
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles &&
-      sudo darwin-rebuild switch --impure --flake '.#macos-p' &&
       ghq list | ghq get --update &&
+      sudo darwin-rebuild switch --impure --flake '.#macos-p' &&
       cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/ &&
       cd - &&
       ghq-repo-status
@@ -99,13 +99,14 @@ snippets:
 
   - name: (Nix) darwin-rebuild switch
     keyword: ndr
+    # sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
     snippet:
-      sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
+      sudo darwin-rebuild switch --impure --flake ".#macos-p"
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
     snippet:
-      nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)"
+      nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)" --command zsh
 
   - name: (Quarto) preview
     keyword: qp
