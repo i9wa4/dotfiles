@@ -10,18 +10,5 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "minimumReleaseAge": "7 days",
-  "packageRules": [
-    {
-      "description": "Disable mise updates (synced from nix via bin/nix-update-all.py)",
-      "matchManagers": ["mise"],
-      "enabled": false
-    },
-    {
-      "description": "Disable mise regex updates (synced from nix)",
-      "matchManagers": ["regex"],
-      "matchFileNames": ["mise.toml"],
-      "enabled": false
-    }
-  ]
+  "minimumReleaseAge": "7 days"
 }
