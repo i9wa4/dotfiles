@@ -64,4 +64,4 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          nix develop .#ci --command pre-commit run --all-files
+          nix develop .#ci --command pre-commit run --all-files --verbose
