@@ -10,11 +10,11 @@ description: "Summarize Reviews"
 
 1. `.i9wa4/` ディレクトリの君以外のペインのレビュー結果を読み込む
 2. PRのコメント・レビューを取得し、既に指摘済みの内容を把握する
-    - `gh pr view <number> --json comments,reviews` で取得
+   - `gh pr view <number> --json comments,reviews` で取得
 3. 各ペインの指摘を以下の3カテゴリに分類する
-    - 指摘必要: 新規指摘かつ実害がある (下流への影響、データ欠損など)
-    - 指摘不要: 新規指摘だが許容範囲 (設計判断、低優先度など)
-    - 指摘済み: CodeRabbit等が既にPRでコメント済み
+   - 指摘必要: 新規指摘かつ実害がある (下流への影響、データ欠損など)
+   - 指摘不要: 新規指摘だが許容範囲 (設計判断、低優先度など)
+   - 指摘済み: CodeRabbit等が既にPRでコメント済み
 4. `.i9wa4/YYYYMMDD-all-reviews.md` に集約して出力する
 
 ## 2. 出力フォーマット
