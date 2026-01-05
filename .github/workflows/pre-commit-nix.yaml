@@ -38,12 +38,17 @@ jobs:
           persist-credentials: false
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@c5a866b6ab867e88becbed4467b93592bce69f8a # v21
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+        uses: cachix/install-nix-action@4e002c8ec80594ecd40e759629461e26c8abed15 # v31.9.0
         with:
-          use-flakehub: false
+          github_access_token: ${{ github.token }}
+
+      - name: Cache Nix store
+        uses: nix-community/cache-nix-action@b426b118b6dc86d6952988d396aa7c6b09776d0a # v7.0.0
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
+
+      - name: Load Nix environment
+        run: nix develop .#ci --command true
 
       - name: Cache pre-commit
         uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
