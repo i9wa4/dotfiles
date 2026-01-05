@@ -111,8 +111,11 @@ function _get_simplified_path() {
   echo "${path}"
 }
 function _get_devshell_indicator() {
-  [[ -n "${DIRENV_DIR}" ]] && echo "(devShell) "
+  if [[ -n "${IN_NIX_SHELL}" || -n "${DIRENV_DIR}" ]]; then
+    print "(devShell) "
+  fi
 }
+
 (( _IS_LOCAL )) && PROMPT="" || PROMPT="[%M] "
 PROMPT="
 \$(_get_devshell_indicator)${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
