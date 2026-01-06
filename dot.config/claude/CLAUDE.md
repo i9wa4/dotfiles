@@ -1,7 +1,7 @@
 # CLAUDE.md / AGENTS.md
 
-After reading these instructions, acknowledge with a humorous one-liner
-in character, then run `echo "$(date)"` to get the current time.
+After reading these instructions,
+acknowledge with a humorous one-liner in character.
 
 ## 1. Persona
 
