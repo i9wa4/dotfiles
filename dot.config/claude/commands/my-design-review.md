@@ -41,22 +41,21 @@ Set up reviewers using one of the following methods.
 
 If agents/ directory is available, run 5 reviewer agents in parallel.
 
-| Agent                 | Focus                                        |
-| --------------------- | -------------------------------------------- |
-| security-reviewer     | Security vulnerabilities, OWASP Top 10       |
+| Agent                 | Focus                                             |
+| --------------------- | --------------------------------------------      |
+| security-reviewer     | Security vulnerabilities, OWASP Top 10            |
 | qa-reviewer           | Acceptance criteria, goal achievement, edge cases |
-| architecture-reviewer | Design overview, consistency, extensibility  |
-| data-reviewer         | Data model, ER diagrams, normalization       |
+| architecture-reviewer | Design overview, consistency, extensibility       |
+| data-reviewer         | Data model, ER diagrams, normalization            |
 | historian             | Issue/PR history, commit context, project context |
 
 Agent definition files:
 
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/
-  architecture-reviewer.md
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/data-reviewer.md
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
+- agents/security-reviewer.md
+- agents/qa-reviewer.md
+- agents/architecture-reviewer.md
+- agents/data-reviewer.md
+- agents/historian.md
 
 Execution steps:
 
@@ -71,11 +70,11 @@ Perform single review based on pane number role.
 - Get tmux pane number N:
   `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
 - Load corresponding agent definition based on N % 5
-    - N % 5 == 0: @.../agents/security-reviewer.md
-    - N % 5 == 1: @.../agents/qa-reviewer.md
-    - N % 5 == 2: @.../agents/architecture-reviewer.md
-    - N % 5 == 3: @.../agents/data-reviewer.md
-    - N % 5 == 4: @.../agents/historian.md
+    - N % 5 == 0: agents/security-reviewer.md
+    - N % 5 == 1: agents/qa-reviewer.md
+    - N % 5 == 2: agents/architecture-reviewer.md
+    - N % 5 == 3: agents/data-reviewer.md
+    - N % 5 == 4: agents/historian.md
 
 ## 6. Review Result Markdown Output
 

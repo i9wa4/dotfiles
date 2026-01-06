@@ -1,12 +1,12 @@
-# Config Optimization Rules
+# Claude Config Rules
 
-These rules apply when editing CLAUDE.md / AGENTS.md or rules/ config files.
+Rules for Claude Code configuration files (CLAUDE.md, rules/, skills/, etc.).
 
 ## 1. Purpose
 
 Minimize startup context for efficient session initialization.
 
-## 2. CLAUDE.md / AGENTS.md Design Guidelines
+## 2. CLAUDE.md Design Guidelines
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `rules/`
@@ -29,9 +29,17 @@ Check the following when editing CLAUDE.md:
 - [ ] Is the persona definition concise?
 - [ ] Are basic rules truly needed at all times?
 - [ ] Can detailed explanations be moved to rules/ or skills/?
-- [ ] Have reference links been moved to config-maintenance.md?
+- [ ] Have reference links been moved to claude-config.md?
 
-## 5. Reference Links
+## 5. File Structure Maintenance
+
+When adding/removing files in rules/, skills/, agents/, or commands/:
+
+- YOU MUST: Update corresponding table in CLAUDE.md section 4
+- YOU MUST: Keep tables alphabetically sorted or logically grouped
+- IMPORTANT: Verify actual files match documentation after changes
+
+## 6. Reference Links
 
 - Claude Code config guide: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
