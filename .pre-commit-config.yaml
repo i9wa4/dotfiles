@@ -21,6 +21,12 @@ repos:
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
+      - id: alejandra
+        name: alejandra
+        entry: alejandra
+        language: system
+        types: [nix]
+
       - id: check-external-mention
         name: Check external mention
         entry: bash bin/check-external-mention.sh
@@ -68,13 +74,13 @@ repos:
         name: rumdl check
         entry: rumdl check
         language: system
-        files: \.md$
+        types: [markdown]
 
       - id: rumdl-fmt
         name: rumdl fmt
         entry: rumdl fmt
         language: system
-        files: \.md$
+        types: [markdown]
 
       - id: shellcheck
         name: shellcheck
@@ -94,11 +100,17 @@ repos:
         language: system
         types: [sql]
 
+      - id: statix
+        name: statix check
+        entry: statix check
+        language: system
+        types: [nix]
+
       - id: stylua
         name: stylua
         entry: stylua --indent-type Spaces --indent-width 2
         language: system
-        files: \.lua$
+        types: [lua]
 
       - id: zizmor
         name: zizmor

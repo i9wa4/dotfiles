@@ -57,11 +57,13 @@
       ciPackages = [
         # nixpkgs
         pkgs.actionlint
+        pkgs.alejandra
         pkgs.gitleaks
         pkgs.pre-commit
         pkgs.python3
         pkgs.shellcheck
         pkgs.shfmt
+        pkgs.statix
         pkgs.stylua
         pkgs.uv
         pkgs.zizmor
@@ -114,11 +116,13 @@
             ];
             # Enable brew-nix to symlink apps to /Applications/Nix Apps
             brew-nix.enable = true;
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = {inherit username;};
-            home-manager.users.${username} = import ./nix/home.nix;
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {inherit username;};
+              users.${username} = import ./nix/home.nix;
+            };
           }
         ];
       };
