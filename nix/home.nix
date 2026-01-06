@@ -203,6 +203,7 @@ in {
       fi
     '';
 
+    # TODO: is this needed?
     # 2. Start ssh-agent if not running (Linux only)
     # cf. https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
     startSshAgent = lib.hm.dag.entryAfter ["writeBoundary"] (
