@@ -1,11 +1,11 @@
-# AWS CLI ルール
+# AWS CLI Rules
 
-## 基本ルール
+## 1. Basic Rules
 
-- NEVER: リソース変更系コマンドは使用しない
-- YOU MUST: `--profile xxx` もしくは `AWS_PROFILE=xxx aws ...` の形でプロファイルを指定する
+- NEVER: Do not use resource-modifying commands
+- YOU MUST: Specify profile with `--profile xxx` or `AWS_PROFILE=xxx aws ...`
 
-## 許可されるコマンド (読み取り専用)
+## 2. Allowed Commands (Read-only)
 
 ```sh
 aws s3 ls --profile xxx
@@ -13,7 +13,7 @@ aws ec2 describe-instances --profile xxx
 aws iam list-users --profile xxx
 ```
 
-## 禁止されるコマンド (リソース変更)
+## 3. Prohibited Commands (Resource Modification)
 
 ```sh
 aws s3 rm ...

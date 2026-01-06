@@ -1,52 +1,52 @@
-# Bash ルール
+# Bash Rules
 
-## 1. コマンド利用方法全般
+## 1. General Command Usage
 
-- YOU MUST: コマンド実行時は必ず以下のフォーマットを守る
+- YOU MUST: Follow this format when executing commands
 
     ```sh
     NOW=$(date +%Y%m%d-%H%M%S) && echo "${NOW}" && <command> > /tmp/"${NOW}"-<filename>.txt 2>&1 && cat /tmp/"${NOW}"-<filename>.txt
     ```
 
-- NEVER: `rm` コマンドは使用しない
-- IMPORTANT: 削除の代替として `mv` で `/tmp/` ディレクトリに移動することは許可されている
+- NEVER: Do not use the `rm` command
+- IMPORTANT: Moving files to `/tmp/` with `mv` is allowed as an alternative
 
-## 2. Bash ツールでの構文制限
+## 2. Bash Tool Syntax Restrictions
 
-Bash ツールには構文上の制限があるため以下に注意する
+The Bash tool has syntax limitations. Keep these in mind.
 
-### 2.1. 基本ルール
+### 2.1. Basic Rules
 
-- NEVER: サブシェル `()` は使用しない (parse error が発生する)
-- YOU MUST: 複数コマンドをグループ化する場合は `{ }` (ブレース) を使用する
-- YOU MUST: パイプ `|` を含むコマンドをリダイレクトする場合はブレース `{ }` で囲む
+- NEVER: Do not use subshells `()` (causes parse error)
+- YOU MUST: Use braces `{ }` to group multiple commands
+- YOU MUST: Wrap pipe `|` commands in braces `{ }` when redirecting
 
-### 2.2. コマンド分割ルール
+### 2.2. Command Splitting Rules
 
-- YOU MUST: 複雑な処理は1つのコマンドに詰め込まず、複数の Bash ツール呼び出しに分割する
-- YOU MUST: 変数代入を伴う複雑なコマンドチェーンは避ける
-- NEVER: `jq` の複雑なフィルタと変数代入を1行に詰め込まない
+- YOU MUST: Split complex operations across multiple Bash tool calls
+- YOU MUST: Avoid complex command chains with variable assignments
+- NEVER: Do not cram complex `jq` filters with variable assignments in one line
 
-### 2.3. 良い例 (コマンド分割)
+### 2.3. Good Example (Command Splitting)
 
 ```sh
-# 1回目の Bash ツール呼び出し
+# First Bash tool call
 gh issue view 1 --json title,body > /tmp/issue.json
 
-# 2回目の Bash ツール呼び出し (別のツール呼び出しとして)
+# Second Bash tool call (separate invocation)
 jq -r '.title' /tmp/issue.json
 ```
 
-### 2.4. 悪い例 (parse error が発生)
+### 2.4. Bad Example (Causes Parse Error)
 
 ```sh
-# 複雑すぎる1行コマンド
+# Overly complex one-liner
 _json="/tmp/issue.json" && gh issue view 1 --json title > "$_json" && _title=$(jq -r '.title' "$_json") && echo "$_title"
 ```
 
-### 2.5. ブレースグループの例
+### 2.5. Brace Group Examples
 
-良い例
+Good example
 
 ```sh
 NOW=$(date +%Y%m%d-%H%M%S) && { for i in 1 2 3; do echo "$i"; done; } > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
@@ -56,7 +56,7 @@ NOW=$(date +%Y%m%d-%H%M%S) && { for i in 1 2 3; do echo "$i"; done; } > /tmp/${N
 NOW=$(date +%Y%m%d-%H%M%S) && { git branch -r | grep issue; } > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
 ```
 
-悪い例 (parse error が発生)
+Bad example (causes parse error)
 
 ```sh
 NOW=$(date +%Y%m%d-%H%M%S) && (for i in 1 2 3; do echo "$i"; done) > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
@@ -66,10 +66,10 @@ NOW=$(date +%Y%m%d-%H%M%S) && (for i in 1 2 3; do echo "$i"; done) > /tmp/${NOW}
 NOW=$(date +%Y%m%d-%H%M%S) && git branch -r | grep issue > /tmp/${NOW}-output.txt 2>&1 && cat /tmp/${NOW}-output.txt
 ```
 
-### 2.6. HEREDOC の使用
+### 2.6. HEREDOC Usage
 
-- YOU MUST: 複数行のファイル作成には HEREDOC (`cat << 'EOF'`) を使用する
-- IMPORTANT: HEREDOC は正常に動作する
+- YOU MUST: Use HEREDOC (`cat << 'EOF'`) for multi-line file creation
+- IMPORTANT: HEREDOC works correctly
 
 ```sh
 cat > /path/to/file.md << 'EOF'

@@ -1,35 +1,35 @@
-# Python ルール
+# Python Rules
 
-## 基本ルール
+## 1. Basic Rules
 
-- NEVER: グローバル Python 環境を汚染しない
-- NEVER: 勝手に `uv.lock` や `.venv/` を作成しない
+- NEVER: Do not pollute global Python environment
+- NEVER: Do not create `uv.lock` or `.venv/` without permission
 
-## Python 仮想環境の利用方法
+## 2. Python Virtual Environment Usage
 
-### uv.lock がある場合
+### 2.1. When uv.lock Exists
 
-`uv` を利用して Python コマンドを実行する
+Use `uv` to execute Python commands:
 
 ```sh
 uv run dbt debug --profiles-dir ~/.dbt --no-use-colors
 ```
 
-### poetry.lock がある場合
+### 2.2. When poetry.lock Exists
 
-以下のブログ記事を参考に `uv` で仮想環境を作成する
+Create virtual environment with `uv` referring to the blog article:
 
-- [poetry の pyproject.toml から uv で仮想環境を作成する方法](https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html)
+- <https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html>
 
-### uv.lock がない場合
+### 2.3. When uv.lock Does Not Exist
 
-1. 仮想環境を有効化する
+1. Activate the virtual environment
 
     ```sh
     source .venv/bin/activate
     ```
 
-2. Python コマンドを実行する
+2. Execute Python commands
 
     ```sh
     dbt debug --profiles-dir ~/.dbt --no-use-colors

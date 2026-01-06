@@ -1,29 +1,29 @@
-# Nix ルール
+# Nix Rules
 
-## nix build
+## 1. nix build
 
-- YOU MUST: `nix build` は必ず `--no-link` オプションを付ける
+- YOU MUST: Always use `--no-link` option with `nix build`
 
     ```sh
     nix build .#rumdl --no-link
     ```
 
-- IMPORTANT: `--no-link` を付けないと `./result` シンボリックリンクが作成される
+- IMPORTANT: Without `--no-link`, a `./result` symlink is created
 
-## nix run
+## 2. nix run
 
-- IMPORTANT: packages に登録されているパッケージは `nix run` で実行できる
+- IMPORTANT: Packages registered in packages can be run with `nix run`
 
     ```sh
     nix run .#pike -- scan -d ./terraform
     ```
 
-## カスタムパッケージの追加
+## 3. Adding Custom Packages
 
-- YOU MUST: 新しいカスタムパッケージを追加する手順は README.md の 7.4.2 を参照
-- IMPORTANT: ハッシュ取得の流れ
-    1. 空ハッシュ (`hash = "";`) で .nix ファイルを作成
-    2. `git add` してから `nix build --no-link` を実行
-    3. エラーメッセージの `got:` からハッシュをコピー
-    4. Go は `vendorHash`、Rust は `cargoHash` も同様に取得
-- IMPORTANT: テストが失敗する場合は `doCheck = false;` を追加する
+- YOU MUST: See README.md section 7.4.2 for adding new custom packages
+- IMPORTANT: Hash acquisition flow
+    1. Create .nix file with empty hash (`hash = "";`)
+    2. Run `git add` then `nix build --no-link`
+    3. Copy hash from error message `got:`
+    4. For Go use `vendorHash`, for Rust use `cargoHash` similarly
+- IMPORTANT: Add `doCheck = false;` if tests fail

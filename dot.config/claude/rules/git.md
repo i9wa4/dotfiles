@@ -1,153 +1,154 @@
-# Git ルール
+# Git Rules
 
-## 基本ルール
+## 1. Basic Rules
 
-- YOU MUST: 作業を始めるときは必ずブランチに追加されたコミットの理解から始める
-- YOU MUST: 許可が必要な Git 操作は必ず実行前に許可を得る
-- EXCEPTION: ユーザーがコミットを依頼した場合 (add, commit) は許可されているものとして実行してよい
+- YOU MUST: Start work by understanding commits added to the branch
+- YOU MUST: Get permission before executing restricted Git operations
+- EXCEPTION: If user requests commit (add, commit), execute without asking
 
-## 禁止コマンド (破壊的操作)
+## 2. Prohibited Commands (Destructive Operations)
 
-以下のようなコマンドは絶対に実行しないこと
+Never execute these commands:
 
 ```sh
-git push                # プッシュ
-git reset               # リセット (後述の例外を除く)
-git merge               # マージ
-git stash               # スタッシュ
-git checkout -b         # ブランチ作成
-git branch -d           # ブランチ削除
+git push                # Push
+git reset               # Reset (except noted exceptions)
+git merge               # Merge
+git stash               # Stash
+git checkout -b         # Create branch
+git branch -d           # Delete branch
 ```
 
-## 許可が必要なコマンド (破壊的ではない操作)
+## 3. Permission Required (Non-destructive)
 
-以下のコマンドは必ず事前に許可を得る
+Get permission before these commands:
 
 ```sh
-git add <files>         # ステージング
-git commit -m "msg"     # コミット
-git rebase              # リベース (途中のコミット修正等)
+git add <files>         # Staging
+git commit -m "msg"     # Commit
+git rebase              # Rebase (for commit edits etc.)
 ```
 
-## 許可不要なコマンド (読み取り専用)
+## 4. No Permission Needed (Read-only)
 
-以下のコマンドは自由に実行可能
+Execute freely:
 
 ```sh
-git status              # 状態確認
-git diff                # 差分確認
-git log                 # ログ確認
-git branch              # ブランチ一覧
-git show                # コミット詳細
-git remote -v           # リモート確認
+git status              # Status check
+git diff                # Diff check
+git log                 # Log check
+git branch              # Branch list
+git show                # Commit details
+git remote -v           # Remote check
 ```
 
-## 途中のコミットメッセージを修正する方法 (rebase)
+## 5. Editing Commit Messages (Rebase)
 
-ローカルブランチで途中のコミットメッセージを修正したい場合、interactive rebase を使用できる
+To edit commit messages in a local branch using interactive rebase:
 
-前提条件:
+Prerequisites:
 
-- まだ push していないローカルブランチ
-- 環境変数で対話的操作を自動化する
-- ハッシュ値が変わることを理解している
+- Local branch not yet pushed
+- Automate interactive operations with environment variables
+- Understand that hash values will change
 
-手順:
+Steps:
 
 ```sh
-# 1. 修正したいコミットのハッシュを確認
+# 1. Find the commit hash to edit
 git log --oneline -10
 
-# 2. 環境変数で "edit" を指定して rebase 開始
+# 2. Start rebase with "edit" via environment variable
 GIT_SEQUENCE_EDITOR="sed -i '' 's/^pick <HASH>/edit <HASH>/'" git rebase -i <HASH>^
 
-# 3. コミットメッセージを修正
-git commit --amend --allow-empty --no-verify -m "新しいメッセージ"
+# 3. Edit the commit message
+git commit --amend --allow-empty --no-verify -m "New message"
 
-# 4. rebase 続行 (ユーザーに許可を得る)
+# 4. Continue rebase (get user permission)
 git rebase --continue
 ```
 
-注意事項:
+Notes:
 
-- Interactive rebase (`-i` フラグ) は使用可能だが、対話的操作を環境変数で自動化する必要がある
-- `git rebase --continue` は必ずユーザーの許可を得てから実行する
-- ハッシュ値が変わるため、すでに push 済みのコミットには使用しない
+- Interactive rebase (`-i` flag) is allowed but must be automated
+- Always get user permission before `git rebase --continue`
+- Do not use on pushed commits as hash values change
 
-## (Claude Code 向け) TodoWrite ツールとの連携
+## 6. (Claude Code) TodoWrite Tool Integration
 
-TodoWrite ツールでタスクを作成する際許可が必要な Git 操作関連のタスクには必ず (要許可) を付ける
+When creating tasks with TodoWrite for permission-required Git operations,
+always add (requires permission):
 
 ```text
-- 良い例
-    - [ ] モデルの修正を完了
-    - [ ] テストを実行して動作確認
-    - [ ] 変更内容をコミット (要許可)
-    - [ ] リモートに push (要許可)
-- 悪い例
-    - [ ] モデルの修正を完了
-    - [ ] テストを実行して動作確認
-    - [ ] 変更内容をコミット ← 許可マークがないため自動実行の危険がある
+- Good example
+    - [ ] Complete model changes
+    - [ ] Run tests for verification
+    - [ ] Commit changes (requires permission)
+    - [ ] Push to remote (requires permission)
+- Bad example
+    - [ ] Complete model changes
+    - [ ] Run tests for verification
+    - [ ] Commit changes <- Risk of auto-execution without permission mark
 ```
 
-## コミットメッセージの書き方
+## 7. Commit Message Guidelines
 
-基本ルール
+Basic rules:
 
-- YOU MUST: 直近のコミットメッセージをいくつか確認し、英語もしくは日本語どちらかに統一する
-- IMPORTANT: 作業再開しやすい粒度: そのコミット内容を見ると作業を再開しやすい粒度を心がける
-- IMPORTANT: 説明の充実: コミットメッセージには変更内容、問題解決、技術詳細を記載
-- NEVER: コミットメッセージには Co-Authored-By を含めない
-- NEVER: コミットメッセージには「Generated with [Claude Code]」などのAIツール利用表示も含めない
-- NEVER: `.i9wa4/` ディレクトリ配下のファイルは global `.gitignore` に追加されているためコミットメッセージ内では一切言及しない
-- NEVER: `/tmp/` ディレクトリ配下のファイルもコミットメッセージ内では一切言及しない
-- NEVER: ローカルファイルパスは記載しない (例: `.i9wa4/xxx.md`, `/tmp/xxx.log` など)
+- YOU MUST: Check recent commits and match language (English or Japanese)
+- IMPORTANT: Granularity for resumption: commits should help resume work easily
+- IMPORTANT: Rich descriptions: include changes, problem resolution, technical details
+- NEVER: Do not include Co-Authored-By
+- NEVER: Do not include "Generated with [Claude Code]" or similar AI tool notices
+- NEVER: Do not mention `.i9wa4/` files (in global `.gitignore`)
+- NEVER: Do not mention `/tmp/` files
+- NEVER: Do not include local file paths (e.g., `.i9wa4/xxx.md`, `/tmp/xxx.log`)
 
-外部リポジトリ参照ルール (メンション防止)
+External Repository Reference Rules (Mention Prevention):
 
-- NEVER: 外部リポジトリの URL にパスを含めない (通知が飛ぶ)
+- NEVER: Do not include paths in external repo URLs (triggers notifications)
     - NG: `https://github.com/owner/repo/issues/123`
     - NG: `https://github.com/owner/repo/pull/456`
     - NG: `https://github.com/owner/repo/discussions/789`
-- NEVER: `owner/repo#123` 形式の外部参照を使用しない (通知が飛ぶ)
-- YOU MUST: 外部リポジトリを参照する場合は以下の形式を使用する
-    - リポジトリルート URL のみ (例: `https://github.com/nix-darwin/nix-darwin`)
-    - `cf. <repo-name> issue <number>` (例: `cf. nix-darwin issue 149`)
-    - バッククォートで囲む (例: `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
+- NEVER: Do not use `owner/repo#123` format (triggers notifications)
+- YOU MUST: Use these formats for external repo references
+    - Repository root URL only (e.g., `https://github.com/nix-darwin/nix-darwin`)
+    - `cf. <repo-name> issue <number>` (e.g., `cf. nix-darwin issue 149`)
+    - Wrap in backticks (e.g., `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
 
-フォーマット (Conventional Commits)
+Format (Conventional Commits):
 
 ```text
-<type>: <簡潔な説明> (#<Issue番号>)
+<type>: <brief description> (#<Issue number>)
 
-<詳細な説明>
+<detailed description>
 
-## 概要
+## Summary
 
-- 詳細な説明と同等の内容でOK
+- Same as detailed description is OK
 
-## 背景
+## Background
 
-- 変更の背景や目的を簡潔に説明
+- Briefly explain the background and purpose
 
-## 変更内容
+## Changes
 
-- 具体的な変更点1
-- 具体的な変更点2
+- Specific change 1
+- Specific change 2
 
-## 技術詳細
+## Technical Details
 
-- 技術的な実装詳細
-- 設計判断の理由
-- 全般に why を意識して記述する
+- Technical implementation details
+- Reasons for design decisions
+- Focus on "why" throughout
 
-## 動作確認
+## Verification
 
-- 動作確認していればその内容を簡潔に記述
+- Describe verification if performed
 
-## 関連 URL
+## Related URLs
 
-- <関連 Issue>
-- <外部 URL>
-- 他にもあれば
+- <Related Issue>
+- <External URL>
+- Others if applicable
 ```

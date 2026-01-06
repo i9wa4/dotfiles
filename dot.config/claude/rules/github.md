@@ -1,22 +1,23 @@
-# GitHub ルール
+# GitHub Rules
 
-## 基本ルール
+## 1. Basic Rules
 
-- YOU MUST: Issue や Pull Request の番号を記載する際 #240 のように `#` をつけ、前後に半角スペースを入れる
-- YOU MUST: GitHub の情報取得は `gh` コマンドを利用する
-- YOU MUST: `gh` で Issue や Pull Request を取得する際必ずコメントも全件取得する
-- YOU MUST: Issue や Pull Request の情報は `gh` コマンドで本文とコメント全件を取得する
+- YOU MUST: When citing Issue/PR numbers, use `#` prefix with spaces
+  (e.g., `#240`)
+- YOU MUST: Use `gh` command for GitHub information retrieval
+- YOU MUST: Always fetch all comments when getting Issues or PRs with `gh`
+- YOU MUST: Get Issue/PR body and all comments using `gh` command
 
-## 外部リポジトリ参照ルール (メンション防止)
+## 2. External Repository Reference Rules (Mention Prevention)
 
-Issue、Pull Request、コミットメッセージなど GitHub に投稿するすべてのテキストに適用される。
+Applies to all text posted to GitHub: Issues, PRs, commit messages, etc.
 
-- NEVER: 外部リポジトリの URL にパスを含めない (通知が飛ぶ)
+- NEVER: Do not include paths in external repo URLs (triggers notifications)
     - NG: `https://github.com/owner/repo/issues/123`
     - NG: `https://github.com/owner/repo/pull/456`
     - NG: `https://github.com/owner/repo/discussions/789`
-- NEVER: `owner/repo#123` 形式の外部参照を使用しない (通知が飛ぶ)
-- YOU MUST: 外部リポジトリを参照する場合は以下の形式を使用する
-    - リポジトリルート URL のみ (例: `https://github.com/nix-darwin/nix-darwin`)
-    - `cf. <repo-name> issue <number>` (例: `cf. nix-darwin issue 149`)
-    - バッククォートで囲む (例: `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
+- NEVER: Do not use `owner/repo#123` format (triggers notifications)
+- YOU MUST: Use these formats for external repo references
+    - Repository root URL only (e.g., `https://github.com/nix-darwin/nix-darwin`)
+    - `cf. <repo-name> issue <number>` (e.g., `cf. nix-darwin issue 149`)
+    - Wrap in backticks (e.g., `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)

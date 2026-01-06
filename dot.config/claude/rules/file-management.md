@@ -1,23 +1,24 @@
-# ファイル管理ルール
+# File Management Rules
 
-## /tmp/ ディレクトリの活用
+## 1. /tmp/ Directory Usage
 
-- YOU MUST: コマンドのリダイレクトを `/tmp/` ディレクトリに保存する
-- YOU MUST: その他雑多なファイルも `/tmp/` ディレクトリに保存する
+- YOU MUST: Save command redirects to the `/tmp/` directory
+- YOU MUST: Save miscellaneous files to the `/tmp/` directory
 
-## .i9wa4/ ディレクトリの活用
+## 2. i9wa4/ Directory Usage
 
-- IMPORTANT: `.i9wa4/` ディレクトリはグローバル `.gitignore` に追加されているので Git 管理しないファイルを保存できる
-- YOU MUST: 作業で生成するドキュメントのうち重要なものは `.i9wa4/` ディレクトリに保存する
-- YOU MUST: ファイル名は `YYYYMMDD-pN-xxxx.md` の形式とする
-    - `YYYYMMDD`: 日付 (例: `20251105`)
-    - `pN`: tmux ペイン番号 (例: `p0`, `p1`, `p2`)
-    - `xxxx`: ファイルの目的 (例: `review`, `plan`, `memo`)
-    - 例: `.i9wa4/20251105-p2-review.md`
-- IMPORTANT: tmux ペイン番号Nは `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'` で取得する
+- IMPORTANT: `.i9wa4/` is in global `.gitignore`, so files here are not Git-tracked
+- YOU MUST: Save important work documents to the `.i9wa4/` directory
+- YOU MUST: Use filename format `YYYYMMDD-pN-xxxx.md`
+    - `YYYYMMDD`: Date (e.g., `20251105`)
+    - `pN`: tmux pane number (e.g., `p0`, `p1`, `p2`)
+    - `xxxx`: File purpose (e.g., `review`, `plan`, `memo`)
+    - Example: `.i9wa4/20251105-p2-review.md`
+- IMPORTANT: Get tmux pane number N with:
+  `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
 
-## プロジェクト固有ルール
+## 3. Project-Specific Rules
 
-- YOU MUST: プロジェクト固有ルールを記載した以下のファイルがもし存在すれば優先して従う
+- YOU MUST: Follow these files if they exist in the project
     - @README.md
     - @CONTRIBUTING.md
