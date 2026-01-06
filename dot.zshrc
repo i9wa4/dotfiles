@@ -108,7 +108,18 @@ function _get_simplified_path() {
 }
 function _get_devshell_indicator() {
   if [[ -n "${IN_NIX_SHELL}" || -n "${DIRENV_DIR}" ]]; then
-    print "(devShell) "
+    local repo_name=""
+    if [[ -n "${DIRENV_DIR}" ]]; then
+      local dir="${DIRENV_DIR#-}"
+      if [[ "${dir}" =~ ghq/github\.com/(.+)$ ]]; then
+        repo_name="${match[1]}"
+      fi
+    fi
+    if [[ -n "${repo_name}" ]]; then
+      print "(devShell: ${repo_name}) "
+    else
+      print "(devShell) "
+    fi
   fi
 }
 
