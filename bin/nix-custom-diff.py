@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """nix-custom-diff.py - Show custom package version differences.
 
 Usage:

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Scrape Databricks Runtime Python libraries from official documentation.
 

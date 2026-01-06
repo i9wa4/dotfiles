@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """nix-flake-diff.py - Show package version differences without updating.
 
 Usage:
