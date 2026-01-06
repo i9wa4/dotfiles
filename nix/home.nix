@@ -31,104 +31,110 @@ in {
     ./git.nix
     ./vscode.nix
   ];
-  # User info (username is passed from flake.nix via extraSpecialArgs)
-  home.username = username;
-  home.homeDirectory = lib.mkForce homeDir;
+  home = {
+    # User info (username is passed from flake.nix via extraSpecialArgs)
+    inherit username;
+    homeDirectory = lib.mkForce homeDir;
 
-  # Home Manager state version
-  # Set to the version of home-manager at initial installation. Do not change.
-  # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
-  home.stateVersion = "24.11";
+    # Home Manager state version
+    # Set to the version of home-manager at initial installation. Do not change.
+    # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
+    stateVersion = "24.11";
 
-  # PATH additions (prepended to $PATH)
-  # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
-  home.sessionPath = [
-    "${homeDir}/.local/bin"
-    "${dotfilesDir}/bin"
-  ];
+    # PATH additions (prepended to $PATH)
+    # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
+    sessionPath = [
+      "${homeDir}/.local/bin"
+      "${dotfilesDir}/bin"
+    ];
 
-  # User packages (managed by home-manager)
-  # For project-specific tools, use devShell or mise instead
-  home.packages =
-    [
-      # Shell (zsh is default on macOS, needs install on Linux)
-    ]
-    ++ lib.optionals pkgs.stdenv.isLinux [
-      pkgs.zsh
-      pkgs.wslu # WSL utilities (harmless on non-WSL)
-    ]
-    ++ [
-      # Cloud & Infrastructure
-      pkgs.awscli2
-      pkgs.databricks-cli
-      pkgs.google-cloud-sdk
-      pkgs.terraform
-      pkgs.tflint
-      # Version control (git is managed by programs.git)
-      pkgs.gh
-      pkgs.ghq
-      # Search
-      pkgs.ripgrep
-      pkgs.fd
-      pkgs.fzf
-      # File viewers
-      pkgs.bat
-      pkgs.jq
-      pkgs.yq-go
-      # Terminal
-      pkgs.tmux
-      # System
-      pkgs.htop
-      pkgs.wget
-      pkgs.fastfetch
-      pkgs.hyperfine
-      # Language runtimes
-      pkgs.deno
-      pkgs.go
-      pkgs.nodejs
-      pkgs.python3
-      pkgs.rustup
-      pkgs.uv
-      # Linters & Formatters
-      pkgs.alejandra
-      pkgs.hadolint
-      pkgs.shellcheck
-      pkgs.shfmt
-      pkgs.statix
-      pkgs.stylua
-      pkgs.zizmor
-      # CI/CD
-      pkgs.act
-      pkgs.actionlint
-      pkgs.gitleaks
-      pkgs.mise
-      pkgs.pre-commit
-      # LSP
-      pkgs.efm-langserver
-      # Editors (latest from neovim-nightly-overlay and vim-overlay)
-      pkgs.neovim
-      pkgs.vim
-      # Build tools
-      pkgs.ninja
-      pkgs.cmake
-      pkgs.gettext
-      pkgs.gnumake
-      # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
-      # to appear in /Applications/Nix Apps/
-    ]
-    # Custom packages (all from customPkgs)
-    ++ (builtins.attrValues customPkgs);
+    # User packages (managed by home-manager)
+    # For project-specific tools, use devShell or mise instead
+    packages =
+      lib.optionals pkgs.stdenv.isLinux [
+        pkgs.zsh
+        pkgs.wslu # WSL utilities (harmless on non-WSL)
+      ]
+      ++ [
+        # Cloud & Infrastructure
+        pkgs.awscli2
+        pkgs.databricks-cli
+        pkgs.google-cloud-sdk
+        pkgs.terraform
+        pkgs.tflint
+        # Version control (git is managed by programs.git)
+        pkgs.gh
+        pkgs.ghq
+        # Search
+        pkgs.ripgrep
+        pkgs.fd
+        pkgs.fzf
+        # File viewers
+        pkgs.bat
+        pkgs.jq
+        pkgs.yq-go
+        # Terminal
+        pkgs.tmux
+        # System
+        pkgs.htop
+        pkgs.wget
+        pkgs.fastfetch
+        pkgs.hyperfine
+        # Language runtimes
+        pkgs.deno
+        pkgs.go
+        pkgs.nodejs
+        pkgs.python3
+        pkgs.rustup
+        pkgs.uv
+        # Linters & Formatters
+        pkgs.alejandra
+        pkgs.hadolint
+        pkgs.shellcheck
+        pkgs.shfmt
+        pkgs.statix
+        pkgs.stylua
+        pkgs.zizmor
+        # CI/CD
+        pkgs.act
+        pkgs.actionlint
+        pkgs.gitleaks
+        pkgs.mise
+        pkgs.pre-commit
+        # LSP
+        pkgs.efm-langserver
+        # Editors (latest from neovim-nightly-overlay and vim-overlay)
+        pkgs.neovim
+        pkgs.vim
+        # Build tools
+        pkgs.ninja
+        pkgs.cmake
+        pkgs.gettext
+        pkgs.gnumake
+        # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
+        # to appear in /Applications/Nix Apps/
+      ]
+      # Custom packages
+      ++ [
+        (lib.lowPrio customPkgs.ghalint) # pinact優先 (両方にgen-jsonschemaがある)
+        customPkgs.ghatm
+        customPkgs.pike
+        customPkgs.pinact
+        customPkgs.rumdl
+        customPkgs.vim-startuptime
+      ];
 
-  # ============================================================================
-  # Dotfiles (direct symlink via mkOutOfStoreSymlink)
-  # Changes reflect immediately without rebuild
-  # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
-  # ============================================================================
-  home.file = {
-    ".claude/skills".source = symlink "${dotfilesDir}/dot.config/claude/skills";
-    ".codex".source = symlink "${dotfilesDir}/dot.config/codex";
-    ".zshenv".source = symlink "${dotfilesDir}/dot.zshenv";
-    ".zshrc".source = symlink "${dotfilesDir}/dot.zshrc";
+    # ==========================================================================
+    # Dotfiles (direct symlink via mkOutOfStoreSymlink)
+    # Changes reflect immediately without rebuild
+    # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
+    # ==========================================================================
+    file = {
+      ".claude/skills".source = symlink "${dotfilesDir}/dot.config/claude/skills";
+      ".codex".source = symlink "${dotfilesDir}/dot.config/codex";
+      ".zshenv".source = symlink "${dotfilesDir}/dot.zshenv";
+      ".zshrc".source = symlink "${dotfilesDir}/dot.zshrc";
+    };
   };
 
   xdg.configFile = {
