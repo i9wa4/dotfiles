@@ -17,7 +17,7 @@ tools:
     format-stdin: true
 
   markdown-rumdl: &markdown-rumdl
-    lint-command: 'rumdl check --stdin ${INPUT}'
+    lint-command: 'rumdl check --disable MD013 --stdin ${INPUT}'
     lint-source: 'rumdl'
     lint-stdin: true
     lint-formats:
@@ -26,7 +26,7 @@ tools:
     format-stdin: true
 
   python-ruff-check: &python-ruff-check
-    lint-command: 'ruff check --stdin-filename ${INPUT} -'
+    lint-command: 'ruff check --disable MD013 --stdin-filename ${INPUT} -'
     lint-source: 'ruff'
     lint-stdin: true
     lint-formats:
