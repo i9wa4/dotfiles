@@ -64,12 +64,7 @@ zinit ice wait'0a' lucid \
   '
 zinit light zdharma-continuum/null
 
-# mise (lazy loading via zinit turbo mode)
-zinit ice wait'0b' lucid \
-  atload'eval "$(${HOME}/.local/bin/mise activate zsh --quiet)"'
-zinit light zdharma-continuum/null
-
-# direnv (lazy loading via zinit turbo mode, after mise to override)
+# direnv (lazy loading via zinit turbo mode)
 zinit ice wait'0b' lucid \
   atload'eval "$(direnv hook zsh)"'
 zinit light zdharma-continuum/null
