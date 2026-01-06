@@ -21,8 +21,9 @@ snippets:
       ghq get . &&
       make nix-switch &&
       cd - &&
-      ghq list | ghq get --update &&
-      cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/ &&
+      cd ~/ghq/github.com/i9wa4/internal &&
+      ghq get . &&
+      uv run quarto render work/ &&
       cd - &&
       ghq-repo-status
 
