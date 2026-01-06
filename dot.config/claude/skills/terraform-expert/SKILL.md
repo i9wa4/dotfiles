@@ -1,99 +1,99 @@
 ---
 name: terraform-expert
-description: Terraform エキスパートエンジニアスキル - Infrastructure as Code、リソース管理、モジュール設計、状態管理に関する包括的なガイドを提供
+description: Terraform Expert Engineer Skill - Comprehensive guide for Infrastructure as Code, resource management, module design, and state management
 ---
 
 # Terraform Expert Engineer Skill
 
-このスキルは Terraform 開発に関する包括的なガイドを提供する。
+This skill provides a comprehensive guide for Terraform development.
 
-## 1. Terraform CLI の基本コマンド
+## 1. Terraform CLI Basic Commands
 
-### 1.1. 初期化と計画
+### 1.1. Initialization and Planning
 
 ```sh
-# ワークスペースの初期化（プロバイダーのダウンロード）
+# Initialize workspace (download providers)
 terraform init
 
-# バックエンド設定を指定して初期化
+# Initialize with backend config
 terraform init -backend-config="bucket=my-terraform-state"
 
-# 実行計画の確認
+# Check execution plan
 terraform plan
 
-# 実行計画をファイルに保存
+# Save execution plan to file
 terraform plan -out=tfplan
 
-# 特定のリソースのみ計画
+# Plan specific resource only
 terraform plan -target=aws_instance.example
 ```
 
-### 1.2. 適用と破棄
+### 1.2. Apply and Destroy
 
 ```sh
-# 変更の適用
+# Apply changes
 terraform apply
 
-# 保存した計画を適用
+# Apply saved plan
 terraform apply tfplan
 
-# 自動承認で適用（CI/CD向け）
+# Auto-approve apply (for CI/CD)
 terraform apply -auto-approve
 
-# リソースの破棄
+# Destroy resources
 terraform destroy
 
-# 特定のリソースのみ破棄
+# Destroy specific resource only
 terraform destroy -target=aws_instance.example
 ```
 
-### 1.3. 状態管理
+### 1.3. State Management
 
 ```sh
-# 状態の確認
+# Check state
 terraform state list
 
-# リソースの詳細確認
+# Show resource details
 terraform state show aws_instance.example
 
-# リソースの移動（リファクタリング時）
+# Move resource (for refactoring)
 terraform state mv aws_instance.old aws_instance.new
 
-# 既存リソースのインポート
+# Import existing resource
 terraform import aws_instance.example i-1234567890abcdef0
 
-# 状態からリソースを削除（実リソースは残す）
+# Remove resource from state (keeps actual resource)
 terraform state rm aws_instance.example
 ```
 
-### 1.4. その他の便利なコマンド
+### 1.4. Other Useful Commands
 
 ```sh
-# 設定の検証
+# Validate configuration
 terraform validate
 
-# フォーマット
+# Format
 terraform fmt
 
-# 再帰的にフォーマット
+# Format recursively
 terraform fmt -recursive
 
-# 出力値の確認
+# Check outputs
 terraform output
 
-# JSON形式で出力
+# Output in JSON format
 terraform output -json
 
-# 対話的なコンソール（式のテスト用）
+# Interactive console (for testing expressions)
 terraform console
 
-# プロバイダーのロック
+# Lock providers
 terraform providers lock -platform=linux_amd64 -platform=darwin_amd64
 ```
 
-## 2. リソース管理
+## 2. Resource Management
 
-### 2.1. リソースブロックの基本構造
+### 2.1. Basic Resource Block Structure
 
 ```hcl
 resource "aws_instance" "example" {
@@ -106,32 +106,32 @@ resource "aws_instance" "example" {
 }
 ```
 
-### 2.2. メタ引数
+### 2.2. Meta-arguments
 
-- `depends_on`: 明示的な依存関係
-- `count`: リソースの複製（インデックスベース）
-- `for_each`: リソースの複製（キーベース）
-- `provider`: 代替プロバイダーの指定
-- `lifecycle`: ライフサイクル制御
+- `depends_on`: Explicit dependencies
+- `count`: Resource replication (index-based)
+- `for_each`: Resource replication (key-based)
+- `provider`: Specify alternate provider
+- `lifecycle`: Lifecycle control
 
-### 2.3. ライフサイクル設定
+### 2.3. Lifecycle Settings
 
 ```hcl
 resource "aws_instance" "example" {
   # ...
 
   lifecycle {
-    create_before_destroy = true  # 置換時に新規作成を先に
-    prevent_destroy       = true  # 削除防止
-    ignore_changes        = [tags] # 変更を無視する属性
+    create_before_destroy = true  # Create new first on replacement
+    prevent_destroy       = true  # Prevent deletion
+    ignore_changes        = [tags] # Attributes to ignore changes
     replace_triggered_by  = [null_resource.trigger.id]
   }
 }
 ```
 
-## 3. モジュール設計
+## 3. Module Design
 
-### 3.1. モジュールの呼び出し
+### 3.1. Module Invocation
 
 ```hcl
 module "vpc" {
@@ -143,23 +143,23 @@ module "vpc" {
 }
 ```
 
-### 3.2. モジュールソースの種類
+### 3.2. Module Source Types
 
-- ローカルパス: `./modules/vpc`
+- Local path: `./modules/vpc`
 - Terraform Registry: `hashicorp/consul/aws`
 - GitHub: `github.com/hashicorp/example`
 - S3: `s3::https://s3-eu-west-1.amazonaws.com/bucket/module.zip`
 
-### 3.3. モジュールのベストプラクティス
+### 3.3. Module Best Practices
 
-- 標準的なファイル構成: `main.tf`, `variables.tf`, `outputs.tf`
-- README.md でドキュメント化
-- 意味のあるデフォルト値を設定
-- バリデーションで入力を検証
+- Standard file structure: `main.tf`, `variables.tf`, `outputs.tf`
+- Document with README.md
+- Set meaningful default values
+- Validate inputs with validation blocks
 
-## 4. 状態管理
+## 4. State Management
 
-### 4.1. リモートバックエンドの設定
+### 4.1. Remote Backend Configuration
 
 ```hcl
 terraform {
@@ -173,59 +173,60 @@ terraform {
 }
 ```
 
-### 4.2. 状態管理のベストプラクティス
+### 4.2. State Management Best Practices
 
-- リモートバックエンドを使用（チーム開発必須）
-- 状態ロックを有効化（同時実行防止）
-- 暗号化を有効化
-- 状態ファイルを直接編集しない（`terraform state` コマンドを使用）
-- 環境ごとに状態ファイルを分離
+- Use remote backend (required for team development)
+- Enable state locking (prevent concurrent execution)
+- Enable encryption
+- Do not directly edit state file (use `terraform state` commands)
+- Separate state files per environment
 
-## 5. 変数と出力
+## 5. Variables and Outputs
 
-### 5.1. 入力変数
+### 5.1. Input Variables
 
 ```hcl
 variable "instance_type" {
   type        = string
-  description = "EC2 インスタンスタイプ"
+  description = "EC2 instance type"
   default     = "t2.micro"
 
   validation {
     condition     = contains(["t2.micro", "t2.small", "t2.medium"], var.instance_type)
-    error_message = "許可されたインスタンスタイプを指定してください"
+    error_message = "Please specify an allowed instance type"
   }
 }
 ```
 
-### 5.2. 変数の設定方法（優先順位順）
+### 5.2. Variable Setting Methods (Priority Order)
 
-1. コマンドライン `-var`, `-var-file`
-2. `*.auto.tfvars` ファイル
+1. Command line `-var`, `-var-file`
+2. `*.auto.tfvars` files
 3. `terraform.tfvars.json`
 4. `terraform.tfvars`
-5. 環境変数 `TF_VAR_*`
-6. デフォルト値
+5. Environment variables `TF_VAR_*`
+6. Default values
 
-### 5.3. 機密データの取り扱い
+### 5.3. Sensitive Data Handling
 
 ```hcl
 variable "db_password" {
   type      = string
-  sensitive = true  # 出力でマスク
+  sensitive = true  # Mask in output
 }
 
 output "connection_string" {
   value     = "postgres://user:${var.db_password}@host/db"
-  sensitive = true  # 機密データを含む出力
+  sensitive = true  # Output contains sensitive data
 }
 ```
 
-**注意**: 状態ファイルには機密データがプレーンテキストで保存される。リモートバックエンドの暗号化や HCP Terraform の使用を推奨。
+Note: Sensitive data is stored in plaintext in state files.
+Remote backend encryption or HCP Terraform recommended.
 
-## 6. プロバイダー
+## 6. Providers
 
-### 6.1. プロバイダーの宣言
+### 6.1. Provider Declaration
 
 ```hcl
 terraform {
@@ -242,7 +243,7 @@ provider "aws" {
 }
 ```
 
-### 6.2. 複数プロバイダーの使用
+### 6.2. Multiple Providers
 
 ```hcl
 provider "aws" {
@@ -261,44 +262,44 @@ resource "aws_instance" "us" {
 }
 ```
 
-## 7. 組み込み関数
+## 7. Built-in Functions
 
-### 7.1. よく使う関数
+### 7.1. Common Functions
 
 ```hcl
-# 文字列操作
+# String operations
 join("-", ["foo", "bar"])          # "foo-bar"
 split(",", "a,b,c")                # ["a", "b", "c"]
 format("Hello, %s!", "World")      # "Hello, World!"
 
-# コレクション操作
+# Collection operations
 length(["a", "b", "c"])            # 3
-lookup(map, key, default)          # マップから値を取得
-merge(map1, map2)                  # マップのマージ
+lookup(map, key, default)          # Get value from map
+merge(map1, map2)                  # Merge maps
 flatten([["a"], ["b", "c"]])       # ["a", "b", "c"]
 
-# 型変換
+# Type conversions
 tostring(123)                      # "123"
-tolist(set)                        # セットをリストに
-tomap(object)                      # オブジェクトをマップに
+tolist(set)                        # Set to list
+tomap(object)                      # Object to map
 
-# 条件式
-coalesce("", "default")            # "default"（最初の非空値）
-try(expression, fallback)          # エラー時にフォールバック
+# Conditional expressions
+coalesce("", "default")            # "default" (first non-empty value)
+try(expression, fallback)          # Fallback on error
 ```
 
 ## 8. HCP Terraform / Terraform Cloud
 
-### 8.1. 主な機能
+### 8.1. Key Features
 
-- リモート状態管理（暗号化、バージョニング）
-- チームコラボレーション
-- ポリシー適用（Sentinel）
-- プライベートモジュールレジストリ
-- VCS 連携（GitHub, GitLab など）
-- コスト見積もり
+- Remote state management (encryption, versioning)
+- Team collaboration
+- Policy enforcement (Sentinel)
+- Private module registry
+- VCS integration (GitHub, GitLab, etc.)
+- Cost estimation
 
-### 8.2. ワークスペース設定
+### 8.2. Workspace Configuration
 
 ```hcl
 terraform {
@@ -312,44 +313,44 @@ terraform {
 }
 ```
 
-## 9. セキュリティベストプラクティス
+## 9. Security Best Practices
 
-### 9.1. 認証情報の管理
+### 9.1. Credential Management
 
-- ハードコードしない
-- 環境変数または認証ファイルを使用
-- IAM ロール / サービスアカウントを推奨
-- HashiCorp Vault との連携
+- Do not hardcode
+- Use environment variables or auth files
+- IAM roles / service accounts recommended
+- HashiCorp Vault integration
 
-### 9.2. 状態ファイルのセキュリティ
+### 9.2. State File Security
 
-- 暗号化されたバックエンドを使用
-- アクセス制御を適切に設定
-- `.terraform/` を `.gitignore` に追加
-- `*.tfvars` を `.gitignore` に追加（機密情報含む場合）
+- Use encrypted backend
+- Set appropriate access controls
+- Add `.terraform/` to `.gitignore`
+- Add `*.tfvars` to `.gitignore` (if contains sensitive info)
 
-## 10. 詳細ドキュメント
+## 10. Detailed Documentation
 
-`docs/` ディレクトリに以下の詳細ドキュメントが含まれている
+See `docs/` directory for detailed documentation:
 
-- `language-overview.md` - Terraform 言語の概要
-- `resources.md` - リソース管理の詳細
-- `modules.md` - モジュール設計
-- `state.md` - 状態管理
-- `providers.md` - プロバイダー設定
-- `variables.md` - 変数と出力
-- `expressions.md` - 式と関数
-- `lifecycle.md` - ライフサイクル制御
-- `backends.md` - バックエンド設定
-- `sensitive-data.md` - 機密データの取り扱い
-- `data-sources.md` - データソース
+- `language-overview.md` - Terraform language overview
+- `resources.md` - Resource management details
+- `modules.md` - Module design
+- `state.md` - State management
+- `providers.md` - Provider configuration
+- `variables.md` - Variables and outputs
+- `expressions.md` - Expressions and functions
+- `lifecycle.md` - Lifecycle control
+- `backends.md` - Backend configuration
+- `sensitive-data.md` - Sensitive data handling
+- `data-sources.md` - Data sources
 - `hcp-terraform.md` - HCP Terraform / Terraform Cloud
 
-## 11. 参考リンク
+## 11. Reference Links
 
-- 公式ドキュメント: https://developer.hashicorp.com/terraform/docs
-- 言語リファレンス: https://developer.hashicorp.com/terraform/language
-- CLI リファレンス: https://developer.hashicorp.com/terraform/cli
-- プロバイダーレジストリ: https://registry.terraform.io/
-- モジュールレジストリ: https://registry.terraform.io/browse/modules
-- HCP Terraform: https://developer.hashicorp.com/terraform/cloud-docs
+- Official docs: <https://developer.hashicorp.com/terraform/docs>
+- Language reference: <https://developer.hashicorp.com/terraform/language>
+- CLI reference: <https://developer.hashicorp.com/terraform/cli>
+- Provider registry: <https://registry.terraform.io/>
+- Module registry: <https://registry.terraform.io/browse/modules>
+- HCP Terraform: <https://developer.hashicorp.com/terraform/cloud-docs>

@@ -53,7 +53,8 @@ Agent definition files:
 
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
-- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
+- @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/
+  architecture-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/data-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
 
@@ -67,7 +68,8 @@ Execution steps:
 
 Perform single review based on pane number role.
 
-- Get tmux pane number N: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- Get tmux pane number N:
+  `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
 - Load corresponding agent definition based on N % 5
     - N % 5 == 0: @.../agents/security-reviewer.md
     - N % 5 == 1: @.../agents/qa-reviewer.md
@@ -79,4 +81,5 @@ Perform single review based on pane number role.
 
 - Save review results to:
     - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux pane number)
-- Get tmux pane number: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- Get tmux pane number:
+  `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`

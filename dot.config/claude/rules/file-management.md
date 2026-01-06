@@ -7,7 +7,8 @@
 
 ## 2. i9wa4/ Directory Usage
 
-- IMPORTANT: `.i9wa4/` is in global `.gitignore`, so files here are not Git-tracked
+- IMPORTANT: `.i9wa4/` is in global `.gitignore`,
+  so files here are not Git-tracked
 - YOU MUST: Save important work documents to the `.i9wa4/` directory
 - YOU MUST: Use filename format `YYYYMMDD-pN-xxxx.md`
     - `YYYYMMDD`: Date (e.g., `20251105`)

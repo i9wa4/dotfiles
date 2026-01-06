@@ -1,30 +1,31 @@
 ---
 name: confluence-to-md
-description: Confluence ページを Markdown に変換するスキル - draw.io 図、画像、コードブロック、テーブルを適切に処理
+description: Confluence to Markdown conversion skill - Properly handles draw.io diagrams, images, code blocks, and tables
 ---
 
 # Confluence to Markdown Skill
 
-このスキルは Confluence ページを Markdown に変換する機能を提供する。
+This skill provides functionality to convert Confluence pages to Markdown.
 
-## 1. 概要
+## 1. Overview
 
-`bin/confluence-to-md.py` スクリプトを使用して、Confluence ページを Markdown ファイルに変換する。
+Use the `bin/confluence-to-md.py` script
+to convert Confluence pages to Markdown files.
 
-### 1.1. 主な機能
+### 1.1. Key Features
 
-- 箇条書きの保持（フラット化を防止）
-- draw.io 図と画像の完全 URL 変換
-- 水平線の変換 (`<hr>` -> `---`)
-- コードブロックの維持
-- テーブルフォーマットの改善
-- 出力ファイル名: `{timestamp}-confluence-{title}.md`
+- Preserve bullet list structure (prevent flattening)
+- Convert draw.io diagrams and images to full URL
+- Convert horizontal rules (`<hr>` -> `---`)
+- Maintain code blocks
+- Improve table formatting
+- Output filename: `{timestamp}-confluence-{title}.md`
 
-## 2. 環境設定
+## 2. Environment Setup
 
-### 2.1. 必要な環境変数
+### 2.1. Required Environment Variables
 
-プロジェクトルートの `.env` ファイルに以下を設定する。
+Set the following in project root `.env` file.
 
 ```sh
 CONFLUENCE_BASE=https://your-confluence-instance.atlassian.net/wiki
@@ -32,95 +33,96 @@ CONFLUENCE_EMAIL=your-email@example.com
 CONFLUENCE_API_TOKEN=your-api-token
 ```
 
-### 2.2. 依存パッケージ
+### 2.2. Dependencies
 
 ```sh
 pip install requests beautifulsoup4 html2text python-dotenv
 ```
 
-## 3. 使い方
+## 3. Usage
 
-### 3.1. コマンドライン実行
+### 3.1. Command Line Execution
 
 ```sh
-# 引数で URL を指定
+# Specify URL as argument
 confluence-to-md.py <confluence_url>
 
-# 対話モード
+# Interactive mode
 confluence-to-md.py
 ```
 
-### 3.2. URL の形式
+### 3.2. URL Format
 
-Confluence ページの URL から page ID を抽出する。
+Extract page ID from Confluence page URL.
 
-```
+```text
 https://your-confluence.atlassian.net/wiki/spaces/SPACE/pages/123456789/Page+Title
 ```
 
-### 3.3. 出力先
+### 3.3. Output Location
 
-変換後の Markdown ファイルは `~/Downloads/` に保存される。
+Converted Markdown files are saved to `~/Downloads/`.
 
-```
+```text
 ~/Downloads/20251219-123456-confluence-Page_Title.md
 ```
 
-## 4. 変換仕様
+## 4. Conversion Specifications
 
-### 4.1. 箇条書き
+### 4.1. Bullet Lists
 
-HTML の `<ul>`, `<ol>` をネスト構造を保持して変換する。
+Convert HTML `<ul>`, `<ol>` while preserving nested structure.
 
 ```markdown
-- 項目1
-    - サブ項目1-1
-    - サブ項目1-2
-- 項目2
+- Item 1
+    - Sub-item 1-1
+    - Sub-item 1-2
+- Item 2
 ```
 
-### 4.2. draw.io 図と画像
+### 4.2. draw.io Diagrams and Images
 
-`ac:image` タグや `img` タグをフル URL の Markdown 画像に変換する。
+Convert `ac:image` and `img` tags to full URL Markdown images.
 
 ```markdown
 ![image](https://confluence.example.com/download/attachments/123456/diagram.png)
 ```
 
-### 4.3. コードブロック
+### 4.3. Code Blocks
 
-`<pre>` タグを Markdown のコードブロックに変換する。
+Convert `<pre>` tags to Markdown code blocks.
 
 ````markdown
 ```text
-コード内容
+Code content
 ```
 ````
 
-### 4.4. テーブル
+### 4.4. Tables
 
-テーブルはカラム幅を揃えて整形する。
+Format tables with aligned column widths.
 
 ```markdown
-| カラム1 | カラム2 |
+| Column1 | Column2 |
 | ------- | ------- |
-| データ1 | データ2 |
+| Data1   | Data2   |
 ```
 
-## 5. トラブルシューティング
+## 5. Troubleshooting
 
-### 5.1. 認証エラー
+### 5.1. Authentication Error
 
+```text
+Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN must be set
+in .env file.
 ```
-Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN must be set in .env file.
-```
 
-`.env` ファイルの設定を確認する。
+Check `.env` file settings.
 
-### 5.2. ページ ID 抽出エラー
+### 5.2. Page ID Extraction Error
 
-```
+```text
 Error: Could not extract page ID from URL.
 ```
 
-URL に `/pages/数字/` の形式が含まれているか確認する。
+Verify URL contains `/pages/number/` format.

@@ -12,8 +12,10 @@ Aggregate review results after reading this file.
 2. Get PR comments/reviews to identify already-reported issues
    - Get with `gh pr view <number> --json comments,reviews`
 3. Classify each pane's findings into 3 categories
-   - Needs reporting: New finding with real impact (downstream effects, data loss)
-   - No need to report: New finding but acceptable (design decision, low priority)
+   - Needs reporting: New finding with real impact
+     (downstream effects, data loss)
+   - No need to report: New finding but acceptable
+     (design decision, low priority)
    - Already reported: CodeRabbit etc. already commented on PR
 4. Output aggregation to `.i9wa4/YYYYMMDD-all-reviews.md`
 

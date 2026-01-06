@@ -1,13 +1,13 @@
 ---
 name: jupyter-notebook
-description: Jupyter Notebook エキスパートスキル - ノートブックの実行方法、Databricks カーネル連携に関するガイドを提供
+description: Jupyter Notebook Expert Skill - Guide for notebook execution and Databricks kernel integration
 ---
 
 # Jupyter Notebook Expert Skill
 
-このスキルは Jupyter Notebook の実行に関するガイドを提供する。
+This skill provides a guide for Jupyter Notebook execution.
 
-## 1. Databricks 向け Jupyter Kernel
+## 1. Databricks Jupyter Kernel
 
 <https://github.com/i9wa4/jupyter-databricks-kernel>
 
@@ -21,54 +21,54 @@ pip install jupyter-databricks-kernel
 python -m jupyter_databricks_kernel.install
 ```
 
-## 2. デフォルトの実行方法
+## 2. Default Execution Method
 
-Notebook 全体を実行する指示を受けた際は、以下のコマンドを使用する
+When instructed to execute an entire notebook, use this command:
 
 ```sh
 uv run jupyter execute <notebook_path> --inplace --timeout=300
 ```
 
-## 3. Databricks カーネルで実行
+## 3. Execute with Databricks Kernel
 
-Databricks クラスタでノートブックを実行する場合
+When running notebook on Databricks cluster:
 
 ```sh
 uv run jupyter execute <notebook_path> --inplace --kernel_name=databricks --timeout=300
 ```
 
-必要な環境変数
+Required environment variables:
 
-- `DATABRICKS_HOST`: Databricks ワークスペースの URL
+- `DATABRICKS_HOST`: Databricks workspace URL
 - `DATABRICKS_TOKEN`: Personal Access Token
-- `DATABRICKS_CLUSTER_ID`: クラスタ ID
+- `DATABRICKS_CLUSTER_ID`: Cluster ID
 
-## 4. 使用例
+## 4. Usage Examples
 
 ```bash
-# ローカルの Python カーネルで実行
+# Execute with local Python kernel
 uv run jupyter execute /workspace/notebooks/sample.ipynb --inplace --timeout=300
 
-# Databricks カーネルで実行
+# Execute with Databricks kernel
 uv run jupyter execute /workspace/notebooks/databricks-sample.ipynb --inplace --kernel_name=databricks --timeout=300
 ```
 
-## 5. オプション説明
+## 5. Option Descriptions
 
-- `--inplace`: 元のファイルに実行結果を上書き
-- `--kernel_name=<name>`: 使用するカーネルを指定 (databricks, python3 等)
-- `--timeout=<seconds>`: タイムアウトを秒数で設定 (-1 で無制限)
-- `--startup_timeout=<seconds>`: カーネル起動のタイムアウト (デフォルト 60 秒)
-- `--allow-errors`: エラーがあっても最後まで実行を継続
+- `--inplace`: Overwrite original file with execution results
+- `--kernel_name=<name>`: Specify kernel to use (databricks, python3, etc.)
+- `--timeout=<seconds>`: Set timeout in seconds (-1 for unlimited)
+- `--startup_timeout=<seconds>`: Kernel startup timeout (default 60 seconds)
+- `--allow-errors`: Continue execution to end even with errors
 
-## 6. 注意事項
+## 6. Notes
 
-- 実行前に必要な環境変数が適切に設定されていることを確認する
-- 長時間実行されるセルがある場合は `--timeout` の値を調整する
-- VS Code で開いている場合は実行後にファイルの更新を確認する
-- Databricks カーネルの場合、クラスタが停止していると起動に 5-6 分かかる
+- Verify required environment variables are properly set before execution
+- Adjust `--timeout` value for long-running cells
+- If open in VS Code, verify file updates after execution
+- For Databricks kernel, cluster startup takes 5-6 minutes if stopped
 
-## 7. 参考リンク
+## 7. Reference Links
 
-- jupyter-databricks-kernel: https://github.com/i9wa4/jupyter-databricks-kernel
-- Jupyter nbclient: https://nbclient.readthedocs.io/
+- jupyter-databricks-kernel: <https://github.com/i9wa4/jupyter-databricks-kernel>
+- Jupyter nbclient: <https://nbclient.readthedocs.io/>

@@ -4,7 +4,8 @@ description: "Restricted BigQuery dbt environment"
 
 # restricted-bigquery-dbt-environment
 
-After reading this file, execute the following then respond humorously in character.
+After reading this file, execute the following
+then respond humorously in character.
 
 ## 1. Overview
 

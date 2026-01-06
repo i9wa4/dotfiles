@@ -1,185 +1,186 @@
 ---
 name: dbt-expert
-description: dbt エキスパートエンジニアスキル - dbt 開発のベストプラクティス、コマンド実行、環境設定に関する包括的なガイドを提供
+description: dbt Expert Engineer Skill - Comprehensive guide for dbt development best practices, command execution, and environment configuration
 ---
 
 # dbt Expert Engineer Skill
 
-このスキルは dbt 開発に関する包括的なガイドを提供する。
+This skill provides a comprehensive guide for dbt development.
 
-## 1. dbt コマンドの基本
+## 1. dbt Command Basics
 
-### 1.1. 必須オプション
+### 1.1. Required Options
 
-dbt コマンドには必ず以下のオプションを指定する
+Always specify these options with dbt commands:
 
 ```sh
 --profiles-dir ~/.dbt --no-use-colors
 ```
 
-### 1.2. 接続確認
+### 1.2. Connection Verification
 
-作業開始時に必ず接続先を確認する
+Always verify connection at work start:
 
 ```sh
 dbt debug --profiles-dir ~/.dbt --no-use-colors
 ```
 
-### 1.3. アドホッククエリの実行
+### 1.3. Ad-hoc Query Execution
 
-dbt でアドホッククエリを実行する際は `dbt show` コマンドを使用する
+Use `dbt show` command for ad-hoc queries in dbt:
 
 ```sh
-# 基本的なクエリ実行
+# Basic query execution
 dbt show --inline "select 1 as test, current_timestamp() as now" --profiles-dir ~/.dbt --no-use-colors
 
-# 行数制限の指定（デフォルトは5件）
+# Specify row limit (default is 5)
 dbt show --inline "select * from table_name" --limit 10 --profiles-dir ~/.dbt --no-use-colors
 
-# dbtモデルの参照
+# Reference dbt models
 dbt show --inline "select * from {{ ref('model_name') }}" --profiles-dir ~/.dbt --no-use-colors
 
-# catalog.schema.table形式での直接参照
+# Direct reference using catalog.schema.table format
 dbt show --inline "select * from catalog_name.schema_name.table_name" --limit 3 --profiles-dir ~/.dbt --no-use-colors
 ```
 
-注意事項:
+Notes:
 
-- クエリ内で明示的に LIMIT を指定すると `--limit` オプションと重複してエラーになる
-- DDL系コマンド（SHOW文など）は自動LIMITが付いて構文エラーになるため適さない
+- Explicit LIMIT in query conflicts with `--limit` option and causes error
+- DDL commands (SHOW statements, etc.) cause syntax error due to auto-LIMIT
 
-## 2. 動作確認手順
+## 2. Verification Procedures
 
-### 2.1. dbt run 禁止環境での動作確認
+### 2.1. Verification When dbt run is Prohibited
 
-本番環境への影響を避けるため、`dbt run` を実行できない環境での動作確認手順
+Verification steps when `dbt run` cannot be executed to avoid production impact:
 
-1. モデルを編集
-2. `dbt compile --profiles-dir ~/.dbt --no-use-colors` でSQLを生成
-3. 生成されたSQLを `target/compiled/` から取得
-4. `bq query` または `databricks` コマンドで動作確認（LIMIT付きで実行推奨）
+1. Edit model
+2. Generate SQL with `dbt compile --profiles-dir ~/.dbt --no-use-colors`
+3. Get generated SQL from `target/compiled/`
+4. Verify with `bq query` or `databricks` command (recommend using LIMIT)
 
-### 2.2. dbt run 可能環境での動作確認
+### 2.2. Verification When dbt run is Allowed
 
-開発環境やサンドボックス環境で `dbt run` が実行可能な場合の動作確認手順
+Verification steps when `dbt run` is allowed
+in development/sandbox environments:
 
-1. モデルを編集
-2. `dbt run --select +model_name --profiles-dir ~/.dbt --no-use-colors` で run 実行
-3. `dbt test --select +model_name --profiles-dir ~/.dbt --no-use-colors` で test 実行
-4. 必要に応じて生成されたテーブルを直接クエリで確認
+1. Edit model
+2. Execute `dbt run --select +model_name --profiles-dir ~/.dbt --no-use-colors`
+3. Execute `dbt test --select +model_name --profiles-dir ~/.dbt --no-use-colors`
+4. Query generated table directly if needed
 
-注意点:
+Notes:
 
-- `--select` オプションで対象を限定して実行する
-- モデルと tag の AND 条件の場合は `--select "staging.target,tag:tag_name"` のように指定する
+- Use `--select` option to limit scope
+- For model AND tag conditions, use `--select "staging.target,tag:tag_name"`
 
-## 3. Issue 作業時のターゲット設定
+## 3. Issue Work Target Setup
 
-Issue 作業で `dbt run` を実行する前に、必ず Issue 専用ターゲットを設定する
+Always set up Issue-specific target before `dbt run` during Issue work.
 
-### 3.1. 設定手順
+### 3.1. Setup Procedure
 
-1. `~/.dbt/profiles.yml` を読み取り、既存の設定を確認する
-2. 該当 Issue 用ターゲットが存在しなければ、既存の `dev` ターゲットを参考に追加する
+1. Read `~/.dbt/profiles.yml` and check existing settings
+2. Add Issue-specific target if not exists, based on existing `dev` target
 
 ```yaml
 my_databricks_dbt:
   outputs:
     dev:
-      # 既存の設定...
-    issue_123:  # issue番号に応じて命名
-      catalog: dbt_dev_{username}  # dev と同じ
-      host: dbc-xxxxx.cloud.databricks.com  # dev と同じ
-      http_path: /sql/1.0/warehouses/xxxxx  # dev と同じ
-      schema: dwh_issue_123  # issue番号をスキーマ名に含める
+      # Existing settings...
+    issue_123:  # Name based on issue number
+      catalog: dbt_dev_{username}  # Same as dev
+      host: dbc-xxxxx.cloud.databricks.com  # Same as dev
+      http_path: /sql/1.0/warehouses/xxxxx  # Same as dev
+      schema: dwh_issue_123  # Include issue number in schema name
       threads: 1
-      token: dapixxxxx  # dev と同じ
+      token: dapixxxxx  # Same as dev
       type: databricks
   target: dev
 ```
 
-3. dbt コマンド実行時に `--target` オプションで切り替える
+Then switch with `--target` option when executing dbt commands
 
 ```sh
-# issue_123 ターゲットで実行
+# Execute with issue_123 target
 dbt run --select +model_name --target issue_123 --profiles-dir ~/.dbt --no-use-colors
 
-# 接続先確認
+# Verify connection
 dbt debug --target issue_123 --profiles-dir ~/.dbt --no-use-colors
 ```
 
-### 3.2. 注意点
+### 3.2. Notes
 
-- ターゲット名と schema 名は issue 番号に合わせて一貫性を持たせる
-- 作業完了後、不要になったスキーマは手動で削除する
-- intermediate 層は `{schema}_dbt_intermediates` として自動生成される
+- Keep target name and schema name consistent with issue number
+- Manually delete unused schemas after work completion
+- Intermediate layer auto-generates as `{schema}_dbt_intermediates`
 
-## 4. Databricks SQL 方言
+## 4. Databricks SQL Dialect
 
-- 全角のカラム名はバッククォートで囲む必要がある
-- ハイフンを含むカラム名やカタログ名などもバッククォートで囲む必要がある
+- Full-width column names require backticks
+- Column names and catalog names with hyphens require backticks
 
 ```sql
--- ハイフンを含むカタログ名の参照例
+-- Reference catalog name with hyphen
 select * from `catalog-name`.schema_name.table_name;
 
--- 全角カラム名の参照例
-select `全角カラム名` from table_name;
+-- Reference full-width column name
+select `full-width column` from table_name;
 ```
 
-## 5. ベストプラクティスドキュメント
+## 5. Best Practices Documentation
 
-`docs/` ディレクトリに以下のベストプラクティスドキュメントが含まれている
+`docs/` directory contains best practice documentation:
 
-### 5.1. プロジェクト構造
+### 5.1. Project Structure
 
-- `1-guide-overview.md` - 構造ガイド概要
-- `2-staging.md` - ステージング層
-- `3-intermediate.md` - 中間層
-- `4-marts.md` - マート層
-- `5-semantic-layer.md` - セマンティックレイヤー
+- `1-guide-overview.md` - Structure guide overview
+- `2-staging.md` - Staging layer
+- `3-intermediate.md` - Intermediate layer
+- `4-marts.md` - Mart layer
+- `5-semantic-layer.md` - Semantic layer
 
-### 5.2. スタイルガイド
+### 5.2. Style Guide
 
-- `0-how-we-style-our-dbt-projects.md` - プロジェクトスタイル概要
-- `1-how-we-style-our-dbt-models.md` - モデルスタイル
-- `2-how-we-style-our-sql.md` - SQL スタイル
-- `3-how-we-style-our-python.md` - Python スタイル
-- `4-how-we-style-our-jinja.md` - Jinja スタイル
-- `5-how-we-style-our-yaml.md` - YAML スタイル
+- `0-how-we-style-our-dbt-projects.md` - Project style overview
+- `1-how-we-style-our-dbt-models.md` - Model style
+- `2-how-we-style-our-sql.md` - SQL style
+- `3-how-we-style-our-python.md` - Python style
+- `4-how-we-style-our-jinja.md` - Jinja style
+- `5-how-we-style-our-yaml.md` - YAML style
 
-### 5.3. マテリアライゼーション
+### 5.3. Materializations
 
-- `1-guide-overview.md` - マテリアライゼーション概要
-- `2-available-materializations.md` - 利用可能なマテリアライゼーション
-- `3-configuring-materializations.md` - 設定方法
-- `4-incremental-models.md` - インクリメンタルモデル
-- `5-best-practices.md` - ベストプラクティス
+- `1-guide-overview.md` - Materialization overview
+- `2-available-materializations.md` - Available materializations
+- `3-configuring-materializations.md` - Configuration
+- `4-incremental-models.md` - Incremental models
+- `5-best-practices.md` - Best practices
 
 ### 5.4. dbt Mesh
 
-- `mesh-1-intro.md` - dbt Mesh 入門
-- `mesh-2-who-is-dbt-mesh-for.md` - 対象ユーザー
-- `mesh-3-structures.md` - 構造
-- `mesh-4-implementation.md` - 実装
+- `mesh-1-intro.md` - dbt Mesh introduction
+- `mesh-2-who-is-dbt-mesh-for.md` - Target users
+- `mesh-3-structures.md` - Structures
+- `mesh-4-implementation.md` - Implementation
 - `mesh-5-faqs.md` - FAQ
 
-## 6. ドキュメント検索
+## 6. Documentation Search
 
 ```bash
 python scripts/search_docs.py "<query>"
 ```
 
-オプション:
+Options:
 
-- `--json` - JSON形式で出力
-- `--max-results N` - 結果数を制限（デフォルト: 10）
+- `--json` - Output in JSON format
+- `--max-results N` - Limit number of results (default: 10)
 
-## 7. 回答時のフォーマット
+## 7. Response Format
 
-```
-[ドキュメントに基づく回答]
+```text
+[Documentation-based response]
 
-**Source:** [source_url]
-**Fetched:** [fetched_at]
+Source: [source_url]
+Fetched: [fetched_at]
 ```

@@ -10,7 +10,8 @@ Minimize startup context for efficient session initialization.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `rules/`
-- NEVER: Include unnecessary information at startup (reference links, usage details)
+- NEVER: Include unnecessary information at startup
+  (reference links, usage details)
 
 ## 3. Configuration Usage
 

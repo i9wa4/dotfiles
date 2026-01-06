@@ -97,9 +97,11 @@ Basic rules:
 
 - YOU MUST: Check recent commits and match language (English or Japanese)
 - IMPORTANT: Granularity for resumption: commits should help resume work easily
-- IMPORTANT: Rich descriptions: include changes, problem resolution, technical details
+- IMPORTANT: Rich descriptions: include changes,
+  problem resolution, technical details
 - NEVER: Do not include Co-Authored-By
-- NEVER: Do not include "Generated with [Claude Code]" or similar AI tool notices
+- NEVER: Do not include "Generated with [Claude Code]"
+  or similar AI tool notices
 - NEVER: Do not mention `.i9wa4/` files (in global `.gitignore`)
 - NEVER: Do not mention `/tmp/` files
 - NEVER: Do not include local file paths (e.g., `.i9wa4/xxx.md`, `/tmp/xxx.log`)

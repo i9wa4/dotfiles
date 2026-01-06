@@ -1,58 +1,61 @@
 ---
 name: daily-report
 description: |
-  日報（daily report）を作成するスキル。GitHub上での活動内容をまとめて下書きを作成し、Issue投稿まで行う。
-  以下の場合に使用:
-  - 「日報を作成して」「日報書いて」と言われたとき
-  - 「今日の活動をまとめて」と言われたとき
-  - daily reportやdaily journalの作成を依頼されたとき
+  Daily report creation skill. Summarizes GitHub activities,
+  creates a draft, and posts as an Issue.
+  Use when:
+  - Asked to "create daily report" or "write daily report"
+  - Asked to "summarize today's activities"
+  - Requested to create a daily report or journal
 ---
 
-# 日報作成スキル
+# Daily Report Skill
 
-@i9wa4 のGitHub上での活動内容をまとめた日報を作成し、GitHub Issueとして投稿する。
+Summarize @i9wa4's GitHub activities and post as a GitHub Issue.
 
-## 1. 前提条件
+## 1. Prerequisites
 
-- gh CLI がインストールされていること
-- jq がインストールされていること
+- gh CLI installed
+- jq installed
 
-## 2. ワークフロー
+## 2. Workflow
 
-### 2.1. GitHub活動の取得
+### 2.1. Get GitHub Activities
 
-専用スクリプトを使用して活動を取得する。デフォルトで現在時刻から24時間前までの活動を取得する（UTCで正確に計算）。
+Use dedicated script to fetch activities.
+Defaults to fetching 24 hours of activities from current time
+(calculated in UTC).
 
-#### スクリプトの場所
+#### Script Location
 
-```
+```text
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh
 ```
 
-#### コマンド例
+#### Command Examples
 
 ```bash
-# デフォルト: 24時間前から現在まで
+# Default: 24 hours ago to now
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh --no-url
 
-# 時間を指定: N時間前から現在まで
+# Specify hours: N hours ago to now
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh --hours 48 --no-url
 
-# 日時を直接指定 (ISO8601形式、UTC)
+# Specify datetime directly (ISO8601, UTC)
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
 ```
 
-#### オプション
+#### Options
 
-| オプション | 説明 |
+| Option | Description |
 | --- | --- |
-| --no-url | URLなしで出力（メンション通知防止、日報向け） |
-| --hours N | N時間前から現在までの活動を取得 |
-| --from | 開始日時（ISO8601形式、例: 2025-12-17T00:00:00Z） |
-| --to | 終了日時（ISO8601形式、例: 2025-12-17T23:59:59Z） |
-| --hostname | GitHub Enterprise Server のホスト名 |
+| --no-url | Output without URLs (prevents mention notifications, for daily reports) |
+| --hours N | Fetch activities from N hours ago to now |
+| --from | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z) |
+| --to | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z) |
+| --hostname | GitHub Enterprise Server hostname |
 
-#### 出力形式
+#### Output Format
 
 ```markdown
 ### repository-owner/repository-name
@@ -64,114 +67,117 @@ description: |
 - [PullRequestReview] PR title
 ```
 
-**注意**: `--no-url` オプションでURLを省略し、メンション通知を防ぐ。
+Note: Use `--no-url` option to omit URLs and prevent mention notifications.
 
-### 2.2. 下書き作成
+### 2.2. Create Draft
 
-`.i9wa4/YYYY-MM-DD-Mawatari.md` に保存（キーワードなしで作成）。
+Save to `.i9wa4/YYYY-MM-DD-Mawatari.md` (without keyword initially).
 
-**テンプレート**:
+Template:
 
 ```markdown
 ---
 title: "YYYY-MM-DD Mawatari"
 labels:
-  - name: "日報"
+  - name: "Daily Report"
     color: "0E8A16"
 ---
 
-## 1. 今日の活動
+## 1. Today's Activities
 
 ### 1.1. GitHub
 
-gh-furikの出力を整理して記載。以下のように分類する:
+Organize gh-furik output. Classify as follows:
 
-#### 1.1.1. 作成したIssue
+#### 1.1.1. Created Issues
 
-- [リポジトリ名] Issue タイトル
+- [repo-name] Issue title
 
-#### 1.1.2. 作成したPR
+#### 1.1.2. Created PRs
 
-- [リポジトリ名] PR タイトル
-- [リポジトリ名] PR タイトル (merged)
-    - 補足コメントがあればインデントして記載
+- [repo-name] PR title
+- [repo-name] PR title (merged)
+    - Add supplementary comments indented
 
-#### 1.1.3. レビューしたPR
+#### 1.1.3. Reviewed PRs
 
-- [リポジトリ名] PR タイトル
+- [repo-name] PR title
 
-#### 1.1.4. コメントしたIssue/PR
+#### 1.1.4. Commented Issues/PRs
 
-- [リポジトリ名] Issue/PR タイトル
+- [repo-name] Issue/PR title
 
-### 1.2. ミーティング
+### 1.2. Meetings
 
-- ミーティング名
-    - 補足コメント
+- Meeting name
+    - Supplementary comments
 
-### 1.3. その他
+### 1.3. Other
 
-- メモ
+- Notes
 
-## 2. 振り返り
+## 2. Reflection
 
-今日の感想や学びを記載。
+Today's thoughts and learnings.
 ```
 
-### 2.3. ユーザー編集待ち
+### 2.3. Wait for User Edit
 
-下書きを表示してユーザーの編集を待つ。ミーティングや振り返りはユーザーが追記する。
+Display draft and wait for user edits. User adds meetings and reflections.
 
-### 2.4. キーワード提案
+### 2.4. Keyword Suggestion
 
-下書き完成後、活動内容からキーワードを提案する。
+After draft completion, suggest keywords from activities.
 
-**提案のコツ**:
+Suggestion tips:
 
-- 真面目な候補（dbt, Review, Meeting など）
-- ユーモアのある候補も混ぜる（活動内容から連想されるネタ）
+- Serious candidates (dbt, Review, Meeting, etc.)
+- Mix in humorous candidates (ideas inspired by activities)
 
-例: dbt Labs商談で高かった日 → 「高い」「お見送り」なども候補に
+Example: On an expensive dbt Labs deal day
+-> "Expensive", "Declined" as candidates
 
-### 2.5. タイトル更新
+### 2.5. Update Title
 
-ユーザーがキーワードを決定したら、**ファイル内のtitleのみ**を更新する。ファイル名は変更しない。
+After user decides keyword, update only the title in file.
+Do not change filename.
 
 ```markdown
 title: "YYYY-MM-DD Mawatari {keyword}"
 ```
 
-### 2.6. Issue投稿
+### 2.6. Post Issue
 
-`gh issue create` で投稿:
+Post with `gh issue create`:
 
 ```bash
-gh issue create --title "YYYY-MM-DD Mawatari {keyword}" --label "日報" --body "$(cat <<'EOF'
-[本文]
+gh issue create --title "YYYY-MM-DD Mawatari {keyword}" --label "Daily Report" --body "$(cat <<'EOF'
+[body]
 EOF
 )"
 ```
 
-投稿後、Issue URLを表示する。
+Display Issue URL after posting.
 
-## 3. 重要なルール
+## 3. Important Rules
 
-1. **リンクを貼らない**: PRやIssueは直接リンクを貼るとメンションが飛ぶため、タイトルのみ記載
-2. **下書き確認**: 必ずユーザーに下書きを見せて編集を待つ
-3. **キーワードは最後**: 下書き完成後に提案。ユーモアも交える
-4. **ファイル名は固定**: キーワードはタイトルのみに追加、ファイル名は変えない
-5. **Issue投稿**: キーワード確定後、そのまま投稿まで行う
+1. No direct links: Do not link PRs/Issues directly (triggers mentions),
+   use titles only
+2. Draft review: Always show draft to user and wait for edits
+3. Keyword last: Suggest after draft completion. Include humor.
+4. Fixed filename: Add keyword to title only, do not change filename
+5. Issue posting: Post immediately after keyword confirmation
 
-## 4. gh-furik 出力の整理方法
+## 4. gh-furik Output Organization
 
-gh-furik の出力から以下のように分類:
+Classify gh-furik output as follows:
 
-| 出力タイプ | 分類先 |
+| Output Type | Classification |
 | --- | --- |
-| Issue | 作成したIssue |
-| PullRequest | 作成したPR |
-| PullRequestReview | レビューしたPR |
-| IssueComment | コメントしたIssue/PR |
-| PullRequestComment | コメントしたIssue/PR |
+| Issue | Created Issues |
+| PullRequest | Created PRs |
+| PullRequestReview | Reviewed PRs |
+| IssueComment | Commented Issues/PRs |
+| PullRequestComment | Commented Issues/PRs |
 
-**注意**: 同じIssue/PRに複数のコメントがある場合は1つにまとめる。
+Note: Consolidate multiple comments on same Issue/PR into one.

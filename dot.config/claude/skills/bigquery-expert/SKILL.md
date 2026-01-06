@@ -1,74 +1,74 @@
 ---
 name: bigquery-expert
-description: BigQuery エキスパートエンジニアスキル - GoogleSQL クエリ、データ管理、パフォーマンス最適化、コスト管理に関する包括的なガイドを提供
+description: BigQuery Expert Engineer Skill - Comprehensive guide for GoogleSQL queries, data management, performance optimization, and cost management
 ---
 
 # BigQuery Expert Engineer Skill
 
-このスキルは BigQuery 開発に関する包括的なガイドを提供する。
+This skill provides a comprehensive guide for BigQuery development.
 
-## 1. bq コマンドラインツールの基本
+## 1. bq Command Line Tool Basics
 
-### 1.1. クエリ実行
+### 1.1. Query Execution
 
 ```sh
-# 標準 SQL でクエリ実行
+# Execute query with Standard SQL
 bq query --use_legacy_sql=false 'SELECT * FROM `project.dataset.table` LIMIT 10'
 
-# 結果を CSV 形式で出力
+# Output results in CSV format
 bq query --use_legacy_sql=false --format=csv 'SELECT * FROM `project.dataset.table`'
 
-# ドライラン（コスト見積もり）
+# Dry run (cost estimation)
 bq query --use_legacy_sql=false --dry_run 'SELECT * FROM `project.dataset.table`'
 
-# 結果をテーブルに保存
+# Save results to table
 bq query --use_legacy_sql=false --destination_table=project:dataset.result_table 'SELECT * FROM `project.dataset.table`'
 ```
 
-### 1.2. テーブル操作
+### 1.2. Table Operations
 
 ```sh
-# テーブル一覧
+# List tables
 bq ls project:dataset
 
-# テーブルスキーマ確認
+# Check table schema
 bq show --schema --format=prettyjson project:dataset.table
 
-# テーブル作成（スキーマファイルから）
+# Create table (from schema file)
 bq mk --table project:dataset.table schema.json
 
-# パーティションテーブル作成
+# Create partitioned table
 bq mk --table --time_partitioning_field=created_at project:dataset.table schema.json
 
-# クラスタリングテーブル作成
+# Create clustered table
 bq mk --table --clustering_fields=user_id,category project:dataset.table schema.json
 
-# テーブル削除
+# Delete table
 bq rm -t project:dataset.table
 ```
 
-### 1.3. データのロード/エクスポート
+### 1.3. Data Load/Export
 
 ```sh
-# CSV からロード
+# Load from CSV
 bq load --source_format=CSV project:dataset.table gs://bucket/data.csv schema.json
 
-# JSON からロード
+# Load from JSON
 bq load --source_format=NEWLINE_DELIMITED_JSON project:dataset.table gs://bucket/data.json
 
-# Parquet からロード（スキーマ自動検出）
+# Load from Parquet (auto-detect schema)
 bq load --source_format=PARQUET --autodetect project:dataset.table gs://bucket/data.parquet
 
-# Cloud Storage へエクスポート
+# Export to Cloud Storage
 bq extract --destination_format=CSV project:dataset.table gs://bucket/export/*.csv
 ```
 
-## 2. GoogleSQL の基本構文
+## 2. GoogleSQL Basic Syntax
 
-### 2.1. SELECT 文
+### 2.1. SELECT Statement
 
 ```sql
--- 基本的な SELECT
+-- Basic SELECT
 SELECT
   column1,
   column2,
@@ -86,10 +86,10 @@ ORDER BY
 LIMIT 100
 ```
 
-### 2.2. よく使う関数
+### 2.2. Common Functions
 
 ```sql
--- 文字列関数
+-- String functions
 CONCAT(str1, str2)
 LOWER(str), UPPER(str)
 TRIM(str), LTRIM(str), RTRIM(str)
@@ -98,7 +98,7 @@ REGEXP_CONTAINS(str, r'pattern')
 REGEXP_EXTRACT(str, r'pattern')
 SPLIT(str, delimiter)
 
--- 日付/時刻関数
+-- Date/time functions
 CURRENT_DATE(), CURRENT_TIMESTAMP()
 DATE(timestamp), TIMESTAMP(date)
 DATE_ADD(date, INTERVAL 1 DAY)
@@ -107,14 +107,14 @@ FORMAT_DATE('%Y-%m-%d', date)
 PARSE_DATE('%Y%m%d', str)
 EXTRACT(YEAR FROM date)
 
--- 集計関数
+-- Aggregate functions
 COUNT(*), COUNT(DISTINCT column)
 SUM(column), AVG(column)
 MIN(column), MAX(column)
 ARRAY_AGG(column)
 STRING_AGG(column, ',')
 
--- ウィンドウ関数
+-- Window functions
 ROW_NUMBER() OVER (PARTITION BY col ORDER BY col2)
 RANK() OVER (ORDER BY col DESC)
 LAG(col, 1) OVER (ORDER BY date)
@@ -122,7 +122,7 @@ LEAD(col, 1) OVER (ORDER BY date)
 SUM(col) OVER (PARTITION BY category)
 ```
 
-### 2.3. JOIN 構文
+### 2.3. JOIN Syntax
 
 ```sql
 -- INNER JOIN
@@ -137,13 +137,13 @@ FROM `project.dataset.table_a` AS a
 LEFT JOIN `project.dataset.table_b` AS b
   ON a.id = b.id
 
--- CROSS JOIN（配列展開でよく使用）
+-- CROSS JOIN (commonly used for array expansion)
 SELECT *
 FROM `project.dataset.table`,
 UNNEST(array_column) AS element
 ```
 
-### 2.4. CTE（共通テーブル式）
+### 2.4. CTE (Common Table Expressions)
 
 ```sql
 WITH
@@ -164,24 +164,24 @@ FROM aggregated
 ORDER BY count DESC
 ```
 
-## 3. テーブル設計
+## 3. Table Design
 
-### 3.1. パーティショニング
+### 3.1. Partitioning
 
-日付でデータを分割し、クエリのスキャン量を削減
+Divide data by date to reduce query scan volume.
 
 ```sql
--- 日付パーティションテーブル作成
+-- Create date-partitioned table
 CREATE TABLE `project.dataset.partitioned_table`
 PARTITION BY DATE(created_at)
 AS SELECT * FROM `project.dataset.source_table`;
 
--- 整数パーティション
+-- Integer partitioning
 CREATE TABLE `project.dataset.int_partitioned`
 PARTITION BY RANGE_BUCKET(user_id, GENERATE_ARRAY(0, 1000000, 10000))
 AS SELECT * FROM source;
 
--- パーティションフィルタを必須にする
+-- Require partition filter
 CREATE TABLE `project.dataset.table`
 PARTITION BY DATE(created_at)
 OPTIONS (
@@ -189,65 +189,65 @@ OPTIONS (
 );
 ```
 
-### 3.2. クラスタリング
+### 3.2. Clustering
 
-指定したカラムでデータをソート・グループ化
+Sort and group data by specified columns.
 
 ```sql
--- クラスタリングテーブル
+-- Clustering table
 CREATE TABLE `project.dataset.clustered_table`
 PARTITION BY DATE(created_at)
 CLUSTER BY user_id, category
 AS SELECT * FROM source;
 ```
 
-### 3.3. ベストプラクティス
+### 3.3. Best Practices
 
-- パーティションとクラスタリングを組み合わせる
-- クエリでよくフィルタするカラムを選択
-- クラスタリングカラムは最大4つまで
-- カーディナリティが高いカラムを優先
+- Combine partitioning and clustering
+- Choose columns frequently filtered in queries
+- Maximum 4 clustering columns
+- Prioritize high-cardinality columns
 
-## 4. パフォーマンス最適化
+## 4. Performance Optimization
 
-### 4.1. クエリ最適化
+### 4.1. Query Optimization
 
 ```sql
--- SELECT * を避ける
+-- Avoid SELECT *
 -- Bad
 SELECT * FROM table;
 -- Good
 SELECT column1, column2 FROM table;
 
--- パーティションプルーニングを活用
--- Bad（パーティションカラムに関数適用）
+-- Leverage partition pruning
+-- Bad (function applied to partition column)
 WHERE DATE(created_at) = '2024-01-01'
 -- Good
 WHERE created_at >= '2024-01-01' AND created_at < '2024-01-02'
 
--- APPROX_ 関数で概算（高速）
+-- Use APPROX_ functions for estimates (faster)
 SELECT APPROX_COUNT_DISTINCT(user_id) FROM table;
 ```
 
-### 4.2. JOIN 最適化
+### 4.2. JOIN Optimization
 
 ```sql
--- 小さいテーブルを右側に（ブロードキャスト JOIN）
+-- Put smaller table on right side (broadcast JOIN)
 SELECT *
 FROM large_table
 JOIN small_table ON large_table.id = small_table.id;
 
--- 必要なカラムのみ JOIN
+-- JOIN only needed columns
 WITH filtered AS (
   SELECT id, needed_column FROM large_table WHERE condition
 )
 SELECT * FROM filtered JOIN other_table ON ...
 ```
 
-### 4.3. スロット使用量の確認
+### 4.3. Check Slot Usage
 
 ```sql
--- ジョブ統計の確認
+-- Check job statistics
 SELECT
   job_id,
   total_bytes_processed,
@@ -259,52 +259,52 @@ ORDER BY total_slot_ms DESC
 LIMIT 10;
 ```
 
-## 5. コスト管理
+## 5. Cost Management
 
-### 5.1. 料金体系
+### 5.1. Pricing Model
 
-- オンデマンド: スキャンしたデータ量に基づく（$5/TB）
-- 定額（Editions）: 予約したスロットに基づく
-- ストレージ: アクティブ $0.02/GB、長期保存 $0.01/GB
+- On-demand: Based on scanned data ($5/TB)
+- Flat-rate (Editions): Based on reserved slots
+- Storage: Active $0.02/GB, Long-term $0.01/GB
 
-### 5.2. コスト削減のベストプラクティス
+### 5.2. Cost Reduction Best Practices
 
-1. SELECT * を避ける
-2. パーティションフィルタを必ず使用
-3. クエリ前にドライランでコスト確認
-4. マテリアライズドビューで繰り返しクエリを最適化
-5. BI Engine でダッシュボードクエリを高速化
+1. Avoid SELECT *
+2. Always use partition filters
+3. Check cost with dry run before queries
+4. Optimize repeated queries with materialized views
+5. Speed up dashboard queries with BI Engine
 
-### 5.3. カスタムクォータ設定
+### 5.3. Custom Quota Settings
 
 ```sql
--- プロジェクト単位でクエリバイト数制限
--- Cloud Console または gcloud で設定
+-- Set query byte limit per project
+-- Configure in Cloud Console or gcloud
 ```
 
-## 6. データガバナンス
+## 6. Data Governance
 
-### 6.1. IAM ロール
+### 6.1. IAM Roles
 
-- `roles/bigquery.admin`: 全権限
-- `roles/bigquery.dataEditor`: データの読み書き
-- `roles/bigquery.dataViewer`: データの読み取りのみ
-- `roles/bigquery.jobUser`: ジョブの実行
-- `roles/bigquery.user`: データセット一覧、ジョブ実行
+- `roles/bigquery.admin`: Full permissions
+- `roles/bigquery.dataEditor`: Read/write data
+- `roles/bigquery.dataViewer`: Read-only data
+- `roles/bigquery.jobUser`: Execute jobs
+- `roles/bigquery.user`: List datasets, execute jobs
 
-### 6.2. 列レベルセキュリティ
+### 6.2. Column-level Security
 
 ```sql
--- ポリシータグの適用
+-- Apply policy tag
 ALTER TABLE `project.dataset.table`
 ALTER COLUMN sensitive_column
 SET OPTIONS (policy_tags = ['projects/project/locations/us/taxonomies/123/policyTags/456']);
 ```
 
-### 6.3. 行レベルセキュリティ
+### 6.3. Row-level Security
 
 ```sql
--- 行アクセスポリシー作成
+-- Create row access policy
 CREATE ROW ACCESS POLICY region_filter
 ON `project.dataset.table`
 GRANT TO ('user:analyst@example.com')
@@ -313,10 +313,10 @@ FILTER USING (region = 'APAC');
 
 ## 7. BigQuery ML
 
-### 7.1. モデル作成
+### 7.1. Model Creation
 
 ```sql
--- 線形回帰モデル
+-- Linear regression model
 CREATE OR REPLACE MODEL `project.dataset.model`
 OPTIONS (
   model_type = 'LINEAR_REG',
@@ -325,7 +325,7 @@ OPTIONS (
 SELECT feature1, feature2, target
 FROM `project.dataset.training_data`;
 
--- ロジスティック回帰モデル
+-- Logistic regression model
 CREATE OR REPLACE MODEL `project.dataset.classifier`
 OPTIONS (
   model_type = 'LOGISTIC_REG',
@@ -334,13 +334,13 @@ OPTIONS (
 SELECT * FROM training_data;
 ```
 
-### 7.2. モデル評価と予測
+### 7.2. Model Evaluation and Prediction
 
 ```sql
--- モデル評価
+-- Model evaluation
 SELECT * FROM ML.EVALUATE(MODEL `project.dataset.model`);
 
--- 予測
+-- Prediction
 SELECT *
 FROM ML.PREDICT(
   MODEL `project.dataset.model`,
@@ -348,12 +348,12 @@ FROM ML.PREDICT(
 );
 ```
 
-## 8. 外部データソース
+## 8. External Data Sources
 
-### 8.1. 外部テーブル
+### 8.1. External Tables
 
 ```sql
--- Cloud Storage の CSV を外部テーブルとして参照
+-- Reference Cloud Storage CSV as external table
 CREATE EXTERNAL TABLE `project.dataset.external_table`
 OPTIONS (
   format = 'CSV',
@@ -361,7 +361,7 @@ OPTIONS (
   skip_leading_rows = 1
 );
 
--- Parquet 外部テーブル
+-- Parquet external table
 CREATE EXTERNAL TABLE `project.dataset.parquet_table`
 OPTIONS (
   format = 'PARQUET',
@@ -372,20 +372,20 @@ OPTIONS (
 ### 8.2. Federated Query
 
 ```sql
--- Cloud SQL への接続
+-- Connect to Cloud SQL
 SELECT * FROM EXTERNAL_QUERY(
   'projects/project/locations/us/connections/connection_id',
   'SELECT * FROM mysql_table'
 );
 ```
 
-## 9. スケジュールクエリ
+## 9. Scheduled Queries
 
-### 9.1. 設定例
+### 9.1. Configuration Example
 
 ```sql
--- Cloud Console または bq コマンドで設定
--- 毎日午前2時に実行
+-- Configure in Cloud Console or bq command
+-- Run daily at 2 AM
 bq query --use_legacy_sql=false \
   --schedule='every 24 hours' \
   --display_name='Daily aggregation' \
@@ -394,15 +394,15 @@ bq query --use_legacy_sql=false \
   'SELECT DATE(created_at) as date, COUNT(*) as count FROM source GROUP BY 1'
 ```
 
-## 10. 詳細ドキュメント
+## 10. Detailed Documentation
 
-`docs/` ディレクトリに補足ドキュメントが含まれている。
+See `docs/` directory for supplementary documentation.
 
-## 11. 参考リンク
+## 11. Reference Links
 
-- 公式ドキュメント: https://cloud.google.com/bigquery/docs
-- GoogleSQL リファレンス: https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax
-- 関数リファレンス: https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-all
-- bq コマンドリファレンス: https://cloud.google.com/bigquery/docs/bq-command-line-tool
-- BigQuery ML: https://cloud.google.com/bigquery/docs/bqml-introduction
-- 料金: https://cloud.google.com/bigquery/pricing
+- Official docs: <https://cloud.google.com/bigquery/docs>
+- GoogleSQL reference: <https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax>
+- Function reference: <https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-all>
+- bq command reference: <https://cloud.google.com/bigquery/docs/bq-command-line-tool>
+- BigQuery ML: <https://cloud.google.com/bigquery/docs/bqml-introduction>
+- Pricing: <https://cloud.google.com/bigquery/pricing>

@@ -1,23 +1,24 @@
 ---
 name: databricks-expert
-description: Databricks エキスパートエンジニアスキル - データエンジニアリング、機械学習基盤、権限設計に関する包括的なガイドを提供
+description: Databricks Expert Engineer Skill - Comprehensive guide for data engineering, machine learning infrastructure, and permission design
 ---
 
 # Databricks Expert Engineer Skill
 
-このスキルは Databricks 開発に関する包括的なガイドを提供する。
+This skill provides a comprehensive guide for Databricks development.
 
-## 1. Databricks CLI の利用方法
+## 1. Databricks CLI Usage
 
-### 1.1. warehouse_id について
+### 1.1. About warehouse_id
 
-- warehouse_id は Serverless SQL Warehouse を探して1つ選択する
-- 注意: databricks CLI は設定ファイルの warehouse_id を自動読み込みしないため、毎回 JSON に明示的に含める必要がある
+- Find and select one Serverless SQL Warehouse for warehouse_id
+- Note: databricks CLI does not auto-read warehouse_id from config files,
+  so explicitly include it in JSON each time
 
-### 1.2. 基本的な使い方
+### 1.2. Basic Usage
 
 ```sh
-# クエリ実行
+# Execute query
 databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
   "warehouse_id": "xxxxxxxxxx",
   "catalog": "catalog_name",
@@ -25,30 +26,30 @@ databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
   "statement": "select * from table_name limit 10"
 }'
 
-# 結果取得（statement_id は実行時に返される値）
+# Get results (statement_id is returned from execution)
 databricks api get /api/2.0/sql/statements/{statement_id} --profile "DEFAULT"
 ```
 
-### 1.3. コマンドのコツ
+### 1.3. Command Tips
 
-1. クエリ実行のフロー
-   - `post` でクエリ実行 → `statement_id` が返る
-   - `get` で結果取得（`state` が `SUCCEEDED` になるまで待つ）
-   - 長いクエリは `sleep` を挟んで再試行
+1. Query execution flow
+   - `post` executes query -> returns `statement_id`
+   - `get` retrieves results (wait until `state` is `SUCCEEDED`)
+   - For long queries, add `sleep` and retry
 
-2. エラー対策
-   - `state: CLOSED`: 結果取得が遅すぎた場合。早めに `get` を実行
-   - `state: FAILED`: SQL エラー。error_message を確認
-   - `state: RUNNING`: まだ実行中。少し待ってから再度 `get`
-   - タイムアウト: 大量データの場合は `limit` を付けて確認
+2. Error handling
+   - `state: CLOSED`: Result retrieval was too slow. Get earlier
+   - `state: FAILED`: SQL error. Check error_message
+   - `state: RUNNING`: Still executing. Wait and retry `get`
+   - Timeout: For large data, use `limit` to verify
 
-3. 結果の読み方
-   - `data_array`: 実際のデータ（2次元配列）
-   - `schema.columns`: カラム名と型情報
-   - `total_row_count`: 総件数（limit かかってても表示）
-   - `state`: クエリの実行状態
+3. Reading results
+   - `data_array`: Actual data (2D array)
+   - `schema.columns`: Column names and type info
+   - `total_row_count`: Total count (shown even with limit)
+   - `state`: Query execution state
 
-4. パラメータ付きクエリ
+4. Parameterized queries
 
 ```sh
 databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
@@ -58,176 +59,179 @@ databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
 }'
 ```
 
-## 2. Well-Architected Lakehouse フレームワーク
+## 2. Well-Architected Lakehouse Framework
 
-7つの柱で構成される
+Consists of 7 pillars:
 
-### 2.1. データおよび AI ガバナンス
+### 2.1. Data and AI Governance
 
-データと AI 資産を安全に管理するポリシーと実践。統一されたガバナンスソリューションでデータコピーを最小化。
+Policies and practices to securely manage data and AI assets.
+Minimize data copies with unified governance solution.
 
-### 2.2. 相互運用性と使いやすさ
+### 2.2. Interoperability and Usability
 
-一貫したユーザー体験と外部システムとのシームレスな統合。
+Consistent user experience and seamless integration with external systems.
 
-### 2.3. 運用上の卓越性
+### 2.3. Operational Excellence
 
-本番環境での継続的な運用を支えるプロセス。
+Processes supporting continuous production operations.
 
-### 2.4. セキュリティ、プライバシー、コンプライアンス
+### 2.4. Security, Privacy, and Compliance
 
-脅威からの保護措置を実装。
+Implement safeguards against threats.
 
-### 2.5. 信頼性
+### 2.5. Reliability
 
-障害復旧能力の確保。
+Ensure disaster recovery capabilities.
 
-### 2.6. パフォーマンス効率
+### 2.6. Performance Efficiency
 
-負荷変化への適応性。
+Adaptability to workload changes.
 
-### 2.7. コスト最適化
+### 2.7. Cost Optimization
 
-価値提供を最大化するためのコスト管理。
+Cost management to maximize value delivery.
 
 ## 3. Unity Catalog
 
-### 3.1. 基本概念
+### 3.1. Basic Concepts
 
-- 「一度定義すれば、どこでも安全」アプローチ
-- 複数ワークスペース全体で統一されたアクセス制御ポリシー
-- ANSI SQL 準拠の権限管理
+- "Define once, secure everywhere" approach
+- Unified access control policies across multiple workspaces
+- ANSI SQL compliant permission management
 
-### 3.2. オブジェクトモデル
+### 3.2. Object Model
 
-3段階の名前空間: `catalog.schema.table`
+3-level namespace: `catalog.schema.table`
 
-1. カタログ層: データの分離単位（部門別など）
-2. スキーマ層: テーブル、ビュー、ボリュームなどを含む論理的グループ
-3. オブジェクト層: テーブル、ビュー、ボリューム、関数、モデル
+1. Catalog layer: Data isolation unit (by department, etc.)
+2. Schema layer: Logical group containing tables, views, volumes
+3. Object layer: Tables, views, volumes, functions, models
 
-### 3.3. 権限管理
+### 3.3. Permission Management
 
-- 初期状態ではユーザーはデータにアクセスできない
-- 明示的な権限付与が必要
-- 権限は上位から下位へ継承（カタログ → スキーマ → テーブル）
+- Users cannot access data by default
+- Explicit permission grants required
+- Permissions inherit from parent to child (catalog -> schema -> table)
 
 ```sql
--- 権限確認
+-- Check permissions
 SHOW GRANTS ON SCHEMA main.default;
 
--- 権限付与
+-- Grant permissions
 GRANT CREATE TABLE ON SCHEMA main.default TO `finance-team`;
 
--- 権限取消
+-- Revoke permissions
 REVOKE CREATE TABLE ON SCHEMA main.default FROM `finance-team`;
 ```
 
-### 3.4. ベストプラクティス
+### 3.4. Best Practices
 
-- マネージドテーブル/ボリュームを推奨（Delta Lake 形式、フルライフサイクル管理）
-- ワークスペース間でのカタログ分離が可能
-- 各カタログごとに独立したマネージドストレージロケーション設定を推奨
+- Managed tables/volumes recommended
+  (Delta Lake format, full lifecycle management)
+- Catalog isolation across workspaces possible
+- Independent managed storage location per catalog recommended
 
-## 4. データエンジニアリング
+## 4. Data Engineering
 
-### 4.1. Lakeflow ソリューション
+### 4.1. Lakeflow Solution
 
-データの取り込み、変換、オーケストレーションを統合
+Unifies data ingestion, transformation, and orchestration.
 
-- Lakeflow Connect: データ取り込みを簡素化
-- Lakeflow Spark Declarative Pipelines (SDP): 宣言型パイプラインフレームワーク
-- Lakeflow Jobs: ワークフロー自動化
+- Lakeflow Connect: Simplifies data ingestion
+- Lakeflow Spark Declarative Pipelines (SDP): Declarative pipeline framework
+- Lakeflow Jobs: Workflow automation
 
 ### 4.2. Delta Lake
 
-- ファイルベースのトランザクションログを備えた Parquet データファイル
-- ACID トランザクション
-- タイムトラベル機能
-- 最適化: 液体クラスタリング、データスキップ、ファイルレイアウト最適化、vacuum
+- Parquet data files with file-based transaction log
+- ACID transactions
+- Time travel functionality
+- Optimizations: liquid clustering, data skipping,
+  file layout optimization, vacuum
 
 ### 4.3. Lakeflow Jobs
 
-タスクタイプ
+Task types:
 
-- ノートブックタスク
-- パイプラインタスク
-- Python スクリプトタスク
+- Notebook tasks
+- Pipeline tasks
+- Python script tasks
 
-トリガー
+Triggers:
 
-- 時間ベース（例: 毎日午前2時）
-- イベントベース（新データ到着時）
+- Time-based (e.g., daily at 2 AM)
+- Event-based (on new data arrival)
 
-制限事項
+Limits:
 
-- ワークスペース: 最大2000並行タスク実行
-- 保存ジョブ: 最大12000
-- ジョブあたりタスク: 最大1000
+- Workspace: Max 2000 concurrent task executions
+- Saved jobs: Max 12000
+- Tasks per job: Max 1000
 
-## 5. 機械学習基盤
+## 5. Machine Learning Infrastructure
 
 ### 5.1. MLflow
 
-- 実験追跡とモデル管理の中核ツール
-- GenAI 向け専用機能
+- Core tool for experiment tracking and model management
+- Dedicated features for GenAI
 
 ### 5.2. Feature Store
 
-- 特徴量管理システム
-- 自動データパイプラインと特徴量発見
+- Feature management system
+- Automatic data pipelines and feature discovery
 
-### 5.3. モデルサービング
+### 5.3. Model Serving
 
-- カスタムモデルと LLM を REST エンドポイントとしてデプロイ
-- 自動スケーリングと GPU サポート
+- Deploy custom models and LLMs as REST endpoints
+- Auto-scaling and GPU support
 
-## 6. セキュリティ
+## 6. Security
 
-### 6.1. 認証とアクセス制御
+### 6.1. Authentication and Access Control
 
-- SSO 設定
-- 多要素認証
-- アクセス制御リスト
+- SSO configuration
+- Multi-factor authentication
+- Access control lists
 
-### 6.2. ネットワークセキュリティ
+### 6.2. Network Security
 
-- プライベート接続
-- サーバーレスエグレス制御
-- ファイアウォール設定
-- VPC 管理
+- Private connectivity
+- Serverless egress control
+- Firewall settings
+- VPC management
 
-### 6.3. データ暗号化
+### 6.3. Data Encryption
 
-- 保存時・転送時の暗号化
-- カスタマー管理キー
-- クラスタ間通信の暗号化
-- 認証情報の自動マスキング
+- Encryption at rest and in transit
+- Customer-managed keys
+- Inter-cluster communication encryption
+- Automatic credential masking
 
 ## 7. SQL Warehouse
 
-### 7.1. Serverless SQL Warehouse の利点
+### 7.1. Serverless SQL Warehouse Benefits
 
 - Instant and elastic compute
-- 自動スケーリング
-- 最小限の管理（Databricks がキャパシティ管理を担当）
-- 低い総所有コスト
+- Auto-scaling
+- Minimal management (Databricks handles capacity)
+- Low total cost of ownership
 
-## 8. 詳細ドキュメント
+## 8. Detailed Documentation
 
-`docs/` ディレクトリに以下の詳細ドキュメントが含まれている
+See `docs/` directory for detailed documentation:
 
-- `unity-catalog.md` - Unity Catalog の詳細と権限管理
-- `data-engineering.md` - データエンジニアリングのベストプラクティス
-- `machine-learning.md` - 機械学習基盤の詳細
-- `security.md` - セキュリティと権限設計
-- `well-architected.md` - Well-Architected フレームワーク
+- `unity-catalog.md` - Unity Catalog details and permission management
+- `data-engineering.md` - Data engineering best practices
+- `machine-learning.md` - Machine learning infrastructure details
+- `security.md` - Security and permission design
+- `well-architected.md` - Well-Architected framework
 
-## 9. 参考リンク
+## 9. Reference Links
 
-- 公式ドキュメント: https://docs.databricks.com/
-- Unity Catalog: https://docs.databricks.com/en/data-governance/unity-catalog/
-- Lakeflow Jobs: https://docs.databricks.com/en/jobs/
-- MLflow: https://docs.databricks.com/en/mlflow/
-- Delta Lake: https://docs.databricks.com/en/delta/
-- セキュリティ: https://docs.databricks.com/en/security/
+- Official docs: <https://docs.databricks.com/>
+- Unity Catalog: <https://docs.databricks.com/en/data-governance/unity-catalog/>
+- Lakeflow Jobs: <https://docs.databricks.com/en/jobs/>
+- MLflow: <https://docs.databricks.com/en/mlflow/>
+- Delta Lake: <https://docs.databricks.com/en/delta/>
+- Security: <https://docs.databricks.com/en/security/>

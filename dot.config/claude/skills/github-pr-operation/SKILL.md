@@ -1,50 +1,51 @@
 ---
 name: github-pr-operation
 description: |
-  GitHub Pull Request の操作を行うスキル。gh コマンドを使用して PR 情報取得、差分確認、コメント取得・投稿を実行する。
-  以下の場合に使用:
-  - PR にコメントを投稿したいとき
-  - PR のインラインコメントを投稿したいとき
-  - PR のコメントに返信したいとき
-  - PR の差分を行番号付きで確認したいとき
+  GitHub Pull Request operations skill. Uses gh command to retrieve PR info,
+  check diffs, and get/post comments.
+  Use when:
+  - Posting comments to a PR
+  - Posting inline comments to a PR
+  - Replying to PR comments
+  - Checking diffs with line numbers
 ---
 
 # GitHub PR Operation Skill
 
-gh コマンドを使用した GitHub Pull Request 操作のリファレンス。
+Reference for GitHub Pull Request operations using gh command.
 
-## 1. 前提条件
+## 1. Prerequisites
 
-- gh CLI がインストール・認証済みであること
-- jq がインストールされていること
+- gh CLI installed and authenticated
+- jq installed
 
-## 2. PR 情報の取得
+## 2. Get PR Information
 
-### 2.1. 基本情報
+### 2.1. Basic Information
 
 ```bash
 gh pr view NUMBER --repo OWNER/REPO --json title,body,author,state,baseRefName,headRefName,url
 ```
 
-### 2.2. 現在のブランチの PR 番号を取得
+### 2.2. Get Current Branch PR Number
 
 ```bash
 gh pr view --json number -q '.number'
 ```
 
-### 2.3. 最新コミット SHA を取得
+### 2.3. Get Latest Commit SHA
 
-インラインコメント投稿時に必要。
+Required for inline comment posting.
 
 ```bash
 gh pr view NUMBER --repo OWNER/REPO --json commits --jq '.commits[-1].oid'
 ```
 
-## 3. 差分の確認
+## 3. Check Diff
 
-### 3.1. 行番号付き差分
+### 3.1. Diff with Line Numbers
 
-インラインコメントの位置特定に使用する。
+Use for identifying inline comment positions.
 
 ```bash
 gh pr diff NUMBER --repo OWNER/REPO | awk '
@@ -67,105 +68,106 @@ in_hunk { printf "L%-4d R%-4d| %s\n", old_line++, new_line++, $0; next }
 '
 ```
 
-出力形式:
+Output format:
 
-- `L123      |` - 削除行（左側の行番号）
-- `     R456 |` - 追加行（右側の行番号）
-- `L123 R456 |` - 変更なし行（両方の行番号）
+- `L123      |` - Deleted line (left side line number)
+- `R456      |` - Added line (right side line number)
+- `L123 R456 |` - Unchanged line (both line numbers)
 
-## 4. コメントの取得
+## 4. Get Comments
 
-### 4.1. Issue コメント（PR 全体へのコメント）
+### 4.1. Issue Comments (PR-wide Comments)
 
 ```bash
 gh api repos/OWNER/REPO/issues/NUMBER/comments --jq '.[] | {id, user: .user.login, created_at, body}'
 ```
 
-### 4.2. Review コメント（インラインコメント）
+### 4.2. Review Comments (Inline Comments)
 
 ```bash
 gh api repos/OWNER/REPO/pulls/NUMBER/comments --jq '.[] | {id, user: .user.login, path, line, body, in_reply_to_id}'
 ```
 
-### 4.3. すべてのコメントを一括取得
+### 4.3. Get All Comments at Once
 
 ```bash
-# Issue コメント
+# Issue comments
 gh api repos/OWNER/REPO/issues/NUMBER/comments > /tmp/issue-comments.json
 
-# Review コメント
+# Review comments
 gh api repos/OWNER/REPO/pulls/NUMBER/comments > /tmp/review-comments.json
 ```
 
-## 5. コメントの投稿
+## 5. Post Comments
 
-### 5.1. PR 全体へのコメント
+### 5.1. PR-wide Comment
 
 ```bash
-gh pr comment NUMBER --repo OWNER/REPO --body "コメント本文"
+gh pr comment NUMBER --repo OWNER/REPO --body "Comment body"
 ```
 
-複数行の場合:
+For multiple lines:
 
 ```bash
 gh pr comment NUMBER --repo OWNER/REPO --body "$(cat <<'EOF'
-## レビュー結果
+## Review Results
 
-- 指摘1
-- 指摘2
+- Issue 1
+- Issue 2
 EOF
 )"
 ```
 
-### 5.2. インラインコメント
+### 5.2. Inline Comment
 
-特定の行にコメントを付ける。
+Post comment on specific line.
 
 ```bash
-# 最新コミット SHA を取得
+# Get latest commit SHA
 COMMIT_SHA=$(gh pr view NUMBER --repo OWNER/REPO --json commits --jq '.commits[-1].oid')
 
-# インラインコメントを投稿
+# Post inline comment
 gh api repos/OWNER/REPO/pulls/NUMBER/comments \
   --method POST \
-  -f body="コメント本文" \
+  -f body="Comment body" \
   -f commit_id="$COMMIT_SHA" \
   -f path="path/to/file.py" \
   -F line=15 \
   -f side=RIGHT
 ```
 
-パラメータ:
+Parameters:
 
-| パラメータ | 説明 |
+| Parameter | Description |
 | --- | --- |
-| body | コメント本文 |
-| commit_id | 対象コミットの SHA |
-| path | ファイルパス（リポジトリルートからの相対パス） |
-| line | 行番号（差分の右側 R の番号を使用） |
-| side | RIGHT（追加行）または LEFT（削除行） |
+| body | Comment body |
+| commit_id | Target commit SHA |
+| path | File path (relative from repository root) |
+| line | Line number (use R number from diff right side) |
+| side | RIGHT (added line) or LEFT (deleted line) |
 
-### 5.3. コメントへの返信
+### 5.3. Reply to Comment
 
 ```bash
 gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies \
   --method POST \
-  -f body="返信本文"
+  -f body="Reply body"
 ```
 
-## 6. 注意事項
+## 6. Notes
 
-### 6.1. インラインコメントの行番号
+### 6.1. Inline Comment Line Numbers
 
-- 差分の **右側（R）** の行番号を使用する
-- 削除行にコメントする場合は `side=LEFT` と **左側（L）** の行番号を使用
-- 行番号は差分のハンク内での位置ではなく、ファイル内の絶対行番号
+- Use diff right side (R) line numbers
+- For comments on deleted lines, use `side=LEFT` and left side (L) line number
+- Line numbers are absolute positions in file, not positions within diff hunk
 
-### 6.2. コメント投稿の権限
+### 6.2. Comment Posting Permissions
 
-- PR へのコメント投稿は GitHub の権限に依存する
-- 自分がアクセス権を持つリポジトリでのみ実行可能
+- PR comment posting depends on GitHub permissions
+- Only executable on repositories you have access to
 
-### 6.3. rules/git.md との関係
+### 6.3. Relationship with rules/git.md
 
-このスキルは操作方法（How）を提供する。許可/禁止ルールは `rules/git.md` に従うこと。
+This skill provides operations (How).
+Follow `rules/git.md` for permission rules.

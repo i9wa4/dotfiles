@@ -1,158 +1,160 @@
 ---
 name: draw-io
-description: draw.io 図の作成・編集・レビューを行う。.drawio ファイルの XML 編集、PNG 変換、レイアウト調整、AWS アイコン使用時に使用する。
+description: draw.io diagram creation, editing, and review. Use for .drawio XML editing, PNG conversion, layout adjustment, and AWS icon usage.
 ---
 
-# draw.io 図作成スキル
+# draw.io Diagram Skill
 
-## 1. 基本ルール
+## 1. Basic Rules
 
-- `.drawio` ファイルのみを編集する
-- `.drawio.png` ファイルを直接編集しない
-- pre-commit hook により自動生成される `.drawio.png` をスライド等で利用する
+- Edit only `.drawio` files
+- Do not directly edit `.drawio.png` files
+- Use auto-generated `.drawio.png` by pre-commit hook in slides
 
-## 2. フォント設定
+## 2. Font Settings
 
-Quarto スライドで使用する図は、mxGraphModel タグに `defaultFontFamily` を指定する
+For diagrams used in Quarto slides,
+specify `defaultFontFamily` in mxGraphModel tag:
 
 ```xml
 <mxGraphModel defaultFontFamily="Noto Sans JP" ...>
 ```
 
-各テキスト要素の style 属性にも明示的に `fontFamily` を指定する
+Also explicitly specify `fontFamily` in each text element's style attribute:
 
 ```xml
 style="text;html=1;fontSize=27;fontFamily=Noto Sans JP;"
 ```
 
-## 3. 変換コマンド
+## 3. Conversion Commands
 
-変換スクリプトは [scripts/convert-drawio-to-png.sh](scripts/convert-drawio-to-png.sh) を参照。
+See conversion script at [scripts/convert-drawio-to-png.sh](scripts/convert-drawio-to-png.sh).
 
 ```sh
-# 全ての .drawio ファイルを変換
+# Convert all .drawio files
 mise exec -- pre-commit run --all-files
 
-# 特定の .drawio ファイルのみ変換
+# Convert specific .drawio file
 mise exec -- pre-commit run convert-drawio-to-png --files assets/my-diagram.drawio
 
-# スクリプトを直接実行 (スキルのスクリプトを使用)
+# Run script directly (using skill's script)
 bash ~/.claude/skills/draw-io/scripts/convert-drawio-to-png.sh assets/diagram1.drawio
 ```
 
-内部で使用されるコマンド
+Internal command used:
 
 ```sh
 drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 ```
 
-| オプション | 説明 |
-|-----------|------|
-| `-x` | エクスポートモード |
-| `-f png` | PNG フォーマットで出力 |
-| `-s 2` | 2倍スケール (高解像度) |
-| `-t` | 透明背景 |
-| `-o` | 出力ファイルパス |
+| Option | Description |
+|--------|-------------|
+| `-x` | Export mode |
+| `-f png` | PNG format output |
+| `-s 2` | 2x scale (high resolution) |
+| `-t` | Transparent background |
+| `-o` | Output file path |
 
-## 4. レイアウト調整
+## 4. Layout Adjustment
 
-### 4.1. 座標調整の手順
+### 4.1. Coordinate Adjustment Steps
 
-1. `.drawio` ファイルをテキストエディタで開く (プレーンな XML 形式)
-2. 調整したい要素の `mxCell` を探す (`value` 属性でテキストを検索)
-3. `mxGeometry` タグの座標を調整
-    - `x`: 左からの位置
-    - `y`: 上からの位置
-    - `width`: 幅
-    - `height`: 高さ
-4. 変換を実行して確認
+1. Open `.drawio` file in text editor (plain XML format)
+2. Find `mxCell` for element to adjust (search by `value` attribute for text)
+3. Adjust coordinates in `mxGeometry` tag
+   - `x`: Position from left
+   - `y`: Position from top
+   - `width`: Width
+   - `height`: Height
+4. Run conversion and verify
 
-### 4.2. 座標計算
+### 4.2. Coordinate Calculation
 
-- 要素の中心座標 = `y + (height / 2)`
-- 複数要素を揃える場合は中心座標を計算して合わせる
+- Element center coordinate = `y + (height / 2)`
+- To align multiple elements, calculate and match center coordinates
 
-## 5. デザイン原則
+## 5. Design Principles
 
-### 5.1. 基本原則
+### 5.1. Basic Principles
 
-- 明確さ: シンプルで視覚的にクリーンな図を作成
-- 一貫性: 色、フォント、アイコンサイズ、線の太さを統一
-- 正確さ: 簡略化のために正確性を犠牲にしない
+- Clarity: Create simple, visually clean diagrams
+- Consistency: Unify colors, fonts, icon sizes, line thickness
+- Accuracy: Do not sacrifice accuracy for simplification
 
-### 5.2. 構成要素のルール
+### 5.2. Element Rules
 
-- すべての要素にラベルを付ける
-- 方向を示す矢印を使用 (双方向より2本の単方向矢印を推奨)
-- 公式アイコンの最新版を使用
-- 凡例を追加してカスタム記号を説明
+- Label all elements
+- Use arrows to indicate direction
+  (prefer 2 unidirectional arrows over bidirectional)
+- Use latest official icons
+- Add legend to explain custom symbols
 
-### 5.3. アクセシビリティ
+### 5.3. Accessibility
 
-- 十分な色のコントラストを確保
-- 色だけでなくパターンも併用
+- Ensure sufficient color contrast
+- Use patterns in addition to colors
 
-### 5.4. プログレッシブディスクロージャー
+### 5.4. Progressive Disclosure
 
-複雑なシステムは段階的に図を分ける
+Separate complex systems into staged diagrams:
 
-| 図の種類 | 目的 |
-|----------|------|
-| コンテキスト図 | システムを外部から見た全体像 |
-| システム図 | 主要コンポーネントとその関係 |
-| コンポーネント図 | 技術詳細と統合ポイント |
-| デプロイ図 | インフラストラクチャ構成 |
-| データフロー図 | データの流れと変換 |
-| シーケンス図 | 時系列の相互作用 |
+| Diagram Type | Purpose |
+|--------------|---------|
+| Context Diagram | System overview from external perspective |
+| System Diagram | Main components and relationships |
+| Component Diagram | Technical details and integration points |
+| Deployment Diagram | Infrastructure configuration |
+| Data Flow Diagram | Data flow and transformation |
+| Sequence Diagram | Time-series interactions |
 
-### 5.5. メタデータ
+### 5.5. Metadata
 
-図にはタイトル、説明、最終更新日、作成者、バージョンを記載する。
+Include title, description, last updated, author, and version in diagrams.
 
-## 6. ベストプラクティス
+## 6. Best Practices
 
-### 6.1. 背景色
+### 6.1. Background Color
 
-- `background="#ffffff"` は削除すること
-- 透明背景にすることで、様々なテーマに対応できる
+- Remove `background="#ffffff"`
+- Transparent background adapts to various themes
 
-### 6.2. フォントサイズ
+### 6.2. Font Size
 
-- PDF 表示で読みやすくするため、標準フォントサイズの 1.5 倍 (18px 程度) を使用
+- Use 1.5x standard font size (around 18px) for PDF readability
 
-### 6.3. 日本語テキスト幅
+### 6.3. Japanese Text Width
 
-- 1 文字あたり 30〜40px を確保
-- 不足すると意図しない改行が発生する
+- Allow 30-40px per character
+- Insufficient width causes unintended line breaks
 
 ```xml
-<!-- 10文字のテキストなら 300〜400px を確保 -->
+<!-- For 10-character text, allow 300-400px -->
 <mxGeometry x="140" y="60" width="400" height="40" />
 ```
 
-### 6.4. 矢印配置
+### 6.4. Arrow Placement
 
-- 矢印は必ず最背面に配置 (XML で Title の直後に配置)
-- 矢印がラベルと被らないように配置
-- 矢印の起点・終点はラベルの下辺から最低 20px 以上離す
+- Always place arrows at back (position in XML right after Title)
+- Position arrows to avoid overlapping with labels
+- Keep arrow start/end at least 20px from label bottom edge
 
 ```xml
 <!-- Title -->
 <mxCell id="title" value="..." .../>
 
-<!-- Arrows (最背面) -->
+<!-- Arrows (back layer) -->
 <mxCell id="arrow1" style="edgeStyle=..." .../>
 
-<!-- Other elements (前面に表示される) -->
+<!-- Other elements (front layer) -->
 <mxCell id="box1" .../>
 ```
 
-### 6.5. テキストラベルへの矢印接続
+### 6.5. Arrow Connection to Text Labels
 
-テキスト要素への接続は `exitX/exitY` が効かないため、明示的な座標を使用する
+For text elements, exitX/exitY don't work, so use explicit coordinates:
 
 ```xml
-<!-- 良い例: sourcePoint/targetPoint で明示的に座標を指定 -->
+<!-- Good: Explicit coordinates with sourcePoint/targetPoint -->
 <mxCell id="arrow" style="..." edge="1" parent="1">
   <mxGeometry relative="1" as="geometry">
     <mxPoint x="1279" y="500" as="sourcePoint"/>
@@ -165,103 +167,104 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 </mxCell>
 ```
 
-### 6.6. edgeLabel の offset 調整
+### 6.6. edgeLabel Offset Adjustment
 
-矢印ラベルを矢印から離すには、offset 属性を調整する
+Adjust offset attribute to distance arrow labels from arrows:
 
 ```xml
-<!-- 矢印の上側に配置 (マイナス値で離す) -->
+<!-- Place above arrow (negative value to distance) -->
 <mxPoint x="0" y="-40" as="offset"/>
 
-<!-- 矢印の下側に配置 (プラス値で離す) -->
+<!-- Place below arrow (positive value to distance) -->
 <mxPoint x="0" y="40" as="offset"/>
 ```
 
-### 6.7. 不要な要素の削除
+### 6.7. Remove Unnecessary Elements
 
-- 文脈に不要な装飾アイコンは削除
-- 例: ECR があれば、別途 Docker アイコンは不要
+- Remove decorative icons irrelevant to context
+- Example: If ECR exists, separate Docker icon is unnecessary
 
-### 6.8. ラベルと見出し
+### 6.8. Labels and Headings
 
-- サービス名のみ: 1 行
-- サービス名 + 補足情報: 改行して 2 行
-- 冗長な表記 (例: ECR Container Registry): 短縮して 1 行
-- 改行には `&lt;br&gt;` タグを使用
+- Service name only: 1 line
+- Service name + supplementary info: 2 lines with line break
+- Redundant notation (e.g., ECR Container Registry): shorten to 1 line
+- Use `&lt;br&gt;` tag for line breaks
 
-### 6.9. 背景枠と内部要素の配置
+### 6.9. Background Frame and Internal Element Placement
 
-背景枠（グループ化用のボックス）の中に要素を配置する際は、十分なマージンを確保する。
+When placing elements inside background frames (grouping boxes),
+ensure sufficient margin.
 
-- YOU MUST: 内部要素は背景枠の境界から最低 30px 以上のマージンを確保
-- YOU MUST: 角丸 (`rounded=1`) やストローク幅 (`strokeWidth`) を考慮して余裕を持たせる
-- YOU MUST: PNG 出力後に必ず視覚的に確認し、はみ出しがないかチェック
+- YOU MUST: Internal elements must have at least 30px margin from frame boundary
+- YOU MUST: Account for rounded corners (`rounded=1`) and stroke width
+- YOU MUST: Always visually verify PNG output for overflow
 
-座標計算の確認方法
+Coordinate calculation verification:
 
 ```text
-背景枠: y=20, height=400 → 範囲は y=20〜420
-内部要素の上端: 背景枠の y + 30 以上 (例: y=50)
-内部要素の下端: 背景枠の y + height - 30 以下 (例: y=390 まで)
+Background frame: y=20, height=400 -> range is y=20-420
+Internal element top: frame y + 30 or more (e.g., y=50)
+Internal element bottom: frame y + height - 30 or less (e.g., up to y=390)
 ```
 
-悪い例（はみ出る可能性あり）
+Bad example (may overflow):
 
 ```xml
-<!-- 背景枠 -->
+<!-- Background frame -->
 <mxCell id="bg" style="rounded=1;strokeWidth=3;...">
   <mxGeometry x="500" y="20" width="560" height="400" />
 </mxCell>
-<!-- テキスト: y=30 は枠の上端(y=20)に近すぎる -->
-<mxCell id="label" value="タイトル" style="text;...">
+<!-- Text: y=30 is too close to frame top (y=20) -->
+<mxCell id="label" value="Title" style="text;...">
   <mxGeometry x="510" y="30" width="540" height="35" />
 </mxCell>
 ```
 
-良い例（十分なマージン）
+Good example (sufficient margin):
 
 ```xml
-<!-- 背景枠 -->
+<!-- Background frame -->
 <mxCell id="bg" style="rounded=1;strokeWidth=3;...">
   <mxGeometry x="500" y="20" width="560" height="430" />
 </mxCell>
-<!-- テキスト: y=50 は枠の上端(y=20)から30px離れている -->
-<mxCell id="label" value="タイトル" style="text;...">
+<!-- Text: y=50 is 30px from frame top (y=20) -->
+<mxCell id="label" value="Title" style="text;...">
   <mxGeometry x="510" y="50" width="540" height="35" />
 </mxCell>
 ```
 
-## 7. リファレンス
+## 7. Reference
 
-- [レイアウトガイドライン](references/layout-guidelines.md)
-- [AWS アイコン](references/aws-icons.md)
-- [AWS アイコン検索スクリプト](scripts/find_aws_icon.py)
+- [Layout Guidelines](references/layout-guidelines.md)
+- [AWS Icons](references/aws-icons.md)
+- [AWS Icon Search Script](scripts/find_aws_icon.py)
 
-AWS アイコン検索例
+AWS icon search examples:
 
 ```sh
 python ~/.claude/skills/draw-io/scripts/find_aws_icon.py ec2
 python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 ```
 
-## 8. チェックリスト
+## 8. Checklist
 
-- [ ] 背景色が設定されていないか (page="0" であること)
-- [ ] フォントサイズは適切か (大きめ推奨)
-- [ ] 矢印が最背面に配置されているか
-- [ ] 矢印がラベルと被っていないか (PNG で確認)
-- [ ] 矢印の起点・終点がラベルから十分離れているか (最低 20px 以上)
-- [ ] 矢印が他のボックスやアイコンを貫通していないか (PNG で確認)
-- [ ] 背景枠の内部要素が枠からはみ出していないか (PNG で確認)
-- [ ] 背景枠と内部要素の間に 30px 以上のマージンがあるか
-- [ ] AWS サービス名が正式名称・正しい略称になっているか
-- [ ] AWS アイコンが最新版 (mxgraph.aws4.*) か
-- [ ] 不要な要素が残っていないか
-- [ ] PNG に変換して視覚的に確認したか
+- [ ] No background color set (page="0")
+- [ ] Font size appropriate (larger recommended)
+- [ ] Arrows placed at back layer
+- [ ] Arrows not overlapping labels (verify in PNG)
+- [ ] Arrow start/end sufficiently distant from labels (at least 20px)
+- [ ] Arrows not penetrating boxes or icons (verify in PNG)
+- [ ] Internal elements not overflowing background frame (verify in PNG)
+- [ ] 30px+ margin between background frame and internal elements
+- [ ] AWS service names are official names/correct abbreviations
+- [ ] AWS icons are latest version (mxgraph.aws4.*)
+- [ ] No unnecessary elements remaining
+- [ ] Visually verified PNG conversion
 
-## 9. reveal.js スライドでの画像表示
+## 9. Image Display in reveal.js Slides
 
-YAML ヘッダーに `auto-stretch: false` を追加する
+Add `auto-stretch: false` to YAML header:
 
 ```yaml
 ---
@@ -272,4 +275,4 @@ format:
 ---
 ```
 
-これにより、スマホでも画像が正しく表示される
+This ensures correct image display on mobile devices.
