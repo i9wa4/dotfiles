@@ -41,7 +41,7 @@
       "hediet.vscode-drawio.resizeImages" = null;
 
       # Python
-      "python.defaultInterpreterPath" = "/usr/bin/python3";
+      # "python.defaultInterpreterPath" = "/usr/bin/python3";
     };
   };
 }

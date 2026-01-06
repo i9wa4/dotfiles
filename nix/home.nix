@@ -94,6 +94,7 @@ in {
       pkgs.ninja
       pkgs.cmake
       pkgs.gettext
+      pkgs.gnumake
       # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
       # to appear in /Applications/Nix Apps/
     ];

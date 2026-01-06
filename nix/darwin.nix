@@ -58,6 +58,7 @@
       # Add apps here if brew-nix has issues (hash mismatch/xar errors)
       "google-chrome"
       "openvpn-connect"
+      "visual-studio-code"
     ];
   };
 
