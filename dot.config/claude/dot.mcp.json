@@ -1,5 +1,13 @@
 {
   "mcpServers": {
+    "atlassian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.atlassian.com/v1/sse"
+      ]
+    },
     "awslabs-aws-documentation-mcp-server": {
       "type": "stdio",
       "command": "uvx",
@@ -9,6 +17,19 @@
       "env": {},
       "disabled": true,
       "autoApprove": []
+    },
+    "codex-mcp": {
+      "command": "codex",
+      "args": [
+        "mcp-server"
+      ]
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     }
   }
 }

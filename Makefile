@@ -18,8 +18,7 @@ help:  ## print this help
 # --------------------------------------
 # Global Variables
 #
-MF_DOTFILES_DIR := "$${HOME}"/ghq/github.com/i9wa4/dotfiles
-MF_GITHUB_DIR := "$${HOME}"/ghq/github.com
+MF_GITHUB_DIR := $(shell ghq root)/github.com
 MF_DETECTED_OS := $(shell \
 	_uname="$$(uname -a)"; \
 	if echo "$${_uname}" | grep -q Darwin; then \
@@ -51,6 +50,7 @@ claude-config:  ## configure Claude Code MCP
 	claude mcp add --scope user codex-mcp codex mcp-server
 
 nvim-build:  ## build Neovim from source
+	ghq get -p neovim/neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim && \
 	make distclean || true && \
 	make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
@@ -58,13 +58,14 @@ nvim-build:  ## build Neovim from source
 	rm -rf build
 
 vim-build:  ## build Vim from source
+	ghq get -p vim/vim
 ifeq ($(MF_DETECTED_OS),macOS)
 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
 	make distclean || true && \
 	./configure \
-		--enable-darwin \
 		--disable-gui \
 		--enable-clipboard \
+		--enable-darwin \
 		--enable-fail-if-missing \
 		--enable-multibyte \
 		--prefix="$${HOME}"/.local \
@@ -76,13 +77,13 @@ else
 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
 	make distclean || true && \
 	./configure \
-		--without-x \
 		--disable-gui \
 		--enable-clipboard \
 		--enable-fail-if-missing \
 		--enable-multibyte \
 		--prefix="$${HOME}"/.local \
 		--with-features=huge \
+		--without-x \
 		--without-wayland && \
 	make && \
 	make install
@@ -127,9 +128,6 @@ win-copy:  ## copy config files for Windows (WSL only)
 	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows
 	rm -rf $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/bin           $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.config    $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/dot.vscode    $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_DOTFILES_DIR)/etc           $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_GITHUB_DIR)/i9wa4/dotfiles/bin $(MF_WIN_UTIL_DIR)
 	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | \
 		tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
