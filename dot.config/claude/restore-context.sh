@@ -1,12 +1,9 @@
-#!/bin/bash
-# autocompaction 後に CLAUDE.md の内容を再注入するスクリプト
-
+#!/usr/bin/env bash
+# reload CLAUDE.md after autocompaction
 CLAUDE_MD="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
 
-if [[ -f "$CLAUDE_MD" ]]; then
-  # CLAUDE.md の内容を読み込んで JSON 形式で出力
+if [[ -f $CLAUDE_MD ]]; then
   content=$(cat "$CLAUDE_MD")
-  # JSON エスケープ
   escaped=$(echo "$content" | jq -Rs .)
   echo "{\"userMessage\": $escaped}"
 fi

@@ -46,9 +46,6 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	xattr -rc $(MF_GITHUB_DIR)
 endif
 
-claude-config:  ## configure Claude Code MCP
-	claude mcp add --scope user codex-mcp codex mcp-server
-
 nvim-build:  ## build Neovim from source
 	ghq get -p neovim/neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim && \

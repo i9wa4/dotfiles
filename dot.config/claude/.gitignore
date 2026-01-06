@@ -1,15 +1,17 @@
 *
 !.gitignore
-!dot.mcp.json
-!settings.json
-!commands/
-!commands/**
-!skills/
-!skills/**
-skills/.system/
-skills/**/*.skill
 !agents/
 !agents/**
+!commands/
+!commands/**
+!dot.mcp.json
+!restore-context.sh
 !rules/
 !rules/**
-!restore-context.sh
+!settings.json
+
+# Skills
+!skills/
+!skills/**
+skills/**/*.skill
+skills/.system/
