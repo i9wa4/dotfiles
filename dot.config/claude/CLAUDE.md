@@ -27,7 +27,7 @@ in character, then run `echo "$(date)"` to get the current time.
 
 Files and directories described below are located at:
 
-`~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/`
+@~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/
 
 ### 4.1. Rules
 
