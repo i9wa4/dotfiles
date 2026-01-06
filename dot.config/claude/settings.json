@@ -63,7 +63,6 @@
   "enabledPlugins": {
     "example-skills@anthropic-agent-skills": true,
     "document-skills@anthropic-agent-skills": true,
-    "commit-commands@claude-code-plugins": true,
     "pyright-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
