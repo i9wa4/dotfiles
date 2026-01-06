@@ -10,44 +10,33 @@ This repository uses nix as the source of truth for package versions.
 nix (source of truth)
 ├── flake.lock          # nixpkgs versions
 └── nix/packages/*.nix  # custom package versions
-        ↓ sync
-    mise.toml           # for CI (GitHub Actions)
 ```
 
-Environment separation:
-
-| Environment | Tool Provider |
-|-------------|---------------|
-| Local | devShell (auto-activated by direnv) |
-| CI | mise.toml (`mise install`) |
-
-### 1.2. Check for Updates
+### 1.2. Preview Updates
 
 ```sh
-uv run python bin/nix-update-check.py
+# nixpkgs packages
+uv run python bin/nix-pkgs-diff.py
+
+# Custom packages
+uv run python bin/nix-custom-diff.py
 ```
 
-### 1.3. Update All Packages
+### 1.3. Update Packages
 
 ```sh
-uv run python bin/nix-update-all.py
+# Update flake.lock (nixpkgs packages)
+nix flake update
+
+# Update custom packages
+nix run nixpkgs#nix-update -- --flake <package-name>
 ```
-
-This command:
-
-1. Runs `nix flake update` (updates flake.lock)
-2. Runs `nix-update` for custom packages (updates nix/packages/*.nix)
-3. Syncs versions to mise.toml
 
 ### 1.4. Adding a New Package
 
 #### 1.4.1. nixpkgs Package
 
-1. Add to `flake.nix` devShells.ciPackages
-2. Add to `mise.toml`
-
-The nix attribute is auto-inferred from mise key
-(e.g., `aqua:owner/Repo` -> `repo`).
+Add to `flake.nix` devShells section.
 
 #### 1.4.2. Custom Package (not in nixpkgs)
 
@@ -143,14 +132,9 @@ The nix attribute is auto-inferred from mise key
    nix build '.#<name>' --no-link
    ```
 
-6. Add to devShells if needed (CI tools)
+6. Add to devShells if needed
 
-7. Add to `mise.toml` with `aqua:<owner>/<repo>` key
-
-8. Custom packages are auto-detected from `nix/packages/*.nix`
-   by `bin/nix_packages.py`
-
-#### 1.4.3. Custom Package (packages only, no mise)
+#### 1.4.3. Run without installation
 
 For rarely used tools, add only to `flake.nix` packages section.
 You can run them without installation:
