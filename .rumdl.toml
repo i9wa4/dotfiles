@@ -27,8 +27,6 @@ exclude = [
 
     # Skills external docs (fetched via site2skill)
     "**/skills/*/docs/**",
-    "**/skills/*/references/**",
-    "**/skills/*/scripts/**",
 
     # Specific files or patterns
     "CHANGELOG.md",
