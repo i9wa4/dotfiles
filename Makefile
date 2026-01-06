@@ -46,6 +46,14 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	xattr -rc $(MF_GITHUB_DIR)
 endif
 
+nix-switch:  ## update ghq repos and switch nix configuration
+ifeq ($(MF_DETECTED_OS),macOS)
+    # sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
+	sudo darwin-rebuild switch --impure --flake '.#macos-p'
+else
+	nix run home-manager -- switch --flake '.#ubuntu' --impure
+endif
+
 nvim-build:  ## build Neovim from source
 	ghq get -p neovim/neovim
 	cd $(MF_GITHUB_DIR)/neovim/neovim && \

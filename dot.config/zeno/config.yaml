@@ -19,9 +19,8 @@ snippets:
     snippet:
       cd ~/ghq/github.com/i9wa4/dotfiles &&
       ghq list | ghq get --update &&
-      sudo darwin-rebuild switch --impure --flake '.#macos-p' &&
+      make nix-switch &&
       cd ~/ghq/github.com/i9wa4/internal && uv run quarto render work/ &&
-      cd - &&
       ghq-repo-status
 
   - name: (AWS) profile
@@ -97,11 +96,11 @@ snippets:
     snippet:
       worktree-remove "$(ghq root)/$(ghq list | fzf)"
 
-  - name: (Nix) darwin-rebuild switch
-    keyword: ndr
-    # sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
+  - name: (Nix) switch
+    keyword: ns
     snippet:
-      sudo darwin-rebuild switch --impure --flake ".#macos-p"
+      cd ~/ghq/github.com/i9wa4/dotfiles &&
+      make nix-switch
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
