@@ -50,8 +50,7 @@ export FZF_DEFAULT_OPTS="
 
 # Homebrew
 # NOTE: Managed by nix-darwin. Uncomment if you use Homebrew outside of Nix.
-# export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-# export PATH=/opt/homebrew/bin:"${PATH}"
+export PATH=/opt/homebrew/bin:"${PATH}"
 
 # Neovim
 export NVIM_APPNAME=nvim
