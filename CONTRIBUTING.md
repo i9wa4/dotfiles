@@ -1,4 +1,4 @@
-# Contributing
+# CONTRIBUTING
 
 ## 1. Package Management
 
