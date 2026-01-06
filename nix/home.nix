@@ -16,8 +16,15 @@
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
 
-  # Custom packages (not in nixpkgs)
-  rumdl = pkgs.callPackage ./packages/rumdl.nix {};
+  # Custom packages (not in nixpkgs) - all packages from nix/packages/
+  customPkgs = {
+    ghalint = pkgs.callPackage ./packages/ghalint.nix {};
+    ghatm = pkgs.callPackage ./packages/ghatm.nix {};
+    pike = pkgs.callPackage ./packages/pike.nix {};
+    pinact = pkgs.callPackage ./packages/pinact.nix {};
+    rumdl = pkgs.callPackage ./packages/rumdl.nix {};
+    vim-startuptime = pkgs.callPackage ./packages/vim-startuptime.nix {};
+  };
 in {
   imports = [
     ./editorconfig.nix
@@ -89,10 +96,13 @@ in {
       pkgs.shfmt
       pkgs.statix
       pkgs.stylua
-      rumdl
+      pkgs.zizmor
       # CI/CD
       pkgs.act
+      pkgs.actionlint
+      pkgs.gitleaks
       pkgs.mise
+      pkgs.pre-commit
       # LSP
       pkgs.efm-langserver
       # Editors (latest from neovim-nightly-overlay and vim-overlay)
@@ -105,7 +115,9 @@ in {
       pkgs.gnumake
       # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
       # to appear in /Applications/Nix Apps/
-    ];
+    ]
+    # Custom packages (all from customPkgs)
+    ++ (builtins.attrValues customPkgs);
 
   # ============================================================================
   # Dotfiles (direct symlink via mkOutOfStoreSymlink)
