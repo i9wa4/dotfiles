@@ -4,52 +4,52 @@ description: "Design Review"
 
 # my-design-review
 
-このファイルを読んだら直ちに設計レビューを開始すること
+Start design review immediately after reading this file.
 
-## 1. 事前準備
+## 1. Prerequisites
 
-- この Worktree は Pull Request の対象ブランチである
-- Pull Request 番号は `gh pr view --json number -q '.number'` で取得する
-- もし Pull Request 番号が不明な場合は分岐元との差分のレビューを実施する
+- This Worktree is the PR target branch
+- Get PR number with `gh pr view --json number -q '.number'`
+- If PR number is unknown, review diff from branch point
 
-## 2. 差分の取得方法
+## 2. Getting Diff
 
-- 差分は `git diff main...HEAD` で取得する (ドット3つ)
+- Get diff with `git diff main...HEAD` (3 dots)
 
-## 3. レビュー対象
+## 3. Review Targets
 
-設計レビューの時点ではまだコードは存在せず、ドキュメントのみが対象となる
+At design review stage, code does not exist yet; only documents are reviewed.
 
-- 設計文書 (Markdown, Confluence など)
-- ER図、draw.io 図
-- API仕様書
-- 画面設計書
-- その他 PR に含まれるドキュメント
+- Design documents (Markdown, Confluence, etc.)
+- ER diagrams, draw.io diagrams
+- API specifications
+- UI design documents
+- Other documents in the PR
 
-## 4. レビュー方法
+## 4. Review Method
 
-- Pull Request の本文とコメントを全て読み込む
-- PR に含まれる全てのドキュメントをレビューする
-- あらゆる指摘を詳細に抽出する
-- 重要度順に指摘を並べる
+- Read all PR body and comments
+- Review all documents in the PR
+- Extract all issues in detail
+- Sort issues by severity
 
-## 5. レビュアーの役割
+## 5. Reviewer Roles
 
-以下のいずれかの方法でレビュアーを設定する
+Set up reviewers using one of the following methods.
 
-### 5.1. マルチエージェントモード (Claude Code)
+### 5.1. Multi-agent Mode (Claude Code)
 
-agents/ ディレクトリが利用可能な場合、5名のレビュアーエージェントを並列で実行する
+If agents/ directory is available, run 5 reviewer agents in parallel.
 
-| エージェント          | 観点                                         |
+| Agent                 | Focus                                        |
 | --------------------- | -------------------------------------------- |
-| security-reviewer     | セキュリティ脆弱性、OWASP Top 10             |
-| qa-reviewer           | 受け入れ観点、目的達成、エッジケース         |
-| architecture-reviewer | 設計俯瞰、一貫性、拡張性                     |
-| data-reviewer         | データモデル、ER図、正規化                   |
-| historian             | Issue/PR履歴、コミット経緯、プロジェクト文脈 |
+| security-reviewer     | Security vulnerabilities, OWASP Top 10       |
+| qa-reviewer           | Acceptance criteria, goal achievement, edge cases |
+| architecture-reviewer | Design overview, consistency, extensibility  |
+| data-reviewer         | Data model, ER diagrams, normalization       |
+| historian             | Issue/PR history, commit context, project context |
 
-エージェント定義ファイル
+Agent definition files:
 
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
@@ -57,26 +57,26 @@ agents/ ディレクトリが利用可能な場合、5名のレビュアーエ�
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/data-reviewer.md
 - @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
 
-実行手順
+Execution steps:
 
-1. 上記5つのエージェント定義を読み込む
-2. Task ツールを使って5つのレビューを並列実行する
-3. 各エージェントの結果を統合する
+1. Load all 5 agent definitions above
+2. Run 5 reviews in parallel using Task tool
+3. Integrate results from each agent
 
-### 5.2. シングルモード (Codex CLI / エージェント未使用時)
+### 5.2. Single Mode (Codex CLI / No Agents)
 
-ペイン番号に応じた役割で単独レビューを実施する
+Perform single review based on pane number role.
 
-- tmux ペイン番号 N を取得: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
-- ペイン番号 N に応じて対応するエージェント定義ファイルを読み込む
-    - N % 5 == 0: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/security-reviewer.md
-    - N % 5 == 1: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/qa-reviewer.md
-    - N % 5 == 2: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/architecture-reviewer.md
-    - N % 5 == 3: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/data-reviewer.md
-    - N % 5 == 4: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/historian.md
+- Get tmux pane number N: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- Load corresponding agent definition based on N % 5
+    - N % 5 == 0: @.../agents/security-reviewer.md
+    - N % 5 == 1: @.../agents/qa-reviewer.md
+    - N % 5 == 2: @.../agents/architecture-reviewer.md
+    - N % 5 == 3: @.../agents/data-reviewer.md
+    - N % 5 == 4: @.../agents/historian.md
 
-## 6. レビュー結果の Markdown ファイル出力
+## 6. Review Result Markdown Output
 
-- レビュー結果を以下に保存する
-    - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux ペイン番号)
-- tmux ペイン番号は `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'` で取得する
+- Save review results to:
+    - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux pane number)
+- Get tmux pane number: `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`

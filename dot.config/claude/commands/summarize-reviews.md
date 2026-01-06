@@ -4,58 +4,58 @@ description: "Summarize Reviews"
 
 # summarize-reviews
 
-このファイルを読んだらレビュー結果を集約する
+Aggregate review results after reading this file.
 
-## 1. 手順
+## 1. Steps
 
-1. `.i9wa4/` ディレクトリの君以外のペインのレビュー結果を読み込む
-2. PRのコメント・レビューを取得し、既に指摘済みの内容を把握する
-   - `gh pr view <number> --json comments,reviews` で取得
-3. 各ペインの指摘を以下の3カテゴリに分類する
-   - 指摘必要: 新規指摘かつ実害がある (下流への影響、データ欠損など)
-   - 指摘不要: 新規指摘だが許容範囲 (設計判断、低優先度など)
-   - 指摘済み: CodeRabbit等が既にPRでコメント済み
-4. `.i9wa4/YYYYMMDD-all-reviews.md` に集約して出力する
+1. Load review results from other panes in `.i9wa4/` directory
+2. Get PR comments/reviews to identify already-reported issues
+   - Get with `gh pr view <number> --json comments,reviews`
+3. Classify each pane's findings into 3 categories
+   - Needs reporting: New finding with real impact (downstream effects, data loss)
+   - No need to report: New finding but acceptable (design decision, low priority)
+   - Already reported: CodeRabbit etc. already commented on PR
+4. Output aggregation to `.i9wa4/YYYYMMDD-all-reviews.md`
 
-## 2. 出力フォーマット
+## 2. Output Format
 
 ```markdown
-# PR #XXX 統合レビュー結果
+# PR #XXX Integrated Review Results
 
-## 指摘必要 (新規・実害あり)
+## Needs Reporting (New, Real Impact)
 
-| #   | 重要度   | 指摘タイトル  | 指摘者   | 理由           |
-| --- | -------- | ------------- | -------- | ------         |
-| 1   | 高       | ...           | p2, p3   | 下流BIが壊れる |
+| #   | Severity | Issue Title  | Reporter | Reason               |
+| --- | -------- | ------------ | -------- | ---------------      |
+| 1   | High     | ...          | p2, p3   | Breaks downstream BI |
 
-## 指摘不要 (新規・許容範囲)
+## No Need to Report (New, Acceptable)
 
-| #   | 重要度   | 指摘タイトル  | 指摘者   | 理由               |
-| --- | -------- | ------------- | -------- | ------             |
-| 1   | 中       | ...           | p1       | 設計判断として許容 |
+| #   | Severity | Issue Title  | Reporter | Reason                        |
+| --- | -------- | ------------ | -------- | -------------------           |
+| 1   | Medium   | ...          | p1       | Acceptable as design decision |
 
-## 指摘済み (CodeRabbit等)
+## Already Reported (CodeRabbit etc.)
 
-| 指摘タイトル        | 指摘元     | 状態   |
-| -------------       | --------   | ------ |
-| Boolean型変換の問題 | CodeRabbit | 未対応 |
+| Issue Title             | Reporter   | Status     |
+| ----------------------- | ---------- | ---------- |
+| Boolean type conversion | CodeRabbit | Unresolved |
 
-## 指摘詳細
+## Issue Details
 ...
 ```
 
-## 3. 分類基準
+## 3. Classification Criteria
 
-### 3.1. 指摘必要の判断基準
+### 3.1. Needs Reporting Criteria
 
-- 下流のクエリやダッシュボードが壊れる可能性
-- データ欠損や不整合が発生する可能性
-- セキュリティ上の問題
-- 後方互換性の破壊
+- Potential to break downstream queries or dashboards
+- Potential for data loss or inconsistency
+- Security issues
+- Breaking backward compatibility
 
-### 3.2. 指摘不要の判断基準
+### 3.2. No Need to Report Criteria
 
-- 設計判断として許容される範囲
-- パフォーマンス改善などの効果が既にある
-- 低優先度で実害が少ない
-- 確認程度の内容
+- Within acceptable design decision range
+- Performance improvement already provides benefit
+- Low priority with minimal real impact
+- Confirmation-level content

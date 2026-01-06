@@ -4,79 +4,80 @@ description: "Restricted BigQuery dbt environment"
 
 # restricted-bigquery-dbt-environment
 
-このファイルの内容全体を読み取ったら、以下を実行してからペルソナに沿って了承した旨のユーモラスな応答をする。
+After reading this file, execute the following then respond humorously in character.
 
-## 1. 概要
+## 1. Overview
 
-ローカル開発時に本番スキーマへの誤書き込みを防ぐため、モデルの config に `schema='test'` を一時的に追加する。
+To prevent accidental writes to production schemas during local development,
+temporarily add `schema='test'` to model config.
 
-## 2. 環境セットアップ (初回のみ)
+## 2. Environment Setup (First Time Only)
 
-pyproject.toml から依存パッケージをインストールする。
+Install dependency packages from pyproject.toml.
 
 ```bash
 uv pip install --requirement pyproject.toml
 ```
 
-## 3. モデルに schema='test' を追加
+## 3. Add schema='test' to Model
 
-対象モデルの config に `schema='test'` を追加する。
+Add `schema='test'` to target model's config.
 
-カンマ差分を抑制するために必ず先頭に追加する。
+Always add at the beginning to minimize comma diff.
 
 ```sql
 {{
   config(
-    schema='test',  -- ← これを追加
+    schema='test',  -- <- Add this
     materialized='incremental',
     ...
   )
 }}
 ```
 
-これにより、モデルは `test` スキーマに書き込まれる。
+This writes the model to the `test` schema.
 
-## 4. 動作確認
+## 4. Verification
 
-compile でスキーマ名を確認する。
+Verify schema name with compile.
 
 ```bash
 uv run dbt compile --select <model_name> --profiles-dir ~/.dbt --no-use-colors
 ```
 
-出力に `test` スキーマが含まれていることを確認する。
+Confirm output contains `test` schema.
 
-## 5. dbt run の実行
+## 5. dbt run Execution
 
-- YOU MUST: `dbt run` 実行前にユーザーに許可を取る
-- YOU MUST: 出力スキーマが `test` であることを確認済みであること
+- YOU MUST: Get user permission before `dbt run`
+- YOU MUST: Confirm output schema is `test`
 
 ```bash
 uv run dbt run --select <model_name> --profiles-dir ~/.dbt --no-use-colors
 ```
 
-## 6. dbt test の実行
+## 6. dbt test Execution
 
 ```bash
 uv run dbt test --select <model_name> --profiles-dir ~/.dbt --no-use-colors
 ```
 
-## 7. コミット前の作業
+## 7. Pre-commit Work
 
-`schema='test'` を削除してからコミットする。
+Remove `schema='test'` before committing.
 
 ```sql
 {{
   config(
-    -- schema='test',  ← 削除
+    -- schema='test',  <- Remove
     materialized='incremental',
     ...
   )
 }}
 ```
 
-## 8. 注意事項
+## 8. Cautions
 
-- NEVER: `schema='test'` を含んだままコミットしない
-- NEVER: `schema='test'` なしで dbt run を実行しない (本番書き込みリスク)
-- YOU MUST: コミット前に `git diff` で `schema='test'` が残っていないことを確認する
+- NEVER: Do not commit with `schema='test'` included
+- NEVER: Do not run dbt run without `schema='test'` (production write risk)
+- YOU MUST: Verify with `git diff` that `schema='test'` is removed before commit

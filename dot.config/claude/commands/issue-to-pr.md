@@ -1,127 +1,127 @@
 ---
-description: "Issue to PR - 3フェーズで作業管理"
+description: "Issue to PR - 3-phase workflow management"
 ---
 
 # issue-to-pr
 
-Explore → Plan → Code → PR の流れで作業を管理する
+Manage work flow: Explore -> Plan -> Code -> PR
 
-参考: [Anthropic's Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices#a-explore-plan-code-commit)
+Reference: Anthropic's Best Practices
 
-## 1. 前提
+## 1. Prerequisites
 
-- ディレクトリ名もしくはブランチ名から Issue 番号を取得できる
-- 各フェーズの開始前と終了後に必ずユーザーに確認を取る
+- Issue number can be obtained from directory name or branch name
+- Always confirm with user before and after each phase
 
-## 2. フェーズ状態の管理
+## 2. Phase State Management
 
-`.i9wa4/phase.log` にフェーズ遷移を記録する
+Record phase transitions in `.i9wa4/phase.log`
 
 ```text
-2025-01-01 10:00:00 | START → EXPLORE
-2025-01-01 11:00:00 | EXPLORE → PLAN
+2025-01-01 10:00:00 | START -> EXPLORE
+2025-01-01 11:00:00 | EXPLORE -> PLAN
 ...
 ```
 
-途中から再開する場合
+When resuming:
 
-1. `.i9wa4/phase.log` の最終行を確認して現在のフェーズを特定
-2. 該当フェーズから作業を継続
+1. Check last line of `.i9wa4/phase.log` to identify current phase
+2. Continue work from that phase
 
-## 3. フェーズ
+## 3. Phases
 
-### 3.1. EXPLORE (調査フェーズ)
+### 3.1. EXPLORE (Investigation Phase)
 
-ultrathink 推奨
+ultrathink recommended
 
-開始前確認
+Pre-start confirmation:
 
-- Issue 本文とコメントを全件取得して内容を把握
-- `.i9wa4/phase.log` に `START → EXPLORE` を記録
-- ユーザーに調査開始の確認を取る
+- Get Issue body and all comments to understand requirements
+- Record `START -> EXPLORE` in `.i9wa4/phase.log`
+- Confirm investigation start with user
 
-実施内容
+Actions:
 
-- 要件の分析
-- 影響範囲の調査
-- 関連コードの確認
-- IMPORTANT: このフェーズではコードを書かない。調査のみ。
+- Analyze requirements
+- Investigate scope of impact
+- Review related code
+- IMPORTANT: Do not write code in this phase. Investigation only.
 
-終了後確認
+Post-completion confirmation:
 
-- 調査結果を `.i9wa4/explore.md` に保存
-- `.i9wa4/phase.log` に `EXPLORE → PLAN` を記録
-- ユーザーに調査完了の確認を取る
+- Save investigation results to `.i9wa4/explore.md`
+- Record `EXPLORE -> PLAN` in `.i9wa4/phase.log`
+- Confirm investigation completion with user
 
-### 3.2. PLAN (計画フェーズ)
+### 3.2. PLAN (Planning Phase)
 
-ultrathink 推奨
+ultrathink recommended
 
-開始前確認
+Pre-start confirmation:
 
-- ユーザーに計画開始の確認を取る
+- Confirm planning start with user
 
-実施内容
+Actions:
 
-- 技術選択とアーキテクチャ決定
-- 実装計画の作成
-- テスト方針の決定
-- IMPORTANT: このフェーズではコードを書かない。計画のみ。
+- Technical selection and architecture decisions
+- Create implementation plan
+- Determine testing strategy
+- IMPORTANT: Do not write code in this phase. Planning only.
 
-終了後確認
+Post-completion confirmation:
 
-- 設計内容を `.i9wa4/plan.md` に保存
-- `.i9wa4/phase.log` に `PLAN → CODE` を記録
-- ユーザーに計画完了の確認を取る
+- Save design content to `.i9wa4/plan.md`
+- Record `PLAN -> CODE` in `.i9wa4/phase.log`
+- Confirm planning completion with user
 
-### 3.3. CODE (実装フェーズ)
+### 3.3. CODE (Implementation Phase)
 
-開始前確認
+Pre-start confirmation:
 
-- ユーザーに実装開始の確認を取る
+- Confirm implementation start with user
 
-実施内容
+Actions:
 
-- 計画に沿って実装を進める
-- 適宜コミットを行う
-- IMPORTANT: ソリューションの妥当性を確認しながら進める
+- Implement according to plan
+- Create commits as appropriate
+- IMPORTANT: Verify solution validity as you progress
 
-終了後確認
+Post-completion confirmation:
 
-- 全ての実装が完了したことを確認
-- `.i9wa4/phase.log` に `CODE → PR` を記録
-- ユーザーに実装完了の確認を取る
+- Verify all implementation is complete
+- Record `CODE -> PR` in `.i9wa4/phase.log`
+- Confirm implementation completion with user
 
-### 3.4. PR (PR作成フェーズ)
+### 3.4. PR (PR Creation Phase)
 
-開始前確認
+Pre-start confirmation:
 
-- ユーザーに PR 作成開始の確認を取る
+- Confirm PR creation start with user
 
-実施内容
+Actions:
 
-1. 直近10件の @i9wa4 の PR を取得して書き味を参考にする
+1. Get last 10 PRs by @i9wa4 for style reference
 
     ```sh
     gh pr list --author i9wa4 --state all --limit 10 --json number,title,body
     ```
 
-2. PR テンプレートがあれば読み込む
+2. Load PR template if exists
 
     ```sh
     cat .github/PULL_REQUEST_TEMPLATE.md
     ```
 
-3. README やチェンジログの更新が必要か確認し、必要なら更新する
+3. Check if README or changelog needs updating, update if needed
 
-4. ドラフト PR を作成する
+4. Create draft PR
 
     ```sh
-    gh pr create --draft --title "タイトル" --body "本文"
+    gh pr create --draft --title "Title" --body "Body"
     ```
 
-終了後確認
+Post-completion confirmation:
 
-- PR の URL を提示
-- `.i9wa4/phase.log` に `PR → COMPLETE` を記録
-- ユーザーに完了の確認を取る
+- Show PR URL
+- Record `PR -> COMPLETE` in `.i9wa4/phase.log`
+- Confirm completion with user
