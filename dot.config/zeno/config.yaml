@@ -123,12 +123,6 @@ snippets:
     snippet:
       . ~/ghq/github.com/i9wa4/dotfiles/.venv{{}}/bin/activate
 
-  - name: (uv) upgrade
-    keyword: uu
-    snippet:
-      uv lock --upgrade &&
-      uv sync --frozen --all-extras
-
   - name: (vde-layout) dev
     keyword: vd
     snippet:
