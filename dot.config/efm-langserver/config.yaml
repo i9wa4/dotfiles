@@ -60,13 +60,6 @@ tools:
     format-command: 'terraform fmt -list=false -write=false ${INPUT}'
     format-stdin: true
 
-  yaml-actionlint: &yaml-actionlint
-    lint-command: 'sh -c "if echo \"${INPUT}\" | grep -q \".github/workflows/\"; then actionlint -oneline -no-color -stdin-filename \"${INPUT}\" -; fi"'
-    lint-source: 'actionlint'
-    lint-stdin: true
-    lint-formats:
-      - '%f:%l:%c: %m'
-
   lua-stylua: &lua-stylua
     format-command: 'stylua --indent-type Spaces --indent-width 2 -'
     format-stdin: true
@@ -112,6 +105,3 @@ languages:
 
   terraform:
     - <<: *terraform-fmt
-
-  yaml:
-    - <<: *yaml-actionlint

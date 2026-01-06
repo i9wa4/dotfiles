@@ -59,17 +59,11 @@
         pkgs.actionlint
         pkgs.gitleaks
         pkgs.pre-commit
-        pkgs.python3
-        pkgs.shellcheck
-        pkgs.shfmt
-        pkgs.stylua
-        pkgs.uv
         pkgs.zizmor
         # custom packages
         customPkgs.ghalint
         customPkgs.ghatm
         customPkgs.pinact
-        customPkgs.rumdl
       ];
     in {
       # Local development (includes CI tools)

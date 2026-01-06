@@ -15,6 +15,9 @@
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
+
+  # Custom packages (not in nixpkgs)
+  rumdl = pkgs.callPackage ./packages/rumdl.nix {};
 in {
   imports = [
     ./editorconfig.nix
@@ -78,10 +81,15 @@ in {
       pkgs.nodejs
       pkgs.python3
       pkgs.rustup
-      # Linters & Formatters (CI tools are managed by devShell)
+      pkgs.uv
+      # Linters & Formatters
       pkgs.alejandra
       pkgs.hadolint
+      pkgs.shellcheck
+      pkgs.shfmt
       pkgs.statix
+      pkgs.stylua
+      rumdl
       # CI/CD
       pkgs.act
       pkgs.mise
