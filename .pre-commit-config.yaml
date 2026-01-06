@@ -102,7 +102,7 @@ repos:
 
       - id: statix
         name: statix check
-        entry: statix check
+        entry: bash -c 'echo "$@" | xargs -n1 statix check --' --
         language: system
         types: [nix]
 
