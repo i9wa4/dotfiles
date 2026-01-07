@@ -5,6 +5,9 @@ local wezterm = require("wezterm")
 
 local M = {}
 
+-- Session tracking: recorded when module is loaded (= WezTerm start)
+local SESSION_START = os.time()
+
 -- Configuration
 M.config = {
   width = 50,
@@ -193,6 +196,7 @@ local function save_state(animals, width)
   local state = {
     animals = animals,
     width = width,
+    session_start = SESSION_START,
   }
   local file = io.open(STATE_FILE, "w")
   if file then
@@ -589,9 +593,10 @@ function M.get_zoo_display(width)
   local state = load_state()
   local animals = state.animals or {}
   local saved_width = state.width
+  local saved_session = state.session_start
 
-  -- Reset if width changed
-  if saved_width and saved_width ~= width then
+  -- Reset if session changed (WezTerm restarted) or width changed
+  if (saved_session and saved_session ~= SESSION_START) or (saved_width and saved_width ~= width) then
     animals = {}
   end
 
