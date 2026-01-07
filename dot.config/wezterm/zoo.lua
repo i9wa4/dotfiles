@@ -372,31 +372,43 @@ local function update_animal(animal, width, all_animals)
     return animal
   end
 
+  -- Check nearby animals for action decisions
+  local nearby_count = count_nearby(animal, all_animals, 2)
+
   -- Check if doing an action
   if now < animal.action_until then
-    return animal
+    -- Cancel action if another animal comes within 2 cells
+    if nearby_count > 0 then
+      animal.action = "walking"
+      animal.action_until = 0
+    else
+      return animal
+    end
   end
 
   -- Random chance to start an action (varies by age)
-  local action_chance = traits.rest_chance * 0.3
-  local action_list = ACTION_NAMES
+  -- Only trigger actions when no animals within 2 cells to prevent visual interference
+  if nearby_count == 0 then
+    local action_chance = traits.rest_chance * 0.3
+    local action_list = ACTION_NAMES
 
-  if age_stage == "child" then
-    action_chance = 0.4 -- children do things more often
-    action_list = CHILD_ACTION_NAMES
-  elseif age_stage == "teen" then
-    action_chance = 0.25
-    action_list = TEEN_ACTION_NAMES
-  end
-
-  if math.random() < action_chance then
-    animal.action = random_choice(action_list)
-    local action_duration = math.random(2, 5)
     if age_stage == "child" then
-      action_duration = math.random(1, 3) -- children have short attention span
+      action_chance = 0.4 -- children do things more often
+      action_list = CHILD_ACTION_NAMES
+    elseif age_stage == "teen" then
+      action_chance = 0.25
+      action_list = TEEN_ACTION_NAMES
     end
-    animal.action_until = now + action_duration
-    return animal
+
+    if math.random() < action_chance then
+      animal.action = random_choice(action_list)
+      local action_duration = math.random(2, 5)
+      if age_stage == "child" then
+        action_duration = math.random(1, 3) -- children have short attention span
+      end
+      animal.action_until = now + action_duration
+      return animal
+    end
   end
 
   animal.action = "walking"
@@ -420,8 +432,34 @@ local function update_animal(animal, width, all_animals)
       animal.direction = animal.direction * -1
     end
 
-    -- Move
-    animal.pos = animal.pos + animal.direction * animal.speed * age_speed_mult
+    -- Move with collision detection
+    local new_pos = animal.pos + animal.direction * animal.speed * age_speed_mult
+    local collision = false
+
+    -- Check collision with other animals
+    for _, other in ipairs(all_animals) do
+      if other ~= animal then
+        local other_pos = other.pos
+        -- Check if new position would overlap (within 1.5 cells)
+        if math.abs(new_pos - other_pos) < 1.5 then
+          -- Only collide if moving toward the other animal
+          local moving_toward = (animal.direction > 0 and other_pos > animal.pos)
+            or (animal.direction < 0 and other_pos < animal.pos)
+          if moving_toward then
+            collision = true
+            break
+          end
+        end
+      end
+    end
+
+    if collision then
+      -- Bounce back (reverse direction)
+      animal.direction = animal.direction * -1
+    else
+      -- No collision, proceed with movement
+      animal.pos = new_pos
+    end
 
     -- Bounce off walls (with small penalty)
     if animal.pos < 1 then
