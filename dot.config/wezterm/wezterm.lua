@@ -45,9 +45,9 @@ wezterm.on("update-status", function(window, pane)
     { Text = string.format(" Opacity:%.0f%% Font:%.0fpt ", opacity * 100, font_size) },
   }))
 
-  -- Left: Zoo (dynamic width based on terminal size)
+  -- Left: Zoo (full width - status bar overlaps)
   local dims = pane:get_dimensions()
-  local zoo_width = math.max(20, dims.cols - 30) -- Leave space for right status
+  local zoo_width = math.max(20, dims.cols)
   local zoo_display = zoo.get_zoo_display(zoo_width)
   window:set_left_status(wezterm.format({
     { Background = { Color = "none" } },
