@@ -1,4 +1,4 @@
--- zoo.lua - Interactive animal parade for WezTerm tab bar
+-- wezterm-zoo.lua - Interactive animal parade for WezTerm tab bar
 -- Pure Lua implementation with ecosystem simulation
 
 local wezterm = require("wezterm")
@@ -20,36 +20,36 @@ M.config = {
 }
 
 -- State file path
-local STATE_FILE = "/tmp/zoo_wezterm_state.json"
+local STATE_FILE = "/tmp/wezterm-zoo-state.json"
 
 -- Time-based animal/creature sets
 local CREATURE_SETS = {
   zoo = {
     morning = {
-      animals = { "🐓", "🐦", "🐤", "🦆", "🐰", "🦔", "🐿️", "🐝" },
+      animals = { "🐓", "🐤", "🐰", "🦆" },
     },
     afternoon = {
-      animals = { "🦁", "🐘", "🦒", "🦓", "🐆", "🦏", "🐃", "🦬" },
+      animals = { "🦁", "🐘", "🦒", "🦓" },
     },
     evening = {
-      animals = { "🦊", "🐺", "🦌", "🐻", "🦡", "🐗", "🦫", "🦦" },
+      animals = { "🦊", "🐺", "🐻", "🦌" },
     },
     night = {
-      animals = { "🦉", "🦇", "🐱", "🦝", "🐀", "🦨", "🐸", "🦎" },
+      animals = { "🦉", "🐱", "🦝", "🐀" },
     },
   },
   aquarium = {
     morning = {
-      animals = { "🐠", "🐟", "🦐", "🦀", "🐡", "🦑", "🐚", "🪸" },
+      animals = { "🐠", "🐟", "🐡", "🐬" },
     },
     afternoon = {
-      animals = { "🐬", "🐳", "🦈", "🐙", "🪼", "🦭", "🐋", "🦞" },
+      animals = { "🐳", "🐋", "🦈", "🦭" },
     },
     evening = {
-      animals = { "🐢", "🦞", "🦪", "🐚", "🪸", "🦦", "🐡", "🦐" },
+      animals = { "🐢", "🐙", "🐧", "🦦" },
     },
     night = {
-      animals = { "🦈", "🐙", "🪼", "🦑", "🐚", "🐡", "🦐", "🐟" },
+      animals = { "🦈", "🦑", "🐙", "🐡" },
     },
   },
 }
@@ -189,10 +189,14 @@ local function load_state()
   return json_decode(content) or {}
 end
 
-local function save_state(animals)
+local function save_state(animals, width)
+  local state = {
+    animals = animals,
+    width = width,
+  }
   local file = io.open(STATE_FILE, "w")
   if file then
-    file:write(json_encode(animals))
+    file:write(json_encode(state))
     file:close()
   end
 end
@@ -581,8 +585,15 @@ function M.get_zoo_display(width)
   -- Seed random
   math.randomseed(now)
 
-  -- Load existing animals
-  local animals = load_state()
+  -- Load existing state
+  local state = load_state()
+  local animals = state.animals or {}
+  local saved_width = state.width
+
+  -- Reset if width changed
+  if saved_width and saved_width ~= width then
+    animals = {}
+  end
 
   -- Remove dead animals (reached edge while dying, or exceeded lifespan + bonus)
   local alive = {}
@@ -638,8 +649,8 @@ function M.get_zoo_display(width)
   -- Check interactions
   local interactions = check_interactions(animals)
 
-  -- Save state
-  save_state(animals)
+  -- Save state with width
+  save_state(animals, width)
 
   -- Render
   return render(animals, interactions, width)

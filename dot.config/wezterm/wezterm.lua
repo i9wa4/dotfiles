@@ -1,6 +1,6 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
-local zoo = require("zoo")
+local zoo = require("wezterm-zoo")
 
 -- Keybindings
 config.disable_default_key_bindings = true
