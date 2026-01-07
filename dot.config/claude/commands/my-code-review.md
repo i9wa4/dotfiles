@@ -70,4 +70,7 @@ Perform single review based on pane number role.
 - Save review results to:
     - `.i9wa4/YYYYMMDD-pN-review.md` (N: tmux pane number)
 - Get tmux pane number:
-  `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+    - `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- Output must be only the `.i9wa4/YYYYMMDD-pN-review.md` file.
+    - Do not post to GitHub or ask follow-up confirmation.
+    - Finish after saving.

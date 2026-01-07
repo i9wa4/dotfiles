@@ -45,6 +45,36 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+          }
+        ]
+      }
     ]
   },
   "permissions": {
