@@ -40,11 +40,11 @@ cat >.i9wa4/temp.md <<'EOF'
 ## 1. Development
 
 /issue-to-pr
-Go on.
 
 ## 2. Review
 
-/my-review
+/my-code-review
+/my-design-review
 /summarize-reviews
 EOF
 

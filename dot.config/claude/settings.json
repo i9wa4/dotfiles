@@ -1,5 +1,11 @@
 {
+  "alwaysThinkingEnabled": true,
   "cleanupPeriodDays": 36000,
+  "enabledPlugins": {
+    "example-skills@anthropic-agent-skills": true,
+    "document-skills@anthropic-agent-skills": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
@@ -14,7 +20,33 @@
     "ENABLE_TOOL_SEARCH": "true",
     "ENABLE_EXPERIMENTAL_MCP_CLI": "false"
   },
+  "feedbackSurveyState": {
+    "lastShownTime": 2069451551000
+  },
   "includeCoAuthoredBy": false,
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_CONFIG_DIR}/restore-context.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [],
     "deny": [
@@ -33,41 +65,9 @@
       "Write(.env*)"
     ]
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/restore-context.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
-          }
-        ]
-      }
-    ]
-  },
+  "preferredNotifChannel": "terminal_bell",
   "statusLine": {
     "type": "command",
     "command": "npx ccusage@latest statusline"
-  },
-  "enabledPlugins": {
-    "example-skills@anthropic-agent-skills": true,
-    "document-skills@anthropic-agent-skills": true,
-    "pyright-lsp@claude-plugins-official": true
-  },
-  "alwaysThinkingEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  },
-  "preferredNotifChannel": "terminal_bell"
+  }
 }
