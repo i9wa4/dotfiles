@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
+local zoo = require("zoo")
 
 -- Keybindings
 config.disable_default_key_bindings = true
@@ -20,8 +21,8 @@ config.show_tabs_in_tab_bar = false
 
 -- Window
 config.window_frame = {
-  active_titlebar_bg = "none",
-  inactive_titlebar_bg = "none",
+  active_titlebar_bg = "rgba(0, 0, 0, 0.25)",
+  inactive_titlebar_bg = "rgba(0, 0, 0, 0.25)",
   active_titlebar_fg = "#FFFFFF",
   inactive_titlebar_fg = "#FFFFFF",
   font = wezterm.font("UDEV Gothic 35LG"),
@@ -32,14 +33,25 @@ local opacity_default = 0.70
 config.window_background_opacity = opacity_default
 config.hide_tab_bar_if_only_one_tab = false
 
--- Status display (right side)
+-- Status display
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
+
+  -- Right: Opacity and Font
   window:set_right_status(wezterm.format({
     { Background = { Color = "none" } },
     { Text = string.format(" Opacity:%.0f%% Font:%.0fpt ", opacity * 100, font_size) },
+  }))
+
+  -- Left: Zoo (dynamic width based on terminal size)
+  local dims = pane:get_dimensions()
+  local zoo_width = math.max(20, dims.cols - 30) -- Leave space for right status
+  local zoo_display = zoo.get_zoo_display(zoo_width)
+  window:set_left_status(wezterm.format({
+    { Background = { Color = "none" } },
+    { Text = zoo_display },
   }))
 end)
 
