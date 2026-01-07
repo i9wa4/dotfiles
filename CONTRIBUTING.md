@@ -107,14 +107,33 @@ Add to `flake.nix` devShells section.
    });
    ```
 
-3. Stage and build to get hashes
+3. Get `hash` using nurl
+
+   ```sh
+   nurl https://github.com/<owner>/<repo> v<version>
+   ```
+
+   Copy the `hash` value from output:
+
+   ```nix
+   fetchFromGitHub {
+     owner = "<owner>";
+     repo = "<repo>";
+     rev = "v<version>";
+     hash = "sha256-XXX...";  # <- Copy this
+   }
+   ```
+
+4. Update `hash` in nix file, then get `vendorHash`/`cargoHash`
+
+   Stage and build to get vendor/cargo hash:
 
    ```sh
    git add nix/packages/<name>.nix flake.nix
    nix build '.#<name>' --no-link
    ```
 
-   The build will fail with hash mismatch errors. Copy the "got" hash:
+   The build will fail with hash mismatch. Copy the "got" hash:
 
    ```text
    error: hash mismatch in fixed-output derivation:
@@ -122,8 +141,7 @@ Add to `flake.nix` devShells section.
                got:    sha256-XXX...
    ```
 
-4. Update `hash` in nix file, rebuild,
-   then update `vendorHash` (Go) or `cargoHash` (Rust)
+   Update `vendorHash` (Go) or `cargoHash` (Rust) with this value
 
 5. Verify build succeeds
 

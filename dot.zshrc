@@ -5,10 +5,7 @@ zmodload zsh/zprof
 setopt IGNORE_EOF
 
 
-# History
-HISTFILE=~/.zsh_history
-HISTSIZE=1000000
-SAVEHIST=1000000
+# History (HISTFILE, HISTSIZE, SAVEHIST are set in .zshenv)
 setopt append_history
 setopt extended_history
 setopt hist_fcntl_lock

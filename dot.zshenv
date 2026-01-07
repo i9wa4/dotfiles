@@ -1,5 +1,10 @@
 # loaded /etc/zsh/zshenv
 
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=1000000
+
 # Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
 if [ -z "${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
   if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then

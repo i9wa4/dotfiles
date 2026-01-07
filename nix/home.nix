@@ -95,6 +95,8 @@ in {
         pkgs.statix
         pkgs.stylua
         pkgs.zizmor
+        # Nix development
+        pkgs.nurl
         # CI/CD
         pkgs.act
         pkgs.actionlint
