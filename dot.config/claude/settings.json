@@ -1,4 +1,5 @@
 {
+  "alwaysThinkingEnabled": true,
   "cleanupPeriodDays": 36000,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
@@ -12,27 +13,14 @@
     "DISABLE_ERROR_REPORTING": "true",
     "DISABLE_TELEMETRY": "true",
     "ENABLE_TOOL_SEARCH": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "false"
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
+    "IS_DEMO": "true"
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 2069451551000
   },
   "includeCoAuthoredBy": false,
-  "permissions": {
-    "allow": [],
-    "deny": [
-      "Bash(git -C:*)",
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(rm:*)",
-      "Bash(sudo:*)",
-      "Read(**/*key*)",
-      "Read(**/*token*)",
-      "Read(.env.*)",
-      "Read(id_ed25519)",
-      "Read(id_rsa)",
-      "Write(**/secrets/**)",
-      "Write(.env*)"
-    ]
-  },
+  "language": "japanese",
   "hooks": {
     "SessionStart": [
       {
@@ -86,6 +74,24 @@
       }
     ]
   },
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Read(**/*key*)",
+      "Read(**/*token*)",
+      "Read(.env.*)",
+      "Read(id_ed25519)",
+      "Read(id_rsa)",
+      "Write(**/secrets/**)",
+      "Write(.env*)"
+    ]
+  },
+  "preferredNotifChannel": "terminal_bell",
   "statusLine": {
     "type": "command",
     "command": "npx ccusage@latest statusline"
@@ -94,10 +100,5 @@
     "document-skills@anthropic-agent-skills": true,
     "pyright-lsp@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true
-  },
-  "alwaysThinkingEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  },
-  "preferredNotifChannel": "terminal_bell"
+  }
 }

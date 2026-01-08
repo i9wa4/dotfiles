@@ -46,18 +46,18 @@ repos:
         language: system
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
-      - id: gitleaks-pre-commit
-        name: Detect hardcoded secrets (pre-commit)
+      - id: gitleaks
+        name: Detect hardcoded secrets
         entry: gitleaks protect --verbose --redact --staged
         language: system
         pass_filenames: false
-        stages: [pre-commit]
 
-      - id: gitleaks-ci
-        name: Detect hardcoded secrets (CI)
+      - id: gitleaks-history
+        name: Detect hardcoded secrets (history)
         entry: gitleaks detect --verbose --redact
         language: system
         pass_filenames: false
+        stages: [manual]
 
       - id: pinact
         name: pinact
