@@ -12,6 +12,7 @@ Never execute these commands:
 
 ```sh
 git push                # Push
+git commit --amend      # Amend (causes force push requirement)
 git reset               # Reset (except noted exceptions)
 git merge               # Merge
 git stash               # Stash
