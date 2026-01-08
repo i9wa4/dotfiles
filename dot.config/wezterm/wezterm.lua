@@ -47,7 +47,7 @@ config.colors = {
 }
 
 -- Status display
-local status_fg = "#333333"
+local status_fg = "#000000"
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
@@ -65,7 +65,7 @@ wezterm.on("update-status", function(window, pane)
 
   -- Left: Zoo (hint may overlap, that's OK)
   local dims = pane:get_dimensions()
-  local left_padding = 10 -- space for macOS menu bar icons
+  local left_padding = 20 -- space for macOS menu bar icons
   local emoji_buffer = 15 -- each emoji is width 2 but counts as 1
   local zoo_width = math.max(20, dims.cols - right_fixed_width - emoji_buffer - left_padding)
   local zoo_display = zoo.get_zoo_display(zoo_width)
