@@ -26,13 +26,13 @@ Use dedicated script to fetch activities.
 Defaults to fetching 24 hours of activities from current time
 (calculated in UTC).
 
-#### Script Location
+#### 2.1.1. Script Location
 
 ```text
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh
 ```
 
-#### Command Examples
+#### 2.1.2. Command Examples
 
 ```bash
 # Default: 24 hours ago to now
@@ -45,7 +45,7 @@ Defaults to fetching 24 hours of activities from current time
 ~/.config/claude/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
 ```
 
-#### Options
+#### 2.1.3. Options
 
 | Option | Description |
 | --- | --- |
@@ -55,7 +55,7 @@ Defaults to fetching 24 hours of activities from current time
 | --to | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z) |
 | --hostname | GitHub Enterprise Server hostname |
 
-#### Output Format
+#### 2.1.4. Output Format
 
 ```markdown
 ### repository-owner/repository-name
@@ -71,13 +71,13 @@ Note: Use `--no-url` option to omit URLs and prevent mention notifications.
 
 ### 2.2. Create Draft
 
-Save to `.i9wa4/YYYY-MM-DD-Mawatari.md` (without keyword initially).
+Save to `.i9wa4/YYYY-MM-DD-$(whoami).md` (without keyword initially).
 
 Template:
 
 ```markdown
 ---
-title: "YYYY-MM-DD Mawatari"
+title: "YYYY-MM-DD $(whoami)"
 labels:
   - name: "Daily Report"
     color: "0E8A16"
@@ -143,7 +143,7 @@ After user decides keyword, update only the title in file.
 Do not change filename.
 
 ```markdown
-title: "YYYY-MM-DD Mawatari {keyword}"
+title: "YYYY-MM-DD $(whoami) {keyword}"
 ```
 
 ### 2.6. Post Issue
@@ -151,7 +151,7 @@ title: "YYYY-MM-DD Mawatari {keyword}"
 Post with `gh issue create`:
 
 ```bash
-gh issue create --title "YYYY-MM-DD Mawatari {keyword}" --label "Daily Report" --body "$(cat <<'EOF'
+gh issue create --title "YYYY-MM-DD $(whoami) {keyword}" --label "Daily Report" --body "$(cat <<'EOF'
 [body]
 EOF
 )"
@@ -172,12 +172,12 @@ Display Issue URL after posting.
 
 Classify gh-furik output as follows:
 
-| Output Type | Classification |
-| --- | --- |
-| Issue | Created Issues |
-| PullRequest | Created PRs |
-| PullRequestReview | Reviewed PRs |
-| IssueComment | Commented Issues/PRs |
+| Output Type        | Classification       |
+| ---                | ---                  |
+| Issue              | Created Issues       |
+| PullRequest        | Created PRs          |
+| PullRequestReview  | Reviewed PRs         |
+| IssueComment       | Commented Issues/PRs |
 | PullRequestComment | Commented Issues/PRs |
 
 Note: Consolidate multiple comments on same Issue/PR into one.
