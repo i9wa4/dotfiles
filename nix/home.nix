@@ -233,7 +233,6 @@ in {
       NPM_PACKAGES=(
         "@devcontainers/cli"
         "vde-layout"
-        "zenn-cli"
       )
 
       # Install missing packages
