@@ -65,12 +65,13 @@ Agents are stored in the `agents/` directory as specialized reviewers.
 
 | Agent                 | Description                                |
 | --------------------- | ------------------------------------------ |
-| code-reviewer         | Code quality, readability, maintainability |
-| security-reviewer     | Security vulnerability review              |
 | architecture-reviewer | Design patterns and structure review       |
-| historian             | Issue/PR history and commit context        |
+| code-reviewer         | Code quality, readability, maintainability |
 | data-reviewer         | Data quality and schema review             |
+| historian             | Issue/PR history and commit context        |
 | qa-reviewer           | QA and test coverage review                |
+| security-reviewer     | Security vulnerability review              |
+| tech-researcher       | Technical research and analysis            |
 
 ### 4.4. Commands
 
