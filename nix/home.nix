@@ -3,6 +3,7 @@
   lib,
   config,
   username,
+  llmAgentsPkgs,
   ...
 }: let
   # Platform-agnostic paths
@@ -125,6 +126,14 @@ in {
         customPkgs.pinact
         customPkgs.rumdl
         customPkgs.vim-startuptime
+      ]
+      # AI coding agents (claude-code from overlay, others from llm-agents.nix)
+      ++ [
+        pkgs.claude-code # claude-code-overlay
+        llmAgentsPkgs.ccusage
+        llmAgentsPkgs.codex
+        llmAgentsPkgs.copilot-cli
+        llmAgentsPkgs.gemini-cli
       ];
 
     # ==========================================================================
@@ -220,13 +229,9 @@ in {
     # 3. Install/update npm packages (after safe-chain, so they get scanned)
     installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
+      # AI tools moved to Nix: claude-code, ccusage, codex, copilot, gemini-cli
       NPM_PACKAGES=(
-        "@anthropic-ai/claude-code"
         "@devcontainers/cli"
-        "@github/copilot"
-        "@google/gemini-cli"
-        "@openai/codex"
-        "ccusage"
         "vde-layout"
         "zenn-cli"
       )

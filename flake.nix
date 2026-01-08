@@ -20,6 +20,9 @@
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
+    # AI coding agents
+    claude-code-overlay.url = "github:ryoppippi/claude-code-overlay";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs = {
@@ -30,6 +33,8 @@
     brew-nix,
     neovim-nightly-overlay,
     vim-overlay,
+    claude-code-overlay,
+    llm-agents,
   }: let
     # Supported systems (x86_64-darwin excluded - Apple Silicon only)
     systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
@@ -113,6 +118,7 @@
                 lua = true;
                 python3 = true;
               })
+              claude-code-overlay.overlays.default
             ];
             # Enable brew-nix to symlink apps to /Applications/Nix Apps
             brew-nix.enable = true;
@@ -120,7 +126,10 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               backupFileExtension = "backup";
-              extraSpecialArgs = {inherit username;};
+              extraSpecialArgs = {
+                inherit username;
+                llmAgentsPkgs = llm-agents.packages."aarch64-darwin";
+              };
               users.${username} = import ./nix/home.nix;
             };
           }
@@ -140,6 +149,7 @@
             lua = true;
             python3 = true;
           })
+          claude-code-overlay.overlays.default
         ];
       };
       # On Linux, USER is available directly (no sudo needed for home-manager)
@@ -147,7 +157,10 @@
     in
       home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = {inherit username;};
+        extraSpecialArgs = {
+          inherit username;
+          llmAgentsPkgs = llm-agents.packages.${system};
+        };
         modules = [
           ./nix/home.nix
         ];

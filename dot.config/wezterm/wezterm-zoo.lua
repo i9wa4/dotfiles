@@ -8,18 +8,108 @@ local M = {}
 -- Session tracking: recorded when module is loaded (= WezTerm start)
 local SESSION_START = os.time()
 
+-- Splash hints about zoo specifications
+local HINTS = {
+  -- Actions
+  "zZ=sleeping",
+  "*~=eating",
+  "..=thinking",
+  "~!=playing",
+  ">>/<<:running",
+  -- Greetings (distance<2)
+  "?~:strangers met",
+  "!~o:acquaintances",
+  "<3!!***:friends",
+  -- Personalities
+  "lazy:slow mover",
+  "sleepy:zZ often",
+  "hyper:fast,active",
+  "friendly:approach",
+  "shy:runs away",
+  "curious:explores",
+  "stalker:pursues",
+  -- Age stages
+  "child:0-2min,fast",
+  "teen:2-5min",
+  "adult:5min+,calm",
+  -- Lifespan mechanics
+  "life:15min base",
+  "exit:last 60sec",
+  "native time=+life",
+  "wrong time=-life",
+  "crowded(5+)=-life",
+  "alone(10s+)=-life",
+  "eating=+life",
+  "sleeping=+life",
+  "social=+life",
+  "bump wall=-life",
+  -- Reproduction
+  "same species=baby",
+  "baby:shorter life",
+  -- Collision
+  "collision:bounce",
+  -- Modes
+  "mode:zoo/aquarium",
+  -- Zoo morning 5-12h
+  "5-12h:🐓rooster",
+  "5-12h:🐤chick",
+  "5-12h:🐰rabbit",
+  "5-12h:🦆duck",
+  -- Zoo afternoon 12-18h
+  "12-18h:🦁lion",
+  "12-18h:🐘elephant",
+  "12-18h:🦒giraffe",
+  "12-18h:🦓zebra",
+  -- Zoo evening 18-22h
+  "18-22h:🦊fox",
+  "18-22h:🐺wolf",
+  "18-22h:🐻bear",
+  "18-22h:🦌deer",
+  -- Zoo night 22-5h
+  "22-5h:🦉owl",
+  "22-5h:🐱cat",
+  "22-5h:🦝raccoon",
+  "22-5h:🐀rat",
+  -- Aquarium morning
+  "aqua5-12:🐠fish",
+  "aqua5-12:🐟fish",
+  "aqua5-12:🐡puffer",
+  "aqua5-12:🐬dolphin",
+  -- Aquarium afternoon
+  "aqua12-18:🐳whale",
+  "aqua12-18:🐋humpback",
+  "aqua12-18:🦈shark",
+  "aqua12-18:🦭seal",
+  -- Aquarium evening
+  "aqua18-22:🐢turtle",
+  "aqua18-22:🐙octopus",
+  "aqua18-22:🐧penguin",
+  "aqua18-22:🦦otter",
+  -- Aquarium night
+  "aqua22-5:🦈shark",
+  "aqua22-5:🦑squid",
+  "aqua22-5:🐙octopus",
+  "aqua22-5:🐡puffer",
+}
+
+-- Get a random hint
+function M.get_hint()
+  math.randomseed(math.floor(os.time() / 10)) -- change every 10 sec
+  return HINTS[math.random(#HINTS)]
+end
+
 -- Configuration
 M.config = {
   width = 50,
   update_interval = 1000, -- ms
   min_animals = 3,
   max_animals = 15,
-  animals_per_width = 20, -- 1 animal per N characters
+  animals_per_width = 30, -- 1 animal per N characters
   base_lifespan = 900, -- 15 minutes base
   dying_threshold = 60, -- start heading to exit when 60 seconds left
   child_age = 120, -- first 2 minutes = child
   teen_age = 300, -- 2-5 minutes = teen (then adult)
-  mode = "zoo", -- "zoo" or "aquarium"
+  mode = "off", -- "off", "zoo", or "aquarium"
 }
 
 -- State file path
@@ -63,15 +153,22 @@ local function get_animal_sets()
 end
 
 -- Personality traits
+-- move_chance: how often they move
+-- rest_chance: how often they do actions (sleep, eat, etc)
+-- social: how likely to approach others
+-- speed_mult: movement speed multiplier
+-- approach: actively seek out others when spotted
 local PERSONALITIES = {
-  lazy = { move_chance = 0.3, rest_chance = 0.5, social = 0.3, speed_mult = 0.7 },
-  hyper = { move_chance = 0.9, rest_chance = 0.1, social = 0.7, speed_mult = 1.5 },
-  friendly = { move_chance = 0.5, rest_chance = 0.2, social = 0.9, speed_mult = 1.0 },
-  shy = { move_chance = 0.6, rest_chance = 0.3, social = 0.2, speed_mult = 0.9 },
-  curious = { move_chance = 0.7, rest_chance = 0.2, social = 0.6, speed_mult = 1.2 },
+  lazy = { move_chance = 0.3, rest_chance = 0.5, social = 0.3, speed_mult = 0.7, approach = 0.1 },
+  sleepy = { move_chance = 0.2, rest_chance = 0.8, social = 0.2, speed_mult = 0.5, approach = 0.0 },
+  hyper = { move_chance = 0.9, rest_chance = 0.1, social = 0.7, speed_mult = 1.5, approach = 0.6 },
+  friendly = { move_chance = 0.5, rest_chance = 0.2, social = 0.9, speed_mult = 1.0, approach = 0.8 },
+  shy = { move_chance = 0.6, rest_chance = 0.3, social = 0.2, speed_mult = 0.9, approach = 0.0 },
+  curious = { move_chance = 0.7, rest_chance = 0.2, social = 0.6, speed_mult = 1.2, approach = 0.7 },
+  stalker = { move_chance = 0.8, rest_chance = 0.1, social = 0.5, speed_mult = 1.3, approach = 0.95 },
 }
 
-local PERSONALITY_NAMES = { "lazy", "hyper", "friendly", "shy", "curious" }
+local PERSONALITY_NAMES = { "lazy", "sleepy", "hyper", "friendly", "shy", "curious", "stalker" }
 
 -- Greetings based on social level
 local GREETINGS = {
@@ -80,14 +177,14 @@ local GREETINGS = {
   friends = { "<3", "!!", "***" },
 }
 
--- Actions
+-- Actions (max 2 chars)
 local ACTIONS = {
   walking = "",
-  sleeping = "zzZ",
-  eating = "nom",
-  thinking = "...",
+  sleeping = "zZ",
+  eating = "*~",
+  thinking = "..",
   playing = "~!",
-  running = ">>>",
+  running = ">>",
   dying = "", -- heading to exit
 }
 
@@ -481,22 +578,27 @@ local function update_animal(animal, width, all_animals)
     end
   end
 
-  -- Social behavior (children seek playmates)
+  -- Social behavior (approach or avoid based on personality)
   for _, other in ipairs(all_animals) do
     if other ~= animal then
       local dist = other.pos - animal.pos
       local other_age_stage = get_age_stage(other)
 
-      if math.abs(dist) < 5 then
+      if math.abs(dist) < 8 then -- detection range
         -- Children love to play with other children
         if age_stage == "child" and other_age_stage == "child" then
           if math.random() < 0.7 then
             animal.direction = dist > 0 and 1 or -1 -- run toward!
           end
-        elseif math.random() < traits.social then
-          animal.direction = dist > 0 and 1 or -1
-        elseif animal.personality == "shy" then
-          animal.direction = dist > 0 and -1 or 1
+        -- Approach behavior based on personality
+        elseif math.random() < (traits.approach or 0) then
+          animal.direction = dist > 0 and 1 or -1 -- approach
+        -- Shy animals run away
+        elseif animal.personality == "shy" and math.abs(dist) < 4 then
+          animal.direction = dist > 0 and -1 or 1 -- flee
+        -- Stalkers actively hunt
+        elseif animal.personality == "stalker" and math.abs(dist) < 10 then
+          animal.direction = dist > 0 and 1 or -1 -- pursue
         end
       end
     end
@@ -569,9 +671,38 @@ local function render(animals, interactions, width)
       -- Show action if not walking
       if animal.action ~= "walking" and animal.action ~= "dying" then
         local action_str = ACTIONS[animal.action]
-        for i = 1, #action_str do
-          if p + i <= width then
-            field[p + i] = action_str:sub(i, i)
+        -- Running direction matches movement
+        if animal.action == "running" then
+          action_str = animal.direction > 0 and ">>" or "<<"
+        end
+
+        -- Check if right side is blocked by another animal
+        local right_blocked = false
+        for _, other in ipairs(animals) do
+          if other ~= animal then
+            local other_p = math.floor(other.pos)
+            if other_p > p and other_p <= p + #action_str then
+              right_blocked = true
+              break
+            end
+          end
+        end
+
+        -- Display on left if right is blocked
+        if right_blocked then
+          -- Show on left side
+          for i = 1, #action_str do
+            local pos = p - #action_str - 1 + i
+            if pos >= 1 and field[pos] == " " then
+              field[pos] = action_str:sub(i, i)
+            end
+          end
+        else
+          -- Show on right side (default)
+          for i = 1, #action_str do
+            if p + i <= width then
+              field[p + i] = action_str:sub(i, i)
+            end
           end
         end
       end
@@ -583,6 +714,11 @@ end
 
 -- Main update function
 function M.get_zoo_display(width)
+  -- Return empty if mode is off
+  if M.config.mode == "off" then
+    return string.rep(" ", width or M.config.width)
+  end
+
   width = width or M.config.width
   local now = os.time()
 

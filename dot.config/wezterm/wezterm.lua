@@ -21,10 +21,16 @@ config.show_tabs_in_tab_bar = false
 
 -- Window
 config.window_frame = {
-  active_titlebar_bg = "rgba(0, 0, 0, 0.25)",
-  inactive_titlebar_bg = "rgba(0, 0, 0, 0.25)",
+  active_titlebar_bg = "none",
+  inactive_titlebar_bg = "none",
   active_titlebar_fg = "#FFFFFF",
   inactive_titlebar_fg = "#FFFFFF",
+  active_titlebar_border_bottom = "none",
+  inactive_titlebar_border_bottom = "none",
+  button_bg = "none",
+  button_fg = "#FFFFFF",
+  button_hover_bg = "rgba(255, 255, 255, 0.1)",
+  button_hover_fg = "#FFFFFF",
   font = wezterm.font("UDEV Gothic 35LG"),
   font_size = 20, -- the same as Chrome titlebar height
 }
@@ -33,25 +39,39 @@ local opacity_default = 0.70
 config.window_background_opacity = opacity_default
 config.hide_tab_bar_if_only_one_tab = false
 
+-- Tab bar colors (match titlebar - all transparent)
+config.colors = {
+  tab_bar = {
+    background = "none",
+  },
+}
+
 -- Status display
+local status_fg = "#333333"
+
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
 
-  -- Right: Opacity and Font
+  -- Right: Hint (if zoo/aqua on) + Opacity and Font
+  local hint = zoo.config.mode ~= "off" and zoo.get_hint() or ""
+  local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
+  local right_fixed_width = 13 -- fixed width for zoo calculation (excludes hint)
   window:set_right_status(wezterm.format({
-    { Background = { Color = "none" } },
-    { Text = string.format(" Opacity:%.0f%% Font:%.0fpt ", opacity * 100, font_size) },
+    { Foreground = { Color = status_fg } },
+    { Text = hint .. right_status },
   }))
 
-  -- Left: Zoo (full width - status bar overlaps)
+  -- Left: Zoo (hint may overlap, that's OK)
   local dims = pane:get_dimensions()
-  local zoo_width = math.max(20, dims.cols)
+  local left_padding = 10 -- space for macOS menu bar icons
+  local emoji_buffer = 15 -- each emoji is width 2 but counts as 1
+  local zoo_width = math.max(20, dims.cols - right_fixed_width - emoji_buffer - left_padding)
   local zoo_display = zoo.get_zoo_display(zoo_width)
   window:set_left_status(wezterm.format({
-    { Background = { Color = "none" } },
-    { Text = zoo_display },
+    { Foreground = { Color = status_fg } },
+    { Text = string.rep(" ", left_padding) .. zoo_display },
   }))
 end)
 
@@ -88,11 +108,25 @@ wezterm.on("dec-font-size", function(window, pane)
   window:set_config_overrides(overrides)
 end)
 
+-- Toggle zoo mode: off -> zoo -> aquarium -> off (Opt+z)
+wezterm.on("toggle-zoo-mode", function(window, pane)
+  if zoo.config.mode == "off" then
+    zoo.config.mode = "zoo"
+  elseif zoo.config.mode == "zoo" then
+    zoo.config.mode = "aquarium"
+  else
+    zoo.config.mode = "off"
+  end
+  -- Clear state to respawn with new creatures
+  os.remove("/tmp/wezterm-zoo-state.json")
+end)
+
 config.keys = {
   { key = "a", mods = "OPT", action = wezterm.action.EmitEvent("inc-opacity") },
   { key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
   { key = "d", mods = "OPT", action = wezterm.action.EmitEvent("inc-font-size") },
   { key = "f", mods = "OPT", action = wezterm.action.EmitEvent("dec-font-size") },
+  { key = "z", mods = "OPT", action = wezterm.action.EmitEvent("toggle-zoo-mode") },
   { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
   { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
 }
