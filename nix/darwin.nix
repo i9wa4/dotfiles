@@ -125,8 +125,6 @@
         # Note: macOS では trackpad と mouse のスクロール方向を別々に設定できない
         # false = 従来の PC 方向 (マウスに合わせる)
         "com.apple.swipescrolldirection" = false;
-        # マウス速度 (0.0-3.0) [default: 1.0]
-        "com.apple.mouse.scaling" = 2.0;
         # 英字入力中にスペルを自動変換 [default: true]
         NSAutomaticSpellingCorrectionEnabled = false;
         # 文頭を自動的に大文字にする [default: true]
@@ -181,6 +179,11 @@
       # Custom User Preferences (settings not available as nix-darwin options)
       # ------------------------------------------------------------------------
       CustomUserPreferences = {
+        # マウス速度 (0.0-3.0) [default: 1.0]
+        # Note: NSGlobalDomain では設定できないため CustomUserPreferences を使用
+        ".GlobalPreferences" = {
+          "com.apple.mouse.scaling" = 2.0;
+        };
         "com.apple.finder" = {
           # サイドバーを表示 [default: true]
           # ShowSidebar = true;
