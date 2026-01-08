@@ -79,8 +79,8 @@ Template:
 ---
 title: "YYYY-MM-DD $(whoami)"
 labels:
-  - name: "Daily Report"
-    color: "0E8A16"
+  - name: "日報"
+    color: "0887b9"
 ---
 
 ## 1. Today's Activities
@@ -151,7 +151,7 @@ title: "YYYY-MM-DD $(whoami) {keyword}"
 Post with `gh issue create`:
 
 ```bash
-gh issue create --title "YYYY-MM-DD $(whoami) {keyword}" --label "Daily Report" --body "$(cat <<'EOF'
+gh issue create --title "YYYY-MM-DD $(whoami) {keyword}" --label "日報" --body "$(cat <<'EOF'
 [body]
 EOF
 )"
