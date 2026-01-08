@@ -54,45 +54,45 @@ else
 	nix run home-manager -- switch --flake '.#ubuntu' --impure
 endif
 
-nvim-build:  ## build Neovim from source
-	ghq get -p neovim/neovim
-	cd $(MF_GITHUB_DIR)/neovim/neovim && \
-	make distclean || true && \
-	make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
-	make install && \
-	rm -rf build
+# nvim-build:  ## build Neovim from source
+# 	ghq get -p neovim/neovim
+# 	cd $(MF_GITHUB_DIR)/neovim/neovim && \
+# 	make distclean || true && \
+# 	make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$${HOME}"/.local && \
+# 	make install && \
+# 	rm -rf build
 
-vim-build:  ## build Vim from source
-	ghq get -p vim/vim
-ifeq ($(MF_DETECTED_OS),macOS)
-	cd $(MF_GITHUB_DIR)/vim/vim/src && \
-	make distclean || true && \
-	./configure \
-		--disable-gui \
-		--enable-clipboard \
-		--enable-darwin \
-		--enable-fail-if-missing \
-		--enable-multibyte \
-		--prefix="$${HOME}"/.local \
-		--with-features=huge \
-		--without-wayland && \
-	make && \
-	make install
-else
-	cd $(MF_GITHUB_DIR)/vim/vim/src && \
-	make distclean || true && \
-	./configure \
-		--disable-gui \
-		--enable-clipboard \
-		--enable-fail-if-missing \
-		--enable-multibyte \
-		--prefix="$${HOME}"/.local \
-		--with-features=huge \
-		--without-x \
-		--without-wayland && \
-	make && \
-	make install
-endif
+# vim-build:  ## build Vim from source
+# 	ghq get -p vim/vim
+# ifeq ($(MF_DETECTED_OS),macOS)
+# 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
+# 	make distclean || true && \
+# 	./configure \
+# 		--disable-gui \
+# 		--enable-clipboard \
+# 		--enable-darwin \
+# 		--enable-fail-if-missing \
+# 		--enable-multibyte \
+# 		--prefix="$${HOME}"/.local \
+# 		--with-features=huge \
+# 		--without-wayland && \
+# 	make && \
+# 	make install
+# else
+# 	cd $(MF_GITHUB_DIR)/vim/vim/src && \
+# 	make distclean || true && \
+# 	./configure \
+# 		--disable-gui \
+# 		--enable-clipboard \
+# 		--enable-fail-if-missing \
+# 		--enable-multibyte \
+# 		--prefix="$${HOME}"/.local \
+# 		--with-features=huge \
+# 		--without-x \
+# 		--without-wayland && \
+# 	make && \
+# 	make install
+# endif
 
 
 # --------------------------------------
