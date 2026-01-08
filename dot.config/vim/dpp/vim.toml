@@ -24,6 +24,9 @@ let g:lsp_settings = {
 \   'efm-langserver': {
 \     'disabled': v:false,
 \   },
+\   'nixd': {
+\     'disabled': v:false,
+\   },
 \   'pylsp': {
 \     'disabled': v:true,
 \   },

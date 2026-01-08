@@ -9,6 +9,7 @@ require('ddc_source_lsp_setup').setup()
 -- vim.lsp.enable('pylsp')
 vim.lsp.enable('denols')
 vim.lsp.enable('efm')
+vim.lsp.enable('nixd')
 
 -- :help lsp-defaults-disable
 vim.api.nvim_create_autocmd('LspAttach', {

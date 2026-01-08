@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+_: {
   programs.vscode = {
     enable = true;
     # Extensions managed by VS Code itself (sync feature) or install manually

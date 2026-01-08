@@ -105,6 +105,7 @@ in {
         pkgs.pre-commit
         # LSP
         pkgs.efm-langserver
+        pkgs.nixd
         # Editors (latest from neovim-nightly-overlay and vim-overlay)
         pkgs.neovim
         pkgs.vim
