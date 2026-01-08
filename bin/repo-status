@@ -62,8 +62,12 @@ unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
 # Get insertions/deletions (single git diff call)
 read -r insertions deletions <<<"$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
 
-# Get unpushed commits
-unpushed=$(git log '@{u}..' --oneline 2>/dev/null | wc -l | tr -d ' ')
+# Get unpushed commits (try upstream, fall back to origin/branch)
+upstream="@{u}"
+if ! git rev-parse "${upstream}" >/dev/null 2>&1; then
+  upstream="origin/${branch}"
+fi
+unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' ')
 [ -z "${unpushed}" ] && unpushed=0
 
 # Get commit hash (8 characters)
