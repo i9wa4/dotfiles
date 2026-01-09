@@ -41,8 +41,8 @@ else
 fi
 
 # AWS
-export AWS_DEFAULT_PROFILE=
-export AWS_PROFILE=
+# export AWS_DEFAULT_PROFILE=
+# export AWS_PROFILE=
 
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/dot.config/claude
@@ -61,7 +61,7 @@ export PATH=/opt/homebrew/bin:"${PATH}"
 export NVIM_APPNAME=nvim
 
 # zeno.zsh
-export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
+# export ZENO_DISABLE_EXECUTE_CACHE_COMMAND=1
 
 # Home-manager session variables (for home.sessionPath, home.sessionVariables)
 # cf. nix/home.nix home.sessionPath

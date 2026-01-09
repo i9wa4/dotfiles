@@ -122,6 +122,14 @@ $ "
 
 
 # AWS SSO profile tracking
+aws-sso-login() {
+  local profile
+  profile=$(aws configure list-profiles | fzf)
+  if [[ -n "$profile" ]]; then
+    aws sso login --profile "$profile"
+    export MY_AWS_SSO_PROFILE="$profile"
+  fi
+}
 preexec() {
   if [[ "$1" =~ 'aws sso login --profile ([^ ]+)' ]]; then
     export MY_AWS_SSO_PROFILE="${match[1]}"
