@@ -151,7 +151,10 @@ git config --global user.email "your@email.com"
 ### 5.4. Ubuntu Server Only: Enable SSH
 
 ```sh
-make ubuntu-server-init
+sudo apt-get install -y openssh-server
+sudo systemctl daemon-reload
+sudo systemctl start ssh.service
+sudo systemctl enable ssh.service
 ```
 
 ### 5.5. WSL2 Ubuntu Only: Copy Windows Config
