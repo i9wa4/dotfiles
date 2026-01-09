@@ -1,10 +1,19 @@
+#!/bin/zsh
+zmodload zsh/datetime
+typeset -g _T0=$EPOCHREALTIME
+typeset -ga _TIMINGS=()
+_mark() { _TIMINGS+=("$1:$(( (EPOCHREALTIME - _T0) * 1000 ))") }
+
+_mark "start"
 zmodload zsh/zprof
 
 
+_mark "before-setopt"
 # Disable Ctrl-D to exit
 setopt IGNORE_EOF
 
 
+_mark "before-history"
 # History (HISTFILE, HISTSIZE, SAVEHIST are set in .zshenv)
 setopt append_history
 setopt extended_history
@@ -16,11 +25,13 @@ setopt hist_save_no_dups
 setopt share_history
 
 
+_mark "before-keybind"
 # Keybind
 bindkey -e
 bindkey '\e[3~' delete-char
 
 
+_mark "before-edit-cmd"
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -32,6 +43,7 @@ zle -N edit_current_line
 bindkey '^x^e' edit_current_line
 
 
+_mark "before-zinit"
 # Zinit (manual install)
 # https://github.com/zdharma-continuum/zinit?tab=readme-ov-file#manual
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -39,6 +51,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d "$ZINIT_HOME"/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 
+_mark "before-compinit"
 # compinit (lazy loading via zinit turbo mode)
 setopt extendedglob
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
@@ -61,11 +74,13 @@ zinit ice wait'0a' lucid \
   '
 zinit light zdharma-continuum/null
 
+_mark "before-direnv"
 # direnv (lazy loading via zinit turbo mode)
 zinit ice wait'0b' lucid \
   atload'eval "$(direnv hook zsh)"'
 zinit light zdharma-continuum/null
 
+_mark "before-zeno"
 # zeno.zsh (lazy loading via zinit turbo mode)
 zinit ice wait'0c' lucid depth"1" blockf \
   atload'
@@ -82,6 +97,7 @@ zinit ice wait'0c' lucid depth"1" blockf \
   '
 zinit light yuki-yano/zeno.zsh
 
+_mark "before-ssh"
 # SSH connection detection
 if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
   _IS_LOCAL=0
@@ -90,6 +106,7 @@ else
 fi
 
 
+_mark "before-prompt"
 # Prompt
 setopt prompt_subst
 function _get_simplified_path() {
@@ -134,6 +151,7 @@ precmd() {
 }
 
 
+_mark "before-aws"
 # AWS command wrapper (tracks SSO profile)
 aws() {
   local profile=""
@@ -156,6 +174,7 @@ aws() {
 }
 
 
+_mark "before-tmux"
 # tmux
 if (( _IS_LOCAL )); then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
@@ -164,13 +183,24 @@ if (( _IS_LOCAL )); then
 fi
 
 
+_mark "before-safe"
 # Safe-chain
 if test -f ~/.safe-chain/scripts/init-posix.sh; then
   source ~/.safe-chain/scripts/init-posix.sh
 fi
 
 
+_mark "before-local"
 # Local config (machine-specific, not version controlled)
 if test -f ~/.zshrc.local; then
   source ~/.zshrc.local
 fi
+_mark "end"
+
+# Output cumulative timing results to stderr
+echo "=== Cumulative timing ===" >&2
+for t in "${_TIMINGS[@]}"; do
+  name="${t%%:*}"
+  ms="${t#*:}"
+  printf "%-20s %7.2fms\n" "$name" "$ms" >&2
+done

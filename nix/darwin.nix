@@ -24,7 +24,12 @@
   };
 
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
-  programs.zsh.enable = true;
+  # Note: Completion is handled by user's zshrc with zinit turbo mode
+  programs.zsh = {
+    enable = true;
+    enableCompletion = false; # Skip compinit in /etc/zshrc
+    enableBashCompletion = false; # Skip bashcompinit
+  };
 
   # System packages (GUI applications via brew-nix overlay, symlinked to /Applications/Nix Apps/)
   # NOTE: google-chrome, openvpn-connect are in Homebrew (hash mismatch/xar errors)
