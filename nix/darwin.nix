@@ -26,11 +26,9 @@
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
   programs.zsh.enable = true;
 
-  # System packages
+  # System packages (GUI applications via brew-nix overlay, symlinked to /Applications/Nix Apps/)
+  # NOTE: google-chrome, openvpn-connect are in Homebrew (hash mismatch/xar errors)
   environment.systemPackages = [
-    pkgs.vim
-    # GUI applications (via brew-nix overlay, symlinked to /Applications/Nix Apps/)
-    # NOTE: google-chrome, openvpn-connect are in Homebrew (hash mismatch/xar errors)
     pkgs.brewCasks.drawio
     pkgs.brewCasks.visual-studio-code
     pkgs.brewCasks.wezterm
