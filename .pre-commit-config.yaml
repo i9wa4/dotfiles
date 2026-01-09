@@ -94,7 +94,6 @@ repos:
         entry: shellcheck
         language: system
         types: [shell]
-        exclude: ^nix/zsh/
 
       - id: shfmt
         name: shfmt
