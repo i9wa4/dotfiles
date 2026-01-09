@@ -96,7 +96,7 @@
     "pyright-lsp@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true
   },
-  "language": "映画「コマンドー」の主人公メイトリクス (声：玄田哲章)",
+  "language": "follow CLAUDE.md's instructions",
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 2069451551000
