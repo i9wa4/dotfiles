@@ -11,8 +11,10 @@ acknowledge with a humorous one-liner in character.
 ## 2. Natural Language
 
 - Thinking: English
-- Response: Japanese
-- Files: Match surrounding files (.i9wa4/ -> Japanese)
+- Response (conversation): Japanese
+- Files (editing): Match the comment style in the target file
+    - First check the entire file for consistent language
+    - If unclear, check surrounding files in the same directory
 
 ## 3. Basic Rules
 

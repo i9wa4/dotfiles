@@ -10,7 +10,7 @@
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
     # cf. https://github.com/nix-darwin/nix-darwin/issues/1252
     optimise.automatic = true;
-    # Garbage collection (weekly on Sunday, delete older than 7 days)
+    # Garbage collection (weekly on Sunday, delete older than 1 day)
     # cf. https://mynixos.com/nix-darwin/option/nix.gc.interval
     gc = {
       automatic = true;
@@ -19,7 +19,7 @@
         Hour = 3;
         Minute = 0;
       };
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than 1d";
     };
   };
 
@@ -42,12 +42,9 @@
     enableFzfGit = false;
   };
 
-  # System packages (GUI applications via brew-nix overlay, symlinked to /Applications/Nix Apps/)
-  # NOTE: google-chrome, openvpn-connect, visual-studio-code are in Homebrew
+  # System packages (CLI tools that need to be system-wide)
+  # NOTE: GUI apps moved to Homebrew casks to avoid nix store bloat from generations
   environment.systemPackages = [
-    pkgs.brewCasks.drawio
-    pkgs.brewCasks.wezterm
-    pkgs.brewCasks.zoom
   ];
 
   # Fonts
@@ -55,8 +52,7 @@
     pkgs.udev-gothic
   ];
 
-  # Homebrew (only for apps with frequent updates / hash issues)
-  # NOTE: Currently all GUI apps are managed via brew-nix
+  # Homebrew (GUI apps to avoid nix store bloat from generations)
   homebrew = {
     enable = true;
     onActivation = {
@@ -65,10 +61,12 @@
       upgrade = true;
     };
     casks = [
-      # Add apps here if brew-nix has issues (hash mismatch/xar errors/auto-update)
+      "drawio"
       "google-chrome"
       "openvpn-connect"
       "visual-studio-code"
+      "wezterm"
+      "zoom"
     ];
   };
 
