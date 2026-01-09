@@ -144,8 +144,7 @@ in {
     file = {
       ".claude/skills".source = symlink "${dotfilesDir}/dot.config/claude/skills";
       ".codex".source = symlink "${dotfilesDir}/dot.config/codex";
-      ".zshenv".source = symlink "${dotfilesDir}/dot.zshenv";
-      ".zshrc".source = symlink "${dotfilesDir}/dot.zshrc";
+      # Note: .zshenv and .zshrc are managed by programs.zsh
     };
   };
 
@@ -162,13 +161,102 @@ in {
     "zeno".source = symlink "${dotfilesDir}/dot.config/zeno";
   };
 
-  # Let Home Manager manage itself
-  programs.home-manager.enable = true;
+  programs = {
+    # Let Home Manager manage itself
+    home-manager.enable = true;
 
-  # direnv (auto-activate devShell when cd into project)
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
+    # direnv (auto-activate devShell when cd into project)
+    # Note: zsh hook is handled by zinit turbo mode for faster startup
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+      enableZshIntegration = false; # Handled by zinit turbo
+    };
+
+    # zsh (managed by home-manager)
+    zsh = {
+      enable = true;
+      enableCompletion = false; # Handled by zinit turbo mode
+
+      # Environment variables
+      sessionVariables = {
+        CLAUDE_CONFIG_DIR = "${dotfilesDir}/dot.config/claude";
+        EDITOR = "vim";
+        FZF_DEFAULT_OPTS = "--reverse --bind 'ctrl-y:accept'";
+        NVIM_APPNAME = "nvim";
+        TZ = "Asia/Tokyo";
+        VISUAL = "vim";
+        XDG_CACHE_HOME = "$HOME/.cache";
+        XDG_CONFIG_HOME = "$HOME/.config";
+      };
+
+      # History
+      history = {
+        extended = true;
+        ignoreAllDups = true;
+        ignoreDups = true;
+        ignoreSpace = true;
+        path = "$HOME/.zsh_history";
+        save = 1000000;
+        share = true;
+        size = 1000000;
+      };
+
+      # ~/.zshenv additions (dynamic processing)
+      # NOTE: ''${VAR} escapes to ${VAR} in shell (prevents nix interpolation)
+      envExtra = ''
+        # Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
+        if [ -z "''${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
+          if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+            . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+          fi
+        fi
+
+        # locale
+        if locale -a 2>/dev/null | grep -q "en_US.UTF-8"; then
+          export LC_ALL=en_US.UTF-8
+        else
+          export LC_ALL=C.UTF-8
+        fi
+
+        # Homebrew PATH (macOS only)
+        [[ -d /opt/homebrew ]] && export PATH=/opt/homebrew/bin:"''${PATH}"
+
+        # Local config
+        [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
+      '';
+
+      # ~/.zshrc additions
+      initExtra = ''
+        # Disable Ctrl-D to exit
+        setopt IGNORE_EOF
+
+        # History options (values are set by home-manager)
+        setopt append_history
+        setopt hist_fcntl_lock
+        setopt hist_reduce_blanks
+        setopt hist_save_no_dups
+
+        # Source modular configs
+        source ${dotfilesDir}/nix/zsh/keybind.zsh
+        source ${dotfilesDir}/nix/zsh/zinit.zsh
+        source ${dotfilesDir}/nix/zsh/prompt.zsh
+        source ${dotfilesDir}/nix/zsh/aws.zsh
+
+        # tmux auto-start (local only, not in VSCode)
+        if [[ -z "''${SSH_CONNECTION}" && -z "''${SSH_TTY}" && -z "''${SSH_CLIENT}" ]]; then
+          if [[ "''${SHLVL}" -eq 1 && "''${TERM_PROGRAM}" != "vscode" ]]; then
+            tmux
+          fi
+        fi
+
+        # Safe-chain
+        [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
+
+        # Local config
+        [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+      '';
+    };
   };
 
   # ============================================================================

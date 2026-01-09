@@ -94,12 +94,14 @@ repos:
         entry: shellcheck
         language: system
         types: [shell]
+        exclude: ^nix/zsh/
 
       - id: shfmt
         name: shfmt
         entry: shfmt -i 2 -w
         language: system
         types: [shell]
+        exclude: ^nix/zsh/
 
       - id: sqlfmt
         name: sqlfmt

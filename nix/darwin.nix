@@ -24,11 +24,22 @@
   };
 
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
-  # Note: Completion is handled by user's zshrc with zinit turbo mode
+  # Note: All features disabled - home-manager programs.zsh handles ~/.zshrc
   programs.zsh = {
     enable = true;
-    enableCompletion = false; # Skip compinit in /etc/zshrc
-    enableBashCompletion = false; # Skip bashcompinit
+    # History is managed by home-manager programs.zsh.history
+    # Completion (handled by zinit turbo mode)
+    enableCompletion = false;
+    enableBashCompletion = false;
+    enableGlobalCompInit = false;
+    # Prompt (handled by home-manager initExtra)
+    promptInit = "";
+    # Plugins (handled by zinit/zeno)
+    enableSyntaxHighlighting = false;
+    enableAutosuggestions = false;
+    enableFzfCompletion = false;
+    enableFzfHistory = false;
+    enableFzfGit = false;
   };
 
   # System packages (GUI applications via brew-nix overlay, symlinked to /Applications/Nix Apps/)
