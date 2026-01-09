@@ -267,9 +267,20 @@ in {
     npmPrefix = "${homeDir}/.local";
     ghq = "${pkgs.ghq}/bin/ghq";
     git = "${pkgs.git}/bin/git";
+    fd = "${pkgs.fd}/bin/fd";
     ghqListEssential = "${dotfilesDir}/nix/ghq-list-essential.txt";
     tpmDir = "${dotfilesDir}/dot.config/tmux/plugins/tpm";
   in {
+    # 0. Clean temporary files
+    cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      echo "Cleaning temporary files..."
+      rm -rf "${homeDir}/.npm"
+      ${lib.optionalString pkgs.stdenv.isDarwin ''
+        ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
+        xattr -rc ${ghqRoot} || true
+      ''}
+    '';
+
     # 0. Clone essential repositories (ghq-get-essential)
     # Note: ghq requires git in PATH
     ghqGetEssential = lib.hm.dag.entryAfter ["writeBoundary"] ''

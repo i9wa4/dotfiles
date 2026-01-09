@@ -37,15 +37,6 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # --------------------------------------
 # Utility Tasks
 #
-clean:  ## clean temporary files
-	# OS-common clean
-	rm -rf "$${HOME}"/.npm
-ifeq ($(MF_DETECTED_OS),macOS)
-	# macOS-specific clean
-	fd ".DS_Store" $(MF_GITHUB_DIR) --hidden --no-ignore | xargs -t rm -f
-	xattr -rc $(MF_GITHUB_DIR)
-endif
-
 nix-switch:  ## update ghq repos and switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
     # sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
