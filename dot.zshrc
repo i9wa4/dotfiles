@@ -108,32 +108,51 @@ function _get_devshell_indicator() {
       fi
     fi
     if [[ -n "${repo_name}" ]]; then
-      print "(devShell: ${repo_name}) "
+      print "❄️${repo_name} "
     else
-      print "(devShell) "
+      print "❄️devShell "
     fi
   fi
 }
+function _get_aws_profile_indicator() {
+  [[ -n "${MY_AWS_PROFILE}" ]] && print -n "🔶${MY_AWS_PROFILE}"
+}
+function _get_context_line() {
+  local devshell="$(_get_devshell_indicator)"
+  local aws="$(_get_aws_profile_indicator)"
+  print -n "${devshell}${aws}"
+}
 
-(( _IS_LOCAL )) && PROMPT="" || PROMPT="[%M] "
-PROMPT="
-\$(_get_devshell_indicator)${PROMPT}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)
-$ "
-
-
-# AWS SSO profile tracking
-aws-sso-login() {
-  local profile
-  profile=$(aws configure list-profiles | fzf)
-  if [[ -n "$profile" ]]; then
-    aws sso login --profile "$profile"
-    export MY_AWS_SSO_PROFILE="$profile"
+(( _IS_LOCAL )) && _HOST_PREFIX="" || _HOST_PREFIX="[%M] "
+precmd() {
+  local context="$(_get_context_line)"
+  if [[ -n "${context}" ]]; then
+    PROMPT=$'\n'"${context}"$'\n'"${_HOST_PREFIX}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
+  else
+    PROMPT=$'\n'"${_HOST_PREFIX}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
   fi
 }
-preexec() {
-  if [[ "$1" =~ 'aws sso login --profile ([^ ]+)' ]]; then
-    export MY_AWS_SSO_PROFILE="${match[1]}"
+
+
+# AWS command wrapper (tracks SSO profile)
+aws() {
+  local profile=""
+  local i
+  for ((i=1; i<=${#@}; i++)); do
+    if [[ "${@[$i]}" == "--profile" ]]; then
+      profile="${@[$((i+1))]}"
+      break
+    fi
+  done
+
+  command aws "$@"
+  local ret=$?
+
+  if [[ "$1" == "sso" && "$2" == "login" && $ret -eq 0 && -n "$profile" ]]; then
+    export MY_AWS_PROFILE="$profile"
   fi
+
+  return $ret
 }
 
 
