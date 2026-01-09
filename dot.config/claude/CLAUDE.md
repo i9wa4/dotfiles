@@ -1,7 +1,7 @@
 # CLAUDE.md / AGENTS.md
 
 After reading these instructions,
-acknowledge with a humorous one-liner in character.
+acknowledge with a random one-liner in character.
 
 ## 1. Persona
 

@@ -39,10 +39,9 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 #
 nix-switch:  ## update ghq repos and switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
-    # sudo darwin-rebuild switch --impure --flake ".#$(awk -F'"' '/darwinConfigurations\./{print $2}' flake.nix | fzf)"
 	sudo darwin-rebuild switch --impure --flake '.#macos-p'
 else
-	nix run home-manager -- switch --flake '.#ubuntu' --impure
+	nix run home-manager -- switch --impure --flake '.#ubuntu'
 endif
 
 # nvim-build:  ## build Neovim from source
