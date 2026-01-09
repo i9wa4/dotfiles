@@ -51,6 +51,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 
 | Skill               | Description                        |
 | ------------------- | ---------------------------------- |
+| agent-memory        | Save and recall work context       |
 | bigquery-expert     | BigQuery development guide         |
 | databricks-expert   | Databricks development guide       |
 | dbt-expert          | dbt development guide              |
