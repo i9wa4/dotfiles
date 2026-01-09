@@ -123,6 +123,12 @@ Please follow these rules strictly to prevent the CLI from crashing:
    - Direct file editing with Japanese text has high crash rate.
    - Workaround: Use Python/shell scripts for file operations.
 
+6. Box-drawing Characters
+   - Box-drawing chars with CJK text are high-risk (cf. Issue #14104).
+   - NG: `│`, `─`, `┌`, `└`, `┐`, `┘`
+   - OK: `|`, `-`, `+`
+   - Markdown tables with Japanese text may trigger crash.
+
 #### 5.1.2. Rule
 
 Replace these full-width characters with half-width in your output:

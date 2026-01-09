@@ -43,10 +43,9 @@
   };
 
   # System packages (GUI applications via brew-nix overlay, symlinked to /Applications/Nix Apps/)
-  # NOTE: google-chrome, openvpn-connect are in Homebrew (hash mismatch/xar errors)
+  # NOTE: google-chrome, openvpn-connect, visual-studio-code are in Homebrew
   environment.systemPackages = [
     pkgs.brewCasks.drawio
-    pkgs.brewCasks.visual-studio-code
     pkgs.brewCasks.wezterm
     pkgs.brewCasks.zoom
   ];
@@ -66,9 +65,10 @@
       upgrade = true;
     };
     casks = [
-      # Add apps here if brew-nix has issues (hash mismatch/xar errors)
+      # Add apps here if brew-nix has issues (hash mismatch/xar errors/auto-update)
       "google-chrome"
       "openvpn-connect"
+      "visual-studio-code"
     ];
   };
 

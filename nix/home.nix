@@ -271,11 +271,14 @@ in {
     ghqListEssential = "${dotfilesDir}/nix/ghq-list-essential.txt";
     tpmDir = "${dotfilesDir}/dot.config/tmux/plugins/tpm";
   in {
-    # 0. Clean temporary files
+    # 0. Clean temporary files (node caches for security)
     cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
       echo "Cleaning temporary files..."
+      # Node.js caches
       rm -rf "${homeDir}/.npm"
+      rm -rf "${homeDir}/.cache/deno"
       ${lib.optionalString pkgs.stdenv.isDarwin ''
+        rm -rf "${homeDir}/Library/Caches/deno"
         ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
         xattr -rc ${ghqRoot} || true
       ''}
