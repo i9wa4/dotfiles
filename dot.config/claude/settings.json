@@ -20,6 +20,9 @@
   "permissions": {
     "allow": [],
     "deny": [
+      "Bash(git * push:*)",
+      "Bash(git * rebase:*)",
+      "Bash(git * reset:*)",
       "Bash(git push:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",

@@ -1,6 +1,6 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
-local bongo = require("wezterm-bongo-cat")
+local bongo = wezterm.plugin.require("https://github.com/i9wa4/wezterm-bongo-cat")
 
 -- Keybindings
 config.disable_default_key_bindings = true
@@ -108,6 +108,7 @@ config.keys = {
   { key = "f", mods = "OPT", action = wezterm.action.EmitEvent("dec-font-size") },
   { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
   { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
+  { key = "l", mods = "CTRL|SHIFT", action = wezterm.action.ShowDebugOverlay }, -- wezterm.plugin.update_all()
 }
 
 return config
