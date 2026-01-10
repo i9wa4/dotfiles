@@ -107,6 +107,7 @@ in {
         # LSP
         pkgs.efm-langserver
         pkgs.nixd
+        pkgs.pyright
         # Editors (latest from neovim-nightly-overlay and vim-overlay)
         pkgs.neovim
         pkgs.vim

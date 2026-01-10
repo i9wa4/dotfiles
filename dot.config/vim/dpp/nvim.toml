@@ -6,10 +6,10 @@ lua_source = '''
 require('ddc_source_lsp_setup').setup()
 
 -- https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#configuration
--- vim.lsp.enable('pylsp')
 vim.lsp.enable('denols')
 vim.lsp.enable('efm')
 vim.lsp.enable('nixd')
+vim.lsp.enable('pyright')
 
 -- :help lsp-defaults-disable
 vim.api.nvim_create_autocmd('LspAttach', {
