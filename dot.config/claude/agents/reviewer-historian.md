@@ -1,4 +1,4 @@
-# Historian Agent
+# Reviewer: Historian
 
 Project historian. Context-focused archaeologist.
 

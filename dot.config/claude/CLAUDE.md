@@ -64,29 +64,27 @@ Skills are stored in the `skills/` directory for specific integrations.
 
 ### 4.3. Agents
 
-Agents are stored in the `agents/` directory as specialized reviewers.
+Agents are stored in the `agents/` directory.
 
 | Agent                 | Description                                |
 | --------------------- | ------------------------------------------ |
-| architecture-reviewer | Design patterns and structure review       |
-| code-reviewer         | Code quality, readability, maintainability |
-| data-reviewer         | Data quality and schema review             |
-| historian             | Issue/PR history and commit context        |
-| qa-reviewer           | QA and test coverage review                |
-| security-reviewer     | Security vulnerability review              |
-| tech-researcher       | Technical research and analysis            |
+| reviewer-architecture | Design patterns and structure review       |
+| reviewer-code         | Code quality, readability, maintainability |
+| reviewer-data         | Data quality and schema review             |
+| reviewer-historian    | Issue/PR history and commit context        |
+| reviewer-qa           | QA and test coverage review                |
+| reviewer-security     | Security vulnerability review              |
+| researcher-tech       | Technical research and analysis            |
 
 ### 4.4. Commands
 
 Slash commands are stored in `commands/` and loaded on invocation.
 
-| Command                            | Description                          |
-| ---------------------------------- | ------------------------------------ |
-| issue-to-pr                        | Issue to PR - 3-phase workflow       |
-| my-code-review                     | Code review workflow                 |
-| my-design-review                   | Design review workflow               |
-| restricted-bigquery-dbt-environment| Restricted BigQuery dbt environment  |
-| summarize-reviews                  | Summarize PR reviews                 |
+| Command                             | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| issue-to-pr                         | Issue to PR - 3-phase workflow      |
+| my-review                           | Unified code/design review workflow |
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
 
 ## 5. Claude Code Known Issues & Guardrails
 

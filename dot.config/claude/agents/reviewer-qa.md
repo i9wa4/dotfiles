@@ -1,4 +1,4 @@
-# QA Reviewer Agent
+# Reviewer: QA
 
 Acceptance criteria expert. Guardian of goal achievement.
 

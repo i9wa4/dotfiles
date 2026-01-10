@@ -1,4 +1,4 @@
-# Tech Researcher Agent
+# Researcher: Tech
 
 Technical research specialist. Thorough investigator.
 

@@ -93,8 +93,9 @@
   },
   "enabledPlugins": {
     "document-skills@anthropic-agent-skills": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "example-skills@anthropic-agent-skills": true
+    "example-skills@anthropic-agent-skills": true,
+    "context7@claude-plugins-official": true,
+    "ralph-wiggum@claude-code-plugins": true
   },
   "language": "follow CLAUDE.md's instructions",
   "alwaysThinkingEnabled": true,

@@ -1,4 +1,4 @@
-# Data Reviewer Agent
+# Reviewer: Data
 
 Data model expert. Normalization master.
 

@@ -10,13 +10,13 @@
 - IMPORTANT: `.i9wa4/` is in global `.gitignore`,
   so files here are not Git-tracked
 - YOU MUST: Save important work documents to the `.i9wa4/` directory
-- YOU MUST: Use filename format `YYYYMMDD-pN-xxxx.md`
-    - `YYYYMMDD`: Date (e.g., `20251105`)
-    - `pN`: tmux pane number (e.g., `p0`, `p1`, `p2`)
-    - `xxxx`: File purpose (e.g., `review`, `plan`, `memo`)
-    - Example: `.i9wa4/20251105-p2-review.md`
-- IMPORTANT: Get tmux pane number N with:
-  `tmux display-message -p -t "${TMUX_PANE}" '#{pane_index}'`
+- YOU MUST: Use filename format `YYYYMMDD-HHMMSS-{source}-{role}-{short_id}.md`
+    - `YYYYMMDD-HHMMSS`: Timestamp with seconds
+    - `source`: cc (Claude Code) or cx (Codex CLI)
+    - `role`: Task role (e.g., security, code, arch, qa, hist, memo)
+    - `short_id`: 4 hex chars for uniqueness
+    - Example: `.i9wa4/20260110-211652-cc-security-a1b2.md`
+- IMPORTANT: Generate short_id with: `openssl rand -hex 2`
 
 ## 3. Project-Specific Rules
 

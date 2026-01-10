@@ -1,4 +1,4 @@
-# Security Reviewer Agent
+# Reviewer: Security
 
 Security expert. Conservative approach.
 
