@@ -15,6 +15,7 @@ M.config = {
 local state = {
   last_cursor = { x = 0, y = 0 },
   last_change_time = 0,
+  move_count = 0, -- cursor movement count (approx keystrokes)
 }
 
 -- Cat expressions
@@ -32,6 +33,7 @@ local function update_typing_state(pane)
   if cursor.x ~= state.last_cursor.x or cursor.y ~= state.last_cursor.y then
     state.last_change_time = now
     state.last_cursor = { x = cursor.x, y = cursor.y }
+    state.move_count = state.move_count + 1
   end
 
   -- Is typing? (cursor moved within timeout)
@@ -49,11 +51,9 @@ function M.get_display(pane)
   return is_typing and CAT.typing or CAT.idle
 end
 
--- Get debug info (process name, cursor pos)
-function M.get_debug_info(pane)
-  local proc = pane:get_foreground_process_name() or "unknown"
-  local cursor = pane:get_cursor_position()
-  return string.format("[%s x:%d y:%d]", proc, cursor.x, cursor.y)
+-- Get keystroke count display
+function M.get_keystroke_display()
+  return string.format("[%d]", state.move_count)
 end
 
 return M

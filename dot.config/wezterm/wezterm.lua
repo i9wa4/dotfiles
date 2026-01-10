@@ -22,8 +22,8 @@ config.show_tabs_in_tab_bar = false
 
 -- Window
 config.window_frame = {
-  active_titlebar_bg = "none",
-  inactive_titlebar_bg = "none",
+  active_titlebar_bg = "rgba(0, 0, 0, 0.2)",
+  inactive_titlebar_bg = "rgba(0, 0, 0, 0.2)",
   active_titlebar_fg = "#FFFFFF",
   inactive_titlebar_fg = "#FFFFFF",
   active_titlebar_border_bottom = "none",
@@ -40,36 +40,33 @@ local opacity_default = 0.70
 config.window_background_opacity = opacity_default
 config.hide_tab_bar_if_only_one_tab = false
 
--- Tab bar colors (match titlebar - all transparent)
+-- Tab bar colors (match titlebar)
 config.colors = {
   tab_bar = {
-    background = "none",
+    background = "rgba(0, 0, 0, 0.2)",
   },
 }
 
 -- Status display
-local status_fg = "#000000"
+local status_fg = "#FFFFFF"
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
 
-  -- Right: Opacity and Font
+  -- Right: BongoCat + keystroke count + Opacity + Font
+  local cat_display = bongo.get_display(pane)
+  local keystroke_display = bongo.get_keystroke_display()
   local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
   window:set_right_status(wezterm.format({
+    { Background = { Color = "rgba(0, 0, 0, 0.2)" } },
     { Foreground = { Color = status_fg } },
-    { Text = right_status },
+    { Text = cat_display .. " " .. keystroke_display .. right_status },
   }))
 
-  -- Left: BongoCat + debug info
-  local left_padding = 20 -- space for macOS menu bar icons
-  local cat_display = bongo.get_display(pane)
-  local debug_info = bongo.get_debug_info(pane)
-  window:set_left_status(wezterm.format({
-    { Foreground = { Color = status_fg } },
-    { Text = string.rep(" ", left_padding) .. cat_display .. " " .. debug_info },
-  }))
+  -- Left: empty (space for macOS window buttons)
+  window:set_left_status("")
 end)
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
