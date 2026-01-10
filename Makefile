@@ -112,7 +112,7 @@ win-copy:  ## copy config files for Windows (WSL only)
 	# WSL2
 	echo "$${MF_WSLCONF_IN_WSL}" | sudo tee /etc/wsl.conf
 	# Windows
-	rm -rf $(MF_WIN_UTIL_DIR)
-	cp -rf $(MF_GITHUB_DIR)/i9wa4/dotfiles/bin $(MF_WIN_UTIL_DIR)
 	echo "$${MF_WSLCONFIG_IN_WINDOWS}" | \
 		tee $(MF_WIN_UTIL_DIR)/etc/dot.wslconfig
+	rm -rf $(MF_WIN_UTIL_DIR)
+	cp -rf $(MF_GITHUB_DIR)/i9wa4/dotfiles/bin $(MF_WIN_UTIL_DIR)
