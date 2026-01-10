@@ -6,6 +6,13 @@ M.config = {
   enabled = true,
   typing_timeout = 2,
   sleep_timeout = 30,
+  random_interval = 5,
+  hand = { up = "ฅ", down = "₀" },
+  face = {
+    normal = "^•ω•^",
+    effort = "^>ω<^",
+    sleepy = { "^-ω-^", "^=ω=^" },
+  },
 }
 
 local state = {
@@ -14,7 +21,10 @@ local state = {
   move_count = 0,
 }
 
-local FACE = { normal = "^•ω•^", effort = "^>ω<^", sleepy = "^-ω-^" }
+local function random_choice(tbl)
+  math.randomseed(math.floor(os.time() / M.config.random_interval))
+  return tbl[math.random(#tbl)]
+end
 
 function M.get_display(pane)
   if not M.config.enabled then
@@ -31,15 +41,18 @@ function M.get_display(pane)
   end
 
   local idle_time = now - state.last_change_time
+  local hand = M.config.hand
+  local face = M.config.face
 
   if idle_time >= M.config.sleep_timeout then
-    return "ฅ" .. FACE.sleepy .. "ฅ"
+    local sleepy = type(face.sleepy) == "table" and random_choice(face.sleepy) or face.sleepy
+    return hand.up .. sleepy .. hand.up
   elseif idle_time >= M.config.typing_timeout then
-    return "ฅ" .. FACE.normal .. "ฅ"
+    return hand.up .. face.normal .. hand.up
   else
-    local left = state.move_count % 2 == 0 and "ฅ" or "₀"
-    local right = state.move_count % 2 == 0 and "₀" or "ฅ"
-    return left .. FACE.effort .. right
+    local left = state.move_count % 2 == 0 and hand.up or hand.down
+    local right = state.move_count % 2 == 0 and hand.down or hand.up
+    return left .. face.effort .. right
   end
 end
 
