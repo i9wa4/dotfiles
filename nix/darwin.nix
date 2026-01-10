@@ -64,6 +64,7 @@
       "drawio"
       "google-chrome"
       "openvpn-connect"
+      "steam"
       "visual-studio-code"
       "wezterm"
       "zoom"

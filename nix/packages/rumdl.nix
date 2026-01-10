@@ -10,10 +10,10 @@ rustPlatform.buildRustPackage rec {
     owner = "rvben";
     repo = "rumdl";
     rev = "v${version}";
-    hash = "sha256-EW/JQlzve46eKCuDqXmvdeU1X3khtuk/WiUD5XoD+N4=";
+    hash = "sha256-YUo6WU3r9phIrM8g3qfGAVaj1oSAOqgTfCoghsFU/Ng=";
   };
 
-  cargoHash = "sha256-dres1qO4YqmGwnjFDp6alh5+QTQa4liDBv6iMXFBlck=";
+  cargoHash = "sha256-JSHS1/H5jiB4NvQV5qMrui118JGxVLqOfjRLUB/cPTQ=";
 
   # Tests require the binary in PATH
   doCheck = false;

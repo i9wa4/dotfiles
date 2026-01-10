@@ -1,6 +1,7 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
-local zoo = require("wezterm-zoo")
+-- local zoo = require("wezterm-zoo")
+local bongo = require("wezterm-bongo-cat")
 
 -- Keybindings
 config.disable_default_key_bindings = true
@@ -54,24 +55,20 @@ wezterm.on("update-status", function(window, pane)
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
 
-  -- Right: Hint (if zoo/aqua on) + Opacity and Font
-  local hint = zoo.config.mode ~= "off" and zoo.get_hint() or ""
+  -- Right: Opacity and Font
   local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
-  local right_fixed_width = 13 -- fixed width for zoo calculation (excludes hint)
   window:set_right_status(wezterm.format({
     { Foreground = { Color = status_fg } },
-    { Text = hint .. right_status },
+    { Text = right_status },
   }))
 
-  -- Left: Zoo (hint may overlap, that's OK)
-  local dims = pane:get_dimensions()
+  -- Left: BongoCat + debug info
   local left_padding = 20 -- space for macOS menu bar icons
-  local emoji_buffer = 15 -- each emoji is width 2 but counts as 1
-  local zoo_width = math.max(20, dims.cols - right_fixed_width - emoji_buffer - left_padding)
-  local zoo_display = zoo.get_zoo_display(zoo_width)
+  local cat_display = bongo.get_display(pane)
+  local debug_info = bongo.get_debug_info(pane)
   window:set_left_status(wezterm.format({
     { Foreground = { Color = status_fg } },
-    { Text = string.rep(" ", left_padding) .. zoo_display },
+    { Text = string.rep(" ", left_padding) .. cat_display .. " " .. debug_info },
   }))
 end)
 
@@ -109,16 +106,21 @@ wezterm.on("dec-font-size", function(window, pane)
 end)
 
 -- Toggle zoo mode: off -> zoo -> aquarium -> off (Opt+z)
-wezterm.on("toggle-zoo-mode", function(window, pane)
-  if zoo.config.mode == "off" then
-    zoo.config.mode = "zoo"
-  elseif zoo.config.mode == "zoo" then
-    zoo.config.mode = "aquarium"
-  else
-    zoo.config.mode = "off"
-  end
-  -- Clear state to respawn with new creatures
-  os.remove("/tmp/wezterm-zoo-state.json")
+-- wezterm.on("toggle-zoo-mode", function(window, pane)
+--   if zoo.config.mode == "off" then
+--     zoo.config.mode = "zoo"
+--   elseif zoo.config.mode == "zoo" then
+--     zoo.config.mode = "aquarium"
+--   else
+--     zoo.config.mode = "off"
+--   end
+--   -- Clear state to respawn with new creatures
+--   os.remove("/tmp/wezterm-zoo-state.json")
+-- end)
+
+-- Toggle bongo-cat (Opt+z)
+wezterm.on("toggle-bongo-cat", function(window, pane)
+  bongo.config.enabled = not bongo.config.enabled
 end)
 
 config.keys = {
@@ -126,7 +128,7 @@ config.keys = {
   { key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
   { key = "d", mods = "OPT", action = wezterm.action.EmitEvent("inc-font-size") },
   { key = "f", mods = "OPT", action = wezterm.action.EmitEvent("dec-font-size") },
-  { key = "z", mods = "OPT", action = wezterm.action.EmitEvent("toggle-zoo-mode") },
+  { key = "z", mods = "OPT", action = wezterm.action.EmitEvent("toggle-bongo-cat") },
   { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
   { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
 }
