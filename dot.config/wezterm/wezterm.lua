@@ -37,6 +37,7 @@ config.window_frame = {
 
 local opacity_default = 0.70
 config.window_background_opacity = opacity_default
+config.status_update_interval = 100 -- 100ms for faster bongo-cat animation
 config.hide_tab_bar_if_only_one_tab = false
 
 -- Tab bar colors (match titlebar)
@@ -57,7 +58,8 @@ wezterm.on("update-status", function(window, pane)
   -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
   local keystroke_display = bongo.get_keystroke_display()
-  local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
+  -- local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
+  local right_status = ""
   window:set_right_status(wezterm.format({
     { Background = { Color = "rgba(0, 0, 0, 0.2)" } },
     { Foreground = { Color = status_fg } },
