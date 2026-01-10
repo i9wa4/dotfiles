@@ -127,7 +127,7 @@ def generate_markdown(changes: list[dict]) -> str:
         "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
-        "## Package Changes",
+        "## 1. Package Changes",
         "",
     ]
 
@@ -135,7 +135,7 @@ def generate_markdown(changes: list[dict]) -> str:
         lines.append("All custom packages are up to date.")
         lines.append("")
     else:
-        for change in changes:
+        for i, change in enumerate(changes, 1):
             pkg = change["name"]
             old_ver = change["old_version"]
             new_ver = change["new_version"]
@@ -143,9 +143,15 @@ def generate_markdown(changes: list[dict]) -> str:
             repo = change["repo"]
             release_notes = change.get("release_notes", [])
 
-            lines.append(f"### {pkg}: `{old_ver}` -> `{new_ver}`")
+            lines.append(f"### 1.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
             lines.append("")
-            lines.append(f"Repository: https://github.com/{owner}/{repo}")
+            lines.append(f"Repository: <https://github.com/{owner}/{repo}>")
+            lines.append("")
+            lines.append("Update command:")
+            lines.append("")
+            lines.append("```bash")
+            lines.append(f"nix run 'nixpkgs#nix-update' -- --flake {pkg}")
+            lines.append("```")
             lines.append("")
 
             if release_notes:
@@ -155,11 +161,11 @@ def generate_markdown(changes: list[dict]) -> str:
                 )
                 lines.append("")
 
-                for note in release_notes:
+                for j, note in enumerate(release_notes, 1):
                     tag = note["tag"]
                     body = note["body"]
                     url = note["url"]
-                    lines.append(f"#### [{tag}]({url})")
+                    lines.append(f"#### 1.{i}.{j}. [{tag}]({url})")
                     lines.append("")
                     lines.append(body)
                     lines.append("")
@@ -172,18 +178,6 @@ def generate_markdown(changes: list[dict]) -> str:
                 )
                 lines.append(f"[Compare changes]({compare_url})")
                 lines.append("")
-
-    lines.extend(
-        [
-            "---",
-            "",
-            "To update a package:",
-            "",
-            "```bash",
-            "nix run nixpkgs#nix-update -- --flake <package-name>",
-            "```",
-        ]
-    )
 
     return "\n".join(lines)
 

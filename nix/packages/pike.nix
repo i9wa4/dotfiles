@@ -4,16 +4,16 @@
 }:
 buildGoModule rec {
   pname = "pike";
-  version = "0.3.87";
+  version = "0.3.88";
 
   src = fetchFromGitHub {
     owner = "jameswoolfenden";
     repo = "pike";
     rev = "v${version}";
-    hash = "sha256-D0LC77H2eFMmCb4Tn95H5Hc5SKu8pR/Aa/kZF3FqijY=";
+    hash = "sha256-lyHYRZbRJKtp+MpkcxIrRF1nq3H8Tw8km4Hv6Ib62Zk=";
   };
 
-  vendorHash = "sha256-kql+0oqpl9O2zz3lXKhsqGcFRG5CVYX0/62WqNP9M8Y=";
+  vendorHash = "sha256-1V8LODOmRO4Y9z+UCi+DGT96LY1F8bOUMMCNzbk9AgI=";
 
   # Tests require Terraform installation
   doCheck = false;

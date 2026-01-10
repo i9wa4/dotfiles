@@ -4,7 +4,7 @@
 }:
 rustPlatform.buildRustPackage rec {
   pname = "rumdl";
-  version = "0.0.211";
+  version = "0.0.213";
 
   src = fetchFromGitHub {
     owner = "rvben";
