@@ -55,15 +55,14 @@ wezterm.on("update-status", function(window, pane)
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
 
-  -- Right: Combo + Cat + Keystroke + Opacity + Font
-  local combo_display = bongo.get_combo_display()
+  -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
   local keystroke_display = bongo.get_keystroke_display()
   local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
   window:set_right_status(wezterm.format({
     { Background = { Color = "rgba(0, 0, 0, 0.2)" } },
     { Foreground = { Color = status_fg } },
-    { Text = combo_display .. " " .. cat_display .. " " .. keystroke_display .. right_status },
+    { Text = cat_display .. " " .. keystroke_display .. right_status },
   }))
 
   -- Left: empty (space for macOS window buttons)
