@@ -38,6 +38,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # Utility Tasks
 #
 nix-switch:  ## update ghq repos and switch nix configuration
+	nix flake update
 ifeq ($(MF_DETECTED_OS),macOS)
 	sudo darwin-rebuild switch --impure --flake '.#macos-p'
 else
