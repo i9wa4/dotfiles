@@ -182,6 +182,8 @@ in {
       # Environment variables
       sessionVariables = {
         CLAUDE_CONFIG_DIR = "${dotfilesDir}/dot.config/claude";
+        DENO_NO_PROMPT = "1";
+        DENO_NO_UPDATE_CHECK = "1";
         EDITOR = "vim";
         FZF_DEFAULT_OPTS = "--reverse --bind 'ctrl-y:accept'";
         NVIM_APPNAME = "nvim";
