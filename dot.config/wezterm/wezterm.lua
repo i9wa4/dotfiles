@@ -1,6 +1,5 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
--- local zoo = require("wezterm-zoo")
 local bongo = require("wezterm-bongo-cat")
 
 -- Keybindings
@@ -102,30 +101,11 @@ wezterm.on("dec-font-size", function(window, pane)
   window:set_config_overrides(overrides)
 end)
 
--- Toggle zoo mode: off -> zoo -> aquarium -> off (Opt+z)
--- wezterm.on("toggle-zoo-mode", function(window, pane)
---   if zoo.config.mode == "off" then
---     zoo.config.mode = "zoo"
---   elseif zoo.config.mode == "zoo" then
---     zoo.config.mode = "aquarium"
---   else
---     zoo.config.mode = "off"
---   end
---   -- Clear state to respawn with new creatures
---   os.remove("/tmp/wezterm-zoo-state.json")
--- end)
-
--- Toggle bongo-cat (Opt+z)
-wezterm.on("toggle-bongo-cat", function(window, pane)
-  bongo.config.enabled = not bongo.config.enabled
-end)
-
 config.keys = {
   { key = "a", mods = "OPT", action = wezterm.action.EmitEvent("inc-opacity") },
   { key = "s", mods = "OPT", action = wezterm.action.EmitEvent("dec-opacity") },
   { key = "d", mods = "OPT", action = wezterm.action.EmitEvent("inc-font-size") },
   { key = "f", mods = "OPT", action = wezterm.action.EmitEvent("dec-font-size") },
-  { key = "z", mods = "OPT", action = wezterm.action.EmitEvent("toggle-bongo-cat") },
   { key = "c", mods = "CMD", action = wezterm.action.CopyTo("Clipboard") },
   { key = "v", mods = "CMD", action = wezterm.action.PasteFrom("Clipboard") },
 }
