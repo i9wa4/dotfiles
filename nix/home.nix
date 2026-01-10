@@ -228,7 +228,7 @@ in {
       '';
 
       # ~/.zshrc additions
-      initExtra = ''
+      initContent = ''
         # Disable Ctrl-D to exit
         setopt IGNORE_EOF
 
@@ -281,7 +281,7 @@ in {
       ${lib.optionalString pkgs.stdenv.isDarwin ''
         rm -rf "${homeDir}/Library/Caches/deno"
         ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
-        xattr -rc ${ghqRoot} || true
+        /usr/bin/xattr -rc ${ghqRoot} || true
       ''}
     '';
 
