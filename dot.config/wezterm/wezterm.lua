@@ -14,41 +14,29 @@ config.font = wezterm.font("UDEV Gothic 35LG")
 config.font_size = 20
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
--- Integrated titlebar
+-- Integrated titlebar (use retro tab bar for consistent transparency)
 config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
+config.use_fancy_tab_bar = false
 config.show_new_tab_button_in_tab_bar = false
 config.show_tabs_in_tab_bar = false
 
--- Window
-config.window_frame = {
-  active_titlebar_bg = "rgba(0, 0, 0, 0.2)",
-  inactive_titlebar_bg = "rgba(0, 0, 0, 0.2)",
-  active_titlebar_fg = "#FFFFFF",
-  inactive_titlebar_fg = "#FFFFFF",
-  active_titlebar_border_bottom = "none",
-  inactive_titlebar_border_bottom = "none",
-  button_bg = "none",
-  button_fg = "#FFFFFF",
-  button_hover_bg = "rgba(255, 255, 255, 0.1)",
-  button_hover_fg = "#FFFFFF",
-  font = wezterm.font("UDEV Gothic 35LG"),
-  font_size = 20, -- the same as Chrome titlebar height
-}
-
+-- Opacity
 local opacity_default = 0.70
+local tab_bar_opacity = 0.2
+local tab_bar_bg = string.format("rgba(0, 0, 0, %.2f)", tab_bar_opacity)
 config.window_background_opacity = opacity_default
 config.status_update_interval = 100 -- 100ms for faster bongo-cat animation
 config.hide_tab_bar_if_only_one_tab = false
 
--- Tab bar colors (match titlebar)
+-- Tab bar background
 config.colors = {
   tab_bar = {
-    background = "rgba(0, 0, 0, 0.2)",
+    background = tab_bar_bg,
   },
 }
 
 -- Status display
-local status_fg = "#FFFFFF"
+local status_fg = "#404040"
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
@@ -58,16 +46,11 @@ wezterm.on("update-status", function(window, pane)
   -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
   local keystroke_display = bongo.get_keystroke_display()
-  -- local right_status = string.format(" %3.0f%% %2.0fpt ", opacity * 100, font_size)
-  local right_status = ""
+  local right_status = string.format("%3.0f%% %2.0fpt ", opacity * 100, font_size)
   window:set_right_status(wezterm.format({
-    { Background = { Color = "rgba(0, 0, 0, 0.2)" } },
     { Foreground = { Color = status_fg } },
     { Text = cat_display .. " " .. keystroke_display .. right_status },
   }))
-
-  -- Left: empty (space for macOS window buttons)
-  window:set_left_status("")
 end)
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
