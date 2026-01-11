@@ -279,7 +279,6 @@ in {
       echo "Cleaning temporary files..."
       # Node.js caches
       rm -rf "${homeDir}/.npm"
-      rm -rf "${homeDir}/.cache/deno"
       ${lib.optionalString pkgs.stdenv.isDarwin ''
         rm -rf "${homeDir}/Library/Caches/deno"
         ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
