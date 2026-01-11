@@ -4,25 +4,29 @@
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
     "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
     "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
     "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
     "DISABLE_AUTOUPDATER": "true",
+    "DISABLE_BUG_COMMAND": "true",
     "DISABLE_ERROR_REPORTING": "true",
     "DISABLE_TELEMETRY": "true",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "ENABLE_LSP_TOOL": "true",
     "ENABLE_TOOL_SEARCH": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "IS_DEMO": "true"
+  },
+  "attribution": {
+    "commits": false,
+    "pullRequests": false
   },
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [],
     "deny": [
-      "Bash(git * push:*)",
-      "Bash(git * rebase:*)",
-      "Bash(git * reset:*)",
+      "Bash(git -C:*)",
       "Bash(git push:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
@@ -100,10 +104,18 @@
     "context7@claude-plugins-official": true,
     "ralph-wiggum@claude-code-plugins": true
   },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": { "source": "github", "repo": "anthropics/skills" }
+    },
+    "claude-code-plugins": {
+      "source": { "source": "github", "repo": "anthropics/claude-code" }
+    },
+    "claude-plugins-official": {
+      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+    }
+  },
   "language": "follow CLAUDE.md's instructions",
   "alwaysThinkingEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 2069451551000
-  },
   "preferredNotifChannel": "terminal_bell"
 }
