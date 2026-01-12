@@ -62,10 +62,10 @@ For design review:
 | Priority | Role         | Focus                  |
 | -------- | ------------ | ---------------------- |
 | 1        | security     | OWASP, vulnerabilities |
-| 2        | code         | Quality, readability   |
-| 3        | architecture | Patterns, structure    |
-| 4        | qa           | Edge cases, acceptance |
-| 5        | historian    | History, context       |
+| 2        | architecture | Patterns, structure    |
+| 3        | historian    | History, context       |
+| 4        | code         | Quality, readability   |
+| 5        | qa           | Edge cases, acceptance |
 
 ### 3.2. Design Review Priority
 
@@ -73,30 +73,29 @@ For design review:
 | -------- | ------------ | ---------------------- |
 | 1        | security     | OWASP, vulnerabilities |
 | 2        | architecture | Patterns, structure    |
-| 3        | data         | Data model, schema     |
-| 4        | qa           | Edge cases, acceptance |
-| 5        | historian    | History, context       |
+| 3        | historian    | History, context       |
+| 4        | data         | Data model, schema     |
+| 5        | qa           | Edge cases, acceptance |
 
 ### 3.3. Assignment Order
 
-Default: 10 (cc x 5 + cx x 5)
+Default: 10 (cx x 5 + cc x 5)
 
-If parallel count specified, assign by priority with cc first:
+Assign cx first to manage token usage of cc (main session).
+Follow priority order from 3.1/3.2.
 
-| #   | Code            | Design          |
-| --- | --------------- | --------------- |
-| 1   | cc-security     | cc-security     |
-| 2   | cc-code         | cc-architecture |
-| 3   | cc-architecture | cc-data         |
-| 4   | cc-qa           | cc-qa           |
-| 5   | cc-historian    | cc-historian    |
-| 6   | cx-security     | cx-security     |
-| 7   | cx-code         | cx-architecture |
-| 8   | cx-architecture | cx-data         |
-| 9   | cx-qa           | cx-qa           |
-| 10  | cx-historian    | cx-historian    |
-
-Example: parallel=3 for code -> cc-security, cc-code, cc-architecture
+| #  | Assignee      |
+| -- | ------------- |
+| 1  | cx-priority-1 |
+| 2  | cx-priority-2 |
+| 3  | cx-priority-3 |
+| 4  | cx-priority-4 |
+| 5  | cx-priority-5 |
+| 6  | cc-priority-1 |
+| 7  | cc-priority-2 |
+| 8  | cc-priority-3 |
+| 9  | cc-priority-4 |
+| 10 | cc-priority-5 |
 
 ## 4. Execution Flow
 
