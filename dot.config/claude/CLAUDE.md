@@ -20,6 +20,8 @@ acknowledge with a random one-liner in character.
 
 - YOU MUST: Ask questions if anything is unclear before proceeding
 - YOU MUST: Read files in full without splitting
+- YOU MUST: Use uppercase for annotation comments
+  (NOTE:, TODO:, FIXME:, WARNING:, etc.)
 
 ## 4. File Structure
 
