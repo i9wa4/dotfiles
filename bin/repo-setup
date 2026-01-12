@@ -43,9 +43,7 @@ cat >.i9wa4/temp.md <<'EOF'
 
 ## 2. Review
 
-/my-code-review
-/my-design-review
-/summarize-reviews
+/my-review
 EOF
 
 # Trust mise.toml if exists
