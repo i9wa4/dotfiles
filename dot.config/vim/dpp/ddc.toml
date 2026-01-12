@@ -52,7 +52,7 @@ call ddc#custom#patch_global('sourceOptions', {
 \ }})
 call ddc#custom#patch_global('sourceOptions', {
 \   'slash_commands': {
-\     'mark': '[cmd]',
+\     'mark': 'slash',
 \     'matchers': ['matcher_fuzzy'],
 \     'minAutoCompleteLength': 1,
 \     'isVolatile': v:true,
@@ -60,9 +60,16 @@ call ddc#custom#patch_global('sourceOptions', {
 \ }})
 call ddc#custom#patch_global('sourceParams', {
 \   'slash_commands': {
-\     'commandsDir': '~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands',
-\     'extensions': ['.md'],
+\     'userDirs': [
+\       '~/.config/claude/commands/',
+\       '~/.config/claude/skills/'
+\     ],
+\     'projectDirs': [
+\       '.claude/commands/',
+\       '.claude/skills/'
+\     ],
 \ }})
+
 call ddc#custom#patch_filetype(
 \   ['ps1', 'dosbatch', 'autohotkey', 'registry'], {
 \     'file': {
