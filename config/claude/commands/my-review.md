@@ -139,7 +139,7 @@ Based on target_type:
 Load agent definition based on role:
 
 ```text
-@~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/reviewer-{ROLE}.md
+@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md
 ```
 
 ### 5.4. CC Template (Task tool)
@@ -179,7 +179,7 @@ target: ${TARGET}
 
 Refer to my-review.md Section 5.2 for how to get review target.
 
-Load agent: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/reviewer-${ROLE}.md
+Load agent: @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-${ROLE}.md
 
 Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md"
 ```
@@ -206,7 +206,7 @@ target: ${TARGET}
 
 Refer to my-review.md Section 5.2 for how to get review target.
 
-Load agent: @~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/agents/reviewer-${ROLE}.md
+Load agent: @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-${ROLE}.md
 
 Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md" &
 done

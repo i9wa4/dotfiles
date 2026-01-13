@@ -143,23 +143,23 @@ in {
     # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
     # ==========================================================================
     file = {
-      ".claude/skills".source = symlink "${dotfilesDir}/dot.config/claude/skills";
-      ".codex".source = symlink "${dotfilesDir}/dot.config/codex";
+      ".claude/skills".source = symlink "${dotfilesDir}/config/claude/skills";
+      ".codex".source = symlink "${dotfilesDir}/config/codex";
       # Note: .zshenv and .zshrc are managed by programs.zsh
     };
   };
 
   xdg.configFile = {
-    "claude".source = symlink "${dotfilesDir}/dot.config/claude";
-    "efm-langserver".source = symlink "${dotfilesDir}/dot.config/efm-langserver";
-    "nvim".source = symlink "${dotfilesDir}/dot.config/nvim";
+    "claude".source = symlink "${dotfilesDir}/config/claude";
+    "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
+    "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "rumdl/rumdl.toml".source = symlink "${dotfilesDir}/.rumdl.toml";
-    "skk".source = symlink "${dotfilesDir}/dot.config/skk";
-    "tmux".source = symlink "${dotfilesDir}/dot.config/tmux";
-    "vde".source = symlink "${dotfilesDir}/dot.config/vde";
-    "vim".source = symlink "${dotfilesDir}/dot.config/vim";
-    "wezterm".source = symlink "${dotfilesDir}/dot.config/wezterm";
-    "zeno".source = symlink "${dotfilesDir}/dot.config/zeno";
+    "skk".source = symlink "${dotfilesDir}/config/skk";
+    "tmux".source = symlink "${dotfilesDir}/config/tmux";
+    "vde".source = symlink "${dotfilesDir}/config/vde";
+    "vim".source = symlink "${dotfilesDir}/config/vim";
+    "wezterm".source = symlink "${dotfilesDir}/config/wezterm";
+    "zeno".source = symlink "${dotfilesDir}/config/zeno";
   };
 
   programs = {
@@ -181,7 +181,7 @@ in {
 
       # Environment variables
       sessionVariables = {
-        CLAUDE_CONFIG_DIR = "${dotfilesDir}/dot.config/claude";
+        CLAUDE_CONFIG_DIR = "${dotfilesDir}/config/claude";
         DENO_NO_PROMPT = "1";
         DENO_NO_UPDATE_CHECK = "1";
         EDITOR = "vim";
@@ -272,7 +272,7 @@ in {
     git = "${pkgs.git}/bin/git";
     fd = "${pkgs.fd}/bin/fd";
     ghqListEssential = "${dotfilesDir}/nix/ghq-list-essential.txt";
-    tpmDir = "${dotfilesDir}/dot.config/tmux/plugins/tpm";
+    tpmDir = "${dotfilesDir}/config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
     cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''

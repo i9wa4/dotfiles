@@ -23,7 +23,7 @@ echo "* Repository: ${repo_name}"
 
 # Create local.vim
 cat >local.vim <<'EOF'
-" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim
+" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
 let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
@@ -48,7 +48,7 @@ EOF
 
 # Copy .mcp.json from dotfiles
 dotfiles_dir="$(dirname "$(dirname "$(readlink -f "$0")")")"
-mcp_source="${dotfiles_dir}/dot.config/claude/dot.mcp.json"
+mcp_source="${dotfiles_dir}/config/claude/dot.mcp.json"
 if [[ -f "${mcp_source}" ]]; then
   cp "${mcp_source}" .mcp.json
   echo "* Copied .mcp.json"

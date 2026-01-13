@@ -27,7 +27,7 @@ acknowledge with a random one-liner in character.
 
 Files and directories described below are located at:
 
-@~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/
+@~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
 ### 4.1. Rules
 

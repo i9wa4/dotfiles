@@ -130,7 +130,7 @@ endfunction
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
-inoremap ,cmd <C-r>=fnamemodify("~/ghq/github.com/i9wa4/dotfiles/dot.config/claude/commands/", ":p:~")<CR>
+inoremap ,cmd <C-r>=fnamemodify("~/ghq/github.com/i9wa4/dotfiles/config/claude/commands/", ":p:~")<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 
@@ -249,7 +249,7 @@ function! s:set_register() abort
 endfunction
 
 command! CreateLocalVimrc
-\   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/dot.config/vim/rc/local.default.vim" > ./local.vim')
+\   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
 
 
