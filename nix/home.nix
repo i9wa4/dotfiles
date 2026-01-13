@@ -257,7 +257,9 @@ in {
         [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
 
         # Local config
-        [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+        if [[ -f ~/.zshrc.local ]]; then
+          source ~/.zshrc.local
+        fi
       '';
     };
   };
