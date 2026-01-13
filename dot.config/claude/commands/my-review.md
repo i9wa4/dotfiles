@@ -166,7 +166,7 @@ ROLE=security && \
 REVIEW_TYPE=code && \
 TARGET_TYPE=pr && \
 TARGET=123 && \
-codex exec -s workspace-write --add-dir /tmp "<!-- REVIEW_SESSION
+codex exec -s danger-full-access "<!-- REVIEW_SESSION
 timestamp: ${TS}
 source: cx
 role: ${ROLE}
@@ -193,7 +193,7 @@ TARGET_TYPE=pr && \
 TARGET=123 && \
 for ROLE in security code architecture qa historian; do
   ID=$(openssl rand -hex 2)
-  codex exec -s workspace-write --add-dir /tmp "<!-- REVIEW_SESSION
+  codex exec -s danger-full-access "<!-- REVIEW_SESSION
 timestamp: ${TS}
 source: cx
 role: ${ROLE}
