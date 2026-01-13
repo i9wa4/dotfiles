@@ -46,6 +46,14 @@ cat >.i9wa4/temp.md <<'EOF'
 /my-review
 EOF
 
+# Copy .mcp.json from dotfiles
+dotfiles_dir="$(dirname "$(dirname "$(readlink -f "$0")")")"
+mcp_source="${dotfiles_dir}/dot.config/claude/dot.mcp.json"
+if [[ -f "${mcp_source}" ]]; then
+  cp "${mcp_source}" .mcp.json
+  echo "* Copied .mcp.json"
+fi
+
 # Trust mise.toml if exists
 if [[ -f "mise.toml" ]]; then
   mise trust mise.toml

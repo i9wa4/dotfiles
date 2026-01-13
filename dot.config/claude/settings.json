@@ -18,10 +18,7 @@
     "ENABLE_TOOL_SEARCH": "true",
     "IS_DEMO": "true"
   },
-  "attribution": {
-    "commits": false,
-    "pullRequests": false
-  },
+  "attribution": {},
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [],
@@ -106,13 +103,22 @@
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
-      "source": { "source": "github", "repo": "anthropics/skills" }
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
     },
     "claude-code-plugins": {
-      "source": { "source": "github", "repo": "anthropics/claude-code" }
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-code"
+      }
     },
     "claude-plugins-official": {
-      "source": { "source": "github", "repo": "anthropics/claude-plugins-official" }
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
     }
   },
   "language": "follow CLAUDE.md's instructions",
