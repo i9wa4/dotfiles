@@ -223,10 +223,14 @@ in {
         fi
 
         # Homebrew PATH (macOS only)
-        [[ -d /opt/homebrew ]] && export PATH=/opt/homebrew/bin:"''${PATH}"
+        if [[ -d /opt/homebrew ]]; then
+          export PATH=/opt/homebrew/bin:"''${PATH}"
+        fi
 
         # Local config
-        [[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
+        if [[ -f ~/.zshenv.local ]]; then
+          source ~/.zshenv.local
+        fi
       '';
 
       # ~/.zshrc additions
@@ -254,7 +258,9 @@ in {
         fi
 
         # Safe-chain
-        [[ -f ~/.safe-chain/scripts/init-posix.sh ]] && source ~/.safe-chain/scripts/init-posix.sh
+        if [[ -f ~/.safe-chain/scripts/init-posix.sh ]]; then
+          source ~/.safe-chain/scripts/init-posix.sh
+        fi
 
         # Local config
         if [[ -f ~/.zshrc.local ]]; then
