@@ -17,9 +17,7 @@ Add this prefix when launching any subagent:
 Common template for both Task tool and codex exec:
 
 ```text
-[SUBAGENT MODE] You are running as a subagent.
-- Do NOT update .i9wa4/claude-current-status (mood status)
-- Focus only on the assigned task
+{PREFIX from "Subagent Prefix"}
 
 {TASK_CONTENT}
 ```

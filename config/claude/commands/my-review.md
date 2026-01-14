@@ -182,6 +182,25 @@ Use subagent.md "Subagent Prompt Template" with the task content above.
 - Codex CLI: `codex exec --sandbox danger-full-access "..."`
     - Append `&` for parallel execution
 
+<!-- NOTE: Batch execution example for reference.
+     Shell variables must be expanded before passing to codex exec. -->
+
+```bash
+TS=$(date +%Y%m%d-%H%M%S) && \
+REVIEW_TYPE=code && \
+TARGET_TYPE=commit && \
+TARGET=abc1234 && \
+for ROLE in security architecture historian code qa; do
+  ID=$(openssl rand -hex 2)
+  codex exec --sandbox danger-full-access "[SUBAGENT MODE] ...
+timestamp: ${TS}
+role: ${ROLE}
+...
+Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md" &
+done
+wait
+```
+
 For design review: use ROLE list `security architecture data qa historian`
 
 ## 6. Summary Output
