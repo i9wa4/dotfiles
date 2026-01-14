@@ -8,8 +8,8 @@
     NOW=$(date +%Y%m%d-%H%M%S) && echo "${NOW}" && <command> > /tmp/"${NOW}"-<filename>.txt 2>&1 && cat /tmp/"${NOW}"-<filename>.txt
     ```
 
-- NEVER: Do not use the `rm` command
-- IMPORTANT: Moving files to `/tmp/` with `mv` is allowed as an alternative
+- NEVER: Do not use the `rm` command (denied in settings.json)
+- YOU MUST: Use `mv /tmp/` when you need to delete files
 
 ## 2. Bash Tool Syntax Restrictions
 
