@@ -22,6 +22,11 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Read files in full without splitting
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
+- YOU MUST: Update `.i9wa4/claude-current-status` with current mood
+    - Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
+    - Choose appropriate emoji for current situation
+    - Update when task status changes significantly
+    - SKIP if running as subagent (see subagent.md)
 
 ## 4. File Structure
 
@@ -46,23 +51,28 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | markdown.md          | Markdown creation rules              | Markdown creation        |
 | file-management.md   | /tmp/ and .i9wa4/ directory rules    | File creation            |
 | claude-config.md     | Claude Code config rules             | Config file editing      |
+| subagent.md          | Subagent launch rules                | Task tool / codex exec   |
 
 ### 4.2. Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
-| Skill               | Description                        |
-| ------------------- | ---------------------------------- |
-| agent-memory        | Save and recall work context       |
-| bigquery-expert     | BigQuery development guide         |
-| databricks-expert   | Databricks development guide       |
-| dbt-expert          | dbt development guide              |
-| terraform-expert    | Terraform development guide        |
-| jupyter-notebook    | Jupyter Notebook execution guide   |
-| draw-io             | draw.io diagram creation/editing   |
-| confluence-to-md    | Confluence page to Markdown        |
-| daily-report        | Daily work report generation       |
-| github-pr-operation | GitHub PR operations               |
+| Skill                 | Description                        |
+| --------------------- | ---------------------------------- |
+| agent-memory          | Save and recall work context       |
+| claude-code-changelog | Claude Code CHANGELOG catchup      |
+| codex-cli-changelog   | Codex CLI CHANGELOG catchup        |
+| codex-consultation    | Consult with Codex CLI via tmux    |
+| bigquery-expert       | BigQuery development guide         |
+| databricks-expert     | Databricks development guide       |
+| dbt-expert            | dbt development guide              |
+| terraform-expert      | Terraform development guide        |
+| jupyter-notebook      | Jupyter Notebook execution guide   |
+| draw-io               | draw.io diagram creation/editing   |
+| confluence-to-md      | Confluence page to Markdown        |
+| daily-report          | Daily work report generation       |
+| github-pr-operation   | GitHub PR operations               |
+| skill-creator         | Skill creation guide               |
 
 ### 4.3. Agents
 
@@ -87,55 +97,3 @@ Slash commands are stored in `commands/` and loaded on invocation.
 | issue-to-pr                         | Issue to PR - 3-phase workflow      |
 | my-review                           | Unified code/design review workflow |
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
-
-## 5. Claude Code Known Issues & Guardrails
-
-See: Claude Code UTF-8 multibyte character panic (Qiita article)
-
-### 5.1. UTF-8 Multibyte Character Panic (Issue #14133)
-
-Claude Code v2.0.70+ has a bug in Rust string slicing
-causing crashes on multi-byte characters.
-
-#### 5.1.1. Critical Guardrails
-
-Please follow these rules strictly to prevent the CLI from crashing:
-
-1. No Full-width Parentheses
-   - NG: `（補足）` `（済）`
-   - OK: `(補足)` `(済)`
-   - Always use half-width `()` in explanations, todo items,
-     and commit messages.
-
-2. Bold Formatting Safety
-   - Do not place multi-byte characters immediately after bold text.
-   - NG: `**完了**です`
-   - OK: `**完了** です` (Insert a space)
-
-3. TodoWrite Usage
-   - When adding tasks via `TodoWrite`,
-     avoid full-width symbols in the description.
-
-4. Japanese Period and Colon
-   - `。` (U+3002) and `：` (U+FF1A) are high-risk characters.
-   - NG: `お問い合わせ：` `完了しました。`
-   - OK: `お問い合わせ:` `完了しました.`
-   - Use half-width `:` and `.` instead.
-
-5. File Editing Workaround
-   - Direct file editing with Japanese text has high crash rate.
-   - Workaround: Use Python/shell scripts for file operations.
-
-6. Box-drawing Characters
-   - Box-drawing chars with CJK text are high-risk (cf. Issue #14104).
-   - NG: `│`, `─`, `┌`, `└`, `┐`, `┘`
-   - OK: `|`, `-`, `+`
-   - Markdown tables with Japanese text may trigger crash.
-
-#### 5.1.2. Rule
-
-Replace these full-width characters with half-width in your output:
-
-- `（）` -> `()`
-- `。` -> `.`
-- `：` -> `:`

@@ -146,11 +146,25 @@
         ]
       },
       "locked": {
+<<<<<<< HEAD
         "lastModified": 1768432437,
         "narHash": "sha256-oIrvAQMfw69vzswZNmT1N1mGxKQ3F3czJ5ALGpgyqDQ=",
+||||||| 943ac4a
+        "lastModified": 1768325819,
+        "narHash": "sha256-mBKqOJkxCRwEhIXfq93WTcDXsBlJ/f1Dfv9thJxrDPs=",
+=======
+        "lastModified": 1768403989,
+        "narHash": "sha256-kyQ79xcrgdnP2Pl7IzPUDo9Rotb4FdmvUxSYy7GfsbY=",
+>>>>>>> refs/remotes/origin/main
         "owner": "nix-community",
         "repo": "home-manager",
+<<<<<<< HEAD
         "rev": "0b24f3a487c83bc2d101af9a14911e24492b8d82",
+||||||| 943ac4a
+        "rev": "b1fa714d6cd656e3105d1965637be6ab7541d7d7",
+=======
+        "rev": "df6eeded8516d70bd9ece2f0c6904d9df8f3c04b",
+>>>>>>> refs/remotes/origin/main
         "type": "github"
       },
       "original": {
@@ -166,11 +180,25 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
+<<<<<<< HEAD
         "lastModified": 1768417394,
         "narHash": "sha256-ig0fJrL6R/Ag97dxkNxW2rAyv6nDewHpWdwiSK3VDN0=",
+||||||| 943ac4a
+        "lastModified": 1768320174,
+        "narHash": "sha256-ljOkLG8q1mgphEaZXqtc9+td8zW4o/Sivga5i+Zdkmc=",
+=======
+        "lastModified": 1768400511,
+        "narHash": "sha256-dUbrS/tP1X4oCq9o9q+9BaJzrdbWPwHTMNmErlqaVL0=",
+>>>>>>> refs/remotes/origin/main
         "owner": "numtide",
         "repo": "llm-agents.nix",
+<<<<<<< HEAD
         "rev": "cc3cf32879edad1b4c69ccfe13fb4a63570e1266",
+||||||| 943ac4a
+        "rev": "d13412f4e05aa2be13422b09ccbbba1d4ceff1cb",
+=======
+        "rev": "2380a3f42c4047a714921d3df7272a8055908b00",
+>>>>>>> refs/remotes/origin/main
         "type": "github"
       },
       "original": {
@@ -254,6 +282,41 @@
     },
     "nixpkgs_2": {
       "locked": {
+<<<<<<< HEAD
+||||||| 943ac4a
+        "lastModified": 1768178648,
+        "narHash": "sha256-kz/F6mhESPvU1diB7tOM3nLcBfQe7GU7GQCymRlTi/s=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3fbab70c6e69c87ea2b6e48aa6629da2aa6a23b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1768178648,
+        "narHash": "sha256-kz/F6mhESPvU1diB7tOM3nLcBfQe7GU7GQCymRlTi/s=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3fbab70c6e69c87ea2b6e48aa6629da2aa6a23b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
+=======
         "lastModified": 1768302833,
         "narHash": "sha256-h5bRFy9bco+8QcK7rGoOiqMxMbmn21moTACofNLRMP4=",
         "owner": "NixOS",
@@ -274,6 +337,40 @@
         "narHash": "sha256-h5bRFy9bco+8QcK7rGoOiqMxMbmn21moTACofNLRMP4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
+        "rev": "61db79b0c6b838d9894923920b612048e1201926",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
+>>>>>>> refs/remotes/origin/main
+        "lastModified": 1768302833,
+        "narHash": "sha256-h5bRFy9bco+8QcK7rGoOiqMxMbmn21moTACofNLRMP4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "61db79b0c6b838d9894923920b612048e1201926",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1768302833,
+        "narHash": "sha256-h5bRFy9bco+8QcK7rGoOiqMxMbmn21moTACofNLRMP4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+<<<<<<< HEAD
         "rev": "61db79b0c6b838d9894923920b612048e1201926",
         "type": "github"
       },
@@ -307,6 +404,11 @@
         "owner": "NixOS",
         "repo": "nixpkgs",
         "rev": "61db79b0c6b838d9894923920b612048e1201926",
+||||||| 943ac4a
+        "rev": "3fbab70c6e69c87ea2b6e48aa6629da2aa6a23b0",
+=======
+        "rev": "61db79b0c6b838d9894923920b612048e1201926",
+>>>>>>> refs/remotes/origin/main
         "type": "github"
       },
       "original": {

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 search_docs.py - Full-text search tool for Claude Code Skills
 

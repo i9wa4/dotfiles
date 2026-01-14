@@ -5,6 +5,12 @@ model_reasoning_effort = "high"
 network_access = true
 notify = ["printf", "\\a"]
 
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false
+
 [features]
 skills = true
 web_search_request = true

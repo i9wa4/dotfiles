@@ -10,35 +10,10 @@ presets:
         - name: editor
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
-        - name: claude
-          command: claude --dangerously-skip-permissions
-
-  review:
-    name: review
-    description: review
-    windowMode: current-window
-    layout:
-      type: vertical
-      ratio: [3, 1]
-      panes:
-        - type: horizontal
-          ratio: [1, 1]
+        - type: vertical
+          ratio: [3, 1]
           panes:
-            - name: editor
-              command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
-              focus: true
             - name: claude
               command: claude --dangerously-skip-permissions
-        - type: horizontal
-          ratio: [1, 1, 1, 1, 1]
-          panes:
             - name: codex
-              command: codex --yolo
-            - name: codex
-              command: codex --yolo
-            - name: codex
-              command: codex --yolo
-            - name: codex
-              command: codex --yolo
-            - name: codex
-              command: codex --yolo
+              command: bash ~/ghq/github.com/i9wa4/dotfiles/config/codex/generate-config.sh && codex --yolo

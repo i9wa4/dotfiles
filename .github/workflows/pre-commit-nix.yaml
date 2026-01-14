@@ -1,4 +1,4 @@
-name: pre-commit (Nix ubuntu-24.04-arm)
+name: pre-commit-nix
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
@@ -56,9 +56,8 @@ jobs:
           path: |
             ~/.cache/pre-commit
             ~/.cache/uv
-            .venv
           key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', '.pre-commit-config.yaml', 'uv.lock') }}
+            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', 'flake.nix', '.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-${{ runner.arch }}-
 

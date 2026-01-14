@@ -142,78 +142,66 @@ Load agent definition based on role:
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md
 ```
 
-### 5.4. CC Template (Task tool)
+### 5.4. Review Task Content
+
+Common task content for both Task tool and codex exec.
+
+Variables:
+
+- `TS`: Shared timestamp from Step 1
+- `SOURCE`: cc (Task tool) or cx (codex exec)
+- `ID`: `openssl rand -hex 2`
+- `ROLE`: From priority table
+- `REVIEW_TYPE`: code or design
+- `TARGET_TYPE`: pr, commit, branch, issue, or document
+- `TARGET`: Target value
 
 ```text
-{SESSION_INFO from 5.1}
-
-Refer to Section 5.2 for how to get review target.
-Refer to Section 5.3 for agent definition.
-
-Target: {TARGET}
-
-Save results to: {output_file}
-```
-
-### 5.5. CX Template (codex exec)
-
-Single execution:
-
-```bash
-TS=$(date +%Y%m%d-%H%M%S) && \
-ID=$(openssl rand -hex 2) && \
-ROLE=security && \
-REVIEW_TYPE=code && \
-TARGET_TYPE=pr && \
-TARGET=123 && \
-codex exec -s danger-full-access "<!-- REVIEW_SESSION
-timestamp: ${TS}
-source: cx
-role: ${ROLE}
-short_id: ${ID}
-output_file: .i9wa4/${TS}-cx-${ROLE}-${ID}.md
-review_type: ${REVIEW_TYPE}
-target_type: ${TARGET_TYPE}
-target: ${TARGET}
+<!-- REVIEW_SESSION
+timestamp: {TS}
+source: {SOURCE}
+role: {ROLE}
+short_id: {ID}
+output_file: .i9wa4/{TS}-{SOURCE}-{ROLE}-{ID}.md
+review_type: {REVIEW_TYPE}
+target_type: {TARGET_TYPE}
+target: {TARGET}
 -->
 
-Refer to my-review.md Section 5.2 for how to get review target.
+Refer to "How to Get Review Target" for review target.
+Refer to "Agent Reference" for agent definition.
 
-Load agent: @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-${ROLE}.md
-
-Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md"
+Save results to: .i9wa4/{TS}-{SOURCE}-{ROLE}-{ID}.md
 ```
 
-Batch execution (5 parallel):
+### 5.5. Launching Reviewers
+
+Use subagent.md "Subagent Prompt Template" with the task content above.
+
+- Task tool: Call Task tool with the prompt
+- Codex CLI: `codex exec --sandbox danger-full-access "..."`
+    - Append `&` for parallel execution
+
+<!-- NOTE: Batch execution example for reference.
+     Shell variables must be expanded before passing to codex exec. -->
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S) && \
 REVIEW_TYPE=code && \
-TARGET_TYPE=pr && \
-TARGET=123 && \
-for ROLE in security code architecture qa historian; do
+TARGET_TYPE=commit && \
+TARGET=abc1234 && \
+for ROLE in security architecture historian code qa; do
   ID=$(openssl rand -hex 2)
-  codex exec -s danger-full-access "<!-- REVIEW_SESSION
+  codex exec --sandbox danger-full-access "[SUBAGENT MODE] ...
 timestamp: ${TS}
-source: cx
 role: ${ROLE}
-short_id: ${ID}
-output_file: .i9wa4/${TS}-cx-${ROLE}-${ID}.md
-review_type: ${REVIEW_TYPE}
-target_type: ${TARGET_TYPE}
-target: ${TARGET}
--->
-
-Refer to my-review.md Section 5.2 for how to get review target.
-
-Load agent: @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-${ROLE}.md
-
+...
 Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md" &
 done
 wait
 ```
 
-For design: change ROLE list to `security architecture data qa historian`
+For design review: use ROLE list `security architecture data qa historian`
 
 ## 6. Summary Output
 

@@ -82,10 +82,16 @@
       # Local development (includes CI tools)
       default = pkgs.mkShell {
         packages = ciPackages;
+        shellHook = ''
+          uv sync --frozen
+        '';
       };
       # CI environment (minimal)
       ci = pkgs.mkShell {
         packages = ciPackages;
+        shellHook = ''
+          uv sync --frozen
+        '';
       };
     });
 

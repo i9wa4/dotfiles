@@ -4,6 +4,9 @@
 
 - NEVER: Do not pollute global Python environment
 - NEVER: Do not create `uv.lock` or `.venv/` without permission
+- NEVER: Do not add shebang lines (`#!/usr/bin/env python3`) to Python files
+- NEVER: Do not set execute permission on Python files
+- YOU MUST: Always execute Python scripts with explicit `python` command
 
 ## 2. Python Virtual Environment Usage
 

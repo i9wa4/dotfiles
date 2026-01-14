@@ -54,6 +54,8 @@ Defaults to fetching 24 hours of activities from current time
 | --from | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z) |
 | --to | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z) |
 | --hostname | GitHub Enterprise Server hostname |
+| --exclude-owner | Exclude repos by owner (comma-separated, default: i9wa4) |
+| --include-personal | Include personal repos (overrides --exclude-owner) |
 
 #### 2.1.4. Output Format
 
@@ -64,10 +66,11 @@ Defaults to fetching 24 hours of activities from current time
 - [IssueComment] Issue title
 - [PullRequest] PR title
 - [PullRequestComment] PR title
-- [PullRequestReview] PR title
+- [ReviewedPR] PR title (PRs reviewed by me, excludes my own PRs)
 ```
 
 Note: Use `--no-url` option to omit URLs and prevent mention notifications.
+Note: Personal repos (i9wa4/*) are excluded by default.
 
 ### 2.2. Create Draft
 
@@ -112,10 +115,6 @@ Organize gh-furik output. Classify as follows:
 - Meeting name
     - Supplementary comments
 
-### 1.3. Other
-
-- Notes
-
 ## 2. Reflection
 
 Today's thoughts and learnings.
@@ -125,33 +124,12 @@ Today's thoughts and learnings.
 
 Display draft and wait for user edits. User adds meetings and reflections.
 
-### 2.4. Keyword Suggestion
-
-After draft completion, suggest keywords from activities.
-
-Suggestion tips:
-
-- Serious candidates (dbt, Review, Meeting, etc.)
-- Mix in humorous candidates (ideas inspired by activities)
-
-Example: On an expensive dbt Labs deal day
--> "Expensive", "Declined" as candidates
-
-### 2.5. Update Title
-
-After user decides keyword, update only the title in file.
-Do not change filename.
-
-```markdown
-title: "YYYY-MM-DD $(whoami) {keyword}"
-```
-
-### 2.6. Post Issue
+### 2.4. Post Issue
 
 Post with `gh issue create`:
 
 ```bash
-gh issue create --title "YYYY-MM-DD $(whoami) {keyword}" --label "日報" --body "$(cat <<'EOF'
+gh issue create --title "YYYY-MM-DD $(whoami)" --label "日報" --body "$(cat <<'EOF'
 [body]
 EOF
 )"
@@ -163,21 +141,22 @@ Display Issue URL after posting.
 
 1. No direct links: Do not link PRs/Issues directly (triggers mentions),
    use titles only
-2. Draft review: Always show draft to user and wait for edits
-3. Keyword last: Suggest after draft completion. Include humor.
-4. Fixed filename: Add keyword to title only, do not change filename
-5. Issue posting: Post immediately after keyword confirmation
+2. PR/Issue numbers: Use `(# 123)` with space, not `(#123)`.
+   Without space, GitHub auto-links to unintended repos.
+3. Draft review: Always show draft to user and wait for edits
+4. Issue posting: Post after user confirms draft is ready
 
-## 4. gh-furik Output Organization
+## 4. Output Type Classification
 
-Classify gh-furik output as follows:
+Classify script output as follows:
 
 | Output Type        | Classification       |
 | ---                | ---                  |
 | Issue              | Created Issues       |
 | PullRequest        | Created PRs          |
-| PullRequestReview  | Reviewed PRs         |
+| ReviewedPR         | Reviewed PRs         |
 | IssueComment       | Commented Issues/PRs |
 | PullRequestComment | Commented Issues/PRs |
 
 Note: Consolidate multiple comments on same Issue/PR into one.
+Note: ReviewedPR only includes PRs authored by others (my own PRs excluded).

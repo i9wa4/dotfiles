@@ -23,20 +23,29 @@ to convert Confluence pages to Markdown files.
 
 ## 2. Environment Setup
 
-### 2.1. Required Environment Variables
+### 2.1. API Token Creation
 
-Set the following in project root `.env` file.
+1. Access <https://id.atlassian.com/manage-profile/security/api-tokens>
+2. Click "Create API token"
+3. Select "Create classic API token" (NOT scoped)
+
+Why Classic token is required:
+
+- This script uses site-specific URLs (`xxx.atlassian.net/wiki/rest/api/...`)
+- Scoped tokens only work with `api.atlassian.com` URLs
+- Classic tokens inherit all permissions of your Atlassian account
+
+Note: Classic tokens created before 2024-12-15
+will expire between 2026-03-14 and 2026-05-12.
+
+### 2.2. Required Environment Variables
+
+Set the following in `~/.zshenv.local` (with export).
 
 ```sh
-CONFLUENCE_BASE=https://your-confluence-instance.atlassian.net/wiki
-CONFLUENCE_EMAIL=your-email@example.com
-CONFLUENCE_API_TOKEN=your-api-token
-```
-
-### 2.2. Dependencies
-
-```sh
-pip install requests beautifulsoup4 html2text python-dotenv
+export CONFLUENCE_BASE=https://your-confluence-instance.atlassian.net/wiki
+export CONFLUENCE_EMAIL=your-email@example.com
+export CONFLUENCE_API_TOKEN=your-api-token
 ```
 
 ## 3. Usage
@@ -44,11 +53,8 @@ pip install requests beautifulsoup4 html2text python-dotenv
 ### 3.1. Command Line Execution
 
 ```sh
-# Specify URL as argument
-confluence-to-md.py <confluence_url>
-
-# Interactive mode
-confluence-to-md.py
+uvx --with requests --with beautifulsoup4 --with html2text \
+    python confluence-to-md.py <confluence_url>
 ```
 
 ### 3.2. URL Format
@@ -113,11 +119,11 @@ Format tables with aligned column widths.
 ### 5.1. Authentication Error
 
 ```text
-Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN must be set
-in .env file.
+Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN
+must be set as environment variables (e.g., in .zshenv.local).
 ```
 
-Check `.env` file settings.
+Check `~/.zshenv.local` settings and ensure variables are exported.
 
 ### 5.2. Page ID Extraction Error
 
