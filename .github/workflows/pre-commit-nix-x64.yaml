@@ -56,9 +56,8 @@ jobs:
           path: |
             ~/.cache/pre-commit
             ~/.cache/uv
-            .venv
           key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', '.pre-commit-config.yaml', 'uv.lock') }}
+            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', 'flake.nix', '.pre-commit-config.yaml', 'uv.lock') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-${{ runner.arch }}-
 
