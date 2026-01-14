@@ -46,14 +46,6 @@ cat >.i9wa4/temp.md <<'EOF'
 /my-review
 EOF
 
-# Copy .mcp.json from dotfiles
-dotfiles_dir="$(dirname "$(dirname "$(readlink -f "$0")")")"
-mcp_source="${dotfiles_dir}/config/claude/dot.mcp.json"
-if [[ -f "${mcp_source}" ]]; then
-  cp "${mcp_source}" .mcp.json
-  echo "* Copied .mcp.json"
-fi
-
 # Trust mise.toml if exists
 if [[ -f "mise.toml" ]]; then
   mise trust mise.toml
@@ -79,4 +71,17 @@ case "${repo_name}" in
   ;;
 esac
 
+# Add Slack MCP server if token is set and not already configured
+if [[ -n "${SLACK_MCP_XOXP_TOKEN:-}" ]]; then
+  if claude mcp add --scope project slack -e "SLACK_MCP_XOXP_TOKEN=${SLACK_MCP_XOXP_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio 2>/dev/null; then
+    echo "* Added Slack MCP server"
+  fi
+fi
+
 echo "* Setup complete"
+echo ""
+echo "To add more MCP servers for this project:"
+echo "  claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp"
+echo "  claude mcp add --scope project atlassian -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse"
+echo "  claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest"
+echo "  claude mcp add --scope project codex-mcp -- codex mcp-server"

@@ -4,7 +4,6 @@
 !agents/**
 !commands/
 !commands/**
-!dot.mcp.json
 !restore-context.sh
 !rules/
 !rules/**
