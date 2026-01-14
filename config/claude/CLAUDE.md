@@ -51,18 +51,19 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 
 Skills are stored in the `skills/` directory for specific integrations.
 
-| Skill               | Description                        |
-| ------------------- | ---------------------------------- |
-| agent-memory        | Save and recall work context       |
-| bigquery-expert     | BigQuery development guide         |
-| databricks-expert   | Databricks development guide       |
-| dbt-expert          | dbt development guide              |
-| terraform-expert    | Terraform development guide        |
-| jupyter-notebook    | Jupyter Notebook execution guide   |
-| draw-io             | draw.io diagram creation/editing   |
-| confluence-to-md    | Confluence page to Markdown        |
-| daily-report        | Daily work report generation       |
-| github-pr-operation | GitHub PR operations               |
+| Skill                 | Description                        |
+| --------------------- | ---------------------------------- |
+| agent-memory          | Save and recall work context       |
+| claude-code-changelog | Claude Code CHANGELOG catchup      |
+| bigquery-expert       | BigQuery development guide         |
+| databricks-expert     | Databricks development guide       |
+| dbt-expert            | dbt development guide              |
+| terraform-expert      | Terraform development guide        |
+| jupyter-notebook      | Jupyter Notebook execution guide   |
+| draw-io               | draw.io diagram creation/editing   |
+| confluence-to-md      | Confluence page to Markdown        |
+| daily-report          | Daily work report generation       |
+| github-pr-operation   | GitHub PR operations               |
 
 ### 4.3. Agents
 
