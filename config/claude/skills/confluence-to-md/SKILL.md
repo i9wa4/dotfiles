@@ -23,7 +23,22 @@ to convert Confluence pages to Markdown files.
 
 ## 2. Environment Setup
 
-### 2.1. Required Environment Variables
+### 2.1. API Token Creation
+
+1. Access <https://id.atlassian.com/manage-profile/security/api-tokens>
+2. Click "Create API token"
+3. Select "Create classic API token" (NOT scoped)
+
+Why Classic token is required:
+
+- This script uses site-specific URLs (`xxx.atlassian.net/wiki/rest/api/...`)
+- Scoped tokens only work with `api.atlassian.com` URLs
+- Classic tokens inherit all permissions of your Atlassian account
+
+Note: Classic tokens created before 2024-12-15
+will expire between 2026-03-14 and 2026-05-12.
+
+### 2.2. Required Environment Variables
 
 Set the following in `~/.zshenv.local` (with export).
 
@@ -33,7 +48,7 @@ export CONFLUENCE_EMAIL=your-email@example.com
 export CONFLUENCE_API_TOKEN=your-api-token
 ```
 
-### 2.2. Dependencies
+### 2.3. Dependencies
 
 ```sh
 pip install requests beautifulsoup4 html2text
