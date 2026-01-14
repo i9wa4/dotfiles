@@ -55,6 +55,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | --------------------- | ---------------------------------- |
 | agent-memory          | Save and recall work context       |
 | claude-code-changelog | Claude Code CHANGELOG catchup      |
+| codex-cli-changelog   | Codex CLI CHANGELOG catchup        |
 | bigquery-expert       | BigQuery development guide         |
 | databricks-expert     | Databricks development guide       |
 | dbt-expert            | dbt development guide              |
