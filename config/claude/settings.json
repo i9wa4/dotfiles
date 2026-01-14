@@ -22,11 +22,13 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [],
-    "deny": [
+    "ask": [
       "Bash(git -C:*)",
       "Bash(git push:*)",
       "Bash(git rebase:*)",
-      "Bash(git reset:*)",
+      "Bash(git reset:*)"
+    ],
+    "deny": [
       "Bash(rm:*)",
       "Bash(sudo:*)",
       "Read(**/*key*)",
