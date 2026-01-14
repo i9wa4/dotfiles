@@ -78,10 +78,26 @@ if [[ -n "${SLACK_MCP_XOXP_TOKEN:-}" ]]; then
   fi
 fi
 
+# Add Atlassian MCP server if credentials are set and not already configured
+# Requires: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN in .zshenv.local
+if [[ -n "${CONFLUENCE_API_TOKEN:-}" ]] && [[ -n "${CONFLUENCE_EMAIL:-}" ]] && [[ -n "${CONFLUENCE_BASE:-}" ]]; then
+  # Derive JIRA_URL from CONFLUENCE_BASE (remove /wiki suffix)
+  _jira_url="${CONFLUENCE_BASE%/wiki}"
+  if claude mcp add --scope project mcp-atlassian \
+    -e "JIRA_URL=${_jira_url}" \
+    -e "JIRA_USERNAME=${CONFLUENCE_EMAIL}" \
+    -e "JIRA_API_TOKEN=${CONFLUENCE_API_TOKEN}" \
+    -e "CONFLUENCE_URL=${CONFLUENCE_BASE}" \
+    -e "CONFLUENCE_USERNAME=${CONFLUENCE_EMAIL}" \
+    -e "CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN}" \
+    -- uvx --python=3.12 mcp-atlassian 2>/dev/null; then
+    echo "* Added Atlassian MCP server (Jira + Confluence)"
+  fi
+fi
+
 echo "* Setup complete"
 echo ""
 echo "To add more MCP servers for this project:"
 echo "  claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp"
-echo "  claude mcp add --scope project atlassian -- npx -y mcp-remote https://mcp.atlassian.com/v1/sse"
 echo "  claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest"
 echo "  claude mcp add --scope project codex-mcp -- codex mcp-server"
