@@ -39,7 +39,15 @@
         "color": "brightGreen"
       }
     ],
-    [],
+    [
+      {
+        "id": "mood-status",
+        "type": "custom-command",
+        "commandPath": "cat .i9wa4/claude-current-status 2>/dev/null || echo 'No status'",
+        "timeout": 1000,
+        "color": "cyan"
+      }
+    ],
     []
   ],
   "flexMode": "full-minus-40",

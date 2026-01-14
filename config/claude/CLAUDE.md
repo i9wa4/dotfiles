@@ -22,6 +22,10 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Read files in full without splitting
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
+- YOU MUST: Update `.i9wa4/claude-current-status` with current mood
+    - Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
+    - Choose appropriate emoji for current situation
+    - Update when task status changes significantly
 
 ## 4. File Structure
 
