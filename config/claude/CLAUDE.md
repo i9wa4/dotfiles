@@ -26,6 +26,7 @@ acknowledge with a random one-liner in character.
     - Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
     - Choose appropriate emoji for current situation
     - Update when task status changes significantly
+    - SKIP if running as subagent (see subagent.md)
 
 ## 4. File Structure
 
@@ -50,6 +51,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | markdown.md          | Markdown creation rules              | Markdown creation        |
 | file-management.md   | /tmp/ and .i9wa4/ directory rules    | File creation            |
 | claude-config.md     | Claude Code config rules             | Config file editing      |
+| subagent.md          | Subagent launch rules                | Task tool / codex exec   |
 
 ### 4.2. Skills
 
