@@ -150,6 +150,7 @@ in {
   };
 
   xdg.configFile = {
+    "ccstatusline".source = symlink "${dotfilesDir}/config/ccstatusline";
     "claude".source = symlink "${dotfilesDir}/config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
     "nvim".source = symlink "${dotfilesDir}/config/nvim";
