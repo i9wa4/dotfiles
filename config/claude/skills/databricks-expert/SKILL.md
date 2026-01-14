@@ -15,7 +15,21 @@ This skill provides a comprehensive guide for Databricks development.
 - Note: databricks CLI does not auto-read warehouse_id from config files,
   so explicitly include it in JSON each time
 
-### 1.2. Basic Usage
+### 1.2. Authentication
+
+- When `auth_type=databricks-cli` in profile, run U2M authentication first
+
+    ```sh
+    databricks auth login --host https://xxx.cloud.databricks.com --profile PROFILE_NAME
+    ```
+
+- Check authentication status
+
+    ```sh
+    databricks auth profiles
+    ```
+
+### 1.3. Basic Usage
 
 ```sh
 # Execute query
@@ -30,7 +44,7 @@ databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
 databricks api get /api/2.0/sql/statements/{statement_id} --profile "DEFAULT"
 ```
 
-### 1.3. Command Tips
+### 1.4. Command Tips
 
 1. Query execution flow
    - `post` executes query -> returns `statement_id`
