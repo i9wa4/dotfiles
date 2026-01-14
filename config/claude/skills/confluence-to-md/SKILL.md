@@ -48,22 +48,13 @@ export CONFLUENCE_EMAIL=your-email@example.com
 export CONFLUENCE_API_TOKEN=your-api-token
 ```
 
-### 2.3. Dependencies
-
-```sh
-pip install requests beautifulsoup4 html2text
-```
-
 ## 3. Usage
 
 ### 3.1. Command Line Execution
 
 ```sh
-# Specify URL as argument
-confluence-to-md.py <confluence_url>
-
-# Interactive mode
-confluence-to-md.py
+uvx --with requests --with beautifulsoup4 --with html2text \
+    python confluence-to-md.py <confluence_url>
 ```
 
 ### 3.2. URL Format

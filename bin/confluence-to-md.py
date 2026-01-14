@@ -10,8 +10,8 @@ Features:
 - Output filename: {timestamp}-confluence-{title}.md
 
 Usage:
-    confluence-to-md.py <confluence_url>
-    confluence-to-md.py  # Interactive mode
+    uvx --with requests --with beautifulsoup4 --with html2text \
+        python confluence-to-md.py <confluence_url>
 
 Environment variables (set in .zshenv.local):
     CONFLUENCE_BASE: Base URL of Confluence instance
