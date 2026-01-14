@@ -60,18 +60,17 @@ Include return instructions in the consultation:
 
 [RESPONSE INSTRUCTIONS]
 When done, send your response to Claude Code pane using:
-tmux send-keys -t {claude_pane_id} -l -- "$(cat << 'RESPONSE_EOF'
-[CODEX RESPONSE]
-{your response here}
-RESPONSE_EOF
-)" && tmux send-keys -t {claude_pane_id} Enter
+tmux send-keys -t {claude_pane_id} -l -- '[CODEX RESPONSE] {your response}' && sleep 0.5 && tmux send-keys -t {claude_pane_id} Enter
 ```
 
 ### 4.2. Send Command
 
+IMPORTANT: sleep 0.5 is required between text and Enter.
+
 ```bash
 # Escape and send
 tmux send-keys -t {codex_pane_id} -l -- "{escaped_message}"
+sleep 0.5
 tmux send-keys -t {codex_pane_id} Enter
 ```
 
@@ -139,20 +138,17 @@ send_consultation() {
     return 1
   fi
 
-  # Format with return instructions
+  # Format with return instructions (include sleep 0.5)
   local full_message="[CONSULTATION REQUEST]
 
 $message
 
 [RESPONSE INSTRUCTIONS]
 When done, send response via:
-tmux send-keys -t $claude_pane -l -- '\$(cat << RESP_EOF
-[CODEX RESPONSE]
-{your response}
-RESP_EOF
-)' && tmux send-keys -t $claude_pane Enter"
+tmux send-keys -t $claude_pane -l -- '[CODEX RESPONSE] {your response}' && sleep 0.5 && tmux send-keys -t $claude_pane Enter"
 
   tmux send-keys -t "$codex_pane" -l -- "$full_message"
+  sleep 0.5
   tmux send-keys -t "$codex_pane" Enter
 }
 ```
