@@ -5,7 +5,7 @@
       {
         "id": "1",
         "type": "version",
-        "color": "brightBlack",
+        "color": "brightBlue",
         "bold": false
       },
       {
@@ -16,7 +16,7 @@
       {
         "id": "0f434a1f-bce0-4def-9b45-8badd483422e",
         "type": "model",
-        "color": "brightBlack"
+        "color": "brightBlue"
       },
       {
         "id": "8e73890c-2569-4548-b2ae-8f9468b37f9e",
@@ -25,53 +25,22 @@
       },
       {
         "id": "8e53a3ef-f755-4e03-9a06-5ebed1d762b8",
-        "type": "block-timer",
-        "color": "brightBlack"
-      }
-    ],
-    [
-      {
-        "id": "ecabd1bb-0ca3-4fd6-b8ef-ca15f337f704",
         "type": "context-length",
-        "color": "magenta"
+        "color": "green"
       },
       {
-        "id": "b3f9e9a8-c2d1-4869-b1e7-ab75907e42e7",
+        "id": "e4077133-1839-4a62-a1e8-50fd4629eac4",
         "type": "separator",
         "color": "brightBlack"
       },
       {
-        "id": "e37c4260-bb4e-491f-b49a-347290cfe8d3",
+        "id": "5f62a263-c582-4746-8f18-fc8a279e5dad",
         "type": "context-percentage-usable",
-        "color": "magenta"
-      },
-      {
-        "id": "3f7c9e85-fd84-436f-89a4-de1d3301d695",
-        "type": "separator",
-        "color": "brightBlack"
-      },
-      {
-        "id": "b516c6cf-717c-431b-8817-d2ead081d1cd",
-        "type": "tokens-input",
-        "color": "brightBlack"
-      },
-      {
-        "id": "1ee19147-1d91-4c4a-9b47-e0ce8da26e67",
-        "type": "separator",
-        "color": "brightBlack"
-      },
-      {
-        "id": "d4d61797-da15-4c78-9a65-8c47c08fdabf",
-        "type": "tokens-output",
-        "color": "brightBlack"
+        "color": "brightGreen"
       }
     ],
-    [
-      {
-        "id": "389e17c7-843b-4a42-85dc-f574eb8167e1",
-        "type": "custom-command"
-      }
-    ]
+    [],
+    []
   ],
   "flexMode": "full-minus-40",
   "compactThreshold": 60,
