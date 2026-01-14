@@ -18,6 +18,7 @@ fi
 
 HOSTNAME="github.com"
 NO_URL=false
+EXCLUDE_OWNERS="i9wa4"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -47,68 +48,38 @@ while [ $# -gt 0 ]; do
   --no-url)
     NO_URL=true
     ;;
+  --exclude-owner)
+    # カンマ区切りで複数指定可能
+    EXCLUDE_OWNERS="$2"
+    shift
+    ;;
+  --include-personal)
+    # 個人リポジトリも含める
+    EXCLUDE_OWNERS=""
+    ;;
   esac
   shift
 done
 
+# Get current user login
+VIEWER_LOGIN=$(gh api graphql --hostname "$HOSTNAME" -f query='{ viewer { login } }' | jq -r '.data.viewer.login')
+
 TEMP_FILE=$(mktemp)
 trap 'rm -f "$TEMP_FILE"' EXIT
 
-# Fetch PR review comments
-gh api graphql --hostname "$HOSTNAME" -f from="$FROM" -f to="$TO" -f query='
-query($from: DateTime!, $to: DateTime!) {
-  viewer {
-    login
-    contributionsCollection(from: $from, to: $to) {
-      pullRequestReviewContributions(first: 100) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        nodes {
-          pullRequestReview {
-            url
-            publishedAt
-            pullRequest {
-              title
-              repository {
-                nameWithOwner
-              }
-            }
-            comments(first: 100) {
-              nodes {
-                url
-                bodyText
-                publishedAt
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-' | jq -r '
-.data.viewer.contributionsCollection.pullRequestReviewContributions.nodes[] |
-.pullRequestReview |
+# Fetch PRs reviewed by me (using gh search for accuracy)
+# This excludes PRs authored by myself
+gh search prs --reviewed-by="$VIEWER_LOGIN" --sort=updated --limit 50 --json repository,number,title,url,updatedAt,author 2>/dev/null | jq -r --arg from "$FROM" --arg to "$TO" --arg viewer "$VIEWER_LOGIN" '
+.[] |
+select(.updatedAt >= $from and .updatedAt <= $to) |
+select(.author.login != $viewer) |
 {
-  type: "PullRequestReview",
-  repo: .pullRequest.repository.nameWithOwner,
-  title: .pullRequest.title,
+  type: "ReviewedPR",
+  repo: .repository.nameWithOwner,
+  title: .title,
   url: .url,
-  created_at: .publishedAt
-} as $review |
-if (.comments.nodes | length) > 0 then
-  .comments.nodes[] | {
-    type: "PullRequestReviewComment",
-    repo: $review.repo,
-    title: $review.title,
-    url: .url,
-    created_at: .publishedAt
-  }
-else
-  $review
-end
+  created_at: .updatedAt
+}
 ' >>"$TEMP_FILE"
 
 # Fetch Issue comments and PR comments
@@ -325,10 +296,25 @@ select(.createdAt >= $from and .createdAt <= $to) |
   fi
 done
 
+# Build exclude filter for jq
+EXCLUDE_FILTER=""
+if [ -n "$EXCLUDE_OWNERS" ]; then
+  # Convert comma-separated owners to jq filter
+  IFS=',' read -ra OWNERS <<<"$EXCLUDE_OWNERS"
+  for owner in "${OWNERS[@]}"; do
+    if [ -n "$EXCLUDE_FILTER" ]; then
+      EXCLUDE_FILTER="$EXCLUDE_FILTER and"
+    fi
+    EXCLUDE_FILTER="$EXCLUDE_FILTER (.repo | startswith(\"$owner/\") | not)"
+  done
+fi
+
 # Format and output results
 if [ "$NO_URL" = "true" ]; then
   # URL なしの出力 (メンション通知防止)
-  jq -rs '
+  if [ -n "$EXCLUDE_FILTER" ]; then
+    jq -rs --argjson excludeFilter "true" "
+map(select($EXCLUDE_FILTER)) |
 group_by(.repo) |
 map({
   repo: .[0].repo,
@@ -337,7 +323,34 @@ map({
     group_by(.url) |
     map(
       sort_by(
-        if .type == "PullRequestReview" or .type == "PullRequestReviewComment" then 0
+        if .type == \"ReviewedPR\" then 0
+        elif .type == \"PullRequest\" or .type == \"Issue\" then 1
+        elif .type == \"IssueComment\" or .type == \"PullRequestComment\" then 2
+        else 3
+        end
+      ) |
+      .[0]
+    ) |
+    sort_by(.created_at) |
+    reverse
+  )
+}) |
+sort_by(.repo) |
+map(\"\n### \" + .repo +\"\n\", (.activities | map(\"- [\" + .type + \"] \" + .title))) |
+flatten |
+.[]
+" "$TEMP_FILE"
+  else
+    jq -rs '
+group_by(.repo) |
+map({
+  repo: .[0].repo,
+  activities: (
+    . |
+    group_by(.url) |
+    map(
+      sort_by(
+        if .type == "ReviewedPR" then 0
         elif .type == "PullRequest" or .type == "Issue" then 1
         elif .type == "IssueComment" or .type == "PullRequestComment" then 2
         else 3
@@ -354,9 +367,12 @@ map("\n### " + .repo +"\n", (.activities | map("- [" + .type + "] " + .title))) 
 flatten |
 .[]
 ' "$TEMP_FILE"
+  fi
 else
   # URL ありの出力 (gh-furik 互換)
-  jq -rs '
+  if [ -n "$EXCLUDE_FILTER" ]; then
+    jq -rs --argjson excludeFilter "true" "
+map(select($EXCLUDE_FILTER)) |
 group_by(.repo) |
 map({
   repo: .[0].repo,
@@ -365,7 +381,34 @@ map({
     group_by(.url) |
     map(
       sort_by(
-        if .type == "PullRequestReview" or .type == "PullRequestReviewComment" then 0
+        if .type == \"ReviewedPR\" then 0
+        elif .type == \"PullRequest\" or .type == \"Issue\" then 1
+        elif .type == \"IssueComment\" or .type == \"PullRequestComment\" then 2
+        else 3
+        end
+      ) |
+      .[0]
+    ) |
+    sort_by(.created_at) |
+    reverse
+  )
+}) |
+sort_by(.repo) |
+map(\"\n### \" + .repo +\"\n\", (.activities | map(\"- [\" + .type + \"](\" + .url + \"): \" + .title))) |
+flatten |
+.[]
+" "$TEMP_FILE"
+  else
+    jq -rs '
+group_by(.repo) |
+map({
+  repo: .[0].repo,
+  activities: (
+    . |
+    group_by(.url) |
+    map(
+      sort_by(
+        if .type == "ReviewedPR" then 0
         elif .type == "PullRequest" or .type == "Issue" then 1
         elif .type == "IssueComment" or .type == "PullRequestComment" then 2
         else 3
@@ -382,4 +425,5 @@ map("\n### " + .repo +"\n", (.activities | map("- [" + .type + "](" + .url + "):
 flatten |
 .[]
 ' "$TEMP_FILE"
+  fi
 fi
