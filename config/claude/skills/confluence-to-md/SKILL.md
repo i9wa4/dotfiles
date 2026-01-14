@@ -25,18 +25,18 @@ to convert Confluence pages to Markdown files.
 
 ### 2.1. Required Environment Variables
 
-Set the following in project root `.env` file.
+Set the following in `~/.zshenv.local` (with export).
 
 ```sh
-CONFLUENCE_BASE=https://your-confluence-instance.atlassian.net/wiki
-CONFLUENCE_EMAIL=your-email@example.com
-CONFLUENCE_API_TOKEN=your-api-token
+export CONFLUENCE_BASE=https://your-confluence-instance.atlassian.net/wiki
+export CONFLUENCE_EMAIL=your-email@example.com
+export CONFLUENCE_API_TOKEN=your-api-token
 ```
 
 ### 2.2. Dependencies
 
 ```sh
-pip install requests beautifulsoup4 html2text python-dotenv
+pip install requests beautifulsoup4 html2text
 ```
 
 ## 3. Usage
@@ -113,11 +113,11 @@ Format tables with aligned column widths.
 ### 5.1. Authentication Error
 
 ```text
-Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN must be set
-in .env file.
+Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN
+must be set as environment variables (e.g., in .zshenv.local).
 ```
 
-Check `.env` file settings.
+Check `~/.zshenv.local` settings and ensure variables are exported.
 
 ### 5.2. Page ID Extraction Error
 

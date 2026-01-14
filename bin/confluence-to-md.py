@@ -13,7 +13,7 @@ Usage:
     confluence-to-md.py <confluence_url>
     confluence-to-md.py  # Interactive mode
 
-Environment variables (in .env file):
+Environment variables (set in .zshenv.local):
     CONFLUENCE_BASE: Base URL of Confluence instance
     CONFLUENCE_EMAIL: User email for authentication
     CONFLUENCE_API_TOKEN: API token for authentication
@@ -22,7 +22,6 @@ Dependencies:
     - requests
     - beautifulsoup4
     - html2text
-    - python-dotenv
 """
 
 from __future__ import annotations
@@ -39,26 +38,20 @@ from pathlib import Path
 import html2text
 import requests
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 
 
 # =========================================================
 # Environment Configuration
 # =========================================================
 def load_env():
-    """Load environment variables from .env file."""
-    root_dir = Path(__file__).resolve().parents[1]
-    env_path = root_dir / ".env"
-    if not env_path.exists():
-        sys.exit(f"Error: .env file not found: {env_path}")
-    load_dotenv(dotenv_path=env_path)
+    """Load environment variables."""
     base = os.getenv("CONFLUENCE_BASE")
     email = os.getenv("CONFLUENCE_EMAIL")
     token = os.getenv("CONFLUENCE_API_TOKEN")
     if not (base and email and token):
         sys.exit(
             "Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN "
-            "must be set in .env file."
+            "must be set as environment variables (e.g., in .zshenv.local)."
         )
     return base.rstrip("/"), email, token
 
