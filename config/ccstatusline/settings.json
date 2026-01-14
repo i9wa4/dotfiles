@@ -35,17 +35,26 @@
       },
       {
         "id": "5f62a263-c582-4746-8f18-fc8a279e5dad",
-        "type": "context-percentage-usable",
+        "type": "context-percentage",
         "color": "brightGreen"
+      },
+      {
+        "id": "356823ce-8520-43eb-81f9-0ab3cfd5e777",
+        "type": "separator",
+        "color": "brightBlack"
+      },
+      {
+        "id": "7d49aa9a-ab93-40d2-8530-c4f84e68fdce",
+        "type": "context-percentage-usable"
       }
     ],
     [
       {
         "id": "mood-status",
         "type": "custom-command",
+        "color": "cyan",
         "commandPath": "cat .i9wa4/claude-current-status 2>/dev/null || echo 'No status'",
-        "timeout": 1000,
-        "color": "cyan"
+        "timeout": 1000
       }
     ],
     []
@@ -56,6 +65,15 @@
   "inheritSeparatorColors": false,
   "globalBold": false,
   "powerline": {
-    "enabled": false
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false
   }
 }
