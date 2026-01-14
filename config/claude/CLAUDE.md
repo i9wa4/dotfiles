@@ -71,6 +71,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | confluence-to-md      | Confluence page to Markdown        |
 | daily-report          | Daily work report generation       |
 | github-pr-operation   | GitHub PR operations               |
+| skill-creator         | Skill creation guide               |
 
 ### 4.3. Agents
 

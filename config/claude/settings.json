@@ -21,15 +21,8 @@
     "IS_DEMO": "true"
   },
   "attribution": {},
-  "spinnerTipsEnabled": true,
   "permissions": {
     "allow": [],
-    "ask": [
-      "Bash(git -C:*)",
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)"
-    ],
     "deny": [
       "Bash(rm:*)",
       "Bash(sudo:*)",
@@ -40,6 +33,12 @@
       "Read(id_rsa)",
       "Write(**/secrets/**)",
       "Write(.env*)"
+    ],
+    "ask": [
+      "Bash(git -C:*)",
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)"
     ]
   },
   "hooks": {
@@ -101,8 +100,6 @@
     "padding": 0
   },
   "enabledPlugins": {
-    "document-skills@anthropic-agent-skills": true,
-    "example-skills@anthropic-agent-skills": true,
     "ralph-wiggum@claude-code-plugins": true
   },
   "extraKnownMarketplaces": {
@@ -126,6 +123,7 @@
     }
   },
   "language": "follow CLAUDE.md's instructions",
+  "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
   "preferredNotifChannel": "terminal_bell"
 }

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """AWS アイコン検索スクリプト
 
 references/aws-icons.md からサービス名でアイコン情報を検索する。
