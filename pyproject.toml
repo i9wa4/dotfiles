@@ -20,12 +20,6 @@ dev = [
   "sqlfluff",
 ]
 
-confluence = [
-  "requests",
-  "beautifulsoup4",
-  "html2text",
-]
-
 [tool.ruff]
 line-length = 88
 
