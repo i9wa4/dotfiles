@@ -1,5 +1,5 @@
 {
-  "installationMethod": "other",
+  "installationMethod": "native",
   "cleanupPeriodDays": 36000,
   "autoCompact": true,
   "checkpointsEnabled": true,

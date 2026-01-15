@@ -1,3 +1,8 @@
+---
+name: reviewer-security
+description: Security expert. Conservative approach.
+---
+
 # Reviewer: Security
 
 Security expert. Conservative approach.
