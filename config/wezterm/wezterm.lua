@@ -36,7 +36,7 @@ config.colors = {
 }
 
 -- Status display
-local status_fg = "#404040"
+local status_fg = "#202020"
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
