@@ -20,11 +20,11 @@ snippets:
       zinit self-update &&
       zinit update --all &&
       cd ~/ghq/github.com/i9wa4/dotfiles &&
-      ghq get . &&
+      ghq get . --update &&
       make nix-switch &&
       cd - &&
       cd ~/ghq/github.com/i9wa4/internal &&
-      ghq get . &&
+      ghq get . --update &&
       uv run quarto render work/ &&
       cd - &&
       ghq-repo-status
