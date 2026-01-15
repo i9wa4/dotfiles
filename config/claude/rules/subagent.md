@@ -8,7 +8,7 @@ Add this prefix when launching any subagent:
 
 ```text
 [SUBAGENT MODE] You are running as a subagent.
-- Do NOT update .i9wa4/claude-current-status (mood status)
+- Do NOT update .i9wa4/status-* files (mood status)
 - Focus only on the assigned task
 ```
 
@@ -41,7 +41,7 @@ For parallel execution, append `&` and use `wait`.
 
 ## 4. Mood Status Update
 
-- Main session: Update `.i9wa4/claude-current-status` as needed
+- Main session: Update `.i9wa4/status-<tty>-<agent>` as needed
 - Subagent: NEVER update mood status (skip this rule)
 
 ## 5. Subagent Behavior

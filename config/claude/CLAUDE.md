@@ -22,7 +22,9 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Read files in full without splitting
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
-- YOU MUST: Update `.i9wa4/claude-current-status` with current mood
+- YOU MUST: Update status file with current mood (per-pane isolation)
+    - File: `.i9wa4/status-<tty>-<agent>` (e.g., `status-ttys002-claude`)
+    - Get tty: `tmux display-message -p '#{pane_tty}' | sed 's|/dev/||'`
     - Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
     - Choose appropriate emoji for current situation
     - Update when task status changes significantly
@@ -94,6 +96,6 @@ Slash commands are stored in `commands/` and loaded on invocation.
 
 | Command                             | Description                         |
 | ----------------------------------- | ----------------------------------- |
-| issue-to-pr                         | Issue to PR - 3-phase workflow      |
+| issue-to-pr                         | Issue to PR - 4-phase workflow      |
 | my-review                           | Unified code/design review workflow |
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |

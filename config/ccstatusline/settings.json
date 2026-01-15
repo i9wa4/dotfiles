@@ -35,7 +35,7 @@
         "id": "mood-status",
         "type": "custom-command",
         "color": "yellow",
-        "commandPath": "cat .i9wa4/claude-current-status 2>/dev/null || echo 'No status'",
+        "commandPath": "tty=$(tmux display-message -p '#{pane_tty}'); cat $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-${tty#/dev/}-claude 2>/dev/null || echo 'No status'",
         "timeout": 1000
       }
     ],
