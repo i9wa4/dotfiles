@@ -3,19 +3,10 @@
   "lines": [
     [
       {
-        "id": "8e53a3ef-f755-4e03-9a06-5ebed1d762b8",
-        "type": "context-length",
-        "color": "green"
-      },
-      {
-        "id": "356823ce-8520-43eb-81f9-0ab3cfd5e777",
-        "type": "separator",
-        "color": "brightBlack"
-      },
-      {
         "id": "7d49aa9a-ab93-40d2-8530-c4f84e68fdce",
         "type": "context-percentage-usable",
-        "color": "brightGreen"
+        "color": "brightGreen",
+        "bold": true
       },
       {
         "id": "8e73890c-2569-4548-b2ae-8f9468b37f9e",
