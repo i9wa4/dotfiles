@@ -1,0 +1,16 @@
+# AI Agent Registry for tmux-pane-relay
+# Define detectable AI CLI agents running in tmux panes
+
+[[agent]]
+name = "codex"
+label = "Codex CLI"
+match_current_command = "codex"
+match_pane_title = "codex|Codex"
+match_process = "codex"
+
+[[agent]]
+name = "claude"
+label = "Claude Code"
+match_current_command = "claude"
+match_pane_title = "claude|Claude"
+match_process = "claude"
