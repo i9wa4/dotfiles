@@ -52,23 +52,8 @@
     pkgs.udev-gothic
   ];
 
-  # Homebrew (GUI apps to avoid nix store bloat from generations)
-  homebrew = {
-    enable = true;
-    onActivation = {
-      cleanup = "uninstall";
-      autoUpdate = true;
-      upgrade = true;
-    };
-    casks = [
-      "drawio"
-      "google-chrome"
-      "openvpn-connect"
-      "visual-studio-code"
-      "wezterm"
-      "zoom"
-    ];
-  };
+  # NOTE: Homebrew settings are in common/homebrew.nix
+  # Host-specific casks are in hosts/<name>/casks.nix
 
   # Platform
   nixpkgs.hostPlatform = "aarch64-darwin";

@@ -19,18 +19,18 @@
 
   # Custom packages (not in nixpkgs) - all packages from nix/packages/
   customPkgs = {
-    ghalint = pkgs.callPackage ./packages/ghalint.nix {};
-    ghatm = pkgs.callPackage ./packages/ghatm.nix {};
-    pike = pkgs.callPackage ./packages/pike.nix {};
-    pinact = pkgs.callPackage ./packages/pinact.nix {};
-    rumdl = pkgs.callPackage ./packages/rumdl.nix {};
-    vim-startuptime = pkgs.callPackage ./packages/vim-startuptime.nix {};
+    ghalint = pkgs.callPackage ../packages/ghalint.nix {};
+    ghatm = pkgs.callPackage ../packages/ghatm.nix {};
+    pike = pkgs.callPackage ../packages/pike.nix {};
+    pinact = pkgs.callPackage ../packages/pinact.nix {};
+    rumdl = pkgs.callPackage ../packages/rumdl.nix {};
+    vim-startuptime = pkgs.callPackage ../packages/vim-startuptime.nix {};
   };
 in {
   imports = [
-    ./editorconfig.nix
-    ./git.nix
-    ./vscode.nix
+    ../editorconfig.nix
+    ../git.nix
+    ../vscode.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -116,8 +116,8 @@ in {
         pkgs.cmake
         pkgs.gettext
         pkgs.gnumake
-        # NOTE: GUI applications are in nix/darwin.nix (environment.systemPackages)
-        # to appear in /Applications/Nix Apps/
+        # NOTE: GUI applications are managed via Homebrew casks
+        # cf. nix/hosts/<name>/casks.nix
       ]
       # Custom packages
       ++ [

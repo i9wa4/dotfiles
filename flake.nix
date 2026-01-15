@@ -110,7 +110,8 @@
         system = "aarch64-darwin";
         specialArgs = {inherit username;};
         modules = [
-          ./nix/darwin.nix
+          ./nix/common/darwin.nix
+          ./nix/hosts/macos-p/darwin.nix
           home-manager.darwinModules.home-manager
           brew-nix.darwinModules.default
           {
@@ -136,7 +137,53 @@
                 inherit username;
                 llmAgentsPkgs = llm-agents.packages."aarch64-darwin";
               };
-              users.${username} = import ./nix/home.nix;
+              users.${username} = import ./nix/hosts/macos-p/home.nix;
+            };
+          }
+        ];
+      };
+
+    # darwin-rebuild switch --flake '.#macos-w' --impure
+    darwinConfigurations."macos-w" = let
+      username = let
+        sudoUser = builtins.getEnv "SUDO_USER";
+      in
+        if sudoUser != ""
+        then sudoUser
+        else throw "Must run with sudo (SUDO_USER not set). Run: sudo darwin-rebuild switch --flake '.#macos-w' --impure";
+    in
+      nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {inherit username;};
+        modules = [
+          ./nix/common/darwin.nix
+          ./nix/hosts/macos-w/darwin.nix
+          home-manager.darwinModules.home-manager
+          brew-nix.darwinModules.default
+          {
+            # Allow unfree packages (e.g., terraform with BSL license)
+            nixpkgs.config.allowUnfree = true;
+            # Overlays
+            nixpkgs.overlays = [
+              brew-nix.overlays.default
+              neovim-nightly-overlay.overlays.default
+              (vim-overlay.overlays.features {
+                lua = true;
+                python3 = true;
+              })
+              claude-code-overlay.overlays.default
+            ];
+            # Enable brew-nix to symlink apps to /Applications/Nix Apps
+            brew-nix.enable = true;
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              extraSpecialArgs = {
+                inherit username;
+                llmAgentsPkgs = llm-agents.packages."aarch64-darwin";
+              };
+              users.${username} = import ./nix/hosts/macos-w/home.nix;
             };
           }
         ];
@@ -168,7 +215,7 @@
           llmAgentsPkgs = llm-agents.packages.${system};
         };
         modules = [
-          ./nix/home.nix
+          ./nix/common/home.nix
         ];
       };
   };
