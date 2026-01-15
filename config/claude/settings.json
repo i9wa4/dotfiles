@@ -32,6 +32,12 @@
   "attribution": {},
   "permissions": {
     "allow": [],
+    "ask": [
+      "Bash(git -C:*)",
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)"
+    ],
     "deny": [
       "Bash(rm:*)",
       "Bash(sudo:*)",
@@ -42,12 +48,6 @@
       "Read(id_rsa)",
       "Write(**/secrets/**)",
       "Write(.env*)"
-    ],
-    "ask": [
-      "Bash(git -C:*)",
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)"
     ]
   },
   "hooks": {
