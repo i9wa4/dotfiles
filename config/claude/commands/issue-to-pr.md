@@ -1,17 +1,18 @@
 ---
-description: "Issue to PR - 3-phase workflow management"
+description: "Issue to PR - 4-phase workflow management"
 ---
 
 # issue-to-pr
 
 Manage work flow: Explore -> Plan -> Code -> PR
 
-Reference: Anthropic's Best Practices
+Reference: [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
 
 ## 1. Prerequisites
 
 - Issue number can be obtained from directory name or branch name
 - Always confirm with user before and after each phase
+- Use tmux-pane-relay for consultation at phase boundaries
 
 ## 2. Phase State Management
 
@@ -28,13 +29,54 @@ When resuming:
 1. Check last line of `.i9wa4/phase.log` to identify current phase
 2. Continue work from that phase
 
-## 3. Phases
+## 3. Relay Consultation (tmux-pane-relay)
 
-### 3.1. EXPLORE (Investigation Phase)
+### 3.1. When to Consult
+
+- Required: End of EXPLORE/PLAN/CODE, before PR creation
+- Optional: When uncertain (unclear requirements, technical decisions)
+
+### 3.2. Consultation Template
+
+```text
+[AI REQUEST id=YYYYMMDD-HHMMSS-XXXX from=claude pane=%1 to=codex to_pane=%2]
+
+## Phase: <current phase>
+
+## Summary
+- <brief summary of work done>
+
+## Key Points
+- <point 1>
+- <point 2>
+
+## Open Questions
+- <question 1>
+- <question 2>
+
+## Ask
+<specific question: OK to proceed? Any concerns?>
+
+[RESPONSE INSTRUCTIONS]
+When done, send response via:
+tmux send-keys -t %1 -l -- "[AI RESPONSE id=YYYYMMDD-HHMMSS-XXXX from=codex pane=%2 to=claude to_pane=%1] {your response}" && sleep 0.5 && tmux send-keys -t %1 Enter
+```
+
+### 3.3. Decision Flow
+
+After receiving consultation response:
+
+1. **Continue**: Proceed to next phase
+2. **Revise**: Make adjustments based on feedback
+3. **Ask User**: If unclear or needs human decision, ask user
+
+## 4. Phases
+
+### 4.1. EXPLORE (Investigation Phase)
 
 ultrathink recommended
 
-Pre-start confirmation:
+Pre-start:
 
 - Get Issue body and all comments to understand requirements
 - Record `START -> EXPLORE` in `.i9wa4/phase.log`
@@ -47,17 +89,20 @@ Actions:
 - Review related code
 - IMPORTANT: Do not write code in this phase. Investigation only.
 
-Post-completion confirmation:
+Post-completion:
 
 - Save investigation results to `.i9wa4/explore.md`
+- Relay consultation with summary:
+    - Problem summary, constraints, impact scope, open questions
+    - Ask: OK to proceed to PLAN?
+- Based on consultation: continue / revise / ask user
 - Record `EXPLORE -> PLAN` in `.i9wa4/phase.log`
-- Confirm investigation completion with user
 
-### 3.2. PLAN (Planning Phase)
+### 4.2. PLAN (Planning Phase)
 
 ultrathink recommended
 
-Pre-start confirmation:
+Pre-start:
 
 - Confirm planning start with user
 
@@ -68,15 +113,18 @@ Actions:
 - Determine testing strategy
 - IMPORTANT: Do not write code in this phase. Planning only.
 
-Post-completion confirmation:
+Post-completion:
 
 - Save design content to `.i9wa4/plan.md`
+- Relay consultation with summary:
+    - Change approach, key files, risks, test strategy
+    - Ask: OK to proceed to CODE?
+- Based on consultation: continue / revise / ask user
 - Record `PLAN -> CODE` in `.i9wa4/phase.log`
-- Confirm planning completion with user
 
-### 3.3. CODE (Implementation Phase)
+### 4.3. CODE (Implementation Phase)
 
-Pre-start confirmation:
+Pre-start:
 
 - Confirm implementation start with user
 
@@ -86,15 +134,18 @@ Actions:
 - Create commits as appropriate
 - IMPORTANT: Verify solution validity as you progress
 
-Post-completion confirmation:
+Post-completion:
 
 - Verify all implementation is complete
+- Relay consultation with summary:
+    - Notable changes, concerns, test results
+    - Ask: OK to proceed to PR?
+- Based on consultation: continue / revise / ask user
 - Record `CODE -> PR` in `.i9wa4/phase.log`
-- Confirm implementation completion with user
 
-### 3.4. PR (PR Creation Phase)
+### 4.4. PR (PR Creation Phase)
 
-Pre-start confirmation:
+Pre-start:
 
 - Confirm PR creation start with user
 
@@ -114,13 +165,19 @@ Actions:
 
 3. Check if README or changelog needs updating, update if needed
 
-4. Create draft PR
+4. Relay consultation with PR draft:
+   - Title, body, risks, verification
+   - Ask: Any concerns before creating PR?
+
+5. Based on consultation: continue / revise / ask user
+
+6. Create draft PR
 
     ```sh
     gh pr create --draft --title "Title" --body "Body"
     ```
 
-Post-completion confirmation:
+Post-completion:
 
 - Show PR URL
 - Record `PR -> COMPLETE` in `.i9wa4/phase.log`
