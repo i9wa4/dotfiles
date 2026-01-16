@@ -1,3 +1,13 @@
+---
+name: tmux-pane-relay
+description: |
+  Relay messages between AI panes using tmux.
+  Use when:
+  - User wants to consult another AI agent in a different pane
+  - User says "Codexに相談して" or "Claudeに聞いて"
+  - Need inter-agent communication via tmux
+---
+
 # Tmux Pane Relay Skill
 
 Relay consultation messages between AI panes using tmux.

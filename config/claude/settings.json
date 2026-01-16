@@ -134,5 +134,6 @@
   "language": "follow CLAUDE.md's instructions",
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
-  "preferredNotifChannel": "terminal_bell"
+  "preferredNotifChannel": "terminal_bell",
+  "mcpToolSearch": "auto:5"
 }
