@@ -169,7 +169,22 @@ def generate_markdown(
         "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
-        "## 1. Summary",
+        "## 1. Update Commands",
+        "",
+        "Update nixpkgs to latest nixpkgs-unstable:",
+        "",
+        "```bash",
+        "nix flake update nixpkgs",
+        "```",
+        "",
+        "Or update to the specific target revision:",
+        "",
+        "```bash",
+        "nix flake update nixpkgs --override-input nixpkgs "
+        f"github:NixOS/nixpkgs/{target_rev}",
+        "```",
+        "",
+        "## 2. Summary",
         "",
     ]
 
@@ -188,14 +203,14 @@ def generate_markdown(
 
     lines.extend(
         [
-            "## 2. nixpkgs revision",
+            "## 3. nixpkgs revision",
             "",
             f"- Current: `{current_rev[:8]}` "
             f"([view](https://github.com/NixOS/nixpkgs/commit/{current_rev}))",
             f"- Target: `{target_rev[:8]}` "
             f"([view](https://github.com/NixOS/nixpkgs/commit/{target_rev}))",
             "",
-            "## 3. Package Changes",
+            "## 4. Package Changes",
             "",
         ]
     )
@@ -210,7 +225,7 @@ def generate_markdown(
             new_ver = change["new_version"]
             release_notes = change.get("release_notes", [])
 
-            lines.append(f"### 3.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
+            lines.append(f"### 4.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
             lines.append("")
 
             if release_notes:
@@ -224,7 +239,7 @@ def generate_markdown(
                     tag = note["tag"]
                     body = note["body"]
                     url = note["url"]
-                    lines.append(f"#### 3.{i}.{j}. [{tag}]({url})")
+                    lines.append(f"#### 4.{i}.{j}. [{tag}]({url})")
                     lines.append("")
                     lines.append(body)
                     lines.append("")
@@ -234,25 +249,6 @@ def generate_markdown(
             elif change.get("compare_url"):
                 lines.append(f"[Compare changes]({change['compare_url']})")
                 lines.append("")
-
-    lines.extend(
-        [
-            "## 4. Update Commands",
-            "",
-            "Update nixpkgs to latest nixpkgs-unstable:",
-            "",
-            "```bash",
-            "nix flake update nixpkgs",
-            "```",
-            "",
-            "Or update to the specific target revision:",
-            "",
-            "```bash",
-            "nix flake update nixpkgs --override-input nixpkgs "
-            f"github:NixOS/nixpkgs/{target_rev}",
-            "```",
-        ]
-    )
 
     return "\n".join(lines)
 
@@ -358,6 +354,11 @@ def main():
     print()
     print(f"Output written to: {output_file}")
     print(f"Changed packages: {len(changes)}")
+
+    if changes:
+        print()
+        print("Update command:")
+        print("  nix flake update nixpkgs")
 
     return 0
 

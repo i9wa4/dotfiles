@@ -127,9 +127,28 @@ def generate_markdown(changes: list[dict]) -> str:
         "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
-        "## 1. Summary",
+        "## 1. Batch Update Commands",
         "",
     ]
+
+    if changes:
+        lines.append("Update all packages at once:")
+        lines.append("")
+        lines.append("```bash")
+        for change in changes:
+            lines.append(f"nix run 'nixpkgs#nix-update' -- --flake {change['name']}")
+        lines.append("```")
+        lines.append("")
+    else:
+        lines.append("No updates available.")
+        lines.append("")
+
+    lines.extend(
+        [
+            "## 2. Summary",
+            "",
+        ]
+    )
 
     if not changes:
         lines.append("All custom packages are up to date.")
@@ -146,7 +165,7 @@ def generate_markdown(changes: list[dict]) -> str:
 
     lines.extend(
         [
-            "## 2. Package Changes",
+            "## 3. Package Changes",
             "",
         ]
     )
@@ -163,7 +182,7 @@ def generate_markdown(changes: list[dict]) -> str:
             repo = change["repo"]
             release_notes = change.get("release_notes", [])
 
-            lines.append(f"### 2.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
+            lines.append(f"### 3.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
             lines.append("")
             lines.append(f"Repository: <https://github.com/{owner}/{repo}>")
             lines.append("")
@@ -185,7 +204,7 @@ def generate_markdown(changes: list[dict]) -> str:
                     tag = note["tag"]
                     body = note["body"]
                     url = note["url"]
-                    lines.append(f"#### 2.{i}.{j}. [{tag}]({url})")
+                    lines.append(f"#### 3.{i}.{j}. [{tag}]({url})")
                     lines.append("")
                     lines.append(body)
                     lines.append("")
@@ -198,20 +217,6 @@ def generate_markdown(changes: list[dict]) -> str:
                 )
                 lines.append(f"[Compare changes]({compare_url})")
                 lines.append("")
-
-    if changes:
-        lines.extend(
-            [
-                "## 3. Batch Update Commands",
-                "",
-                "Update all packages at once:",
-                "",
-                "```bash",
-            ]
-        )
-        for change in changes:
-            lines.append(f"nix run 'nixpkgs#nix-update' -- --flake {change['name']}")
-        lines.append("```")
 
     return "\n".join(lines)
 
@@ -292,6 +297,12 @@ def main():
     print()
     print(f"Output written to: {output_file}")
     print(f"Packages with updates: {len(changes)}")
+
+    if changes:
+        print()
+        print("Update commands:")
+        for change in changes:
+            print(f"  nix run 'nixpkgs#nix-update' -- --flake {change['name']}")
 
     return 0
 

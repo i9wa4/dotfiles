@@ -18,7 +18,7 @@ presets:
         - type: horizontal
           ratio: [1, 1]
           panes:
-            - name: claude
-              command: claude --dangerously-skip-permissions
             - name: codex
               command: bash ~/ghq/github.com/i9wa4/dotfiles/config/codex/generate-config.sh && codex --yolo
+            - name: claude
+              command: claude --dangerously-skip-permissions
