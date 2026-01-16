@@ -34,20 +34,20 @@ acknowledge with a random one-liner in character.
 
 ### 4.1. Roles
 
-| Role | Description | Communication |
-| ---- | ----------- | ------------- |
-| Orchestrator | Coordinator. Does NOT execute, delegates | - |
-| Worker | Executor in another tmux pane | tmux relay |
-| Subagent | Executor as child process | Task tool / codex exec |
+| Role         | Description                              | Communication          |
+| ----         | -----------                              | -------------          |
+| Orchestrator | Coordinator. Does NOT execute, delegates | -                      |
+| Worker       | Executor in another tmux pane            | tmux relay             |
+| Subagent     | Executor as child process                | Task tool / codex exec |
 
 ### 4.2. Capability
 
 Worker and Subagent operate with one of two capability modes:
 
-| Capability | Description | Tools |
-| ---------- | ----------- | ----- |
-| READONLY | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
-| WRITABLE | Explicit. Implementation, modification | All tools allowed |
+| Capability | Description                              | Tools                              |
+| ---------- | -----------                              | -----                              |
+| READONLY   | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
+| WRITABLE   | Explicit. Implementation, modification   | All tools allowed                  |
 
 Both modes allow writing to `.i9wa4/` for reports.
 
@@ -137,8 +137,9 @@ Agents are stored in the `agents/` directory.
 
 Slash commands are stored in `commands/` and loaded on invocation.
 
-| Command                             | Description                         |
-| ----------------------------------- | ----------------------------------- |
-| issue-to-pr                         | Issue to PR - 4-phase workflow      |
-| my-review                           | Unified code/design review workflow |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
+| Command                             | Description                            |
+| ----------------------------------- | -------------------------------------- |
+| my-plan                             | Universal planning for any source      |
+| my-review                           | Unified code/design review workflow    |
+| issue-to-pr                         | Issue to PR - 4-phase workflow (legacy)|
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment    |
