@@ -36,14 +36,13 @@ acknowledge with a random one-liner in character.
 
 | Role | Description | Communication |
 | ---- | ----------- | ------------- |
-| Orchestrator | Coordinator. Does NOT execute, delegates to Workers | - |
-| Worker | Executor. Performs actual tasks | - |
-| - Crew | Worker in another tmux pane | tmux relay |
-| - Subagent | Worker as child process | Task tool / codex exec |
+| Orchestrator | Coordinator. Does NOT execute, delegates | - |
+| Worker | Executor in another tmux pane | tmux relay |
+| Subagent | Executor as child process | Task tool / codex exec |
 
 ### 4.2. Capability
 
-Workers operate with one of two capability modes:
+Worker and Subagent operate with one of two capability modes:
 
 | Capability | Description | Tools |
 | ---------- | ----------- | ----- |
@@ -54,7 +53,7 @@ Both modes allow writing to `.i9wa4/` for reports.
 
 ### 4.3. Header Format
 
-When delegating to Workers, include capability in header:
+When delegating, include capability in header:
 
 ```text
 [SUBAGENT capability=READONLY]
@@ -62,7 +61,7 @@ When delegating to Workers, include capability in header:
 ```
 
 ```text
-[CREW capability=WRITABLE]
+[WORKER capability=WRITABLE]
 {task content}
 ```
 
@@ -73,7 +72,7 @@ Orchestrator itself operates in READONLY mode:
 - NEVER: Edit, Write, NotebookEdit (project files)
 - ALLOWED: Read, Glob, Grep, Bash (read-only)
 - ALLOWED: Write to `.i9wa4/` (plans, reports)
-- DELEGATE: Execution to Workers
+- DELEGATE: Execution to Worker/Subagent
 
 ## 5. File Structure
 
