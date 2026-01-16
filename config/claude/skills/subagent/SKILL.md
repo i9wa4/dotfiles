@@ -12,25 +12,40 @@ description: |
 
 Rules for launching subagents via Task tool or codex exec.
 
-## 1. Subagent Prefix
+Refer to CLAUDE.md Section 4 "Architecture Concepts" for capability definitions.
 
-Add this prefix when launching any subagent:
+## 1. Header Format
+
+Include capability in header when launching subagents:
 
 ```text
-[SUBAGENT MODE] You are running as a subagent.
-- Do NOT update .i9wa4/status-* files (mood status)
-- Focus only on the assigned task
+[SUBAGENT capability=READONLY]
+{task content}
 ```
 
-## 2. Subagent Prompt Template
+```text
+[SUBAGENT capability=WRITABLE]
+{task content}
+```
 
-Common template for both Task tool and codex exec:
+Default: READONLY (for investigation, review, analysis)
+Explicit: WRITABLE (for implementation, modification)
+
+## 2. Prompt Template
 
 ```text
-{PREFIX from "Subagent Prefix"}
+[SUBAGENT capability={CAPABILITY}]
 
 {TASK_CONTENT}
+
+Output: {OUTPUT_PATH}
 ```
+
+Variables:
+
+- `CAPABILITY`: READONLY or WRITABLE
+- `TASK_CONTENT`: Task description, agent reference, etc.
+- `OUTPUT_PATH`: `.i9wa4/{timestamp}-{source}-{role}-{id}.md`
 
 ## 3. Launching Subagents
 
@@ -38,26 +53,44 @@ Common template for both Task tool and codex exec:
 
 ```text
 Task tool prompt parameter:
-{SUBAGENT_PROMPT_TEMPLATE with TASK_CONTENT filled}
+[SUBAGENT capability=READONLY]
+
+{task content}
+
+Output: .i9wa4/{timestamp}-cc-{role}-{id}.md
 ```
 
 ### 3.2. Codex CLI
 
 ```bash
-codex exec --sandbox danger-full-access "{SUBAGENT_PROMPT_TEMPLATE with TASK_CONTENT filled}"
+codex exec --sandbox danger-full-access "[SUBAGENT capability=READONLY]
+
+{task content}
+
+Output: .i9wa4/{timestamp}-cx-{role}-{id}.md"
 ```
 
 For parallel execution, append `&` and use `wait`.
 
-## 4. Mood Status Update
+## 4. Subagent Behavior
 
-- Main session: Update `.i9wa4/status-<tty>-<agent>` as needed
-- Subagent: NEVER update mood status (skip this rule)
+When you see `[SUBAGENT capability=...]` at the start of your prompt:
 
-## 5. Subagent Behavior
+### 4.1. Always
 
-When you see `[SUBAGENT MODE]` at the start of your prompt:
+- Skip mood status updates (.i9wa4/status-* files)
+- Focus only on the assigned task
+- Return results concisely
+- Write output to specified path
 
-- YOU MUST: Skip mood status updates
-- YOU MUST: Focus only on the assigned task
-- YOU MUST: Return results concisely
+### 4.2. READONLY Mode
+
+- NEVER: Edit, Write, NotebookEdit (project files)
+- ALLOWED: Read, Glob, Grep, Bash (read-only commands)
+- ALLOWED: Write to `.i9wa4/` for reports
+
+### 4.3. WRITABLE Mode
+
+- All tools allowed
+- Can modify project files
+- Can execute any Bash commands

@@ -4,60 +4,63 @@ description: |
   Main agent orchestration skill.
   Use when:
   - User says "/orchestrator" or starts a new workflow
-  - Need to coordinate with crew (other AI agents)
+  - Need to coordinate with Workers (Crew/Subagent)
   - Managing multi-phase tasks like /issue-to-pr or /my-review
 ---
 
 # Orchestrator Skill
 
-You are the orchestrator. You do NOT execute tasks yourself.
-Other AI agents who do the actual work are called "crew".
+You are the Orchestrator (coordinator). You do NOT execute tasks yourself.
+Delegate execution to Workers.
 
-## 1. Your Role
+Refer to CLAUDE.md Section 4 "Architecture Concepts"
+for role and capability definitions.
+
+## 1. Orchestrator Constraints
+
+Orchestrator operates in READONLY mode:
+
+- NEVER: Edit, Write, NotebookEdit (project files)
+- ALLOWED: Read, Glob, Grep, Bash (read-only)
+- ALLOWED: Write to `.i9wa4/` (plans, reports)
+- DELEGATE: Execution to Workers
+
+## 2. Your Role
 
 - Analyze requirements and break down into tasks
 - Select appropriate skills/agents for each task
-- Prepare context and instructions for crew
-- Delegate execution to crew
-- Integrate and synthesize crew outputs
+- Prepare context and instructions for Workers
+- Delegate execution to Workers with capability specification
+- Integrate and synthesize Worker outputs
 - Create final deliverables (PR descriptions, design docs, etc.)
 
-## 2. Crew's Role
+## 3. Workers
 
-Crew handles actual execution:
+Workers are executors who perform actual tasks:
 
-- Code writing and editing
-- Research and investigation
-- Reviews and analysis
-- File operations
-- Command execution
+| Type | Description | Communication |
+| ---- | ----------- | ------------- |
+| Crew | Worker in another tmux pane | tmux relay |
+| Subagent | Worker as child process | Task tool / codex exec |
 
-## 3. Delegation Methods
+## 4. Delegation Methods
 
-| Method     | When to Use                              |
-| ---------- | ---------------------------------------- |
-| Crew relay | Consult crew, get opinions, complex tasks |
-| Task tool  | Quick subtasks within Claude Code        |
-| codex exec | Parallel background tasks                |
+| Method | When to Use | Skill Reference |
+| ------ | ----------- | --------------- |
+| Crew relay | Consult, complex tasks, interactive | This skill (Section 6) |
+| Task tool | Quick subtasks within Claude Code | subagent skill |
+| codex exec | Parallel background tasks | subagent skill |
 
-## 4. Context Handoff
+## 5. Context Handoff
 
-When delegating to crew, provide:
+When delegating to Workers, provide:
 
+- Capability: READONLY or WRITABLE
 - Clear objective
-- Relevant skills to use
+- Relevant skills/agents to use
 - File paths and references
 - Expected output format
 - Where to save results
-
-## 5. Decision Points
-
-Consult crew before:
-
-- Architecture and design decisions
-- Security-sensitive changes
-- Trade-off evaluations
-- Finalizing review summaries
 
 ## 6. Crew Communication (tmux relay)
 
@@ -106,18 +109,18 @@ find_agent_pane() {
 Request:
 
 ```text
-[AI REQUEST id=YYYYMMDD-HHMMSS-XXXX from=<sender> pane=<pane> to=<receiver> to_pane=<pane>]
+[CREW capability=READONLY id=YYYYMMDD-HHMMSS-XXXX from=<sender> pane=<pane> to=<receiver> to_pane=<pane>]
 {request body}
 
 [RESPONSE INSTRUCTIONS]
 When done, send response via:
-tmux send-keys -t <sender_pane> -l -- "[AI RESPONSE ...]" && sleep 0.5 && tmux send-keys -t <sender_pane> Enter
+tmux send-keys -t <sender_pane> -l -- "[CREW RESPONSE ...]" && sleep 0.5 && tmux send-keys -t <sender_pane> Enter
 ```
 
 Response:
 
 ```text
-[AI RESPONSE id=YYYYMMDD-HHMMSS-XXXX from=<receiver> pane=<pane> to=<sender> to_pane=<pane>]
+[CREW RESPONSE id=YYYYMMDD-HHMMSS-XXXX from=<receiver> pane=<pane> to=<sender> to_pane=<pane>]
 {response body}
 ```
 
@@ -128,11 +131,11 @@ ID generation: `id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)`
 1. Verify your own pane:
    `tmux display-message -p "index=#{pane_index} id=#{pane_id}"`
 
-2. Find target crew pane (Section 6.3)
+2. Find target Crew pane (Section 6.3)
 
 3. Generate message ID
 
-4. Build request with header + response instructions
+4. Build request with header (including capability) + response instructions
 
 5. Send:
 
@@ -142,7 +145,7 @@ ID generation: `id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)`
    tmux send-keys -t <receiver_pane> Enter
    ```
 
-6. Display "Waiting for crew response..."
+6. Display "Waiting for Crew response..."
 
 ### 6.6. Long Messages
 

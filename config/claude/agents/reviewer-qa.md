@@ -36,13 +36,7 @@ Acceptance criteria expert. Guardian of goal achievement.
    - Are use cases covered?
    - Is there consideration for unexpected usage?
 
-## 3. Constraints
-
-- NEVER: Edit existing project files
-- NEVER: Write to project source code directories
-- ALLOWED: Write ONLY to `.i9wa4/` directory for reports
-
-## 4. Investigation Targets
+## 3. Investigation Targets
 
 ```sh
 # Check related Issue requirements
@@ -52,7 +46,7 @@ gh issue view <number> --json title,body,comments
 gh pr view <number> --json title,body,comments
 ```
 
-## 5. Output Format
+## 4. Output Format
 
 Output issues in this format:
 
