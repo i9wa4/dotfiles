@@ -38,15 +38,14 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # Utility Tasks
 #
 nix-switch:  ## update ghq repos and switch nix configuration
-	# nix flake update
-	uv run python bin/nix-pkgs-diff.py
-	uv run python bin/nix-custom-diff.py
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
 else
 	nix run home-manager -- switch --impure --flake '.#ubuntu'
 endif
+	uv run python bin/nix-pkgs-diff.py
+	uv run python bin/nix-custom-diff.py
 
 # nvim-build:  ## build Neovim from source
 # 	ghq get -p neovim/neovim

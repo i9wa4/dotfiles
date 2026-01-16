@@ -169,14 +169,7 @@ def generate_markdown(
         "",
         f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
-        "## nixpkgs revision",
-        "",
-        f"- Current: `{current_rev[:8]}` "
-        f"([view](https://github.com/NixOS/nixpkgs/commit/{current_rev}))",
-        f"- Target: `{target_rev[:8]}` "
-        f"([view](https://github.com/NixOS/nixpkgs/commit/{target_rev}))",
-        "",
-        "## Package Changes",
+        "## 1. Summary",
         "",
     ]
 
@@ -184,13 +177,40 @@ def generate_markdown(
         lines.append("No package changes detected.")
         lines.append("")
     else:
+        lines.append("The following packages will be updated:")
+        lines.append("")
         for change in changes:
+            pkg = change["package"]
+            old_ver = change["old_version"]
+            new_ver = change["new_version"]
+            lines.append(f"- {pkg}: `{old_ver}` -> `{new_ver}`")
+        lines.append("")
+
+    lines.extend(
+        [
+            "## 2. nixpkgs revision",
+            "",
+            f"- Current: `{current_rev[:8]}` "
+            f"([view](https://github.com/NixOS/nixpkgs/commit/{current_rev}))",
+            f"- Target: `{target_rev[:8]}` "
+            f"([view](https://github.com/NixOS/nixpkgs/commit/{target_rev}))",
+            "",
+            "## 3. Package Changes",
+            "",
+        ]
+    )
+
+    if not changes:
+        lines.append("No package changes detected.")
+        lines.append("")
+    else:
+        for i, change in enumerate(changes, 1):
             pkg = change["package"]
             old_ver = change["old_version"]
             new_ver = change["new_version"]
             release_notes = change.get("release_notes", [])
 
-            lines.append(f"### {pkg}: `{old_ver}` -> `{new_ver}`")
+            lines.append(f"### 3.{i}. {pkg}: `{old_ver}` -> `{new_ver}`")
             lines.append("")
 
             if release_notes:
@@ -200,11 +220,11 @@ def generate_markdown(
                 )
                 lines.append("")
 
-                for note in release_notes:
+                for j, note in enumerate(release_notes, 1):
                     tag = note["tag"]
                     body = note["body"]
                     url = note["url"]
-                    lines.append(f"#### [{tag}]({url})")
+                    lines.append(f"#### 3.{i}.{j}. [{tag}]({url})")
                     lines.append("")
                     lines.append(body)
                     lines.append("")
@@ -217,9 +237,15 @@ def generate_markdown(
 
     lines.extend(
         [
-            "---",
+            "## 4. Update Commands",
             "",
-            "To apply this update:",
+            "Update nixpkgs to latest nixpkgs-unstable:",
+            "",
+            "```bash",
+            "nix flake update nixpkgs",
+            "```",
+            "",
+            "Or update to the specific target revision:",
             "",
             "```bash",
             "nix flake update nixpkgs --override-input nixpkgs "
