@@ -73,17 +73,11 @@ case "${repo_name}" in
   ;;
 esac
 
-# Add Slack MCP server if token is set and not already configured
-if [[ -n "${SLACK_MCP_XOXP_TOKEN:-}" ]]; then
-  if claude mcp add --scope project slack -e "SLACK_MCP_XOXP_TOKEN=${SLACK_MCP_XOXP_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio 2>/dev/null; then
-    echo "* Added Slack MCP server"
-  fi
-fi
-
 echo "* Setup complete"
 echo ""
 echo "To add more MCP servers for this project:"
-echo "  claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp"
-echo "  claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest"
-echo "  claude mcp add --scope project codex-mcp -- codex mcp-server"
-echo "  claude mcp add --scope project mcp-atlassian -e \"JIRA_URL=\${CONFLUENCE_BASE%/wiki}\" -e \"JIRA_USERNAME=\${CONFLUENCE_EMAIL}\" -e \"JIRA_API_TOKEN=\${CONFLUENCE_API_TOKEN}\" -e \"CONFLUENCE_URL=\${CONFLUENCE_BASE}\" -e \"CONFLUENCE_USERNAME=\${CONFLUENCE_EMAIL}\" -e \"CONFLUENCE_API_TOKEN=\${CONFLUENCE_API_TOKEN}\" -- uvx --python=3.12 mcp-atlassian"
+echo "claude mcp add --scope project slack -e \"SLACK_MCP_XOXP_TOKEN=\${SLACK_MCP_XOXP_TOKEN}\" -- npx -y slack-mcp-server@latest --transport stdio"
+echo "claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp"
+echo "claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest"
+echo "claude mcp add --scope project codex-mcp -- codex mcp-server"
+echo "claude mcp add --scope project mcp-atlassian -e \"JIRA_URL=\${CONFLUENCE_BASE%/wiki}\" -e \"JIRA_USERNAME=\${CONFLUENCE_EMAIL}\" -e \"JIRA_API_TOKEN=\${CONFLUENCE_API_TOKEN}\" -e \"CONFLUENCE_URL=\${CONFLUENCE_BASE}\" -e \"CONFLUENCE_USERNAME=\${CONFLUENCE_EMAIL}\" -e \"CONFLUENCE_API_TOKEN=\${CONFLUENCE_API_TOKEN}\" -- uvx --python=3.12 mcp-atlassian"

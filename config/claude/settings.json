@@ -32,13 +32,11 @@
   "attribution": {},
   "permissions": {
     "allow": [],
-    "ask": [
+    "deny": [
       "Bash(git -C:*)",
       "Bash(git push:*)",
       "Bash(git rebase:*)",
-      "Bash(git reset:*)"
-    ],
-    "deny": [
+      "Bash(git reset:*)",
       "Bash(rm:*)",
       "Bash(sudo:*)",
       "Read(**/*key*)",
