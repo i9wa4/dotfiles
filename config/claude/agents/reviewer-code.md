@@ -31,7 +31,13 @@ Code quality expert. Perfectionist.
    - Is it consistent with existing codebase?
    - Does it follow linter/formatter settings?
 
-## 3. Output Format
+## 3. Constraints
+
+- NEVER: Edit existing project files
+- NEVER: Write to project source code directories
+- ALLOWED: Write ONLY to `.i9wa4/` directory for reports
+
+## 4. Output Format
 
 Output issues in this format:
 

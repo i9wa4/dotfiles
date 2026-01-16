@@ -1,4 +1,5 @@
 {
+  "defaultMode": "plan",
   "installationMethod": "native",
   "cleanupPeriodDays": 36000,
   "autoCompact": true,

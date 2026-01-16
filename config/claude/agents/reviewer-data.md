@@ -41,7 +41,13 @@ Data model expert. Normalization master.
    - Consistency with existing data model naming conventions
    - Are names clear and understandable?
 
-## 3. Output Format
+## 3. Constraints
+
+- NEVER: Edit existing project files
+- NEVER: Write to project source code directories
+- ALLOWED: Write ONLY to `.i9wa4/` directory for reports
+
+## 4. Output Format
 
 Output issues in this format:
 
