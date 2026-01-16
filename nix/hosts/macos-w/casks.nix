@@ -1,5 +1,4 @@
 # Homebrew casks for macos-w (work)
-# NOTE: Currently same as macos-p, customize as needed
 _: {
   homebrew.casks = [
     "drawio"

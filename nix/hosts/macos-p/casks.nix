@@ -3,6 +3,7 @@ _: {
   homebrew.casks = [
     "drawio"
     "google-chrome"
+    "visual-studio-code"
     "wezterm"
     "zoom"
   ];

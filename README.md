@@ -114,6 +114,12 @@ cf. [Homebrew](https://brew.sh/)
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
 ```
 
+or
+
+```sh
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-w' --impure --no-update-lock-file
+```
+
 Open a new terminal after completion.
 
 ### 4.4. Set PC-specific Git Config
