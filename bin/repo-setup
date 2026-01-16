@@ -37,6 +37,8 @@ echo "* Created .i9wa4/ directory"
 cat >.i9wa4/temp.md <<'EOF'
 # temp
 
+/orchestrator
+
 ## 1. Development
 
 /issue-to-pr

@@ -1,5 +1,5 @@
 ---
-name: terraform-expert
+name: terraform
 description: Terraform Expert Engineer Skill - Comprehensive guide for Infrastructure as Code, resource management, module design, and state management
 ---
 

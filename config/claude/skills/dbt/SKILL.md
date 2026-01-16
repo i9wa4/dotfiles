@@ -1,5 +1,5 @@
 ---
-name: dbt-expert
+name: dbt
 description: dbt Expert Engineer Skill - Comprehensive guide for dbt development best practices, command execution, and environment configuration
 ---
 

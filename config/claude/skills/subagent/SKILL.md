@@ -1,4 +1,14 @@
-# Subagent Rules
+---
+name: subagent
+description: |
+  Subagent launch skill. Rules for Task tool and codex exec.
+  Use when:
+  - Launching parallel reviewers or workers
+  - Using Task tool for subtasks
+  - Using codex exec for background tasks
+---
+
+# Subagent Skill
 
 Rules for launching subagents via Task tool or codex exec.
 

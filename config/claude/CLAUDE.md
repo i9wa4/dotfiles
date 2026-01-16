@@ -42,17 +42,16 @@ Rules are stored in the `rules/` directory, organized by topic.
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
-| Rule                 | Description                          | When to Reference        |
-| -------------------- | ------------------------------------ | ------------------------ |
-| git.md               | Git operation rules                  | Git operations           |
-| github.md            | GitHub operation rules               | GitHub operations        |
-| bash.md              | Bash syntax and command rules        | Command execution        |
-| python.md            | Python virtual environment usage     | Python execution         |
-| aws.md               | AWS CLI usage rules                  | AWS operations           |
-| nix.md               | Nix commands and package management  | Nix operations           |
-| markdown.md          | Markdown creation rules              | Markdown creation        |
-| file-management.md   | /tmp/ and .i9wa4/ directory rules    | File creation            |
-| subagent.md          | Subagent launch rules                | Task tool / codex exec   |
+| Rule               | Description                          | When to Reference        |
+| ------------------ | ------------------------------------ | ------------------------ |
+| aws.md             | AWS CLI usage rules                  | AWS operations           |
+| bash.md            | Bash syntax and command rules        | Command execution        |
+| file-management.md | /tmp/ and .i9wa4/ directory rules    | File creation            |
+| git.md             | Git operation rules                  | Git operations           |
+| github.md          | GitHub operation rules               | GitHub operations        |
+| markdown.md        | Markdown creation rules              | Markdown creation        |
+| nix.md             | Nix commands and package management  | Nix operations           |
+| python.md          | Python virtual environment usage     | Python execution         |
 
 ### 4.2. Skills
 
@@ -61,19 +60,20 @@ Skills are stored in the `skills/` directory for specific integrations.
 | Skill                   | Description                        |
 | ----------------------- | ---------------------------------- |
 | agent-memory            | Save and recall work context       |
+| bigquery                | BigQuery development guide         |
 | claude-config-optimizer | Claude Code config and changelog   |
 | codex-cli-changelog     | Codex CLI CHANGELOG catchup        |
 | confluence-to-md        | Confluence page to Markdown        |
 | daily-report            | Daily work report generation       |
+| databricks              | Databricks development guide       |
+| dbt                     | dbt development guide              |
 | draw-io                 | draw.io diagram creation/editing   |
-| github-pr-operation     | GitHub PR operations               |
 | jupyter-notebook        | Jupyter Notebook execution guide   |
+| orchestrator            | Main agent orchestration with crew |
+| pull-request-operation  | Pull Request operations            |
 | skill-creator           | Skill creation guide               |
-| tmux-pane-relay         | Relay messages between AI panes    |
-| bigquery-expert         | BigQuery development guide         |
-| databricks-expert       | Databricks development guide       |
-| dbt-expert              | dbt development guide              |
-| terraform-expert        | Terraform development guide        |
+| subagent                | Subagent launch rules              |
+| terraform               | Terraform development guide        |
 
 ### 4.3. Agents
 

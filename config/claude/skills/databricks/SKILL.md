@@ -1,5 +1,5 @@
 ---
-name: databricks-expert
+name: databricks
 description: Databricks Expert Engineer Skill - Comprehensive guide for data engineering, machine learning infrastructure, and permission design
 ---
 

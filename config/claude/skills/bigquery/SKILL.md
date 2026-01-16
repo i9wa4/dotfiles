@@ -1,5 +1,5 @@
 ---
-name: bigquery-expert
+name: bigquery
 description: BigQuery Expert Engineer Skill - Comprehensive guide for GoogleSQL queries, data management, performance optimization, and cost management
 ---
 

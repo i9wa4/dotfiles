@@ -1,5 +1,5 @@
 ---
-name: github-pr-operation
+name: pull-request-operation
 description: |
   GitHub Pull Request operations skill. Uses gh command to retrieve PR info,
   check diffs, and get/post comments.
@@ -10,9 +10,9 @@ description: |
   - Checking diffs with line numbers
 ---
 
-# GitHub PR Operation Skill
+# Pull Request Operation Skill
 
-Reference for GitHub Pull Request operations using gh command.
+Reference for Pull Request operations using gh command.
 
 ## 1. Prerequisites
 

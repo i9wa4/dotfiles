@@ -14,23 +14,6 @@ Reference: [Claude Code Best Practices](https://www.anthropic.com/engineering/cl
 - Always confirm with user before and after each phase
 - Use tmux-pane-relay for consultation at phase boundaries
 
-## 1.1. Multi-Agent Collaboration (Recommended)
-
-When multiple AI panes are available, use role-based collaboration:
-
-| Role | Pane | Responsibilities |
-| ---- | ---- | ---------------- |
-| Commander | Claude (receives /issue-to-pr) | Phase management, task delegation, NEVER executes tasks directly |
-| Worker | Claude (other pane) | Code editing, file operations, dbt/test execution |
-| Advisor | Codex | Design review, technical consultation, high-frequency feedback |
-
-**Commander Rules**:
-
-- MUST delegate all tasks to Worker via tmux-pane-relay
-- MUST consult Advisor frequently (not just at phase boundaries)
-- MUST NOT edit files, run commands, or execute any implementation directly
-- Track progress and coordinate between Worker and Advisor
-
 ## 2. Phase State Management
 
 Record phase transitions in `.i9wa4/phase.log`
