@@ -13,73 +13,27 @@
 ### 2.1. Issue Templates
 
 - YOU MUST: Check `.github/ISSUE_TEMPLATE/` before creating an Issue
-- YOU MUST: Follow the template format (fields, structure)
-- IMPORTANT: Common templates
-    - `task.yml`: Sub-task (child) for work items
-    - `epic.yml`: Epic (parent) for large features
-    - `bug_report.yml`: Bug reports
+- YOU MUST: Follow the template format if it exists
 
 ### 2.2. Parent-Child Issue Relationship (Sub-issues)
 
-GitHub の sub-issue 機能を使用して親子関係を設定する。
-標準の gh CLI ではサポートされていないため、拡張機能を使用する。
+- YOU MUST: Use `gh sub-issue` extension (standard gh CLI does not support)
+- YOU MUST: Follow project's issue template for parent-child fields
 
-#### 拡張機能のインストール
+#### Extension
 
 ```bash
+# Install
 gh extension install agbiotech/gh-sub-issue
-```
 
-#### Sub-issue の作成手順
+# Add sub-issue
+gh sub-issue add <parent> --sub-issue-number <child>
 
-1. **子 Issue を作成**
-   - Title format: `[#<parent_number>] <description>`
-   - Body: テンプレートに従い `親Issue番号` フィールドに `#<parent_number>`
-   - Labels: `type/task`
+# List sub-issues
+gh sub-issue list <parent>
 
-2. **親子関係を設定** (gh sub-issue 拡張)
-
-    ```bash
-    gh sub-issue add <parent_number> --sub-issue-number <child_number>
-    ```
-
-3. **親 Issue の body を更新** (子タスク セクション)
-
-    ```bash
-    # 子タスクセクションに追加: - [ ] #<child_number> <description>
-    gh issue edit <parent_number> --body "..."
-    ```
-
-#### コマンド一覧
-
-```bash
-# Sub-issue 一覧表示
-gh sub-issue list <parent_number>
-
-# Sub-issue 追加
-gh sub-issue add <parent_number> --sub-issue-number <child_number>
-
-# Sub-issue 削除
-gh sub-issue remove <parent_number> --sub-issue-number <child_number>
-
-# Sub-issue 並び替え
-gh sub-issue reprioritize <parent_number> --sub-issue-number <child_number> --before <other_child>
-```
-
-#### 完全な例
-
-```bash
-# 1. 子 Issue 作成
-gh issue create --title "[#1192] VPC Peering 設定" --label "type/task" --body "..."
-
-# 2. 親子関係を設定 (拡張機能使用)
-gh sub-issue add 1192 --sub-issue-number 1422
-
-# 3. 親 Issue の子タスクセクションを更新
-gh issue edit 1192 --body "..."
-
-# 4. 確認
-gh sub-issue list 1192
+# Remove sub-issue
+gh sub-issue remove <parent> --sub-issue-number <child>
 ```
 
 ## 3. External Repository Reference Rules (Mention Prevention)
