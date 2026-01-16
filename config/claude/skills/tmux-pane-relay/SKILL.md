@@ -46,23 +46,40 @@ match_process = "claude"
 
 ### 3.1. Overview
 
-1. `tmux list-panes -F "#{pane_id} #{pane_pid} ..."`
+1. List panes with format:
+   `tmux list-panes -F "#{pane_index} #{pane_id} #{pane_pid} ..."`
 2. Exclude current pane (`tmux display-message -p "#{pane_id}"`)
 3. Filter by `match_current_command` and/or `match_pane_title`
 4. Confirm with `ps -o command= -p <pid>` and `match_process`
 5. If `--to <name>` is provided, restrict to that agent
 6. If multiple panes remain, show selection UI (fzf if available)
 
-### 3.2. Find Agent Pane
+### 3.2. Pane Info Format
+
+For debugging, always include both `pane_index` and `pane_id`:
+
+- `pane_index`: Window-relative position (0, 1, 2, 3...)
+- `pane_id`: Unique identifier (%90, %91, %92...)
+
+Example output:
+
+```text
+0 %90 34979 vim
+1 %91 35326 .claude-wrapped
+2 %92 35353 .claude-wrapped
+3 %93 35391 codex
+```
+
+### 3.3. Find Agent Pane
 
 ```bash
 find_agent_pane() {
   local target_agent="$1"  # "codex" or "claude"
-  local panes=$(tmux list-panes -F "#{pane_pid} #{pane_id}")
+  local panes=$(tmux list-panes -F "#{pane_index} #{pane_pid} #{pane_id}")
 
-  while read -r pane_pid pane_id; do
+  while read -r pane_index pane_pid pane_id; do
     if ps -ax -o ppid,command | grep -v grep | grep "$target_agent" | grep -q "^\s*$pane_pid"; then
-      echo "$pane_id"
+      echo "$pane_index $pane_id"
       return 0
     fi
   done <<< "$panes"
@@ -99,16 +116,51 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 
 ## 5. Send Procedure
 
-### 5.1. Steps
+### 5.1. Pre-Send Verification (REQUIRED)
 
-1. Detect sender pane (current pane)
-2. Resolve receiver pane via registry
-3. Generate message ID
-4. Build request with header + response instructions
-5. Send with `tmux send-keys -l --`, then `sleep 0.5`, then `Enter`
-6. Display "Waiting for AI response..."
+Before sending any message, verify both sender and receiver:
 
-### 5.2. Send Command
+1. **Confirm your own pane**:
+
+   ```bash
+   tmux display-message -p "index=#{pane_index} id=#{pane_id} cmd=#{pane_current_command}"
+   ```
+
+   Verify the command shows your agent (e.g., `.claude-wrapped`, `codex`)
+
+2. **Confirm target pane**:
+
+   ```bash
+   tmux list-panes -F "#{pane_index} #{pane_id} #{pane_current_command}" | grep -E "codex|claude"
+   ```
+
+   Verify the target pane_id matches the intended receiver agent
+
+3. **If mismatch detected**: Re-run detection (Section 3.3) before proceeding
+
+### 5.2. Steps
+
+1. Run Pre-Send Verification (5.1)
+2. Detect sender pane (current pane)
+3. Resolve receiver pane via registry
+4. Generate message ID
+5. Build request with header + response instructions
+6. Send with `tmux send-keys -l --`, then `sleep 0.5`, then `Enter`
+7. Display "Waiting for AI response..."
+
+### 5.3. Response Safety Check
+
+Before executing the response `tmux send-keys`, verify `to_pane`:
+
+1. Confirm the pane exists:
+   `tmux list-panes -a -F "#{pane_index} #{pane_id} #{pane_current_command}"`
+2. Ensure `to_pane` matches the receiver agent (`claude` or `codex`) using
+   `match_current_command` or `match_pane_title` from `agents.toml`.
+3. NOTE: If `to_pane` is missing or does not match the expected agent,
+   re-detect the correct pane via Section 3.3. If multiple candidates remain,
+   prompt the user to confirm the target pane before sending.
+
+### 5.4. Send Command
 
 ```bash
 tmux send-keys -t <receiver_pane> -l -- "{escaped_message}"

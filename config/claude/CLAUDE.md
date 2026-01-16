@@ -52,29 +52,28 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | nix.md               | Nix commands and package management  | Nix operations           |
 | markdown.md          | Markdown creation rules              | Markdown creation        |
 | file-management.md   | /tmp/ and .i9wa4/ directory rules    | File creation            |
-| claude-config.md     | Claude Code config rules             | Config file editing      |
 | subagent.md          | Subagent launch rules                | Task tool / codex exec   |
 
 ### 4.2. Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
-| Skill                 | Description                        |
-| --------------------- | ---------------------------------- |
-| agent-memory          | Save and recall work context       |
-| claude-code-changelog | Claude Code CHANGELOG catchup      |
-| codex-cli-changelog   | Codex CLI CHANGELOG catchup        |
-| tmux-pane-relay       | Relay messages between AI panes    |
-| bigquery-expert       | BigQuery development guide         |
-| databricks-expert     | Databricks development guide       |
-| dbt-expert            | dbt development guide              |
-| terraform-expert      | Terraform development guide        |
-| jupyter-notebook      | Jupyter Notebook execution guide   |
-| draw-io               | draw.io diagram creation/editing   |
-| confluence-to-md      | Confluence page to Markdown        |
-| daily-report          | Daily work report generation       |
-| github-pr-operation   | GitHub PR operations               |
-| skill-creator         | Skill creation guide               |
+| Skill                   | Description                        |
+| ----------------------- | ---------------------------------- |
+| agent-memory            | Save and recall work context       |
+| claude-config-optimizer | Claude Code config and changelog   |
+| codex-cli-changelog     | Codex CLI CHANGELOG catchup        |
+| confluence-to-md        | Confluence page to Markdown        |
+| daily-report            | Daily work report generation       |
+| draw-io                 | draw.io diagram creation/editing   |
+| github-pr-operation     | GitHub PR operations               |
+| jupyter-notebook        | Jupyter Notebook execution guide   |
+| skill-creator           | Skill creation guide               |
+| tmux-pane-relay         | Relay messages between AI panes    |
+| bigquery-expert         | BigQuery development guide         |
+| databricks-expert       | Databricks development guide       |
+| dbt-expert              | dbt development guide              |
+| terraform-expert        | Terraform development guide        |
 
 ### 4.3. Agents
 

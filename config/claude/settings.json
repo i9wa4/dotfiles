@@ -135,5 +135,6 @@
   "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
   "preferredNotifChannel": "terminal_bell",
-  "mcpToolSearch": "auto:5"
+  "mcpToolSearch": "auto:5",
+  "plansDirectory": ".i9wa4/plans"
 }
