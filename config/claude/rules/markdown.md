@@ -3,6 +3,25 @@
 ## 1. Universal Rules
 
 - NEVER: Do not use emojis
+- YOU MUST: Align table columns with spaces
+
+Good example:
+
+```markdown
+| Name   | Description | Value |
+| ------ | ----------- | ----- |
+| foo    | Foo item    | 100   |
+| barbaz | Bar baz     | 200   |
+```
+
+Bad example:
+
+```markdown
+| Name | Description | Value |
+| --- | --- | --- |
+| foo | Foo item | 100 |
+| barbaz | Bar baz | 200 |
+```
 
 ## 2. Japanese Markdown Rules
 
