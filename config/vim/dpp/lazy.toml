@@ -212,13 +212,6 @@ augroup mnh
 augroup END
 '''
 
-[[plugins]]
-repo = 'previm/previm'
-on_ft = ['markdown', 'quarto', 'rmd']
-hook_add = '''
-let g:previm_open_cmd = 'open -a Google\ Chrome'
-'''
-
 # --------------------------------------
 # Terraform
 #
