@@ -1,6 +1,6 @@
 [[plugins]]
 repo = 'github/copilot.vim'
-on_event = ['VimEnter']
+if = 0
 
 [[plugins]]
 repo = 'i9wa4/vim-tmux-send-to-ai-cli'
