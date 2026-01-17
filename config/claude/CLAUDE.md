@@ -22,6 +22,9 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Read files in full without splitting
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
+- NEVER: Do not pollute global environment (use venv, nvm, rbenv, etc.)
+- NEVER: Do not create lock files (uv.lock, package-lock.json, etc.)
+  or virtual environments (.venv/, node_modules/) without permission
 
 ## 4. File Structure
 
@@ -42,8 +45,6 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | file-management.md | /tmp/ and .i9wa4/ directory rules    | File creation            |
 | git-github.md      | Git and GitHub rules (constraints)   | Git/GitHub operations    |
 | markdown.md        | Markdown creation rules              | Markdown creation        |
-| nix.md             | Nix commands and package management  | Nix operations           |
-| python.md          | Python virtual environment usage     | Python execution         |
 
 ### 4.2. Skills
 
@@ -62,8 +63,10 @@ Skills are stored in the `skills/` directory for specific integrations.
 | git                     | Git operations guide               |
 | github                  | GitHub operations guide            |
 | jupyter-notebook        | Jupyter Notebook execution guide   |
+| nix                     | Nix commands and package management|
 | orchestrator            | Main agent orchestration           |
 | pull-request-operation  | Pull Request operations            |
+| python                  | Python environment and execution   |
 | skill-creator           | Skill creation guide               |
 | terraform               | Terraform development guide        |
 

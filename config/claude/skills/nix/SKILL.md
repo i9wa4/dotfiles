@@ -1,4 +1,14 @@
-# Nix Rules
+---
+name: nix
+description: |
+  Nix commands and package management guide.
+  Use when:
+  - Running nix build, nix run
+  - Adding custom packages
+  - Using nurl for hash acquisition
+---
+
+# Nix Skill
 
 ## 1. nix build
 

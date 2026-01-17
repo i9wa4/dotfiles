@@ -1,14 +1,21 @@
-# Python Rules
+---
+name: python
+description: |
+  Python environment and execution guide.
+  Use when:
+  - Running Python scripts
+  - Working with uv, poetry, venv
+---
 
-## 1. Basic Rules
+# Python Skill
 
-- NEVER: Do not pollute global Python environment
-- NEVER: Do not create `uv.lock` or `.venv/` without permission
-- NEVER: Do not add shebang lines (`#!/usr/bin/env python3`) to Python files
+## 1. Python-specific Rules
+
+- NEVER: Do not add shebang lines (`#!/usr/bin/env python3`)
 - NEVER: Do not set execute permission on Python files
-- YOU MUST: Always execute Python scripts with explicit `python` command
+- YOU MUST: Always execute with explicit `python` command
 
-## 2. Python Virtual Environment Usage
+## 2. Virtual Environment Usage
 
 ### 2.1. When uv.lock Exists
 
