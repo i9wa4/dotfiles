@@ -96,6 +96,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | markdown.md        | Markdown creation rules              | Markdown creation        |
 | nix.md             | Nix commands and package management  | Nix operations           |
 | python.md          | Python virtual environment usage     | Python execution         |
+| subagent.md        | Subagent launch and behavior rules   | Subagent operations      |
 
 ### 5.2. Skills
 
@@ -103,7 +104,6 @@ Skills are stored in the `skills/` directory for specific integrations.
 
 | Skill                   | Description                        |
 | ----------------------- | ---------------------------------- |
-| agent-memory            | Save and recall work context       |
 | bigquery                | BigQuery development guide         |
 | claude-config-optimizer | Claude Code config and changelog   |
 | codex-cli-changelog     | Codex CLI CHANGELOG catchup        |
@@ -113,10 +113,9 @@ Skills are stored in the `skills/` directory for specific integrations.
 | dbt                     | dbt development guide              |
 | draw-io                 | draw.io diagram creation/editing   |
 | jupyter-notebook        | Jupyter Notebook execution guide   |
-| orchestrator            | Main agent orchestration with crew |
+| orchestrator            | Main agent orchestration           |
 | pull-request-operation  | Pull Request operations            |
 | skill-creator           | Skill creation guide               |
-| subagent                | Subagent launch rules              |
 | terraform               | Terraform development guide        |
 
 ### 5.3. Agents
@@ -139,7 +138,4 @@ Slash commands are stored in `commands/` and loaded on invocation.
 
 | Command                             | Description                            |
 | ----------------------------------- | -------------------------------------- |
-| my-plan                             | Universal planning for any source      |
-| my-review                           | Unified code/design review workflow    |
-| issue-to-pr                         | Issue to PR - 4-phase workflow (legacy)|
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment    |

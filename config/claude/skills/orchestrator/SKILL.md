@@ -5,7 +5,7 @@ description: |
   Use when:
   - User says "/orchestrator" or starts a new workflow
   - Need to coordinate with Worker/Subagent
-  - Managing multi-phase tasks like /issue-to-pr or /my-review
+  - Managing multi-phase tasks (plan -> code -> PR)
 ---
 
 # Orchestrator Skill
@@ -36,18 +36,33 @@ Orchestrator operates in READONLY mode:
 
 ## 3. Executors
 
-| Type | Description | Communication |
-| ---- | ----------- | ------------- |
-| Worker | Executor in another tmux pane | tmux relay |
-| Subagent | Executor as child process | Task tool / codex exec |
+| Type     | Description                    | Communication          |
+| -------- | ------------------------------ | ---------------------- |
+| Worker   | Executor in another tmux pane  | worker-comm            |
+| Subagent | Executor as child process      | Task tool / codex exec |
+
+Typical role assignment (not strict):
+
+| Agent  | Typical Use                |
+| ------ | -------------------------- |
+| codex  | Consultation, review       |
+| claude | Implementation             |
+
+When worker configuration is unclear, ASK the user:
+
+- Multiple workers of same type: "Which pane (%X) for implementation?"
+- Non-standard setup: "I see codex only. Use codex for implementation?"
+- Role clarification: "What role should pane %X play?"
+
+Always specify target by pane ID (e.g., `to_pane=%8`) when multiple workers.
 
 ## 4. Delegation Methods
 
-| Method | When to Use | Skill Reference |
-| ------ | ----------- | --------------- |
-| Worker relay | Consult, complex tasks, interactive | This skill (Section 6) |
-| Task tool | Quick subtasks within Claude Code | subagent skill |
-| codex exec | Parallel background tasks | subagent skill |
+| Method       | When to Use                        | Reference              |
+| ------------ | ---------------------------------- | ---------------------- |
+| Worker comm  | Consult, complex tasks, interactive| references/worker-comm |
+| Task tool    | Quick subtasks within Claude Code  | rules/subagent         |
+| codex exec   | Parallel background tasks          | rules/subagent         |
 
 ## 5. Context Handoff
 
@@ -60,109 +75,84 @@ When delegating, provide:
 - Expected output format
 - Where to save results
 
-## 6. Worker Communication (tmux relay)
+## 6. Phase Management
 
-### 6.1. Prerequisites
-
-- Both sender and receiver running in the same tmux session/window
-- Target pane is interactive (waiting for input)
-
-### 6.2. Worker Registry (agents.toml)
-
-Location: `config/claude/skills/orchestrator/agents.toml`
-
-```toml
-[[agent]]
-name = "codex"
-label = "Codex CLI"
-match_process = "codex"
-
-[[agent]]
-name = "claude"
-label = "Claude Code"
-match_process = "claude"
-```
-
-### 6.3. Find Worker Pane
-
-```bash
-find_agent_pane() {
-  local target_agent="$1"
-  local panes=$(tmux list-panes -F "#{pane_index} #{pane_pid} #{pane_id}")
-
-  while read -r pane_index pane_pid pane_id; do
-    if ps -ax -o ppid,command | grep -v grep | grep "$target_agent" \
-       | grep -q "^\s*$pane_pid"; then
-      echo "$pane_index $pane_id"
-      return 0
-    fi
-  done <<< "$panes"
-
-  return 1
-}
-```
-
-### 6.4. Message Format
-
-Request:
+Record phase transitions in `.i9wa4/phase.log`:
 
 ```text
-[WORKER capability=READONLY id=YYYYMMDD-HHMMSS-XXXX from=<sender> pane=<pane> to=<receiver> to_pane=<pane>]
-{request body}
-
-[RESPONSE INSTRUCTIONS]
-When done, send response via:
-tmux send-keys -t <sender_pane> -l -- "[WORKER RESPONSE ...]" && sleep 0.5 && tmux send-keys -t <sender_pane> Enter
+2025-01-01 10:00:00 | START -> PLAN
+2025-01-01 11:00:00 | PLAN -> CODE
+2025-01-01 12:00:00 | CODE -> PR
+2025-01-01 12:30:00 | PR -> COMPLETE
 ```
 
-Response:
+When resuming:
+
+1. Check `.i9wa4/phase.log` for current phase
+2. Continue from that phase
+
+At phase boundaries, consult Worker if needed.
+
+## 7. Workflows
+
+### 7.1. Plan Workflow
+
+See: `references/plan.md`
 
 ```text
-[WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX from=<receiver> pane=<pane> to=<sender> to_pane=<pane>]
-{response body}
+"plan して" -> Plan Mode -> ExitPlanMode -> CODE phase
 ```
 
-ID generation: `id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)`
+### 7.2. Review Workflow
 
-### 6.5. Send Procedure
-
-1. Verify your own pane:
-   `tmux display-message -p "index=#{pane_index} id=#{pane_id}"`
-
-2. Find target Worker pane (Section 6.3)
-
-3. Generate message ID
-
-4. Build request with header (including capability) + response instructions
-
-5. Send:
-
-   ```bash
-   tmux send-keys -t <receiver_pane> -l -- "{message}"
-   sleep 0.5
-   tmux send-keys -t <receiver_pane> Enter
-   ```
-
-6. Display "Waiting for Worker response..."
-
-### 6.6. Long Messages
-
-Use tmux buffer for long messages:
-
-```bash
-tmux load-buffer -b ai_msg /path/to/message.txt
-sleep 0.2
-tmux paste-buffer -b ai_msg -t <pane_id>
-```
-
-## 7. Workflow Integration
+See: `references/review.md`
 
 ```text
-/orchestrator
-/issue-to-pr
+"review して" -> Setup -> Parallel reviewers -> Summary
 ```
 
+### 7.3. Code Workflow
+
+See: `references/code.md`
+
 ```text
-/orchestrator
-/my-review
+Plan approved -> Delegate (WRITABLE) -> Verify -> PR phase
 ```
+
+### 7.4. Pull Request Workflow
+
+See: `references/pull-request.md`
+
+```text
+Code complete -> PR context -> Create PR -> Report URL
+```
+
+### 7.5. Worker Communication
+
+See: `references/worker-comm.md`
+
+```text
+tmux pane communication protocol
+```
+
+## 8. Reference Loading
+
+Load relevant reference when context matches:
+
+| Trigger                           | Load                         |
+| --------------------------------- | ---------------------------- |
+| plan, planning, design, 設計      | references/plan.md           |
+| review, レビュー                  | references/review.md         |
+| code, implement, 実装             | references/code.md           |
+| pr, pull request, PR作成          | references/pull-request.md   |
+| worker, pane, tmux, communication | references/worker-comm.md    |
+
+## 9. Quick Reference
+
+| Reference                 | Purpose                           |
+| ------------------------- | --------------------------------- |
+| references/plan           | Plan workflow from any source     |
+| references/review         | Parallel review workflow          |
+| references/code           | Code workflow (post-plan)         |
+| references/pull-request   | PR creation workflow              |
+| references/worker-comm    | Worker communication protocol     |

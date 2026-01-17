@@ -1,27 +1,23 @@
----
-description: "Code/Design Review"
----
+# Review Workflow
 
-# my-review
-
-Unified review command for code and design reviews.
+Unified review workflow for code and design reviews.
 
 ## 1. Overview
 
 ```text
-Claude Code
-|
-+-- setup (review_type, target_type, target, parallel_count)
-|
-+-- generate timestamp
-|
-+-- cx x 5 (Bash background, GPT)
-|
-+-- cc x 5 (Task tool parallel, Claude)
-|
-+-- wait all -> .i9wa4/{timestamp}-*-*-*.md
-|
-+-- integrate results -> summary
+Orchestrator
+    |
+    +-- 1. Setup (review_type, target_type, target, parallel_count)
+    |
+    +-- 2. Generate timestamp
+    |
+    +-- 3. Launch cx x 5 (codex exec background)
+    |
+    +-- 4. Launch cc x 5 (Task tool parallel)
+    |
+    +-- 5. Wait all -> .i9wa4/{timestamp}-*-*-*.md
+    |
+    +-- 6. Integrate results -> summary
 ```
 
 Default: 10 parallel (cx x 5 + cc x 5)
@@ -31,29 +27,37 @@ Priority-based assignment when parallel count is specified.
 
 ### 2.1. Review Type
 
-- code: Code changes (PR, commit, branch)
-- design: Design documents (Issue, Markdown, etc.)
+| Type   | Description                        |
+| ------ | ---------------------------------- |
+| code   | Code changes (PR, commit, branch)  |
+| design | Design documents (Issue, Markdown) |
 
 ### 2.2. Target Type
 
 For code review:
 
-- pr: Pull Request
-- commit: Specific commit
-- branch: Branch (vs main)
+| Type   | Description     |
+| ------ | --------------- |
+| pr     | Pull Request    |
+| commit | Specific commit |
+| branch | Branch vs main  |
 
 For design review:
 
-- issue: GitHub Issue
-- document: Markdown or other docs
+| Type     | Description              |
+| -------- | ------------------------ |
+| issue    | GitHub Issue             |
+| document | Markdown or other docs   |
 
 ### 2.3. Target Value
 
-- PR: number (e.g., 123)
-- Commit: hash (e.g., abc1234)
-- Branch: name (e.g., feature/xxx)
-- Issue: number (e.g., 456)
-- Document: path (e.g., docs/design.md)
+| Target Type | Value Example      |
+| ----------- | ------------------ |
+| pr          | 123                |
+| commit      | abc1234            |
+| branch      | feature/xxx        |
+| issue       | 456                |
+| document    | docs/design.md     |
 
 ## 3. Priority and Assignment
 
@@ -128,11 +132,13 @@ target: {TARGET}
 
 Based on target_type:
 
-- pr: `gh pr view {target} --json body,comments` + `git diff main...HEAD`
-- commit: `git show {target}`
-- branch: `git diff main...HEAD`
-- issue: `gh issue view {target} --json body,comments`
-- document: Read the file at {target}
+| Target Type | Command                                                |
+| ----------- | ------------------------------------------------------ |
+| pr          | `gh pr view {target} --json body,comments` + diff      |
+| commit      | `git show {target}`                                    |
+| branch      | `git diff main...HEAD`                                 |
+| issue       | `gh issue view {target} --json body,comments`          |
+| document    | Read the file at {target}                              |
 
 ### 5.3. Agent Reference
 
@@ -148,15 +154,19 @@ Common task content for both Task tool and codex exec.
 
 Variables:
 
-- `TS`: Shared timestamp from Step 1
-- `SOURCE`: cc (Task tool) or cx (codex exec)
-- `ID`: `openssl rand -hex 2`
-- `ROLE`: From priority table
-- `REVIEW_TYPE`: code or design
-- `TARGET_TYPE`: pr, commit, branch, issue, or document
-- `TARGET`: Target value
+| Variable    | Description                    |
+| ----------- | ------------------------------ |
+| TS          | Shared timestamp from Step 1   |
+| SOURCE      | cc (Task tool) or cx (codex)   |
+| ID          | `openssl rand -hex 2`          |
+| ROLE        | From priority table            |
+| REVIEW_TYPE | code or design                 |
+| TARGET_TYPE | pr, commit, branch, issue, doc |
+| TARGET      | Target value                   |
 
 ```text
+[SUBAGENT capability=READONLY]
+
 <!-- REVIEW_SESSION
 timestamp: {TS}
 source: {SOURCE}
@@ -176,14 +186,21 @@ Save results to: .i9wa4/{TS}-{SOURCE}-{ROLE}-{ID}.md
 
 ### 5.5. Launching Reviewers
 
-Use subagent.md "Subagent Prompt Template" with the task content above.
+See: `rules/subagent.md` for launch details and prompt template.
 
-- Task tool: Call Task tool with the prompt
-- Codex CLI: `codex exec --sandbox danger-full-access "..."`
-    - Append `&` for parallel execution
+Task tool (cc):
 
-<!-- NOTE: Batch execution example for reference.
-     Shell variables must be expanded before passing to codex exec. -->
+```text
+Call Task tool with the prompt (parallel execution)
+```
+
+Codex CLI (cx):
+
+```bash
+codex exec --sandbox danger-full-access "..." &
+```
+
+Batch execution example:
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S) && \
@@ -192,7 +209,7 @@ TARGET_TYPE=commit && \
 TARGET=abc1234 && \
 for ROLE in security architecture historian code qa; do
   ID=$(openssl rand -hex 2)
-  codex exec --sandbox danger-full-access "[SUBAGENT MODE] ...
+  codex exec --sandbox danger-full-access "[SUBAGENT capability=READONLY]
 timestamp: ${TS}
 role: ${ROLE}
 ...
@@ -221,18 +238,18 @@ Output: `.i9wa4/{timestamp}-summary-{id}.md`
 
 ### Critical/High
 
-| # | Issue | Reporter | File |
-|---|-------|----------|------|
+| #   | Issue | Reporter | File |
+| --- | ----- | -------- | ---- |
 
 ### Medium
 
-| # | Issue | Reporter | File |
-|---|-------|----------|------|
+| #   | Issue | Reporter | File |
+| --- | ----- | -------- | ---- |
 
 ### Low
 
-| # | Issue | Reporter | File |
-|---|-------|----------|------|
+| #   | Issue | Reporter | File |
+| --- | ----- | -------- | ---- |
 
 ## Detailed Findings
 
