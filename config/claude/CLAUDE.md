@@ -54,7 +54,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | ----------------------- | ---------------------------------- |
 | bigquery                | BigQuery development guide         |
 | claude-config-optimizer | Claude Code config and changelog   |
-| codex-cli-changelog     | Codex CLI CHANGELOG catchup        |
+| codex-cli-optimizer     | Codex CLI config and changelog     |
 | confluence-to-md        | Confluence page to Markdown        |
 | daily-report            | Daily work report generation       |
 | databricks              | Databricks development guide       |
