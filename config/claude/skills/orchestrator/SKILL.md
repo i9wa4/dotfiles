@@ -77,17 +77,17 @@ Orchestrator must update status file to show current mood:
 
 - File: `.i9wa4/status-pane<id>` (e.g., `status-pane6`)
 - 2 lines:
-    - Line 1: Current mood and what was just done
-    - Line 2: Trigger needed for next action
-- Choose appropriate emoji for current situation
-- Update when task status changes significantly
+    - Line 1: "CURRENT: what was just done | current mood <1 or 2 emojis>"
+        - Choose appropriate emoji for current situation
+    - Line 2: "NEXT: Trigger needed for next action"
+- Update every time task status changes
 
 Example:
 
 ```sh
 cat > .i9wa4/status-pane${TMUX_PANE#%} << 'EOF'
-😎 SSOT修正完了 - 達成感
-次: ユーザーの指示待ち
+CURRENT: SSOT修正完了 | 達成感 😎
+NEXT: タスク状態確認後の指示待ち
 EOF
 ```
 
