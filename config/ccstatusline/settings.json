@@ -35,7 +35,7 @@
         "id": "mood-status",
         "type": "custom-command",
         "color": "yellow",
-        "commandPath": "sed -n '1p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null",
+        "commandPath": "sed -n '1p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null || true",
         "timeout": 1000
       }
     ],
@@ -44,7 +44,7 @@
         "id": "next-trigger",
         "type": "custom-command",
         "color": "cyan",
-        "commandPath": "sed -n '2p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null",
+        "commandPath": "sed -n '2p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null || true",
         "timeout": 1000
       }
     ]
