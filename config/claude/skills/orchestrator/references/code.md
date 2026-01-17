@@ -119,21 +119,17 @@ For dependent tasks:
 
 ### 5.2. Parallel Execution
 
-For independent tasks (use codex exec).
-See `rules/subagent.md` Section 3 for sandbox settings.
+For independent tasks, use multiple Workers:
 
-```bash
-# Use WRITABLE sandbox (danger-full-access)
-TS=$(date +%Y%m%d-%H%M%S) && \
-for TASK in task1 task2 task3; do
-  ID=$(openssl rand -hex 2)
-  codex exec --sandbox danger-full-access "[SUBAGENT capability=WRITABLE]
-Task: ${TASK}
-Reference: .i9wa4/plans/plan.md
-Output: .i9wa4/${TS}-cx-impl-${ID}.md" &
-done
-wait
+```text
+[WORKER capability=WRITABLE to_pane=%7]
+Task A: ...
+
+[WORKER capability=WRITABLE to_pane=%8]
+Task B: ...
 ```
+
+Add Workers as needed for parallelism.
 
 ## 6. Result Collection
 
