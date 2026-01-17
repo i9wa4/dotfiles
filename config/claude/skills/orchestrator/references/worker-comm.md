@@ -123,11 +123,13 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 
 ## 5. Send Procedure (Orchestrator)
 
-1. Verify your own pane:
+1. Get your own pane ID (use env var, NOT tmux display-message):
 
    ```bash
-   tmux display-message -p "index=#{pane_index} id=#{pane_id}"
+   ORCHESTRATOR="${TMUX_PANE}"  # e.g., %6
    ```
+
+   NOTE: `tmux display-message` returns focused pane, not your pane.
 
 2. Find target Worker pane (Section 2)
 
