@@ -35,11 +35,19 @@
         "id": "mood-status",
         "type": "custom-command",
         "color": "yellow",
-        "commandPath": "tty=$(tmux display-message -p '#{pane_tty}'); cat $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-${tty#/dev/}-claude 2>/dev/null || echo 'No status'",
+        "commandPath": "sed -n '1p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null",
         "timeout": 1000
       }
     ],
-    []
+    [
+      {
+        "id": "next-trigger",
+        "type": "custom-command",
+        "color": "cyan",
+        "commandPath": "sed -n '2p' $(git rev-parse --show-toplevel 2>/dev/null)/.i9wa4/status-pane${TMUX_PANE#%} 2>/dev/null",
+        "timeout": 1000
+      }
+    ]
   ],
   "flexMode": "full-minus-40",
   "compactThreshold": 60,

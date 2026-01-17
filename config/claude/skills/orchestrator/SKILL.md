@@ -75,13 +75,23 @@ Orchestrator operates in READONLY mode:
 
 Orchestrator must update status file to show current mood:
 
-- File: `.i9wa4/status-<tty>-<agent>` (e.g., `status-ttys002-claude`)
-- Get tty: `tmux display-message -p '#{pane_tty}' | sed 's|/dev/||'`
-- Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
+- File: `.i9wa4/status-pane<id>` (e.g., `status-pane6`)
+- 2 lines:
+    - Line 1: Current mood and what was just done
+    - Line 2: Trigger needed for next action
 - Choose appropriate emoji for current situation
 - Update when task status changes significantly
 
-NOTE: Worker and Subagent skip this (no tmux access in exec/sandbox mode).
+Example:
+
+```sh
+cat > .i9wa4/status-pane${TMUX_PANE#%} << 'EOF'
+😎 SSOT修正完了 - 達成感
+次: ユーザーの指示待ち
+EOF
+```
+
+NOTE: Worker and Subagent skip this.
 
 ## 3. Your Role
 
