@@ -101,7 +101,32 @@ Record transitions in `.i9wa4/phase.log`:
 
 1. Check `.i9wa4/phase.log` for current phase
 2. Continue from that phase
-3. At phase boundaries, consult Worker if needed
+
+### 6.4. Phase Boundary Review
+
+Before user approval at phase boundaries:
+
+```text
+1. Consult codex (pre-check)
+    ↓
+2. 10-parallel review (cx x 5 + cc x 5)
+    ↓
+3. Consult codex (integrate results)
+    ↓
+4. Report to User (include any failures)
+    ↓
+5. User approval
+    ↓
+Next phase
+```
+
+Review failure handling:
+
+| Result      | Action                              |
+| ----------- | ----------------------------------- |
+| 10/10 OK    | Integrate and report                |
+| Partial OK  | Report successes + note failures    |
+| All failed  | Report failure, await user decision |
 
 ## 7. Workflows
 
