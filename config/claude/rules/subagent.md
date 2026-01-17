@@ -30,7 +30,8 @@ Explicit: WRITABLE (for implementation, modification)
 
 ### 2.2. Capability
 
-Refer to CLAUDE.md Section 4.2 "Capability" for READONLY/WRITABLE rules.
+Refer to orchestrator skill Section 1.2 "Capability"
+for READONLY/WRITABLE rules.
 
 ### 2.3. Always Skip
 

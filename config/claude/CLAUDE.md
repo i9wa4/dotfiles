@@ -23,62 +23,13 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
 
-## 4. Architecture Concepts
-
-### 4.1. Roles
-
-| Role         | Description                              | Communication          |
-| ----         | -----------                              | -------------          |
-| Orchestrator | Coordinator. Does NOT execute, delegates | -                      |
-| Worker       | Executor in another tmux pane            | tmux relay             |
-| Subagent     | Executor as child process                | Task tool / codex exec |
-
-### 4.2. Capability
-
-Worker and Subagent operate with one of two capability modes:
-
-| Capability | Description                              | Tools                              |
-| ---------- | -----------                              | -----                              |
-| READONLY   | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
-| WRITABLE   | Explicit. Implementation, modification   | All tools allowed                  |
-
-Both modes allow writing to `.i9wa4/` for reports.
-
-### 4.3. Header Format
-
-When delegating, include capability in header:
-
-```text
-[SUBAGENT capability=READONLY]
-{task content}
-```
-
-```text
-[WORKER capability=WRITABLE]
-{task content}
-```
-
-### 4.4. Communication Hierarchy
-
-```text
-User
-  ↑↓
-Orchestrator
-  ↑↓
-Worker / Subagent
-```
-
-- Worker/Subagent communicate with Orchestrator, not directly with User
-- On failure, report to Orchestrator
-- Orchestrator consults User only when it cannot resolve
-
-## 5. File Structure
+## 4. File Structure
 
 Files and directories described below are located at:
 
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
-### 5.1. Rules
+### 4.1. Rules
 
 Rules are stored in the `rules/` directory, organized by topic.
 
@@ -95,7 +46,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | python.md          | Python virtual environment usage     | Python execution         |
 | subagent.md        | Subagent launch and behavior rules   | Subagent operations      |
 
-### 5.2. Skills
+### 4.2. Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
@@ -117,7 +68,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | skill-creator           | Skill creation guide               |
 | terraform               | Terraform development guide        |
 
-### 5.3. Agents
+### 4.3. Agents
 
 Agents are stored in the `agents/` directory.
 
@@ -131,7 +82,7 @@ Agents are stored in the `agents/` directory.
 | reviewer-security     | Security vulnerability review              |
 | researcher-tech       | Technical research and analysis            |
 
-### 5.4. Commands
+### 4.4. Commands
 
 Slash commands are stored in `commands/` and loaded on invocation.
 
