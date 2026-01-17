@@ -167,7 +167,7 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies \
 - PR comment posting depends on GitHub permissions
 - Only executable on repositories you have access to
 
-### 6.3. Relationship with rules/git.md
+### 6.3. Relationship with rules/git-github.md
 
 This skill provides operations (How).
-Follow `rules/git.md` for permission rules.
+Follow `rules/git-github.md` for permission rules.

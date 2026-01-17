@@ -105,8 +105,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | aws.md             | AWS CLI usage rules                  | AWS operations           |
 | bash.md            | Bash syntax and command rules        | Command execution        |
 | file-management.md | /tmp/ and .i9wa4/ directory rules    | File creation            |
-| git.md             | Git operation rules                  | Git operations           |
-| github.md          | GitHub operation rules               | GitHub operations        |
+| git-github.md      | Git and GitHub rules (constraints)   | Git/GitHub operations    |
 | markdown.md        | Markdown creation rules              | Markdown creation        |
 | nix.md             | Nix commands and package management  | Nix operations           |
 | python.md          | Python virtual environment usage     | Python execution         |
@@ -126,6 +125,8 @@ Skills are stored in the `skills/` directory for specific integrations.
 | databricks              | Databricks development guide       |
 | dbt                     | dbt development guide              |
 | draw-io                 | draw.io diagram creation/editing   |
+| git                     | Git operations guide               |
+| github                  | GitHub operations guide            |
 | jupyter-notebook        | Jupyter Notebook execution guide   |
 | orchestrator            | Main agent orchestration           |
 | pull-request-operation  | Pull Request operations            |
