@@ -196,8 +196,11 @@ Call Task tool with the prompt (parallel execution)
 
 Codex CLI (cx):
 
+See `rules/subagent.md` Section 3 for sandbox settings.
+
 ```bash
-codex exec --sandbox danger-full-access "..." &
+# Use READONLY sandbox (workspace-write -C .i9wa4)
+codex exec --sandbox workspace-write -C .i9wa4 "..." &
 ```
 
 Batch execution example:
@@ -209,14 +212,16 @@ TARGET_TYPE=commit && \
 TARGET=abc1234 && \
 for ROLE in security architecture historian code qa; do
   ID=$(openssl rand -hex 2)
-  codex exec --sandbox danger-full-access "[SUBAGENT capability=READONLY]
+  codex exec --sandbox workspace-write -C .i9wa4 "[SUBAGENT capability=READONLY]
 timestamp: ${TS}
 role: ${ROLE}
 ...
-Save results to: .i9wa4/${TS}-cx-${ROLE}-${ID}.md" &
+Save results to: ${TS}-cx-${ROLE}-${ID}.md" &
 done
 wait
 ```
+
+NOTE: Output path is relative because `-C .i9wa4` changes working directory.
 
 For design review: use ROLE list `security architecture data qa historian`
 

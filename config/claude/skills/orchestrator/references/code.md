@@ -119,9 +119,11 @@ For dependent tasks:
 
 ### 5.2. Parallel Execution
 
-For independent tasks (use codex exec):
+For independent tasks (use codex exec).
+See `rules/subagent.md` Section 3 for sandbox settings.
 
 ```bash
+# Use WRITABLE sandbox (danger-full-access)
 TS=$(date +%Y%m%d-%H%M%S) && \
 for TASK in task1 task2 task3; do
   ID=$(openssl rand -hex 2)
