@@ -71,16 +71,18 @@ Orchestrator                         Worker
     +-- create session dir              |
     +-- write 001-request.md            |
     +-- load buffer                     |
-    +-- paste to Worker ──────────────> |
-    +-- (wait)                          +-- receive request
+    +-- paste CONTENT to Worker ──────> |
+    +-- (wait)                          +-- receive request (full content)
     |                                   +-- (process)
     |                                   +-- write 002-response.md
-    |                                   +-- notify path
-    | <──────────────── [RESPONSE ready] path
+    |                                   +-- notify PATH only
+    | <───────────────── [RESPONSE ...] path
     +-- read response file              |
     +-- delete buffer                   |
     +-- (files remain for history)      |
 ```
+
+NOTE: Asymmetric - request pastes content, response notifies path only.
 
 ## 4. Message Format
 
@@ -93,7 +95,7 @@ Orchestrator                         Worker
 [RESPONSE INSTRUCTIONS]
 Response file: <response_file_path>
 Notify via:
-tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE ready] <response_file_path>"
+tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE started_at=<started_at> orchestrator=<orch_pane> worker=<worker_pane>] <response_file_path>"
 tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane>
 sleep 1 && tmux send-keys -t <orchestrator_pane> Enter
 ```
@@ -101,7 +103,7 @@ sleep 1 && tmux send-keys -t <orchestrator_pane> Enter
 ### 4.2. Response Notification
 
 ```text
-[RESPONSE ready] /tmp/worker-comm/<started_at>-o<orch>-w<worker>/<seq>-response.md
+[RESPONSE started_at=YYYYMMDD-HHMMSS orchestrator=%N worker=%M] /tmp/worker-comm/...
 ```
 
 Orchestrator reads the file to get full response content.
@@ -168,7 +170,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    tmux send-keys -t <target_pane> Enter
    ```
 
-8. Wait for `[RESPONSE ready] <path>` notification
+8. Wait for response notification: `[RESPONSE ...] <path>`
 
 9. Read response file content
 
@@ -196,7 +198,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 4. Notify Orchestrator (path only):
 
    ```bash
-   tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE ready] ${RESP_FILE}"
+   tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE started_at=${STARTED_AT} orchestrator=${ORCH_PANE} worker=${WORKER_PANE}] ${RESP_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane>
    sleep 1
    tmux send-keys -t <orchestrator_pane> Enter
@@ -221,7 +223,7 @@ Reference: .i9wa4/plans/auth-plan.md
 [RESPONSE INSTRUCTIONS]
 Response file: /tmp/worker-comm/20260117-120000-o6-w7/002-response.md
 Notify via:
-tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE ready] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md"
+tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE started_at=20260117-120000 orchestrator=%6 worker=%7] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md"
 tmux paste-buffer -b "msg-o6-w7" -t %6
 sleep 1 && tmux send-keys -t %6 Enter
 ```
