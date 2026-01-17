@@ -77,7 +77,18 @@ When delegating, provide:
 
 ## 6. Phase Management
 
-Record phase transitions in `.i9wa4/phase.log`:
+### 6.1. Phase Transitions
+
+| From  | To       | Condition               |
+| ----- | -------- | ----------------------- |
+| START | PLAN     | Immediate (on start)    |
+| PLAN  | CODE     | User approves plan      |
+| CODE  | PR       | User approves to create |
+| PR    | COMPLETE | User confirms           |
+
+### 6.2. Phase Log
+
+Record transitions in `.i9wa4/phase.log`:
 
 ```text
 2025-01-01 10:00:00 | START -> PLAN
@@ -86,12 +97,11 @@ Record phase transitions in `.i9wa4/phase.log`:
 2025-01-01 12:30:00 | PR -> COMPLETE
 ```
 
-When resuming:
+### 6.3. Resuming
 
 1. Check `.i9wa4/phase.log` for current phase
 2. Continue from that phase
-
-At phase boundaries, consult Worker if needed.
+3. At phase boundaries, consult Worker if needed
 
 ## 7. Workflows
 
