@@ -35,7 +35,7 @@ Orchestrator manages buffer and file lifecycle to prevent command injection.
 ```text
 /tmp/
 └── worker-comm/
-    └── {SESSION_TS}-{ORCH}to{WORKER}/
+    └── {STARTED_AT}-{ORCH_NUM}to{WORKER_NUM}/
         ├── 001-request.md
         ├── 002-response.md
         ├── 003-request.md
@@ -48,16 +48,16 @@ Example: `20260117-155000-6to7/`
 
 ```bash
 # Pane numbers (strip %)
-MY_NUM=$(echo "${MY_PANE}" | tr -d '%')
-TARGET_NUM=$(echo "${TARGET_PANE}" | tr -d '%')
+ORCH_NUM=$(echo "${ORCHESTRATOR}" | tr -d '%')
+WORKER_NUM=$(echo "${WORKER}" | tr -d '%')
 
 # Session directory (created once per session)
-SESSION_TS=$(date +%Y%m%d-%H%M%S)
-COMM_DIR="/tmp/worker-comm/${SESSION_TS}-${MY_NUM}to${TARGET_NUM}"
+STARTED_AT=$(date +%Y%m%d-%H%M%S)
+COMM_DIR="/tmp/worker-comm/${STARTED_AT}-${ORCH_NUM}to${WORKER_NUM}"
 mkdir -p "${COMM_DIR}"
 
 # Buffer name
-BUFFER_NAME="msg-${MY_NUM}-${TARGET_NUM}"
+BUFFER_NAME="msg-${ORCH_NUM}-${WORKER_NUM}"
 
 # Sequence number (count existing files + 1)
 SEQ=$(printf "%03d" $(( $(ls -1 "${COMM_DIR}"/*.md 2>/dev/null | wc -l) + 1 )))
@@ -87,15 +87,15 @@ Orchestrator                         Worker
 ### 4.1. Request
 
 ```text
-[WORKER capability=READONLY id=YYYYMMDD-HHMMSS-XXXX pane=<pane> to_pane=<pane>]
+[WORKER capability=READONLY id=YYYYMMDD-HHMMSS-XXXX started_at=YYYYMMDD-HHMMSS orchestrator=%N worker=%M]
 {request body}
 
 [RESPONSE INSTRUCTIONS]
 Buffer: msg-<orch_num>-<worker_num>
-Response file: /tmp/worker-comm/<session_ts>-<orch>to<worker>/<seq>-response.md
+Response file: /tmp/worker-comm/<started_at>-<orch>to<worker>/<seq>-response.md
 Response via:
 cat > <response_file> << 'RESP_EOF'
-[WORKER RESPONSE id=... pane=<pane> to_pane=<pane>]
+[WORKER RESPONSE id=... started_at=... orchestrator=%N worker=%M]
 {response}
 RESP_EOF
 tmux load-buffer -b "<buffer_name>" <response_file> && \
@@ -106,7 +106,7 @@ sleep 0.5 && tmux send-keys -t <orchestrator_pane> Enter
 ### 4.2. Response
 
 ```text
-[WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX pane=<pane> to_pane=<pane>]
+[WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX started_at=YYYYMMDD-HHMMSS orchestrator=%N worker=%M]
 {response body}
 ```
 
@@ -129,12 +129,12 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 3. Setup session directory and names (first time only):
 
    ```bash
-   MY_NUM=$(echo "${MY_PANE}" | tr -d '%')
-   TARGET_NUM=$(echo "${TARGET_PANE}" | tr -d '%')
-   SESSION_TS=$(date +%Y%m%d-%H%M%S)
-   COMM_DIR="/tmp/worker-comm/${SESSION_TS}-${MY_NUM}to${TARGET_NUM}"
+   ORCH_NUM=$(echo "${ORCHESTRATOR}" | tr -d '%')
+   WORKER_NUM=$(echo "${WORKER}" | tr -d '%')
+   STARTED_AT=$(date +%Y%m%d-%H%M%S)
+   COMM_DIR="/tmp/worker-comm/${STARTED_AT}-${ORCH_NUM}to${WORKER_NUM}"
    mkdir -p "${COMM_DIR}"
-   BUFFER_NAME="msg-${MY_NUM}-${TARGET_NUM}"
+   BUFFER_NAME="msg-${ORCH_NUM}-${WORKER_NUM}"
    ```
 
 4. Generate sequence number:
@@ -183,7 +183,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 
    ```bash
    cat > "${RESP_FILE}" << 'EOF'
-   [WORKER RESPONSE id=... from=<me> pane=<my_pane> to=<sender> to_pane=<sender_pane>]
+   [WORKER RESPONSE id=... started_at=... orchestrator=%N worker=%M]
    {response body}
    EOF
    ```
@@ -209,7 +209,7 @@ Always include capability in the header:
 Example request with WRITABLE capability:
 
 ```text
-[WORKER capability=WRITABLE id=20260117-120000-a1b2 pane=%6 to_pane=%7]
+[WORKER capability=WRITABLE id=20260117-120000-a1b2 started_at=20260117-120000 orchestrator=%6 worker=%7]
 Implement the authentication module as specified in plan.
 Reference: .i9wa4/plans/auth-plan.md
 
@@ -218,7 +218,7 @@ Buffer: msg-6-7
 Response file: /tmp/worker-comm/20260117-120000-6to7/002-response.md
 Response via:
 cat > /tmp/worker-comm/20260117-120000-6to7/002-response.md << 'RESP_EOF'
-[WORKER RESPONSE id=20260117-120000-a1b2 pane=%7 to_pane=%6]
+[WORKER RESPONSE id=20260117-120000-a1b2 started_at=20260117-120000 orchestrator=%6 worker=%7]
 {your response}
 RESP_EOF
 tmux load-buffer -b "msg-6-7" /tmp/worker-comm/20260117-120000-6to7/002-response.md && \
