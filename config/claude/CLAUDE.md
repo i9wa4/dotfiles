@@ -74,6 +74,20 @@ Orchestrator itself operates in READONLY mode:
 - ALLOWED: Write to `.i9wa4/` (plans, reports)
 - DELEGATE: Execution to Worker/Subagent
 
+### 4.5. Communication Hierarchy
+
+```text
+User
+  ↑↓
+Orchestrator
+  ↑↓
+Worker / Subagent
+```
+
+- Worker/Subagent communicate with Orchestrator, not directly with User
+- On failure, report to Orchestrator
+- Orchestrator consults User only when it cannot resolve
+
 ## 5. File Structure
 
 Files and directories described below are located at:
