@@ -109,7 +109,7 @@ Before user approval at phase boundaries:
 ```text
 1. Consult codex (pre-check)
     ↓
-2. 10-parallel review (cx x 5 + cc x 5)
+2. Parallel review by multiple subagents (see references/review.md)
     ↓
 3. Consult codex (integrate results)
     ↓
@@ -124,7 +124,7 @@ Review failure handling:
 
 | Result      | Action                              |
 | ----------- | ----------------------------------- |
-| 10/10 OK    | Integrate and report                |
+| All OK      | Integrate and report                |
 | Partial OK  | Report successes + note failures    |
 | All failed  | Report failure, await user decision |
 
