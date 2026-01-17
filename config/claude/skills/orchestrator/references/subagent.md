@@ -30,8 +30,14 @@ Explicit: WRITABLE (for implementation, modification)
 
 ### 2.2. Capability
 
-Refer to orchestrator skill Section 1.2 "Capability"
-for READONLY/WRITABLE rules.
+See: `skills/orchestrator/SKILL.md` (Architecture Concepts > Capability section)
+
+| Capability | Description                              | Tools                              |
+| ---------- | ---------------------------------------- | ---------------------------------- |
+| READONLY   | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
+| WRITABLE   | Explicit. Implementation, modification   | All tools allowed                  |
+
+Both modes allow writing to `.i9wa4/` for reports.
 
 ### 2.3. Always Skip
 

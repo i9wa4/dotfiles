@@ -44,7 +44,6 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | markdown.md        | Markdown creation rules              | Markdown creation        |
 | nix.md             | Nix commands and package management  | Nix operations           |
 | python.md          | Python virtual environment usage     | Python execution         |
-| subagent.md        | Subagent launch and behavior rules   | Subagent operations      |
 
 ### 4.2. Skills
 

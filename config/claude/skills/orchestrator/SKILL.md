@@ -119,8 +119,8 @@ Always specify target by pane ID (e.g., `to_pane=%8`) when multiple workers.
 | Method       | When to Use                        | Reference              |
 | ------------ | ---------------------------------- | ---------------------- |
 | Worker comm  | Consult, complex tasks, interactive| references/worker-comm |
-| Task tool    | Quick subtasks within Claude Code  | rules/subagent         |
-| codex exec   | Parallel background tasks          | rules/subagent         |
+| Task tool    | Quick subtasks within Claude Code  | references/subagent    |
+| codex exec   | Parallel background tasks          | references/subagent    |
 
 ## 6. Context Handoff
 
@@ -239,6 +239,7 @@ Load relevant reference when context matches:
 | code, implement, 実装             | references/code.md           |
 | pr, pull request, PR作成          | references/pull-request.md   |
 | worker, pane, tmux, communication | references/worker-comm.md    |
+| subagent, Task tool, codex exec   | references/subagent.md       |
 
 ## 10. Quick Reference
 
@@ -249,3 +250,4 @@ Load relevant reference when context matches:
 | references/code           | Code workflow (post-plan)         |
 | references/pull-request   | PR creation workflow              |
 | references/worker-comm    | Worker communication protocol     |
+| references/subagent       | Subagent launch and behavior      |
