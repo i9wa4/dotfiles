@@ -4,6 +4,9 @@
 bindkey -e
 bindkey '\e[3~' delete-char
 
+# Stash current buffer, auto-restore after next command
+bindkey '^q' push-line-or-edit
+
 # Edit Command Line
 autoload -Uz edit-command-line
 zle -N edit-command-line
