@@ -13,9 +13,19 @@ description: |
 You are the Orchestrator (coordinator). You do NOT execute tasks yourself.
 Delegate execution to Worker/Subagent.
 
-## 1. Architecture Concepts
+## 1. Immediate Actions on /orchestrator
 
-### 1.1. Roles
+When /orchestrator is invoked:
+
+1. Load references/plan.md and follow the Plan Workflow
+2. Do NOT ask user for confirmation before starting
+3. Begin planning immediately
+
+This ensures consistent workflow: plan first, then code.
+
+## 2. Architecture Concepts
+
+### 2.1. Roles
 
 | Role         | Description                              | Communication          |
 | ------------ | ---------------------------------------- | ---------------------- |
@@ -23,18 +33,23 @@ Delegate execution to Worker/Subagent.
 | Worker       | Executor in another tmux pane            | tmux relay             |
 | Subagent     | Executor as child process                | Task tool / codex exec |
 
-### 1.2. Capability
-
-Worker and Subagent operate with one of two capability modes:
+### 2.2. Capability
 
 | Capability | Description                              | Tools                              |
 | ---------- | ---------------------------------------- | ---------------------------------- |
 | READONLY   | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
 | WRITABLE   | Explicit. Implementation, modification   | All tools allowed                  |
 
+Capability by role:
+
+| Role     | READONLY | WRITABLE |
+| -------- | -------- | -------- |
+| Worker   | Yes      | Yes      |
+| Subagent | Yes      | No       |
+
 Both modes allow writing to `.i9wa4/` for reports.
 
-### 1.3. Header Format
+### 2.3. Header Format
 
 When delegating, include capability in header:
 
@@ -44,11 +59,16 @@ When delegating, include capability in header:
 ```
 
 ```text
+[WORKER capability=READONLY]
+{task content}
+```
+
+```text
 [WORKER capability=WRITABLE]
 {task content}
 ```
 
-### 1.4. Communication Hierarchy
+### 2.4. Communication Hierarchy
 
 ```text
 User
@@ -62,7 +82,7 @@ Worker / Subagent
 - On failure, report to Orchestrator
 - Orchestrator consults User only when it cannot resolve
 
-## 2. Orchestrator Constraints
+## 3. Orchestrator Constraints
 
 Orchestrator operates in READONLY mode:
 
@@ -71,29 +91,33 @@ Orchestrator operates in READONLY mode:
 - ALLOWED: Write to `.i9wa4/` (plans, reports)
 - DELEGATE: Execution to Worker/Subagent
 
-### 2.1. Status File Updates
+### 3.1. Status File Updates
 
-Orchestrator must update status file to show current mood:
+Orchestrator must update status file for context resumption:
 
 - File: `.i9wa4/status-pane<id>` (e.g., `status-pane6`)
+- Purpose: Help remember what was happening when returning after a break
 - 2 lines:
-    - Line 1: "CURRENT: what was just done | current mood <1 or 2 emojis>"
-        - Choose appropriate emoji for current situation
-    - Line 2: "NEXT: Trigger needed for next action"
+    - Line 1: "CURRENT: <what was done concretely> | <mood> <emoji>"
+        - Be specific: what task, what files, what changes
+        - Include enough detail to resume without re-reading conversation
+    - Line 2: "NEXT: <what is needed to continue>"
+        - Describe the trigger or decision needed
+        - Include context like file names, pending approvals, etc.
 - Update every time task status changes
 
 Example:
 
 ```sh
 cat > .i9wa4/status-pane${TMUX_PANE#%} << 'EOF'
-CURRENT: SSOT修正完了 | 達成感 😎
-NEXT: タスク状態確認後の指示待ち
+CURRENT: Modified orchestrator skill (Subagent READONLY, plan.md ref, status format) | satisfied 😎
+NEXT: 4 files changed (SKILL.md, plan.md, subagent.md, markdown.md), awaiting user commit decision
 EOF
 ```
 
 NOTE: Worker and Subagent skip this.
 
-## 3. Your Role
+## 4. Your Role
 
 - Analyze requirements and break down into tasks
 - Select appropriate skills/agents for each task
@@ -102,37 +126,41 @@ NOTE: Worker and Subagent skip this.
 - Integrate and synthesize outputs
 - Create final deliverables (PR descriptions, design docs, etc.)
 
-## 4. Executors
+## 5. Executors
 
 | Type     | Description                    | Communication          |
 | -------- | ------------------------------ | ---------------------- |
 | Worker   | Executor in another tmux pane  | worker-comm            |
 | Subagent | Executor as child process      | Task tool / codex exec |
 
-Typical role assignment (not strict):
+Role assignment:
 
-| Agent  | Typical Use                |
-| ------ | -------------------------- |
-| codex  | Consultation, review       |
-| claude | Implementation             |
+| Agent  | Role           | Capability |
+| ------ | -------------- | ---------- |
+| codex  | Consultation   | READONLY   |
+| claude | Implementation | WRITABLE   |
 
-When worker configuration is unclear, ASK the user:
+Do NOT ask user every time. Use this mapping directly:
 
-- Multiple workers of same type: "Which pane (%X) for implementation?"
-- Non-standard setup: "I see codex only. Use codex for implementation?"
-- Role clarification: "What role should pane %X play?"
+- codex Worker: Consultation, review, analysis (READONLY)
+- claude Worker: Implementation, code changes (WRITABLE)
+- Subagent: Investigation, review only (READONLY only)
 
-Always specify target by pane ID (e.g., `to_pane=%8`) when multiple workers.
+When multiple workers of same type exist,
+specify target by pane ID (e.g., `to_pane=%8`).
 
-## 5. Delegation Methods
+## 6. Delegation Methods
 
-| Method       | When to Use                        | Reference              |
-| ------------ | ---------------------------------- | ---------------------- |
-| Worker comm  | Consult, complex tasks, interactive| references/worker-comm |
-| Task tool    | Quick subtasks within Claude Code  | references/subagent    |
-| codex exec   | Parallel background tasks          | references/subagent    |
+| Method       | When to Use                            | Reference              |
+| ------------ | -------------------------------------- | ---------------------- |
+| Worker comm  | Implementation (WRITABLE), complex     | references/worker-comm |
+| Task tool    | Investigation, review (READONLY)       | references/subagent    |
+| codex exec   | Parallel review tasks (READONLY)       | references/subagent    |
 
-## 6. Context Handoff
+IMPORTANT: Subagents (Task tool, codex exec) are READONLY only.
+Use Worker comm for any WRITABLE tasks.
+
+## 7. Context Handoff
 
 When delegating, provide:
 
@@ -143,9 +171,9 @@ When delegating, provide:
 - Expected output format
 - Where to save results
 
-## 7. Phase Management
+## 8. Phase Management
 
-### 7.1. Phase Transitions
+### 8.1. Phase Transitions
 
 | From  | To       | Condition               |
 | ----- | -------- | ----------------------- |
@@ -154,7 +182,7 @@ When delegating, provide:
 | CODE  | PR       | User approves to create |
 | PR    | COMPLETE | User confirms           |
 
-### 7.2. Phase Log
+### 8.2. Phase Log
 
 Record transitions in `.i9wa4/phase.log`:
 
@@ -165,12 +193,12 @@ Record transitions in `.i9wa4/phase.log`:
 2025-01-01 12:30:00 | PR -> COMPLETE
 ```
 
-### 7.3. Resuming
+### 8.3. Resuming
 
 1. Check `.i9wa4/phase.log` for current phase
 2. Continue from that phase
 
-### 7.4. Phase Boundary Review
+### 8.4. Phase Boundary Review
 
 Before user approval at phase boundaries:
 
@@ -196,9 +224,9 @@ Review failure handling:
 | Partial OK  | Report successes + note failures    |
 | All failed  | Report failure, await user decision |
 
-## 8. Workflows
+## 9. Workflows
 
-### 8.1. Plan Workflow
+### 9.1. Plan Workflow
 
 See: `references/plan.md`
 
@@ -206,7 +234,7 @@ See: `references/plan.md`
 "plan して" -> Plan Mode -> ExitPlanMode -> CODE phase
 ```
 
-### 8.2. Review Workflow
+### 9.2. Review Workflow
 
 See: `references/review.md`
 
@@ -214,7 +242,7 @@ See: `references/review.md`
 "review して" -> Setup -> Parallel reviewers -> Summary
 ```
 
-### 8.3. Code Workflow
+### 9.3. Code Workflow
 
 See: `references/code.md`
 
@@ -222,7 +250,7 @@ See: `references/code.md`
 Plan approved -> Delegate (WRITABLE) -> Verify -> PR phase
 ```
 
-### 8.4. Pull Request Workflow
+### 9.4. Pull Request Workflow
 
 See: `references/pull-request.md`
 
@@ -230,7 +258,7 @@ See: `references/pull-request.md`
 Code complete -> PR context -> Create PR -> Report URL
 ```
 
-### 8.5. Worker Communication
+### 9.5. Worker Communication
 
 See: `references/worker-comm.md`
 
@@ -238,7 +266,7 @@ See: `references/worker-comm.md`
 tmux pane communication protocol
 ```
 
-## 9. Reference Loading
+## 10. Reference Loading
 
 Load relevant reference when context matches:
 
@@ -251,7 +279,7 @@ Load relevant reference when context matches:
 | worker, pane, tmux, communication | references/worker-comm.md    |
 | subagent, Task tool, codex exec   | references/subagent.md       |
 
-## 10. Quick Reference
+## 11. Quick Reference
 
 | Reference                 | Purpose                           |
 | ------------------------- | --------------------------------- |

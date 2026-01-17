@@ -20,24 +20,19 @@ Include capability in header when launching subagents:
 {task content}
 ```
 
-```text
-[SUBAGENT capability=WRITABLE]
-{task content}
-```
-
-Default: READONLY (for investigation, review, analysis)
-Explicit: WRITABLE (for implementation, modification)
+Subagents are READONLY only. Use Worker for WRITABLE tasks.
 
 ### 2.2. Capability
 
 See: `skills/orchestrator/SKILL.md` (Architecture Concepts > Capability section)
 
+Subagents operate in READONLY mode only:
+
 | Capability | Description                              | Tools                              |
 | ---------- | ---------------------------------------- | ---------------------------------- |
-| READONLY   | Default. Investigation, review, analysis | Read, Glob, Grep, Bash (read-only) |
-| WRITABLE   | Explicit. Implementation, modification   | All tools allowed                  |
+| READONLY   | Investigation, review, analysis          | Read, Glob, Grep, Bash (read-only) |
 
-Both modes allow writing to `.i9wa4/` for reports.
+Writing to `.i9wa4/` for reports is allowed.
 
 ### 2.3. Always Skip
 
@@ -66,10 +61,11 @@ Output: .i9wa4/{timestamp}-cc-{role}-{id}.md
 
 ### 4.1. Sandbox Settings
 
-| Capability | Sandbox Option                        | Write Scope      |
-| ---------- | ------------------------------------- | ---------------- |
-| READONLY   | `--sandbox workspace-write -C .i9wa4` | .i9wa4/ and /tmp |
-| WRITABLE   | `--sandbox danger-full-access`        | Full access      |
+Subagents use READONLY sandbox only:
+
+| Sandbox Option                        | Write Scope      |
+| ------------------------------------- | ---------------- |
+| `--sandbox workspace-write -C .i9wa4` | .i9wa4/ and /tmp |
 
 ### 4.2. Launching
 
@@ -80,14 +76,6 @@ Use `-o` option to capture output reliably:
 codex exec --sandbox workspace-write -C .i9wa4 \
   -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
   "[SUBAGENT capability=READONLY] {task content}" &
-wait
-```
-
-```bash
-# WRITABLE
-codex exec --sandbox danger-full-access \
-  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
-  "[SUBAGENT capability=WRITABLE] {task content}" &
 wait
 ```
 

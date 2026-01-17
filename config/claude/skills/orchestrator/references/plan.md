@@ -102,15 +102,10 @@ Review this design approach. Any concerns?
 
 ## 6. Delegation for Implementation
 
-After plan approval, delegate implementation:
-
-```text
-[SUBAGENT capability=WRITABLE]
-Implement Step 1 of the plan.
-Reference: .i9wa4/plans/<plan-file>.md
-```
+After plan approval, delegate implementation to Worker:
 
 ```text
 [WORKER capability=WRITABLE]
 Implement the authentication module as specified in plan.
+Reference: .i9wa4/plans/<plan-file>.md
 ```

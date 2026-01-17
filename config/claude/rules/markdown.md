@@ -3,6 +3,7 @@
 ## 1. Universal Rules
 
 - NEVER: Do not use emojis
+- NEVER: Do not start numbered lists from 0 (tools auto-convert 0 to 1)
 - YOU MUST: Align table columns with spaces
 
 Good example:
