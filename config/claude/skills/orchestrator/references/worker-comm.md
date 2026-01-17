@@ -100,7 +100,7 @@ cat > <response_file> << 'RESP_EOF'
 RESP_EOF
 tmux load-buffer -b "<buffer_name>" <response_file> && \
 tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane> && \
-sleep 0.5 && tmux send-keys -t <orchestrator_pane> Enter
+sleep 1 && tmux send-keys -t <orchestrator_pane> Enter
 ```
 
 ### 4.2. Response
@@ -161,7 +161,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    ```bash
    tmux load-buffer -b "${BUFFER_NAME}" "${REQ_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <target_pane>
-   sleep 0.5
+   sleep 1
    tmux send-keys -t <target_pane> Enter
    ```
 
@@ -193,7 +193,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    ```bash
    tmux load-buffer -b "${BUFFER_NAME}" "${RESP_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane>
-   sleep 0.5
+   sleep 1
    tmux send-keys -t <orchestrator_pane> Enter
    ```
 
@@ -223,7 +223,7 @@ cat > /tmp/worker-comm/20260117-120000-6to7/002-response.md << 'RESP_EOF'
 RESP_EOF
 tmux load-buffer -b "msg-6-7" /tmp/worker-comm/20260117-120000-6to7/002-response.md && \
 tmux paste-buffer -b "msg-6-7" -t %6 && \
-sleep 0.5 && tmux send-keys -t %6 Enter
+sleep 1 && tmux send-keys -t %6 Enter
 ```
 
 ## 8. Security Notes
