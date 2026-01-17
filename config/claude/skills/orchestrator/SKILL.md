@@ -25,6 +25,18 @@ Orchestrator operates in READONLY mode:
 - ALLOWED: Write to `.i9wa4/` (plans, reports)
 - DELEGATE: Execution to Worker/Subagent
 
+### 1.1. Status File Updates
+
+Orchestrator must update status file to show current mood:
+
+- File: `.i9wa4/status-<tty>-<agent>` (e.g., `status-ttys002-claude`)
+- Get tty: `tmux display-message -p '#{pane_tty}' | sed 's|/dev/||'`
+- Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
+- Choose appropriate emoji for current situation
+- Update when task status changes significantly
+
+NOTE: Worker and Subagent skip this (no tmux access in exec/sandbox mode).
+
 ## 2. Your Role
 
 - Analyze requirements and break down into tasks
