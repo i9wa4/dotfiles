@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+# Display system load (CPU and memory usage) for tmux status line.
+# Shows Chrome separately to track browser resource usage.
+#
+# Usage:
+#   system-load
+#
+# Output format:
+#   C:Chr XX%/Oth XX% | M:Chr X.XG/Oth X.XG
+#
+# Supported platforms:
+#   - macOS (Darwin)
+#   - Linux
+#
+# Memory measurement:
+#   - macOS: Uses `top -stats mem` which equals `footprint` (accurate)
+#   - Linux: Uses RSS from ps (may overcount shared memory)
+
+os_type=$(uname -s)
+
+# Get total CPU usage percentage
+get_total_cpu_usage() {
+  case "${os_type}" in
+  Darwin)
+    # Parse top output for CPU usage (user + sys)
+    top -l 1 -s 0 2>/dev/null | awk '/CPU usage/ {
+        gsub(/%/, "", $3)
+        gsub(/%/, "", $5)
+        printf "%.0f", $3 + $5
+      }'
+    ;;
+  Linux)
+    # Parse /proc/stat for CPU usage
+    read -r _cpu user nice system idle rest </proc/stat
+    total1=$((user + nice + system + idle))
+    idle1=${idle}
+    sleep 0.1
+    read -r _cpu user nice system idle rest </proc/stat
+    total2=$((user + nice + system + idle))
+    idle2=${idle}
+    total_diff=$((total2 - total1))
+    idle_diff=$((idle2 - idle1))
+    if [ "${total_diff}" -gt 0 ]; then
+      echo $(((total_diff - idle_diff) * 100 / total_diff))
+    else
+      echo "0"
+    fi
+    ;;
+  *)
+    echo "0"
+    ;;
+  esac
+}
+
+# Get Chrome CPU usage percentage (sum of all Chrome processes)
+get_chrome_cpu_usage() {
+  # shellcheck disable=SC2009
+  ps -eo %cpu,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {printf "%.0f", sum+0}'
+}
+
+# Parse memory value from top (handles G/M/K suffixes)
+# Usage: parse_top_mem "123M" -> outputs MB value
+# shellcheck disable=SC2016
+parse_top_mem_awk='
+{
+  mem = $2
+  gsub(/\+$/, "", mem)
+  if (mem ~ /G$/) { gsub(/G$/, "", mem); mb = mem * 1024 }
+  else if (mem ~ /M$/) { gsub(/M$/, "", mem); mb = mem }
+  else if (mem ~ /K$/) { gsub(/K$/, "", mem); mb = mem / 1024 }
+  else mb = 0
+  sum += mb
+}
+END { printf "%.1f", sum / 1024 }
+'
+
+# Get Chrome memory usage in GB
+get_chrome_memory_gb() {
+  case "${os_type}" in
+  Darwin)
+    # Use top's mem column which equals footprint (accurate)
+    top -l 1 -s 0 -stats pid,mem,command 2>/dev/null | grep -i chrome | awk "${parse_top_mem_awk}"
+    ;;
+  *)
+    # Linux: Use RSS
+    # shellcheck disable=SC2009
+    chrome_kb=$(ps -eo rss,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {print sum+0}')
+    awk "BEGIN {printf \"%.1f\", ${chrome_kb:-0} / 1024 / 1024}"
+    ;;
+  esac
+}
+
+# Get Other (non-Chrome) memory usage in GB
+get_other_memory_gb() {
+  case "${os_type}" in
+  Darwin)
+    # Sum non-Chrome processes' mem from top (skip header lines)
+    top -l 1 -s 0 -stats pid,mem,command 2>/dev/null | tail -n +13 | grep -vi chrome | awk "${parse_top_mem_awk}"
+    ;;
+  *)
+    # Linux: Use RSS for non-Chrome processes
+    # shellcheck disable=SC2009
+    other_kb=$(ps -eo rss,comm 2>/dev/null | grep -vi chrome | awk '{sum += $1} END {print sum+0}')
+    awk "BEGIN {printf \"%.1f\", ${other_kb:-0} / 1024 / 1024}"
+    ;;
+  esac
+}
+
+# Main
+total_cpu=$(get_total_cpu_usage)
+chrome_cpu=$(get_chrome_cpu_usage)
+chrome_mem=$(get_chrome_memory_gb)
+other_mem=$(get_other_memory_gb)
+
+# Calculate other CPU (cap Chrome at total to avoid negative)
+if [ "${chrome_cpu}" -gt "${total_cpu}" ]; then
+  chrome_cpu="${total_cpu}"
+fi
+other_cpu=$((total_cpu - chrome_cpu))
+
+# Ensure values are not empty
+[ -z "${chrome_mem}" ] && chrome_mem="0.0"
+[ -z "${other_mem}" ] && other_mem="0.0"
+
+echo "CPU:Chr${chrome_cpu}%/Oth${other_cpu}% Mem:Chr${chrome_mem}G/Oth:${other_mem}G"

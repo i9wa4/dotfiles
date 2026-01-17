@@ -15,19 +15,18 @@
       },
       {
         "id": "0f434a1f-bce0-4def-9b45-8badd483422e",
-        "type": "model",
-        "color": "brightBlue"
+        "type": "block-timer",
+        "color": "brightMagenta"
       },
       {
-        "id": "2",
+        "id": "f6d4f02b-c501-4b94-8d60-d266417b5cbe",
         "type": "separator",
         "color": "brightBlack"
       },
       {
-        "id": "1",
+        "id": "f0997e9c-4c8f-48b8-adfe-72e2c9e01b85",
         "type": "version",
-        "color": "brightBlue",
-        "bold": false
+        "color": "brightBlue"
       }
     ],
     [
