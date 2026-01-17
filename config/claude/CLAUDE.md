@@ -61,13 +61,13 @@ Skills are stored in the `skills/` directory for specific integrations.
 | dbt                     | dbt development guide              |
 | draw-io                 | draw.io diagram creation/editing   |
 | git                     | Git operations guide               |
-| github                  | GitHub operations guide            |
+| github                  | GitHub and PR operations guide     |
 | jupyter-notebook        | Jupyter Notebook execution guide   |
 | nix                     | Nix commands and package management|
 | orchestrator            | Main agent orchestration           |
-| pull-request-operation  | Pull Request operations            |
 | python                  | Python environment and execution   |
 | skill-creator           | Skill creation guide               |
+| slack                   | Slack thread fetch and search      |
 | terraform               | Terraform development guide        |
 
 ### 4.3. Agents
