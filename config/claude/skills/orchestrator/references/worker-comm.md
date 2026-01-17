@@ -87,7 +87,7 @@ Orchestrator                         Worker
 ### 4.1. Request
 
 ```text
-[WORKER capability=READONLY id=YYYYMMDD-HHMMSS-XXXX from=<sender> pane=<pane> to=<receiver> to_pane=<pane>]
+[WORKER capability=READONLY id=YYYYMMDD-HHMMSS-XXXX pane=<pane> to_pane=<pane>]
 {request body}
 
 [RESPONSE INSTRUCTIONS]
@@ -95,7 +95,7 @@ Buffer: msg-<orch_num>-<worker_num>
 Response file: /tmp/worker-comm/<session_ts>-<orch>to<worker>/<seq>-response.md
 Response via:
 cat > <response_file> << 'RESP_EOF'
-[WORKER RESPONSE id=... from=<receiver> pane=<pane> to=<sender> to_pane=<pane>]
+[WORKER RESPONSE id=... pane=<pane> to_pane=<pane>]
 {response}
 RESP_EOF
 tmux load-buffer -b "<buffer_name>" <response_file> && \
@@ -106,7 +106,7 @@ sleep 0.5 && tmux send-keys -t <orchestrator_pane> Enter
 ### 4.2. Response
 
 ```text
-[WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX from=<receiver> pane=<pane> to=<sender> to_pane=<pane>]
+[WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX pane=<pane> to_pane=<pane>]
 {response body}
 ```
 
@@ -209,7 +209,7 @@ Always include capability in the header:
 Example request with WRITABLE capability:
 
 ```text
-[WORKER capability=WRITABLE id=20260117-120000-a1b2 from=claude pane=%6 to=codex to_pane=%7]
+[WORKER capability=WRITABLE id=20260117-120000-a1b2 pane=%6 to_pane=%7]
 Implement the authentication module as specified in plan.
 Reference: .i9wa4/plans/auth-plan.md
 
@@ -218,7 +218,7 @@ Buffer: msg-6-7
 Response file: /tmp/worker-comm/20260117-120000-6to7/002-response.md
 Response via:
 cat > /tmp/worker-comm/20260117-120000-6to7/002-response.md << 'RESP_EOF'
-[WORKER RESPONSE id=20260117-120000-a1b2 from=codex pane=%7 to=claude to_pane=%6]
+[WORKER RESPONSE id=20260117-120000-a1b2 pane=%7 to_pane=%6]
 {your response}
 RESP_EOF
 tmux load-buffer -b "msg-6-7" /tmp/worker-comm/20260117-120000-6to7/002-response.md && \

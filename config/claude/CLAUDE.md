@@ -22,13 +22,13 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Read files in full without splitting
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
-- YOU MUST: Update status file with current mood (per-pane isolation)
+- YOU MUST: Update status file with current mood (Orchestrator only)
     - File: `.i9wa4/status-<tty>-<agent>` (e.g., `status-ttys002-claude`)
     - Get tty: `tmux display-message -p '#{pane_tty}' | sed 's|/dev/||'`
     - Format: `<emoji(s)> <brief status> - <feeling>` (1-2 emojis allowed)
     - Choose appropriate emoji for current situation
     - Update when task status changes significantly
-    - SKIP if running as subagent (see subagent.md)
+    - SKIP: Worker and Subagent (no tmux access in exec/sandbox mode)
 
 ## 4. Architecture Concepts
 

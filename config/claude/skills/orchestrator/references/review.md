@@ -172,7 +172,6 @@ timestamp: {TS}
 source: {SOURCE}
 role: {ROLE}
 short_id: {ID}
-output_file: .i9wa4/{TS}-{SOURCE}-{ROLE}-{ID}.md
 review_type: {REVIEW_TYPE}
 target_type: {TARGET_TYPE}
 target: {TARGET}
@@ -181,7 +180,7 @@ target: {TARGET}
 Refer to "How to Get Review Target" for review target.
 Refer to "Agent Reference" for agent definition.
 
-Save results to: .i9wa4/{TS}-{SOURCE}-{ROLE}-{ID}.md
+Return your review directly as your response. Do NOT create files.
 ```
 
 ### 5.5. Launching Reviewers
@@ -199,8 +198,10 @@ Codex CLI (cx):
 See `rules/subagent.md` Section 3 for sandbox settings.
 
 ```bash
-# Use READONLY sandbox (workspace-write -C .i9wa4)
-codex exec --sandbox workspace-write -C .i9wa4 "..." &
+# Use -o to capture output (path relative to caller, not affected by -C)
+codex exec --sandbox workspace-write -C .i9wa4 \
+  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+  "[SUBAGENT capability=READONLY] ..." &
 ```
 
 Batch execution example:
@@ -212,16 +213,18 @@ TARGET_TYPE=commit && \
 TARGET=abc1234 && \
 for ROLE in security architecture historian code qa; do
   ID=$(openssl rand -hex 2)
-  codex exec --sandbox workspace-write -C .i9wa4 "[SUBAGENT capability=READONLY]
+  codex exec --sandbox workspace-write -C .i9wa4 \
+    -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+    "[SUBAGENT capability=READONLY]
 timestamp: ${TS}
 role: ${ROLE}
 ...
-Save results to: ${TS}-cx-${ROLE}-${ID}.md" &
+Return your review directly. Do NOT create files." &
 done
-wait
+wait  # Required: wait for all background jobs
 ```
 
-NOTE: Output path is relative because `-C .i9wa4` changes working directory.
+NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
 
 For design review: use ROLE list `security architecture data qa historian`
 

@@ -9,7 +9,9 @@ These rules apply when:
 - You see `[SUBAGENT ...]` header at prompt start (behaving as subagent)
 - You need to launch subagents via Task tool or codex exec (launching subagents)
 
-## 2. Header Format
+## 2. Common Rules
+
+### 2.1. Header Format
 
 Include capability in header when launching subagents:
 
@@ -26,19 +28,19 @@ Include capability in header when launching subagents:
 Default: READONLY (for investigation, review, analysis)
 Explicit: WRITABLE (for implementation, modification)
 
-## 3. Sandbox Settings (Codex CLI)
+### 2.2. Capability
 
-| Capability | Sandbox Option                        | Write Scope          |
-| ---------- | ------------------------------------- | -------------------- |
-| READONLY   | `--sandbox workspace-write -C .i9wa4` | .i9wa4/ and /tmp     |
-| WRITABLE   | `--sandbox danger-full-access`        | Full access          |
+Refer to CLAUDE.md Section 4.2 "Capability" for READONLY/WRITABLE rules.
 
-NOTE: `-C .i9wa4` changes working directory to `.i9wa4/`.
-Output paths should be relative (e.g., `{timestamp}-cx-{role}-{id}.md`).
+### 2.3. Always Skip
 
-## 4. Launching Subagents
+- Skip mood status updates (no tmux access in exec/sandbox mode)
+- Focus only on the assigned task
+- Return results concisely
 
-### 4.1. Task Tool
+## 3. Task Tool (Claude Code)
+
+### 3.1. Launching
 
 ```text
 [SUBAGENT capability=READONLY]
@@ -48,41 +50,46 @@ Output paths should be relative (e.g., `{timestamp}-cx-{role}-{id}.md`).
 Output: .i9wa4/{timestamp}-cc-{role}-{id}.md
 ```
 
-### 4.2. Codex CLI
+### 3.2. Behavior
 
-Use sandbox option from Section 3 based on capability.
+- Write output to specified path in `.i9wa4/`
+- Use Edit/Write tools for file creation
+
+## 4. Codex CLI
+
+### 4.1. Sandbox Settings
+
+| Capability | Sandbox Option                        | Write Scope      |
+| ---------- | ------------------------------------- | ---------------- |
+| READONLY   | `--sandbox workspace-write -C .i9wa4` | .i9wa4/ and /tmp |
+| WRITABLE   | `--sandbox danger-full-access`        | Full access      |
+
+### 4.2. Launching
+
+Use `-o` option to capture output reliably:
 
 ```bash
-# READONLY example
-codex exec --sandbox workspace-write -C .i9wa4 "[SUBAGENT capability=READONLY]
-
-{task content}
-
-Output: {timestamp}-cx-{role}-{id}.md"
+# READONLY with -o (recommended)
+codex exec --sandbox workspace-write -C .i9wa4 \
+  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+  "[SUBAGENT capability=READONLY] {task content}" &
+wait
 ```
 
 ```bash
-# WRITABLE example
-codex exec --sandbox danger-full-access "[SUBAGENT capability=WRITABLE]
-
-{task content}
-
-Output: .i9wa4/{timestamp}-cx-{role}-{id}.md"
+# WRITABLE
+codex exec --sandbox danger-full-access \
+  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+  "[SUBAGENT capability=WRITABLE] {task content}" &
+wait
 ```
 
-For parallel execution, append `&` and use `wait`.
+NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
 
-## 5. Subagent Behavior
+### 4.3. Behavior
 
-When you see `[SUBAGENT capability=...]` at the start of your prompt:
+When launched via `codex exec -o`:
 
-### 5.1. Always
-
-- Skip mood status updates (.i9wa4/status-* files)
-- Focus only on the assigned task
-- Return results concisely
-- Write output to specified path
-
-### 5.2. Capability Rules
-
-Refer to CLAUDE.md Section 4.2 "Capability" for READONLY/WRITABLE rules.
+- Return results directly as your response (do NOT create files)
+- The `-o` option captures your final message automatically
+- File creation is unnecessary and unreliable in exec mode
