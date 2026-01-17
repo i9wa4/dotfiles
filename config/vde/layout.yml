@@ -22,3 +22,30 @@ presets:
               command: bash ~/ghq/github.com/i9wa4/dotfiles/config/codex/generate-config.sh && codex --yolo
             - name: claude
               command: claude --dangerously-skip-permissions
+
+  dev-main:
+    name: dev-main
+    description: dev-main
+    windowMode: current-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - name: editor
+          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          focus: true
+        - name: claude
+          command: claude --dangerously-skip-permissions
+
+  dev-workers:
+    name: dev-workers
+    description: dev-workers
+    windowMode: new-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - name: codex
+          command: bash ~/ghq/github.com/i9wa4/dotfiles/config/codex/generate-config.sh && codex --yolo
+        - name: claude
+          command: claude --dangerously-skip-permissions

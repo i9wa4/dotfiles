@@ -121,9 +121,4 @@ snippets:
   - name: (vde-layout) dev
     keyword: vd
     snippet:
-      vde-layout dev
-
-  - name: (vde-layout) review
-    keyword: vr
-    snippet:
-      vde-layout review
+      vde-layout dev-main && vde-layout dev-workers

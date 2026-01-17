@@ -4,20 +4,25 @@ Protocol for Worker communication via tmux panes.
 
 ## 1. Prerequisites
 
-- Both sender and receiver running in the same tmux session/window
+- Both sender and receiver running in the same tmux session
 - Target pane is interactive (waiting for input)
 
+NOTE: Works across different windows in the same session.
+
 ## 2. Find Worker Pane
+
+Search all panes in the session (across all windows) using `-s` flag.
 
 ```bash
 find_agent_pane() {
   local target_agent="$1"
-  local panes=$(tmux list-panes -F "#{pane_index} #{pane_pid} #{pane_id}")
+  # -s: search all panes in the session (not just current window)
+  local panes=$(tmux list-panes -s -F "#{pane_pid} #{pane_id}")
 
-  while read -r pane_index pane_pid pane_id; do
+  while read -r pane_pid pane_id; do
     if ps -ax -o ppid,command | grep -v grep | grep -F -- "$target_agent" \
        | grep -q "^\s*$pane_pid"; then
-      echo "$pane_index $pane_id"
+      echo "$pane_id"
       return 0
     fi
   done <<< "$panes"
@@ -25,6 +30,9 @@ find_agent_pane() {
   return 1
 }
 ```
+
+NOTE: Returns `pane_id` (e.g., `%7`) which works across windows.
+Use `pane_id` for all cross-window communication.
 
 ## 3. Buffer and File Management
 
