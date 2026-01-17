@@ -35,14 +35,14 @@ Orchestrator manages buffer and file lifecycle to prevent command injection.
 ```text
 /tmp/
 └── worker-comm/
-    └── {STARTED_AT}-{ORCH_NUM}to{WORKER_NUM}/
+    └── {STARTED_AT}-o{ORCH_NUM}-w{WORKER_NUM}/
         ├── 001-request.md
         ├── 002-response.md
         ├── 003-request.md
         └── 004-response.md
 ```
 
-Example: `20260117-155000-6to7/`
+Example: `20260117-155000-o6-w7/`
 
 ### 3.2. Naming Convention
 
@@ -53,11 +53,11 @@ WORKER_NUM=$(echo "${WORKER}" | tr -d '%')
 
 # Session directory (created once per session)
 STARTED_AT=$(date +%Y%m%d-%H%M%S)
-COMM_DIR="/tmp/worker-comm/${STARTED_AT}-${ORCH_NUM}to${WORKER_NUM}"
+COMM_DIR="/tmp/worker-comm/${STARTED_AT}-o${ORCH_NUM}-w${WORKER_NUM}"
 mkdir -p "${COMM_DIR}"
 
 # Buffer name
-BUFFER_NAME="msg-${ORCH_NUM}-${WORKER_NUM}"
+BUFFER_NAME="msg-o${ORCH_NUM}-w${WORKER_NUM}"
 
 # Sequence number (count existing files + 1)
 SEQ=$(printf "%03d" $(( $(ls -1 "${COMM_DIR}"/*.md 2>/dev/null | wc -l) + 1 )))
@@ -75,9 +75,9 @@ Orchestrator                         Worker
     +-- (wait)                          +-- receive request
     |                                   +-- (process)
     |                                   +-- write 002-response.md
-    |                                   +-- load buffer (same name)
-    | <──────────────── paste to Orch ──+
-    +-- receive response                |
+    |                                   +-- notify path
+    | <──────────────── [RESPONSE ready] path
+    +-- read response file              |
     +-- delete buffer                   |
     +-- (files remain for history)      |
 ```
@@ -91,26 +91,29 @@ Orchestrator                         Worker
 {request body}
 
 [RESPONSE INSTRUCTIONS]
-Buffer: msg-<orch_num>-<worker_num>
-Response file: /tmp/worker-comm/<started_at>-<orch>to<worker>/<seq>-response.md
-Response via:
-cat > <response_file> << 'RESP_EOF'
-[WORKER RESPONSE id=... started_at=... orchestrator=%N worker=%M]
-{response}
-RESP_EOF
-tmux load-buffer -b "<buffer_name>" <response_file> && \
-tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane> && \
+Response file: <response_file_path>
+Notify via:
+tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE ready] <response_file_path>"
+tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane>
 sleep 1 && tmux send-keys -t <orchestrator_pane> Enter
 ```
 
-### 4.2. Response
+### 4.2. Response Notification
+
+```text
+[RESPONSE ready] /tmp/worker-comm/<started_at>-o<orch>-w<worker>/<seq>-response.md
+```
+
+Orchestrator reads the file to get full response content.
+
+### 4.3. Response File Content
 
 ```text
 [WORKER RESPONSE id=YYYYMMDD-HHMMSS-XXXX started_at=YYYYMMDD-HHMMSS orchestrator=%N worker=%M]
 {response body}
 ```
 
-### 4.3. ID Generation
+### 4.4. ID Generation
 
 ```bash
 id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
@@ -132,9 +135,9 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    ORCH_NUM=$(echo "${ORCHESTRATOR}" | tr -d '%')
    WORKER_NUM=$(echo "${WORKER}" | tr -d '%')
    STARTED_AT=$(date +%Y%m%d-%H%M%S)
-   COMM_DIR="/tmp/worker-comm/${STARTED_AT}-${ORCH_NUM}to${WORKER_NUM}"
+   COMM_DIR="/tmp/worker-comm/${STARTED_AT}-o${ORCH_NUM}-w${WORKER_NUM}"
    mkdir -p "${COMM_DIR}"
-   BUFFER_NAME="msg-${ORCH_NUM}-${WORKER_NUM}"
+   BUFFER_NAME="msg-o${ORCH_NUM}-w${WORKER_NUM}"
    ```
 
 4. Generate sequence number:
@@ -165,17 +168,19 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    tmux send-keys -t <target_pane> Enter
    ```
 
-8. Display "Waiting for Worker response..."
+8. Wait for `[RESPONSE ready] <path>` notification
 
-9. After receiving response, cleanup buffer (files remain):
+9. Read response file content
 
-   ```bash
-   tmux delete-buffer -b "${BUFFER_NAME}"
-   ```
+10. After processing, cleanup buffer (files remain):
+
+    ```bash
+    tmux delete-buffer -b "${BUFFER_NAME}"
+    ```
 
 ## 6. Response Procedure (Worker)
 
-1. Receive request with buffer name and response file in RESPONSE INSTRUCTIONS
+1. Receive request with response file path in RESPONSE INSTRUCTIONS
 
 2. Process request
 
@@ -188,10 +193,10 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    EOF
    ```
 
-4. Send via same buffer:
+4. Notify Orchestrator (path only):
 
    ```bash
-   tmux load-buffer -b "${BUFFER_NAME}" "${RESP_FILE}"
+   tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE ready] ${RESP_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane>
    sleep 1
    tmux send-keys -t <orchestrator_pane> Enter
@@ -214,15 +219,10 @@ Implement the authentication module as specified in plan.
 Reference: .i9wa4/plans/auth-plan.md
 
 [RESPONSE INSTRUCTIONS]
-Buffer: msg-6-7
-Response file: /tmp/worker-comm/20260117-120000-6to7/002-response.md
-Response via:
-cat > /tmp/worker-comm/20260117-120000-6to7/002-response.md << 'RESP_EOF'
-[WORKER RESPONSE id=20260117-120000-a1b2 started_at=20260117-120000 orchestrator=%6 worker=%7]
-{your response}
-RESP_EOF
-tmux load-buffer -b "msg-6-7" /tmp/worker-comm/20260117-120000-6to7/002-response.md && \
-tmux paste-buffer -b "msg-6-7" -t %6 && \
+Response file: /tmp/worker-comm/20260117-120000-o6-w7/002-response.md
+Notify via:
+tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE ready] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md"
+tmux paste-buffer -b "msg-o6-w7" -t %6
 sleep 1 && tmux send-keys -t %6 Enter
 ```
 
