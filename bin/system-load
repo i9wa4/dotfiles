@@ -123,4 +123,4 @@ other_cpu=$((total_cpu - chrome_cpu))
 [ -z "${chrome_mem}" ] && chrome_mem="0.0"
 [ -z "${other_mem}" ] && other_mem="0.0"
 
-echo "CPU:Chr${chrome_cpu}%/Oth${other_cpu}% Mem:Chr${chrome_mem}G/Oth:${other_mem}G"
+echo "CPU:Chr${chrome_cpu}%/${other_cpu}% Mem:Chr${chrome_mem}G/${other_mem}G"

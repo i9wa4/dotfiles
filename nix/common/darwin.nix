@@ -325,14 +325,14 @@
       sudo -u ${username} bash -c '
         # ------------------------------------------
         # Keyboard: Custom shortcuts [default: none]
-        # ウィンドウ->移動とサイズ変更->右 Ctrl + Cmd + L
-        # ウィンドウ->移動とサイズ変更->左 Ctrl + Cmd + H
+        # ウィンドウ->移動とサイズ変更->右 Ctrl + Option + .
+        # ウィンドウ->移動とサイズ変更->左 Ctrl + Option + ,
         # Note: dict-add requires activation script (cannot use CustomUserPreferences)
         # ------------------------------------------
         defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
-          $'"'"'\033ウィンドウ\033移動とサイズ変更\033右'"'"' "@^l"
+          $'"'"'\033ウィンドウ\033移動とサイズ変更\033右'"'"' "^~."
         defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
-          $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "@^h"
+          $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "^~,"
 
         # ------------------------------------------
         # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
