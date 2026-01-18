@@ -316,13 +316,9 @@ Default: 10 parallel (cx x 5 + cc x 5)
 | 5        | qa           | Edge cases, acceptance |
 
 For design review: replace `code` with `data` (Data model, schema).
+Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
 
-### 11.3. Assignment Order
-
-Assign cx first (priority 1-5), then cc (priority 1-5).
-cx manages token usage of cc (main session).
-
-### 11.4. How to Get Review Target
+### 11.3. References
 
 | Target Type | Command                                           |
 | ----------- | ------------------------------------------------- |
@@ -332,13 +328,10 @@ cx manages token usage of cc (main session).
 | issue       | `gh issue view {target} --json body,comments`     |
 | document    | Read the file at {target}                         |
 
-### 11.5. Agent Reference
+Agent file:
+`@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md`
 
-```text
-@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md
-```
-
-### 11.6. Review Execution
+### 11.4. Review Execution
 
 Task content template:
 
@@ -361,25 +354,19 @@ done
 wait
 ```
 
-### 11.7. Summary Output
+### 11.5. Summary Output
 
 Output: `.i9wa4/reviews/summary.md`
 
 ```markdown
 # Review Summary
-
 ## Target
-- Type: {review_type} / {target_type}
-- Target: {target}
-
+- Type: {review_type} / {target_type}, Target: {target}
 ## Findings by Severity
-
 ### Critical/High
 | # | Issue | Reporter | File |
-
 ### Medium
 | # | Issue | Reporter | File |
-
 ### Low
 | # | Issue | Reporter | File |
 ```
