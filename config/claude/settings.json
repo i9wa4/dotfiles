@@ -52,11 +52,11 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "compact|resume",
+        "matcher": "compact|resume|clear",
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/restore-context.sh"
+            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/reload-claude-md.sh"
           }
         ]
       }
@@ -66,64 +66,29 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+            "command": "echo Current time: $(date +%Y-%m-%dT%H:%M:%S%z)"
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
-          }
-        ]
-      },
-      {
         "matcher": "Edit|Write|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/orchestrator-readonly.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Read|Glob|Grep|Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/worker-reminder.sh"
+            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/deny-edit-write.sh"
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
-          }
-        ]
-      },
-      {
         "matcher": ".*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/status-reminder.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo $(date +%Y-%m-%dT%H:%M:%S%z)"
+            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/post-tool-use.sh"
           }
         ]
       }
@@ -133,9 +98,6 @@
     "type": "command",
     "command": "npx -y ccstatusline@latest",
     "padding": 0
-  },
-  "enabledPlugins": {
-    "ralph-wiggum@claude-code-plugins": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
