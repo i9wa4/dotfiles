@@ -59,7 +59,7 @@ Changes:
 Verification:
 - <how to verify>
 
-Output: .i9wa4/{timestamp}-cx-impl-{id}.md
+Update: .i9wa4/roadmap.md (mark task complete)
 ```
 
 ### 4.2. Complex Task (Worker)
@@ -100,7 +100,7 @@ Commands:
 - <test command>
 - <build command>
 
-Report failures to: .i9wa4/{timestamp}-cx-test-{id}.md
+Update: .i9wa4/roadmap.md (mark test complete or note failures)
 ```
 
 ## 5. Execution Flow
@@ -137,9 +137,7 @@ Add Workers as needed for parallelism.
 
 Check all implementation outputs:
 
-```bash
-ls -la .i9wa4/{timestamp}-*-impl-*.md
-```
+Check `.i9wa4/roadmap.md` for completion status.
 
 ### 6.2. Run Final Tests
 
@@ -155,7 +153,7 @@ Run:
 - Linting
 - Build
 
-Report: .i9wa4/{timestamp}-cx-verify-{id}.md
+Update: .i9wa4/roadmap.md (mark verification complete)
 ```
 
 ## 7. Completion
@@ -202,7 +200,7 @@ Include:
 
 Create final report:
 
-Output: `.i9wa4/{timestamp}-completion-{id}.md`
+Output: `.i9wa4/completion-{id}.md`
 
 ```markdown
 # Implementation Complete

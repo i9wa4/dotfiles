@@ -103,9 +103,7 @@ NOTE: Asymmetric - request pastes content, response notifies path only.
 [RESPONSE INSTRUCTIONS]
 Response file: <response_file_path>
 Notify via:
-tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE started_at=<started_at> orchestrator=<orch_pane> worker=<worker_pane>] <response_file_path>"
-tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane>
-sleep 0.3 && tmux send-keys -t <orchestrator_pane> Enter
+tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE started_at=<started_at> orchestrator=<orch_pane> worker=<worker_pane>] <response_file_path>" && tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane> && sleep 0.2 && tmux send-keys -t <orchestrator_pane> Enter
 ```
 
 ### 4.2. Response Notification
@@ -174,10 +172,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 7. Send via buffer:
 
    ```bash
-   tmux load-buffer -b "${BUFFER_NAME}" "${REQ_FILE}"
-   tmux paste-buffer -b "${BUFFER_NAME}" -t <target_pane>
-   sleep 0.3
-   tmux send-keys -t <target_pane> Enter
+   tmux load-buffer -b "${BUFFER_NAME}" "${REQ_FILE}" && tmux paste-buffer -b "${BUFFER_NAME}" -t <target_pane> && sleep 0.2 && tmux send-keys -t <target_pane> Enter
    ```
 
 8. Wait for response notification: `[RESPONSE ...] <path>`
@@ -208,10 +203,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 4. Notify Orchestrator (path only):
 
    ```bash
-   tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE started_at=${STARTED_AT} orchestrator=${ORCH_PANE} worker=${WORKER_PANE}] ${RESP_FILE}"
-   tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane>
-   sleep 0.3
-   tmux send-keys -t <orchestrator_pane> Enter
+   tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE started_at=${STARTED_AT} orchestrator=${ORCH_PANE} worker=${WORKER_PANE}] ${RESP_FILE}" && tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane> && sleep 0.2 && tmux send-keys -t <orchestrator_pane> Enter
    ```
 
 ## 7. Capability in Messages
@@ -233,9 +225,7 @@ Reference: .i9wa4/plans/auth-plan.md
 [RESPONSE INSTRUCTIONS]
 Response file: /tmp/worker-comm/20260117-120000-o6-w7/002-response.md
 Notify via:
-tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE started_at=20260117-120000 orchestrator=%6 worker=%7] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md"
-tmux paste-buffer -b "msg-o6-w7" -t %6
-sleep 0.3 && tmux send-keys -t %6 Enter
+tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE started_at=20260117-120000 orchestrator=%6 worker=%7] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md" && tmux paste-buffer -b "msg-o6-w7" -t %6 && sleep 0.2 && tmux send-keys -t %6 Enter
 ```
 
 ## 8. Delta Report

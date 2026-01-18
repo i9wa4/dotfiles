@@ -9,6 +9,15 @@ These rules apply when:
 - You see `[SUBAGENT ...]` header at prompt start (behaving as subagent)
 - You need to launch subagents via Task tool or codex exec (launching subagents)
 
+### 1.1. Who Can Use Subagents
+
+| Role         | Can Launch Subagent | Use Case                    |
+| ------------ | ------------------- | --------------------------- |
+| Orchestrator | Yes                 | Review only (parallel)      |
+| Worker claude| Yes                 | Investigation during impl   |
+| Worker codex | No                  | Direct execution preferred  |
+| Subagent     | No                  | No nested subagents         |
+
 ## 2. Common Rules
 
 ### 2.1. Header Format
@@ -49,7 +58,7 @@ Writing to `.i9wa4/` for reports is allowed.
 
 {task content}
 
-Output: .i9wa4/{timestamp}-cc-{role}-{id}.md
+Output: .i9wa4/reviews/cc-{role}.md (for reviews)
 ```
 
 ### 3.2. Behavior
@@ -74,7 +83,7 @@ Use `-o` option to capture output reliably:
 ```bash
 # READONLY with -o (recommended)
 codex exec --sandbox workspace-write -C .i9wa4 \
-  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+  -o ".i9wa4/reviews/cx-${ROLE}.md" \
   "[SUBAGENT capability=READONLY] {task content}" &
 wait
 ```

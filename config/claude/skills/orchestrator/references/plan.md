@@ -92,7 +92,7 @@ During investigation, delegate to Worker/Subagent as needed:
 ```text
 [SUBAGENT capability=READONLY]
 Investigate <specific area> for plan.
-Output: .i9wa4/{timestamp}-cx-research-{id}.md
+Output: .i9wa4/plans/<descriptive-name>.md
 ```
 
 ```text

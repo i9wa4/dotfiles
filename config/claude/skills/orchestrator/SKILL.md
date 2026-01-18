@@ -152,6 +152,45 @@ EOF
 
 NOTE: Worker and Subagent skip this.
 
+### 3.2. .i9wa4/ Directory Structure
+
+```text
+.i9wa4/
+├── roadmap.md          # Current task progress (checkboxes)
+├── plans/              # Plans (no timestamp prefix)
+├── reviews/            # Review results (no timestamp prefix)
+├── status-pane{id}     # Orchestrator status
+├── phase.log           # Phase transition log
+├── completion-{id}.md  # Completion reports
+└── temp.md             # Editor scratch file
+```
+
+### 3.3. Roadmap Management
+
+Roadmap tracks overall progress across all roles:
+
+- Created by: Orchestrator
+- Format: Checkbox list `- [ ] task`
+- Updated by: Worker (mark `- [x] task` on completion)
+- Purpose: Everyone knows current position
+
+Example `.i9wa4/roadmap.md`:
+
+```markdown
+# Roadmap
+
+## Current Sprint
+
+- [x] Implement authentication module
+- [x] Add unit tests
+- [ ] Code review
+- [ ] Create PR
+
+## Blocked
+
+- [ ] Database migration (waiting for DBA approval)
+```
+
 ## 4. Your Role
 
 - Analyze requirements and break down into tasks

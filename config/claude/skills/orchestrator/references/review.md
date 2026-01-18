@@ -15,7 +15,7 @@ Orchestrator
     |
     +-- 4. Launch cc x 5 (Task tool parallel)
     |
-    +-- 5. Wait all -> .i9wa4/{timestamp}-*-*-*.md
+    +-- 5. Wait all -> .i9wa4/reviews/
     |
     +-- 6. Integrate results -> summary
 ```
@@ -108,7 +108,7 @@ Follow priority order from 3.1/3.2.
 3. Launch cx reviewers (Bash background): `codex exec ... &`
 4. Launch cc reviewers (Task tool parallel)
 5. Wait for all reviewers
-6. Read results: `.i9wa4/{timestamp}-*-*-*.md`
+6. Read results from `.i9wa4/reviews/`
 7. Integrate and output summary
 
 ## 5. Templates
@@ -121,7 +121,7 @@ timestamp: {TS}
 source: cc | cx
 role: {ROLE}
 short_id: {ID}
-output_file: .i9wa4/{TS}-{source}-{ROLE}-{ID}.md
+output_file: .i9wa4/reviews/{source}-{ROLE}.md
 review_type: code | design
 target_type: pr | commit | branch | issue | document
 target: {TARGET}
@@ -200,7 +200,7 @@ See `rules/subagent.md` Section 3 for sandbox settings.
 ```bash
 # Use -o to capture output (path relative to caller, not affected by -C)
 codex exec --sandbox workspace-write -C .i9wa4 \
-  -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+  -o ".i9wa4/reviews/cx-${ROLE}.md" \
   "[SUBAGENT capability=READONLY] ..." &
 ```
 
@@ -214,7 +214,7 @@ TARGET=abc1234 && \
 for ROLE in security architecture historian code qa; do
   ID=$(openssl rand -hex 2)
   codex exec --sandbox workspace-write -C .i9wa4 \
-    -o ".i9wa4/${TS}-cx-${ROLE}-${ID}.md" \
+    -o ".i9wa4/reviews/cx-${ROLE}.md" \
     "[SUBAGENT capability=READONLY]
 timestamp: ${TS}
 role: ${ROLE}
@@ -232,7 +232,7 @@ For design review: use ROLE list `security architecture data qa historian`
 
 After all complete, create integrated summary.
 
-Output: `.i9wa4/{timestamp}-summary-{id}.md`
+Output: `.i9wa4/reviews/summary.md`
 
 ```markdown
 # Review Summary
