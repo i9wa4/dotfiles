@@ -5,18 +5,28 @@ Implementation workflow for executing approved plans.
 ## 1. Overview
 
 ```text
-Orchestrator (READONLY)
+Orchestrator
     |
     +-- 1. Load approved plan from .i9wa4/plans/
     |
     +-- 2. Break down into implementation tasks
     |
-    +-- 3. Delegate each task to Worker/Subagent (WRITABLE)
+    +-- 3. Delegate each task to Worker (WRITABLE)
     |
     +-- 4. Collect results and verify
     |
-    +-- 5. Create PR or completion report
+    +-- 5. Consult both Workers (codex + claude)
+    |
+    +-- 6. Fix issues if any
+    |
+    +-- 7. Ask user for parallel review count
+    |
+    +-- 8. Execute parallel review (see references/review.md)
+    |
+    +-- 9. User approval -> PR or completion report
 ```
+
+For Capability and Header format, see SKILL.md Section 2.2 and 2.3.
 
 ## 2. Prerequisites
 
@@ -46,7 +56,7 @@ See: `references/subagent.md` for Subagent launch rules.
 For isolated, well-defined changes:
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 
 Task: Implement <specific change>
 
@@ -67,7 +77,7 @@ Update: .i9wa4/roadmap.md (mark task complete)
 For interactive or multi-step work:
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 
 Task: Implement <feature name>
 
@@ -90,7 +100,7 @@ Expected outcome:
 After implementation:
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 
 Task: Run tests and verify implementation
 
@@ -122,10 +132,10 @@ For dependent tasks:
 For independent tasks, use multiple Workers:
 
 ```text
-[WORKER capability=WRITABLE to_pane=%7]
+[WORKER capability=WRITABLE to=%7]
 Task A: ...
 
-[WORKER capability=WRITABLE to_pane=%8]
+[WORKER capability=WRITABLE to=%8]
 Task B: ...
 ```
 
@@ -134,8 +144,6 @@ Add Workers as needed for parallelism.
 ## 6. Result Collection
 
 ### 6.1. Verify Outputs
-
-Check all implementation outputs:
 
 Check `.i9wa4/roadmap.md` for completion status.
 
@@ -163,7 +171,7 @@ Update: .i9wa4/roadmap.md (mark verification complete)
 Delegate commit creation:
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 
 Task: Create commit for implementation
 
@@ -177,24 +185,7 @@ Follow git.md rules for commit message format.
 
 ### 7.2. PR Creation
 
-Delegate PR creation:
-
-```text
-[WORKER capability=WRITABLE]
-
-Task: Create PR for implementation
-
-Title: <PR title>
-Base: main
-Branch: <feature-branch>
-
-Reference: Plan at .i9wa4/plans/<plan-file>.md
-
-Include:
-- Summary of changes
-- Test plan
-- Related issues
-```
+See: `references/pull-request.md`
 
 ### 7.3. Completion Report
 

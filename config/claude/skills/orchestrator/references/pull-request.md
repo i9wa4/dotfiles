@@ -18,12 +18,18 @@ Orchestrator
     |
     +-- 2. Gather PR context
     |
-    +-- 3. Worker consultation (optional)
+    +-- 3. Consult both Workers (codex + claude)
     |
-    +-- 4. Create PR
+    +-- 4. Fix issues if any
     |
-    +-- 5. Report PR URL
+    +-- 5. Create PR (Worker WRITABLE)
+    |
+    +-- 6. Report PR URL
 ```
+
+NOTE: PR phase has no parallel review.
+
+For Capability and Header format, see SKILL.md Section 2.2 and 2.3.
 
 ## 3. Gather PR Context
 
@@ -49,10 +55,10 @@ cat .github/PULL_REQUEST_TEMPLATE.md
 
 ## 4. Worker Consultation
 
-Before creating PR, optionally consult Worker:
+Before creating PR, consult both Workers:
 
 ```text
-[WORKER capability=READONLY id=... from=claude pane=%X to=codex to_pane=%Y]
+[WORKER capability=READONLY to=%N]
 
 ## PR Draft Review
 
@@ -69,7 +75,7 @@ Any concerns before creating PR?
 ### 5.1. Delegation Template
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 
 Create draft PR with:
 - Title: <title>

@@ -7,45 +7,24 @@ Rules for launching and behaving as subagents.
 These rules apply when:
 
 - You see `[SUBAGENT ...]` header at prompt start (behaving as subagent)
-- You need to launch subagents via Task tool or codex exec (launching subagents)
+- You need to launch subagents via Task tool or codex exec
 
-### 1.1. Who Can Use Subagents
+### 1.1. Who Can Launch Subagents
 
-| Role         | Can Launch Subagent | Use Case                    |
-| ------------ | ------------------- | --------------------------- |
-| Orchestrator | Yes                 | Review only (parallel)      |
-| Worker claude| Yes                 | Investigation during impl   |
-| Worker codex | No                  | Direct execution preferred  |
-| Subagent     | No                  | No nested subagents         |
+| Role          | Can Launch | Use Case                   |
+| ------------- | ---------- | -------------------------- |
+| Orchestrator  | Yes        | Review only (parallel)     |
+| Worker claude | Yes        | Investigation during impl  |
+| Worker codex  | No         | Direct execution preferred |
+| Subagent      | No         | No nested subagents        |
 
 ## 2. Common Rules
 
-### 2.1. Header Format
-
-Include capability in header when launching subagents:
-
-```text
-[SUBAGENT capability=READONLY]
-{task content}
-```
-
 Subagents are READONLY only. Use Worker for WRITABLE tasks.
 
-### 2.2. Capability
+See SKILL.md Section 2.2 for Capability details.
 
-See: `skills/orchestrator/SKILL.md` (Architecture Concepts > Capability section)
-
-Subagents operate in READONLY mode only:
-
-| Capability | Description                              | Tools                              |
-| ---------- | ---------------------------------------- | ---------------------------------- |
-| READONLY   | Investigation, review, analysis          | Read, Glob, Grep, Bash (read-only) |
-
-READONLY means: No project file modifications allowed.
-Exceptions: `.i9wa4/` and `/tmp/` writes are permitted
-for reports and temp files.
-
-### 2.3. Always Skip
+### 2.1. Always Skip
 
 - Skip mood status updates (no tmux access in exec/sandbox mode)
 - Focus only on the assigned task
@@ -80,10 +59,9 @@ Subagents use READONLY sandbox only:
 
 ### 4.2. Launching
 
-Use `-o` option to capture output reliably:
+Use `-o` option to capture output:
 
 ```bash
-# READONLY with -o (recommended)
 codex exec --sandbox workspace-write -C .i9wa4 \
   -o ".i9wa4/reviews/cx-${ROLE}.md" \
   "[SUBAGENT capability=READONLY] {task content}" &

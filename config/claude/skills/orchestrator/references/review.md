@@ -7,21 +7,25 @@ Unified review workflow for code and design reviews.
 ```text
 Orchestrator
     |
-    +-- 1. Setup (review_type, target_type, target, parallel_count)
+    +-- 1. Setup (review_type, target_type, target)
     |
-    +-- 2. Generate timestamp
+    +-- 2. Ask user for parallel review count
     |
-    +-- 3. Launch cx x 5 (codex exec background)
+    +-- 3. Generate timestamp
     |
-    +-- 4. Launch cc x 5 (Task tool parallel)
+    +-- 4. Launch cx reviewers (codex exec background)
     |
-    +-- 5. Wait all -> .i9wa4/reviews/
+    +-- 5. Launch cc reviewers (Task tool parallel)
     |
-    +-- 6. Integrate results -> summary
+    +-- 6. Wait all -> .i9wa4/reviews/
+    |
+    +-- 7. Integrate results -> summary
 ```
 
 Default: 10 parallel (cx x 5 + cc x 5)
 Priority-based assignment when parallel count is specified.
+
+For Capability and Header format, see SKILL.md Section 2.2 and 2.3.
 
 ## 2. Setup Options
 
@@ -59,9 +63,20 @@ For design review:
 | issue       | 456                |
 | document    | docs/design.md     |
 
-## 3. Priority and Assignment
+## 3. Ask Parallel Count
 
-### 3.1. Code Review Priority
+Before launching reviewers, ask user:
+
+```text
+How many parallel reviewers? (default: 10)
+- 10: Full review (cx x 5 + cc x 5)
+- 5: Half review (cx x 5 only)
+- Custom: Specify number
+```
+
+## 4. Priority and Assignment
+
+### 4.1. Code Review Priority
 
 | Priority | Role         | Focus                  |
 | -------- | ------------ | ---------------------- |
@@ -71,7 +86,7 @@ For design review:
 | 4        | code         | Quality, readability   |
 | 5        | qa           | Edge cases, acceptance |
 
-### 3.2. Design Review Priority
+### 4.2. Design Review Priority
 
 | Priority | Role         | Focus                  |
 | -------- | ------------ | ---------------------- |
@@ -81,12 +96,12 @@ For design review:
 | 4        | data         | Data model, schema     |
 | 5        | qa           | Edge cases, acceptance |
 
-### 3.3. Assignment Order
+### 4.3. Assignment Order
 
 Default: 10 (cx x 5 + cc x 5)
 
 Assign cx first to manage token usage of cc (main session).
-Follow priority order from 3.1/3.2.
+Follow priority order from 4.1/4.2.
 
 | #  | Assignee      |
 | -- | ------------- |
@@ -101,19 +116,20 @@ Follow priority order from 3.1/3.2.
 | 9  | cc-priority-4 |
 | 10 | cc-priority-5 |
 
-## 4. Execution Flow
+## 5. Execution Flow
 
-1. Generate shared timestamp: `date +%Y%m%d-%H%M%S`
-2. Determine assignments based on parallel count and priority
-3. Launch cx reviewers (Bash background): `codex exec ... &`
-4. Launch cc reviewers (Task tool parallel)
-5. Wait for all reviewers
-6. Read results from `.i9wa4/reviews/`
-7. Integrate and output summary
+1. Ask user for parallel review count
+2. Generate shared timestamp: `date +%Y%m%d-%H%M%S`
+3. Determine assignments based on parallel count and priority
+4. Launch cx reviewers (Bash background): `codex exec ... &`
+5. Launch cc reviewers (Task tool parallel)
+6. Wait for all reviewers
+7. Read results from `.i9wa4/reviews/`
+8. Integrate and output summary
 
-## 5. Templates
+## 6. Templates
 
-### 5.1. Session Info Format
+### 6.1. Session Info Format
 
 ```text
 <!-- REVIEW_SESSION
@@ -128,7 +144,7 @@ target: {TARGET}
 -->
 ```
 
-### 5.2. How to Get Review Target
+### 6.2. How to Get Review Target
 
 Based on target_type:
 
@@ -140,7 +156,7 @@ Based on target_type:
 | issue       | `gh issue view {target} --json body,comments`          |
 | document    | Read the file at {target}                              |
 
-### 5.3. Agent Reference
+### 6.3. Agent Reference
 
 Load agent definition based on role:
 
@@ -148,7 +164,7 @@ Load agent definition based on role:
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md
 ```
 
-### 5.4. Review Task Content
+### 6.4. Review Task Content
 
 Common task content for both Task tool and codex exec.
 
@@ -156,7 +172,7 @@ Variables:
 
 | Variable    | Description                    |
 | ----------- | ------------------------------ |
-| TS          | Shared timestamp from Step 1   |
+| TS          | Shared timestamp from Step 2   |
 | SOURCE      | cc (Task tool) or cx (codex)   |
 | ID          | `openssl rand -hex 2`          |
 | ROLE        | From priority table            |
@@ -183,7 +199,7 @@ Refer to "Agent Reference" for agent definition.
 Return your review directly as your response. Do NOT create files.
 ```
 
-### 5.5. Launching Reviewers
+### 6.5. Launching Reviewers
 
 See: `references/subagent.md` for launch details and prompt template.
 
@@ -228,7 +244,7 @@ NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
 
 For design review: use ROLE list `security architecture historian data qa`
 
-## 6. Summary Output
+## 7. Summary Output
 
 After all complete, create integrated summary.
 

@@ -32,23 +32,24 @@ Universal plan workflow for any source.
     v
 [Normal Mode]
     |
-    +-- 5. Delegate implementation to Worker/Subagent
+    +-- 5. Consult both Workers (codex + claude)
     |
-    +-- 6. PR or completion report
+    +-- 6. Fix issues if any
+    |
+    +-- 7. Ask user for parallel review count
+    |
+    +-- 8. Execute parallel review (see references/review.md)
+    |
+    +-- 9. Delegate implementation to Worker
+    |
+    +-- 10. PR or completion report
 ```
 
-## 3. Orchestrator Constraints During Planning
-
-- NEVER: Edit, Write, NotebookEdit (project files)
-- ALLOWED: Read, Glob, Grep, Bash (read-only)
-- ALLOWED: Write to `.i9wa4/` (plans, reports)
-- DELEGATE: Investigation to Worker/Subagent with READONLY capability
-
-## 4. Plan Output
+## 3. Plan Output
 
 Save plan to `.i9wa4/plans/` with descriptive filename.
 
-### 4.1. Template
+### 3.1. Template
 
 ```markdown
 # Plan: <title>
@@ -85,9 +86,11 @@ Save plan to `.i9wa4/plans/` with descriptive filename.
 - <how to verify>
 ```
 
-## 5. Delegation for Investigation
+## 4. Delegation
 
-During investigation, delegate to Worker/Subagent as needed:
+For Capability and Header format, see SKILL.md Section 2.2 and 2.3.
+
+### 4.1. Investigation (READONLY)
 
 ```text
 [SUBAGENT capability=READONLY]
@@ -95,17 +98,19 @@ Investigate <specific area> for plan.
 Output: .i9wa4/plans/<descriptive-name>.md
 ```
 
+### 4.2. Consultation (READONLY)
+
 ```text
-[WORKER capability=READONLY]
+[WORKER capability=READONLY to=%N]
 Review this design approach. Any concerns?
 ```
 
-## 6. Delegation for Implementation
+### 4.3. Implementation (WRITABLE)
 
-After plan approval, delegate implementation to Worker:
+After plan approval:
 
 ```text
-[WORKER capability=WRITABLE]
+[WORKER capability=WRITABLE to=%N]
 Implement the authentication module as specified in plan.
 Reference: .i9wa4/plans/<plan-file>.md
 ```
