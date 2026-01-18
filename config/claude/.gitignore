@@ -1,12 +1,14 @@
 *
 !.gitignore
+!CLAUDE.md
 !agents/
 !agents/**
 !commands/
 !commands/**
-!restore-context.sh
 !rules/
 !rules/**
+!scripts/
+!scripts/**
 !settings.json
 
 # Skills
