@@ -400,27 +400,12 @@ Output: `.i9wa4/reviews/summary.md`
 
 ### 12.2. Gather PR Context
 
-```bash
-# Reference past PRs
-gh pr list --author i9wa4 --state all --limit 10 --json number,title,body
+1. Read `.github/PULL_REQUEST_TEMPLATE.md` if exists
+2. Reference recent PRs: `gh pr list --author i9wa4 --limit 10`
+3. Match the style of existing PRs
+4. Check: README, CHANGELOG need update?
 
-# Load PR template
-cat .github/PULL_REQUEST_TEMPLATE.md
-```
-
-Check: README, CHANGELOG, other docs need update?
-
-### 12.3. PR Style
-
-Structure:
-
-- 概要: What was fixed/added
-- やったこと: List of changes
-- 動作確認: Verification items
-
-Use bullet points. Keep concise.
-
-### 12.4. Create PR
+### 12.3. Create PR
 
 ```text
 [WORKER capability=WRITABLE to=%N]
@@ -433,7 +418,7 @@ Create draft PR with:
 Use: gh pr create --draft --title "..." --body "..."
 ```
 
-### 12.5. Post-PR
+### 12.4. Post-PR
 
 1. Record in phase.log: `CODE -> PR -> COMPLETE`
 2. Display PR URL to user
