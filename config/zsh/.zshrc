@@ -4,12 +4,9 @@
 # This file is sourced by interactive shells only.
 # Location: $ZDOTDIR/.zshrc
 
-# tmux auto-start (local only, not in VSCode)
-# exec replaces current shell, so put this before loading anything
-if [[ -z "${SSH_CONNECTION}" && -z "${SSH_TTY}" && -z "${SSH_CLIENT}" ]]; then
-  if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
-    tmux
-  fi
+# tmux auto-start (local only, not in VSCode, not already in tmux)
+if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; then
+  command -v tmux &>/dev/null && exec tmux new-session -A -s main
 fi
 
 # Disable XON/XOFF flow control (enable Ctrl-Q for push-line-or-edit)
