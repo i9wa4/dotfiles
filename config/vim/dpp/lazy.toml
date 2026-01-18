@@ -134,6 +134,8 @@ nnoremap <Space>m <Cmd>call <SID>bimove_h_enter()<CR><Plug>(bimove-h)
 nnoremap <Plug>(bimove-h)H <Cmd>call <SID>bimove_h_left()<CR><Plug>(bimove-h)
 nnoremap <Plug>(bimove-h)L <Cmd>call <SID>bimove_h_right()<CR><Plug>(bimove-h)
 nnoremap <Plug>(bimove-h)<Esc> <Cmd>call <SID>bimove_h_clear()<CR>
+nnoremap <Plug>(bimove-h)h <Cmd>call <SID>bimove_h_clear()<CR>h
+nnoremap <Plug>(bimove-h)l <Cmd>call <SID>bimove_h_clear()<CR>l
 '''
 
 [[plugins]]
