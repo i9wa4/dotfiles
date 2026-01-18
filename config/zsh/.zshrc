@@ -8,7 +8,7 @@
 # exec replaces current shell, so put this before loading anything
 if [[ -z "${SSH_CONNECTION}" && -z "${SSH_TTY}" && -z "${SSH_CLIENT}" ]]; then
   if [[ "${SHLVL}" -eq 1 && "${TERM_PROGRAM}" != "vscode" ]]; then
-    exec tmux
+    tmux
   fi
 fi
 
