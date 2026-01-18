@@ -41,7 +41,9 @@ Subagents operate in READONLY mode only:
 | ---------- | ---------------------------------------- | ---------------------------------- |
 | READONLY   | Investigation, review, analysis          | Read, Glob, Grep, Bash (read-only) |
 
-Writing to `.i9wa4/` for reports is allowed.
+READONLY means: No project file modifications allowed.
+Exceptions: `.i9wa4/` and `/tmp/` writes are permitted
+for reports and temp files.
 
 ### 2.3. Always Skip
 

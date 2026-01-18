@@ -28,25 +28,25 @@ Orchestrator (READONLY)
 
 Break plan steps into atomic implementation tasks:
 
-| Task Type       | Description                    | Executor   |
-| --------------- | ------------------------------ | ---------- |
-| File creation   | Create new files               | Subagent   |
-| File edit       | Modify existing files          | Subagent   |
-| Multi-file      | Changes across multiple files  | Worker     |
-| Test execution  | Run tests and verify           | Subagent   |
-| Build           | Build and verify               | Subagent   |
-| Complex feature | Interactive, iterative work    | Worker     |
+| Task Type       | Description                          | Executor |
+| --------------- | ------------------------------------ | -------- |
+| File creation   | Create new files                     | Worker   |
+| File edit       | Modify existing files                | Worker   |
+| Multi-file      | 2+ files requiring coordinated edits | Worker   |
+| Test execution  | Run tests and verify                 | Worker   |
+| Build           | Build and verify                     | Worker   |
+| Complex feature | User interaction or iterations       | Worker   |
 
 ## 4. Delegation Templates
 
-See: `rules/subagent.md` for Subagent launch rules.
+See: `references/subagent.md` for Subagent launch rules.
 
-### 4.1. Simple Task (Subagent)
+### 4.1. Simple Task (Worker)
 
 For isolated, well-defined changes:
 
 ```text
-[SUBAGENT capability=WRITABLE]
+[WORKER capability=WRITABLE]
 
 Task: Implement <specific change>
 
@@ -85,12 +85,12 @@ Expected outcome:
 - <what should work when done>
 ```
 
-### 4.3. Test and Verify (Subagent)
+### 4.3. Test and Verify (Worker)
 
 After implementation:
 
 ```text
-[SUBAGENT capability=WRITABLE]
+[WORKER capability=WRITABLE]
 
 Task: Run tests and verify implementation
 

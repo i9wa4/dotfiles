@@ -86,11 +86,11 @@ Orchestrator                         Worker
     |                                   +-- notify PATH only
     | <───────────────── [RESPONSE ...] path
     +-- read response file              |
-    +-- delete buffer                   |
     +-- (files remain for history)      |
 ```
 
 NOTE: Asymmetric - request pastes content, response notifies path only.
+Buffer cleanup is unnecessary (unique naming prevents conflicts).
 
 ## 4. Message Format
 
@@ -179,12 +179,6 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
 
 9. Read response file content
 
-10. After processing, cleanup buffer (files remain):
-
-    ```bash
-    tmux delete-buffer -b "${BUFFER_NAME}"
-    ```
-
 ## 6. Response Procedure (Worker)
 
 1. Receive request with response file path in RESPONSE INSTRUCTIONS
@@ -246,5 +240,6 @@ See: `references/delta-communication.md` for full specification.
 
 - NEVER use `tmux send-keys -l -- "{message}"` for message content
 - Always use buffer-based communication to prevent command injection
-- Orchestrator is responsible for buffer cleanup after receiving response
+- Buffer cleanup is unnecessary
+  (unique naming `msg-o${ORCH_NUM}-w${WORKER_NUM}` prevents conflicts)
 - Message files remain in `/tmp/worker-comm/` for history and debugging

@@ -185,7 +185,7 @@ Return your review directly as your response. Do NOT create files.
 
 ### 5.5. Launching Reviewers
 
-See: `rules/subagent.md` for launch details and prompt template.
+See: `references/subagent.md` for launch details and prompt template.
 
 Task tool (cc):
 
@@ -195,7 +195,7 @@ Call Task tool with the prompt (parallel execution)
 
 Codex CLI (cx):
 
-See `rules/subagent.md` Section 3 for sandbox settings.
+See `references/subagent.md` Section 4 for sandbox settings.
 
 ```bash
 # Use -o to capture output (path relative to caller, not affected by -C)
@@ -226,7 +226,7 @@ wait  # Required: wait for all background jobs
 
 NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
 
-For design review: use ROLE list `security architecture data qa historian`
+For design review: use ROLE list `security architecture historian data qa`
 
 ## 6. Summary Output
 

@@ -58,6 +58,20 @@ After Worker discovery:
 
 This ensures consistent workflow: plan first, then code.
 
+### 1.4. Task Type Detection
+
+After Worker discovery, detect task type from user message:
+
+| Keyword              | Action                        | Self-Execute |
+| -------------------- | ----------------------------- | ------------ |
+| review, レビュー     | references/review.md workflow | NEVER        |
+| plan, 設計           | references/plan.md workflow   | NEVER        |
+| implement, 実装      | references/code.md workflow   | NEVER        |
+| pr, pull request     | references/pull-request.md    | NEVER        |
+
+IMPORTANT: Orchestrator coordinates, does NOT execute.
+When user requests "review", ALWAYS execute parallel reviewer workflow.
+
 ## 2. Architecture Concepts
 
 ### 2.1. Roles
