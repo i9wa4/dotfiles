@@ -13,7 +13,7 @@
 #         "hooks": [
 #           {
 #             "type": "command",
-#             "command": "bash ~/ghq/github.com/i9wa4/dotfiles/config/scripts/orchestrator-readonly.sh"
+#             "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/orchestrator-readonly.sh"
 #           }
 #         ]
 #       }
