@@ -66,6 +66,7 @@ in {
         # Version control (git is managed by programs.git)
         pkgs.gh
         pkgs.ghq
+        pkgs.lazygit
         # Search
         pkgs.ripgrep
         pkgs.fd
