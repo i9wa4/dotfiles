@@ -105,7 +105,7 @@ Response file: <response_file_path>
 Notify via:
 tmux load-buffer -b "<buffer_name>" - <<< "[RESPONSE started_at=<started_at> orchestrator=<orch_pane> worker=<worker_pane>] <response_file_path>"
 tmux paste-buffer -b "<buffer_name>" -t <orchestrator_pane>
-sleep 1 && tmux send-keys -t <orchestrator_pane> Enter
+sleep 0.3 && tmux send-keys -t <orchestrator_pane> Enter
 ```
 
 ### 4.2. Response Notification
@@ -176,7 +176,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    ```bash
    tmux load-buffer -b "${BUFFER_NAME}" "${REQ_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <target_pane>
-   sleep 1
+   sleep 0.3
    tmux send-keys -t <target_pane> Enter
    ```
 
@@ -210,7 +210,7 @@ id=$(date +%Y%m%d-%H%M%S)-$(openssl rand -hex 2)
    ```bash
    tmux load-buffer -b "${BUFFER_NAME}" - <<< "[RESPONSE started_at=${STARTED_AT} orchestrator=${ORCH_PANE} worker=${WORKER_PANE}] ${RESP_FILE}"
    tmux paste-buffer -b "${BUFFER_NAME}" -t <orchestrator_pane>
-   sleep 1
+   sleep 0.3
    tmux send-keys -t <orchestrator_pane> Enter
    ```
 
@@ -235,10 +235,24 @@ Response file: /tmp/worker-comm/20260117-120000-o6-w7/002-response.md
 Notify via:
 tmux load-buffer -b "msg-o6-w7" - <<< "[RESPONSE started_at=20260117-120000 orchestrator=%6 worker=%7] /tmp/worker-comm/20260117-120000-o6-w7/002-response.md"
 tmux paste-buffer -b "msg-o6-w7" -t %6
-sleep 1 && tmux send-keys -t %6 Enter
+sleep 0.3 && tmux send-keys -t %6 Enter
 ```
 
-## 8. Security Notes
+## 8. Delta Report
+
+Worker includes in response when reporting changes:
+
+```text
+DELTA:
+  changes: [...]
+  risks: [...]
+  alternatives: [...]
+  needs_consult: yes|no
+```
+
+See: `references/delta-communication.md` for full specification.
+
+## 9. Security Notes
 
 - NEVER use `tmux send-keys -l -- "{message}"` for message content
 - Always use buffer-based communication to prevent command injection

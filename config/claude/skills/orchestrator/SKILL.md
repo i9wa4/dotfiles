@@ -15,7 +15,42 @@ Delegate execution to Worker/Subagent.
 
 ## 1. Immediate Actions on /orchestrator
 
-When /orchestrator is invoked:
+When /orchestrator is invoked, follow this checklist:
+
+### 1.1. Worker Discovery (REQUIRED)
+
+Before any planning or execution:
+
+- [ ] Find available Worker panes using `references/worker-comm.md` Section 2
+- [ ] Record discovered Workers (codex, claude panes)
+- [ ] If no Workers found, inform user and wait
+
+```bash
+# Find claude Workers
+tmux list-panes -s -F "#{pane_pid} #{pane_id}" | while read pid id; do
+  ps -ax -o ppid,command | grep -v grep | grep claude | grep -q "^\s*$pid" && echo "claude: $id"
+done
+
+# Find codex Workers
+tmux list-panes -s -F "#{pane_pid} #{pane_id}" | while read pid id; do
+  ps -ax -o ppid,command | grep -v grep | grep codex | grep -q "^\s*$pid" && echo "codex: $id"
+done
+```
+
+### 1.2. Delegation Priority
+
+ALWAYS prefer Worker over Task tool:
+
+| Task Type            | First Choice       | Fallback      |
+| -------------------- | ------------------ | ------------- |
+| Implementation       | Worker (WRITABLE)  | N/A           |
+| Complex investigation| Worker (READONLY)  | Task tool     |
+| Simple review        | Task tool          | -             |
+| Parallel reviews     | codex exec         | Task tool     |
+
+### 1.3. Start Planning
+
+After Worker discovery:
 
 1. Load references/plan.md and follow the Plan Workflow
 2. Do NOT ask user for confirmation before starting
@@ -84,7 +119,7 @@ Worker / Subagent
 
 ## 3. Orchestrator Constraints
 
-Orchestrator operates in READONLY mode:
+Orchestrator operates in READONLY mode (self-enforced discipline):
 
 - NEVER: Edit, Write, NotebookEdit (project files)
 - ALLOWED: Read, Glob, Grep, Bash (read-only)
@@ -170,6 +205,10 @@ When delegating, provide:
 - File paths and references
 - Expected output format
 - Where to save results
+
+For complex tasks, use delta report format:
+
+- See: `references/delta-communication.md` (4 items)
 
 ## 8. Phase Management
 
@@ -270,22 +309,24 @@ tmux pane communication protocol
 
 Load relevant reference when context matches:
 
-| Trigger                           | Load                         |
-| --------------------------------- | ---------------------------- |
-| plan, planning, design, 設計      | references/plan.md           |
-| review, レビュー                  | references/review.md         |
-| code, implement, 実装             | references/code.md           |
-| pr, pull request, PR作成          | references/pull-request.md   |
-| worker, pane, tmux, communication | references/worker-comm.md    |
-| subagent, Task tool, codex exec   | references/subagent.md       |
+| Trigger                           | Load                              |
+| --------------------------------- | --------------------------------- |
+| plan, planning, design, 設計      | references/plan.md                |
+| review, レビュー                  | references/review.md              |
+| code, implement, 実装             | references/code.md                |
+| pr, pull request, PR作成          | references/pull-request.md        |
+| worker, pane, tmux, communication | references/worker-comm.md         |
+| subagent, Task tool, codex exec   | references/subagent.md            |
+| delta, changes, report            | references/delta-communication.md |
 
 ## 11. Quick Reference
 
-| Reference                 | Purpose                           |
-| ------------------------- | --------------------------------- |
-| references/plan           | Plan workflow from any source     |
-| references/review         | Parallel review workflow          |
-| references/code           | Code workflow (post-plan)         |
-| references/pull-request   | PR creation workflow              |
-| references/worker-comm    | Worker communication protocol     |
-| references/subagent       | Subagent launch and behavior      |
+| Reference                      | Purpose                           |
+| ------------------------------ | --------------------------------- |
+| references/plan                | Plan workflow from any source     |
+| references/review              | Parallel review workflow          |
+| references/code                | Code workflow (post-plan)         |
+| references/pull-request        | PR creation workflow              |
+| references/worker-comm         | Worker communication protocol     |
+| references/subagent            | Subagent launch and behavior      |
+| references/delta-communication | Change reporting format (4 items) |

@@ -13,8 +13,8 @@ presets:
             - name: editor
               command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
               focus: true
-            - name: claude
-              command: claude --dangerously-skip-permissions
+            - name: orchestrator
+              command: CLAUDE_ROLE=orchestrator claude --dangerously-skip-permissions
         - type: horizontal
           ratio: [1, 1]
           panes:
@@ -34,8 +34,8 @@ presets:
         - name: editor
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
-        - name: claude
-          command: claude --dangerously-skip-permissions
+        - name: orchestrator
+          command: CLAUDE_ROLE=orchestrator claude --dangerously-skip-permissions
 
   dev-workers:
     name: dev-workers
