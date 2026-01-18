@@ -17,7 +17,7 @@ Delegate execution to Worker/Subagent.
 
 When /orchestrator is invoked:
 
-1. Find available Workers (Section 4)
+1. Find available Workers (Section 3)
 2. Detect task type from user message
 3. Start appropriate workflow
 
@@ -66,7 +66,7 @@ Both modes allow writes to `.i9wa4/` and `/tmp/`.
 - ALLOWED: Write to `.i9wa4/` and `/tmp/`
 - DELEGATE: Execution to Worker/Subagent
 
-## 3. Communication Protocol
+## 3. Communication & Discovery
 
 ### 3.1. Worker Request
 
@@ -85,7 +85,7 @@ Worker responds: `[RESPONSE from=%M] /path/to/file.md`
 
 NEVER use `tmux send-keys -l` for message content (security).
 
-## 4. Worker Discovery
+### 3.2. Worker Discovery
 
 Your own pane: `$TMUX_PANE`
 
@@ -105,7 +105,7 @@ CODEX=$(find_agent_pane codex)
 
 If no Workers found, inform user and wait.
 
-## 5. Delegation Priority
+## 4. Delegation Priority
 
 | Task Type             | First Choice      | Fallback   |
 | --------------------- | ----------------- | ---------- |
@@ -113,6 +113,31 @@ If no Workers found, inform user and wait.
 | Complex investigation | Worker (READONLY) | Task tool  |
 | Simple review         | Task tool         | -          |
 | Parallel reviews      | codex exec        | Task tool  |
+
+## 5. Subagent Execution
+
+Subagents are READONLY only. Skip mood status updates.
+
+### 5.1. Task Tool (Claude Code)
+
+```text
+[SUBAGENT capability=READONLY]
+{task content}
+```
+
+Return results directly. Write to `.i9wa4/` if file output needed.
+
+### 5.2. Codex CLI
+
+```bash
+codex exec --sandbox workspace-write -C .i9wa4 \
+  -o ".i9wa4/reviews/cx-${ROLE}.md" \
+  "[SUBAGENT capability=READONLY] {task content}" &
+wait
+```
+
+NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
+When using `-o`, return results directly (do NOT create files).
 
 ## 6. Phase Management
 
@@ -185,34 +210,9 @@ NEXT: <what is needed to continue>
 - [ ] <blocked item> (reason)
 ```
 
-## 8. Subagent Execution
+## 8. Plan Workflow
 
-Subagents are READONLY only. Skip mood status updates.
-
-### 8.1. Task Tool (Claude Code)
-
-```text
-[SUBAGENT capability=READONLY]
-{task content}
-```
-
-Return results directly. Write to `.i9wa4/` if file output needed.
-
-### 8.2. Codex CLI
-
-```bash
-codex exec --sandbox workspace-write -C .i9wa4 \
-  -o ".i9wa4/reviews/cx-${ROLE}.md" \
-  "[SUBAGENT capability=READONLY] {task content}" &
-wait
-```
-
-NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
-When using `-o`, return results directly (do NOT create files).
-
-## 9. Plan Workflow
-
-### 9.1. Source Types
+### 8.1. Source Types
 
 | Type  | Format            | How to Fetch                         |
 | ----- | ----------------- | ------------------------------------ |
@@ -222,7 +222,7 @@ When using `-o`, return results directly (do NOT create files).
 | memo  | `memo <path>`     | Read file                            |
 | text  | `"<description>"` | Direct input                         |
 
-### 9.2. Plan Template
+### 8.2. Plan Template
 
 Save to `.i9wa4/plans/<descriptive-name>.md`:
 
@@ -252,9 +252,9 @@ Save to `.i9wa4/plans/<descriptive-name>.md`:
 - <how to verify>
 ```
 
-## 10. Code Workflow
+## 9. Code Workflow
 
-### 10.1. Task Breakdown
+### 9.1. Task Breakdown
 
 Break plan steps into atomic tasks:
 
@@ -266,12 +266,12 @@ Break plan steps into atomic tasks:
 | Test execution  | Run tests and verify                 |
 | Build           | Build and verify                     |
 
-### 10.2. Execution
+### 9.2. Execution
 
 Sequential: Delegate -> Wait -> Verify -> Next task
 Parallel: Send to multiple Workers simultaneously
 
-### 10.3. Completion Report
+### 9.3. Completion Report
 
 Output: `.i9wa4/completion-{id}.md`
 
@@ -293,9 +293,9 @@ Output: `.i9wa4/completion-{id}.md`
 - <PR number or commit hash>
 ```
 
-## 11. Review Workflow
+## 10. Review Workflow
 
-### 11.1. Setup
+### 10.1. Setup
 
 | Parameter   | Options                               |
 | ----------- | ------------------------------------- |
@@ -305,7 +305,7 @@ Output: `.i9wa4/completion-{id}.md`
 
 Default: 10 parallel (cx x 5 + cc x 5)
 
-### 11.2. Priority (Code Review)
+### 10.2. Priority (Code Review)
 
 | Priority | Role         | Focus                  |
 | -------- | ------------ | ---------------------- |
@@ -318,7 +318,7 @@ Default: 10 parallel (cx x 5 + cc x 5)
 For design review: replace `code` with `data` (Data model, schema).
 Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
 
-### 11.3. References
+### 10.3. References
 
 | Target Type | Command                                           |
 | ----------- | ------------------------------------------------- |
@@ -331,7 +331,7 @@ Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
 Agent file:
 `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md`
 
-### 11.4. Review Execution
+### 10.4. Review Execution
 
 Task content template:
 
@@ -355,7 +355,7 @@ done
 wait
 ```
 
-### 11.5. Summary Output
+### 10.5. Summary Output
 
 Output: `.i9wa4/reviews/summary.md`
 
@@ -372,22 +372,22 @@ Output: `.i9wa4/reviews/summary.md`
 | # | Issue | Reporter | File |
 ```
 
-## 12. PR Workflow
+## 11. PR Workflow
 
-### 12.1. Prerequisites
+### 11.1. Prerequisites
 
 - Implementation complete
 - Tests passing
 - IMPORTANT: Always create as **draft** PR
 
-### 12.2. Gather PR Context
+### 11.2. Gather PR Context
 
 1. Read `.github/PULL_REQUEST_TEMPLATE.md` if exists
 2. Reference recent PRs: `gh pr list --author i9wa4 --limit 10`
 3. Match the style of existing PRs
 4. Check: README, CHANGELOG need update?
 
-### 12.3. Create PR
+### 11.3. Create PR
 
 ```text
 [WORKER capability=WRITABLE to=%N]
@@ -400,7 +400,7 @@ Create draft PR with:
 Use: gh pr create --draft --title "..." --body "..."
 ```
 
-### 12.4. Post-PR
+### 11.4. Post-PR
 
 1. Record in phase.log: `CODE -> PR -> COMPLETE`
 2. Display PR URL to user
