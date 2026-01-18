@@ -344,12 +344,13 @@ review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
 Return your review directly. Do NOT create files.
 ```
 
-Batch execution (cx): Use Section 8.2 pattern with loop:
+Batch execution (cx):
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S)
 for ROLE in security architecture historian code qa; do
-  # See Section 8.2 for codex exec syntax
+  codex exec --sandbox workspace-write -C .i9wa4 \
+    -o ".i9wa4/reviews/cx-${ROLE}.md" "{task}" &
 done
 wait
 ```
