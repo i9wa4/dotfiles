@@ -28,6 +28,7 @@
   };
 in {
   imports = [
+    ../codex.nix
     ../editorconfig.nix
     ../git.nix
     ../vscode.nix
