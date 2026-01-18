@@ -410,27 +410,15 @@ cat .github/PULL_REQUEST_TEMPLATE.md
 
 Check: README, CHANGELOG, other docs need update?
 
-### 12.3. PR Body Template
+### 12.3. PR Style
 
-```markdown
-## Summary
-- <change 1>
-- <change 2>
+Structure:
 
-## Background
-<why this change>
+- 概要: What was fixed/added
+- やったこと: List of changes
+- 動作確認: Verification items
 
-## Changes
-- <specific change 1>
-- <specific change 2>
-
-## Test Plan
-- [ ] <test item 1>
-- [ ] <test item 2>
-
-## Related
-- Issue: #<number>
-```
+Use bullet points. Keep concise.
 
 ### 12.4. Create PR
 
