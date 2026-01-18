@@ -202,6 +202,8 @@ Example `.i9wa4/roadmap.md`:
 
 ## 5. Executors
 
+### 5.1. Types
+
 | Type     | Description                    | Communication          |
 | -------- | ------------------------------ | ---------------------- |
 | Worker   | Executor in another tmux pane  | worker-comm            |
@@ -222,6 +224,18 @@ Do NOT ask user every time. Use this mapping directly:
 
 When multiple workers of same type exist,
 specify target by pane ID (e.g., `to_pane=%8`).
+
+### 5.2. Task Workflow
+
+| Task Type      | codex          | claude         | orchestrator   |
+| -------------- | -------------- | -------------- | -------------- |
+| Consultation   | Yes (each time)| Yes (each time)| Coordinate     |
+| Implementation | -              | Yes (owner)    | -              |
+| Verification   | Yes            | Yes            | Yes            |
+
+- Consultation: Always consult both codex and claude before decisions
+- Implementation: Only claude worker executes code changes
+- Verification: All three verify the result before user confirmation
 
 ## 6. Delegation Methods
 
