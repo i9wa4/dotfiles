@@ -22,10 +22,9 @@ in {
       cp -f "$_common" "$_output"
 
       ${pkgs.fd}/bin/fd --type d --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 4 2>/dev/null |
-        sed 's|/\.git$||' |
         sort |
-        while read -r repo; do
-          [ -z "$repo" ] && continue
+        while read -r gitdir; do
+          repo=$(dirname "$gitdir")
           echo ""
           echo "[projects.\"$repo/\"]"
           echo "trust_level = \"trusted\""
