@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # shellcheck disable=all
-# Keybind
+
 bindkey -e
 bindkey '\e[3~' delete-char
 

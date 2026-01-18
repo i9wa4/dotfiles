@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 # shellcheck disable=all
+
 # Zinit (manual install)
 # https://github.com/zdharma-continuum/zinit?tab=readme-ov-file#manual
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -11,7 +12,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 setopt extendedglob
 _zcompdump="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/.zcompdump-${HOST}-${ZSH_VERSION}"
 mkdir -p "${_zcompdump:h}"
-zinit ice wait'0a' lucid \
+# zinit ice wait'0a' lucid
+zinit ice lucid \
   atload'
     autoload -Uz compinit
     if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
@@ -29,13 +31,9 @@ zinit ice wait'0a' lucid \
   '
 zinit light zdharma-continuum/null
 
-# direnv (lazy loading via zinit turbo mode)
-zinit ice wait'0b' lucid \
-  atload'eval "$(direnv hook zsh)"'
-zinit light zdharma-continuum/null
-
 # zeno.zsh (lazy loading via zinit turbo mode)
-zinit ice wait'0c' lucid depth"1" blockf \
+# zinit ice wait'0b' lucid depth"1" blockf
+zinit ice lucid depth"1" blockf \
   atload'
     if [[ -n "${ZENO_LOADED}" ]]; then
       bindkey " "  zeno-auto-snippet

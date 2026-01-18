@@ -100,7 +100,7 @@ repos:
         entry: shfmt -i 2 -w
         language: system
         types: [shell]
-        exclude: ^nix/zsh/
+        exclude: ^config/zsh/
 
       - id: sqlfmt
         name: sqlfmt

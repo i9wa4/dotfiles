@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # shellcheck disable=all
-# Prompt
+
 setopt prompt_subst
 
 function _get_simplified_path() {

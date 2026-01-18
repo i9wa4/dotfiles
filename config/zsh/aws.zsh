@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 # shellcheck disable=all
+
 # AWS command wrapper (tracks SSO profile)
 aws() {
   local profile=""
