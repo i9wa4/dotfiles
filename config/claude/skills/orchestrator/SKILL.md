@@ -338,36 +338,30 @@ cx manages token usage of cc (main session).
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md
 ```
 
-### 11.6. Review Task Content
+### 11.6. Review Execution
+
+Task content template:
 
 ```text
 [SUBAGENT capability=READONLY]
-
 <!-- REVIEW_SESSION
-timestamp: {TS}
-source: {SOURCE}
-role: {ROLE}
-review_type: {REVIEW_TYPE}
-target_type: {TARGET_TYPE}
-target: {TARGET}
+timestamp: {TS}, source: {SOURCE}, role: {ROLE}
+review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
 -->
-
 Return your review directly. Do NOT create files.
 ```
 
-### 11.7. Batch Execution (cx)
+Batch execution (cx): Use Section 8.2 pattern with loop:
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S)
 for ROLE in security architecture historian code qa; do
-  codex exec --sandbox workspace-write -C .i9wa4 \
-    -o ".i9wa4/reviews/cx-${ROLE}.md" \
-    "[SUBAGENT capability=READONLY] ..." &
+  # See Section 8.2 for codex exec syntax
 done
 wait
 ```
 
-### 11.8. Summary Output
+### 11.7. Summary Output
 
 Output: `.i9wa4/reviews/summary.md`
 
