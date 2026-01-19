@@ -69,7 +69,7 @@ echo "* Setup complete"
 echo ""
 echo "To add more MCP servers for this project:"
 # shellcheck disable=SC2016
-echo 'claude mcp add --scope project slack -e "SLACK_MCP_XOXP_TOKEN=${SLACK_MCP_XOXP_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio'
+echo 'claude mcp add --scope project slack -e "SLACK_MCP_XOXC_TOKEN=${SLACK_MCP_XOXC_TOKEN}" -e "SLACK_MCP_XOXD_TOKEN=${SLACK_MCP_XOXD_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio'
 echo "claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp"
 echo "claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest"
 echo "claude mcp add --scope project codex-mcp -- codex mcp-server"
