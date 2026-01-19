@@ -358,16 +358,40 @@ review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
 Return your review directly. Do NOT create files.
 ```
 
-Batch execution (cx):
+#### Method A: Task Tool (Recommended for Claude Code)
+
+Use Task tool with reviewer agents. Launch multiple Task tools in a single message
+for parallel execution with clean output isolation.
+
+```text
+Task tool calls (parallel):
+- subagent_type: reviewer-security
+- subagent_type: reviewer-architecture
+- subagent_type: reviewer-historian
+- subagent_type: reviewer-code
+- subagent_type: reviewer-qa
+```
+
+Each reviewer agent reads the agent file automatically.
+
+#### Method B: Codex CLI Sequential (Recommended for Codex)
+
+NEVER use background processes (`&`) with codex exec - causes output interleaving.
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S)
 for ROLE in security architecture historian code qa; do
   codex exec --sandbox workspace-write -C .i9wa4 \
-    -o ".i9wa4/reviews/cx-${ROLE}.md" "{task}" &
+    -o ".i9wa4/reviews/${TS}-cx-${ROLE}.md" "{task}"
 done
-wait
 ```
+
+#### Method C: Codex CLI Parallel (Advanced)
+
+For true parallelism without output mixing, use separate terminal sessions
+or accept that outputs will be written to files (not displayed cleanly).
+
+WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
 ### 10.5. Summary Output
 
