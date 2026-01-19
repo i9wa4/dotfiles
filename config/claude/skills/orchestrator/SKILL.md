@@ -66,9 +66,11 @@ Both modes allow writes to `.i9wa4/` and `/tmp/`.
 - ALLOWED: Write to `.i9wa4/` and `/tmp/`
 - DELEGATE: Execution to Worker/Subagent
 
-### 2.5. Worker/Subagent Constraints
+### 2.5. Worker/Subagent Constraints (Claude Code)
 
-- NEVER: Use AskUserQuestion (user interaction is Orchestrator's role)
+When Worker/Subagent is Claude Code:
+
+- NEVER: Use AskUserQuestion tool (user interaction is Orchestrator's role)
 - NEVER: Ask questions directly to user
 - MUST: Report unclear points in response to Orchestrator
 - MUST: Orchestrator handles all user communication
@@ -79,7 +81,7 @@ Both modes allow writes to `.i9wa4/` and `/tmp/`.
 
 ```text
 [WORKER capability=READONLY|WRITABLE to=%N]
-IMPORTANT: Do NOT use AskUserQuestion. Report unclear points in your response.
+IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool. Report unclear points in your response.
 
 {task content}
 
