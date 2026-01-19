@@ -78,7 +78,7 @@ Save to `.i9wa4/YYYY-MM-DD-$(whoami).md` (without keyword initially).
 
 Template:
 
-```markdown
+````markdown
 ---
 title: "YYYY-MM-DD $(whoami)"
 labels:
@@ -115,10 +115,37 @@ Organize gh-furik output. Classify as follows:
 - Meeting name
     - Supplementary comments
 
-## 2. Reflection
+## 2. AI Coding Tool Usage
+
+### Claude Code
+
+```console
+npx ccusage@latest --compact --since $(date +%Y%m%d)
+```
+
+| Date       | Models | Input | Output | Cost (USD) |
+| ---------- | ------ | ----- | ------ | ---------- |
+| YYYY-MM-DD | ...    | ...   | ...    | ...        |
+
+### Codex CLI
+
+```console
+npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
+```
+
+| Date       | Models | Input | Output | Cost (USD) |
+| ---------- | ------ | ----- | ------ | ---------- |
+| YYYY-MM-DD | ...    | ...   | ...    | ...        |
+
+## 3. Reflection
 
 Today's thoughts and learnings.
+
+```text
+
 ```
+
+````
 
 ### 2.3. Wait for User Edit
 

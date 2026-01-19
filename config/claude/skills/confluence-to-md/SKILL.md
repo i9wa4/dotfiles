@@ -9,7 +9,7 @@ This skill provides functionality to convert Confluence pages to Markdown.
 
 ## 1. Overview
 
-Use the `bin/confluence-to-md.py` script
+Use the `~/ghq/github.com/i9wa4/dotfiles/bin/confluence-to-md.py` script
 to convert Confluence pages to Markdown files.
 
 ### 1.1. Key Features
@@ -54,7 +54,7 @@ export CONFLUENCE_API_TOKEN=your-api-token
 
 ```sh
 uvx --with requests --with beautifulsoup4 --with html2text \
-    python confluence-to-md.py <confluence_url>
+    python ~/ghq/github.com/i9wa4/dotfiles/bin/confluence-to-md.py <confluence_url>
 ```
 
 ### 3.2. URL Format

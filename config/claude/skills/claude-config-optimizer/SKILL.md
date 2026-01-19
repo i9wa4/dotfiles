@@ -114,7 +114,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 9. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.9 (2026-01-16)
+Last reviewed Claude Code version: v2.1.12 (2026-01-20)
 
 ### 9.1. Applied Optimizations
 
@@ -135,6 +135,7 @@ Last reviewed Claude Code version: v2.1.9 (2026-01-16)
 
 ### 9.3. Version Notes
 
+- v2.1.10: Setup hook, OAuth URL copy shortcut, heredoc template literal fix
 - v2.1.9: plansDirectory, auto:N for MCP, PreToolUse additionalContext
 - v2.1.7: keybindings.json, showTurnDuration, MCP tool search auto mode
 - v2.1.3: Merged slash commands and skills
