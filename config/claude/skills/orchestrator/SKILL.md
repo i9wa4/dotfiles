@@ -136,8 +136,11 @@ codex exec --sandbox workspace-write -C .i9wa4 \
 wait
 ```
 
-NOTE: `-o` path is relative to caller's directory (not affected by `-C`).
-When using `-o`, return results directly (do NOT create files).
+NOTE:
+
+- Do NOT use `--model` option
+- `-o` path is relative to caller's directory (not affected by `-C`)
+- When using `-o`, return results directly (do NOT create files)
 
 ## 6. Phase Management
 
