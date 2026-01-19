@@ -66,12 +66,21 @@ Both modes allow writes to `.i9wa4/` and `/tmp/`.
 - ALLOWED: Write to `.i9wa4/` and `/tmp/`
 - DELEGATE: Execution to Worker/Subagent
 
+### 2.5. Worker/Subagent Constraints
+
+- NEVER: Use AskUserQuestion (user interaction is Orchestrator's role)
+- NEVER: Ask questions directly to user
+- MUST: Report unclear points in response to Orchestrator
+- MUST: Orchestrator handles all user communication
+
 ## 3. Communication & Discovery
 
 ### 3.1. Worker Request
 
 ```text
 [WORKER capability=READONLY|WRITABLE to=%N]
+IMPORTANT: Do NOT use AskUserQuestion. Report unclear points in your response.
+
 {task content}
 
 [RESPONSE]
