@@ -44,7 +44,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 else
 	nix run home-manager -- switch --impure --flake '.#ubuntu'
 endif
-	uv run python bin/nix-pkgs-diff.py
+	uv run python bin/nix-flake-diff.py
 	uv run python bin/nix-custom-diff.py
 
 # nvim-build:  ## build Neovim from source
