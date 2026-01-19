@@ -119,10 +119,10 @@
       }
     }
   },
-  "language": "follow CLAUDE.md's instructions",
-  "spinnerTipsEnabled": true,
   "alwaysThinkingEnabled": true,
+  "language": "follow CLAUDE.md's instructions",
+  "mcpToolSearch": "auto:1",
   "preferredNotifChannel": "terminal_bell",
-  "mcpToolSearch": "auto:5",
+  "spinnerTipsEnabled": true,
   "plansDirectory": ".i9wa4/plans"
 }
