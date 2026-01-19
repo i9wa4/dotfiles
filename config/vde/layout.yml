@@ -13,9 +13,9 @@ presets:
         - name: claude
           command: claude --dangerously-skip-permissions
 
-  dev-orchestrator:
-    name: dev-orchestrator
-    description: dev-orchestrator
+  orchestrator:
+    name: orchestrator
+    description: orchestrator
     windowMode: current-window
     layout:
       type: horizontal
@@ -27,9 +27,9 @@ presets:
         - name: orchestrator
           command: CLAUDE_ROLE=orchestrator claude --dangerously-skip-permissions
 
-  dev-workers:
-    name: dev-workers
-    description: dev-workers
+  workers:
+    name: workers
+    description: workers
     windowMode: new-window
     layout:
       type: horizontal

@@ -119,6 +119,11 @@ snippets:
       . ~/ghq/github.com/i9wa4/dotfiles/.venv{{}}/bin/activate
 
   - name: (vde-layout) dev
-    keyword: vd
+    keyword: vo
     snippet:
-      vde-layout dev-orchestrator && vde-layout dev-workers
+      vde-layout dev
+
+  - name: (vde-layout) orchestrator
+    keyword: vo
+    snippet:
+      vde-layout orchestrator && vde-layout workers
