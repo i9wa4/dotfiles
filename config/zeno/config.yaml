@@ -121,4 +121,4 @@ snippets:
   - name: (vde-layout) dev
     keyword: vd
     snippet:
-      vde-layout dev-main && vde-layout dev-workers
+      vde-layout dev-orchestrator && vde-layout dev-workers

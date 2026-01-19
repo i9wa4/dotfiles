@@ -4,28 +4,18 @@ presets:
     description: dev
     windowMode: current-window
     layout:
-      type: vertical
-      ratio: [3, 1]
+      type: horizontal
+      ratio: [1, 1]
       panes:
-        - type: horizontal
-          ratio: [1, 1]
-          panes:
-            - name: editor
-              command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
-              focus: true
-            - name: orchestrator
-              command: CLAUDE_ROLE=orchestrator claude --dangerously-skip-permissions
-        - type: horizontal
-          ratio: [1, 1]
-          panes:
-            - name: codex
-              command: codex --yolo
-            - name: claude
-              command: claude --dangerously-skip-permissions
+        - name: editor
+          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          focus: true
+        - name: claude
+          command: claude --dangerously-skip-permissions
 
-  dev-main:
-    name: dev-main
-    description: dev-main
+  dev-orchestrator:
+    name: dev-orchestrator
+    description: dev-orchestrator
     windowMode: current-window
     layout:
       type: horizontal
