@@ -119,7 +119,7 @@ snippets:
       . ~/ghq/github.com/i9wa4/dotfiles/.venv{{}}/bin/activate
 
   - name: (vde-layout) dev
-    keyword: vo
+    keyword: vd
     snippet:
       vde-layout dev
 
