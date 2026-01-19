@@ -7,6 +7,7 @@ description: |
   - User says "read this slack thread" or "fetch slack thread"
   - User wants to see conversation context from Slack
   - User wants to search Slack messages
+  - User wants to fetch channel history (e.g., Google Calendar DM)
 ---
 
 # Slack API Skill
@@ -15,36 +16,16 @@ Fetch threads and search messages using direct API calls (no MCP server needed).
 
 ## 1. Prerequisites
 
-### 1.1. Environment Variable
+### 1.1. Environment Variables
 
 ```sh
-export SLACK_MCP_XOXP_TOKEN="xoxp-..."
+export SLACK_MCP_XOXC_TOKEN="xoxc-..."
+export SLACK_MCP_XOXD_TOKEN="xoxd-..."
 ```
 
-### 1.2. Token Setup
+## 2. URL Formats
 
-Reference: <https://github.com/korotovsky/slack-mcp-server>
-
-1. Create Slack App at <https://api.slack.com/apps>
-2. Go to "OAuth & Permissions"
-3. Add User Token Scopes (read-only for this skill)
-   - `channels:history` - view messages in public channels
-   - `channels:read` - view basic info about public channels
-   - `groups:history` - view messages in private channels
-   - `groups:read` - view basic info about private channels
-   - `im:history` - view messages in DMs
-   - `im:read` - view basic info about DMs
-   - `mpim:history` - view messages in group DMs
-   - `mpim:read` - view basic info about group DMs
-   - `users:read` - view people in workspace
-   - `search:read` - search workspace content
-4. Install to Workspace
-5. Copy "User OAuth Token" (starts with `xoxp-`)
-6. Export as environment variable in `.zshrc` or similar
-
-## 2. URL Format
-
-Slack message URLs look like:
+### 2.1. Message URL (archives format)
 
 ```text
 https://xxx.slack.com/archives/C1234567890/p1234567890123456
@@ -54,9 +35,45 @@ https://xxx.slack.com/archives/C1234567890/p1234567890123456
 - `p1234567890123456` = timestamp (remove `p`, insert `.` before last 6 digits)
     - `p1234567890123456` → `1234567890.123456`
 
-## 3. Fetch Thread
+### 2.2. Channel URL (client format)
 
-### 3.1. Parse URL and Fetch
+```text
+https://app.slack.com/client/E1234567890/C1234567890
+https://app.slack.com/client/E1234567890/D1234567890
+```
+
+- First ID (E...) = Enterprise/Workspace ID
+- Second ID = channel ID (C = channel, D = DM)
+
+## 3. Fetch Channel History
+
+Fetch latest messages from a channel (useful for bot DMs like Google Calendar).
+
+### 3.1. Extract Channel ID from Client URL
+
+```sh
+URL="https://app.slack.com/client/E05CUN3JKJN/D07UW8G7C9H"
+CHANNEL=$(echo "$URL" | sed -n 's|.*/client/[^/]*/\([^/]*\).*|\1|p')
+echo "$CHANNEL"  # D07UW8G7C9H
+```
+
+### 3.2. Fetch Latest Messages
+
+```sh
+CHANNEL="D07UW8G7C9H"
+curl -s -X POST "https://slack.com/api/conversations.history" \
+  -H "Authorization: Bearer $SLACK_MCP_XOXC_TOKEN" \
+  -H "Cookie: d=$SLACK_MCP_XOXD_TOKEN" \
+  -d "channel=${CHANNEL}" \
+  -d "limit=20" > /tmp/slack_history.json
+
+# Extract calendar events (for Google Calendar DM)
+jq '.messages[] | select(.attachments) | .attachments[] | select(.title) | {pretext, title, text}' /tmp/slack_history.json
+```
+
+## 4. Fetch Thread
+
+### 4.1. Parse URL and Fetch
 
 ```sh
 # Example URL: https://xxx.slack.com/archives/C1234567890/p1234567890123456
@@ -64,10 +81,11 @@ CHANNEL="C1234567890"
 TS="1234567890.123456"
 
 curl -s "https://slack.com/api/conversations.replies?channel=${CHANNEL}&ts=${TS}" \
-  -H "Authorization: Bearer ${SLACK_MCP_XOXP_TOKEN}" | jq '.messages[] | {user, text, ts}'
+  -H "Authorization: Bearer ${SLACK_MCP_XOXC_TOKEN}" \
+  -H "Cookie: d=${SLACK_MCP_XOXD_TOKEN}" | jq '.messages[] | {user, text, ts}'
 ```
 
-### 3.2. One-liner with URL Parsing
+### 4.2. One-liner with URL Parsing
 
 ```sh
 URL="https://xxx.slack.com/archives/C08V9MYDQ1C/p1736929199388759"
@@ -75,10 +93,23 @@ CHANNEL=$(echo "$URL" | sed -n 's|.*/archives/\([^/]*\)/.*|\1|p')
 TS_RAW=$(echo "$URL" | sed -n 's|.*/p\([0-9]*\).*|\1|p')
 TS="${TS_RAW:0:10}.${TS_RAW:10}"
 curl -s "https://slack.com/api/conversations.replies?channel=${CHANNEL}&ts=${TS}" \
-  -H "Authorization: Bearer ${SLACK_MCP_XOXP_TOKEN}" | jq '.messages[] | {user, text, ts}'
+  -H "Authorization: Bearer ${SLACK_MCP_XOXC_TOKEN}" \
+  -H "Cookie: d=${SLACK_MCP_XOXD_TOKEN}" | jq '.messages[] | {user, text, ts}'
 ```
 
-## 4. Output Format
+### 4.3. Fetch Single Message (conversations.history)
+
+```sh
+CHANNEL="C1234567890"
+TS="1234567890.123456"
+
+curl -s -X POST "https://slack.com/api/conversations.history" \
+  -H "Authorization: Bearer ${SLACK_MCP_XOXC_TOKEN}" \
+  -H "Cookie: d=${SLACK_MCP_XOXD_TOKEN}" \
+  -d "channel=${CHANNEL}" -d "latest=${TS}" -d "limit=1" -d "inclusive=true" | jq '.messages[0]'
+```
+
+## 5. Output Format
 
 Show each message with:
 
@@ -86,17 +117,21 @@ Show each message with:
 - Message text
 - Timestamp
 
-## 5. Search Messages
+## 6. Search Messages
 
-### 5.1. Basic Search
+NOTE: Enterprise Grid may restrict `search.messages` API
+with `enterprise_is_restricted` error.
+
+### 6.1. Basic Search
 
 ```sh
-QUERY="検索キーワード"
+QUERY="keyword"
 curl -s "https://slack.com/api/search.messages?query=$(echo "$QUERY" | jq -sRr @uri)&count=20" \
-  -H "Authorization: Bearer ${SLACK_MCP_XOXP_TOKEN}" | jq '.messages.matches[] | {channel: .channel.name, user, text, ts, permalink}'
+  -H "Authorization: Bearer ${SLACK_MCP_XOXC_TOKEN}" \
+  -H "Cookie: d=${SLACK_MCP_XOXD_TOKEN}" | jq '.messages.matches[] | {channel: .channel.name, user, text, ts, permalink}'
 ```
 
-### 5.2. Search with Filters
+### 6.2. Search with Filters
 
 ```sh
 # Search in specific channel
@@ -112,16 +147,21 @@ QUERY="after:2026-01-01 before:2026-01-15 keyword"
 QUERY="in:#general from:@john after:2026-01-01 terraform"
 
 curl -s "https://slack.com/api/search.messages?query=$(echo "$QUERY" | jq -sRr @uri)&count=20&sort=timestamp&sort_dir=desc" \
-  -H "Authorization: Bearer ${SLACK_MCP_XOXP_TOKEN}" | jq '.messages.matches[] | {channel: .channel.name, user, text, ts, permalink}'
+  -H "Authorization: Bearer ${SLACK_MCP_XOXC_TOKEN}" \
+  -H "Cookie: d=${SLACK_MCP_XOXD_TOKEN}" | jq '.messages.matches[] | {channel: .channel.name, user, text, ts, permalink}'
 ```
 
-### 5.3. Search Options
+### 6.3. Search Options
 
 - `count`: Number of results (default 20, max 100)
 - `sort`: `score` (relevance) or `timestamp`
 - `sort_dir`: `asc` or `desc`
 
-## 6. Error Handling
+## 7. Error Handling
 
 - If `ok: false` in response, show error message
-- Common errors: `channel_not_found`, `thread_not_found`, `invalid_auth`
+- Common errors:
+    - `channel_not_found` - invalid channel ID
+    - `thread_not_found` - invalid timestamp
+    - `invalid_auth` - token expired or invalid
+    - `enterprise_is_restricted` - Enterprise Grid API restriction

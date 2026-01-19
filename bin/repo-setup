@@ -65,7 +65,11 @@ case "${repo_name}" in
   ;;
 esac
 
-claude mcp add --scope project slack -e "SLACK_MCP_XOXC_TOKEN=${SLACK_MCP_XOXC_TOKEN}" -e "SLACK_MCP_XOXD_TOKEN=${SLACK_MCP_XOXD_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio
+# Reset .mcp.json
+rm -f .mcp.json
+
+# https://github.com/korotovsky/slack-mcp-server
+# claude mcp add --scope project slack -e "SLACK_MCP_XOXC_TOKEN=${SLACK_MCP_XOXC_TOKEN}" -e "SLACK_MCP_XOXD_TOKEN=${SLACK_MCP_XOXD_TOKEN}" -- npx -y slack-mcp-server@latest --transport stdio
 claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
 claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest
 claude mcp add --scope project mcp-atlassian -e "JIRA_URL=${CONFLUENCE_BASE%/wiki}" -e "JIRA_USERNAME=${CONFLUENCE_EMAIL}" -e "JIRA_API_TOKEN=${CONFLUENCE_API_TOKEN}" -e "CONFLUENCE_URL=${CONFLUENCE_BASE}" -e "CONFLUENCE_USERNAME=${CONFLUENCE_EMAIL}" -e "CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN}" -- uvx --python=3.12 mcp-atlassian

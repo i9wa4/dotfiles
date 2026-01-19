@@ -125,7 +125,8 @@ Last reviewed Claude Code version: v2.1.12 (2026-01-20)
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "follow CLAUDE.md's instructions"
-- [x] `mcpToolSearch` setting - set to "auto:5"
+- [x] `mcpToolSearch` setting - set to "auto:1"
+- [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
 - [x] `plansDirectory` setting - set to ".i9wa4/plans"
 
 ### 9.2. Pending Considerations

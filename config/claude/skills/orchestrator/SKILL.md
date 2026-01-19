@@ -94,6 +94,12 @@ Command: tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] <file_path>" \
 Send to Worker via tmux buffer.
 Worker responds: `[RESPONSE from=%M] /path/to/file.md`
 
+IMPORTANT:
+
+- NEVER poll for responses (sleep + ls, etc.)
+- Responses arrive as direct user input to Orchestrator
+- Just wait for the `[RESPONSE from=%N]` message
+
 NEVER use `tmux send-keys -l` for message content (security).
 
 ### 3.2. Worker Discovery
@@ -360,8 +366,8 @@ Return your review directly. Do NOT create files.
 
 #### Method A: Task Tool (Recommended for Claude Code)
 
-Use Task tool with reviewer agents. Launch multiple Task tools in a single message
-for parallel execution with clean output isolation.
+Use Task tool with reviewer agents. Launch multiple Task tools in a single
+message for parallel execution with clean output isolation.
 
 ```text
 Task tool calls (parallel):
@@ -376,7 +382,8 @@ Each reviewer agent reads the agent file automatically.
 
 #### Method B: Codex CLI Sequential (Recommended for Codex)
 
-NEVER use background processes (`&`) with codex exec - causes output interleaving.
+NEVER use background processes (`&`) with codex exec -
+causes output interleaving.
 
 ```bash
 TS=$(date +%Y%m%d-%H%M%S)
