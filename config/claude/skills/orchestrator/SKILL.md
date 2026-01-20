@@ -91,7 +91,19 @@ Command: tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] <file_path>" \
   && tmux paste-buffer -t %N && sleep 0.2 && tmux send-keys -t %N Enter
 ```
 
-Send to Worker via tmux buffer.
+Orchestrator → Worker (send request):
+
+```bash
+tmux load-buffer /tmp/request.txt && tmux paste-buffer -t %N && sleep 1 && tmux send-keys -t %N Enter
+```
+
+Worker → Orchestrator (send response):
+
+```bash
+tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] <file_path>" \
+  && tmux paste-buffer -t %N && sleep 0.2 && tmux send-keys -t %N Enter
+```
+
 Worker responds: `[RESPONSE from=%M] /path/to/file.md`
 
 IMPORTANT:
