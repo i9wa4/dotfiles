@@ -1,23 +1,26 @@
 #!/usr/bin/env bash
 
-# Display system load (CPU and memory usage) for tmux status line.
-# Shows Chrome separately to track browser resource usage.
+# Display system load (CPU, GPU, memory usage) for tmux status line.
+# Shows Chrome/Claude/Codex separately to track resource usage.
 #
 # Usage:
 #   system-load
 #
 # Output format:
-#   C:Chr XX%/Oth XX% | M:Chr X.XG/Oth X.XG
+#   macOS: CPU:ChrXX%/XX% GPU:XX% Mem:ChrXX%/XX%
+#   Linux: CPU:ChrXX%/XX% Mem:XX%
 #
 # Supported platforms:
 #   - macOS (Darwin)
 #   - Linux
 #
-# Memory measurement:
-#   - macOS: Uses `top -stats mem` which equals `footprint` (accurate)
-#   - Linux: Uses RSS from ps (may overcount shared memory)
+# Memory measurement (macOS):
+#   Uses footprint command for accurate per-process memory.
+#   Results are cached for 10 seconds to avoid performance impact.
 
 os_type=$(uname -s)
+MEM_CACHE_FILE="/tmp/system-load-mem-cache"
+MEM_CACHE_TTL=10
 
 # Get total CPU usage percentage
 get_total_cpu_usage() {
@@ -55,54 +58,132 @@ get_total_cpu_usage() {
 
 # Get Chrome CPU usage percentage (sum of all Chrome processes)
 get_chrome_cpu_usage() {
-  # shellcheck disable=SC2009
-  ps -eo %cpu,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {printf "%.0f", sum+0}'
-}
-
-# Parse memory value from top (handles G/M/K suffixes)
-# Usage: parse_top_mem "123M" -> outputs MB value
-# shellcheck disable=SC2016
-parse_top_mem_awk='
-{
-  mem = $2
-  gsub(/\+$/, "", mem)
-  if (mem ~ /G$/) { gsub(/G$/, "", mem); mb = mem * 1024 }
-  else if (mem ~ /M$/) { gsub(/M$/, "", mem); mb = mem }
-  else if (mem ~ /K$/) { gsub(/K$/, "", mem); mb = mem / 1024 }
-  else mb = 0
-  sum += mb
-}
-END { printf "%.1f", sum / 1024 }
-'
-
-# Get Chrome memory usage in GB
-get_chrome_memory_gb() {
   case "${os_type}" in
   Darwin)
-    # Use top's mem column which equals footprint (accurate)
-    top -l 1 -s 0 -stats pid,mem,command 2>/dev/null | grep -i chrome | awk "${parse_top_mem_awk}"
+    # Use top -l 2 to get real-time CPU usage (2nd sample is accurate)
+    top -l 2 -s 0 -stats pid,cpu,command 2>/dev/null | awk '
+      /^Processes:/ { snapshot++ }
+      snapshot == 2 && tolower($0) ~ /chrome/ { sum += $2 }
+      END { printf "%.0f", sum+0 }
+    '
     ;;
   *)
-    # Linux: Use RSS
+    # Linux: use ps (per-process real-time is complex)
     # shellcheck disable=SC2009
-    chrome_kb=$(ps -eo rss,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {print sum+0}')
-    awk "BEGIN {printf \"%.1f\", ${chrome_kb:-0} / 1024 / 1024}"
+    ps -eo %cpu,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {printf "%.0f", sum+0}'
     ;;
   esac
 }
 
-# Get Other (non-Chrome) memory usage in GB
-get_other_memory_gb() {
+# Get GPU usage percentage (macOS only)
+get_gpu_usage() {
   case "${os_type}" in
   Darwin)
-    # Sum non-Chrome processes' mem from top (skip header lines)
-    top -l 1 -s 0 -stats pid,mem,command 2>/dev/null | tail -n +13 | grep -vi chrome | awk "${parse_top_mem_awk}"
+    ioreg -r -d 1 -c IOAccelerator 2>/dev/null | grep -o '"Device Utilization %"=[0-9]*' | grep -o '[0-9]*$' | head -1
     ;;
   *)
-    # Linux: Use RSS for non-Chrome processes
-    # shellcheck disable=SC2009
-    other_kb=$(ps -eo rss,comm 2>/dev/null | grep -vi chrome | awk '{sum += $1} END {print sum+0}')
-    awk "BEGIN {printf \"%.1f\", ${other_kb:-0} / 1024 / 1024}"
+    echo ""
+    ;;
+  esac
+}
+
+# Get physical memory used (simple, for Linux)
+get_mem_used_simple() {
+  case "${os_type}" in
+  Linux)
+    awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0fG", (total-avail)/1024/1024}' /proc/meminfo
+    ;;
+  *)
+    echo ""
+    ;;
+  esac
+}
+
+# Calculate memory for a category using footprint (macOS only)
+# Usage: calc_category_mem "chrome|pattern"
+calc_category_mem() {
+  local pattern="$1"
+  local total_kb=0
+  local pids
+  pids=$(pgrep -i "${pattern}" 2>/dev/null)
+  if [ -z "${pids}" ]; then
+    echo "0"
+    return
+  fi
+  for pid in ${pids}; do
+    # footprint outputs like "phys_footprint: 123 MB" or "phys_footprint: 456 KB"
+    local fp_line
+    fp_line=$(footprint "${pid}" 2>/dev/null | grep "phys_footprint:")
+    if [ -n "${fp_line}" ]; then
+      local val unit
+      val=$(echo "${fp_line}" | awk '{print $2}')
+      unit=$(echo "${fp_line}" | awk '{print $3}')
+      case "${unit}" in
+      KB) total_kb=$((total_kb + val)) ;;
+      MB) total_kb=$((total_kb + val * 1024)) ;;
+      GB) total_kb=$((total_kb + val * 1024 * 1024)) ;;
+      esac
+    fi
+  done
+  echo "${total_kb}"
+}
+
+# Update memory cache (runs in background)
+# Saves percentages of total physical memory
+update_mem_cache() {
+  local chrome_kb total_phys_kb used_kb
+  chrome_kb=$(calc_category_mem "chrome")
+  # Get total physical memory
+  total_phys_kb=$(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%.0f", $1/1024}')
+  # Get used physical memory from top (e.g., "15G" -> KB)
+  used_kb=$(top -l 1 -s 0 2>/dev/null | awk '/PhysMem/ {
+    gsub(/G/, "", $2)
+    printf "%.0f", $2 * 1024 * 1024
+  }')
+  # Calculate percentages
+  local chrome_pct other_pct other_kb
+  chrome_pct=$((chrome_kb * 100 / total_phys_kb))
+  other_kb=$((used_kb - chrome_kb))
+  [ "${other_kb}" -lt 0 ] && other_kb=0
+  other_pct=$((other_kb * 100 / total_phys_kb))
+  echo "${chrome_pct} ${other_pct}" >"${MEM_CACHE_FILE}"
+}
+
+# Get memory breakdown from cache (macOS only)
+get_mem_breakdown() {
+  case "${os_type}" in
+  Darwin)
+    # Check if cache exists and is fresh
+    if [ -f "${MEM_CACHE_FILE}" ]; then
+      local cache_age
+      # macOS: stat -f %m, Linux: stat -c %Y
+      local mtime
+      if stat -f %m "${MEM_CACHE_FILE}" >/dev/null 2>&1; then
+        mtime=$(stat -f %m "${MEM_CACHE_FILE}")
+      else
+        mtime=$(stat -c %Y "${MEM_CACHE_FILE}")
+      fi
+      cache_age=$(($(date +%s) - mtime))
+      if [ "${cache_age}" -lt "${MEM_CACHE_TTL}" ]; then
+        # Cache is fresh, read it
+        read -r chrome_pct other_pct <"${MEM_CACHE_FILE}"
+        echo "Chr${chrome_pct}%/${other_pct}%"
+        return
+      fi
+    fi
+    # Cache is stale or missing, start background update
+    update_mem_cache &
+    # Return old cache if exists, otherwise simple value
+    if [ -f "${MEM_CACHE_FILE}" ]; then
+      read -r chrome_pct other_pct <"${MEM_CACHE_FILE}"
+      echo "Chr${chrome_pct}%/${other_pct}%"
+    else
+      # First run, show simple total
+      top -l 1 -s 0 2>/dev/null | awk '/PhysMem/ { print $2 }'
+    fi
+    ;;
+  *)
+    get_mem_used_simple
     ;;
   esac
 }
@@ -110,8 +191,8 @@ get_other_memory_gb() {
 # Main
 total_cpu=$(get_total_cpu_usage)
 chrome_cpu=$(get_chrome_cpu_usage)
-chrome_mem=$(get_chrome_memory_gb)
-other_mem=$(get_other_memory_gb)
+gpu_usage=$(get_gpu_usage)
+mem_info=$(get_mem_breakdown)
 
 # Calculate other CPU (cap Chrome at total to avoid negative)
 if [ "${chrome_cpu}" -gt "${total_cpu}" ]; then
@@ -119,8 +200,13 @@ if [ "${chrome_cpu}" -gt "${total_cpu}" ]; then
 fi
 other_cpu=$((total_cpu - chrome_cpu))
 
-# Ensure values are not empty
-[ -z "${chrome_mem}" ] && chrome_mem="0.0"
-[ -z "${other_mem}" ] && other_mem="0.0"
+# Build output
+output="CPU:Chr${chrome_cpu}%/${other_cpu}%"
+if [ -n "${gpu_usage}" ]; then
+  output="${output} GPU:${gpu_usage}%"
+fi
+if [ -n "${mem_info}" ]; then
+  output="${output} Mem:${mem_info}"
+fi
 
-echo "CPU:Chr${chrome_cpu}%/${other_cpu}% Mem:Chr${chrome_mem}G/${other_mem}G"
+echo "${output}"
