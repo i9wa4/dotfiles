@@ -231,17 +231,7 @@ Limits:
 - Minimal management (Databricks handles capacity)
 - Low total cost of ownership
 
-## 8. Detailed Documentation
-
-See `docs/` directory for detailed documentation:
-
-- `unity-catalog.md` - Unity Catalog details and permission management
-- `data-engineering.md` - Data engineering best practices
-- `machine-learning.md` - Machine learning infrastructure details
-- `security.md` - Security and permission design
-- `well-architected.md` - Well-Architected framework
-
-## 9. Reference Links
+## 8. Reference Links
 
 - Official docs: <https://docs.databricks.com/>
 - Unity Catalog: <https://docs.databricks.com/en/data-governance/unity-catalog/>

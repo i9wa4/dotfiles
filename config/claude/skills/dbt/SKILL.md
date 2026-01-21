@@ -128,55 +128,7 @@ select * from `catalog-name`.schema_name.table_name;
 select `full-width column` from table_name;
 ```
 
-## 5. Best Practices Documentation
-
-`docs/` directory contains best practice documentation:
-
-### 5.1. Project Structure
-
-- `1-guide-overview.md` - Structure guide overview
-- `2-staging.md` - Staging layer
-- `3-intermediate.md` - Intermediate layer
-- `4-marts.md` - Mart layer
-- `5-semantic-layer.md` - Semantic layer
-
-### 5.2. Style Guide
-
-- `0-how-we-style-our-dbt-projects.md` - Project style overview
-- `1-how-we-style-our-dbt-models.md` - Model style
-- `2-how-we-style-our-sql.md` - SQL style
-- `3-how-we-style-our-python.md` - Python style
-- `4-how-we-style-our-jinja.md` - Jinja style
-- `5-how-we-style-our-yaml.md` - YAML style
-
-### 5.3. Materializations
-
-- `1-guide-overview.md` - Materialization overview
-- `2-available-materializations.md` - Available materializations
-- `3-configuring-materializations.md` - Configuration
-- `4-incremental-models.md` - Incremental models
-- `5-best-practices.md` - Best practices
-
-### 5.4. dbt Mesh
-
-- `mesh-1-intro.md` - dbt Mesh introduction
-- `mesh-2-who-is-dbt-mesh-for.md` - Target users
-- `mesh-3-structures.md` - Structures
-- `mesh-4-implementation.md` - Implementation
-- `mesh-5-faqs.md` - FAQ
-
-## 6. Documentation Search
-
-```bash
-python scripts/search_docs.py "<query>"
-```
-
-Options:
-
-- `--json` - Output in JSON format
-- `--max-results N` - Limit number of results (default: 10)
-
-## 7. Response Format
+## 5. Response Format
 
 ```text
 [Documentation-based response]

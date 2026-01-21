@@ -329,24 +329,7 @@ terraform {
 - Add `.terraform/` to `.gitignore`
 - Add `*.tfvars` to `.gitignore` (if contains sensitive info)
 
-## 10. Detailed Documentation
-
-See `docs/` directory for detailed documentation:
-
-- `language-overview.md` - Terraform language overview
-- `resources.md` - Resource management details
-- `modules.md` - Module design
-- `state.md` - State management
-- `providers.md` - Provider configuration
-- `variables.md` - Variables and outputs
-- `expressions.md` - Expressions and functions
-- `lifecycle.md` - Lifecycle control
-- `backends.md` - Backend configuration
-- `sensitive-data.md` - Sensitive data handling
-- `data-sources.md` - Data sources
-- `hcp-terraform.md` - HCP Terraform / Terraform Cloud
-
-## 11. Reference Links
+## 10. Reference Links
 
 - Official docs: <https://developer.hashicorp.com/terraform/docs>
 - Language reference: <https://developer.hashicorp.com/terraform/language>
