@@ -79,29 +79,31 @@ When Worker/Subagent is Claude Code:
 
 ### 3.1. Worker Request
 
+Orchestrator MUST include the response command in EVERY request.
+Worker MUST respond via tmux command, NOT display to user directly.
+
+Template (Orchestrator fills `{ORCH_PANE}` with own pane ID, e.g., %116):
+
 ```text
 [WORKER capability=READONLY|WRITABLE to=%N]
-IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool. Report unclear points in your response.
+IMPORTANT: Do NOT display response to user. Respond via tmux command below.
+IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool.
 
 {task content}
 
-[RESPONSE]
-Dir: /tmp/communication/
-Command: tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] <file_path>" \
-  && tmux paste-buffer -t %N && sleep 0.2 && tmux send-keys -t %N Enter
+[RESPONSE REQUIRED]
+1. Write your response to a file:
+   /tmp/communication/{descriptive-name}.md
+
+2. Send notification to Orchestrator:
+   tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] /tmp/communication/{descriptive-name}.md" \
+     && tmux paste-buffer -t {ORCH_PANE} && sleep 0.2 && tmux send-keys -t {ORCH_PANE} Enter
 ```
 
 Orchestrator → Worker (send request):
 
 ```bash
 tmux load-buffer /tmp/request.txt && tmux paste-buffer -t %N && sleep 1 && tmux send-keys -t %N Enter
-```
-
-Worker → Orchestrator (send response):
-
-```bash
-tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] <file_path>" \
-  && tmux paste-buffer -t %N && sleep 0.2 && tmux send-keys -t %N Enter
 ```
 
 Worker responds: `[RESPONSE from=%M] /path/to/file.md`
