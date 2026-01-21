@@ -394,11 +394,7 @@ bq query --use_legacy_sql=false \
   'SELECT DATE(created_at) as date, COUNT(*) as count FROM source GROUP BY 1'
 ```
 
-## 10. Detailed Documentation
-
-See `docs/` directory for supplementary documentation.
-
-## 11. Reference Links
+## 10. Reference Links
 
 - Official docs: <https://cloud.google.com/bigquery/docs>
 - GoogleSQL reference: <https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax>
