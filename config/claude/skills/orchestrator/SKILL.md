@@ -222,6 +222,7 @@ NEXT: <what is needed to continue>
 # Roadmap: <Feature Name>
 
 ## Phase: PLAN
+
 - [x] Read requirements
 - [x] Investigate existing code
 - [x] Consult Workers
@@ -230,6 +231,7 @@ NEXT: <what is needed to continue>
 - [x] User approval
 
 ## Phase: CODE
+
 - [x] Implement changes
 - [x] Add tests
 - [x] Consult Workers
@@ -237,10 +239,12 @@ NEXT: <what is needed to continue>
 - [ ] User approval
 
 ## Phase: PR
+
 - [ ] Consult Workers
 - [ ] Create draft PR
 
 ## Blocked
+
 - [ ] <blocked item> (reason)
 ```
 
@@ -261,28 +265,34 @@ NEXT: <what is needed to continue>
 Save to `.i9wa4/plans/<descriptive-name>.md`:
 
 ```markdown
-# Plan: <title>
+# Plan: {title}
 
 ## Source
+
 - Type: <source_type>
 - Reference: <source_reference>
 
 ## Context
+
 <additional context from user>
 
 ## Investigation Summary
+
 <findings from investigation phase>
 
 ## Implementation Plan
 
 ### Step 1: <step title>
+
 - Files: <affected files>
 - Changes: <what to change>
 
 ## Risks and Considerations
+
 - <risk 1>
 
 ## Test Strategy
+
 - <how to verify>
 ```
 
@@ -313,17 +323,21 @@ Output: `.i9wa4/completion-{id}.md`
 # Implementation Complete
 
 ## Plan Reference
-- File: .i9wa4/plans/<plan-file>.md
+
+- File: .i9wa4/plans/plan-file.md
 
 ## Changes Made
+
 | File   | Change Type | Description |
 | ------ | ----------- | ----------- |
 | <file> | <type>      | <desc>      |
 
 ## Test Results
+
 - <test outcome>
 
 ## PR / Commit
+
 - <PR number or commit hash>
 ```
 
@@ -420,15 +434,27 @@ Output: `.i9wa4/reviews/summary.md`
 
 ```markdown
 # Review Summary
+
 ## Target
+
 - Type: {review_type} / {target_type}, Target: {target}
+
 ## Findings by Severity
+
 ### Critical/High
+
 | # | Issue | Reporter | File |
+| - | ----- | -------- | ---- |
+
 ### Medium
+
 | # | Issue | Reporter | File |
+| - | ----- | -------- | ---- |
+
 ### Low
+
 | # | Issue | Reporter | File |
+| - | ----- | -------- | ---- |
 ```
 
 ## 11. PR Workflow
