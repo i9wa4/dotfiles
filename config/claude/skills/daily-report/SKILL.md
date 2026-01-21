@@ -1,7 +1,7 @@
 ---
 name: daily-report
 description: |
-  Daily report creation skill. Summarizes GitHub activities,
+  Daily report creation skill. Summarizes GitHub and Jira activities,
   creates a draft, and posts as an Issue.
   Use when:
   - Asked to "create daily report" or "write daily report"
@@ -11,12 +11,13 @@ description: |
 
 # Daily Report Skill
 
-Summarize @i9wa4's GitHub activities and post as a GitHub Issue.
+Summarize @i9wa4's GitHub and Jira activities and post as a GitHub Issue.
 
 ## 1. Prerequisites
 
 - gh CLI installed
 - jq installed
+- acli installed (for Jira)
 
 ## 2. Workflow
 
@@ -72,9 +73,28 @@ Defaults to fetching 24 hours of activities from current time
 Note: Use `--no-url` option to omit URLs and prevent mention notifications.
 Note: Personal repos (i9wa4/*) are excluded by default.
 
-### 2.2. Create Draft
+### 2.2. Get Jira Activities
+
+Use acli to fetch Jira activities.
+
+```sh
+# Today's activities
+acli jira workitem search \
+    --jql "updated >= startOfDay() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
+    --fields "key,summary,status"
+
+# Specific date range
+acli jira workitem search \
+    --jql "updated >= 'YYYY-MM-DD' AND updated < 'YYYY-MM-DD' AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
+    --fields "key,summary,status"
+```
+
+### 2.3. Create Draft
 
 Save to `.i9wa4/YYYY-MM-DD-$(whoami).md` (without keyword initially).
+
+NOTE: Keep command blocks in "AI Coding Tool Usage" section.
+Execute commands and paste results below the command block.
 
 Template:
 
@@ -110,14 +130,18 @@ Organize gh-furik output. Classify as follows:
 
 - [repo-name] Issue/PR title
 
-### 1.2. Meetings
+### 1.2. Jira
+
+- [KEY-123] Issue summary (status)
+
+### 1.3. Meetings
 
 - Meeting name
     - Supplementary comments
 
 ## 2. AI Coding Tool Usage
 
-### Claude Code
+### 2.1. Claude Code
 
 ```console
 npx ccusage@latest --compact --since $(date +%Y%m%d)
@@ -125,9 +149,8 @@ npx ccusage@latest --compact --since $(date +%Y%m%d)
 
 | Date       | Models | Input | Output | Cost (USD) |
 | ---------- | ------ | ----- | ------ | ---------- |
-| YYYY-MM-DD | ...    | ...   | ...    | ...        |
 
-### Codex CLI
+### 2.2. Codex CLI
 
 ```console
 npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
@@ -135,23 +158,16 @@ npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
 
 | Date       | Models | Input | Output | Cost (USD) |
 | ---------- | ------ | ----- | ------ | ---------- |
-| YYYY-MM-DD | ...    | ...   | ...    | ...        |
 
 ## 3. Reflection
 
-Today's thoughts and learnings.
-
-```text
-
-```
-
 ````
 
-### 2.3. Wait for User Edit
+### 2.4. Wait for User Edit
 
 Display draft and wait for user edits. User adds meetings and reflections.
 
-### 2.4. Post Issue
+### 2.5. Post Issue
 
 Post with `gh issue create`:
 

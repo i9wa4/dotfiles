@@ -59,6 +59,7 @@ in {
       ]
       ++ [
         # Cloud & Infrastructure
+        pkgs.acli # Atlassian CLI
         pkgs.awscli2
         pkgs.databricks-cli
         pkgs.google-cloud-sdk

@@ -13,10 +13,10 @@ Usage:
     uvx --with requests --with beautifulsoup4 --with html2text \
         python confluence-to-md.py <confluence_url>
 
-Environment variables (set in .zshenv.local):
-    CONFLUENCE_BASE: Base URL of Confluence instance
-    CONFLUENCE_EMAIL: User email for authentication
-    CONFLUENCE_API_TOKEN: API token for authentication
+Environment variables:
+    ATLASSIAN_SITE: Atlassian site URL (without /wiki)
+    ATLASSIAN_EMAIL: User email for authentication
+    ATLASSIAN_API_TOKEN: API token for authentication
 
 Dependencies:
     - requests
@@ -45,15 +45,17 @@ from bs4 import BeautifulSoup
 # =========================================================
 def load_env():
     """Load environment variables."""
-    base = os.getenv("CONFLUENCE_BASE")
-    email = os.getenv("CONFLUENCE_EMAIL")
-    token = os.getenv("CONFLUENCE_API_TOKEN")
-    if not (base and email and token):
+    site = os.getenv("ATLASSIAN_SITE")
+    email = os.getenv("ATLASSIAN_EMAIL")
+    token = os.getenv("ATLASSIAN_API_TOKEN")
+    if not (site and email and token):
         sys.exit(
-            "Error: CONFLUENCE_BASE, CONFLUENCE_EMAIL, CONFLUENCE_API_TOKEN "
-            "must be set as environment variables (e.g., in .zshenv.local)."
+            "Error: ATLASSIAN_SITE, ATLASSIAN_EMAIL, ATLASSIAN_API_TOKEN "
+            "must be set as environment variables."
         )
-    return base.rstrip("/"), email, token
+    # Append /wiki to site URL for Confluence API
+    base = site.rstrip("/") + "/wiki"
+    return base, email, token
 
 
 # =========================================================
