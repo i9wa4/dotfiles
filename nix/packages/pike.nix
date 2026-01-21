@@ -4,13 +4,13 @@
 }:
 buildGoModule rec {
   pname = "pike";
-  version = "0.3.89";
+  version = "0.3.91";
 
   src = fetchFromGitHub {
     owner = "jameswoolfenden";
     repo = "pike";
     rev = "v${version}";
-    hash = "sha256-9As8U0wVcZSgqhMe2/+Cneh0mra24k6dYnSqnIYCesg=";
+    hash = "sha256-PMA/4fmAE5pc6aeCYm0yfbLy2IJnOI7JJFvnmKhxZH4=";
   };
 
   vendorHash = "sha256-1V8LODOmRO4Y9z+UCi+DGT96LY1F8bOUMMCNzbk9AgI=";
