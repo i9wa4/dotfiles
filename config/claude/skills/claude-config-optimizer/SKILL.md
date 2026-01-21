@@ -163,7 +163,29 @@ Last reviewed Claude Code version: v2.1.12 (2026-01-20)
 Source: https://github.com/anthropics/claude-code
 ```
 
-## 11. Reference Links
+## 11. site2skill Usage
+
+Convert documentation websites into Claude Agent Skills.
+
+Requirements: Python 3.10+, wget (`brew install wget`)
+
+```sh
+uvx --from git+https://github.com/laiso/site2skill site2skill <URL> <SKILL_NAME>
+
+# Example
+uvx --from git+https://github.com/laiso/site2skill site2skill https://docs.pay.jp/v1/ payjp
+```
+
+Options:
+
+- `--output, -o` - Output directory (default: `.claude/skills`)
+- `--skill-output` - Where to save .skill file (default: current directory)
+- `--skip-fetch` - Skip download (reuse existing files)
+- `--clean` - Remove temporary files after completion
+
+To update existing skill docs, re-run without `--skip-fetch`.
+
+## 12. Reference Links
 
 - Claude Code config: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
