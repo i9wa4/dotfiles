@@ -317,9 +317,9 @@
       # Toggle by uncommenting the desired option
       # ------------------------------------------
       # Enable Spotlight indexing [default]
-      # mdutil -a -i on 2>/dev/null || true
+      mdutil -a -i on 2>/dev/null || true
       # Disable Spotlight indexing (saves ~500MB RAM)
-      mdutil -a -i off 2>/dev/null || true
+      # mdutil -a -i off 2>/dev/null || true
 
       # Run as user (not root)
       sudo -u ${username} bash -c '
