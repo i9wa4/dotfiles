@@ -73,4 +73,6 @@ content = """
 Required Actions:
 1. Consult worker-claude for advice/implementation
 2. Report to worker-codex (MANDATORY for every task)
+
+NOTE: When you send to worker-claude, also report status to worker-codex!
 """
