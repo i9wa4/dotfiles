@@ -30,6 +30,9 @@ terraform plan -target=aws_instance.example
 
 ### 1.2. Apply and Destroy
 
+WARNING: These commands modify infrastructure.
+Always run `terraform plan` first and ask user permission.
+
 ```sh
 # Apply changes
 terraform apply
