@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # Only remind for orchestrator role
-if [[ ${CLAUDE_ROLE:-} != "orchestrator" ]]; then
+if [[ ${AGENT_ROLE:-} != "orchestrator" ]]; then
   exit 0
 fi
 

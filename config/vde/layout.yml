@@ -25,17 +25,27 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: orchestrator
-          command: CLAUDE_ROLE=orchestrator claude --dangerously-skip-permissions
+          command: AGENT_ROLE=orchestrator claude --dangerously-skip-permissions
 
   workers:
     name: workers
     description: workers
     windowMode: new-window
     layout:
-      type: horizontal
+      type: vertical
       ratio: [1, 1]
       panes:
-        - name: codex
-          command: codex --yolo
-        - name: claude
-          command: claude --dangerously-skip-permissions
+        - type: horizontal
+          ratio: [1, 1]
+          panes:
+            - name: postman
+              command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
+            - name: codex
+              command: AGENT_ROLE=observer codex --yolo
+        - type: horizontal
+          ratio: [1, 1]
+          panes:
+            - name: codex
+              command: AGENT_ROLE=worker-codex codex --yolo
+            - name: claude
+              command: AGENT_ROLE=worker-claude claude --dangerously-skip-permissions

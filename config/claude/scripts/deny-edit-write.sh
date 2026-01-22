@@ -2,13 +2,13 @@
 # deny-edit-write.sh
 #
 # Hook script to enforce READONLY mode for Orchestrator.
-# Blocks Edit, Write, NotebookEdit tools when CLAUDE_ROLE=orchestrator.
+# Blocks Edit, Write, NotebookEdit tools when AGENT_ROLE=orchestrator.
 # Uses JSON output for better visibility to Claude.
 
 set -euo pipefail
 
 # Only enforce for orchestrator role
-if [[ ${CLAUDE_ROLE:-} != "orchestrator" ]]; then
+if [[ ${AGENT_ROLE:-} != "orchestrator" ]]; then
   exit 0
 fi
 
