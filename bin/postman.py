@@ -260,8 +260,7 @@ class Postman:
         # CC to observer (if exists and not already the recipient)
         if "observer" in self.participants and recipient != "observer":
             observer = self.participants["observer"]
-            cc_msg = f"[CC] {sender} → {recipient} - Review if needed"
-            self.deliver_notification(observer, sender, filepath, cc_message=cc_msg)
+            self.deliver_notification(observer, sender, filepath, is_cc=True)
             self.log("📋", f"CC to observer ({observer.pane_id})")
 
     def deliver_notification(
@@ -269,38 +268,31 @@ class Postman:
         participant: Participant,
         sender: str,
         filepath: Path,
-        cc_message: Optional[str] = None,
+        is_cc: bool = False,
     ) -> None:
         """Send notification to a participant's pane."""
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
-        # Build message with response instructions
-        role = participant.role
-        if cc_message:
-            # Observer CC message
-            message = (
-                f"📮 {cc_message}: {filepath.name}\n"
-                f"To respond: .i9wa4/draft/{{ts}}-from-{role}-to-orchestrator.md"
-            )
-        else:
-            # Direct message to recipient
-            message = (
-                f"📮 Mail from {sender}: {filepath.name}\n"
-                f"To respond: .i9wa4/draft/{{ts}}-from-{role}-to-{sender}.md"
-            )
+        # Get template for recipient role
+        template = self.templates.get(participant.role, {}).get("content", "")
+        if not template:
+            self.log("⚠️ ", f"No template for role: {participant.role}")
+            return
+
+        # Format template
+        response_file = f"response-{filepath.stem}.md"
+        message = template.format(
+            task=f"📮 New message: {filepath.name}",
+            response_file=response_file,
+        )
 
         try:
             if self.notification_method == "paste-buffer":
-                # Load message into buffer and paste to pane
+                subprocess.run(["tmux", "set-buffer", message], timeout=2)
                 subprocess.run(
-                    ["tmux", "set-buffer", message],
-                    timeout=2,
+                    ["tmux", "paste-buffer", "-t", participant.pane_id], timeout=2
                 )
-                subprocess.run(
-                    ["tmux", "paste-buffer", "-t", participant.pane_id],
-                    timeout=2,
-                )
-                time.sleep(self.enter_delay)  # Configurable delay
+                time.sleep(self.enter_delay)
                 subprocess.run(
                     ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
                     timeout=2,
@@ -312,7 +304,7 @@ class Postman:
                         "display-message",
                         "-t",
                         participant.pane_id,
-                        message,
+                        message[:100],
                     ],
                     timeout=2,
                 )
