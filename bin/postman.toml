@@ -3,10 +3,12 @@
 
 [postman]
 watch_dir = ".i9wa4/post"
-stuck_interval = 10          # Minutes before stuck alert
-scan_interval = 30           # Pane rescan interval (seconds)
+stuck_interval_minutes = 10
+scan_interval_seconds = 30
 notification_method = "paste-buffer"  # "paste-buffer" or "display-message"
-enter_delay = 0.5            # Seconds to wait before sending Enter after paste-buffer
+enter_delay_seconds = 0.5
+capture_history_count = 5
+captures_dir = ".i9wa4/captures"
 
 [templates]
 # Templates by recipient role
@@ -63,7 +65,7 @@ content = """
 2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 
 ---
-Workers available:
-- worker-claude: Consultation & Implementation
-- worker-codex: Consultation & Status Report
+Required Actions:
+1. Consult worker-claude for advice/implementation
+2. Report to worker-codex (MANDATORY for every task)
 """

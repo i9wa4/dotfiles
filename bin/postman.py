@@ -48,10 +48,12 @@ DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 DEFAULT_CONFIG: dict[str, Any] = {
     "postman": {
         "watch_dir": ".i9wa4/postman",
-        "stuck_interval": 10,
-        "scan_interval": 30,
+        "stuck_interval_minutes": 10,
+        "scan_interval_seconds": 30,
         "notification_method": "display-message",
-        "enter_delay": 0.5,
+        "enter_delay_seconds": 0.5,
+        "capture_history_count": 5,
+        "captures_dir": ".i9wa4/captures",
     },
     "templates": {},
 }
@@ -111,6 +113,8 @@ class Postman:
         scan_interval: int,
         notification_method: str = "display-message",
         enter_delay: float = 0.5,
+        capture_history: int = 5,
+        captures_dir: Path = Path(".i9wa4/captures"),
         templates: Optional[dict[str, Any]] = None,
     ):
         self.watch_dir = watch_dir
@@ -118,6 +122,8 @@ class Postman:
         self.scan_interval = scan_interval
         self.notification_method = notification_method
         self.enter_delay = enter_delay
+        self.capture_history = capture_history
+        self.captures_dir = captures_dir
         self.templates = templates or {}
         self.participants: dict[str, Participant] = {}
         self.running = True
@@ -329,6 +335,28 @@ class Postman:
             pass
         return ""
 
+    def save_capture(self, pane_id: str, content: str) -> Optional[Path]:
+        """Save capture to file and cleanup old captures."""
+        try:
+            self.captures_dir.mkdir(parents=True, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            # Sanitize pane_id for filename (replace % with _)
+            safe_pane_id = pane_id.replace("%", "_")
+            filename = f"{safe_pane_id}-{timestamp}.txt"
+            filepath = self.captures_dir / filename
+
+            filepath.write_text(content)
+
+            # Cleanup old captures for this pane
+            pattern = f"{safe_pane_id}-*.txt"
+            captures = sorted(self.captures_dir.glob(pattern), reverse=True)
+            for old_capture in captures[self.capture_history :]:
+                old_capture.unlink()
+
+            return filepath
+        except OSError:
+            return None
+
     def check_all_stuck(self) -> None:
         """Check all participants for stuck state."""
         current_time = time.time()
@@ -340,6 +368,9 @@ class Postman:
 
             current_capture = self.capture_pane(participant.pane_id)
 
+            # Save capture to file
+            capture_path = self.save_capture(participant.pane_id, current_capture)
+
             # Skip if first capture
             if participant.last_capture_time == 0:
                 participant.last_capture = current_capture
@@ -350,7 +381,9 @@ class Postman:
             if current_capture == participant.last_capture:
                 elapsed_minutes = (current_time - participant.last_capture_time) / 60
                 if elapsed_minutes >= self.stuck_interval:
-                    self.send_stuck_alert(participant, int(elapsed_minutes))
+                    self.send_stuck_alert(
+                        participant, int(elapsed_minutes), capture_path
+                    )
                     # Reset timer after sending alert
                     participant.last_capture_time = current_time
             else:
@@ -358,7 +391,12 @@ class Postman:
                 participant.last_capture = current_capture
                 participant.last_capture_time = current_time
 
-    def send_stuck_alert(self, participant: Participant, minutes: int) -> None:
+    def send_stuck_alert(
+        self,
+        participant: Participant,
+        minutes: int,
+        capture_path: Optional[Path] = None,
+    ) -> None:
         """Send stuck alert to orchestrator with pane capture."""
         self.log(
             "⚠️ ", f"Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
@@ -372,6 +410,8 @@ class Postman:
         filename = f"{timestamp}-from-postman-to-orchestrator.md"
         filepath = self.watch_dir / filename
 
+        capture_info = f"Capture: {capture_path}" if capture_path else "Capture: N/A"
+
         content = f"""[MESSAGE]
 from: postman
 to: orchestrator
@@ -381,6 +421,8 @@ type: stuck-alert
 ## Alert
 
 Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} minutes.
+
+{capture_info}
 
 ## Last 30 Lines
 
@@ -561,10 +603,12 @@ Setup (in other panes):
 
     # CLI args override config values
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
-    stuck_interval = args.stuck_interval or postman_cfg["stuck_interval"]
-    scan_interval = args.scan_interval or postman_cfg["scan_interval"]
+    stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
+    scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
     notification_method = postman_cfg.get("notification_method", "display-message")
-    enter_delay = postman_cfg.get("enter_delay", 0.5)
+    enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
+    capture_history = postman_cfg.get("capture_history_count", 5)
+    captures_dir = Path(postman_cfg.get("captures_dir", ".i9wa4/captures"))
 
     # Create and run postman
     postman = Postman(
@@ -573,6 +617,8 @@ Setup (in other panes):
         scan_interval=scan_interval,
         notification_method=notification_method,
         enter_delay=enter_delay,
+        capture_history=capture_history,
+        captures_dir=captures_dir,
         templates=config.get("templates", {}),
     )
 
