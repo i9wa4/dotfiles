@@ -96,7 +96,7 @@ IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool.
    .i9wa4/communication/{descriptive-name}.md
 
 2. Send notification to Orchestrator:
-   tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] .i9wa4/communication/{descriptive-name}.md" \
+   echo "[RESPONSE from=$TMUX_PANE] .i9wa4/communication/{descriptive-name}.md" | tmux load-buffer - \
      && tmux paste-buffer -t {ORCH_PANE} && sleep 0.2 && tmux send-keys -t {ORCH_PANE} Enter
 ```
 
@@ -135,6 +135,66 @@ CODEX=$(find_agent_pane codex)
 ```
 
 If no Workers found, inform user and wait.
+
+### 3.3. Response Monitoring via Bash Mode
+
+Use Bash mode to autonomously monitor responses from Workers.
+
+#### Response File Check Command
+
+Send commands to Claude Code Worker in Bash mode:
+
+```bash
+# 1. Send command in Bash mode (send ! via hex 0x21)
+tmux send-keys -t {WORKER_PANE} C-u && \
+tmux send-keys -t {WORKER_PANE} -H 21 && \
+tmux send-keys -t {WORKER_PANE} ' ls -la .i9wa4/communication/{expected-file}.md 2>/dev/null || echo "WAITING"' && \
+sleep 0.2 && \
+tmux send-keys -t {WORKER_PANE} C-m
+
+# 2. Capture output
+sleep 2 && tmux capture-pane -t {WORKER_PANE} -p | tail -15
+```
+
+NOTE:
+
+- `!` is escaped by Claude Code (Ink UI), so send via hex code (0x21)
+- `C-u` clears the input line (`!` must be at the beginning of line)
+- `sleep 0.2` is required before sending Enter
+
+#### Response Monitoring Flow
+
+```text
+1. Send request to Worker
+2. Set timeout (e.g., 5 minutes)
+3. Check response file existence via Bash mode
+4. File exists → Read response
+5. File not found → Retry or alert
+```
+
+#### Implementation Example
+
+```bash
+# Response monitoring function
+check_worker_response() {
+  local worker_pane="$1"
+  local expected_file="$2"
+  local orch_pane="$3"
+
+  # Check file via Bash mode
+  tmux send-keys -t "$worker_pane" C-u
+  tmux send-keys -t "$worker_pane" -H 21
+  tmux send-keys -t "$worker_pane" " ls .i9wa4/communication/${expected_file} 2>/dev/null || echo NO_FILE"
+  sleep 0.2
+  tmux send-keys -t "$worker_pane" C-m
+
+  # Capture output
+  sleep 2
+  tmux capture-pane -t "$worker_pane" -p | tail -10
+}
+```
+
+Reference: cf. vim-cc-mdd issue 14 (Bash mode command sending via tmux)
 
 ## 4. Delegation Priority
 
