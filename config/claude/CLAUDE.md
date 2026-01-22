@@ -81,6 +81,9 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .
     - Review results (type: review)
 - YOU MUST: Use TodoWrite to track what needs to be persisted
 
+NOTE: TodoWrite is Claude Code specific.
+Codex CLI users should track tasks manually.
+
 ## 6. File Structure
 
 Files and directories described below are located at:
