@@ -6,9 +6,10 @@ watch_dir = ".i9wa4/post"
 stuck_interval_minutes = 10
 scan_interval_seconds = 30
 notification_method = "paste-buffer"  # "paste-buffer" or "display-message"
-enter_delay_seconds = 0.5
+enter_delay_seconds = 0.7
 capture_history_count = 5
 captures_dir = ".i9wa4/captures"
+target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck state
 
 [observer]
 remind_enabled = true

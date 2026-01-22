@@ -41,19 +41,28 @@ from watchfiles import Change, watch
 
 VERSION = "1.2.0"
 
+# Timeout constants (seconds)
+TMUX_TIMEOUT = 5
+TMUX_QUICK_TIMEOUT = 2
+
+# Display constants
+CAPTURE_LINES = 30
+MESSAGE_PREVIEW_LENGTH = 100
+
 # Default config path (same directory as script)
 DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 
 # Default configuration values
 DEFAULT_CONFIG: dict[str, Any] = {
     "postman": {
-        "watch_dir": ".i9wa4/postman",
+        "watch_dir": ".i9wa4/post",
         "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
         "notification_method": "display-message",
         "enter_delay_seconds": 0.5,
         "capture_history_count": 5,
         "captures_dir": ".i9wa4/captures",
+        "target_roles": ["worker-claude", "worker-codex"],
     },
     "observer": {
         "remind_enabled": False,
@@ -128,6 +137,7 @@ class Postman:
         observer_remind_enabled: bool = False,
         observer_remind_interval_messages: int = 10,
         observer_remind_message: str = "Consider consulting observer for feedback",
+        target_roles: Optional[list[str]] = None,
         templates: Optional[dict[str, Any]] = None,
     ):
         self.watch_dir = watch_dir
@@ -140,6 +150,7 @@ class Postman:
         self.observer_remind_enabled = observer_remind_enabled
         self.observer_remind_interval_messages = observer_remind_interval_messages
         self.observer_remind_message = observer_remind_message
+        self.target_roles = target_roles or []
         self.templates = templates or {}
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
@@ -167,7 +178,7 @@ class Postman:
                 ["tmux", "list-panes", "-s", "-F", "#{pane_id} #{pane_pid}"],
                 capture_output=True,
                 text=True,
-                timeout=5,
+                timeout=TMUX_TIMEOUT,
             )
 
             if result.returncode != 0:
@@ -220,7 +231,7 @@ class Postman:
                 ["pgrep", "-P", pid],
                 capture_output=True,
                 text=True,
-                timeout=5,
+                timeout=TMUX_TIMEOUT,
             )
             if result.returncode == 0:
                 for child_pid in result.stdout.strip().split("\n"):
@@ -241,7 +252,7 @@ class Postman:
                     ["ps", "eww", "-p", pid],
                     capture_output=True,
                     text=True,
-                    timeout=5,
+                    timeout=TMUX_TIMEOUT,
                 )
                 if result.returncode == 0:
                     match = re.search(r"AGENT_ROLE=([^\s]+)", result.stdout)
@@ -317,6 +328,12 @@ class Postman:
         template = self.templates.get(participant.role, {}).get("content", "")
         if not template:
             self.log("⚠️ ", f"No template for role: {participant.role}")
+            self.send_delivery_failure_alert(
+                recipient_role=participant.role,
+                sender=sender,
+                original_filepath=filepath,
+                reason="No template configured",
+            )
             return False
 
         # Format template
@@ -328,14 +345,17 @@ class Postman:
 
         try:
             if self.notification_method == "paste-buffer":
-                subprocess.run(["tmux", "set-buffer", message], timeout=2)
                 subprocess.run(
-                    ["tmux", "paste-buffer", "-t", participant.pane_id], timeout=2
+                    ["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT
+                )
+                subprocess.run(
+                    ["tmux", "paste-buffer", "-t", participant.pane_id],
+                    timeout=TMUX_QUICK_TIMEOUT,
                 )
                 time.sleep(self.enter_delay)
                 subprocess.run(
                     ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
-                    timeout=2,
+                    timeout=TMUX_QUICK_TIMEOUT,
                 )
             else:  # display-message (default)
                 subprocess.run(
@@ -344,9 +364,9 @@ class Postman:
                         "display-message",
                         "-t",
                         participant.pane_id,
-                        message[:100],
+                        message[:MESSAGE_PREVIEW_LENGTH],
                     ],
-                    timeout=2,
+                    timeout=TMUX_QUICK_TIMEOUT,
                 )
         except (subprocess.TimeoutExpired, FileNotFoundError):
             self.log("❌", f"Failed to notify {participant.pane_id}")
@@ -393,6 +413,40 @@ type: observer-reminder
         except OSError as e:
             self.log("❌", f"Failed to send observer reminder: {e}")
 
+    def send_delivery_failure_alert(
+        self,
+        recipient_role: str,
+        sender: str,
+        original_filepath: Path,
+        reason: str,
+    ) -> None:
+        """Alert orchestrator about delivery failure."""
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        filename = f"{timestamp}-from-postman-to-orchestrator.md"
+        filepath = self.watch_dir / filename
+
+        content = f"""[MESSAGE]
+from: postman
+to: orchestrator
+timestamp: {datetime.now().isoformat()}
+type: delivery-failure
+
+## Delivery Failed
+
+- Original file: {original_filepath.name}
+- Intended recipient: {recipient_role}
+- Sender: {sender}
+- Reason: {reason}
+
+Action required: Add template for role '{recipient_role}' in postman.toml
+"""
+
+        try:
+            filepath.write_text(content)
+            self.log("❌", f"Delivery failure alert sent: {recipient_role}")
+        except OSError as e:
+            self.log("❌", f"Failed to send delivery failure alert: {e}")
+
     def capture_pane(self, pane_id: str, lines: int = 0) -> str:
         """Capture content of a tmux pane."""
         try:
@@ -403,7 +457,7 @@ type: observer-reminder
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=5,
+                timeout=TMUX_TIMEOUT,
             )
             if result.returncode == 0:
                 return result.stdout
@@ -438,11 +492,12 @@ type: observer-reminder
         current_time = time.time()
 
         # Take snapshot inside lock
+        # If target_roles is empty, check all participants (backward compatibility)
         with self._participants_lock:
             snapshot = [
                 (role, p.pane_id, p.last_capture, p.last_capture_time)
                 for role, p in self.participants.items()
-                if role != "orchestrator"
+                if not self.target_roles or role in self.target_roles
             ]
 
         for role, pane_id, last_capture, last_capture_time in snapshot:
@@ -486,8 +541,8 @@ type: observer-reminder
             "⚠️ ", f"Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
         )
 
-        # Get last 30 lines of pane content
-        pane_content = self.capture_pane(participant.pane_id, lines=30)
+        # Get last CAPTURE_LINES lines of pane content
+        pane_content = self.capture_pane(participant.pane_id, lines=CAPTURE_LINES)
 
         # Create alert file
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -508,7 +563,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
 
 {capture_info}
 
-## Last 30 Lines
+## Last {CAPTURE_LINES} Lines
 
 ```
 {pane_content}
@@ -701,6 +756,7 @@ Setup (in other panes):
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
     capture_history = postman_cfg.get("capture_history_count", 5)
     captures_dir = Path(postman_cfg.get("captures_dir", ".i9wa4/captures"))
+    target_roles = postman_cfg.get("target_roles", [])
     observer_remind_enabled = observer_cfg.get("remind_enabled", False)
     observer_remind_interval_messages = observer_cfg.get("remind_interval_messages", 10)
     observer_remind_message = observer_cfg.get(
@@ -719,6 +775,7 @@ Setup (in other panes):
         observer_remind_enabled=observer_remind_enabled,
         observer_remind_interval_messages=observer_remind_interval_messages,
         observer_remind_message=observer_remind_message,
+        target_roles=target_roles,
         templates=config.get("templates", {}),
     )
 
