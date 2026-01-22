@@ -50,7 +50,7 @@ When /orchestrator is invoked:
 | Worker     | Yes      | Yes      |
 | Subagent   | Yes      | No       |
 
-Both modes allow writes to `.i9wa4/` and `/tmp/`.
+Both modes allow writes to `.i9wa4/`.
 
 ### 2.3. Worker Assignment
 
@@ -63,7 +63,7 @@ Both modes allow writes to `.i9wa4/` and `/tmp/`.
 
 - NEVER: Edit, Write, NotebookEdit (project files)
 - ALLOWED: Read, Glob, Grep, Bash (read-only)
-- ALLOWED: Write to `.i9wa4/` and `/tmp/`
+- ALLOWED: Write to `.i9wa4/`
 - DELEGATE: Execution to Worker/Subagent
 
 ### 2.5. Worker/Subagent Constraints (Claude Code)
@@ -93,17 +93,17 @@ IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool.
 
 [RESPONSE REQUIRED]
 1. Write your response to a file:
-   /tmp/communication/{descriptive-name}.md
+   .i9wa4/communication/{descriptive-name}.md
 
 2. Send notification to Orchestrator:
-   tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] /tmp/communication/{descriptive-name}.md" \
+   tmux load-buffer - <<< "[RESPONSE from=$TMUX_PANE] .i9wa4/communication/{descriptive-name}.md" \
      && tmux paste-buffer -t {ORCH_PANE} && sleep 0.2 && tmux send-keys -t {ORCH_PANE} Enter
 ```
 
 Orchestrator → Worker (send request):
 
 ```bash
-tmux load-buffer /tmp/request.txt && tmux paste-buffer -t %N && sleep 1 && tmux send-keys -t %N Enter
+tmux load-buffer .i9wa4/communication/request.txt && tmux paste-buffer -t %N && sleep 1 && tmux send-keys -t %N Enter
 ```
 
 Worker responds: `[RESPONSE from=%M] /path/to/file.md`
@@ -208,7 +208,7 @@ File: `.i9wa4/phase.log`
 | `.i9wa4/phase.log`         | Phase transitions  | Orchestrator |
 | `.i9wa4/plans/`            | Plan documents     | Orchestrator |
 | `.i9wa4/reviews/`          | Review results     | Subagent     |
-| `/tmp/communication/`      | Message exchange   | All          |
+| `.i9wa4/communication/`    | Message exchange   | All          |
 
 ### 7.2. Status File Format
 

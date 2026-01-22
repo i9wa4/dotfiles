@@ -73,7 +73,9 @@ Applies to: Issues, PRs, commit messages, and all GitHub-posted text.
 - IMPORTANT: Commits should help resume work easily (granularity for resumption)
 - IMPORTANT: Include changes, problem resolution, technical details
 
-### 5.2. Prohibited Content
+### 5.2. Prohibited Content (Commits, PRs, Issues)
+
+Applies to: commit messages, PR descriptions, Issue comments
 
 - NEVER: Include Co-Authored-By
 - NEVER: Include "Generated with [Claude Code]" or similar AI tool notices

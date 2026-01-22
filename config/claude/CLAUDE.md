@@ -35,12 +35,13 @@ All working files go to `.i9wa4/` (globally gitignored).
 
 Directory structure:
 
-| Directory        | Purpose                    | Example                      |
-| ---------------- | -------------------------- | ---------------------------- |
-| `.i9wa4/`        | Fixed name files (root)    | `roadmap.md`, `phase.log`    |
-| `.i9wa4/plans/`  | Plan documents             | Timestamped                  |
-| `.i9wa4/reviews/`| Review results             | Timestamped                  |
-| `.i9wa4/tmp/`    | Temporary/command outputs  | Timestamped                  |
+| Directory               | Purpose                    | Example                      |
+| ----------------------- | -------------------------- | ---------------------------- |
+| `.i9wa4/`               | Fixed name files (root)    | `roadmap.md`, `phase.log`    |
+| `.i9wa4/plans/`         | Plan documents             | Timestamped                  |
+| `.i9wa4/reviews/`       | Review results             | Timestamped                  |
+| `.i9wa4/tmp/`           | Temporary/command outputs  | Timestamped                  |
+| `.i9wa4/communication/` | Worker/Agent message exchange | Timestamped               |
 
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
 

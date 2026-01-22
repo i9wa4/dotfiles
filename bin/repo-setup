@@ -29,9 +29,9 @@ let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
 echo "* Created local.vim"
 
-# Create .i9wa4/ directory structure
-mkdir -p .i9wa4/{plans,reviews,tmp}
-echo "* Created .i9wa4/ directory structure"
+# Create .i9wa4/ directory (subdirectories created on demand by touchfile.sh)
+mkdir -p .i9wa4
+echo "* Created .i9wa4/ directory"
 
 # Create template file
 cat >.i9wa4/temp.md <<'EOF'

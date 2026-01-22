@@ -37,7 +37,7 @@ Use `gh` command to fetch the latest CHANGELOG:
 
 ```sh
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
-  --jq '.content' | base64 -d > /tmp/claude-code-changelog.md
+  --jq '.content' | base64 -d > .i9wa4/tmp/claude-code-changelog.md
 ```
 
 Then read the file to analyze.
