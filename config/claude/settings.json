@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/reload-claude-md.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/reload-claude-md.sh"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/deny-edit-write.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/deny-edit-write.sh"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_CONFIG_DIR}/scripts/post-tool-use.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/post-tool-use.sh"
           }
         ]
       }
