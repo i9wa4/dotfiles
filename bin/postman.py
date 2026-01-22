@@ -5,14 +5,22 @@
 """
 postman.py - File-based communication daemon for tmux panes
 
+Postman runs in a dedicated pane and monitors all other panes that have
+POSTMAN_ROLE environment variable set.
+
 Usage:
-    POSTMAN_ROLE=orchestrator uv run bin/postman.py
-    POSTMAN_ROLE=claude-worker uv run bin/postman.py
+    uv run bin/postman.py
 
 Options:
     --watch-dir PATH      Directory to watch (default: .i9wa4/postman)
     --stuck-interval MIN  Minutes before stuck alert (default: 10)
     --scan-interval SEC   Pane rescan interval (default: 30)
+
+Setup:
+    Pane 1: POSTMAN_ROLE=orchestrator claude ...
+    Pane 2: POSTMAN_ROLE=claude-worker claude ...
+    Pane 3: POSTMAN_ROLE=codex-worker codex ...
+    Pane 4: uv run bin/postman.py   <- Monitors all above
 """
 
 import argparse
@@ -23,14 +31,14 @@ import subprocess
 import sys
 import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 from watchfiles import Change, watch
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # File pattern: {timestamp}-from-{sender}-to-{recipient}.md
 FILE_PATTERN = re.compile(r"^(\d{8}-\d{6})-from-([a-z0-9-]+)-to-([a-z0-9-]+)\.md$")
@@ -42,15 +50,8 @@ class Participant:
 
     role: str
     pane_id: str
-
-
-@dataclass
-class PostmanState:
-    """State for stuck detection."""
-
     last_capture: str = ""
     last_capture_time: float = 0.0
-    capture_history: list[str] = field(default_factory=list)
 
 
 class Postman:
@@ -58,17 +59,14 @@ class Postman:
 
     def __init__(
         self,
-        role: str,
         watch_dir: Path,
         stuck_interval: int,
         scan_interval: int,
     ):
-        self.role = role
         self.watch_dir = watch_dir
         self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
         self.participants: dict[str, Participant] = {}
-        self.state = PostmanState()
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
 
@@ -80,7 +78,7 @@ class Postman:
 
     def discover_panes(self) -> dict[str, Participant]:
         """Find all panes with POSTMAN_ROLE set."""
-        participants: dict[str, Participant] = {}
+        new_participants: dict[str, Participant] = {}
 
         try:
             # Get all panes in current session
@@ -92,7 +90,7 @@ class Postman:
             )
 
             if result.returncode != 0:
-                return participants
+                return new_participants
 
             for line in result.stdout.strip().split("\n"):
                 if not line:
@@ -104,25 +102,36 @@ class Postman:
 
                 pane_id, pane_pid = parts
 
+                # Skip our own pane
+                if pane_id == self.my_pane_id:
+                    continue
+
                 # Try to get POSTMAN_ROLE from process environment
                 role = self._get_pane_role(pane_pid)
                 if role:
-                    participants[role] = Participant(role=role, pane_id=pane_id)
+                    # Preserve existing state if participant already known
+                    if role in self.participants:
+                        old = self.participants[role]
+                        new_participants[role] = Participant(
+                            role=role,
+                            pane_id=pane_id,
+                            last_capture=old.last_capture,
+                            last_capture_time=old.last_capture_time,
+                        )
+                    else:
+                        new_participants[role] = Participant(role=role, pane_id=pane_id)
 
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
 
-        return participants
+        return new_participants
 
     def _get_pane_role(self, pid: str) -> Optional[str]:
         """Get POSTMAN_ROLE from a process's environment."""
-        # macOS: use ps -E
-        # Linux: read /proc/PID/environ
         try:
             if sys.platform == "darwin":
-                # macOS: /proc doesn't exist, use fallback
-                if pid == str(os.getpid()):
-                    return self.role
+                # macOS: /proc doesn't exist
+                # TODO: implement macOS support via ps or launchd
                 return None
             else:
                 env_path = Path(f"/proc/{pid}/environ")
@@ -131,57 +140,65 @@ class Postman:
                     for item in env_content.split("\0"):
                         if item.startswith("POSTMAN_ROLE="):
                             return item.split("=", 1)[1]
-        except (subprocess.TimeoutExpired, PermissionError, OSError):
+        except (PermissionError, OSError):
             pass
 
         return None
 
-    def is_for_me(self, filename: str) -> tuple[bool, Optional[str], Optional[str]]:
-        """Check if file is addressed to my role."""
+    def parse_message(
+        self, filename: str
+    ) -> tuple[Optional[str], Optional[str], Optional[str]]:
+        """Parse message filename. Returns (timestamp, sender, recipient)."""
         match = FILE_PATTERN.match(filename)
         if not match:
-            return False, None, None
-
-        timestamp, sender, recipient = match.groups()
-        if recipient == self.role:
-            return True, sender, timestamp
-
-        return False, None, None
+            return None, None, None
+        return match.groups()
 
     def handle_new_file(self, filepath: Path) -> None:
-        """Handle a newly created file."""
+        """Handle a newly created file - route to recipient."""
         filename = filepath.name
-        is_mine, sender, timestamp = self.is_for_me(filename)
-        if is_mine and sender:
-            self.deliver_notification(sender, filepath)
+        timestamp, sender, recipient = self.parse_message(filename)
 
-    def deliver_notification(self, sender: str, filepath: Path) -> None:
-        """Send notification to the pane."""
-        self.log("📥", "You've got mail!")
-        self.log("  ", f"From: {sender}")
-        self.log("  ", f"File: {filepath.name}")
+        if not recipient:
+            return
 
-        # Also send tmux display-message if in tmux
-        if self.my_pane_id:
-            try:
-                subprocess.run(
-                    [
-                        "tmux",
-                        "display-message",
-                        "-t",
-                        self.my_pane_id,
-                        f"📮 Mail from {sender}",
-                    ],
-                    timeout=2,
-                )
-            except (subprocess.TimeoutExpired, FileNotFoundError):
-                pass
+        self.log("📨", f"Message: {sender} → {recipient}")
 
-    def capture_pane(self, pane_id: str) -> str:
+        # Find recipient pane
+        if recipient in self.participants:
+            participant = self.participants[recipient]
+            self.deliver_notification(participant, sender, filepath)
+        else:
+            self.log("⚠️ ", f"Recipient '{recipient}' not found")
+
+    def deliver_notification(
+        self, participant: Participant, sender: str, filepath: Path
+    ) -> None:
+        """Send notification to a participant's pane."""
+        self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
+
+        try:
+            subprocess.run(
+                [
+                    "tmux",
+                    "display-message",
+                    "-t",
+                    participant.pane_id,
+                    f"📮 Mail from {sender}: {filepath.name}",
+                ],
+                timeout=2,
+            )
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            self.log("❌", f"Failed to notify {participant.pane_id}")
+
+    def capture_pane(self, pane_id: str, lines: int = 0) -> str:
         """Capture content of a tmux pane."""
         try:
+            cmd = ["tmux", "capture-pane", "-t", pane_id, "-p"]
+            if lines > 0:
+                cmd.extend(["-S", f"-{lines}"])
             result = subprocess.run(
-                ["tmux", "capture-pane", "-t", pane_id, "-p"],
+                cmd,
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -192,53 +209,64 @@ class Postman:
             pass
         return ""
 
-    def check_stuck(self) -> None:
-        """Check if pane appears stuck and send alert."""
-        if not self.my_pane_id:
-            return
-
-        current_capture = self.capture_pane(self.my_pane_id)
+    def check_all_stuck(self) -> None:
+        """Check all participants for stuck state."""
         current_time = time.time()
 
-        # Skip if this is the first capture
-        if self.state.last_capture_time == 0:
-            self.state.last_capture = current_capture
-            self.state.last_capture_time = current_time
-            return
+        for role, participant in self.participants.items():
+            # Skip orchestrator - it waits for input legitimately
+            if role == "orchestrator":
+                continue
 
-        # Check if content changed
-        if current_capture == self.state.last_capture:
-            elapsed_minutes = (current_time - self.state.last_capture_time) / 60
-            if elapsed_minutes >= self.stuck_interval:
-                self.send_stuck_alert(int(elapsed_minutes))
-                # Reset timer after sending alert
-                self.state.last_capture_time = current_time
-        else:
-            # Content changed, reset timer
-            self.state.last_capture = current_capture
-            self.state.last_capture_time = current_time
+            current_capture = self.capture_pane(participant.pane_id)
 
-    def send_stuck_alert(self, minutes: int) -> None:
-        """Send stuck alert to orchestrator."""
-        self.log("⚠️ ", f"Stuck alert: No activity for {minutes} minutes")
+            # Skip if first capture
+            if participant.last_capture_time == 0:
+                participant.last_capture = current_capture
+                participant.last_capture_time = current_time
+                continue
+
+            # Check if content changed
+            if current_capture == participant.last_capture:
+                elapsed_minutes = (current_time - participant.last_capture_time) / 60
+                if elapsed_minutes >= self.stuck_interval:
+                    self.send_stuck_alert(participant, int(elapsed_minutes))
+                    # Reset timer after sending alert
+                    participant.last_capture_time = current_time
+            else:
+                # Content changed, reset timer
+                participant.last_capture = current_capture
+                participant.last_capture_time = current_time
+
+    def send_stuck_alert(self, participant: Participant, minutes: int) -> None:
+        """Send stuck alert to orchestrator with pane capture."""
+        self.log(
+            "⚠️ ", f"Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
+        )
+
+        # Get last 30 lines of pane content
+        pane_content = self.capture_pane(participant.pane_id, lines=30)
 
         # Create alert file
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        filename = f"{timestamp}-from-{self.role}-to-orchestrator.md"
+        filename = f"{timestamp}-from-postman-to-orchestrator.md"
         filepath = self.watch_dir / filename
 
         content = f"""[MESSAGE]
-from: {self.role}
+from: postman
 to: orchestrator
 timestamp: {datetime.now().isoformat()}
-type: alert
+type: stuck-alert
 
-## Content
+## Alert
 
-ALERT: No activity detected for {minutes} minutes
+Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} minutes.
 
-Pane ID: {self.my_pane_id}
-Role: {self.role}
+## Last 30 Lines
+
+```
+{pane_content}
+```
 """
 
         try:
@@ -254,23 +282,27 @@ Role: {self.role}
             if not self.running:
                 break
 
-            old_count = len(self.participants)
+            old_roles = set(self.participants.keys())
             self.participants = self.discover_panes()
-            new_count = len(self.participants)
+            new_roles = set(self.participants.keys())
 
-            if new_count != old_count:
-                self.log("🔄", f"Pane scan: {new_count} participants found")
+            if old_roles != new_roles:
+                added = new_roles - old_roles
+                removed = old_roles - new_roles
+                if added:
+                    self.log("🔄", f"Joined: {', '.join(added)}")
+                if removed:
+                    self.log("🔄", f"Left: {', '.join(removed)}")
                 self.print_participants()
 
     def periodic_stuck_check(self) -> None:
-        """Periodically check for stuck pane."""
-        # Check every minute
+        """Periodically check for stuck panes."""
         check_interval = 60
         while self.running:
             time.sleep(check_interval)
             if not self.running:
                 break
-            self.check_stuck()
+            self.check_all_stuck()
 
     def watch_files(self) -> None:
         """Watch directory for new files using watchfiles."""
@@ -298,7 +330,7 @@ Role: {self.role}
 
     def print_header(self) -> None:
         """Print startup header."""
-        print(f"📮 Postman v{VERSION} | Role: {self.role}")
+        print(f"📮 Postman v{VERSION}")
         print("━" * 50)
         print(f"Watching: {self.watch_dir}/")
         self.print_participants()
@@ -343,19 +375,18 @@ Role: {self.role}
             print("\n📮 Postman stopped")
 
 
-def get_my_role() -> Optional[str]:
-    """Get role from POSTMAN_ROLE environment variable."""
-    return os.environ.get("POSTMAN_ROLE")
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="File-based communication daemon for tmux panes",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  POSTMAN_ROLE=orchestrator uv run bin/postman.py
-  POSTMAN_ROLE=claude-worker uv run bin/postman.py --stuck-interval 5
+  uv run bin/postman.py
+  uv run bin/postman.py --stuck-interval 5
+
+Setup (in other panes):
+  POSTMAN_ROLE=orchestrator claude
+  POSTMAN_ROLE=claude-worker claude
         """,
     )
     parser.add_argument(
@@ -378,16 +409,8 @@ Examples:
     )
     args = parser.parse_args()
 
-    # Get role from environment
-    role = get_my_role()
-    if not role:
-        print("Error: POSTMAN_ROLE environment variable not set", file=sys.stderr)
-        print("Usage: POSTMAN_ROLE=my-role uv run bin/postman.py", file=sys.stderr)
-        sys.exit(1)
-
     # Create and run postman
     postman = Postman(
-        role=role,
         watch_dir=args.watch_dir,
         stuck_interval=args.stuck_interval,
         scan_interval=args.scan_interval,
