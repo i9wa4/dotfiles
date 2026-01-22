@@ -1,0 +1,69 @@
+# Postman Configuration
+# File-based communication daemon for tmux panes
+
+[postman]
+watch_dir = ".i9wa4/post"
+stuck_interval = 10          # Minutes before stuck alert
+scan_interval = 30           # Pane rescan interval (seconds)
+notification_method = "paste-buffer"  # "paste-buffer" or "display-message"
+enter_delay = 0.5            # Seconds to wait before sending Enter after paste-buffer
+
+[templates]
+# Templates by recipient role
+# Variables: {task}, {response_file}
+
+[templates.worker-claude]
+# WRITABLE worker - consultation and implementation
+content = """
+You are worker-claude.
+Your capabilities: Consultation & Implementation
+
+{task}
+
+[RESPONSE]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+"""
+
+[templates.worker-codex]
+# READONLY worker - consultation and status report
+content = """
+You are worker-codex.
+Your capabilities: Consultation & Status Report only
+
+{task}
+
+[RESPONSE]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+"""
+
+[templates.observer]
+# Observer - monitoring and advising
+content = """
+[OBSERVER: Review & Advise]
+Review and advise orchestrator if needed.
+
+{task}
+
+[RESPONSE if needed]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+"""
+
+[templates.orchestrator]
+# Messages to orchestrator - remind about workers
+content = """
+[ORCHESTRATOR]
+
+{task}
+
+[RESPONSE if needed]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+
+---
+Workers available:
+- worker-claude: Consultation & Implementation
+- worker-codex: Consultation & Status Report
+"""

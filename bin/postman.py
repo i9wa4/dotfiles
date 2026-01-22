@@ -1,12 +1,12 @@
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.11"
 # dependencies = ["watchfiles"]
 # ///
 """
 postman.py - File-based communication daemon for tmux panes
 
 Postman runs in a dedicated pane and monitors all other panes that have
-POSTMAN_ROLE environment variable set.
+AGENT_ROLE environment variable set.
 
 Usage:
     uv run bin/postman.py
@@ -17,9 +17,9 @@ Options:
     --scan-interval SEC   Pane rescan interval (default: 30)
 
 Setup:
-    Pane 1: POSTMAN_ROLE=orchestrator claude ...
-    Pane 2: POSTMAN_ROLE=claude-worker claude ...
-    Pane 3: POSTMAN_ROLE=codex-worker codex ...
+    Pane 1: AGENT_ROLE=orchestrator claude ...
+    Pane 2: AGENT_ROLE=claude-worker claude ...
+    Pane 3: AGENT_ROLE=codex-worker codex ...
     Pane 4: uv run bin/postman.py   <- Monitors all above
 """
 
@@ -31,14 +31,61 @@ import subprocess
 import sys
 import threading
 import time
+import tomllib
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from watchfiles import Change, watch
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
+
+# Default config path (same directory as script)
+DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
+
+# Default configuration values
+DEFAULT_CONFIG: dict[str, Any] = {
+    "postman": {
+        "watch_dir": ".i9wa4/postman",
+        "stuck_interval": 10,
+        "scan_interval": 30,
+        "notification_method": "display-message",
+        "enter_delay": 0.5,
+    },
+    "templates": {},
+}
+
+
+def load_config(config_path: Optional[Path] = None) -> dict[str, Any]:
+    """Load configuration from TOML file."""
+    paths_to_try = []
+    if config_path:
+        paths_to_try.append(config_path)
+    paths_to_try.append(DEFAULT_CONFIG_PATH)
+
+    for path in paths_to_try:
+        if path.exists():
+            try:
+                with open(path, "rb") as f:
+                    config = tomllib.load(f)
+                # Merge with defaults
+                merged = DEFAULT_CONFIG.copy()
+                if "postman" in config:
+                    merged["postman"] = {
+                        **DEFAULT_CONFIG["postman"],
+                        **config["postman"],
+                    }
+                if "templates" in config:
+                    merged["templates"] = config["templates"]
+                return merged
+            except (tomllib.TOMLDecodeError, OSError) as e:
+                print(
+                    f"Warning: Failed to load config from {path}: {e}", file=sys.stderr
+                )
+
+    return DEFAULT_CONFIG.copy()
+
 
 # File pattern: {timestamp}-from-{sender}-to-{recipient}.md
 FILE_PATTERN = re.compile(r"^(\d{8}-\d{6})-from-([a-z0-9-]+)-to-([a-z0-9-]+)\.md$")
@@ -62,10 +109,16 @@ class Postman:
         watch_dir: Path,
         stuck_interval: int,
         scan_interval: int,
+        notification_method: str = "display-message",
+        enter_delay: float = 0.5,
+        templates: Optional[dict[str, Any]] = None,
     ):
         self.watch_dir = watch_dir
         self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
+        self.notification_method = notification_method
+        self.enter_delay = enter_delay
+        self.templates = templates or {}
         self.participants: dict[str, Participant] = {}
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
@@ -77,7 +130,7 @@ class Postman:
         sys.stdout.flush()
 
     def discover_panes(self) -> dict[str, Participant]:
-        """Find all panes with POSTMAN_ROLE set."""
+        """Find all panes with AGENT_ROLE set."""
         new_participants: dict[str, Participant] = {}
 
         try:
@@ -106,7 +159,7 @@ class Postman:
                 if pane_id == self.my_pane_id:
                     continue
 
-                # Try to get POSTMAN_ROLE from process environment
+                # Try to get AGENT_ROLE from process environment
                 role = self._get_pane_role(pane_pid)
                 if role:
                     # Preserve existing state if participant already known
@@ -127,20 +180,53 @@ class Postman:
         return new_participants
 
     def _get_pane_role(self, pid: str) -> Optional[str]:
-        """Get POSTMAN_ROLE from a process's environment."""
+        """Get AGENT_ROLE from a process's environment."""
+        # First try the direct pid
+        role = self._get_process_role(pid)
+        if role:
+            return role
+
+        # Try child processes
+        try:
+            result = subprocess.run(
+                ["pgrep", "-P", pid],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            if result.returncode == 0:
+                for child_pid in result.stdout.strip().split("\n"):
+                    if child_pid:
+                        role = self._get_process_role(child_pid)
+                        if role:
+                            return role
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass
+
+        return None
+
+    def _get_process_role(self, pid: str) -> Optional[str]:
+        """Get AGENT_ROLE from a single process's environment."""
         try:
             if sys.platform == "darwin":
-                # macOS: /proc doesn't exist
-                # TODO: implement macOS support via ps or launchd
-                return None
+                result = subprocess.run(
+                    ["ps", "eww", "-p", pid],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
+                if result.returncode == 0:
+                    match = re.search(r"AGENT_ROLE=([^\s]+)", result.stdout)
+                    if match:
+                        return match.group(1)
             else:
                 env_path = Path(f"/proc/{pid}/environ")
                 if env_path.exists():
                     env_content = env_path.read_bytes().decode(errors="ignore")
                     for item in env_content.split("\0"):
-                        if item.startswith("POSTMAN_ROLE="):
+                        if item.startswith("AGENT_ROLE="):
                             return item.split("=", 1)[1]
-        except (PermissionError, OSError):
+        except (subprocess.TimeoutExpired, PermissionError, OSError):
             pass
 
         return None
@@ -164,30 +250,72 @@ class Postman:
 
         self.log("📨", f"Message: {sender} → {recipient}")
 
-        # Find recipient pane
+        # Deliver to recipient
         if recipient in self.participants:
             participant = self.participants[recipient]
             self.deliver_notification(participant, sender, filepath)
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
+        # CC to observer (if exists and not already the recipient)
+        if "observer" in self.participants and recipient != "observer":
+            observer = self.participants["observer"]
+            cc_msg = f"[CC] {sender} → {recipient} - Review if needed"
+            self.deliver_notification(observer, sender, filepath, cc_message=cc_msg)
+            self.log("📋", f"CC to observer ({observer.pane_id})")
+
     def deliver_notification(
-        self, participant: Participant, sender: str, filepath: Path
+        self,
+        participant: Participant,
+        sender: str,
+        filepath: Path,
+        cc_message: Optional[str] = None,
     ) -> None:
         """Send notification to a participant's pane."""
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
-        try:
-            subprocess.run(
-                [
-                    "tmux",
-                    "display-message",
-                    "-t",
-                    participant.pane_id,
-                    f"📮 Mail from {sender}: {filepath.name}",
-                ],
-                timeout=2,
+        # Build message with response instructions
+        role = participant.role
+        if cc_message:
+            # Observer CC message
+            message = (
+                f"📮 {cc_message}: {filepath.name}\n"
+                f"To respond: .i9wa4/draft/{{ts}}-from-{role}-to-orchestrator.md"
             )
+        else:
+            # Direct message to recipient
+            message = (
+                f"📮 Mail from {sender}: {filepath.name}\n"
+                f"To respond: .i9wa4/draft/{{ts}}-from-{role}-to-{sender}.md"
+            )
+
+        try:
+            if self.notification_method == "paste-buffer":
+                # Load message into buffer and paste to pane
+                subprocess.run(
+                    ["tmux", "set-buffer", message],
+                    timeout=2,
+                )
+                subprocess.run(
+                    ["tmux", "paste-buffer", "-t", participant.pane_id],
+                    timeout=2,
+                )
+                time.sleep(self.enter_delay)  # Configurable delay
+                subprocess.run(
+                    ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
+                    timeout=2,
+                )
+            else:  # display-message (default)
+                subprocess.run(
+                    [
+                        "tmux",
+                        "display-message",
+                        "-t",
+                        participant.pane_id,
+                        message,
+                    ],
+                    timeout=2,
+                )
         except (subprocess.TimeoutExpired, FileNotFoundError):
             self.log("❌", f"Failed to notify {participant.pane_id}")
 
@@ -328,11 +456,30 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             print(f"Participants: {', '.join(parts)}")
         sys.stdout.flush()
 
+    def format_template(
+        self,
+        template_name: str,
+        **kwargs: str,
+    ) -> Optional[str]:
+        """Format a template with provided variables."""
+        if template_name not in self.templates:
+            return None
+        template = self.templates[template_name]
+        if "content" not in template:
+            return None
+        try:
+            return template["content"].format(**kwargs)
+        except KeyError:
+            return None
+
     def print_header(self) -> None:
         """Print startup header."""
         print(f"📮 Postman v{VERSION}")
         print("━" * 50)
         print(f"Watching: {self.watch_dir}/")
+        print(f"Notification: {self.notification_method}")
+        if self.templates:
+            print(f"Templates: {', '.join(self.templates.keys())}")
         self.print_participants()
         print()
         sys.stdout.flush()
@@ -382,38 +529,59 @@ def main() -> None:
         epilog="""
 Examples:
   uv run bin/postman.py
+  uv run bin/postman.py --config myconfig.toml
   uv run bin/postman.py --stuck-interval 5
 
 Setup (in other panes):
-  POSTMAN_ROLE=orchestrator claude
-  POSTMAN_ROLE=claude-worker claude
+  AGENT_ROLE=orchestrator claude
+  AGENT_ROLE=claude-worker claude
         """,
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help=f"Config file path (default: {DEFAULT_CONFIG_PATH})",
     )
     parser.add_argument(
         "--watch-dir",
         type=Path,
-        default=Path(".i9wa4/postman"),
-        help="Directory to watch (default: .i9wa4/postman)",
+        default=None,
+        help="Directory to watch (overrides config)",
     )
     parser.add_argument(
         "--stuck-interval",
         type=int,
-        default=10,
-        help="Minutes before stuck alert (default: 10)",
+        default=None,
+        help="Minutes before stuck alert (overrides config)",
     )
     parser.add_argument(
         "--scan-interval",
         type=int,
-        default=30,
-        help="Pane rescan interval in seconds (default: 30)",
+        default=None,
+        help="Pane rescan interval in seconds (overrides config)",
     )
     args = parser.parse_args()
 
+    # Load config file
+    config = load_config(args.config)
+    postman_cfg = config["postman"]
+
+    # CLI args override config values
+    watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
+    stuck_interval = args.stuck_interval or postman_cfg["stuck_interval"]
+    scan_interval = args.scan_interval or postman_cfg["scan_interval"]
+    notification_method = postman_cfg.get("notification_method", "display-message")
+    enter_delay = postman_cfg.get("enter_delay", 0.5)
+
     # Create and run postman
     postman = Postman(
-        watch_dir=args.watch_dir,
-        stuck_interval=args.stuck_interval,
-        scan_interval=args.scan_interval,
+        watch_dir=watch_dir,
+        stuck_interval=stuck_interval,
+        scan_interval=scan_interval,
+        notification_method=notification_method,
+        enter_delay=enter_delay,
+        templates=config.get("templates", {}),
     )
 
     # Handle signals
