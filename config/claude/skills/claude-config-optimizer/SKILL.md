@@ -68,7 +68,18 @@ Then read the file to analyze.
 2. List affected settings and migration paths
 3. Check user's config for affected settings
 
-## 4. Settings Categories
+## 4. Specification Reference
+
+For detailed questions about Claude Code specifications, features, and usage:
+
+- YOU MUST: Use the `claude-code-guide` subagent via Task tool
+- Example queries: hooks, MCP servers, settings, IDE integrations
+
+```text
+Task tool with subagent_type: claude-code-guide
+```
+
+## 5. Settings Categories
 
 | Category | Examples                            |
 | -------- | --------                            |
@@ -79,14 +90,14 @@ Then read the file to analyze.
 | Hooks    | PreToolUse, PostToolUse, Stop hooks |
 | Plans    | `plansDirectory`                    |
 
-## 5. CLAUDE.md Design Guidelines
+## 6. CLAUDE.md Design Guidelines
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `rules/`
 - NEVER: Include unnecessary information at startup
   (reference links, usage details)
 
-## 6. Configuration Usage
+## 7. Configuration Usage
 
 | Type               | Load Timing                    | Purpose                       |
 | ----               | -----------                    | -------                       |
@@ -95,7 +106,7 @@ Then read the file to analyze.
 | skills/            | Auto-triggered by conversation | Specialized knowledge         |
 | agents/            | Delegated via Task tool        | Independent context           |
 
-## 7. Optimization Checklist
+## 8. Optimization Checklist
 
 Check the following when editing CLAUDE.md:
 
@@ -104,7 +115,7 @@ Check the following when editing CLAUDE.md:
 - [ ] Can detailed explanations be moved to rules/ or skills/?
 - [ ] Have reference links been moved to skills/?
 
-## 8. File Structure Maintenance
+## 9. File Structure Maintenance
 
 When adding/removing files in rules/, skills/, agents/, or commands/:
 
@@ -112,11 +123,11 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 - YOU MUST: Keep tables alphabetically sorted or logically grouped
 - IMPORTANT: Verify actual files match documentation after changes
 
-## 9. Optimization Tracking
+## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.12 (2026-01-20)
+Last reviewed Claude Code version: v2.1.15 (2026-01-22)
 
-### 9.1. Applied Optimizations
+### 10.1. Applied Optimizations
 
 - [x] Persona definition minimized
 - [x] Rules split into rules/ directory
@@ -129,20 +140,22 @@ Last reviewed Claude Code version: v2.1.12 (2026-01-20)
 - [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
 - [x] `plansDirectory` setting - set to ".i9wa4/plans"
 
-### 9.2. Pending Considerations
+### 10.2. Pending Considerations
 
 - [ ] `showTurnDuration` setting - hide "Cooked for Xm Xs" messages
 - [ ] Keybindings customization via `~/.claude/keybindings.json`
 
-### 9.3. Version Notes
+### 10.3. Version Notes
 
+- v2.1.15: npm deprecation notice, React Compiler UI perf, MCP stdio timeout fix
+- v2.1.14: Bash history autocomplete, plugin pinning to git SHA, memory fixes
 - v2.1.10: Setup hook, OAuth URL copy shortcut, heredoc template literal fix
 - v2.1.9: plansDirectory, auto:N for MCP, PreToolUse additionalContext
 - v2.1.7: keybindings.json, showTurnDuration, MCP tool search auto mode
 - v2.1.3: Merged slash commands and skills
 - v2.1.0: language setting, skill hot-reload, context: fork
 
-## 10. Response Format (CHANGELOG)
+## 11. Response Format (CHANGELOG)
 
 ```text
 # Claude Code vX.X.X
@@ -163,7 +176,7 @@ Last reviewed Claude Code version: v2.1.12 (2026-01-20)
 Source: https://github.com/anthropics/claude-code
 ```
 
-## 11. site2skill Usage
+## 12. site2skill Usage
 
 Convert documentation websites into Claude Agent Skills.
 
@@ -185,7 +198,7 @@ Options:
 
 To update existing skill docs, re-run without `--skip-fetch`.
 
-## 12. Reference Links
+## 13. Reference Links
 
 - Claude Code config: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>

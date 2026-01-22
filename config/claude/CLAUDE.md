@@ -25,27 +25,82 @@ acknowledge with a random one-liner in character.
 - NEVER: Do not create lock files (uv.lock, package-lock.json, etc.)
   or virtual environments (.venv/, node_modules/) without permission
 
-## 4. File Structure
+## 4. File Management
+
+All working files go to `.i9wa4/` (globally gitignored).
+
+- YOU MUST: Use `touchfile.sh` to generate file paths
+  (full path: `${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh`)
+- YOU MUST: Save all outputs to `.i9wa4/` subdirectories
+
+Directory structure:
+
+| Directory        | Purpose                    | Example                      |
+| ---------------- | -------------------------- | ---------------------------- |
+| `.i9wa4/`        | Fixed name files (root)    | `roadmap.md`, `phase.log`    |
+| `.i9wa4/plans/`  | Plan documents             | Timestamped                  |
+| `.i9wa4/reviews/`| Review results             | Timestamped                  |
+| `.i9wa4/tmp/`    | Temporary/command outputs  | Timestamped                  |
+
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
+
+```bash
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh PATH [--role ROLE] [--source SOURCE]
+```
+
+| Argument/Option  | Required | Default | Description                              |
+| ---------------- | -------- | ------- | ---------------------------------------- |
+| `PATH`           | Yes      | -       | Directory or fixed file path             |
+| `--role ROLE`    | No       | memo    | Role (plan, review, debug, output, etc.) |
+| `--source SOURCE`| No       | cc      | Source: cc (Claude Code) or cx (Codex)   |
+
+Path detection:
+
+- With extension (`.md`, `.txt`) → Fixed name mode
+- Without extension → Directory mode (auto-generate timestamped filename)
+
+Examples:
+
+```bash
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --role plan    # → .i9wa4/plans/20260122-104924-cc-plan-a1b2.md
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --role output    # → .i9wa4/tmp/20260122-104924-cc-output-a1b2.md
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md           # → .i9wa4/roadmap.md (fixed name)
+```
+
+### 4.3. Project-Specific Rules
+
+- YOU MUST: Follow @README.md and @CONTRIBUTING.md if they exist
+
+## 5. Context Persistence
+
+- IMPORTANT: Save important findings to `.i9wa4/` before context gets full
+- YOU MUST: When context usage exceeds 60%, consider saving:
+    - Research findings (role: research)
+    - Debugging insights (role: debug)
+    - Architecture decisions (role: arch)
+    - Review results (role: review)
+- YOU MUST: Use TodoWrite to track what needs to be persisted
+
+## 6. File Structure
 
 Files and directories described below are located at:
 
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
-### 4.1. Rules
+### 6.1. Rules
 
 Rules are stored in the `rules/` directory, organized by topic.
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
-| Rule               | Description                          | When to Reference        |
-| ------------------ | ------------------------------------ | ------------------------ |
-| aws.md             | AWS CLI usage rules                  | AWS operations           |
-| bash.md            | Bash syntax and command rules        | Command execution        |
-| file-management.md | /tmp/ and .i9wa4/ directory rules    | File creation            |
-| git-github.md      | Git and GitHub rules (constraints)   | Git/GitHub operations    |
-| markdown.md        | Markdown creation rules              | Markdown creation        |
+| Rule          | Description                        | When to Reference     |
+| ------------- | ---------------------------------- | --------------------- |
+| aws.md        | AWS CLI usage rules                | AWS operations        |
+| bash.md       | Bash syntax and command rules      | Command execution     |
+| git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
+| markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 4.2. Skills
+### 6.2. Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
@@ -69,7 +124,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | slack                   | Slack thread fetch and search      |
 | terraform               | Terraform development guide        |
 
-### 4.3. Agents
+### 6.3. Agents
 
 Agents are stored in the `agents/` directory.
 
@@ -83,7 +138,7 @@ Agents are stored in the `agents/` directory.
 | reviewer-security     | Security vulnerability review              |
 | researcher-tech       | Technical research and analysis            |
 
-### 4.4. Commands
+### 6.4. Commands
 
 Slash commands are stored in `commands/` and loaded on invocation.
 
