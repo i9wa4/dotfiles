@@ -30,20 +30,20 @@ Defaults to fetching 24 hours of activities from current time
 #### 2.1.1. Script Location
 
 ```text
-~/.config/claude/skills/daily-report/scripts/get-activities.sh
+${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh
 ```
 
 #### 2.1.2. Command Examples
 
 ```bash
 # Default: 24 hours ago to now
-~/.config/claude/skills/daily-report/scripts/get-activities.sh --no-url
+${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --no-url
 
 # Specify hours: N hours ago to now
-~/.config/claude/skills/daily-report/scripts/get-activities.sh --hours 48 --no-url
+${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --hours 48 --no-url
 
 # Specify datetime directly (ISO8601, UTC)
-~/.config/claude/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
+${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
 ```
 
 #### 2.1.3. Options
