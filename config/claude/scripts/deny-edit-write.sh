@@ -17,8 +17,8 @@ INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# Allow writes to .i9wa4/ directory (plans, reports, status)
-if [[ -n $FILE_PATH && $FILE_PATH == *".i9wa4/"* ]]; then
+# Allow writes to .i9wa4/ directory (project root only)
+if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
   exit 0
 fi
 

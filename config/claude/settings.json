@@ -44,8 +44,7 @@
       "Read(**/*key*)",
       "Read(**/*token*)",
       "Read(.env.*)",
-      "Read(id_ed25519)",
-      "Read(id_rsa)",
+      "Read(~/.ssh/**)",
       "Write(**/secrets/**)",
       "Write(.env*)"
     ]
