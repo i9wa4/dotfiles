@@ -48,6 +48,7 @@ TMUX_QUICK_TIMEOUT = 2
 # Display constants
 CAPTURE_LINES = 30
 MESSAGE_PREVIEW_LENGTH = 100
+DELIVERY_FAILURE_MIN_INTERVAL_SECONDS = 60
 
 # Default config path (same directory as script)
 DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
@@ -156,6 +157,9 @@ class Postman:
         self._participants_lock = threading.Lock()
         self._observer_remind_lock = threading.Lock()
         self._observer_remind_count = 0
+        self._delivery_failure_lock = threading.Lock()
+        self._delivery_failure_last_sent: dict[str, float] = {}
+        self._stop_event = threading.Event()
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
 
@@ -421,6 +425,27 @@ type: observer-reminder
         reason: str,
     ) -> None:
         """Alert orchestrator about delivery failure."""
+        if recipient_role == "orchestrator":
+            self.log(
+                "⚠️ ",
+                (
+                    "Delivery failure for orchestrator template; "
+                    "skipping alert to avoid loop"
+                ),
+            )
+            return
+
+        now = time.time()
+        with self._delivery_failure_lock:
+            last_sent = self._delivery_failure_last_sent.get(recipient_role, 0)
+            if now - last_sent < DELIVERY_FAILURE_MIN_INTERVAL_SECONDS:
+                self.log(
+                    "⚠️ ",
+                    f"Delivery failure alert suppressed for {recipient_role}",
+                )
+                return
+            self._delivery_failure_last_sent[recipient_role] = now
+
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         filename = f"{timestamp}-from-postman-to-orchestrator.md"
         filepath = self.watch_dir / filename
@@ -636,22 +661,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             print(f"Participants: {', '.join(parts)}")
         sys.stdout.flush()
 
-    def format_template(
-        self,
-        template_name: str,
-        **kwargs: str,
-    ) -> Optional[str]:
-        """Format a template with provided variables."""
-        if template_name not in self.templates:
-            return None
-        template = self.templates[template_name]
-        if "content" not in template:
-            return None
-        try:
-            return template["content"].format(**kwargs)
-        except KeyError:
-            return None
-
     def print_header(self) -> None:
         """Print startup header."""
         print(f"📮 Postman v{VERSION}")
@@ -675,8 +684,8 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         # Print header
         self.print_header()
 
-        # Create stop event for watchfiles
-        self._stop_event = threading.Event()
+        # Reset stop event for watchfiles
+        self._stop_event.clear()
 
         # Start periodic threads
         scan_thread = threading.Thread(target=self.periodic_scan, daemon=True)
