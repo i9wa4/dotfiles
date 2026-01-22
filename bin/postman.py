@@ -461,9 +461,12 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             if not self.running:
                 break
 
-            new_participants = self.discover_panes()
             with self._participants_lock:
-                old_roles = set(self.participants.keys())
+                existing = dict(self.participants)
+                old_roles = set(existing.keys())
+
+            new_participants = self.discover_panes(existing)
+            with self._participants_lock:
                 self.participants = new_participants
                 new_roles = set(self.participants.keys())
 
@@ -502,10 +505,12 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
 
     def print_participants(self) -> None:
         """Print current participants."""
-        if not self.participants:
+        with self._participants_lock:
+            participants = list(self.participants.values())
+        if not participants:
             print("Participants: None found")
         else:
-            parts = [f"{p.role}({p.pane_id})" for p in self.participants.values()]
+            parts = [f"{p.role}({p.pane_id})" for p in participants]
             print(f"Participants: {', '.join(parts)}")
         sys.stdout.flush()
 
