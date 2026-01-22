@@ -126,6 +126,7 @@ class Postman:
         self.captures_dir = captures_dir
         self.templates = templates or {}
         self.participants: dict[str, Participant] = {}
+        self._participants_lock = threading.Lock()
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
 
@@ -135,9 +136,12 @@ class Postman:
         print(f"[{ts}] {icon} {message}")
         sys.stdout.flush()
 
-    def discover_panes(self) -> dict[str, Participant]:
+    def discover_panes(
+        self, existing_participants: Optional[dict[str, Participant]] = None
+    ) -> dict[str, Participant]:
         """Find all panes with AGENT_ROLE set."""
         new_participants: dict[str, Participant] = {}
+        existing = existing_participants or {}
 
         try:
             # Get all panes in current session
@@ -169,8 +173,8 @@ class Postman:
                 role = self._get_pane_role(pane_pid)
                 if role:
                     # Preserve existing state if participant already known
-                    if role in self.participants:
-                        old = self.participants[role]
+                    if role in existing:
+                        old = existing[role]
                         new_participants[role] = Participant(
                             role=role,
                             pane_id=pane_id,
@@ -256,18 +260,23 @@ class Postman:
 
         self.log("📨", f"Message: {sender} → {recipient}")
 
-        # Deliver to recipient
-        if recipient in self.participants:
-            participant = self.participants[recipient]
-            self.deliver_notification(participant, sender, filepath)
+        # Get participant references inside lock
+        with self._participants_lock:
+            recipient_p = self.participants.get(recipient)
+            observer_p = (
+                self.participants.get("observer") if recipient != "observer" else None
+            )
+
+        # Deliver to recipient (outside lock)
+        if recipient_p:
+            self.deliver_notification(recipient_p, sender, filepath)
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
-        # CC to observer (if exists and not already the recipient)
-        if "observer" in self.participants and recipient != "observer":
-            observer = self.participants["observer"]
-            self.deliver_notification(observer, sender, filepath, is_cc=True)
-            self.log("📋", f"CC to observer ({observer.pane_id})")
+        # CC to observer (outside lock)
+        if observer_p:
+            self.deliver_notification(observer_p, sender, filepath, is_cc=True)
+            self.log("📋", f"CC to observer ({observer_p.pane_id})")
 
     def deliver_notification(
         self,
@@ -361,35 +370,43 @@ class Postman:
         """Check all participants for stuck state."""
         current_time = time.time()
 
-        for role, participant in self.participants.items():
-            # Skip orchestrator - it waits for input legitimately
-            if role == "orchestrator":
-                continue
+        # Take snapshot inside lock
+        with self._participants_lock:
+            snapshot = [
+                (role, p.pane_id, p.last_capture, p.last_capture_time)
+                for role, p in self.participants.items()
+                if role != "orchestrator"
+            ]
 
-            current_capture = self.capture_pane(participant.pane_id)
-
-            # Save capture to file
-            capture_path = self.save_capture(participant.pane_id, current_capture)
+        for role, pane_id, last_capture, last_capture_time in snapshot:
+            current_capture = self.capture_pane(pane_id)
+            capture_path = self.save_capture(pane_id, current_capture)
 
             # Skip if first capture
-            if participant.last_capture_time == 0:
-                participant.last_capture = current_capture
-                participant.last_capture_time = current_time
+            if last_capture_time == 0:
+                with self._participants_lock:
+                    if role in self.participants:
+                        self.participants[role].last_capture = current_capture
+                        self.participants[role].last_capture_time = current_time
                 continue
 
             # Check if content changed
-            if current_capture == participant.last_capture:
-                elapsed_minutes = (current_time - participant.last_capture_time) / 60
+            if current_capture == last_capture:
+                elapsed_minutes = (current_time - last_capture_time) / 60
                 if elapsed_minutes >= self.stuck_interval:
-                    self.send_stuck_alert(
-                        participant, int(elapsed_minutes), capture_path
-                    )
-                    # Reset timer after sending alert
-                    participant.last_capture_time = current_time
+                    with self._participants_lock:
+                        p = self.participants.get(role)
+                    if p:
+                        self.send_stuck_alert(p, int(elapsed_minutes), capture_path)
+                    with self._participants_lock:
+                        if role in self.participants:
+                            self.participants[role].last_capture_time = current_time
             else:
                 # Content changed, reset timer
-                participant.last_capture = current_capture
-                participant.last_capture_time = current_time
+                with self._participants_lock:
+                    if role in self.participants:
+                        self.participants[role].last_capture = current_capture
+                        self.participants[role].last_capture_time = current_time
 
     def send_stuck_alert(
         self,
@@ -444,9 +461,11 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             if not self.running:
                 break
 
-            old_roles = set(self.participants.keys())
-            self.participants = self.discover_panes()
-            new_roles = set(self.participants.keys())
+            new_participants = self.discover_panes()
+            with self._participants_lock:
+                old_roles = set(self.participants.keys())
+                self.participants = new_participants
+                new_roles = set(self.participants.keys())
 
             if old_roles != new_roles:
                 added = new_roles - old_roles
