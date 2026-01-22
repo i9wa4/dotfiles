@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # touchfile.sh - Create file with standardized naming
 #
 # Usage:
@@ -44,7 +44,7 @@ while [[ $# -gt 0 ]]; do
     exit 1
     ;;
   *)
-    if [[ -z "$TARGET_PATH" ]]; then
+    if [[ -z $TARGET_PATH ]]; then
       TARGET_PATH="$1"
     else
       echo "Error: Multiple paths specified" >&2
@@ -56,14 +56,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate PATH
-if [[ -z "$TARGET_PATH" ]]; then
+if [[ -z $TARGET_PATH ]]; then
   echo "Error: PATH is required" >&2
   echo "Usage: touchfile.sh PATH [--type TYPE]" >&2
   exit 1
 fi
 
 # Check if PATH has an extension (fixed name mode)
-if [[ "$TARGET_PATH" =~ \.[a-zA-Z0-9]+$ ]]; then
+if [[ $TARGET_PATH =~ \.[a-zA-Z0-9]+$ ]]; then
   # Fixed name mode
   FILE_PATH="$TARGET_PATH"
   mkdir -p "$(dirname "$FILE_PATH")"

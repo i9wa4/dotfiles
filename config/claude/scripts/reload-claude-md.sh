@@ -1,5 +1,5 @@
-#!/bin/bash
-# restore-context.sh
+#!/usr/bin/env bash
+# reload-claude-md.sh
 #
 # Hook script to remind Claude to re-read CLAUDE.md after compaction/resume.
 # Uses JSON additionalContext so Claude can see the reminder.

@@ -67,7 +67,7 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output      # → .i
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .i9wa4/roadmap.md (fixed name)
 ```
 
-### 4.3. Project-Specific Rules
+### 4.1. Project-Specific Rules
 
 - YOU MUST: Follow @README.md and @CONTRIBUTING.md if they exist
 
@@ -109,7 +109,7 @@ Skills are stored in the `skills/` directory for specific integrations.
 | atlassian               | Jira (acli) and Confluence (REST)  |
 | bigquery                | BigQuery development guide         |
 | claude-config-optimizer | Claude Code config and changelog   |
-| codex-cli-optimizer     | Codex CLI config and changelog     |
+| codex-config-optimizer  | Codex CLI config and changelog     |
 | daily-report            | Daily work report generation       |
 | databricks              | Databricks development guide       |
 | dbt                     | dbt development guide              |
@@ -145,3 +145,14 @@ Slash commands are stored in `commands/` and loaded on invocation.
 | Command                             | Description                            |
 | ----------------------------------- | -------------------------------------- |
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment    |
+
+### 6.5. Scripts
+
+Helper scripts stored in the `scripts/` directory.
+
+| Script              | Purpose                           | Referenced by             |
+| ------------------- | --------------------------------- | ------------------------- |
+| deny-edit-write.sh  | Orchestrator READONLY enforcement | settings.json PreToolUse  |
+| post-tool-use.sh    | Orchestrator reminders            | settings.json PostToolUse |
+| reload-claude-md.sh | Context reload after compaction   | settings.json SessionStart|
+| touchfile.sh        | Standardized file creation        | CLAUDE.md, skills/*       |

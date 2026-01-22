@@ -1,5 +1,5 @@
-#!/bin/bash
-# orchestrator-readonly.sh
+#!/usr/bin/env bash
+# deny-edit-write.sh
 #
 # Hook script to enforce READONLY mode for Orchestrator.
 # Blocks Edit, Write, NotebookEdit tools when CLAUDE_ROLE=orchestrator.

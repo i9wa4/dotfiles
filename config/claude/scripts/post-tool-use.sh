@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # post-tool-use.sh
 #
 # PostToolUse hook for Orchestrator reminders.
