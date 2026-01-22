@@ -12,13 +12,8 @@ This skill provides a guide for Jupyter Notebook execution.
 <https://github.com/i9wa4/jupyter-databricks-kernel>
 
 ```bash
-# With uv
 uv pip install jupyter-databricks-kernel
 uv run python -m jupyter_databricks_kernel.install
-
-# With pip
-pip install jupyter-databricks-kernel
-python -m jupyter_databricks_kernel.install
 ```
 
 ## 2. Default Execution Method
