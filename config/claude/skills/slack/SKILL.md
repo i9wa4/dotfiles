@@ -61,14 +61,15 @@ echo "$CHANNEL"  # D07UW8G7C9H
 
 ```sh
 CHANNEL="D07UW8G7C9H"
+FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output)
 curl -s -X POST "https://slack.com/api/conversations.history" \
   -H "Authorization: Bearer $SLACK_MCP_XOXC_TOKEN" \
   -H "Cookie: d=$SLACK_MCP_XOXD_TOKEN" \
   -d "channel=${CHANNEL}" \
-  -d "limit=20" > /tmp/slack_history.json
+  -d "limit=20" > "$FILE"
 
 # Extract calendar events (for Google Calendar DM)
-jq '.messages[] | select(.attachments) | .attachments[] | select(.title) | {pretext, title, text}' /tmp/slack_history.json
+jq '.messages[] | select(.attachments) | .attachments[] | select(.title) | {pretext, title, text}' "$FILE"
 ```
 
 ## 4. Fetch Thread

@@ -29,7 +29,7 @@ acknowledge with a random one-liner in character.
 
 All working files go to `.i9wa4/` (globally gitignored).
 
-- YOU MUST: Use `touchfile.sh` to generate file paths
+- YOU MUST: Use `touchfile.sh` to create output files
   (full path: `${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh`)
 - YOU MUST: Save all outputs to `.i9wa4/` subdirectories
 
@@ -45,14 +45,13 @@ Directory structure:
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh PATH [--role ROLE] [--source SOURCE]
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh PATH [--type TYPE]
 ```
 
-| Argument/Option  | Required | Default | Description                              |
-| ---------------- | -------- | ------- | ---------------------------------------- |
-| `PATH`           | Yes      | -       | Directory or fixed file path             |
-| `--role ROLE`    | No       | memo    | Role (plan, review, debug, output, etc.) |
-| `--source SOURCE`| No       | cc      | Source: cc (Claude Code) or cx (Codex)   |
+| Argument/Option | Required | Default | Description                  |
+| --------------- | -------- | ------- | ---------------------------- |
+| `PATH`          | Yes      | -       | Directory or fixed file path |
+| `--type TYPE`   | No       | memo    | File type (plan, output, review-cc, review-cx, etc.) |
 
 Path detection:
 
@@ -62,9 +61,9 @@ Path detection:
 Examples:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --role plan    # → .i9wa4/plans/20260122-104924-cc-plan-a1b2.md
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --role output    # → .i9wa4/tmp/20260122-104924-cc-output-a1b2.md
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md           # → .i9wa4/roadmap.md (fixed name)
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan      # → .i9wa4/plans/20260122-110600-plan-a1b2.md
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output      # → .i9wa4/tmp/20260122-110600-output-a1b2.md
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .i9wa4/roadmap.md (fixed name)
 ```
 
 ### 4.3. Project-Specific Rules
@@ -75,10 +74,10 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md           # → .i9w
 
 - IMPORTANT: Save important findings to `.i9wa4/` before context gets full
 - YOU MUST: When context usage exceeds 60%, consider saving:
-    - Research findings (role: research)
-    - Debugging insights (role: debug)
-    - Architecture decisions (role: arch)
-    - Review results (role: review)
+    - Research findings (type: research)
+    - Debugging insights (type: debug)
+    - Architecture decisions (type: arch)
+    - Review results (type: review)
 - YOU MUST: Use TodoWrite to track what needs to be persisted
 
 ## 6. File Structure

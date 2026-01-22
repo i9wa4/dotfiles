@@ -70,10 +70,10 @@ cd ~/ghq/github.com/i9wa4/dotfiles/config/codex && ./generate-config.sh
 Use `gh` command to fetch the latest releases:
 
 ```sh
-gh api repos/openai/codex/releases --jq '.[0:5]' > /tmp/codex-cli-releases.json
+FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output)
+gh api repos/openai/codex/releases --jq '.[0:5]' > "$FILE"
+cat "$FILE"
 ```
-
-Then read the file to analyze.
 
 ## 4. CHANGELOG Operations
 

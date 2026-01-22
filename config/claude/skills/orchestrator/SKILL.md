@@ -161,8 +161,9 @@ Return results directly. Write to `.i9wa4/` if file output needed.
 ### 5.2. Codex CLI
 
 ```bash
+FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type "${ROLE}-cx") && \
 codex exec --sandbox workspace-write -C .i9wa4 \
-  -o ".i9wa4/reviews/cx-${ROLE}.md" \
+  -o "$FILE" \
   "[SUBAGENT capability=READONLY] {task content}" &
 wait
 ```
@@ -262,7 +263,11 @@ NEXT: <what is needed to continue>
 
 ### 8.2. Plan Template
 
-Save to `.i9wa4/plans/<descriptive-name>.md`:
+Create file:
+
+```bash
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan
+```
 
 ```markdown
 # Plan: {title}
@@ -317,7 +322,11 @@ Parallel: Send to multiple Workers simultaneously
 
 ### 9.3. Completion Report
 
-Output: `.i9wa4/completion-{id}.md`
+Create file:
+
+```bash
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type completion
+```
 
 ```markdown
 # Implementation Complete
@@ -414,10 +423,9 @@ NEVER use background processes (`&`) with codex exec -
 causes output interleaving.
 
 ```bash
-TS=$(date +%Y%m%d-%H%M%S)
 for ROLE in security architecture historian code qa; do
-  codex exec --sandbox workspace-write -C .i9wa4 \
-    -o ".i9wa4/reviews/${TS}-cx-${ROLE}.md" "{task}"
+  FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type "${ROLE}-cx")
+  codex exec --sandbox workspace-write -C .i9wa4 -o "$FILE" "{task}"
 done
 ```
 
@@ -430,7 +438,11 @@ WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
 ### 10.5. Summary Output
 
-Output: `.i9wa4/reviews/summary.md`
+Create file:
+
+```bash
+${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews/summary.md
+```
 
 ```markdown
 # Review Summary

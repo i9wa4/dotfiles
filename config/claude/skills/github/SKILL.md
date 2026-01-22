@@ -139,8 +139,10 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments --jq '.[] | {id, user: .user.login
 Get all at once:
 
 ```bash
-gh api repos/OWNER/REPO/issues/NUMBER/comments > /tmp/issue-comments.json
-gh api repos/OWNER/REPO/pulls/NUMBER/comments > /tmp/review-comments.json
+FILE1=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output)
+FILE2=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output)
+gh api repos/OWNER/REPO/issues/NUMBER/comments > "$FILE1"
+gh api repos/OWNER/REPO/pulls/NUMBER/comments > "$FILE2"
 ```
 
 ### 3.4. Post Comments

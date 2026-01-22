@@ -91,7 +91,11 @@ acli jira workitem search \
 
 ### 2.3. Create Draft
 
-Save to `.i9wa4/YYYY-MM-DD-$(whoami).md` (without keyword initially).
+Create file:
+
+```bash
+FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh ".i9wa4/$(date +%Y-%m-%d)-$(whoami).md")
+```
 
 NOTE: Keep command blocks in "AI Coding Tool Usage" section.
 Execute commands and paste results below the command block.

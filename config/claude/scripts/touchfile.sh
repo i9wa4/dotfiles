@@ -2,7 +2,7 @@
 # touchfile.sh - Create file with standardized naming
 #
 # Usage:
-#   touchfile.sh PATH [--role ROLE] [--source SOURCE]
+#   touchfile.sh PATH [--type TYPE]
 #
 # Arguments:
 #   PATH       Output path (required)
@@ -10,20 +10,18 @@
 #              - Without extension → Directory mode (auto-generate filename)
 #
 # Options:
-#   --role ROLE      Role/purpose (optional, default: memo)
-#                    Examples: plan, review, debug, arch, research, memo, output
-#   --source SOURCE  Source identifier (optional, default: cc)
-#                    cc = Claude Code, cx = Codex CLI
+#   --type TYPE  File type (optional, default: memo)
+#                Examples: plan, output, memo, review-cc, review-cx
 #
 # Output format (directory mode):
-#   {DIR}/{YYYYMMDD-HHMMSS}-{SOURCE}-{ROLE}-{ID}.md
+#   {DIR}/{YYYYMMDD-HHMMSS}-{TYPE}-{ID}.md
 #
 # Examples:
-#   touchfile.sh .i9wa4/plans --role plan
-#   # → .i9wa4/plans/20260122-104644-cc-plan-a1b2.md
+#   touchfile.sh .i9wa4/plans --type plan
+#   # → .i9wa4/plans/20260122-104644-plan-a1b2.md
 #
-#   touchfile.sh .i9wa4/tmp --role output
-#   # → .i9wa4/tmp/20260122-104644-cc-output-a1b2.md
+#   touchfile.sh .i9wa4/tmp --type output
+#   # → .i9wa4/tmp/20260122-104644-output-a1b2.md
 #
 #   touchfile.sh .i9wa4/roadmap.md
 #   # → .i9wa4/roadmap.md (fixed name, directory created)
@@ -31,19 +29,14 @@
 set -euo pipefail
 
 # Defaults
-ROLE="memo"
-SOURCE="cc"
+TYPE="memo"
 TARGET_PATH=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-  --role)
-    ROLE="$2"
-    shift 2
-    ;;
-  --source)
-    SOURCE="$2"
+  --type)
+    TYPE="$2"
     shift 2
     ;;
   -*)
@@ -65,7 +58,7 @@ done
 # Validate PATH
 if [[ -z "$TARGET_PATH" ]]; then
   echo "Error: PATH is required" >&2
-  echo "Usage: touchfile.sh PATH [--role ROLE] [--source SOURCE]" >&2
+  echo "Usage: touchfile.sh PATH [--type TYPE]" >&2
   exit 1
 fi
 
@@ -78,7 +71,7 @@ else
   # Directory mode - generate timestamped filename
   TS=$(date +%Y%m%d-%H%M%S)
   ID=$(openssl rand -hex 2)
-  FILE_NAME="${TS}-${SOURCE}-${ROLE}-${ID}.md"
+  FILE_NAME="${TS}-${TYPE}-${ID}.md"
   FILE_PATH="${TARGET_PATH}/${FILE_NAME}"
   mkdir -p "$TARGET_PATH"
 fi
@@ -88,3 +81,4 @@ touch "$FILE_PATH"
 
 # Output the created file path
 echo "$FILE_PATH"
+echo "Created: $FILE_PATH" >&2
