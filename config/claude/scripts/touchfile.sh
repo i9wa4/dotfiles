@@ -70,7 +70,7 @@ if [[ $TARGET_PATH =~ \.[a-zA-Z0-9]+$ ]]; then
 else
   # Directory mode - generate timestamped filename
   TS=$(date +%Y%m%d-%H%M%S)
-  ID=$(openssl rand -hex 2)
+  ID=$(printf '%04x' $RANDOM)
   FILE_NAME="${TS}-${TYPE}-${ID}.md"
   FILE_PATH="${TARGET_PATH}/${FILE_NAME}"
   mkdir -p "$TARGET_PATH"
