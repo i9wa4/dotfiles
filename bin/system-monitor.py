@@ -6,12 +6,17 @@
 system-monitor.py - CPU/Memory monitoring with process breakdown
 
 Usage:
-    uv run system-monitor.py [--interval SECONDS] [--duration SECONDS] [--others-top N]
+    uv run bin/system-monitor.py [OPTIONS]
+
+Options:
+    --interval SECONDS    Sampling interval (default: 1.0)
+    --duration SECONDS    Total duration (default: indefinite)
+    --others-top N        Number of Others to show (default: 5)
 
 Examples:
-    uv run system-monitor.py                    # Monitor indefinitely
-    uv run system-monitor.py --duration 60      # Monitor for 60 seconds
-    uv run system-monitor.py --others-top 10    # Show top 10 in Others
+    uv run bin/system-monitor.py                    # Monitor indefinitely
+    uv run bin/system-monitor.py --duration 60      # Monitor for 60 seconds
+    uv run bin/system-monitor.py --others-top 10    # Show top 10 in Others
 """
 
 import argparse
