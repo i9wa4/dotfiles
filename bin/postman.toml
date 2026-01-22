@@ -10,6 +10,11 @@ enter_delay_seconds = 0.5
 capture_history_count = 5
 captures_dir = ".i9wa4/captures"
 
+[observer]
+remind_enabled = true
+remind_interval_messages = 10
+remind_message = "Consider consulting observer for feedback"
+
 [templates]
 # Templates by recipient role
 # Variables: {task}, {response_file}

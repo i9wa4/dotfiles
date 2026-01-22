@@ -55,6 +55,11 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "capture_history_count": 5,
         "captures_dir": ".i9wa4/captures",
     },
+    "observer": {
+        "remind_enabled": False,
+        "remind_interval_messages": 10,
+        "remind_message": "Consider consulting observer for feedback",
+    },
     "templates": {},
 }
 
@@ -80,6 +85,11 @@ def load_config(config_path: Optional[Path] = None) -> dict[str, Any]:
                     }
                 if "templates" in config:
                     merged["templates"] = config["templates"]
+                if "observer" in config:
+                    merged["observer"] = {
+                        **DEFAULT_CONFIG["observer"],
+                        **config["observer"],
+                    }
                 return merged
             except (tomllib.TOMLDecodeError, OSError) as e:
                 print(
@@ -115,6 +125,9 @@ class Postman:
         enter_delay: float = 0.5,
         capture_history: int = 5,
         captures_dir: Path = Path(".i9wa4/captures"),
+        observer_remind_enabled: bool = False,
+        observer_remind_interval_messages: int = 10,
+        observer_remind_message: str = "Consider consulting observer for feedback",
         templates: Optional[dict[str, Any]] = None,
     ):
         self.watch_dir = watch_dir
@@ -124,9 +137,14 @@ class Postman:
         self.enter_delay = enter_delay
         self.capture_history = capture_history
         self.captures_dir = captures_dir
+        self.observer_remind_enabled = observer_remind_enabled
+        self.observer_remind_interval_messages = observer_remind_interval_messages
+        self.observer_remind_message = observer_remind_message
         self.templates = templates or {}
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
+        self._observer_remind_lock = threading.Lock()
+        self._observer_remind_count = 0
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
 
@@ -267,16 +285,23 @@ class Postman:
                 self.participants.get("observer") if recipient != "observer" else None
             )
 
+        delivered_count = 0
+
         # Deliver to recipient (outside lock)
         if recipient_p:
-            self.deliver_notification(recipient_p, sender, filepath)
+            if self.deliver_notification(recipient_p, sender, filepath):
+                delivered_count += 1
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
         # CC to observer (outside lock)
         if observer_p:
-            self.deliver_notification(observer_p, sender, filepath, is_cc=True)
+            if self.deliver_notification(observer_p, sender, filepath, is_cc=True):
+                delivered_count += 1
             self.log("📋", f"CC to observer ({observer_p.pane_id})")
+
+        if delivered_count:
+            self.maybe_send_observer_reminder(delivered_count)
 
     def deliver_notification(
         self,
@@ -284,7 +309,7 @@ class Postman:
         sender: str,
         filepath: Path,
         is_cc: bool = False,
-    ) -> None:
+    ) -> bool:
         """Send notification to a participant's pane."""
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
@@ -292,7 +317,7 @@ class Postman:
         template = self.templates.get(participant.role, {}).get("content", "")
         if not template:
             self.log("⚠️ ", f"No template for role: {participant.role}")
-            return
+            return False
 
         # Format template
         response_file = f"response-{filepath.stem}.md"
@@ -325,6 +350,48 @@ class Postman:
                 )
         except (subprocess.TimeoutExpired, FileNotFoundError):
             self.log("❌", f"Failed to notify {participant.pane_id}")
+            return False
+        return True
+
+    def maybe_send_observer_reminder(self, delivered_count: int) -> None:
+        """Send observer reminder to orchestrator after N deliveries."""
+        if not self.observer_remind_enabled:
+            return
+        if self.observer_remind_interval_messages <= 0:
+            return
+
+        send_reminder = False
+        with self._observer_remind_lock:
+            self._observer_remind_count += delivered_count
+            if self._observer_remind_count >= self.observer_remind_interval_messages:
+                self._observer_remind_count = 0
+                send_reminder = True
+
+        if send_reminder:
+            self.send_observer_reminder()
+
+    def send_observer_reminder(self) -> None:
+        """Send observer reminder message to orchestrator."""
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        filename = f"{timestamp}-from-postman-to-orchestrator.md"
+        filepath = self.watch_dir / filename
+
+        content = f"""[MESSAGE]
+from: postman
+to: orchestrator
+timestamp: {datetime.now().isoformat()}
+type: observer-reminder
+
+## Reminder
+
+{self.observer_remind_message}
+"""
+
+        try:
+            filepath.write_text(content)
+            self.log("🔔", f"Observer reminder sent: {filename}")
+        except OSError as e:
+            self.log("❌", f"Failed to send observer reminder: {e}")
 
     def capture_pane(self, pane_id: str, lines: int = 0) -> str:
         """Capture content of a tmux pane."""
@@ -624,6 +691,7 @@ Setup (in other panes):
     # Load config file
     config = load_config(args.config)
     postman_cfg = config["postman"]
+    observer_cfg = config.get("observer", {})
 
     # CLI args override config values
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
@@ -633,6 +701,11 @@ Setup (in other panes):
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
     capture_history = postman_cfg.get("capture_history_count", 5)
     captures_dir = Path(postman_cfg.get("captures_dir", ".i9wa4/captures"))
+    observer_remind_enabled = observer_cfg.get("remind_enabled", False)
+    observer_remind_interval_messages = observer_cfg.get("remind_interval_messages", 10)
+    observer_remind_message = observer_cfg.get(
+        "remind_message", "Consider consulting observer for feedback"
+    )
 
     # Create and run postman
     postman = Postman(
@@ -643,6 +716,9 @@ Setup (in other panes):
         enter_delay=enter_delay,
         capture_history=capture_history,
         captures_dir=captures_dir,
+        observer_remind_enabled=observer_remind_enabled,
+        observer_remind_interval_messages=observer_remind_interval_messages,
+        observer_remind_message=observer_remind_message,
         templates=config.get("templates", {}),
     )
 
