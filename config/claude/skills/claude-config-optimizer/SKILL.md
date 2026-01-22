@@ -200,6 +200,13 @@ To update existing skill docs, re-run without `--skip-fetch`.
 
 ## 13. Reference Links
 
+Official Documentation:
+
+- Best Practices: <https://code.claude.com/docs/en/best-practices.md>
+- Docs Map: <https://code.claude.com/docs/en/claude_code_docs_map.md>
+
+Community Resources:
+
 - Claude Code config: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
 - site2skill: <https://github.com/laiso/site2skill>
