@@ -158,9 +158,9 @@ sleep 2 && tmux capture-pane -t {WORKER_PANE} -p | tail -15
 
 NOTE:
 
-- `!` is escaped by Claude Code (Ink UI), so send via hex code (0x21)
-- `C-u` clears the input line (`!` must be at the beginning of line)
-- `sleep 0.2` is required before sending Enter
+- "!" is escaped by Claude Code Ink UI, so send via hex 0x21
+- "C-u" clears the input line ("!" must be at line start)
+- "sleep 0.2" is required before sending Enter
 
 #### Response Monitoring Flow
 
