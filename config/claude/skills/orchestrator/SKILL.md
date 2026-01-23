@@ -196,6 +196,101 @@ check_worker_response() {
 
 Reference: cf. vim-cc-mdd issue 14 (Bash mode command sending via tmux)
 
+### 3.4. Postman (Recommended)
+
+Postman is a file-based communication daemon that monitors `.i9wa4/post/`
+and delivers messages to Workers automatically.
+
+#### File Naming Convention
+
+```text
+{YYYYMMDD-HHMMSS}-from-{sender}-to-{recipient}.md
+```
+
+| Component   | Description                                          |
+| ----------- | ---------------------------------------------------- |
+| timestamp   | `YYYYMMDD-HHMMSS` format (e.g., `20260123-142901`)   |
+| sender      | Role name: `orchestrator`, `worker-claude`, etc.     |
+| recipient   | Role name: `worker-claude`, `worker-codex`, etc.     |
+
+Examples:
+
+- `20260123-142901-from-orchestrator-to-worker-claude.md`
+- `20260123-143000-from-worker-claude-to-orchestrator.md`
+
+#### Available Roles
+
+| Role           | Description                        |
+| -------------- | ---------------------------------- |
+| orchestrator   | Coordinator (you)                  |
+| worker-claude  | Claude Code worker (WRITABLE)      |
+| worker-codex   | Codex CLI worker (READONLY)        |
+| observer       | Monitoring and advising (optional) |
+
+#### Sending a Message
+
+1. Write message to `.i9wa4/draft/{filename}.md`
+2. Move to `.i9wa4/post/` for delivery
+
+```bash
+# 1. Create message file
+TS=$(date +%Y%m%d-%H%M%S)
+cat > .i9wa4/draft/${TS}-from-orchestrator-to-worker-claude.md << 'EOF'
+[MESSAGE]
+from: orchestrator
+to: worker-claude
+timestamp: 2026-01-23T14:29:01
+type: consultation-request
+
+## Task
+
+{task content here}
+EOF
+
+# 2. Move to post directory (triggers delivery)
+mv .i9wa4/draft/${TS}-from-orchestrator-to-worker-claude.md .i9wa4/post/
+```
+
+#### Receiving Responses
+
+Workers respond with files named:
+
+```text
+response-{original-filename}
+```
+
+Example: If you sent `20260123-142901-from-orch-to-worker-claude.md`,
+the response will be `response-20260123-142901-from-orch-to-worker-claude.md`
+
+Check for responses:
+
+```bash
+ls .i9wa4/post/response-*.md
+```
+
+#### Postman Alerts
+
+Postman automatically sends alerts to orchestrator:
+
+| Alert Type       | Trigger                              |
+| ---------------- | ------------------------------------ |
+| stuck-alert      | Worker has no activity for N minutes |
+| delivery-failure | No template configured for recipient |
+| observer-reminder| After N message deliveries           |
+
+#### Configuration
+
+Postman config: `~/ghq/github.com/i9wa4/dotfiles/bin/postman.toml`
+
+Key settings:
+
+```toml
+[postman]
+watch_dir = ".i9wa4/post"
+stuck_interval_minutes = 10
+target_roles = ["worker-claude", "worker-codex"]
+```
+
 ## 4. Delegation Priority
 
 | Task Type             | First Choice      | Fallback   |
@@ -495,6 +590,71 @@ For true parallelism without output mixing, use separate terminal sessions
 or accept that outputs will be written to files (not displayed cleanly).
 
 WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
+
+### 10.4.1 Parallel Execution for 10-Review (cc x 5 + cx x 5)
+
+IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
+
+#### Step 1: Prepare PR Diff
+
+codex exec cannot access PR diff directly. Save it beforehand:
+
+```bash
+gh pr diff $PR_NUMBER > .i9wa4/tmp/pr-diff.txt
+```
+
+#### Step 2: Launch cc x 5 (Single Message)
+
+In one message, call Task tool 5 times in parallel:
+
+```text
+Task tool calls (parallel, single message):
+- subagent_type: reviewer-security
+- subagent_type: reviewer-architecture
+- subagent_type: reviewer-historian
+- subagent_type: reviewer-code (or reviewer-data for design review)
+- subagent_type: reviewer-qa
+```
+
+Each prompt should include:
+
+```text
+[SUBAGENT capability=READONLY]
+PR #N のレビュー（{ROLE}観点）
+差分は .i9wa4/tmp/pr-diff.txt を参照。
+```
+
+#### Step 3: Launch cx x 5 (Background Processes)
+
+Use file output to avoid interleaving:
+
+```bash
+for ROLE in security architecture historian data qa; do
+  FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/reviews --type "review-${ROLE}-cx")
+  codex exec --sandbox workspace-write -o "$FILE" \
+    "[SUBAGENT capability=READONLY] PR #N の ${ROLE} レビュー。差分は .i9wa4/tmp/pr-diff.txt を参照。" &
+done
+wait
+```
+
+#### Step 4: Collect Results
+
+```bash
+# Check all review files
+ls -la .i9wa4/reviews/*-review-*.md
+
+# Read and summarize
+cat .i9wa4/reviews/*-review-*.md
+```
+
+#### Timing Optimization
+
+| Action           | Timing                      |
+| ---------------- | --------------------------- |
+| Save PR diff     | Before starting reviews     |
+| Launch cc x 5    | Immediately (Task tool)     |
+| Launch cx x 5    | Immediately (background)    |
+| Collect results  | After wait completes        |
 
 ### 10.5. Summary Output
 
