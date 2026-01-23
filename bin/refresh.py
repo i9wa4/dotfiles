@@ -68,7 +68,7 @@ def get_slack_tokens():
         cookies = browser.cookies()
         xoxd = next((c["value"] for c in cookies if c["name"] == "d"), None)
 
-        browser.close()
+        # browser.close()
 
         if not xoxc or not xoxd:
             print(f"xoxc: {xoxc}", file=sys.stderr)
