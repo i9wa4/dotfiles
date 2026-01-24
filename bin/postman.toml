@@ -15,18 +15,11 @@ captures_dir = ".i9wa4/captures"
 target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck state
 batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N seconds
 
-[observer]
-remind_enabled = true
-remind_interval_messages = 30
-remind_message = "Consider consulting observer for feedback"
-digest_message_count = 1
+# Template variables: {filename}, {response_file}, {inbox_count}, {inbox_path}, {role}
 
-[templates]
-# Templates by recipient role
-# Variables: {filename}, {response_file}, {inbox_count}, {inbox_path}, {role}
-
-[templates.worker]
-notification = """
+[worker]
+on_join = ""
+template = """
 ## WORKER (WRITABLE)
 
 - NEVER AskUserQuestion - report to Orchestrator
@@ -44,8 +37,13 @@ File: .postman/draft/{response_file}
 2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
 
-[templates.observer]
-notification = """
+[observer]
+on_join = ""
+remind_enabled = true
+remind_interval_messages = 30
+remind_message = "Consider consulting observer for feedback"
+digest_message_count = 1
+template = """
 ## OBSERVER (READONLY)
 
 - Monitor file changes and commit contents
@@ -64,8 +62,9 @@ File: .postman/read/{filename}
 2. Move: `mv .postman/draft/<filename> .postman/post/`
 """
 
-[templates.orchestrator]
-notification = """
+[orchestrator]
+on_join = "/orchestrator"
+template = """
 ## ORCHESTRATOR (READONLY)
 
 - NEVER Edit/Write - DELEGATE to workers
@@ -82,9 +81,3 @@ File: .postman/draft/{response_file}
 1. Edit the response file with your response
 2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
-
-[hooks]
-# on_join: message sent when participant is first detected
-"on_join.orchestrator" = "/orchestrator"
-# "on_join.worker" = ""
-# "on_join.observer" = ""

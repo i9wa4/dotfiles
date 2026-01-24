@@ -84,13 +84,22 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "batch_interval_seconds": 15,
         "log_file": ".postman/postman.log",
     },
+    "worker": {
+        "template": "",
+        "on_join": "",
+    },
     "observer": {
+        "template": "",
+        "on_join": "",
         "remind_enabled": False,
         "remind_interval_messages": 10,
         "remind_message": "Consider consulting observer for feedback",
         "digest_message_count": 5,
     },
-    "templates": {},
+    "orchestrator": {
+        "template": "",
+        "on_join": "",
+    },
 }
 
 
@@ -123,15 +132,13 @@ def load_config(config_path: Optional[Path] = None) -> dict[str, Any]:
                         **DEFAULT_CONFIG["postman"],
                         **config["postman"],
                     }
-                if "templates" in config:
-                    merged["templates"] = config["templates"]
-                if "hooks" in config:
-                    merged["hooks"] = config["hooks"]
-                if "observer" in config:
-                    merged["observer"] = {
-                        **DEFAULT_CONFIG["observer"],
-                        **config["observer"],
-                    }
+                # Role-centric sections
+                for role in ["worker", "observer", "orchestrator"]:
+                    if role in config:
+                        merged[role] = {
+                            **DEFAULT_CONFIG.get(role, {}),
+                            **config[role],
+                        }
                 return merged
             except (tomllib.TOMLDecodeError, OSError) as e:
                 print(
@@ -1456,6 +1463,17 @@ Setup (in other panes):
     postman_cfg = config["postman"]
     observer_cfg = config.get("observer", {})
 
+    # Build templates and hooks from role-centric config
+    templates: dict[str, dict[str, str]] = {}
+    hooks: dict[str, str] = {}
+    for role in ["worker", "observer", "orchestrator"]:
+        role_cfg = config.get(role, {})
+        if role_cfg.get("template"):
+            templates[role] = {"notification": role_cfg["template"]}
+        on_join = role_cfg.get("on_join", "")
+        if on_join:
+            hooks[f"on_join.{role}"] = on_join
+
     # CLI args override config values
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
     inbox_dir = Path(postman_cfg.get("inbox_dir", ".postman/inbox"))
@@ -1497,8 +1515,8 @@ Setup (in other panes):
         observer_remind_interval_messages=observer_remind_interval_messages,
         observer_remind_message=observer_remind_message,
         target_roles=target_roles,
-        templates=config.get("templates", {}),
-        hooks=config.get("hooks", {}),
+        templates=templates,
+        hooks=hooks,
         idle_threshold=idle_threshold,
         batch_notifications=batch_notifications,
         batch_interval=batch_interval,
