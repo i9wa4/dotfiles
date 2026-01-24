@@ -40,7 +40,7 @@ from typing import Any, Optional
 
 from watchfiles import Change, watch
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 
 # Timeout constants (seconds)
 TMUX_TIMEOUT = 5
@@ -70,6 +70,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "watch_dir": ".i9wa4/post",
         "inbox_dir": ".i9wa4/inbox",
         "read_dir": ".i9wa4/read",
+        "draft_dir": ".i9wa4/draft",
         "dead_letter_dir": ".i9wa4/dead-letter",
         "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
@@ -157,6 +158,7 @@ class Postman:
         watch_dir: Path,
         inbox_dir: Path,
         read_dir: Path,
+        draft_dir: Path,
         dead_letter_dir: Path,
         stuck_interval: int,
         scan_interval: int,
@@ -175,6 +177,7 @@ class Postman:
         self.watch_dir = watch_dir
         self.inbox_dir = inbox_dir
         self.read_dir = read_dir
+        self.draft_dir = draft_dir
         self.dead_letter_dir = dead_letter_dir
         self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
@@ -213,6 +216,30 @@ class Postman:
         ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{ts}] {icon} {message}")
         sys.stdout.flush()
+
+    def create_response_draft(
+        self, response_file: str, recipient: str
+    ) -> Optional[Path]:
+        """Create empty response draft file for recipient to fill in."""
+        try:
+            self.draft_dir.mkdir(parents=True, exist_ok=True)
+            filepath = self.draft_dir / response_file
+            # Create with MESSAGE header template
+            header = f"""[MESSAGE]
+from: {recipient}
+to: <recipient>
+timestamp: {datetime.now().isoformat()}
+type: <type>
+
+## Content
+
+"""
+            filepath.write_text(header)
+            self.log("📝", f"Created draft: {response_file}")
+            return filepath
+        except OSError as e:
+            self.log("⚠️ ", f"Failed to create draft: {e}")
+            return None
 
     def is_pane_idle(self, pane_id: str) -> bool:
         """Check if pane has been idle for threshold seconds."""
@@ -330,6 +357,9 @@ class Postman:
             response_file = f"{timestamp}-from-{recipient}-to-{sender}.md"
         else:
             response_file = f"{filepath.stem}-response.md"
+
+        # Create response draft file for recipient
+        self.create_response_draft(response_file, participant.role)
 
         message = safe_format(
             template,
@@ -793,6 +823,10 @@ class Postman:
             )
         else:
             response_file = f"{filepath.stem}-response.md"  # fallback
+
+        # Create response draft file for recipient
+        self.create_response_draft(response_file, participant.role)
+
         message = safe_format(
             template,
             task=f"📮 New message: {filepath.name}",
@@ -1208,6 +1242,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         # Ensure directories exist
         self.watch_dir.mkdir(parents=True, exist_ok=True)
         self.read_dir.mkdir(parents=True, exist_ok=True)
+        self.draft_dir.mkdir(parents=True, exist_ok=True)
         self.dead_letter_dir.mkdir(parents=True, exist_ok=True)
         # Create inbox directories for known roles
         for role in ["orchestrator", "worker-claude", "worker-codex", "observer"]:
@@ -1319,6 +1354,7 @@ Setup (in other panes):
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
     inbox_dir = Path(postman_cfg.get("inbox_dir", ".i9wa4/inbox"))
     read_dir = Path(postman_cfg.get("read_dir", ".i9wa4/read"))
+    draft_dir = Path(postman_cfg.get("draft_dir", ".i9wa4/draft"))
     dead_letter_dir = Path(postman_cfg.get("dead_letter_dir", ".i9wa4/dead-letter"))
     stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
     scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
@@ -1342,6 +1378,7 @@ Setup (in other panes):
         watch_dir=watch_dir,
         inbox_dir=inbox_dir,
         read_dir=read_dir,
+        draft_dir=draft_dir,
         dead_letter_dir=dead_letter_dir,
         stuck_interval=stuck_interval,
         scan_interval=scan_interval,

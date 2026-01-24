@@ -35,9 +35,9 @@ Allowed: All tools
 After reading, move to: .i9wa4/read/
 
 [RESPONSE]
-1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
-   (Use the value of $A2A_PEER environment variable)
-2. Move: mv .i9wa4/draft/{filename} .i9wa4/post/
+Response file: .i9wa4/draft/{response_file}
+1. Edit the response file above with your response
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 """
 
 [templates.observer]
@@ -56,9 +56,9 @@ New file in read/: {filename}
 Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
-1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
-   (Use the value of $A2A_PEER environment variable)
-2. Move: mv .i9wa4/draft/{filename} .i9wa4/post/
+Response file: .i9wa4/draft/{response_file}
+1. Edit the response file above with your response
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 """
 
 [templates.orchestrator]
@@ -79,7 +79,8 @@ CURRENT: <what was done> | <mood> <emoji>
 NEXT: <what is needed to continue>
 
 [RESPONSE if needed]
-1. Write: .i9wa4/draft/{response_file}
+Response file: .i9wa4/draft/{response_file}
+1. Edit the response file above with your response
 2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 
 ---
