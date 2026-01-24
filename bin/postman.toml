@@ -56,9 +56,8 @@ New file in read/: {filename}
 Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
-Response file: .i9wa4/draft/{response_file}
-1. Edit the response file above with your response
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+1. Create: .i9wa4/draft/yyyymmdd-hhmmss-from-observer-to-orchestrator.md
+2. Move: mv .i9wa4/draft/<filename> .i9wa4/post/
 """
 
 [templates.orchestrator]

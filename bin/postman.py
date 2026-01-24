@@ -358,8 +358,9 @@ type: <type>
         else:
             response_file = f"{filepath.stem}-response.md"
 
-        # Create response draft file for recipient
-        self.create_response_draft(response_file, participant.role)
+        # Create response draft file for recipient (skip for observer)
+        if not participant.role.startswith("observer"):
+            self.create_response_draft(response_file, participant.role)
 
         message = safe_format(
             template,
@@ -824,8 +825,9 @@ type: <type>
         else:
             response_file = f"{filepath.stem}-response.md"  # fallback
 
-        # Create response draft file for recipient
-        self.create_response_draft(response_file, participant.role)
+        # Create response draft file for recipient (skip for observer)
+        if not participant.role.startswith("observer"):
+            self.create_response_draft(response_file, participant.role)
 
         message = safe_format(
             template,
