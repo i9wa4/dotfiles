@@ -1,14 +1,10 @@
 ---
 name: orchestrator
 description: |
-  Main agent orchestration skill.
+  Orchestration workflow for orchestrator role ONLY.
   Use when:
-  - User says "/orchestrator" or starts a new workflow
-  - $A2A_PEER environment variable contains "orchestrator"
-  - User mentions "plan", "design", "review", "code", "pr", "implement"
-  - Multi-agent coordination is needed
-  - Managing multi-phase tasks (plan -> code -> PR)
-  - Need to delegate tasks to Worker/Subagent
+  - Agent's $A2A_PEER environment variable contains "orchestrator"
+  Do NOT use for worker or observer roles.
 ---
 
 # Orchestrator Skill
