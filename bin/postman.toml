@@ -72,7 +72,7 @@ Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 [READ] File location: .i9wa4/inbox/orchestrator/
 After reading, move to: .i9wa4/read/
 
-[STATUS] Update .i9wa4/status-orchestrator after each action:
+[STATUS] Update .i9wa4/tmp/status-pane${TMUX_PANE#%} after each action:
 CURRENT: <what was done> | <mood> <emoji>
 NEXT: <what is needed to continue>
 
