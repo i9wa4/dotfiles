@@ -49,7 +49,6 @@ Role: Monitor file changes and commit contents
 - Report concerns to orchestrator
 
 Constraints: NEVER Edit/Write - monitoring and feedback only
-Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 New file in read/: {filename}
 
@@ -64,16 +63,9 @@ Read: .postman/read/{filename}
 notification = """
 [ORCHESTRATOR] (READONLY)
 Constraints: NEVER Edit/Write - DELEGATE to workers
-Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
-
-[SKILL] Invoke /orchestrator for workflow guidance.
 
 📬 Inbox: {inbox_count} message(s) - .postman/inbox/{role}/
 IMPORTANT: Move each file to .postman/read/ immediately after reading (before responding)
-
-[STATUS] Update .i9wa4/tmp/status-pane${TMUX_PANE#%} after each action:
-CURRENT: <what was done> | <mood> <emoji>
-NEXT: <what is needed to continue>
 
 [RESPONSE if needed]
 Response file: .postman/draft/{response_file}
