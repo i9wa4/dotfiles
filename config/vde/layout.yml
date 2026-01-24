@@ -11,7 +11,7 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: claude
-          command: claude --dangerously-skip-permissions
+          command: A2A_PEER=worker-w claude --dangerously-skip-permissions
 
   orchestrator:
     name: orchestrator
@@ -28,7 +28,7 @@ presets:
               command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
               focus: true
             - name: orchestrator
-              command: AGENT_ROLE=orchestrator claude --dangerously-skip-permissions
+              command: A2A_PEER=orchestrator claude --dangerously-skip-permissions
         - name: postman
           command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
 
@@ -44,17 +44,17 @@ presets:
           ratio: [1, 1]
           panes:
             - name: worker
-              command: AGENT_ROLE=worker-r codex --yolo
+              command: A2A_PEER=worker-r codex --yolo
             - name: worker
-              command: AGENT_ROLE=worker-w claude --dangerously-skip-permissions
+              command: A2A_PEER=worker-w claude --dangerously-skip-permissions
         - type: horizontal
           ratio: [1, 1, 1, 1]
           panes:
             - name: observer
-              command: AGENT_ROLE=observer-codex-1 codex --yolo
+              command: A2A_PEER=observer-codex-1 codex --yolo
             - name: observer
-              command: AGENT_ROLE=observer-codex-2 codex --yolo
+              command: A2A_PEER=observer-codex-2 codex --yolo
             - name: observer
-              command: AGENT_ROLE=observer-claude-1 claude --dangerously-skip-permissions
+              command: A2A_PEER=observer-claude-1 claude --dangerously-skip-permissions
             - name: observer
-              command: AGENT_ROLE=observer-claude-2 claude --dangerously-skip-permissions
+              command: A2A_PEER=observer-claude-2 claude --dangerously-skip-permissions
