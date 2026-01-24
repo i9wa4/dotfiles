@@ -11,7 +11,7 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: claude
-          command: A2A_PEER=worker-w claude --dangerously-skip-permissions
+          command: A2A_PEER=worker claude --dangerously-skip-permissions
 
   orchestrator:
     name: orchestrator
@@ -37,17 +37,12 @@ presets:
     description: workers
     windowMode: new-window
     layout:
-      type: vertical
+      type: horizontal
       ratio: [1, 1]
       panes:
-        - type: horizontal
-          ratio: [1, 1]
-          panes:
-            - name: worker
-              command: A2A_PEER=worker-r codex --yolo
-            - name: worker
-              command: A2A_PEER=worker-w claude --dangerously-skip-permissions
-        - type: horizontal
+        - name: worker
+          command: A2A_PEER=worker claude --dangerously-skip-permissions
+        - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: observer
