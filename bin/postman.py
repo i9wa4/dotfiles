@@ -90,6 +90,16 @@ DEFAULT_CONFIG: dict[str, Any] = {
 }
 
 
+def safe_format(template: str, **kwargs: Any) -> str:
+    """Only substitute known keys, leave others (like ${VAR}) unchanged."""
+
+    def replace(match: re.Match[str]) -> str:
+        key = match.group(1)
+        return str(kwargs.get(key, match.group(0)))
+
+    return re.sub(r"\{(\w+)\}", replace, template)
+
+
 def load_config(config_path: Optional[Path] = None) -> dict[str, Any]:
     """Load configuration from TOML file."""
     paths_to_try = []
@@ -315,7 +325,8 @@ class Postman:
         else:
             response_file = f"{filepath.stem}-response.md"
 
-        message = template.format(
+        message = safe_format(
+            template,
             task=f"📮 New message: {filepath.name}",
             filename=filepath.name,
             response_file=response_file,
@@ -739,7 +750,8 @@ class Postman:
             )
         else:
             response_file = f"{filepath.stem}-response.md"  # fallback
-        message = template.format(
+        message = safe_format(
+            template,
             task=f"📮 New message: {filepath.name}",
             filename=filepath.name,
             response_file=response_file,
