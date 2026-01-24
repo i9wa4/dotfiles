@@ -28,7 +28,8 @@
     "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "ENABLE_LSP_TOOL": "true",
     "FORCE_AUTOUPDATE_PLUGINS": "true",
-    "IS_DEMO": "true"
+    "IS_DEMO": "true",
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false"
   },
   "attribution": {},
   "permissions": {
