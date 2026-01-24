@@ -64,8 +64,8 @@ New file in read/: {filename}
 Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
-1. Write: .i9wa4/draft/{timestamp}-from-observer-to-orchestrator.md
-   (Use current timestamp: YYYYMMDD-HHMMSS)
+1. Write: .i9wa4/draft/YYYYMMDD-HHMMSS-from-observer-to-orchestrator.md
+   (Replace YYYYMMDD-HHMMSS with current timestamp)
 2. Move to: .i9wa4/post/
 """
 
