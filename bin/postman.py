@@ -40,7 +40,7 @@ from typing import Any, Optional
 
 from watchfiles import Change, watch
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 # Timeout constants (seconds)
 TMUX_TIMEOUT = 5
@@ -68,6 +68,9 @@ DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 DEFAULT_CONFIG: dict[str, Any] = {
     "postman": {
         "watch_dir": ".i9wa4/post",
+        "inbox_dir": ".i9wa4/inbox",
+        "read_dir": ".i9wa4/read",
+        "dead_letter_dir": ".i9wa4/dead-letter",
         "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
         "enter_delay_seconds": 0.5,
@@ -141,6 +144,9 @@ class Postman:
     def __init__(
         self,
         watch_dir: Path,
+        inbox_dir: Path,
+        read_dir: Path,
+        dead_letter_dir: Path,
         stuck_interval: int,
         scan_interval: int,
         enter_delay: float = 0.5,
@@ -155,6 +161,9 @@ class Postman:
         batch_notifications: bool = True,
     ):
         self.watch_dir = watch_dir
+        self.inbox_dir = inbox_dir
+        self.read_dir = read_dir
+        self.dead_letter_dir = dead_letter_dir
         self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
         self.enter_delay = enter_delay
@@ -185,7 +194,7 @@ class Postman:
 
     def log(self, icon: str, message: str) -> None:
         """Print timestamped log message."""
-        ts = datetime.now().strftime("%H:%M:%S")
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{ts}] {icon} {message}")
         sys.stdout.flush()
 
@@ -284,7 +293,10 @@ class Postman:
     ) -> int:
         """Deliver a single notification. Returns 1 on success, 0 on failure."""
         # Get template for recipient role
-        template = self.templates.get(participant.role, {}).get("content", "")
+        template_config = self.templates.get(participant.role, {})
+        template = template_config.get("notification") or template_config.get(
+            "content", ""
+        )
         if not template:
             self.log("⚠️ ", f"No template for role: {participant.role}")
             return 0
@@ -299,6 +311,7 @@ class Postman:
 
         message = template.format(
             task=f"📮 New message: {filepath.name}",
+            filename=filepath.name,
             response_file=response_file,
         )
 
@@ -523,7 +536,11 @@ class Postman:
         return match.groups()
 
     def validate_message_content(
-        self, filepath: Path, filename_sender: str, filename_recipient: str
+        self,
+        filepath: Path,
+        filename_sender: str,
+        filename_recipient: str,
+        is_cc: bool = False,
     ) -> bool:
         """Validate that file content from/to matches filename sender/recipient."""
         try:
@@ -545,7 +562,8 @@ class Postman:
                     ),
                 )
                 return False
-            if content_to and content_to != filename_recipient:
+            # Skip recipient validation for CC delivery
+            if not is_cc and content_to and content_to != filename_recipient:
                 self.log(
                     "⚠️ ",
                     (
@@ -581,6 +599,7 @@ class Postman:
             )
 
         delivered_count = 0
+        delivery_success = False
 
         # Deliver to recipient (outside lock)
         if recipient_p:
@@ -592,6 +611,7 @@ class Postman:
                 message_recipient=recipient,
             ):
                 delivered_count += 1
+                delivery_success = True
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
@@ -608,8 +628,30 @@ class Postman:
                 delivered_count += 1
             self.log("📋", f"CC to observer ({observer_p.pane_id})")
 
+        # Move file to inbox or dead-letter based on delivery result
+        self._move_delivered_file(filepath, recipient, delivery_success)
+
         if delivered_count:
             self.maybe_send_observer_reminder(delivered_count)
+
+    def _move_delivered_file(
+        self, filepath: Path, recipient: str, success: bool
+    ) -> None:
+        """Move file to inbox/{recipient}/ or dead-letter/ after delivery."""
+        try:
+            if success:
+                # Ensure inbox directory exists for this recipient
+                inbox_path = self.inbox_dir / recipient
+                inbox_path.mkdir(parents=True, exist_ok=True)
+                dest = inbox_path / filepath.name
+                filepath.rename(dest)
+                self.log("📁", f"Moved to inbox/{recipient}/")
+            else:
+                dest = self.dead_letter_dir / filepath.name
+                filepath.rename(dest)
+                self.log("📁", "Moved to dead-letter/")
+        except OSError as e:
+            self.log("❌", f"Failed to move file: {e}")
 
     def deliver_notification(
         self,
@@ -636,7 +678,10 @@ class Postman:
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
         # Get template for recipient role
-        template = self.templates.get(participant.role, {}).get("content", "")
+        template_config = self.templates.get(participant.role, {})
+        template = template_config.get("notification") or template_config.get(
+            "content", ""
+        )
         if not template:
             self.log("⚠️ ", f"No template for role: {participant.role}")
             self.send_delivery_failure_alert(
@@ -656,6 +701,7 @@ class Postman:
             response_file = f"{filepath.stem}-response.md"  # fallback
         message = template.format(
             task=f"📮 New message: {filepath.name}",
+            filename=filepath.name,
             response_file=response_file,
         )
 
@@ -972,8 +1018,13 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
 
     def run(self) -> None:
         """Run the postman daemon."""
-        # Ensure watch directory exists
+        # Ensure directories exist
         self.watch_dir.mkdir(parents=True, exist_ok=True)
+        self.read_dir.mkdir(parents=True, exist_ok=True)
+        self.dead_letter_dir.mkdir(parents=True, exist_ok=True)
+        # Create inbox directories for known roles
+        for role in ["orchestrator", "worker-claude", "worker-codex", "observer"]:
+            (self.inbox_dir / role).mkdir(parents=True, exist_ok=True)
 
         # Load pending queue from previous run
         self.load_pending_queue()
@@ -1068,6 +1119,9 @@ Setup (in other panes):
 
     # CLI args override config values
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
+    inbox_dir = Path(postman_cfg.get("inbox_dir", ".i9wa4/inbox"))
+    read_dir = Path(postman_cfg.get("read_dir", ".i9wa4/read"))
+    dead_letter_dir = Path(postman_cfg.get("dead_letter_dir", ".i9wa4/dead-letter"))
     stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
     scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
@@ -1087,6 +1141,9 @@ Setup (in other panes):
     # Create and run postman
     postman = Postman(
         watch_dir=watch_dir,
+        inbox_dir=inbox_dir,
+        read_dir=read_dir,
+        dead_letter_dir=dead_letter_dir,
         stuck_interval=stuck_interval,
         scan_interval=scan_interval,
         enter_delay=enter_delay,

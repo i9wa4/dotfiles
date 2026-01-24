@@ -3,6 +3,9 @@
 
 [postman]
 watch_dir = ".i9wa4/post"
+inbox_dir = ".i9wa4/inbox"
+read_dir = ".i9wa4/read"
+dead_letter_dir = ".i9wa4/dead-letter"
 stuck_interval_minutes = 30
 scan_interval_seconds = 60
 enter_delay_seconds = 0.7
@@ -17,15 +20,18 @@ remind_message = "Consider consulting observer for feedback"
 
 [templates]
 # Templates by recipient role
-# Variables: {task}, {response_file}
+# Variables: {filename}, {response_file}
 
 [templates.worker-claude]
 # WRITABLE worker - consultation and implementation
-content = """
+notification = """
 You are worker-claude.
 Your capabilities: Consultation & Implementation
 
-{task}
+📮 New message: {filename}
+
+[READ] File location: .i9wa4/inbox/worker-claude/
+After reading, move to: .i9wa4/read/
 
 [RESPONSE]
 1. Write: .i9wa4/draft/{response_file}
@@ -34,11 +40,14 @@ Your capabilities: Consultation & Implementation
 
 [templates.worker-codex]
 # READONLY worker - consultation and status report
-content = """
+notification = """
 You are worker-codex.
 Your capabilities: Consultation & Status Report only
 
-{task}
+📮 New message: {filename}
+
+[READ] File location: .i9wa4/inbox/worker-codex/
+After reading, move to: .i9wa4/read/
 
 [RESPONSE]
 1. Write: .i9wa4/draft/{response_file}
@@ -46,24 +55,29 @@ Your capabilities: Consultation & Status Report only
 """
 
 [templates.observer]
-# Observer - monitoring and advising
-content = """
-[OBSERVER: Review & Advise]
-Review and advise orchestrator if needed.
+# Observer - monitoring read/ directory
+notification = """
+[OBSERVER]
 
-{task}
+New file in read/: {filename}
+
+Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
-1. Write: .i9wa4/draft/{response_file}
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+1. Write: .i9wa4/draft/{timestamp}-from-observer-to-orchestrator.md
+   (Use current timestamp: YYYYMMDD-HHMMSS)
+2. Move to: .i9wa4/post/
 """
 
 [templates.orchestrator]
 # Messages to orchestrator - remind about workers
-content = """
+notification = """
 [ORCHESTRATOR]
 
-{task}
+📮 New message: {filename}
+
+[READ] File location: .i9wa4/inbox/orchestrator/
+After reading, move to: .i9wa4/read/
 
 [RESPONSE if needed]
 1. Write: .i9wa4/draft/{response_file}
