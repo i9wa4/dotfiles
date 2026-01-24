@@ -271,11 +271,17 @@ class Postman:
             filepath, sender = pending[0]
             return self._deliver_single_notification(participant, sender, filepath)
 
-        # Multiple messages - batch format
-        lines = [f"📮 {len(pending)} new messages:"]
+        # Multiple messages - batch format with template
+        content_lines = [f"📮 {len(pending)} new messages:"]
         for filepath, sender in pending:
-            lines.append(f"- from {sender}: {filepath.name}")
-        batch_message = "\n".join(lines)
+            content_lines.append(f"- from {sender}: {filepath.name}")
+        content_lines.append("")
+        content_lines.append(f"[READ] File location: .i9wa4/inbox/{participant.role}/")
+        content_lines.append("After reading, move to: .i9wa4/read/")
+        batch_content = "\n".join(content_lines)
+        batch_message = self.build_notification_with_template(
+            participant.role, batch_content
+        )
 
         try:
             subprocess.run(
@@ -612,6 +618,43 @@ class Postman:
             if role.startswith(prefix) and prefix in self.templates:
                 return self.templates[prefix]
         return {}
+
+    def build_notification_with_template(
+        self, role: str, content: str, response_file: str = ""
+    ) -> str:
+        """Build notification using template header and footer with custom content."""
+        template_config = self.get_template_for_role(role)
+        template = template_config.get("notification") or template_config.get(
+            "content", ""
+        )
+        if not template:
+            return content  # Fallback to raw content
+
+        # Split template at 📮 marker (message-specific content starts here)
+        lines = template.strip().split("\n")
+        header_lines: list[str] = []
+        footer_lines: list[str] = []
+        found_message_marker = False
+
+        for line in lines:
+            if "📮" in line or "{filename}" in line or "New file" in line:
+                found_message_marker = True
+                continue
+            if not found_message_marker:
+                header_lines.append(line)
+            elif "[RESPONSE" in line or "[READ]" in line:
+                footer_lines.append(line)
+            elif found_message_marker and footer_lines:
+                footer_lines.append(line)
+
+        # Build notification: header + content + footer
+        result_lines = header_lines + ["", content, ""]
+        if footer_lines:
+            result_lines.extend(footer_lines)
+
+        result = "\n".join(result_lines)
+        # Apply safe_format for any remaining placeholders
+        return safe_format(result, filename=response_file, response_file=response_file)
 
     def find_participant_by_role(self, role: str) -> Optional[Participant]:
         """Find participant by exact match or prefix match."""
@@ -1086,24 +1129,21 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         # Sort by timestamp (filename starts with timestamp)
         new_files.sort()
 
-        # Build digest message
-        lines = [
-            "[OBSERVER DIGEST]",
-            "Role: Monitor file changes and commit contents",
-            "- Check git diff for uncommitted changes",
-            "- Review recent commits (git log)",
-            "- Report concerns to orchestrator",
-            "",
-            f"New messages in read/ ({len(new_files)} files):",
+        # Build digest content
+        content_lines = [
+            f"📮 [DIGEST] {len(new_files)} new messages in read/:",
         ]
         for filename in new_files:
-            lines.append(f"- {filename}")
-        lines.append("")
-        lines.append("Read location: .i9wa4/read/")
-        digest_message = "\n".join(lines)
+            content_lines.append(f"- {filename}")
+        content_lines.append("")
+        content_lines.append("Read location: .i9wa4/read/")
+        digest_content = "\n".join(content_lines)
 
-        # Deliver to all observers
+        # Deliver to all observers using their template
         for observer_p in observers:
+            digest_message = self.build_notification_with_template(
+                observer_p.role, digest_content
+            )
             try:
                 subprocess.run(
                     ["tmux", "set-buffer", digest_message], timeout=TMUX_QUICK_TIMEOUT
