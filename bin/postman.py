@@ -621,8 +621,8 @@ class Postman:
         message_recipient: Optional[str] = None,
     ) -> bool:
         """Send notification to a participant's pane."""
-        # Check if batch notifications are enabled and pane is busy
-        if self.batch_notifications and not is_cc:
+        # Check if batch notifications are enabled (orchestrator only)
+        if self.batch_notifications and participant.role == "orchestrator":
             if not self.is_pane_idle(participant.pane_id):
                 self.queue_notification(participant.role, filepath, sender)
                 self.save_pending_queue()
