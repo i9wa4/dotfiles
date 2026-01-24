@@ -28,12 +28,39 @@ acknowledge with a random one-liner in character.
 ## 4. Multi-Agent Mode
 
 If $A2A_PEER is set, postman daemon delivers messages with role constraints.
-Each notification includes capability and constraints for your role.
 
-Message format:
+### 4.1. Role Confirmation
 
-- Filename: {timestamp}-from-{sender}-to-{recipient}.md
-- Location: .i9wa4/draft/ → .i9wa4/post/
+When you receive a notification from postman:
+
+1. Read the notification carefully - it contains your role and constraints
+2. Follow the constraints specified (READONLY, WRITABLE, etc.)
+3. Update status file after each significant action
+
+### 4.2. Sending Messages
+
+1. Create message in `.i9wa4/draft/`
+   - Filename: `{timestamp}-from-{your-role}-to-{recipient}.md`
+2. Move to post: `mv .i9wa4/draft/{file} .i9wa4/post/`
+
+### 4.3. Receiving Messages
+
+1. Read from `.i9wa4/inbox/{your-role}/`
+2. After processing, move to: `mv .i9wa4/inbox/{your-role}/{file} .i9wa4/read/`
+
+### 4.4. Message Format
+
+```text
+[MESSAGE]
+from: {your-role}
+to: {recipient}
+timestamp: YYYY-MM-DDTHH:MM:SS+09:00
+type: {task-request|task-complete|status-update}
+
+## Content
+
+Your message here in Markdown.
+```
 
 If $A2A_PEER is not set, proceed normally.
 
