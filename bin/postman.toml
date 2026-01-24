@@ -30,9 +30,8 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-File: .postman/draft/{response_file}
-1. Edit response file
-2. Move: `mv .postman/draft/{response_file} .postman/post/`
+Run: `uv run bin/postman.py draft --to <recipient>`
+Move to .postman/post/ when ready
 """
 
 [observer]
@@ -57,8 +56,8 @@ File: .postman/read/{filename}
 
 ## Response (if needed)
 
-1. Create: .postman/draft/yyyymmdd-hhmmss-from-{role}-to-orchestrator.md
-2. Move: `mv .postman/draft/<filename> .postman/post/`
+Run: `uv run bin/postman.py draft --to <recipient>`
+Move to .postman/post/ when ready
 """
 
 [orchestrator]
@@ -78,7 +77,6 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-File: .postman/draft/{response_file}
-1. Edit response file
-2. Move: `mv .postman/draft/{response_file} .postman/post/`
+Run: `uv run bin/postman.py draft --to <recipient>`
+Move to .postman/post/ when ready
 """

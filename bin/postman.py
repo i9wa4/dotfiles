@@ -387,10 +387,6 @@ type: <type>
         else:
             response_file = f"{filepath.stem}-response.md"
 
-        # Create response draft file for recipient (skip for observer)
-        if not participant.role.startswith("observer"):
-            self.create_response_draft(response_file, participant.role)
-
         # Calculate inbox count for template (+1 to include current message)
         inbox_path = self.inbox_dir / participant.role
         inbox_count = (
@@ -1281,41 +1277,34 @@ Action required: Add template for role '{recipient_role}' in postman.toml
             print("\n📮 Postman stopped")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="File-based communication daemon for tmux panes",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  uv run bin/postman.py
-  uv run bin/postman.py --config myconfig.toml
-  uv run bin/postman.py --scan-interval 30
+def cmd_draft(args: argparse.Namespace) -> None:
+    """Create a draft message file."""
+    sender = os.environ.get("A2A_PEER", "unknown")
+    recipient = args.to
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    filename = f"{timestamp}-from-{sender}-to-{recipient}.md"
 
-Setup (in other panes):
-  A2A_PEER=orchestrator claude
-  A2A_PEER=claude-worker claude
-        """,
-    )
-    parser.add_argument(
-        "--config",
-        type=Path,
-        default=None,
-        help=f"Config file path (default: {DEFAULT_CONFIG_PATH})",
-    )
-    parser.add_argument(
-        "--watch-dir",
-        type=Path,
-        default=None,
-        help="Directory to watch (overrides config)",
-    )
-    parser.add_argument(
-        "--scan-interval",
-        type=int,
-        default=None,
-        help="Pane rescan interval in seconds (overrides config)",
-    )
-    args = parser.parse_args()
+    # Load config for draft_dir
+    config = load_config(args.config)
+    draft_dir = Path(config["postman"].get("draft_dir", ".postman/draft"))
+    draft_dir.mkdir(parents=True, exist_ok=True)
 
+    filepath = draft_dir / filename
+    content = f"""[MESSAGE]
+from: {sender}
+to: {recipient}
+timestamp: <TIMESTAMP>
+type:
+
+## Content
+
+"""
+    filepath.write_text(content)
+    print(f"📝 Created: {filepath}")
+
+
+def cmd_run(args: argparse.Namespace) -> None:
+    """Run the postman daemon."""
     # Load config file
     config = load_config(args.config)
     postman_cfg = config["postman"]
@@ -1383,6 +1372,57 @@ Setup (in other panes):
     signal.signal(signal.SIGTERM, signal_handler)
 
     postman.run()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="File-based communication daemon for tmux panes",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help=f"Config file path (default: {DEFAULT_CONFIG_PATH})",
+    )
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    # run subcommand (default)
+    run_parser = subparsers.add_parser("run", help="Run the postman daemon")
+    run_parser.add_argument(
+        "--watch-dir",
+        type=Path,
+        default=None,
+        help="Directory to watch (overrides config)",
+    )
+    run_parser.add_argument(
+        "--scan-interval",
+        type=int,
+        default=None,
+        help="Pane rescan interval in seconds (overrides config)",
+    )
+
+    # draft subcommand
+    draft_parser = subparsers.add_parser("draft", help="Create a draft message file")
+    draft_parser.add_argument(
+        "--to",
+        required=True,
+        help="Recipient role (e.g., orchestrator, worker)",
+    )
+
+    args = parser.parse_args()
+
+    # Default to run if no subcommand specified
+    if args.command is None or args.command == "run":
+        # For backward compatibility, add default values for run args
+        if not hasattr(args, "watch_dir"):
+            args.watch_dir = None
+        if not hasattr(args, "scan_interval"):
+            args.scan_interval = None
+        cmd_run(args)
+    elif args.command == "draft":
+        cmd_draft(args)
 
 
 if __name__ == "__main__":
