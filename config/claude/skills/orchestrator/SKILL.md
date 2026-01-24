@@ -371,7 +371,7 @@ Agent file:
 
 ### 10.4. Review Execution
 
-IMPORTANT: 10並列レビューを標準で実施すること
+#### IMPORTANT: 10並列レビューを標準で実施すること
 
 設計レビュー/コードレビュー時は必ず以下を実行:
 
