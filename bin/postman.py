@@ -1146,6 +1146,10 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         for role in ["orchestrator", "worker-claude", "worker-codex", "observer"]:
             (self.inbox_dir / role).mkdir(parents=True, exist_ok=True)
 
+        # Initialize digested files with existing files in read/
+        for filepath in self.read_dir.glob("*.md"):
+            self._digested_files.add(filepath.name)
+
         # Load pending queue from previous run
         self.load_pending_queue()
 
