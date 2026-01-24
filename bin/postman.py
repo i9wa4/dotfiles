@@ -633,9 +633,10 @@ class Postman:
         if not (timestamp and sender and recipient):
             return
 
-        if not self.validate_message_content(filepath, sender, recipient):
-            self.log("🚫", f"Skipping mismatched file: {filename}")
-            return
+        # NOTE: Content validation disabled - trust filename for routing
+        # if not self.validate_message_content(filepath, sender, recipient):
+        #     self.log("🚫", f"Skipping mismatched file: {filename}")
+        #     return
 
         self.log("📨", f"Message: {sender} → {recipient}")
 

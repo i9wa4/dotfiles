@@ -75,5 +75,5 @@ After reading, move to: .i9wa4/read/
 2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 
 ---
-Required: Consult worker-claude (implementation) and worker-codex (status)
+Tip: Consider consulting observers when planning or making decisions.
 """

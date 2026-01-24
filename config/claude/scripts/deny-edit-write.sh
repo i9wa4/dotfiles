@@ -3,7 +3,7 @@
 #
 # Hook script to enforce READONLY mode for non-worker roles.
 # Blocks Edit, Write, NotebookEdit tools for orchestrator and observer.
-# All worker-* roles are allowed to edit files.
+# All worker* roles are allowed to edit files.
 # Uses JSON output for better visibility to Claude.
 
 set -euo pipefail
@@ -13,8 +13,8 @@ if [[ -z ${A2A_PEER:-} ]]; then
   exit 0
 fi
 
-# worker-* → writable (allow)
-if [[ ${A2A_PEER} == worker-* ]]; then
+# worker* → writable (allow)
+if [[ ${A2A_PEER} == worker* ]]; then
   exit 0
 fi
 
@@ -41,7 +41,7 @@ Edit | Write | NotebookEdit)
   cat <<JSONEOF
 {
   "decision": "block",
-  "reason": "BLOCKED: ${A2A_PEER} is READONLY. Only worker-* can edit files."
+  "reason": "BLOCKED: ${A2A_PEER} is READONLY. Only worker* can edit files."
 }
 JSONEOF
   exit 2
