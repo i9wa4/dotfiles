@@ -84,7 +84,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "remind_enabled": False,
         "remind_interval_messages": 10,
         "remind_message": "Consider consulting observer for feedback",
-        "digest_interval_seconds": 300,
+        "digest_message_count": 5,
     },
     "templates": {},
 }
@@ -160,7 +160,7 @@ class Postman:
         templates: Optional[dict[str, Any]] = None,
         idle_threshold: int = DEFAULT_IDLE_THRESHOLD_SECONDS,
         batch_notifications: bool = True,
-        observer_digest_interval: int = 300,
+        observer_digest_message_count: int = 5,
     ):
         self.watch_dir = watch_dir
         self.inbox_dir = inbox_dir
@@ -178,7 +178,7 @@ class Postman:
         self.templates = templates or {}
         self.idle_threshold = idle_threshold
         self.batch_notifications = batch_notifications
-        self.observer_digest_interval = observer_digest_interval
+        self.observer_digest_message_count = observer_digest_message_count
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
         self._observer_remind_lock = threading.Lock()
@@ -1029,11 +1029,27 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             self.check_all_stuck()
 
     def periodic_observer_digest(self) -> None:
-        """Periodically send digest of new files in read/ to observers."""
+        """Check for new files in read/ and send digest when threshold reached."""
+        check_interval = 10  # Check every 10 seconds
         while self.running:
-            time.sleep(self.observer_digest_interval)
+            time.sleep(check_interval)
             if not self.running:
                 break
+            self.check_and_send_observer_digest()
+
+    def check_and_send_observer_digest(self) -> None:
+        """Check if new file count reaches threshold and send digest."""
+        # Count new files without marking them as digested yet
+        new_count = 0
+        try:
+            for filepath in self.read_dir.glob("*.md"):
+                if filepath.name not in self._digested_files:
+                    new_count += 1
+        except OSError:
+            return
+
+        # Only send when threshold reached
+        if new_count >= self.observer_digest_message_count:
             self.send_observer_digest()
 
     def send_observer_digest(self) -> None:
@@ -1059,7 +1075,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         new_files.sort()
 
         # Build digest message
-        interval_min = self.observer_digest_interval // 60
         lines = [
             "[OBSERVER DIGEST]",
             "Role: Monitor file changes and commit contents",
@@ -1067,7 +1082,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             "- Review recent commits (git log)",
             "- Report concerns to orchestrator",
             "",
-            f"New messages in read/ (last {interval_min} min):",
+            f"New messages in read/ ({len(new_files)} files):",
         ]
         for filename in new_files:
             lines.append(f"- {filename}")
@@ -1177,7 +1192,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             pending_thread.start()
 
         # Start observer digest thread
-        if self.observer_digest_interval > 0:
+        if self.observer_digest_message_count > 0:
             digest_thread = threading.Thread(
                 target=self.periodic_observer_digest, daemon=True
             )
@@ -1268,7 +1283,7 @@ Setup (in other panes):
     observer_remind_message = observer_cfg.get(
         "remind_message", "Consider consulting observer for feedback"
     )
-    observer_digest_interval = observer_cfg.get("digest_interval_seconds", 300)
+    observer_digest_message_count = observer_cfg.get("digest_message_count", 5)
 
     # Create and run postman
     postman = Postman(
@@ -1288,7 +1303,7 @@ Setup (in other panes):
         templates=config.get("templates", {}),
         idle_threshold=idle_threshold,
         batch_notifications=batch_notifications,
-        observer_digest_interval=observer_digest_interval,
+        observer_digest_message_count=observer_digest_message_count,
     )
 
     # Handle signals

@@ -17,7 +17,7 @@ target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck sta
 remind_enabled = true
 remind_interval_messages = 30
 remind_message = "Consider consulting observer for feedback"
-digest_interval_seconds = 300
+digest_message_count = 5
 
 [templates]
 # Templates by recipient role
