@@ -30,7 +30,7 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-Run: `uv run bin/postman.py draft --to <recipient>`
+Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
 Move to .postman/post/ when ready
 """
 
@@ -56,7 +56,7 @@ File: .postman/read/{filename}
 
 ## Response (if needed)
 
-Run: `uv run bin/postman.py draft --to <recipient>`
+Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
 Move to .postman/post/ when ready
 """
 
@@ -77,6 +77,6 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-Run: `uv run bin/postman.py draft --to <recipient>`
+Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
 Move to .postman/post/ when ready
 """
