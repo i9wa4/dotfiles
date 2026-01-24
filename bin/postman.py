@@ -24,6 +24,7 @@ Setup:
 """
 
 import argparse
+import json
 import os
 import re
 import signal
@@ -39,7 +40,7 @@ from typing import Any, Optional
 
 from watchfiles import Change, watch
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 # Timeout constants (seconds)
 TMUX_TIMEOUT = 5
@@ -50,6 +51,16 @@ CAPTURE_LINES = 30
 MESSAGE_PREVIEW_LENGTH = 100
 DELIVERY_FAILURE_MIN_INTERVAL_SECONDS = 60
 
+# Idle detection constants
+DEFAULT_IDLE_THRESHOLD_SECONDS = 30
+IDLE_CHECK_INTERVAL_SECONDS = 5
+BUSY_INDICATORS = ["Actioning", "⏳", "Working"]
+
+# Batch notification limits
+MAX_BATCH_COUNT = 20
+MAX_BATCH_AGE_SECONDS = 300  # 5 minutes
+QUEUE_FILE_NAME = "queue.jsonl"
+
 # Default config path (same directory as script)
 DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 
@@ -59,11 +70,12 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "watch_dir": ".i9wa4/post",
         "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
-        "notification_method": "display-message",
         "enter_delay_seconds": 0.5,
         "capture_history_count": 5,
         "captures_dir": ".i9wa4/captures",
         "target_roles": ["worker-claude", "worker-codex"],
+        "idle_threshold_seconds": 30,
+        "batch_notifications": True,
     },
     "observer": {
         "remind_enabled": False,
@@ -131,7 +143,6 @@ class Postman:
         watch_dir: Path,
         stuck_interval: int,
         scan_interval: int,
-        notification_method: str = "display-message",
         enter_delay: float = 0.5,
         capture_history: int = 5,
         captures_dir: Path = Path(".i9wa4/captures"),
@@ -140,11 +151,12 @@ class Postman:
         observer_remind_message: str = "Consider consulting observer for feedback",
         target_roles: Optional[list[str]] = None,
         templates: Optional[dict[str, Any]] = None,
+        idle_threshold: int = DEFAULT_IDLE_THRESHOLD_SECONDS,
+        batch_notifications: bool = True,
     ):
         self.watch_dir = watch_dir
         self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
-        self.notification_method = notification_method
         self.enter_delay = enter_delay
         self.capture_history = capture_history
         self.captures_dir = captures_dir
@@ -153,6 +165,8 @@ class Postman:
         self.observer_remind_message = observer_remind_message
         self.target_roles = target_roles or []
         self.templates = templates or {}
+        self.idle_threshold = idle_threshold
+        self.batch_notifications = batch_notifications
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
         self._observer_remind_lock = threading.Lock()
@@ -162,12 +176,237 @@ class Postman:
         self._stop_event = threading.Event()
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
+        # Idle detection and batch notification state
+        self._pending_notifications: dict[str, list[tuple[Path, str]]] = {}
+        self._pending_lock = threading.Lock()
+        self._idle_capture: dict[
+            str, tuple[str, float]
+        ] = {}  # pane_id -> (content, ts)
 
     def log(self, icon: str, message: str) -> None:
         """Print timestamped log message."""
         ts = datetime.now().strftime("%H:%M:%S")
         print(f"[{ts}] {icon} {message}")
         sys.stdout.flush()
+
+    def is_pane_idle(self, pane_id: str) -> bool:
+        """Check if pane has been idle for threshold seconds."""
+        try:
+            result = subprocess.run(
+                ["tmux", "capture-pane", "-t", pane_id, "-p", "-S", "-5"],
+                capture_output=True,
+                text=True,
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            current_content = result.stdout
+            current_time = time.time()
+
+            # Check for busy indicators
+            for indicator in BUSY_INDICATORS:
+                if indicator in current_content:
+                    return False
+
+            # Compare with last capture
+            if pane_id in self._idle_capture:
+                last_content, last_time = self._idle_capture[pane_id]
+                if current_content != last_content:
+                    # Content changed, update and return not idle
+                    self._idle_capture[pane_id] = (current_content, current_time)
+                    return False
+                # Content same, check if idle long enough
+                if current_time - last_time >= self.idle_threshold:
+                    return True
+                return False
+
+            # First capture
+            self._idle_capture[pane_id] = (current_content, current_time)
+            return False
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            return True  # On error, assume idle to avoid blocking
+
+    def queue_notification(self, recipient: str, filepath: Path, sender: str) -> None:
+        """Queue notification for later delivery when pane becomes idle."""
+        with self._pending_lock:
+            if recipient not in self._pending_notifications:
+                self._pending_notifications[recipient] = []
+            self._pending_notifications[recipient].append((filepath, sender))
+        self.log("⏸️ ", f"Queued notification for {recipient} (pane busy)")
+
+    def deliver_pending_notifications(self, participant: Participant) -> int:
+        """Deliver all pending notifications as a batch. Returns count delivered."""
+        with self._pending_lock:
+            pending = self._pending_notifications.pop(participant.role, [])
+
+        if not pending:
+            return 0
+
+        # Format batch message
+        if len(pending) == 1:
+            # Single message - use normal format
+            filepath, sender = pending[0]
+            return self._deliver_single_notification(participant, sender, filepath)
+
+        # Multiple messages - batch format
+        lines = [f"📮 {len(pending)} new messages:"]
+        for filepath, sender in pending:
+            lines.append(f"- from {sender}: {filepath.name}")
+        batch_message = "\n".join(lines)
+
+        try:
+            subprocess.run(
+                ["tmux", "set-buffer", batch_message], timeout=TMUX_QUICK_TIMEOUT
+            )
+            subprocess.run(
+                ["tmux", "paste-buffer", "-t", participant.pane_id],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            time.sleep(self.enter_delay)
+            subprocess.run(
+                ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            self.log(
+                "📬",
+                f"Delivered {len(pending)} batched notifications to {participant.role}",
+            )
+            return len(pending)
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            # Re-queue on failure
+            with self._pending_lock:
+                if participant.role not in self._pending_notifications:
+                    self._pending_notifications[participant.role] = []
+                self._pending_notifications[participant.role].extend(pending)
+            self.log("❌", f"Failed to deliver batch to {participant.pane_id}")
+            return 0
+
+    def _deliver_single_notification(
+        self, participant: Participant, sender: str, filepath: Path
+    ) -> int:
+        """Deliver a single notification. Returns 1 on success, 0 on failure."""
+        # Get template for recipient role
+        template = self.templates.get(participant.role, {}).get("content", "")
+        if not template:
+            self.log("⚠️ ", f"No template for role: {participant.role}")
+            return 0
+
+        # Format response filename
+        match = FILE_PATTERN.match(filepath.name)
+        if match:
+            timestamp, _, recipient = match.groups()
+            response_file = f"{timestamp}-from-{recipient}-to-{sender}.md"
+        else:
+            response_file = f"{filepath.stem}-response.md"
+
+        message = template.format(
+            task=f"📮 New message: {filepath.name}",
+            response_file=response_file,
+        )
+
+        try:
+            subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
+            subprocess.run(
+                ["tmux", "paste-buffer", "-t", participant.pane_id],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            time.sleep(self.enter_delay)
+            subprocess.run(
+                ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            self.log("📬", f"Delivered queued notification to {participant.role}")
+            return 1
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            return 0
+
+    def check_pending_deliveries(self) -> None:
+        """Check all panes and deliver pending notifications to idle ones."""
+        with self._participants_lock:
+            participants_snapshot = list(self.participants.items())
+
+        for role, participant in participants_snapshot:
+            with self._pending_lock:
+                has_pending = bool(self._pending_notifications.get(role))
+            if has_pending and self.is_pane_idle(participant.pane_id):
+                delivered = self.deliver_pending_notifications(participant)
+                if delivered:
+                    self.maybe_send_observer_reminder(delivered)
+
+    def get_queue_file_path(self) -> Path:
+        """Get the path to the queue persistence file."""
+        return self.watch_dir.parent / "tmp" / QUEUE_FILE_NAME
+
+    def save_pending_queue(self) -> None:
+        """Save pending notifications to JSONL file for restart resilience."""
+        queue_file = self.get_queue_file_path()
+        try:
+            queue_file.parent.mkdir(parents=True, exist_ok=True)
+            with self._pending_lock:
+                with open(queue_file, "w") as f:
+                    for role, items in self._pending_notifications.items():
+                        for filepath, sender in items:
+                            entry = {
+                                "role": role,
+                                "filepath": str(filepath),
+                                "sender": sender,
+                                "queued_at": time.time(),
+                            }
+                            f.write(json.dumps(entry) + "\n")
+        except OSError as e:
+            self.log("⚠️ ", f"Failed to save queue: {e}")
+
+    def load_pending_queue(self) -> None:
+        """Load pending notifications from JSONL file on startup."""
+        queue_file = self.get_queue_file_path()
+        if not queue_file.exists():
+            return
+
+        try:
+            with self._pending_lock:
+                with open(queue_file, "r") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            entry = json.loads(line)
+                            role = entry["role"]
+                            filepath = Path(entry["filepath"])
+                            sender = entry["sender"]
+                            # Skip if file no longer exists
+                            if not filepath.exists():
+                                continue
+                            if role not in self._pending_notifications:
+                                self._pending_notifications[role] = []
+                            self._pending_notifications[role].append((filepath, sender))
+                        except (json.JSONDecodeError, KeyError):
+                            continue
+            # Clear the file after loading
+            queue_file.unlink()
+            # Log loaded count
+            total = sum(len(v) for v in self._pending_notifications.values())
+            if total:
+                self.log("📂", f"Loaded {total} pending notifications from queue")
+        except OSError as e:
+            self.log("⚠️ ", f"Failed to load queue: {e}")
+
+    def should_force_deliver(self, role: str) -> bool:
+        """Check if batch should be force-delivered due to limits."""
+        with self._pending_lock:
+            pending = self._pending_notifications.get(role, [])
+            if not pending:
+                return False
+            # Check count limit
+            if len(pending) >= MAX_BATCH_COUNT:
+                return True
+        return False
+
+    def periodic_pending_check(self) -> None:
+        """Periodically check pending deliveries and force-deliver."""
+        while self.running:
+            time.sleep(IDLE_CHECK_INTERVAL_SECONDS)
+            if not self.running:
+                break
+            self.check_pending_deliveries()
 
     def discover_panes(
         self, existing_participants: Optional[dict[str, Participant]] = None
@@ -283,12 +522,53 @@ class Postman:
             return None, None, None
         return match.groups()
 
+    def validate_message_content(
+        self, filepath: Path, filename_sender: str, filename_recipient: str
+    ) -> bool:
+        """Validate that file content from/to matches filename sender/recipient."""
+        try:
+            content = filepath.read_text(encoding="utf-8")
+            lines = content.split("\n")[:10]
+            content_from = None
+            content_to = None
+            for line in lines:
+                if line.startswith("from:"):
+                    content_from = line.split(":", 1)[1].strip()
+                elif line.startswith("to:"):
+                    content_to = line.split(":", 1)[1].strip()
+            if content_from and content_from != filename_sender:
+                self.log(
+                    "⚠️ ",
+                    (
+                        f"Mismatch: filename says from={filename_sender}, "
+                        f"content says from={content_from}"
+                    ),
+                )
+                return False
+            if content_to and content_to != filename_recipient:
+                self.log(
+                    "⚠️ ",
+                    (
+                        f"Mismatch: filename says to={filename_recipient}, "
+                        f"content says to={content_to}"
+                    ),
+                )
+                return False
+        except (OSError, UnicodeDecodeError) as e:
+            self.log("⚠️ ", f"Failed to validate content: {e}")
+            return False
+        return True
+
     def handle_new_file(self, filepath: Path) -> None:
         """Handle a newly created file - route to recipient."""
         filename = filepath.name
         timestamp, sender, recipient = self.parse_message(filename)
 
-        if not recipient:
+        if not (timestamp and sender and recipient):
+            return
+
+        if not self.validate_message_content(filepath, sender, recipient):
+            self.log("🚫", f"Skipping mismatched file: {filename}")
             return
 
         self.log("📨", f"Message: {sender} → {recipient}")
@@ -304,14 +584,27 @@ class Postman:
 
         # Deliver to recipient (outside lock)
         if recipient_p:
-            if self.deliver_notification(recipient_p, sender, filepath):
+            if self.deliver_notification(
+                recipient_p,
+                sender,
+                filepath,
+                message_timestamp=timestamp,
+                message_recipient=recipient,
+            ):
                 delivered_count += 1
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
         # CC to observer (outside lock)
         if observer_p:
-            if self.deliver_notification(observer_p, sender, filepath, is_cc=True):
+            if self.deliver_notification(
+                observer_p,
+                sender,
+                filepath,
+                is_cc=True,
+                message_timestamp=timestamp,
+                message_recipient=recipient,
+            ):
                 delivered_count += 1
             self.log("📋", f"CC to observer ({observer_p.pane_id})")
 
@@ -324,8 +617,22 @@ class Postman:
         sender: str,
         filepath: Path,
         is_cc: bool = False,
+        message_timestamp: Optional[str] = None,
+        message_recipient: Optional[str] = None,
     ) -> bool:
         """Send notification to a participant's pane."""
+        # Check if batch notifications are enabled and pane is busy
+        if self.batch_notifications and not is_cc:
+            if not self.is_pane_idle(participant.pane_id):
+                self.queue_notification(participant.role, filepath, sender)
+                self.save_pending_queue()
+                return True  # Queued successfully
+
+            # Pane is idle - deliver any pending notifications first
+            pending_delivered = self.deliver_pending_notifications(participant)
+            if pending_delivered:
+                self.maybe_send_observer_reminder(pending_delivered)
+
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
         # Get template for recipient role
@@ -340,38 +647,29 @@ class Postman:
             )
             return False
 
-        # Format template
-        response_file = f"response-{filepath.stem}.md"
+        # Format template - swap sender/recipient for response filename
+        if message_timestamp and message_recipient:
+            response_file = (
+                f"{message_timestamp}-from-{message_recipient}-to-{sender}.md"
+            )
+        else:
+            response_file = f"{filepath.stem}-response.md"  # fallback
         message = template.format(
             task=f"📮 New message: {filepath.name}",
             response_file=response_file,
         )
 
         try:
-            if self.notification_method == "paste-buffer":
-                subprocess.run(
-                    ["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT
-                )
-                subprocess.run(
-                    ["tmux", "paste-buffer", "-t", participant.pane_id],
-                    timeout=TMUX_QUICK_TIMEOUT,
-                )
-                time.sleep(self.enter_delay)
-                subprocess.run(
-                    ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
-                    timeout=TMUX_QUICK_TIMEOUT,
-                )
-            else:  # display-message (default)
-                subprocess.run(
-                    [
-                        "tmux",
-                        "display-message",
-                        "-t",
-                        participant.pane_id,
-                        message[:MESSAGE_PREVIEW_LENGTH],
-                    ],
-                    timeout=TMUX_QUICK_TIMEOUT,
-                )
+            subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
+            subprocess.run(
+                ["tmux", "paste-buffer", "-t", participant.pane_id],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            time.sleep(self.enter_delay)
+            subprocess.run(
+                ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
         except (subprocess.TimeoutExpired, FileNotFoundError):
             self.log("❌", f"Failed to notify {participant.pane_id}")
             return False
@@ -397,11 +695,11 @@ class Postman:
     def send_observer_reminder(self) -> None:
         """Send observer reminder message to orchestrator."""
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        filename = f"{timestamp}-from-postman-to-orchestrator.md"
+        filename = f"{timestamp}-from-observer-to-orchestrator.md"
         filepath = self.watch_dir / filename
 
         content = f"""[MESSAGE]
-from: postman
+from: observer
 to: orchestrator
 timestamp: {datetime.now().isoformat()}
 type: observer-reminder
@@ -447,11 +745,11 @@ type: observer-reminder
             self._delivery_failure_last_sent[recipient_role] = now
 
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        filename = f"{timestamp}-from-postman-to-orchestrator.md"
+        filename = f"{timestamp}-from-observer-to-orchestrator.md"
         filepath = self.watch_dir / filename
 
         content = f"""[MESSAGE]
-from: postman
+from: observer
 to: orchestrator
 timestamp: {datetime.now().isoformat()}
 type: delivery-failure
@@ -666,7 +964,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         print(f"📮 Postman v{VERSION}")
         print("━" * 50)
         print(f"Watching: {self.watch_dir}/")
-        print(f"Notification: {self.notification_method}")
         if self.templates:
             print(f"Templates: {', '.join(self.templates.keys())}")
         self.print_participants()
@@ -677,6 +974,9 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         """Run the postman daemon."""
         # Ensure watch directory exists
         self.watch_dir.mkdir(parents=True, exist_ok=True)
+
+        # Load pending queue from previous run
+        self.load_pending_queue()
 
         # Initial pane discovery
         self.participants = self.discover_panes()
@@ -694,6 +994,13 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         stuck_thread = threading.Thread(target=self.periodic_stuck_check, daemon=True)
         stuck_thread.start()
 
+        # Start periodic pending check thread for batch notifications
+        if self.batch_notifications:
+            pending_thread = threading.Thread(
+                target=self.periodic_pending_check, daemon=True
+            )
+            pending_thread.start()
+
         # Start file watcher in separate thread
         watch_thread = threading.Thread(target=self.watch_files, daemon=True)
         watch_thread.start()
@@ -708,6 +1015,8 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         finally:
             self.running = False
             self._stop_event.set()
+            # Save pending queue for next run
+            self.save_pending_queue()
             print("\n📮 Postman stopped")
 
 
@@ -761,11 +1070,14 @@ Setup (in other panes):
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
     stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
     scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
-    notification_method = postman_cfg.get("notification_method", "display-message")
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
     capture_history = postman_cfg.get("capture_history_count", 5)
     captures_dir = Path(postman_cfg.get("captures_dir", ".i9wa4/captures"))
     target_roles = postman_cfg.get("target_roles", [])
+    idle_threshold = postman_cfg.get(
+        "idle_threshold_seconds", DEFAULT_IDLE_THRESHOLD_SECONDS
+    )
+    batch_notifications = postman_cfg.get("batch_notifications", True)
     observer_remind_enabled = observer_cfg.get("remind_enabled", False)
     observer_remind_interval_messages = observer_cfg.get("remind_interval_messages", 10)
     observer_remind_message = observer_cfg.get(
@@ -777,7 +1089,6 @@ Setup (in other panes):
         watch_dir=watch_dir,
         stuck_interval=stuck_interval,
         scan_interval=scan_interval,
-        notification_method=notification_method,
         enter_delay=enter_delay,
         capture_history=capture_history,
         captures_dir=captures_dir,
@@ -786,6 +1097,8 @@ Setup (in other panes):
         observer_remind_message=observer_remind_message,
         target_roles=target_roles,
         templates=config.get("templates", {}),
+        idle_threshold=idle_threshold,
+        batch_notifications=batch_notifications,
     )
 
     # Handle signals

@@ -41,7 +41,7 @@ Directory structure:
 | `.i9wa4/plans/`         | Plan documents             | Timestamped                  |
 | `.i9wa4/reviews/`       | Review results             | Timestamped                  |
 | `.i9wa4/tmp/`           | Temporary/command outputs  | Timestamped                  |
-| `.i9wa4/communication/` | Worker/Agent message exchange | Timestamped               |
+| `.i9wa4/post/`          | Worker/Agent message exchange | Timestamped               |
 
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
 

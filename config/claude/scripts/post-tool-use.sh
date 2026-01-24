@@ -37,7 +37,7 @@ REMINDERS=""
 # Worker delegation reminder for investigation tools
 case "$TOOL_NAME" in
 Read | Glob | Grep | Task)
-  REMINDERS="Consider delegating to Worker (codex: investigation, claude: implementation). "
+  REMINDERS="Consider delegating to Worker. "
   ;;
 esac
 

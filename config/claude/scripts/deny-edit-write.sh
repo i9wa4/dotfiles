@@ -33,7 +33,7 @@ Edit | Write | NotebookEdit)
   cat <<JSONEOF
 {
   "decision": "block",
-  "reason": "BLOCKED: Orchestrator is READONLY. Delegate to Worker for: ${TOOL_NAME}. Use [WORKER capability=WRITABLE] to delegate. See: references/worker-comm.md"
+  "reason": "BLOCKED: Orchestrator is READONLY. Delegate to Worker for: ${TOOL_NAME}."
 }
 JSONEOF
   exit 2

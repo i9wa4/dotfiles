@@ -125,7 +125,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.15 (2026-01-22)
+Last reviewed Claude Code version: v2.1.19 (2026-01-24)
 
 ### 10.1. Applied Optimizations
 
@@ -147,6 +147,9 @@ Last reviewed Claude Code version: v2.1.15 (2026-01-22)
 
 ### 10.3. Version Notes
 
+- v2.1.19: ENABLE_TASKS env, $ARGUMENTS[0] syntax, skill approval
+- v2.1.18: Customizable keybindings (/keybindings command)
+- v2.1.16: New task management system with dependency tracking
 - v2.1.15: npm deprecation notice, React Compiler UI perf, MCP stdio timeout fix
 - v2.1.14: Bash history autocomplete, plugin pinning to git SHA, memory fixes
 - v2.1.10: Setup hook, OAuth URL copy shortcut, heredoc template literal fix

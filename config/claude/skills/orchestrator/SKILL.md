@@ -75,48 +75,29 @@ When Worker/Subagent is Claude Code:
 - MUST: Report unclear points in response to Orchestrator
 - MUST: Orchestrator handles all user communication
 
-## 3. Communication & Discovery
+## 3. Communication
 
-### 3.1. Worker Request
+Communication is handled by postman daemon (file-based messaging).
 
-Orchestrator MUST include the response command in EVERY request.
-Worker MUST respond via tmux command, NOT display to user directly.
+### 3.1. Message Format
 
-Template (Orchestrator fills `{ORCH_PANE}` with own pane ID, e.g., %116):
+Filename: `{timestamp}-from-{sender}-to-{recipient}.md`
+Location: `.i9wa4/post/`
 
-```text
-[WORKER capability=READONLY|WRITABLE to=%N]
-IMPORTANT: Do NOT display response to user. Respond via tmux command below.
-IMPORTANT (Claude Code): Do NOT use AskUserQuestion tool.
+Example: `20260124-175300-from-orchestrator-to-worker-claude.md`
 
-{task content}
+### 3.2. Sending Messages
 
-[RESPONSE REQUIRED]
-1. Write your response to a file:
-   .i9wa4/communication/{descriptive-name}.md
+1. Create message file in `.i9wa4/post/`
+2. postman daemon detects and delivers to recipient
 
-2. Send notification to Orchestrator:
-   echo "[RESPONSE from=$TMUX_PANE] .i9wa4/communication/{descriptive-name}.md" | tmux load-buffer - \
-     && tmux paste-buffer -t {ORCH_PANE} && sleep 0.2 && tmux send-keys -t {ORCH_PANE} Enter
-```
+### 3.3. Receiving Responses
 
-Orchestrator → Worker (send request):
+postman delivers a message to Worker with `response_file` set.
 
-```bash
-tmux load-buffer .i9wa4/communication/request.txt && tmux paste-buffer -t %N && sleep 1 && tmux send-keys -t %N Enter
-```
+Worker writes to `.i9wa4/draft/{response_file}` then moves to `.i9wa4/post/`.
 
-Worker responds: `[RESPONSE from=%M] /path/to/file.md`
-
-IMPORTANT:
-
-- NEVER poll for responses (sleep + ls, etc.)
-- Responses arrive as direct user input to Orchestrator
-- Just wait for the `[RESPONSE from=%N]` message
-
-NEVER use `tmux send-keys -l` for message content (security).
-
-### 3.2. Worker Discovery
+### 3.4. Worker Discovery
 
 Your own pane: `$TMUX_PANE`
 
@@ -135,66 +116,6 @@ CODEX=$(find_agent_pane codex)
 ```
 
 If no Workers found, inform user and wait.
-
-### 3.3. Response Monitoring via Bash Mode
-
-Use Bash mode to autonomously monitor responses from Workers.
-
-#### Response File Check Command
-
-Send commands to Claude Code Worker in Bash mode:
-
-```bash
-# 1. Send command in Bash mode (send ! via hex 0x21)
-tmux send-keys -t {WORKER_PANE} C-u && \
-tmux send-keys -t {WORKER_PANE} -H 21 && \
-tmux send-keys -t {WORKER_PANE} ' ls -la .i9wa4/communication/{expected-file}.md 2>/dev/null || echo "WAITING"' && \
-sleep 0.2 && \
-tmux send-keys -t {WORKER_PANE} C-m
-
-# 2. Capture output
-sleep 2 && tmux capture-pane -t {WORKER_PANE} -p | tail -15
-```
-
-NOTE:
-
-- "!" is escaped by Claude Code Ink UI, so send via hex 0x21
-- "C-u" clears the input line ("!" must be at line start)
-- "sleep 0.2" is required before sending Enter
-
-#### Response Monitoring Flow
-
-```text
-1. Send request to Worker
-2. Set timeout (e.g., 5 minutes)
-3. Check response file existence via Bash mode
-4. File exists → Read response
-5. File not found → Retry or alert
-```
-
-#### Implementation Example
-
-```bash
-# Response monitoring function
-check_worker_response() {
-  local worker_pane="$1"
-  local expected_file="$2"
-  local orch_pane="$3"
-
-  # Check file via Bash mode
-  tmux send-keys -t "$worker_pane" C-u
-  tmux send-keys -t "$worker_pane" -H 21
-  tmux send-keys -t "$worker_pane" " ls .i9wa4/communication/${expected_file} 2>/dev/null || echo NO_FILE"
-  sleep 0.2
-  tmux send-keys -t "$worker_pane" C-m
-
-  # Capture output
-  sleep 2
-  tmux capture-pane -t "$worker_pane" -p | tail -10
-}
-```
-
-Reference: cf. vim-cc-mdd issue 14 (Bash mode command sending via tmux)
 
 ## 4. Delegation Priority
 
@@ -268,7 +189,7 @@ File: `.i9wa4/phase.log`
 | `.i9wa4/phase.log`         | Phase transitions  | Orchestrator |
 | `.i9wa4/plans/`            | Plan documents     | Orchestrator |
 | `.i9wa4/reviews/`          | Review results     | Subagent     |
-| `.i9wa4/communication/`    | Message exchange   | All          |
+| `.i9wa4/post/`             | Message exchange   | All          |
 
 ### 7.2. Status File Format
 
@@ -449,6 +370,15 @@ Agent file:
 `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md`
 
 ### 10.4. Review Execution
+
+IMPORTANT: 10並列レビューを標準で実施すること
+
+設計レビュー/コードレビュー時は必ず以下を実行:
+
+- cc x 5: Task tool で reviewer-* agents を並列起動
+- cx x 5: worker-codex 経由で codex exec を順次実行
+
+2並列（worker-claude + worker-codex のみ）は禁止。
 
 Task content template:
 
