@@ -152,25 +152,26 @@ Skills are stored in the `skills/` directory for specific integrations.
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
-| Skill                   | Description                        |
-| ----------------------- | ---------------------------------- |
-| atlassian               | Jira (acli) and Confluence (REST)  |
-| bigquery                | BigQuery development guide         |
-| claude-config-optimizer | Claude Code config and changelog   |
-| codex-config-optimizer  | Codex CLI config and changelog     |
-| daily-report            | Daily work report generation       |
-| databricks              | Databricks development guide       |
-| dbt                     | dbt development guide              |
-| draw-io                 | draw.io diagram creation/editing   |
-| git                     | Git operations guide               |
-| github                  | GitHub and PR operations guide     |
-| jupyter-notebook        | Jupyter Notebook execution guide   |
-| nix                     | Nix commands and package management|
-| orchestrator            | Main agent orchestration           |
-| python                  | Python environment and execution   |
-| skill-creator           | Skill creation guide               |
-| slack                   | Slack thread fetch and search      |
-| terraform               | Terraform development guide        |
+| Skill                               | Description                         |
+| ----------------------------------- | ----------------------------------- |
+| atlassian                           | Jira (acli) and Confluence (REST)   |
+| bigquery                            | BigQuery development guide          |
+| claude-config-optimizer             | Claude Code config and changelog    |
+| codex-config-optimizer              | Codex CLI config and changelog      |
+| daily-report                        | Daily work report generation        |
+| databricks                          | Databricks development guide        |
+| dbt                                 | dbt development guide               |
+| draw-io                             | draw.io diagram creation/editing    |
+| git                                 | Git operations guide                |
+| github                              | GitHub and PR operations guide      |
+| jupyter-notebook                    | Jupyter Notebook execution guide    |
+| nix                                 | Nix commands and package management |
+| orchestrator                        | Main agent orchestration            |
+| python                              | Python environment and execution    |
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
+| skill-creator                       | Skill creation guide                |
+| slack                               | Slack thread fetch and search       |
+| terraform                           | Terraform development guide         |
 
 ### 7.3. Agents
 
@@ -186,15 +187,7 @@ Agents are stored in the `agents/` directory.
 | reviewer-security     | Security vulnerability review              |
 | researcher-tech       | Technical research and analysis            |
 
-### 7.4. Commands
-
-Slash commands are stored in `commands/` and loaded on invocation.
-
-| Command                             | Description                            |
-| ----------------------------------- | -------------------------------------- |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment    |
-
-### 7.5. Scripts
+### 7.4. Scripts
 
 Helper scripts stored in the `scripts/` directory.
 
