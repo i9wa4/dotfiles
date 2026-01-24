@@ -16,7 +16,9 @@ batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N
 [worker]
 on_join = ""
 template = """
-## WORKER (WRITABLE)
+# WORKER (WRITABLE)
+
+## Rules
 
 - NEVER AskUserQuestion - report to Orchestrator
 - All tools allowed
@@ -24,12 +26,12 @@ template = """
 ## Inbox
 
 📬 {inbox_count} message(s) - .postman/inbox/{role}/
-Move each file to .postman/read/ immediately after reading
+Move to .postman/read/ after reading
 
 ## Response (if needed)
 
 File: .postman/draft/{response_file}
-1. Edit the response file with your response
+1. Edit response file
 2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
 
@@ -40,13 +42,14 @@ remind_interval_messages = 15
 remind_message = "Consider consulting observer for feedback"
 digest_message_count = 1
 template = """
-## OBSERVER (READONLY)
+# OBSERVER (READONLY)
+
+## Rules
 
 - Monitor file changes and commit contents
-- Check git diff for uncommitted changes
-- Review recent commits (git log)
+- Check git diff, review commits
 - Report concerns to orchestrator
-- NEVER Edit/Write - monitoring and feedback only
+- NEVER Edit/Write
 
 ## New File
 
@@ -61,19 +64,21 @@ File: .postman/read/{filename}
 [orchestrator]
 on_join = "/orchestrator"
 template = """
-## ORCHESTRATOR (READONLY)
+# ORCHESTRATOR (READONLY)
 
-- NEVER Edit/Write - DELEGATE to workers
-- Consult observers before planning or design decisions
+## Rules
+
+- DELEGATE to workers (NEVER Edit/Write)
+- Consult observers before planning
 
 ## Inbox
 
 📬 {inbox_count} message(s) - .postman/inbox/{role}/
-Move each file to .postman/read/ immediately after reading
+Move to .postman/read/ after reading
 
 ## Response (if needed)
 
 File: .postman/draft/{response_file}
-1. Edit the response file with your response
+1. Edit response file
 2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
