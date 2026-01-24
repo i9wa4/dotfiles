@@ -48,6 +48,9 @@ When you receive a notification from postman:
 1. Read from `.i9wa4/inbox/{your-role}/`
 2. After processing, move to: `mv .i9wa4/inbox/{your-role}/{file} .i9wa4/read/`
 
+NOTE: Postman will notify you when new messages arrive.
+You do NOT need to poll the inbox directory.
+
 ### 4.4. Message Format
 
 ```text
@@ -62,7 +65,7 @@ type: {task-request|task-complete|status-update}
 Your message here in Markdown.
 ```
 
-If $A2A_PEER is not set, proceed normally.
+If $A2A_PEER is not set, skip this section entirely and proceed normally.
 
 ## 5. File Management
 
