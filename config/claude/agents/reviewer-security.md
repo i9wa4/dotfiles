@@ -1,6 +1,7 @@
 ---
 name: reviewer-security
 description: Security expert. Conservative approach.
+model: sonnet
 ---
 
 # Reviewer: Security

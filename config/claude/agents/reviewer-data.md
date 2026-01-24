@@ -1,6 +1,7 @@
 ---
 name: reviewer-data
 description: Data model expert. Normalization master.
+model: sonnet
 ---
 
 # Reviewer: Data

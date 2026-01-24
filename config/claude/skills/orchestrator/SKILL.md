@@ -4,8 +4,11 @@ description: |
   Main agent orchestration skill.
   Use when:
   - User says "/orchestrator" or starts a new workflow
-  - Need to coordinate with Worker/Subagent
+  - $A2A_PEER environment variable contains "orchestrator"
+  - User mentions "plan", "design", "review", "code", "pr", "implement"
+  - Multi-agent coordination is needed
   - Managing multi-phase tasks (plan -> code -> PR)
+  - Need to delegate tasks to Worker/Subagent
 ---
 
 # Orchestrator Skill

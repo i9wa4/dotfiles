@@ -1,6 +1,7 @@
 ---
 name: researcher-tech
 description: Technical research specialist. Thorough investigator.
+model: sonnet
 ---
 
 # Researcher: Tech

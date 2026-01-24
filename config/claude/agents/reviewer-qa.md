@@ -1,6 +1,7 @@
 ---
 name: reviewer-qa
 description: Acceptance criteria expert. Guardian of goal achievement.
+model: sonnet
 ---
 
 # Reviewer: QA
