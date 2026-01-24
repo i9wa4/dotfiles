@@ -17,68 +17,21 @@ target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck sta
 remind_enabled = true
 remind_interval_messages = 30
 remind_message = "Consider consulting observer for feedback"
+digest_interval_seconds = 300
 
 [templates]
 # Templates by recipient role
 # Variables: {filename}, {response_file}
 
-[templates.worker-w]
+[templates.worker]
 notification = """
-[WORKER-W] (WRITABLE)
+[WORKER] (WRITABLE)
 Constraints: NEVER AskUserQuestion - report to Orchestrator
 Allowed: All tools
 
 📮 New message: {filename}
 
-[READ] File location: .i9wa4/inbox/worker-claude/
-After reading, move to: .i9wa4/read/
-
-[RESPONSE]
-1. Write: .i9wa4/draft/{response_file}
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
-"""
-
-[templates.worker-claude]
-notification = """
-[WORKER-W] (WRITABLE)
-Constraints: NEVER AskUserQuestion - report to Orchestrator
-Allowed: All tools
-
-📮 New message: {filename}
-
-[READ] File location: .i9wa4/inbox/worker-claude/
-After reading, move to: .i9wa4/read/
-
-[RESPONSE]
-1. Write: .i9wa4/draft/{response_file}
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
-"""
-
-[templates.worker-r]
-notification = """
-[WORKER-R] (READONLY)
-Constraints: NEVER Edit/Write/AskUserQuestion - report to Orchestrator
-Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
-
-📮 New message: {filename}
-
-[READ] File location: .i9wa4/inbox/worker-codex/
-After reading, move to: .i9wa4/read/
-
-[RESPONSE]
-1. Write: .i9wa4/draft/{response_file}
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
-"""
-
-[templates.worker-codex]
-notification = """
-[WORKER-R] (READONLY)
-Constraints: NEVER Edit/Write/AskUserQuestion - report to Orchestrator
-Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
-
-📮 New message: {filename}
-
-[READ] File location: .i9wa4/inbox/worker-codex/
+[READ] File location: .i9wa4/inbox/worker/
 After reading, move to: .i9wa4/read/
 
 [RESPONSE]
@@ -89,6 +42,11 @@ After reading, move to: .i9wa4/read/
 [templates.observer]
 notification = """
 [OBSERVER] (READONLY)
+Role: Monitor file changes and commit contents
+- Check git diff for uncommitted changes
+- Review recent commits (git log)
+- Report concerns to orchestrator
+
 Constraints: NEVER Edit/Write - monitoring and feedback only
 Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 

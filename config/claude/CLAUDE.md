@@ -27,7 +27,7 @@ acknowledge with a random one-liner in character.
 
 ## 4. Multi-Agent Mode
 
-If $AGENT_ROLE is set, postman daemon delivers messages with role constraints.
+If $A2A_PEER is set, postman daemon delivers messages with role constraints.
 Each notification includes capability and constraints for your role.
 
 Message format:
@@ -35,7 +35,7 @@ Message format:
 - Filename: {timestamp}-from-{sender}-to-{recipient}.md
 - Location: .i9wa4/draft/ → .i9wa4/post/
 
-If $AGENT_ROLE is not set, proceed normally.
+If $A2A_PEER is not set, proceed normally.
 
 ## 5. File Management
 
@@ -170,7 +170,6 @@ Helper scripts stored in the `scripts/` directory.
 
 | Script              | Purpose                           | Referenced by             |
 | ------------------- | --------------------------------- | ------------------------- |
-| deny-edit-write.sh  | Orchestrator READONLY enforcement | settings.json PreToolUse  |
-| post-tool-use.sh    | Orchestrator reminders            | settings.json PostToolUse |
+| deny-edit-write.sh  | Non-worker READONLY enforcement   | settings.json PreToolUse  |
 | reload-claude-md.sh | Context reload after compaction   | settings.json SessionStart|
 | touchfile.sh        | Standardized file creation        | CLAUDE.md, skills/*       |

@@ -6,7 +6,7 @@
 postman.py - File-based communication daemon for tmux panes
 
 Postman runs in a dedicated pane and monitors all other panes that have
-AGENT_ROLE environment variable set.
+A2A_PEER environment variable set.
 
 Usage:
     uv run bin/postman.py
@@ -17,9 +17,9 @@ Options:
     --scan-interval SEC   Pane rescan interval (default: 30)
 
 Setup:
-    Pane 1: AGENT_ROLE=orchestrator claude ...
-    Pane 2: AGENT_ROLE=claude-worker claude ...
-    Pane 3: AGENT_ROLE=codex-worker codex ...
+    Pane 1: A2A_PEER=orchestrator claude ...
+    Pane 2: A2A_PEER=claude-worker claude ...
+    Pane 3: A2A_PEER=codex-worker codex ...
     Pane 4: uv run bin/postman.py   <- Monitors all above
 """
 
@@ -84,6 +84,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "remind_enabled": False,
         "remind_interval_messages": 10,
         "remind_message": "Consider consulting observer for feedback",
+        "digest_interval_seconds": 300,
     },
     "templates": {},
 }
@@ -159,6 +160,7 @@ class Postman:
         templates: Optional[dict[str, Any]] = None,
         idle_threshold: int = DEFAULT_IDLE_THRESHOLD_SECONDS,
         batch_notifications: bool = True,
+        observer_digest_interval: int = 300,
     ):
         self.watch_dir = watch_dir
         self.inbox_dir = inbox_dir
@@ -176,6 +178,7 @@ class Postman:
         self.templates = templates or {}
         self.idle_threshold = idle_threshold
         self.batch_notifications = batch_notifications
+        self.observer_digest_interval = observer_digest_interval
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
         self._observer_remind_lock = threading.Lock()
@@ -191,6 +194,9 @@ class Postman:
         self._idle_capture: dict[
             str, tuple[str, float]
         ] = {}  # pane_id -> (content, ts)
+        # Observer digest state
+        self._last_digest_time = time.time()
+        self._digested_files: set[str] = set()
 
     def log(self, icon: str, message: str) -> None:
         """Print timestamped log message."""
@@ -424,7 +430,7 @@ class Postman:
     def discover_panes(
         self, existing_participants: Optional[dict[str, Participant]] = None
     ) -> dict[str, Participant]:
-        """Find all panes with AGENT_ROLE set."""
+        """Find all panes with A2A_PEER set."""
         new_participants: dict[str, Participant] = {}
         existing = existing_participants or {}
 
@@ -454,7 +460,7 @@ class Postman:
                 if pane_id == self.my_pane_id:
                     continue
 
-                # Try to get AGENT_ROLE from process environment
+                # Try to get A2A_PEER from process environment
                 role = self._get_pane_role(pane_pid)
                 if role:
                     # Preserve existing state if participant already known
@@ -475,7 +481,7 @@ class Postman:
         return new_participants
 
     def _get_pane_role(self, pid: str) -> Optional[str]:
-        """Get AGENT_ROLE from a process's environment."""
+        """Get A2A_PEER from a process's environment."""
         # First try the direct pid
         role = self._get_process_role(pid)
         if role:
@@ -501,7 +507,7 @@ class Postman:
         return None
 
     def _get_process_role(self, pid: str) -> Optional[str]:
-        """Get AGENT_ROLE from a single process's environment."""
+        """Get A2A_PEER from a single process's environment."""
         try:
             if sys.platform == "darwin":
                 result = subprocess.run(
@@ -511,7 +517,7 @@ class Postman:
                     timeout=TMUX_TIMEOUT,
                 )
                 if result.returncode == 0:
-                    match = re.search(r"AGENT_ROLE=([^\s]+)", result.stdout)
+                    match = re.search(r"A2A_PEER=([^\s]+)", result.stdout)
                     if match:
                         return match.group(1)
             else:
@@ -519,7 +525,7 @@ class Postman:
                 if env_path.exists():
                     env_content = env_path.read_bytes().decode(errors="ignore")
                     for item in env_content.split("\0"):
-                        if item.startswith("AGENT_ROLE="):
+                        if item.startswith("A2A_PEER="):
                             return item.split("=", 1)[1]
         except (subprocess.TimeoutExpired, PermissionError, OSError):
             pass
@@ -583,7 +589,7 @@ class Postman:
         if role in self.templates:
             return self.templates[role]
         # Prefix match
-        for prefix in ["worker-w", "worker-r", "orchestrator", "observer"]:
+        for prefix in ["worker", "orchestrator", "observer"]:
             if role.startswith(prefix) and prefix in self.templates:
                 return self.templates[prefix]
         return {}
@@ -595,7 +601,7 @@ class Postman:
             if role in self.participants:
                 return self.participants[role]
             # Prefix match
-            for prefix in ["worker-w", "worker-r", "orchestrator", "observer"]:
+            for prefix in ["worker", "orchestrator", "observer"]:
                 if role.startswith(prefix):
                     for p in self.participants.values():
                         if p.role.startswith(prefix):
@@ -608,6 +614,16 @@ class Postman:
             return [
                 p for p in self.participants.values() if p.role.startswith("observer")
             ]
+
+    def _get_peers_list(self, exclude_role: str) -> str:
+        """Get formatted list of current peers, excluding specified role."""
+        with self._participants_lock:
+            peers = [
+                f"{p.role}({p.pane_id})"
+                for p in self.participants.values()
+                if p.role != exclude_role
+            ]
+        return ", ".join(sorted(peers))
 
     def handle_new_file(self, filepath: Path) -> None:
         """Handle a newly created file - route to recipient."""
@@ -626,11 +642,6 @@ class Postman:
         # Get participant by role (supports prefix matching)
         recipient_p = self.find_participant_by_role(recipient)
 
-        # Find observers for CC (skip if recipient is an observer)
-        observers = (
-            self.find_all_observers() if not recipient.startswith("observer") else []
-        )
-
         delivered_count = 0
         delivery_success = False
 
@@ -647,23 +658,6 @@ class Postman:
                 delivery_success = True
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
-
-        # CC to all observers
-        if observers:
-            cc_list = []
-            for observer_p in observers:
-                if self.deliver_notification(
-                    observer_p,
-                    sender,
-                    filepath,
-                    is_cc=True,
-                    message_timestamp=timestamp,
-                    message_recipient=recipient,
-                ):
-                    delivered_count += 1
-                cc_list.append(f"{observer_p.role}({observer_p.pane_id})")
-            if cc_list:
-                self.log("📋", f"CC to {', '.join(cc_list)}")
 
         # Move file to inbox or dead-letter based on delivery result
         self._move_delivered_file(filepath, recipient, delivery_success)
@@ -741,6 +735,15 @@ class Postman:
             filename=filepath.name,
             response_file=response_file,
         )
+
+        # Add peers list for orchestrator
+        if participant.role.startswith("orchestrator"):
+            peers = self._get_peers_list(exclude_role=participant.role)
+            if peers:
+                lines = message.split("\n")
+                # Insert peers after first line (role header)
+                lines.insert(1, f"Peers: {peers}")
+                message = "\n".join(lines)
 
         try:
             subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
@@ -1016,6 +1019,77 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
                 break
             self.check_all_stuck()
 
+    def periodic_observer_digest(self) -> None:
+        """Periodically send digest of new files in read/ to observers."""
+        while self.running:
+            time.sleep(self.observer_digest_interval)
+            if not self.running:
+                break
+            self.send_observer_digest()
+
+    def send_observer_digest(self) -> None:
+        """Scan read/ for new files and notify all observers."""
+        observers = self.find_all_observers()
+        if not observers:
+            return
+
+        # Collect new files in read/ since last digest
+        new_files: list[str] = []
+        try:
+            for filepath in self.read_dir.glob("*.md"):
+                if filepath.name not in self._digested_files:
+                    new_files.append(filepath.name)
+                    self._digested_files.add(filepath.name)
+        except OSError:
+            return
+
+        if not new_files:
+            return
+
+        # Sort by timestamp (filename starts with timestamp)
+        new_files.sort()
+
+        # Build digest message
+        interval_min = self.observer_digest_interval // 60
+        lines = [
+            "[OBSERVER DIGEST]",
+            "Role: Monitor file changes and commit contents",
+            "- Check git diff for uncommitted changes",
+            "- Review recent commits (git log)",
+            "- Report concerns to orchestrator",
+            "",
+            f"New messages in read/ (last {interval_min} min):",
+        ]
+        for filename in new_files:
+            lines.append(f"- {filename}")
+        lines.append("")
+        lines.append("Read location: .i9wa4/read/")
+        digest_message = "\n".join(lines)
+
+        # Deliver to all observers
+        for observer_p in observers:
+            try:
+                subprocess.run(
+                    ["tmux", "set-buffer", digest_message], timeout=TMUX_QUICK_TIMEOUT
+                )
+                subprocess.run(
+                    ["tmux", "paste-buffer", "-t", observer_p.pane_id],
+                    timeout=TMUX_QUICK_TIMEOUT,
+                )
+                time.sleep(self.enter_delay)
+                subprocess.run(
+                    ["tmux", "send-keys", "-t", observer_p.pane_id, "Enter"],
+                    timeout=TMUX_QUICK_TIMEOUT,
+                )
+            except (subprocess.TimeoutExpired, FileNotFoundError):
+                self.log("❌", f"Failed to send digest to {observer_p.pane_id}")
+                continue
+
+        self.log(
+            "📋",
+            f"Observer digest: {len(new_files)} files to {len(observers)} observers",
+        )
+
     def watch_files(self) -> None:
         """Watch directory for new files using watchfiles."""
         try:
@@ -1089,6 +1163,13 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
             )
             pending_thread.start()
 
+        # Start observer digest thread
+        if self.observer_digest_interval > 0:
+            digest_thread = threading.Thread(
+                target=self.periodic_observer_digest, daemon=True
+            )
+            digest_thread.start()
+
         # Start file watcher in separate thread
         watch_thread = threading.Thread(target=self.watch_files, daemon=True)
         watch_thread.start()
@@ -1119,8 +1200,8 @@ Examples:
   uv run bin/postman.py --stuck-interval 5
 
 Setup (in other panes):
-  AGENT_ROLE=orchestrator claude
-  AGENT_ROLE=claude-worker claude
+  A2A_PEER=orchestrator claude
+  A2A_PEER=claude-worker claude
         """,
     )
     parser.add_argument(
@@ -1174,6 +1255,7 @@ Setup (in other panes):
     observer_remind_message = observer_cfg.get(
         "remind_message", "Consider consulting observer for feedback"
     )
+    observer_digest_interval = observer_cfg.get("digest_interval_seconds", 300)
 
     # Create and run postman
     postman = Postman(
@@ -1193,6 +1275,7 @@ Setup (in other panes):
         templates=config.get("templates", {}),
         idle_threshold=idle_threshold,
         batch_notifications=batch_notifications,
+        observer_digest_interval=observer_digest_interval,
     )
 
     # Handle signals

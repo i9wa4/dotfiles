@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
 # deny-edit-write.sh
 #
-# Hook script to enforce READONLY mode for Orchestrator.
-# Blocks Edit, Write, NotebookEdit tools when AGENT_ROLE=orchestrator.
+# Hook script to enforce READONLY mode for non-worker roles.
+# Blocks Edit, Write, NotebookEdit tools for orchestrator and observer.
+# All worker-* roles are allowed to edit files.
 # Uses JSON output for better visibility to Claude.
 
 set -euo pipefail
 
-# Only enforce for orchestrator role
-if [[ ${AGENT_ROLE:-} != "orchestrator" ]]; then
+# A2A_PEER not set → normal mode (allow)
+if [[ -z ${A2A_PEER:-} ]]; then
   exit 0
 fi
+
+# worker-* → writable (allow)
+if [[ ${A2A_PEER} == worker-* ]]; then
+  exit 0
+fi
+
+# All other roles (orchestrator, observer) → check for blocking
 
 # Read tool input from stdin
 INPUT=$(cat)
@@ -33,7 +41,7 @@ Edit | Write | NotebookEdit)
   cat <<JSONEOF
 {
   "decision": "block",
-  "reason": "BLOCKED: Orchestrator is READONLY. Delegate to Worker for: ${TOOL_NAME}."
+  "reason": "BLOCKED: ${A2A_PEER} is READONLY. Only worker-* can edit files."
 }
 JSONEOF
   exit 2
