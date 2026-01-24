@@ -36,6 +36,7 @@ After reading, move to: .i9wa4/read/
 
 [RESPONSE]
 1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
+   (Use the value of $A2A_PEER environment variable)
 2. Move: mv .i9wa4/draft/{file} .i9wa4/post/
 """
 
@@ -56,6 +57,7 @@ Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
 1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
+   (Use the value of $A2A_PEER environment variable)
 2. Move: mv .i9wa4/draft/{file} .i9wa4/post/
 """
 
