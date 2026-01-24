@@ -6,12 +6,14 @@ watch_dir = ".postman/post"
 inbox_dir = ".postman/inbox"
 read_dir = ".postman/read"
 dead_letter_dir = ".postman/dead-letter"
+log_file = ".postman/postman.log"
 stuck_interval_minutes = 30
 scan_interval_seconds = 60
 enter_delay_seconds = 0.7
 capture_history_count = 100
 captures_dir = ".i9wa4/captures"
 target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck state
+batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N seconds
 
 [observer]
 remind_enabled = true
@@ -21,7 +23,7 @@ digest_message_count = 1
 
 [templates]
 # Templates by recipient role
-# Variables: {filename}, {response_file}
+# Variables: {filename}, {response_file}, {inbox_count}, {inbox_path}, {role}
 
 [templates.worker]
 notification = """
@@ -29,10 +31,8 @@ notification = """
 Constraints: NEVER AskUserQuestion - report to Orchestrator
 Allowed: All tools
 
-📮 New message: {filename}
-
-[READ] File location: .postman/inbox/worker/
-After reading, move to: .postman/read/
+📬 Inbox: {inbox_count} message(s) - .postman/inbox/{role}/
+IMPORTANT: Move each file to .postman/read/ immediately after reading (before responding)
 
 [RESPONSE]
 Response file: .postman/draft/{response_file}
@@ -56,7 +56,7 @@ New file in read/: {filename}
 Read: .postman/read/{filename}
 
 [RESPONSE if needed]
-1. Create: .postman/draft/yyyymmdd-hhmmss-from-observer-to-orchestrator.md
+1. Create: .postman/draft/yyyymmdd-hhmmss-from-{role}-to-orchestrator.md
 2. Move: mv .postman/draft/<filename> .postman/post/
 """
 
@@ -68,10 +68,8 @@ Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 [SKILL] Invoke /orchestrator for workflow guidance.
 
-📮 New message: {filename}
-
-[READ] File location: .postman/inbox/orchestrator/
-After reading, move to: .postman/read/
+📬 Inbox: {inbox_count} message(s) - .postman/inbox/{role}/
+IMPORTANT: Move each file to .postman/read/ immediately after reading (before responding)
 
 [STATUS] Update .i9wa4/tmp/status-pane${TMUX_PANE#%} after each action:
 CURRENT: <what was done> | <mood> <emoji>
@@ -85,3 +83,9 @@ Response file: .postman/draft/{response_file}
 ---
 Tip: Consider consulting observers when planning or making decisions.
 """
+
+[hooks]
+# on_join: message sent when participant is first detected
+"on_join.orchestrator" = "/orchestrator"
+# "on_join.worker" = ""
+# "on_join.observer" = ""

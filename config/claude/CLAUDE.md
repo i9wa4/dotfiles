@@ -39,14 +39,15 @@ When you receive a notification from postman:
 
 ### 4.2. Sending Messages
 
-1. Create message in `.i9wa4/draft/`
+1. Create message in `.postman/draft/`
    - Filename: `{timestamp}-from-{your-role}-to-{recipient}.md`
-2. Move to post: `mv .i9wa4/draft/{file} .i9wa4/post/`
+2. Move to post: `mv .postman/draft/{file} .postman/post/`
 
 ### 4.3. Receiving Messages
 
-1. Read from `.i9wa4/inbox/{your-role}/`
-2. After processing, move to: `mv .i9wa4/inbox/{your-role}/{file} .i9wa4/read/`
+1. Read from `.postman/inbox/{your-role}/`
+2. After processing, move to read/:
+   `mv .postman/inbox/{your-role}/{file} .postman/read/`
 
 NOTE: Postman will notify you when new messages arrive.
 You do NOT need to poll the inbox directory.

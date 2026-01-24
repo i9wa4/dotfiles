@@ -98,6 +98,28 @@ Worker writes to `.i9wa4/draft/{response_file}` then moves to `.i9wa4/post/`.
 
 ### 3.4. Worker Discovery
 
+#### A2A_PEER Mode (postman)
+
+When `$A2A_PEER` is set, discover Workers from postman inbox:
+
+```bash
+discover_workers() {
+  if [[ -d .postman/inbox ]]; then
+    ls -1 .postman/inbox 2>/dev/null | grep "^worker"
+  fi
+}
+
+# Usage
+WORKERS=$(discover_workers)
+# Output:
+# worker-claude
+# worker-codex
+```
+
+#### Legacy Mode (tmux only)
+
+When `$A2A_PEER` is not set, use tmux pane detection:
+
 Your own pane: `$TMUX_PANE`
 
 ```bash

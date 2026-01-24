@@ -25,6 +25,7 @@ Setup:
 
 import argparse
 import json
+import logging
 import os
 import re
 import signal
@@ -80,6 +81,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "target_roles": ["worker-claude", "worker-codex"],
         "idle_threshold_seconds": 30,
         "batch_notifications": True,
+        "batch_interval_seconds": 15,
+        "log_file": ".postman/postman.log",
     },
     "observer": {
         "remind_enabled": False,
@@ -122,6 +125,8 @@ def load_config(config_path: Optional[Path] = None) -> dict[str, Any]:
                     }
                 if "templates" in config:
                     merged["templates"] = config["templates"]
+                if "hooks" in config:
+                    merged["hooks"] = config["hooks"]
                 if "observer" in config:
                     merged["observer"] = {
                         **DEFAULT_CONFIG["observer"],
@@ -170,9 +175,12 @@ class Postman:
         observer_remind_message: str = "Consider consulting observer for feedback",
         target_roles: Optional[list[str]] = None,
         templates: Optional[dict[str, Any]] = None,
+        hooks: Optional[dict[str, Any]] = None,
         idle_threshold: int = DEFAULT_IDLE_THRESHOLD_SECONDS,
         batch_notifications: bool = True,
+        batch_interval: int = 15,
         observer_digest_message_count: int = 5,
+        log_file: Optional[Path] = None,
     ):
         self.watch_dir = watch_dir
         self.inbox_dir = inbox_dir
@@ -189,8 +197,10 @@ class Postman:
         self.observer_remind_message = observer_remind_message
         self.target_roles = target_roles or []
         self.templates = templates or {}
+        self.hooks = hooks or {}
         self.idle_threshold = idle_threshold
         self.batch_notifications = batch_notifications
+        self.batch_interval = batch_interval
         self.observer_digest_message_count = observer_digest_message_count
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
@@ -211,11 +221,36 @@ class Postman:
         self._last_digest_time = time.time()
         self._digested_files: set[str] = set()
 
-    def log(self, icon: str, message: str) -> None:
-        """Print timestamped log message."""
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"[{ts}] {icon} {message}")
-        sys.stdout.flush()
+        # Setup logging
+        self.setup_logging(log_file or Path(".postman/postman.log"))
+
+    def setup_logging(self, log_file: Path) -> None:
+        """Setup logging with console and file output."""
+        self.logger = logging.getLogger("postman")
+        self.logger.setLevel(logging.INFO)
+
+        # Prevent duplicate handlers on re-initialization
+        self.logger.handlers.clear()
+
+        # Use "WARN" instead of "WARNING" for consistency with Go-style logging
+        logging.addLevelName(logging.WARNING, "WARN")
+
+        # Standard format for both console and file (Go-style, ISO 8601)
+        formatter = logging.Formatter(
+            "%(asctime)s %(levelname)-5s %(message)s",
+            datefmt="%Y-%m-%dT%H:%M:%S%z",
+        )
+
+        # Console handler
+        console = logging.StreamHandler(sys.stdout)
+        console.setFormatter(formatter)
+        self.logger.addHandler(console)
+
+        # File handler
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
 
     def create_response_draft(
         self, response_file: str, recipient: str
@@ -235,10 +270,10 @@ type: <type>
 
 """
             filepath.write_text(header)
-            self.log("📝", f"Created draft: {response_file}")
+            self.logger.info(f"📝 Created draft: {response_file}")
             return filepath
         except OSError as e:
-            self.log("⚠️ ", f"Failed to create draft: {e}")
+            self.logger.warning(f"⚠️ Failed to create draft: {e}")
             return None
 
     def is_pane_idle(self, pane_id: str) -> bool:
@@ -282,7 +317,7 @@ type: <type>
             if recipient not in self._pending_notifications:
                 self._pending_notifications[recipient] = []
             self._pending_notifications[recipient].append((filepath, sender))
-        self.log("⏸️ ", f"Queued notification for {recipient} (pane busy)")
+        self.logger.info(f"⏸️ Queued notification for {recipient} (pane busy)")
 
     def deliver_pending_notifications(self, participant: Participant) -> int:
         """Deliver all pending notifications as a batch. Returns count delivered."""
@@ -303,8 +338,10 @@ type: <type>
         for filepath, sender in pending:
             content_lines.append(f"- from {sender}: {filepath.name}")
         content_lines.append("")
-        content_lines.append(f"[READ] File location: .i9wa4/inbox/{participant.role}/")
-        content_lines.append("After reading, move to: .i9wa4/read/")
+        content_lines.append(
+            f"[READ] File location: .postman/inbox/{participant.role}/"
+        )
+        content_lines.append("After reading, move to: .postman/read/")
         batch_content = "\n".join(content_lines)
         batch_message = self.build_notification_with_template(
             participant.role, batch_content
@@ -323,18 +360,16 @@ type: <type>
                 ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
                 timeout=TMUX_QUICK_TIMEOUT,
             )
-            self.log(
-                "📬",
-                f"Delivered {len(pending)} batched notifications to {participant.role}",
-            )
-            return len(pending)
+            count = len(pending)
+            self.logger.info(f"📬 Delivered {count} batched to {participant.role}")
+            return count
         except (subprocess.TimeoutExpired, FileNotFoundError):
             # Re-queue on failure
             with self._pending_lock:
                 if participant.role not in self._pending_notifications:
                     self._pending_notifications[participant.role] = []
                 self._pending_notifications[participant.role].extend(pending)
-            self.log("❌", f"Failed to deliver batch to {participant.pane_id}")
+            self.logger.error(f"❌ Failed to deliver batch to {participant.pane_id}")
             return 0
 
     def _deliver_single_notification(
@@ -347,7 +382,7 @@ type: <type>
             "content", ""
         )
         if not template:
-            self.log("⚠️ ", f"No template for role: {participant.role}")
+            self.logger.warning(f"⚠️ No template for role: {participant.role}")
             return 0
 
         # Format response filename
@@ -362,11 +397,20 @@ type: <type>
         if not participant.role.startswith("observer"):
             self.create_response_draft(response_file, participant.role)
 
+        # Calculate inbox count for template (+1 to include current message)
+        inbox_path = self.inbox_dir / participant.role
+        inbox_count = (
+            len(list(inbox_path.glob("*.md"))) + 1 if inbox_path.exists() else 1
+        )
+
         message = safe_format(
             template,
             task=f"📮 New message: {filepath.name}",
             filename=filepath.name,
             response_file=response_file,
+            inbox_count=inbox_count,
+            inbox_path=str(inbox_path),
+            role=participant.role,
         )
 
         # Add peers list for orchestrator
@@ -388,20 +432,20 @@ type: <type>
                 ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
                 timeout=TMUX_QUICK_TIMEOUT,
             )
-            self.log("📬", f"Delivered queued notification to {participant.role}")
+            self.logger.info(f"📬 Delivered queued notification to {participant.role}")
             return 1
         except (subprocess.TimeoutExpired, FileNotFoundError):
             return 0
 
     def check_pending_deliveries(self) -> None:
-        """Check all panes and deliver pending notifications to idle ones."""
+        """Check all panes and deliver pending notifications."""
         with self._participants_lock:
             participants_snapshot = list(self.participants.items())
 
         for role, participant in participants_snapshot:
             with self._pending_lock:
                 has_pending = bool(self._pending_notifications.get(role))
-            if has_pending and self.is_pane_idle(participant.pane_id):
+            if has_pending:
                 delivered = self.deliver_pending_notifications(participant)
                 if delivered:
                     self.maybe_send_observer_reminder(delivered)
@@ -427,7 +471,7 @@ type: <type>
                             }
                             f.write(json.dumps(entry) + "\n")
         except OSError as e:
-            self.log("⚠️ ", f"Failed to save queue: {e}")
+            self.logger.warning(f"⚠️ Failed to save queue: {e}")
 
     def load_pending_queue(self) -> None:
         """Load pending notifications from JSONL file on startup."""
@@ -460,9 +504,9 @@ type: <type>
             # Log loaded count
             total = sum(len(v) for v in self._pending_notifications.values())
             if total:
-                self.log("📂", f"Loaded {total} pending notifications from queue")
+                self.logger.info(f"📂 Loaded {total} pending notifications from queue")
         except OSError as e:
-            self.log("⚠️ ", f"Failed to load queue: {e}")
+            self.logger.warning(f"⚠️ Failed to load queue: {e}")
 
     def should_force_deliver(self, role: str) -> bool:
         """Check if batch should be force-delivered due to limits."""
@@ -476,9 +520,9 @@ type: <type>
         return False
 
     def periodic_pending_check(self) -> None:
-        """Periodically check pending deliveries and force-deliver."""
+        """Periodically deliver queued notifications every batch_interval seconds."""
         while self.running:
-            time.sleep(IDLE_CHECK_INTERVAL_SECONDS)
+            time.sleep(self.batch_interval)
             if not self.running:
                 break
             self.check_pending_deliveries()
@@ -616,26 +660,20 @@ type: <type>
                 elif line.startswith("to:"):
                     content_to = line.split(":", 1)[1].strip()
             if content_from and content_from != filename_sender:
-                self.log(
-                    "⚠️ ",
-                    (
-                        f"Mismatch: filename says from={filename_sender}, "
-                        f"content says from={content_from}"
-                    ),
+                self.logger.warning(
+                    f"⚠️ Mismatch: filename says from={filename_sender}, "
+                    f"content says from={content_from}"
                 )
                 return False
             # Skip recipient validation for CC delivery
             if not is_cc and content_to and content_to != filename_recipient:
-                self.log(
-                    "⚠️ ",
-                    (
-                        f"Mismatch: filename says to={filename_recipient}, "
-                        f"content says to={content_to}"
-                    ),
+                self.logger.warning(
+                    f"⚠️ Mismatch: filename says to={filename_recipient}, "
+                    f"content says to={content_to}"
                 )
                 return False
         except (OSError, UnicodeDecodeError) as e:
-            self.log("⚠️ ", f"Failed to validate content: {e}")
+            self.logger.warning(f"⚠️ Failed to validate content: {e}")
             return False
         return True
 
@@ -684,8 +722,22 @@ type: <type>
             result_lines.extend(footer_lines)
 
         result = "\n".join(result_lines)
+
+        # Calculate inbox count for template (+1 to include current message)
+        inbox_path = self.inbox_dir / role
+        inbox_count = (
+            len(list(inbox_path.glob("*.md"))) + 1 if inbox_path.exists() else 1
+        )
+
         # Apply safe_format for any remaining placeholders
-        return safe_format(result, filename=response_file, response_file=response_file)
+        return safe_format(
+            result,
+            filename=response_file,
+            response_file=response_file,
+            inbox_count=inbox_count,
+            inbox_path=str(inbox_path),
+            role=role,
+        )
 
     def find_participant_by_role(self, role: str) -> Optional[Participant]:
         """Find participant by exact match or prefix match."""
@@ -707,6 +759,40 @@ type: <type>
             return [
                 p for p in self.participants.values() if p.role.startswith("observer")
             ]
+
+    def send_welcome_notification(self, participant: Participant) -> None:
+        """Send welcome hook message if configured."""
+        role = participant.role
+
+        # Try exact match first
+        hook_key = f"on_join.{role}"
+        message = self.hooks.get(hook_key)
+
+        # Try prefix match
+        if not message:
+            for prefix in ["orchestrator", "worker", "observer"]:
+                if role.startswith(prefix):
+                    message = self.hooks.get(f"on_join.{prefix}")
+                    break
+
+        if not message:
+            return
+
+        # Send to pane
+        try:
+            subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
+            subprocess.run(
+                ["tmux", "paste-buffer", "-t", participant.pane_id],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            time.sleep(self.enter_delay)
+            subprocess.run(
+                ["tmux", "send-keys", "-t", participant.pane_id, "Enter"],
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            self.logger.info(f"👋 Welcome hook sent to {role}: {message}")
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            self.logger.error(f"❌ Failed to send welcome hook to {role}")
 
     def _get_peers_list(self, exclude_role: str) -> str:
         """Get formatted list of current peers, excluding specified role."""
@@ -731,7 +817,7 @@ type: <type>
         #     self.log("🚫", f"Skipping mismatched file: {filename}")
         #     return
 
-        self.log("📨", f"Message: {sender} → {recipient}")
+        self.logger.info(f"📨 Message: {sender} → {recipient}")
 
         # Get participant by role (supports prefix matching)
         recipient_p = self.find_participant_by_role(recipient)
@@ -751,7 +837,7 @@ type: <type>
                 delivered_count += 1
                 delivery_success = True
         else:
-            self.log("⚠️ ", f"Recipient '{recipient}' not found")
+            self.logger.warning(f"⚠️ Recipient '{recipient}' not found")
 
         # Move file to inbox or dead-letter based on delivery result
         self._move_delivered_file(filepath, recipient, delivery_success)
@@ -770,13 +856,13 @@ type: <type>
                 inbox_path.mkdir(parents=True, exist_ok=True)
                 dest = inbox_path / filepath.name
                 filepath.rename(dest)
-                self.log("📁", f"Moved to inbox/{recipient}/")
+                self.logger.info(f"📁 Moved to inbox/{recipient}/")
             else:
                 dest = self.dead_letter_dir / filepath.name
                 filepath.rename(dest)
-                self.log("📁", "Moved to dead-letter/")
+                self.logger.info("📁 Moved to dead-letter/")
         except OSError as e:
-            self.log("❌", f"Failed to move file: {e}")
+            self.logger.error(f"❌ Failed to move file: {e}")
 
     def deliver_notification(
         self,
@@ -788,19 +874,13 @@ type: <type>
         message_recipient: Optional[str] = None,
     ) -> bool:
         """Send notification to a participant's pane."""
-        # Check if batch notifications are enabled (orchestrator only)
+        # Always queue notifications for orchestrator (delivered every batch_interval)
         if self.batch_notifications and participant.role.startswith("orchestrator"):
-            if not self.is_pane_idle(participant.pane_id):
-                self.queue_notification(participant.role, filepath, sender)
-                self.save_pending_queue()
-                return True  # Queued successfully
+            self.queue_notification(participant.role, filepath, sender)
+            self.save_pending_queue()
+            return True  # Queued successfully
 
-            # Pane is idle - deliver any pending notifications first
-            pending_delivered = self.deliver_pending_notifications(participant)
-            if pending_delivered:
-                self.maybe_send_observer_reminder(pending_delivered)
-
-        self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
+        self.logger.info(f"📥 Delivering to {participant.role} ({participant.pane_id})")
 
         # Get template for recipient role
         template_config = self.get_template_for_role(participant.role)
@@ -808,7 +888,7 @@ type: <type>
             "content", ""
         )
         if not template:
-            self.log("⚠️ ", f"No template for role: {participant.role}")
+            self.logger.warning(f"⚠️ No template for role: {participant.role}")
             self.send_delivery_failure_alert(
                 recipient_role=participant.role,
                 sender=sender,
@@ -829,11 +909,20 @@ type: <type>
         if not participant.role.startswith("observer"):
             self.create_response_draft(response_file, participant.role)
 
+        # Calculate inbox count for template (+1 to include current message)
+        inbox_path = self.inbox_dir / participant.role
+        inbox_count = (
+            len(list(inbox_path.glob("*.md"))) + 1 if inbox_path.exists() else 1
+        )
+
         message = safe_format(
             template,
             task=f"📮 New message: {filepath.name}",
             filename=filepath.name,
             response_file=response_file,
+            inbox_count=inbox_count,
+            inbox_path=str(inbox_path),
+            role=participant.role,
         )
 
         # Add peers list for orchestrator
@@ -857,7 +946,7 @@ type: <type>
                 timeout=TMUX_QUICK_TIMEOUT,
             )
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            self.log("❌", f"Failed to notify {participant.pane_id}")
+            self.logger.error(f"❌ Failed to notify {participant.pane_id}")
             return False
         return True
 
@@ -897,9 +986,9 @@ type: observer-reminder
 
         try:
             filepath.write_text(content)
-            self.log("🔔", f"Observer reminder sent: {filename}")
+            self.logger.info(f"🔔 Observer reminder sent: {filename}")
         except OSError as e:
-            self.log("❌", f"Failed to send observer reminder: {e}")
+            self.logger.error(f"❌ Failed to send observer reminder: {e}")
 
     def send_delivery_failure_alert(
         self,
@@ -910,12 +999,9 @@ type: observer-reminder
     ) -> None:
         """Alert orchestrator about delivery failure."""
         if recipient_role == "orchestrator":
-            self.log(
-                "⚠️ ",
-                (
-                    "Delivery failure for orchestrator template; "
-                    "skipping alert to avoid loop"
-                ),
+            self.logger.warning(
+                "⚠️ Delivery failure for orchestrator template; "
+                "skipping alert to avoid loop"
             )
             return
 
@@ -923,9 +1009,8 @@ type: observer-reminder
         with self._delivery_failure_lock:
             last_sent = self._delivery_failure_last_sent.get(recipient_role, 0)
             if now - last_sent < DELIVERY_FAILURE_MIN_INTERVAL_SECONDS:
-                self.log(
-                    "⚠️ ",
-                    f"Delivery failure alert suppressed for {recipient_role}",
+                self.logger.warning(
+                    f"⚠️ Delivery failure alert suppressed for {recipient_role}"
                 )
                 return
             self._delivery_failure_last_sent[recipient_role] = now
@@ -952,9 +1037,9 @@ Action required: Add template for role '{recipient_role}' in postman.toml
 
         try:
             filepath.write_text(content)
-            self.log("❌", f"Delivery failure alert sent: {recipient_role}")
+            self.logger.error(f"❌ Delivery failure alert sent: {recipient_role}")
         except OSError as e:
-            self.log("❌", f"Failed to send delivery failure alert: {e}")
+            self.logger.error(f"❌ Failed to send delivery failure alert: {e}")
 
     def capture_pane(self, pane_id: str, lines: int = 0) -> str:
         """Capture content of a tmux pane."""
@@ -1046,8 +1131,8 @@ Action required: Add template for role '{recipient_role}' in postman.toml
         capture_path: Optional[Path] = None,
     ) -> None:
         """Send stuck alert to orchestrator with pane capture."""
-        self.log(
-            "⚠️ ", f"Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
+        self.logger.warning(
+            f"⚠️ Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
         )
 
         # Get last CAPTURE_LINES lines of pane content
@@ -1081,9 +1166,9 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
 
         try:
             filepath.write_text(content)
-            self.log("📤", f"Alert sent: {filename}")
+            self.logger.info(f"📤 Alert sent: {filename}")
         except OSError as e:
-            self.log("❌", f"Failed to send alert: {e}")
+            self.logger.error(f"❌ Failed to send alert: {e}")
 
     def periodic_scan(self) -> None:
         """Periodically rescan panes."""
@@ -1105,9 +1190,13 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
                 added = new_roles - old_roles
                 removed = old_roles - new_roles
                 if added:
-                    self.log("🔄", f"Joined: {', '.join(added)}")
+                    self.logger.info(f"🔄 Joined: {', '.join(added)}")
+                    # Send welcome hooks to new participants
+                    for role in added:
+                        if role in self.participants:
+                            self.send_welcome_notification(self.participants[role])
                 if removed:
-                    self.log("🔄", f"Left: {', '.join(removed)}")
+                    self.logger.info(f"🔄 Left: {', '.join(removed)}")
                 self.print_participants()
 
     def periodic_stuck_check(self) -> None:
@@ -1172,7 +1261,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         for filename in new_files:
             content_lines.append(f"- {filename}")
         content_lines.append("")
-        content_lines.append("Read location: .i9wa4/read/")
+        content_lines.append("Read location: .postman/read/")
         digest_content = "\n".join(content_lines)
 
         # Deliver to all observers using their template
@@ -1194,12 +1283,11 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
                     timeout=TMUX_QUICK_TIMEOUT,
                 )
             except (subprocess.TimeoutExpired, FileNotFoundError):
-                self.log("❌", f"Failed to send digest to {observer_p.pane_id}")
+                self.logger.error(f"❌ Failed to send digest to {observer_p.pane_id}")
                 continue
 
-        self.log(
-            "📋",
-            f"Observer digest: {len(new_files)} files to {len(observers)} observers",
+        self.logger.info(
+            f"📋 Observer digest: {len(new_files)} files to {len(observers)} observers"
         )
 
     def watch_files(self) -> None:
@@ -1215,7 +1303,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
                             self.handle_new_file(filepath)
         except Exception as e:
             if self.running:
-                self.log("❌", f"Watch error: {e}")
+                self.logger.error(f"❌ Watch error: {e}")
 
     def print_participants(self) -> None:
         """Print current participants."""
@@ -1246,9 +1334,28 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         self.read_dir.mkdir(parents=True, exist_ok=True)
         self.draft_dir.mkdir(parents=True, exist_ok=True)
         self.dead_letter_dir.mkdir(parents=True, exist_ok=True)
-        # Create inbox directories for known roles
-        for role in ["orchestrator", "worker-claude", "worker-codex", "observer"]:
+
+        # Move existing inbox files to read/ (cleanup from previous run)
+        if self.inbox_dir.exists():
+            for role_dir in self.inbox_dir.iterdir():
+                if role_dir.is_dir():
+                    for filepath in role_dir.glob("*.md"):
+                        dest = self.read_dir / filepath.name
+                        filepath.rename(dest)
+                        self.logger.info(
+                            f"🧹 Moved stale inbox file to read/: {filepath.name}"
+                        )
+
+        # Initial pane discovery
+        self.participants = self.discover_panes()
+
+        # Create inbox directories for discovered participants
+        for role in self.participants.keys():
             (self.inbox_dir / role).mkdir(parents=True, exist_ok=True)
+
+        # Send welcome hooks to initial participants
+        for role, participant in self.participants.items():
+            self.send_welcome_notification(participant)
 
         # Initialize digested files with existing files in read/
         for filepath in self.read_dir.glob("*.md"):
@@ -1256,9 +1363,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
 
         # Load pending queue from previous run
         self.load_pending_queue()
-
-        # Initial pane discovery
-        self.participants = self.discover_panes()
 
         # Print header
         self.print_header()
@@ -1291,7 +1395,7 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         watch_thread = threading.Thread(target=self.watch_files, daemon=True)
         watch_thread.start()
 
-        self.log("👀", "Watching for messages...")
+        self.logger.info("👀 Watching for messages...")
 
         try:
             while self.running:
@@ -1354,10 +1458,10 @@ Setup (in other panes):
 
     # CLI args override config values
     watch_dir = args.watch_dir or Path(postman_cfg["watch_dir"])
-    inbox_dir = Path(postman_cfg.get("inbox_dir", ".i9wa4/inbox"))
-    read_dir = Path(postman_cfg.get("read_dir", ".i9wa4/read"))
-    draft_dir = Path(postman_cfg.get("draft_dir", ".i9wa4/draft"))
-    dead_letter_dir = Path(postman_cfg.get("dead_letter_dir", ".i9wa4/dead-letter"))
+    inbox_dir = Path(postman_cfg.get("inbox_dir", ".postman/inbox"))
+    read_dir = Path(postman_cfg.get("read_dir", ".postman/read"))
+    draft_dir = Path(postman_cfg.get("draft_dir", ".postman/draft"))
+    dead_letter_dir = Path(postman_cfg.get("dead_letter_dir", ".postman/dead-letter"))
     stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
     scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
@@ -1368,12 +1472,14 @@ Setup (in other panes):
         "idle_threshold_seconds", DEFAULT_IDLE_THRESHOLD_SECONDS
     )
     batch_notifications = postman_cfg.get("batch_notifications", True)
+    batch_interval = postman_cfg.get("batch_interval_seconds", 15)
     observer_remind_enabled = observer_cfg.get("remind_enabled", False)
     observer_remind_interval_messages = observer_cfg.get("remind_interval_messages", 10)
     observer_remind_message = observer_cfg.get(
         "remind_message", "Consider consulting observer for feedback"
     )
     observer_digest_message_count = observer_cfg.get("digest_message_count", 5)
+    log_file = Path(postman_cfg.get("log_file", ".postman/postman.log"))
 
     # Create and run postman
     postman = Postman(
@@ -1392,9 +1498,12 @@ Setup (in other panes):
         observer_remind_message=observer_remind_message,
         target_roles=target_roles,
         templates=config.get("templates", {}),
+        hooks=config.get("hooks", {}),
         idle_threshold=idle_threshold,
         batch_notifications=batch_notifications,
+        batch_interval=batch_interval,
         observer_digest_message_count=observer_digest_message_count,
+        log_file=log_file,
     )
 
     # Handle signals
