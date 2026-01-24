@@ -27,53 +27,60 @@ digest_message_count = 1
 
 [templates.worker]
 notification = """
-[WORKER] (WRITABLE)
-Constraints: NEVER AskUserQuestion - report to Orchestrator
-Allowed: All tools
+## WORKER (WRITABLE)
 
-📬 Inbox: {inbox_count} message(s) - .postman/inbox/{role}/
-IMPORTANT: Move each file to .postman/read/ immediately after reading (before responding)
+- NEVER AskUserQuestion - report to Orchestrator
+- All tools allowed
 
-[RESPONSE]
-Response file: .postman/draft/{response_file}
-1. Edit the response file above with your response
-2. Move: mv .postman/draft/{response_file} .postman/post/
+## Inbox
+
+📬 {inbox_count} message(s) - .postman/inbox/{role}/
+Move each file to .postman/read/ immediately after reading
+
+## Response (if needed)
+
+File: .postman/draft/{response_file}
+1. Edit the response file with your response
+2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
 
 [templates.observer]
 notification = """
-[OBSERVER] (READONLY)
-Role: Monitor file changes and commit contents
+## OBSERVER (READONLY)
+
+- Monitor file changes and commit contents
 - Check git diff for uncommitted changes
 - Review recent commits (git log)
 - Report concerns to orchestrator
+- NEVER Edit/Write - monitoring and feedback only
 
-Constraints: NEVER Edit/Write - monitoring and feedback only
+## New File
 
-New file in read/: {filename}
+File: .postman/read/{filename}
 
-Read: .postman/read/{filename}
+## Response (if needed)
 
-[RESPONSE if needed]
 1. Create: .postman/draft/yyyymmdd-hhmmss-from-{role}-to-orchestrator.md
-2. Move: mv .postman/draft/<filename> .postman/post/
+2. Move: `mv .postman/draft/<filename> .postman/post/`
 """
 
 [templates.orchestrator]
 notification = """
-[ORCHESTRATOR] (READONLY)
-Constraints: NEVER Edit/Write - DELEGATE to workers
+## ORCHESTRATOR (READONLY)
 
-📬 Inbox: {inbox_count} message(s) - .postman/inbox/{role}/
-IMPORTANT: Move each file to .postman/read/ immediately after reading (before responding)
+- NEVER Edit/Write - DELEGATE to workers
+- Consult observers before planning or design decisions
 
-[RESPONSE if needed]
-Response file: .postman/draft/{response_file}
-1. Edit the response file above with your response
-2. Move: mv .postman/draft/{response_file} .postman/post/
+## Inbox
 
----
-Tip: Consider consulting observers when planning or making decisions.
+📬 {inbox_count} message(s) - .postman/inbox/{role}/
+Move each file to .postman/read/ immediately after reading
+
+## Response (if needed)
+
+File: .postman/draft/{response_file}
+1. Edit the response file with your response
+2. Move: `mv .postman/draft/{response_file} .postman/post/`
 """
 
 [hooks]
