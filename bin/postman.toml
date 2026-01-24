@@ -35,8 +35,8 @@ Allowed: All tools
 After reading, move to: .i9wa4/read/
 
 [RESPONSE]
-1. Write: .i9wa4/draft/{response_file}
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
+2. Move: mv .i9wa4/draft/{file} .i9wa4/post/
 """
 
 [templates.observer]
@@ -55,8 +55,8 @@ New file in read/: {filename}
 Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
-1. Write: .i9wa4/draft/YYYYMMDD-HHMMSS-from-observer-to-orchestrator.md
-2. Move to: .i9wa4/post/
+1. Write: .i9wa4/draft/yyyymmdd-hhmmss-from-$A2A_PEER-to-orchestrator.md
+2. Move: mv .i9wa4/draft/{file} .i9wa4/post/
 """
 
 [templates.orchestrator]

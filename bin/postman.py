@@ -321,6 +321,14 @@ class Postman:
             response_file=response_file,
         )
 
+        # Add peers list for orchestrator
+        if participant.role.startswith("orchestrator"):
+            peers = self._get_peers_list(exclude_role=participant.role)
+            if peers:
+                lines = message.split("\n")
+                lines.insert(1, f"Peers: {peers}")
+                message = "\n".join(lines)
+
         try:
             subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
             subprocess.run(
