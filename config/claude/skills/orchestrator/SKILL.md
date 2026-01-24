@@ -426,6 +426,71 @@ or accept that outputs will be written to files (not displayed cleanly).
 
 WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
+### 10.4.1 Parallel Execution for 10-Review (cc x 5 + cx x 5)
+
+IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
+
+#### Step 1: Prepare PR Diff
+
+codex exec cannot access PR diff directly. Save it beforehand:
+
+```bash
+gh pr diff $PR_NUMBER > .i9wa4/tmp/pr-diff.txt
+```
+
+#### Step 2: Launch cc x 5 (Single Message)
+
+In one message, call Task tool 5 times in parallel:
+
+```text
+Task tool calls (parallel, single message):
+- subagent_type: reviewer-security
+- subagent_type: reviewer-architecture
+- subagent_type: reviewer-historian
+- subagent_type: reviewer-code (or reviewer-data for design review)
+- subagent_type: reviewer-qa
+```
+
+Each prompt should include:
+
+```text
+[SUBAGENT capability=READONLY]
+PR #N のレビュー（{ROLE}観点）
+差分は .i9wa4/tmp/pr-diff.txt を参照。
+```
+
+#### Step 3: Launch cx x 5 (Background Processes)
+
+Use file output to avoid interleaving:
+
+```bash
+for ROLE in security architecture historian data qa; do
+  FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/reviews --type "review-${ROLE}-cx")
+  codex exec --sandbox workspace-write -o "$FILE" \
+    "[SUBAGENT capability=READONLY] PR #N の ${ROLE} レビュー。差分は .i9wa4/tmp/pr-diff.txt を参照。" &
+done
+wait
+```
+
+#### Step 4: Collect Results
+
+```bash
+# Check all review files
+ls -la .i9wa4/reviews/*-review-*.md
+
+# Read and summarize
+cat .i9wa4/reviews/*-review-*.md
+```
+
+#### Timing Optimization
+
+| Action           | Timing                      |
+| ---------------- | --------------------------- |
+| Save PR diff     | Before starting reviews     |
+| Launch cc x 5    | Immediately (Task tool)     |
+| Launch cx x 5    | Immediately (background)    |
+| Collect results  | After wait completes        |
+
 ### 10.5. Summary Output
 
 Create file:

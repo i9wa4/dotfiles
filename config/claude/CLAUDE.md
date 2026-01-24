@@ -107,6 +107,9 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 
 Skills are stored in the `skills/` directory for specific integrations.
 
+NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
+Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
+
 | Skill                   | Description                        |
 | ----------------------- | ---------------------------------- |
 | atlassian               | Jira (acli) and Confluence (REST)  |
