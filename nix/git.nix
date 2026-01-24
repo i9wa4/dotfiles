@@ -13,6 +13,7 @@ _: {
       ".zshrc.local"
       # dotfiles
       ".i9wa4/"
+      ".postman/"
       "local.vim"
       # Claude
       ".mcp.json"

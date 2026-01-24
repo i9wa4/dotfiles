@@ -83,7 +83,8 @@ Directory structure:
 | `.i9wa4/plans/`         | Plan documents             | Timestamped                  |
 | `.i9wa4/reviews/`       | Review results             | Timestamped                  |
 | `.i9wa4/tmp/`           | Temporary/command outputs  | Timestamped                  |
-| `.i9wa4/post/`          | Worker/Agent message exchange | Timestamped               |
+
+NOTE: Message exchange is managed separately in `.postman/` by postman daemon.
 
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
 

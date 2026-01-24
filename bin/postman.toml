@@ -2,10 +2,10 @@
 # File-based communication daemon for tmux panes
 
 [postman]
-watch_dir = ".i9wa4/post"
-inbox_dir = ".i9wa4/inbox"
-read_dir = ".i9wa4/read"
-dead_letter_dir = ".i9wa4/dead-letter"
+watch_dir = ".postman/post"
+inbox_dir = ".postman/inbox"
+read_dir = ".postman/read"
+dead_letter_dir = ".postman/dead-letter"
 stuck_interval_minutes = 30
 scan_interval_seconds = 60
 enter_delay_seconds = 0.7
@@ -31,13 +31,13 @@ Allowed: All tools
 
 📮 New message: {filename}
 
-[READ] File location: .i9wa4/inbox/worker/
-After reading, move to: .i9wa4/read/
+[READ] File location: .postman/inbox/worker/
+After reading, move to: .postman/read/
 
 [RESPONSE]
-Response file: .i9wa4/draft/{response_file}
+Response file: .postman/draft/{response_file}
 1. Edit the response file above with your response
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+2. Move: mv .postman/draft/{response_file} .postman/post/
 """
 
 [templates.observer]
@@ -53,11 +53,11 @@ Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 New file in read/: {filename}
 
-Read: .i9wa4/read/{filename}
+Read: .postman/read/{filename}
 
 [RESPONSE if needed]
-1. Create: .i9wa4/draft/yyyymmdd-hhmmss-from-observer-to-orchestrator.md
-2. Move: mv .i9wa4/draft/<filename> .i9wa4/post/
+1. Create: .postman/draft/yyyymmdd-hhmmss-from-observer-to-orchestrator.md
+2. Move: mv .postman/draft/<filename> .postman/post/
 """
 
 [templates.orchestrator]
@@ -70,17 +70,17 @@ Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 📮 New message: {filename}
 
-[READ] File location: .i9wa4/inbox/orchestrator/
-After reading, move to: .i9wa4/read/
+[READ] File location: .postman/inbox/orchestrator/
+After reading, move to: .postman/read/
 
 [STATUS] Update .i9wa4/tmp/status-pane${TMUX_PANE#%} after each action:
 CURRENT: <what was done> | <mood> <emoji>
 NEXT: <what is needed to continue>
 
 [RESPONSE if needed]
-Response file: .i9wa4/draft/{response_file}
+Response file: .postman/draft/{response_file}
 1. Edit the response file above with your response
-2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+2. Move: mv .postman/draft/{response_file} .postman/post/
 
 ---
 Tip: Consider consulting observers when planning or making decisions.

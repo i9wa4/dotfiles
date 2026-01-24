@@ -67,11 +67,11 @@ DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 # Default configuration values
 DEFAULT_CONFIG: dict[str, Any] = {
     "postman": {
-        "watch_dir": ".i9wa4/post",
-        "inbox_dir": ".i9wa4/inbox",
-        "read_dir": ".i9wa4/read",
-        "draft_dir": ".i9wa4/draft",
-        "dead_letter_dir": ".i9wa4/dead-letter",
+        "watch_dir": ".postman/post",
+        "inbox_dir": ".postman/inbox",
+        "read_dir": ".postman/read",
+        "draft_dir": ".postman/draft",
+        "dead_letter_dir": ".postman/dead-letter",
         "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
         "enter_delay_seconds": 0.5,
