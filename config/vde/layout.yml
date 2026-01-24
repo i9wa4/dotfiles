@@ -46,6 +46,6 @@ presets:
           ratio: [1, 1]
           panes:
             - name: codex
-              command: AGENT_ROLE=worker-codex codex --yolo
+              command: AGENT_ROLE=worker-r-codex codex --yolo
             - name: claude
-              command: AGENT_ROLE=worker-claude claude --dangerously-skip-permissions
+              command: AGENT_ROLE=worker-w-claude claude --dangerously-skip-permissions

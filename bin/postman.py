@@ -293,7 +293,7 @@ class Postman:
     ) -> int:
         """Deliver a single notification. Returns 1 on success, 0 on failure."""
         # Get template for recipient role
-        template_config = self.templates.get(participant.role, {})
+        template_config = self.get_template_for_role(participant.role)
         template = template_config.get("notification") or template_config.get(
             "content", ""
         )
@@ -577,6 +577,38 @@ class Postman:
             return False
         return True
 
+    def get_template_for_role(self, role: str) -> dict:
+        """Get template matching role by prefix."""
+        # Exact match first
+        if role in self.templates:
+            return self.templates[role]
+        # Prefix match
+        for prefix in ["worker-w", "worker-r", "orchestrator", "observer"]:
+            if role.startswith(prefix) and prefix in self.templates:
+                return self.templates[prefix]
+        return {}
+
+    def find_participant_by_role(self, role: str) -> Optional[Participant]:
+        """Find participant by exact match or prefix match."""
+        with self._participants_lock:
+            # Exact match first
+            if role in self.participants:
+                return self.participants[role]
+            # Prefix match
+            for prefix in ["worker-w", "worker-r", "orchestrator", "observer"]:
+                if role.startswith(prefix):
+                    for p in self.participants.values():
+                        if p.role.startswith(prefix):
+                            return p
+            return None
+
+    def find_all_observers(self) -> list[Participant]:
+        """Find all participants with observer role prefix."""
+        with self._participants_lock:
+            return [
+                p for p in self.participants.values() if p.role.startswith("observer")
+            ]
+
     def handle_new_file(self, filepath: Path) -> None:
         """Handle a newly created file - route to recipient."""
         filename = filepath.name
@@ -591,17 +623,18 @@ class Postman:
 
         self.log("📨", f"Message: {sender} → {recipient}")
 
-        # Get participant references inside lock
-        with self._participants_lock:
-            recipient_p = self.participants.get(recipient)
-            observer_p = (
-                self.participants.get("observer") if recipient != "observer" else None
-            )
+        # Get participant by role (supports prefix matching)
+        recipient_p = self.find_participant_by_role(recipient)
+
+        # Find observers for CC (skip if recipient is an observer)
+        observers = (
+            self.find_all_observers() if not recipient.startswith("observer") else []
+        )
 
         delivered_count = 0
         delivery_success = False
 
-        # Deliver to recipient (outside lock)
+        # Deliver to recipient
         if recipient_p:
             if self.deliver_notification(
                 recipient_p,
@@ -615,18 +648,22 @@ class Postman:
         else:
             self.log("⚠️ ", f"Recipient '{recipient}' not found")
 
-        # CC to observer (outside lock)
-        if observer_p:
-            if self.deliver_notification(
-                observer_p,
-                sender,
-                filepath,
-                is_cc=True,
-                message_timestamp=timestamp,
-                message_recipient=recipient,
-            ):
-                delivered_count += 1
-            self.log("📋", f"CC to observer ({observer_p.pane_id})")
+        # CC to all observers
+        if observers:
+            cc_list = []
+            for observer_p in observers:
+                if self.deliver_notification(
+                    observer_p,
+                    sender,
+                    filepath,
+                    is_cc=True,
+                    message_timestamp=timestamp,
+                    message_recipient=recipient,
+                ):
+                    delivered_count += 1
+                cc_list.append(f"{observer_p.role}({observer_p.pane_id})")
+            if cc_list:
+                self.log("📋", f"CC to {', '.join(cc_list)}")
 
         # Move file to inbox or dead-letter based on delivery result
         self._move_delivered_file(filepath, recipient, delivery_success)
@@ -664,7 +701,7 @@ class Postman:
     ) -> bool:
         """Send notification to a participant's pane."""
         # Check if batch notifications are enabled (orchestrator only)
-        if self.batch_notifications and participant.role == "orchestrator":
+        if self.batch_notifications and participant.role.startswith("orchestrator"):
             if not self.is_pane_idle(participant.pane_id):
                 self.queue_notification(participant.role, filepath, sender)
                 self.save_pending_queue()
@@ -678,7 +715,7 @@ class Postman:
         self.log("📥", f"Delivering to {participant.role} ({participant.pane_id})")
 
         # Get template for recipient role
-        template_config = self.templates.get(participant.role, {})
+        template_config = self.get_template_for_role(participant.role)
         template = template_config.get("notification") or template_config.get(
             "content", ""
         )

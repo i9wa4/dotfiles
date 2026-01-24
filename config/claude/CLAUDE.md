@@ -25,7 +25,19 @@ acknowledge with a random one-liner in character.
 - NEVER: Do not create lock files (uv.lock, package-lock.json, etc.)
   or virtual environments (.venv/, node_modules/) without permission
 
-## 4. File Management
+## 4. Multi-Agent Mode
+
+If $AGENT_ROLE is set, postman daemon delivers messages with role constraints.
+Each notification includes capability and constraints for your role.
+
+Message format:
+
+- Filename: {timestamp}-from-{sender}-to-{recipient}.md
+- Location: .i9wa4/draft/ → .i9wa4/post/
+
+If $AGENT_ROLE is not set, proceed normally.
+
+## 5. File Management
 
 All working files go to `.i9wa4/` (globally gitignored).
 
@@ -67,11 +79,11 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output      # → .i
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .i9wa4/roadmap.md (fixed name)
 ```
 
-### 4.1. Project-Specific Rules
+### 5.1. Project-Specific Rules
 
 - YOU MUST: Follow @README.md and @CONTRIBUTING.md if they exist
 
-## 5. Context Persistence
+## 6. Context Persistence
 
 - IMPORTANT: Save important findings to `.i9wa4/` before context gets full
 - YOU MUST: When context usage exceeds 60%, consider saving:
@@ -84,13 +96,13 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .
 NOTE: TodoWrite is Claude Code specific.
 Codex CLI users should track tasks manually.
 
-## 6. File Structure
+## 7. File Structure
 
 Files and directories described below are located at:
 
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
-### 6.1. Rules
+### 7.1. Rules
 
 Rules are stored in the `rules/` directory, organized by topic.
 
@@ -103,7 +115,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 6.2. Skills
+### 7.2. Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
@@ -130,7 +142,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | slack                   | Slack thread fetch and search      |
 | terraform               | Terraform development guide        |
 
-### 6.3. Agents
+### 7.3. Agents
 
 Agents are stored in the `agents/` directory.
 
@@ -144,7 +156,7 @@ Agents are stored in the `agents/` directory.
 | reviewer-security     | Security vulnerability review              |
 | researcher-tech       | Technical research and analysis            |
 
-### 6.4. Commands
+### 7.4. Commands
 
 Slash commands are stored in `commands/` and loaded on invocation.
 
@@ -152,7 +164,7 @@ Slash commands are stored in `commands/` and loaded on invocation.
 | ----------------------------------- | -------------------------------------- |
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment    |
 
-### 6.5. Scripts
+### 7.5. Scripts
 
 Helper scripts stored in the `scripts/` directory.
 

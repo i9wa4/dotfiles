@@ -22,11 +22,11 @@ remind_message = "Consider consulting observer for feedback"
 # Templates by recipient role
 # Variables: {filename}, {response_file}
 
-[templates.worker-claude]
-# WRITABLE worker - consultation and implementation
+[templates.worker-w]
 notification = """
-You are worker-claude.
-Your capabilities: Consultation & Implementation
+[WORKER-W] (WRITABLE)
+Constraints: NEVER AskUserQuestion - report to Orchestrator
+Allowed: All tools
 
 📮 New message: {filename}
 
@@ -38,11 +38,43 @@ After reading, move to: .i9wa4/read/
 2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 """
 
-[templates.worker-codex]
-# READONLY worker - consultation and status report
+[templates.worker-claude]
 notification = """
-You are worker-codex.
-Your capabilities: Consultation & Status Report only
+[WORKER-W] (WRITABLE)
+Constraints: NEVER AskUserQuestion - report to Orchestrator
+Allowed: All tools
+
+📮 New message: {filename}
+
+[READ] File location: .i9wa4/inbox/worker-claude/
+After reading, move to: .i9wa4/read/
+
+[RESPONSE]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+"""
+
+[templates.worker-r]
+notification = """
+[WORKER-R] (READONLY)
+Constraints: NEVER Edit/Write/AskUserQuestion - report to Orchestrator
+Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
+
+📮 New message: {filename}
+
+[READ] File location: .i9wa4/inbox/worker-codex/
+After reading, move to: .i9wa4/read/
+
+[RESPONSE]
+1. Write: .i9wa4/draft/{response_file}
+2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
+"""
+
+[templates.worker-codex]
+notification = """
+[WORKER-R] (READONLY)
+Constraints: NEVER Edit/Write/AskUserQuestion - report to Orchestrator
+Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 📮 New message: {filename}
 
@@ -55,9 +87,10 @@ After reading, move to: .i9wa4/read/
 """
 
 [templates.observer]
-# Observer - monitoring read/ directory
 notification = """
-[OBSERVER]
+[OBSERVER] (READONLY)
+Constraints: NEVER Edit/Write - monitoring and feedback only
+Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 New file in read/: {filename}
 
@@ -65,14 +98,14 @@ Read: .i9wa4/read/{filename}
 
 [RESPONSE if needed]
 1. Write: .i9wa4/draft/YYYYMMDD-HHMMSS-from-observer-to-orchestrator.md
-   (Replace YYYYMMDD-HHMMSS with current timestamp)
 2. Move to: .i9wa4/post/
 """
 
 [templates.orchestrator]
-# Messages to orchestrator - remind about workers
 notification = """
-[ORCHESTRATOR]
+[ORCHESTRATOR] (READONLY)
+Constraints: NEVER Edit/Write - DELEGATE to workers
+Allowed: Read, Glob, Grep, Bash(ro), .i9wa4/ write
 
 📮 New message: {filename}
 
@@ -84,9 +117,5 @@ After reading, move to: .i9wa4/read/
 2. Move: mv .i9wa4/draft/{response_file} .i9wa4/post/
 
 ---
-Required Actions:
-1. Consult worker-claude for advice/implementation
-2. Report to worker-codex (MANDATORY for every task)
-
-NOTE: When you send to worker-claude, also report status to worker-codex!
+Required: Consult worker-claude (implementation) and worker-codex (status)
 """
