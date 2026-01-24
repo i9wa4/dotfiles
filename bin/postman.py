@@ -12,8 +12,7 @@ Usage:
     uv run bin/postman.py
 
 Options:
-    --watch-dir PATH      Directory to watch (default: .i9wa4/postman)
-    --stuck-interval MIN  Minutes before stuck alert (default: 10)
+    --watch-dir PATH      Directory to watch (default: .postman/post)
     --scan-interval SEC   Pane rescan interval (default: 30)
 
 Setup:
@@ -73,12 +72,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "read_dir": ".postman/read",
         "draft_dir": ".postman/draft",
         "dead_letter_dir": ".postman/dead-letter",
-        "stuck_interval_minutes": 10,
         "scan_interval_seconds": 30,
         "enter_delay_seconds": 0.5,
-        "capture_history_count": 5,
-        "captures_dir": ".i9wa4/captures",
-        "target_roles": ["worker-claude", "worker-codex"],
         "idle_threshold_seconds": 30,
         "batch_notifications": True,
         "batch_interval_seconds": 15,
@@ -172,15 +167,11 @@ class Postman:
         read_dir: Path,
         draft_dir: Path,
         dead_letter_dir: Path,
-        stuck_interval: int,
         scan_interval: int,
         enter_delay: float = 0.5,
-        capture_history: int = 5,
-        captures_dir: Path = Path(".i9wa4/captures"),
         observer_remind_enabled: bool = False,
         observer_remind_interval_messages: int = 10,
         observer_remind_message: str = "Consider consulting observer for feedback",
-        target_roles: Optional[list[str]] = None,
         templates: Optional[dict[str, Any]] = None,
         hooks: Optional[dict[str, Any]] = None,
         idle_threshold: int = DEFAULT_IDLE_THRESHOLD_SECONDS,
@@ -194,15 +185,11 @@ class Postman:
         self.read_dir = read_dir
         self.draft_dir = draft_dir
         self.dead_letter_dir = dead_letter_dir
-        self.stuck_interval = stuck_interval
         self.scan_interval = scan_interval
         self.enter_delay = enter_delay
-        self.capture_history = capture_history
-        self.captures_dir = captures_dir
         self.observer_remind_enabled = observer_remind_enabled
         self.observer_remind_interval_messages = observer_remind_interval_messages
         self.observer_remind_message = observer_remind_message
-        self.target_roles = target_roles or []
         self.templates = templates or {}
         self.hooks = hooks or {}
         self.idle_threshold = idle_threshold
@@ -1066,117 +1053,6 @@ Action required: Add template for role '{recipient_role}' in postman.toml
             pass
         return ""
 
-    def save_capture(self, pane_id: str, content: str) -> Optional[Path]:
-        """Save capture to file and cleanup old captures."""
-        try:
-            self.captures_dir.mkdir(parents=True, exist_ok=True)
-            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-            # Sanitize pane_id for filename (replace % with _)
-            safe_pane_id = pane_id.replace("%", "_")
-            filename = f"{safe_pane_id}-{timestamp}.txt"
-            filepath = self.captures_dir / filename
-
-            filepath.write_text(content)
-
-            # Cleanup old captures for this pane
-            pattern = f"{safe_pane_id}-*.txt"
-            captures = sorted(self.captures_dir.glob(pattern), reverse=True)
-            for old_capture in captures[self.capture_history :]:
-                old_capture.unlink()
-
-            return filepath
-        except OSError:
-            return None
-
-    def check_all_stuck(self) -> None:
-        """Check all participants for stuck state."""
-        current_time = time.time()
-
-        # Take snapshot inside lock
-        # If target_roles is empty, check all participants (backward compatibility)
-        with self._participants_lock:
-            snapshot = [
-                (role, p.pane_id, p.last_capture, p.last_capture_time)
-                for role, p in self.participants.items()
-                if not self.target_roles or role in self.target_roles
-            ]
-
-        for role, pane_id, last_capture, last_capture_time in snapshot:
-            current_capture = self.capture_pane(pane_id)
-            capture_path = self.save_capture(pane_id, current_capture)
-
-            # Skip if first capture
-            if last_capture_time == 0:
-                with self._participants_lock:
-                    if role in self.participants:
-                        self.participants[role].last_capture = current_capture
-                        self.participants[role].last_capture_time = current_time
-                continue
-
-            # Check if content changed
-            if current_capture == last_capture:
-                elapsed_minutes = (current_time - last_capture_time) / 60
-                if elapsed_minutes >= self.stuck_interval:
-                    with self._participants_lock:
-                        p = self.participants.get(role)
-                    if p:
-                        self.send_stuck_alert(p, int(elapsed_minutes), capture_path)
-                    with self._participants_lock:
-                        if role in self.participants:
-                            self.participants[role].last_capture_time = current_time
-            else:
-                # Content changed, reset timer
-                with self._participants_lock:
-                    if role in self.participants:
-                        self.participants[role].last_capture = current_capture
-                        self.participants[role].last_capture_time = current_time
-
-    def send_stuck_alert(
-        self,
-        participant: Participant,
-        minutes: int,
-        capture_path: Optional[Path] = None,
-    ) -> None:
-        """Send stuck alert to orchestrator with pane capture."""
-        self.logger.warning(
-            f"⚠️ Stuck: {participant.role} ({participant.pane_id}) - {minutes} min"
-        )
-
-        # Get last CAPTURE_LINES lines of pane content
-        pane_content = self.capture_pane(participant.pane_id, lines=CAPTURE_LINES)
-
-        # Create alert file
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        filename = f"{timestamp}-from-postman-to-orchestrator.md"
-        filepath = self.watch_dir / filename
-
-        capture_info = f"Capture: {capture_path}" if capture_path else "Capture: N/A"
-
-        content = f"""[MESSAGE]
-from: postman
-to: orchestrator
-timestamp: {datetime.now().isoformat()}
-type: stuck-alert
-
-## Alert
-
-Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} minutes.
-
-{capture_info}
-
-## Last {CAPTURE_LINES} Lines
-
-```
-{pane_content}
-```
-"""
-
-        try:
-            filepath.write_text(content)
-            self.logger.info(f"📤 Alert sent: {filename}")
-        except OSError as e:
-            self.logger.error(f"❌ Failed to send alert: {e}")
-
     def periodic_scan(self) -> None:
         """Periodically rescan panes."""
         while self.running:
@@ -1205,15 +1081,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
                 if removed:
                     self.logger.info(f"🔄 Left: {', '.join(removed)}")
                 self.print_participants()
-
-    def periodic_stuck_check(self) -> None:
-        """Periodically check for stuck panes."""
-        check_interval = 60
-        while self.running:
-            time.sleep(check_interval)
-            if not self.running:
-                break
-            self.check_all_stuck()
 
     def periodic_observer_digest(self) -> None:
         """Check for new files in read/ and send digest when threshold reached."""
@@ -1381,9 +1248,6 @@ Pane {participant.role} ({participant.pane_id}) has no activity for {minutes} mi
         scan_thread = threading.Thread(target=self.periodic_scan, daemon=True)
         scan_thread.start()
 
-        stuck_thread = threading.Thread(target=self.periodic_stuck_check, daemon=True)
-        stuck_thread.start()
-
         # Start periodic pending check thread for batch notifications
         if self.batch_notifications:
             pending_thread = threading.Thread(
@@ -1425,7 +1289,7 @@ def main() -> None:
 Examples:
   uv run bin/postman.py
   uv run bin/postman.py --config myconfig.toml
-  uv run bin/postman.py --stuck-interval 5
+  uv run bin/postman.py --scan-interval 30
 
 Setup (in other panes):
   A2A_PEER=orchestrator claude
@@ -1443,12 +1307,6 @@ Setup (in other panes):
         type=Path,
         default=None,
         help="Directory to watch (overrides config)",
-    )
-    parser.add_argument(
-        "--stuck-interval",
-        type=int,
-        default=None,
-        help="Minutes before stuck alert (overrides config)",
     )
     parser.add_argument(
         "--scan-interval",
@@ -1480,12 +1338,8 @@ Setup (in other panes):
     read_dir = Path(postman_cfg.get("read_dir", ".postman/read"))
     draft_dir = Path(postman_cfg.get("draft_dir", ".postman/draft"))
     dead_letter_dir = Path(postman_cfg.get("dead_letter_dir", ".postman/dead-letter"))
-    stuck_interval = args.stuck_interval or postman_cfg["stuck_interval_minutes"]
     scan_interval = args.scan_interval or postman_cfg["scan_interval_seconds"]
     enter_delay = postman_cfg.get("enter_delay_seconds", 0.5)
-    capture_history = postman_cfg.get("capture_history_count", 5)
-    captures_dir = Path(postman_cfg.get("captures_dir", ".i9wa4/captures"))
-    target_roles = postman_cfg.get("target_roles", [])
     idle_threshold = postman_cfg.get(
         "idle_threshold_seconds", DEFAULT_IDLE_THRESHOLD_SECONDS
     )
@@ -1506,15 +1360,11 @@ Setup (in other panes):
         read_dir=read_dir,
         draft_dir=draft_dir,
         dead_letter_dir=dead_letter_dir,
-        stuck_interval=stuck_interval,
         scan_interval=scan_interval,
         enter_delay=enter_delay,
-        capture_history=capture_history,
-        captures_dir=captures_dir,
         observer_remind_enabled=observer_remind_enabled,
         observer_remind_interval_messages=observer_remind_interval_messages,
         observer_remind_message=observer_remind_message,
-        target_roles=target_roles,
         templates=templates,
         hooks=hooks,
         idle_threshold=idle_threshold,

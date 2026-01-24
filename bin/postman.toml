@@ -7,12 +7,8 @@ inbox_dir = ".postman/inbox"
 read_dir = ".postman/read"
 dead_letter_dir = ".postman/dead-letter"
 log_file = ".postman/postman.log"
-stuck_interval_minutes = 30
-scan_interval_seconds = 60
+scan_interval_seconds = 30
 enter_delay_seconds = 0.7
-capture_history_count = 100
-captures_dir = ".i9wa4/captures"
-target_roles = ["worker-claude", "worker-codex"]  # Roles to check for stuck state
 batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N seconds
 
 # Template variables: {filename}, {response_file}, {inbox_count}, {inbox_path}, {role}
@@ -40,7 +36,7 @@ File: .postman/draft/{response_file}
 [observer]
 on_join = ""
 remind_enabled = true
-remind_interval_messages = 30
+remind_interval_messages = 15
 remind_message = "Consider consulting observer for feedback"
 digest_message_count = 1
 template = """
