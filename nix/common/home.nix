@@ -96,6 +96,10 @@ in {
         pkgs.actionlint
         pkgs.gitleaks
         pkgs.mise
+        pkgs.ghalint
+        pkgs.ghatm
+        pkgs.pinact
+        pkgs.rumdl
         # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
         # LSP
         pkgs.efm-langserver
@@ -104,7 +108,8 @@ in {
         # Editors (latest from neovim-nightly-overlay and vim-overlay)
         pkgs.neovim
         pkgs.vim
-        # Build tools
+        pkgs.vim-startuptime
+        # Neovim build dependencies
         pkgs.ninja
         pkgs.cmake
         pkgs.gettext
@@ -112,21 +117,13 @@ in {
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/hosts/<name>/casks.nix
       ]
-      # CI/CD tools (ghalint via versionOverlay in flake.nix)
-      ++ [
-        (lib.lowPrio pkgs.ghalint) # pinact優先 (両方にgen-jsonschemaがある)
-        pkgs.ghatm
-        pkgs.pinact
-        pkgs.rumdl
-        pkgs.vim-startuptime
-      ]
       # AI coding agents (claude-code from overlay, others from llm-agents.nix)
       ++ [
         pkgs.claude-code # claude-code-overlay
         llmAgentsPkgs.ccusage
         llmAgentsPkgs.codex
-        llmAgentsPkgs.copilot-cli
-        llmAgentsPkgs.gemini-cli
+        # llmAgentsPkgs.copilot-cli
+        # llmAgentsPkgs.gemini-cli
       ];
 
     # ==========================================================================
