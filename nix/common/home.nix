@@ -119,7 +119,7 @@ in {
       ]
       # AI coding agents (claude-code from overlay, others from llm-agents.nix)
       ++ [
-        pkgs.claude-code # claude-code-overlay
+        # pkgs.claude-code # moved to nix profile
         llmAgentsPkgs.ccusage
         llmAgentsPkgs.codex
         # llmAgentsPkgs.copilot-cli
