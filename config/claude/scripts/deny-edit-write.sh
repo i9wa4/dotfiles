@@ -2,7 +2,7 @@
 # deny-edit-write.sh
 #
 # Hook script to enforce READONLY mode for non-worker roles.
-# Blocks Edit, Write, NotebookEdit tools for orchestrator and observer.
+# Blocks Edit, Write, NotebookEdit tools for orchestrator and observer, except for .i9wa4/, .postman/, /tmp/.
 # All worker* roles are allowed to edit files.
 # Uses JSON output for better visibility to Claude.
 
@@ -27,6 +27,11 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 # Allow writes to .i9wa4/ directory (project root only)
 if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
+  exit 0
+fi
+
+# Allow writes to .postman/ directory (project root only)
+if [[ -n $FILE_PATH && ($FILE_PATH == ".postman/"* || $FILE_PATH == *"/.postman/"*) ]]; then
   exit 0
 fi
 
