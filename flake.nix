@@ -68,11 +68,13 @@
         overlays = [versionOverlay];
       };
       ciPackages = [
-        # nixpkgs (ghalint, rumdl via versionOverlay)
+        # nixpkgs (ghalint via versionOverlay)
         pkgs.actionlint
         pkgs.alejandra
         pkgs.ghalint
+        pkgs.ghatm
         pkgs.gitleaks
+        pkgs.pinact
         # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
         pkgs.python3
         pkgs.rumdl
