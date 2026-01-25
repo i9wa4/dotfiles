@@ -37,6 +37,10 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # --------------------------------------
 # Utility Tasks
 #
+nix-profile-upgrade:  ## upgrade specified packages in nix profile
+	nix profile add github:ryoppippi/claude-code-overlay#claude
+	nix profile upgrade --all
+
 nix-switch:  ## update ghq repos and switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
@@ -45,7 +49,6 @@ else
 	nix run home-manager -- switch --impure --flake '.#ubuntu'
 endif
 	uv run python bin/nix-flake-diff.py
-	uv run python bin/nix-custom-diff.py
 
 # nvim-build:  ## build Neovim from source
 # 	ghq get -p neovim/neovim
