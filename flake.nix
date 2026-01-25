@@ -39,44 +39,49 @@
     # Supported systems (x86_64-darwin excluded - Apple Silicon only)
     systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
     forAllSystems = nixpkgs.lib.genAttrs systems;
+
+    # Version pinning overlay
+    # NOTE: Override nixpkgs packages when we need specific versions
+    # that aren't yet available in nixpkgs (e.g., due to Go version requirements)
+    # or when we want to track upstream more closely than nixpkgs updates
+    versionOverlay = final: prev: {
+      # ghalint 1.5.5 requires Go 1.25.6, nixpkgs has 1.25.5
+      # Keep at 1.5.4 until nixpkgs Go is updated
+      ghalint = prev.ghalint.overrideAttrs (old: rec {
+        version = "1.5.4";
+        src = prev.fetchFromGitHub {
+          owner = "suzuki-shunsuke";
+          repo = "ghalint";
+          rev = "v${version}";
+          hash = "sha256-pfLXnMbrxXAMpfmjctah85z5GHfI/+NZDrIu1LcBH8M=";
+        };
+      });
+    };
   in {
     # nix fmt
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
-    # Custom packages (not in nixpkgs)
-    packages = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      ghalint = pkgs.callPackage ./nix/packages/ghalint.nix {};
-      ghatm = pkgs.callPackage ./nix/packages/ghatm.nix {};
-      pike = pkgs.callPackage ./nix/packages/pike.nix {};
-      pinact = pkgs.callPackage ./nix/packages/pinact.nix {};
-      rumdl = pkgs.callPackage ./nix/packages/rumdl.nix {};
-      vim-startuptime = pkgs.callPackage ./nix/packages/vim-startuptime.nix {};
-    });
-
     # nix develop
     devShells = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      customPkgs = self.packages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [versionOverlay];
+      };
       ciPackages = [
-        # nixpkgs
+        # nixpkgs (ghalint, rumdl via versionOverlay)
         pkgs.actionlint
         pkgs.alejandra
+        pkgs.ghalint
         pkgs.gitleaks
         pkgs.pre-commit
         pkgs.python3
+        pkgs.rumdl
         pkgs.shellcheck
         pkgs.shfmt
         pkgs.statix
         pkgs.stylua
         pkgs.uv
         pkgs.zizmor
-        # custom packages
-        customPkgs.ghalint
-        customPkgs.ghatm
-        customPkgs.pinact
-        customPkgs.rumdl
       ];
     in {
       # Local development (includes CI tools)
@@ -119,6 +124,7 @@
             nixpkgs.config.allowUnfree = true;
             # Overlays
             nixpkgs.overlays = [
+              versionOverlay
               brew-nix.overlays.default
               neovim-nightly-overlay.overlays.default
               (vim-overlay.overlays.features {
@@ -165,6 +171,7 @@
             nixpkgs.config.allowUnfree = true;
             # Overlays
             nixpkgs.overlays = [
+              versionOverlay
               brew-nix.overlays.default
               neovim-nightly-overlay.overlays.default
               (vim-overlay.overlays.features {
@@ -197,6 +204,7 @@
         inherit system;
         config.allowUnfree = true;
         overlays = [
+          versionOverlay
           neovim-nightly-overlay.overlays.default
           (vim-overlay.overlays.features {
             lua = true;

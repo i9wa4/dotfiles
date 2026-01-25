@@ -16,16 +16,6 @@
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-
-  # Custom packages (not in nixpkgs) - all packages from nix/packages/
-  customPkgs = {
-    ghalint = pkgs.callPackage ../packages/ghalint.nix {};
-    ghatm = pkgs.callPackage ../packages/ghatm.nix {};
-    pike = pkgs.callPackage ../packages/pike.nix {};
-    pinact = pkgs.callPackage ../packages/pinact.nix {};
-    rumdl = pkgs.callPackage ../packages/rumdl.nix {};
-    vim-startuptime = pkgs.callPackage ../packages/vim-startuptime.nix {};
-  };
 in {
   imports = [
     ../codex.nix
@@ -122,14 +112,13 @@ in {
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/hosts/<name>/casks.nix
       ]
-      # Custom packages
+      # CI/CD tools (ghalint via versionOverlay in flake.nix)
       ++ [
-        (lib.lowPrio customPkgs.ghalint) # pinact優先 (両方にgen-jsonschemaがある)
-        customPkgs.ghatm
-        customPkgs.pike
-        customPkgs.pinact
-        customPkgs.rumdl
-        customPkgs.vim-startuptime
+        (lib.lowPrio pkgs.ghalint) # pinact優先 (両方にgen-jsonschemaがある)
+        pkgs.ghatm
+        pkgs.pinact
+        pkgs.rumdl
+        pkgs.vim-startuptime
       ]
       # AI coding agents (claude-code from overlay, others from llm-agents.nix)
       ++ [
