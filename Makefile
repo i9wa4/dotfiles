@@ -37,8 +37,10 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # --------------------------------------
 # Utility Tasks
 #
-nix-profile-upgrade:  ## upgrade specified packages in nix profile
+nix-profile-add:  ## add specified packages in nix profile
 	nix profile add github:ryoppippi/claude-code-overlay#claude
+
+nix-profile-upgrade:  ## upgrade all packages in nix profile
 	nix profile upgrade --all
 
 nix-switch:  ## update ghq repos and switch nix configuration
