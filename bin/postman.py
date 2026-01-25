@@ -895,10 +895,6 @@ type: <type>
         else:
             response_file = f"{filepath.stem}-response.md"  # fallback
 
-        # Create response draft file for recipient (skip for observer)
-        if not participant.role.startswith("observer"):
-            self.create_response_draft(response_file, participant.role)
-
         # Calculate inbox count for template (+1 to include current message)
         inbox_path = self.inbox_dir / participant.role
         inbox_count = (
