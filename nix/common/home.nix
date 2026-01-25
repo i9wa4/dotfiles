@@ -245,6 +245,7 @@ in {
       # AI tools moved to Nix: claude-code, ccusage, codex, copilot, gemini-cli
       NPM_PACKAGES=(
         "@devcontainers/cli"
+        "gtop"
         "vde-layout"
       )
 
