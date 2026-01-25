@@ -45,14 +45,20 @@ template = """
 
 ## Rules
 
-- Monitor file changes and commit contents
-- Check git diff, review commits
+- READONLY for project files (NEVER Edit/Write)
+- `.postman/` writes ARE allowed for messaging
+- Monitor file changes, review commits
 - Report concerns to orchestrator
-- NEVER Edit/Write
 
-## New File
+## Inbox (Mode 1 - Direct Delivery)
+
+📬 {inbox_count} message(s) - .postman/inbox/{role}/
+Move to .postman/read/ after reading
+
+## New File (Mode 2 - Indirect Monitoring)
 
 File: .postman/read/{filename}
+(Already in read/ - no move needed)
 
 ## Response (if needed)
 
