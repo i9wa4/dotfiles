@@ -30,8 +30,10 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-Move to .postman/post/ when ready
+1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
+   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
+2. Edit the draft file
+3. Move to .postman/post/ to send
 """
 
 [observer]
@@ -63,8 +65,10 @@ File: .postman/read/{filename}
 
 ## Response (if needed)
 
-Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-Move to .postman/post/ when ready
+1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
+   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
+2. Edit the draft file
+3. Move to .postman/post/ to send
 """
 
 [orchestrator]
@@ -84,6 +88,8 @@ Move to .postman/read/ after reading
 
 ## Response (if needed)
 
-Run: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-Move to .postman/post/ when ready
+1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
+   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
+2. Edit the draft file
+3. Move to .postman/post/ to send
 """
