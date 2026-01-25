@@ -40,6 +40,7 @@ remind_enabled = true
 remind_interval_messages = 15
 remind_message = "Consider consulting observer for feedback"
 digest_message_count = 1
+digest_exclude_self = true   # Exclude messages from/to observer
 template = """
 # OBSERVER (READONLY)
 

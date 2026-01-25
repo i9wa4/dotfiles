@@ -90,6 +90,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "remind_interval_messages": 10,
         "remind_message": "Consider consulting observer for feedback",
         "digest_message_count": 5,
+        "digest_exclude_self": False,
     },
     "orchestrator": {
         "template": "",
@@ -178,6 +179,7 @@ class Postman:
         batch_notifications: bool = True,
         batch_interval: int = 15,
         observer_digest_message_count: int = 5,
+        observer_digest_exclude_self: bool = False,
         log_file: Optional[Path] = None,
     ):
         self.watch_dir = watch_dir
@@ -196,6 +198,7 @@ class Postman:
         self.batch_notifications = batch_notifications
         self.batch_interval = batch_interval
         self.observer_digest_message_count = observer_digest_message_count
+        self.observer_digest_exclude_self = observer_digest_exclude_self
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
         self._observer_remind_lock = threading.Lock()
@@ -1109,6 +1112,16 @@ Action required: Add template for role '{recipient_role}' in postman.toml
         try:
             for filepath in self.read_dir.glob("*.md"):
                 if filepath.name not in self._digested_files:
+                    # Filter out observer messages if exclude_self is enabled
+                    if self.observer_digest_exclude_self:
+                        match = FILE_PATTERN.match(filepath.name)
+                        if match:
+                            _, sender, recipient = match.groups()
+                            if sender.startswith("observer") or recipient.startswith(
+                                "observer"
+                            ):
+                                self._digested_files.add(filepath.name)
+                                continue
                     new_files.append(filepath.name)
                     self._digested_files.add(filepath.name)
         except OSError:
@@ -1342,6 +1355,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         "remind_message", "Consider consulting observer for feedback"
     )
     observer_digest_message_count = observer_cfg.get("digest_message_count", 5)
+    observer_digest_exclude_self = observer_cfg.get("digest_exclude_self", False)
     log_file = Path(postman_cfg.get("log_file", ".postman/postman.log"))
 
     # Create and run postman
@@ -1362,6 +1376,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         batch_notifications=batch_notifications,
         batch_interval=batch_interval,
         observer_digest_message_count=observer_digest_message_count,
+        observer_digest_exclude_self=observer_digest_exclude_self,
         log_file=log_file,
     )
 
