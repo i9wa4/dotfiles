@@ -1,6 +1,11 @@
 ---
 name: dbt
-description: dbt Expert Engineer Skill - Comprehensive guide for dbt development best practices, command execution, and environment configuration
+description: |
+  dbt Expert Engineer Skill - Comprehensive guide for dbt development best practices, command execution, and environment configuration
+  Use when:
+  - Running dbt commands (debug, compile, run, test, show)
+  - Setting up Issue-specific targets in profiles.yml
+  - Working with Databricks SQL dialect in dbt
 ---
 
 # dbt Expert Engineer Skill

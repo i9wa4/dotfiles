@@ -5,6 +5,7 @@ description: |
   Use when:
   - Agent's $A2A_PEER environment variable contains "orchestrator"
   Do NOT use for worker or observer roles.
+disable-model-invocation: true
 ---
 
 # Orchestrator Skill

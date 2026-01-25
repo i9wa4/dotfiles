@@ -96,7 +96,7 @@ in {
         pkgs.actionlint
         pkgs.gitleaks
         pkgs.mise
-        pkgs.pre-commit
+        # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
         # LSP
         pkgs.efm-langserver
         pkgs.nixd

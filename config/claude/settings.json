@@ -29,7 +29,8 @@
     "ENABLE_LSP_TOOL": "true",
     "FORCE_AUTOUPDATE_PLUGINS": "true",
     "IS_DEMO": "true",
-    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false"
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
   },
   "attribution": {},
   "permissions": {
@@ -86,7 +87,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "npx -y ccstatusline@latest",
+    "command": "${CLAUDE_CONFIG_DIR}/scripts/ccstatusline.sh",
     "padding": 0
   },
   "extraKnownMarketplaces": {

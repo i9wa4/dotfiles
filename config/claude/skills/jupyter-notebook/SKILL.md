@@ -1,6 +1,11 @@
 ---
 name: jupyter-notebook
-description: Jupyter Notebook Expert Skill - Guide for notebook execution and Databricks kernel integration
+description: |
+  Jupyter Notebook Expert Skill - Guide for notebook execution and Databricks kernel integration
+  Use when:
+  - Executing Jupyter notebooks via CLI (jupyter execute)
+  - Running notebooks with Databricks kernel
+  - Configuring notebook execution options (timeout, inplace)
 ---
 
 # Jupyter Notebook Expert Skill

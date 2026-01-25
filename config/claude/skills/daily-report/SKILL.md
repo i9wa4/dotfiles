@@ -7,6 +7,7 @@ description: |
   - Asked to "create daily report" or "write daily report"
   - Asked to "summarize today's activities"
   - Requested to create a daily report or journal
+disable-model-invocation: true
 ---
 
 # Daily Report Skill

@@ -73,7 +73,7 @@
         pkgs.alejandra
         pkgs.ghalint
         pkgs.gitleaks
-        pkgs.pre-commit
+        # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
         pkgs.python3
         pkgs.rumdl
         pkgs.shellcheck

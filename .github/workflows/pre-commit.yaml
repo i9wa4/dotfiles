@@ -63,5 +63,5 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          nix develop .#ci --command pre-commit run --all-files --verbose
-          nix develop .#ci --command pre-commit run gitleaks-history --all-files --verbose --hook-stage manual
+          nix develop .#ci --command uv run pre-commit run --all-files --verbose
+          nix develop .#ci --command uv run pre-commit run gitleaks-history --all-files --verbose --hook-stage manual

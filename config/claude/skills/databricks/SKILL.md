@@ -1,6 +1,12 @@
 ---
 name: databricks
-description: Databricks Expert Engineer Skill - Comprehensive guide for data engineering, machine learning infrastructure, and permission design
+description: |
+  Databricks Expert Engineer Skill - Comprehensive guide for data engineering, machine learning infrastructure, and permission design
+  Use when:
+  - Running databricks CLI commands (auth, api)
+  - Executing SQL queries via Databricks SQL Warehouse
+  - Working with Unity Catalog permissions
+  - Managing Lakeflow Jobs or Delta Lake
 ---
 
 # Databricks Expert Engineer Skill

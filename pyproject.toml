@@ -15,6 +15,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "jupyterlab",
+  "pre-commit",
   "ruff",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",

@@ -1,6 +1,12 @@
 ---
 name: bigquery
-description: BigQuery Expert Engineer Skill - Comprehensive guide for GoogleSQL queries, data management, performance optimization, and cost management
+description: |
+  BigQuery Expert Engineer Skill - Comprehensive guide for GoogleSQL queries, data management, performance optimization, and cost management
+  Use when:
+  - Running bq commands (query, load, extract)
+  - Writing GoogleSQL queries (functions, JOINs, CTEs)
+  - Designing partitioned/clustered tables
+  - Using BigQuery ML or external data sources
 ---
 
 # BigQuery Expert Engineer Skill

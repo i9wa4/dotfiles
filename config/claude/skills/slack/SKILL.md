@@ -8,6 +8,7 @@ description: |
   - User wants to see conversation context from Slack
   - User wants to search Slack messages
   - User wants to fetch channel history (e.g., Google Calendar DM)
+argument-hint: "[slack-url]"
 ---
 
 # Slack API Skill

@@ -5,6 +5,7 @@ description: |
   users want to create a new skill (or update an existing skill) that
   extends Claude's capabilities with specialized knowledge, workflows,
   or tool integrations.
+argument-hint: "[skill-name]"
 license: Complete terms in LICENSE.txt
 ---
 

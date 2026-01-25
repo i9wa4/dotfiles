@@ -1,6 +1,12 @@
 ---
 name: terraform
-description: Terraform Expert Engineer Skill - Comprehensive guide for Infrastructure as Code, resource management, module design, and state management
+description: |
+  Terraform Expert Engineer Skill - Comprehensive guide for Infrastructure as Code, resource management, module design, and state management
+  Use when:
+  - Running terraform init, plan, apply, destroy
+  - Managing Terraform state (import, move, rm)
+  - Designing modules or configuring backends
+  - Working with HCP Terraform / Terraform Cloud
 ---
 
 # Terraform Expert Engineer Skill
