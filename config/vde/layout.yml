@@ -35,7 +35,7 @@ presets:
                 A2A_PEER: orchestrator
         - name: postman
           command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
-          delay: 2000
+          delay: 5000
 
   workers:
     name: workers
