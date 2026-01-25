@@ -8,15 +8,16 @@
     settings.experimental-features = "nix-command flakes";
     # Deduplicate files via hard links (scheduled, not per-build)
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
+    # Note: Disabled because large binaries are now Homebrew-managed,
+    #       and scheduled optimise can cause syspolicyd high CPU
     # cf. https://github.com/nix-darwin/nix-darwin/issues/1252
-    optimise.automatic = true;
-    # Garbage collection (weekly on Sunday, delete older than 1 day)
+    optimise.automatic = false;
+    # Garbage collection (daily at noon, delete older than 1 day)
     # cf. https://mynixos.com/nix-darwin/option/nix.gc.interval
     gc = {
       automatic = true;
       interval = {
-        Weekday = 0;
-        Hour = 3;
+        Hour = 12;
         Minute = 0;
       };
       options = "--delete-older-than 1d";
