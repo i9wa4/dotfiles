@@ -30,6 +30,7 @@
     "FORCE_AUTOUPDATE_PLUGINS": "true",
     "IS_DEMO": "true",
     "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
+    "CLAUDE_CODE_ENABLE_TASKS": "true",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
   },
   "attribution": {},
