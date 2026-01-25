@@ -10,8 +10,10 @@ presets:
         - name: editor
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
-        - name: claude
-          command: A2A_PEER=worker claude --dangerously-skip-permissions
+        - name: worker
+          command: claude --dangerously-skip-permissions
+          env:
+            A2A_PEER: worker
 
   orchestrator:
     name: orchestrator
@@ -28,9 +30,12 @@ presets:
               command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
               focus: true
             - name: orchestrator
-              command: A2A_PEER=orchestrator claude --dangerously-skip-permissions
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_PEER: orchestrator
         - name: postman
           command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
+          delay: 2000
 
   workers:
     name: workers
@@ -41,15 +46,25 @@ presets:
       ratio: [1, 1]
       panes:
         - name: worker
-          command: A2A_PEER=worker claude --dangerously-skip-permissions
+          command: claude --dangerously-skip-permissions
+          env:
+            A2A_PEER: worker
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: observer
-              command: A2A_PEER=observer-codex-1 codex --yolo
+              command: codex --yolo
+              env:
+                A2A_PEER: observer-codex-1
             - name: observer
-              command: A2A_PEER=observer-codex-2 codex --yolo
+              command: codex --yolo
+              env:
+                A2A_PEER: observer-codex-2
             - name: observer
-              command: A2A_PEER=observer-claude-1 claude --dangerously-skip-permissions
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_PEER: observer-claude-1
             - name: observer
-              command: A2A_PEER=observer-claude-2 claude --dangerously-skip-permissions
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_PEER: observer-claude-2
