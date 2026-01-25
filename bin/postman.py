@@ -592,6 +592,48 @@ type: <type>
             pass
         return ""
 
+    def _acquire_pid_lock(self) -> bool:
+        """Check/create PID file for mutual exclusion. Returns True if lock acquired."""
+        pid_file = self.inbox_dir.parent / "postman.pid"
+        current_pid = os.getpid()
+
+        if pid_file.exists():
+            try:
+                with open(pid_file) as f:
+                    data = json.load(f)
+                old_pid = data.get("pid")
+                old_session = data.get("session", "unknown")
+
+                # Check if process is still alive
+                if old_pid:
+                    try:
+                        os.kill(old_pid, 0)  # Signal 0 = check existence
+                        # Process is alive
+                        msg = f"(PID: {old_pid}, session: {old_session})"
+                        print(f"❌ Another postman is running {msg}")
+                        print(f"   To stop it: kill {old_pid}")
+                        return False
+                    except OSError:
+                        # Process is dead, we can take over
+                        pass
+            except (json.JSONDecodeError, KeyError, OSError):
+                # Corrupted PID file, we can take over
+                pass
+
+        # Write new PID file
+        pid_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(pid_file, "w") as f:
+            json.dump({"pid": current_pid, "session": self.my_session}, f)
+        return True
+
+    def _release_pid_lock(self) -> None:
+        """Delete PID file on exit."""
+        pid_file = self.inbox_dir.parent / "postman.pid"
+        try:
+            pid_file.unlink(missing_ok=True)
+        except OSError:
+            pass
+
     def _get_pane_role(self, pid: str) -> Optional[str]:
         """Get A2A_PEER from a process's environment."""
         # First try the direct pid
@@ -1233,6 +1275,10 @@ Action required: Add template for role '{recipient_role}' in postman.toml
         self.draft_dir.mkdir(parents=True, exist_ok=True)
         self.dead_letter_dir.mkdir(parents=True, exist_ok=True)
 
+        # Acquire PID lock (mutual exclusion)
+        if not self._acquire_pid_lock():
+            sys.exit(1)
+
         # Move existing inbox files to read/ and clear inbox directories
         if self.inbox_dir.exists():
             for role_dir in self.inbox_dir.iterdir():
@@ -1308,6 +1354,8 @@ Action required: Add template for role '{recipient_role}' in postman.toml
             self._stop_event.set()
             # Save pending queue for next run
             self.save_pending_queue()
+            # Release PID lock
+            self._release_pid_lock()
             print("\n📮 Postman stopped")
 
 
