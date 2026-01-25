@@ -5,7 +5,12 @@
 }: {
   # Nix settings
   nix = {
-    settings.experimental-features = "nix-command flakes";
+    settings = {
+      experimental-features = "nix-command flakes";
+      # Increase download buffer to avoid "download buffer is full" warning
+      # Default: 64 MiB (64 * 1024 * 1024 = 67108864)
+      download-buffer-size = 128 * 1024 * 1024; # 128 MiB
+    };
     # Deduplicate files via hard links (scheduled, not per-build)
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
     # Note: Disabled because large binaries are now Homebrew-managed,
