@@ -208,6 +208,7 @@ class Postman:
         self._stop_event = threading.Event()
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
+        self.my_session = self._get_tmux_session()
         # Idle detection and batch notification state
         self._pending_notifications: dict[str, list[tuple[Path, str]]] = {}
         self._pending_lock = threading.Lock()
@@ -529,8 +530,11 @@ type: <type>
 
         try:
             # Get all panes in current session
+            cmd = ["tmux", "list-panes", "-s", "-F", "#{pane_id} #{pane_pid}"]
+            if self.my_session:
+                cmd.extend(["-t", self.my_session])
             result = subprocess.run(
-                ["tmux", "list-panes", "-s", "-F", "#{pane_id} #{pane_pid}"],
+                cmd,
                 capture_output=True,
                 text=True,
                 timeout=TMUX_TIMEOUT,
@@ -572,6 +576,21 @@ type: <type>
             pass
 
         return new_participants
+
+    def _get_tmux_session(self) -> str:
+        """Get the tmux session name that postman is running in."""
+        try:
+            result = subprocess.run(
+                ["tmux", "display-message", "-p", "#{session_name}"],
+                capture_output=True,
+                text=True,
+                timeout=TMUX_QUICK_TIMEOUT,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass
+        return ""
 
     def _get_pane_role(self, pid: str) -> Optional[str]:
         """Get A2A_PEER from a process's environment."""
