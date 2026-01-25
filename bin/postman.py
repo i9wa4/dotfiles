@@ -1201,7 +1201,7 @@ Action required: Add template for role '{recipient_role}' in postman.toml
         self.draft_dir.mkdir(parents=True, exist_ok=True)
         self.dead_letter_dir.mkdir(parents=True, exist_ok=True)
 
-        # Move existing inbox files to read/ (cleanup from previous run)
+        # Move existing inbox files to read/ and clear inbox directories
         if self.inbox_dir.exists():
             for role_dir in self.inbox_dir.iterdir():
                 if role_dir.is_dir():
@@ -1211,6 +1211,12 @@ Action required: Add template for role '{recipient_role}' in postman.toml
                         self.logger.info(
                             f"🧹 Moved stale inbox file to read/: {filepath.name}"
                         )
+                    # Remove empty inbox subdirectory
+                    try:
+                        role_dir.rmdir()
+                        self.logger.info(f"🧹 Removed empty inbox dir: {role_dir.name}")
+                    except OSError:
+                        pass  # Directory not empty or other error
 
         # Initial pane discovery
         self.participants = self.discover_panes()
