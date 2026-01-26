@@ -8,8 +8,7 @@ This repository uses nix as the source of truth for package versions.
 
 ```text
 nix (source of truth)
-├── flake.lock          # nixpkgs versions
-└── nix/packages/*.nix  # custom package versions
+└── flake.lock          # nixpkgs versions
 ```
 
 ### 1.2. Preview Updates
@@ -17,9 +16,6 @@ nix (source of truth)
 ```sh
 # nixpkgs packages
 uv run python bin/nix-pkgs-diff.py
-
-# Custom packages
-uv run python bin/nix-custom-diff.py
 ```
 
 ### 1.3. Update Packages
@@ -27,9 +23,6 @@ uv run python bin/nix-custom-diff.py
 ```sh
 # Update flake.lock (nixpkgs packages)
 nix flake update
-
-# Update custom packages
-nix run nixpkgs#nix-update -- --flake <package-name>
 ```
 
 ### 1.4. Adding a New Package
