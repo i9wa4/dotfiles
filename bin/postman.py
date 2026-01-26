@@ -960,7 +960,9 @@ type: <type>
             response_file = f"{filepath.stem}-response.md"  # fallback
 
         # Calculate inbox count for template (+1 to include current message)
-        inbox_path = self.inbox_dir / participant.role
+        # Use message_recipient from filename, fallback to participant.role
+        actual_role = message_recipient if message_recipient else participant.role
+        inbox_path = self.inbox_dir / actual_role
         inbox_count = (
             len(list(inbox_path.glob("*.md"))) + 1 if inbox_path.exists() else 1
         )
@@ -972,7 +974,7 @@ type: <type>
             response_file=response_file,
             inbox_count=inbox_count,
             inbox_path=str(inbox_path),
-            role=participant.role,
+            role=actual_role,
         )
 
         # Add peers list for orchestrator

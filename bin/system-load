@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-# Display system load (CPU, GPU usage) for tmux status line.
-# Shows Chrome separately to track browser resource usage.
+# Display system load (CPU usage) for tmux status line.
 #
 # Usage:
 #   system-load
 #
 # Output format:
-#   macOS: CPU:ChrXX%/XX% GPU:XX%
-#   Linux: CPU:ChrXX%/XX%
+#   CPU:XX%
 #
 # Supported platforms:
 #   - macOS (Darwin)
@@ -50,52 +48,7 @@ get_total_cpu_usage() {
   esac
 }
 
-# Get Chrome CPU usage percentage (sum of all Chrome processes)
-get_chrome_cpu_usage() {
-  case "${os_type}" in
-  Darwin)
-    # Use top -l 2 to get real-time CPU usage (2nd sample is accurate)
-    top -l 2 -s 0 -stats pid,cpu,command 2>/dev/null | awk '
-      /^Processes:/ { snapshot++ }
-      snapshot == 2 && tolower($0) ~ /chrome/ { sum += $2 }
-      END { printf "%.0f", sum+0 }
-    '
-    ;;
-  *)
-    # Linux: use ps (per-process real-time is complex)
-    # shellcheck disable=SC2009
-    ps -eo %cpu,comm 2>/dev/null | grep -i chrome | awk '{sum += $1} END {printf "%.0f", sum+0}'
-    ;;
-  esac
-}
-
-# Get GPU usage percentage (macOS only)
-get_gpu_usage() {
-  case "${os_type}" in
-  Darwin)
-    ioreg -r -d 1 -c IOAccelerator 2>/dev/null | grep -o '"Device Utilization %"=[0-9]*' | grep -o '[0-9]*$' | head -1
-    ;;
-  *)
-    echo ""
-    ;;
-  esac
-}
-
 # Main
 total_cpu=$(get_total_cpu_usage)
-chrome_cpu=$(get_chrome_cpu_usage)
-gpu_usage=$(get_gpu_usage)
 
-# Calculate other CPU (cap Chrome at total to avoid negative)
-if [ "${chrome_cpu}" -gt "${total_cpu}" ]; then
-  chrome_cpu="${total_cpu}"
-fi
-other_cpu=$((total_cpu - chrome_cpu))
-
-# Build output
-output="CPU:Chr${chrome_cpu}%/${other_cpu}%"
-if [ -n "${gpu_usage}" ]; then
-  output="${output} GPU:${gpu_usage}%"
-fi
-
-echo "${output}"
+echo "CPU:${total_cpu}%"
