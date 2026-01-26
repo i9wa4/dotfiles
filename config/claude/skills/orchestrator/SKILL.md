@@ -23,9 +23,9 @@ When /orchestrator is invoked:
 
 | Keyword                 | Workflow |
 | ----------------------- | -------- |
-| plan, design, 設計      | Plan     |
-| review, レビュー        | Review   |
-| code, implement, 実装   | Code     |
+| plan, design            | Plan     |
+| review                  | Review   |
+| code, implement         | Code     |
 | pr, pull request        | PR       |
 
 ## 2. Roles and Capabilities
@@ -393,14 +393,14 @@ Agent file:
 
 ### 10.4. Review Execution
 
-#### IMPORTANT: 10並列レビューを標準で実施すること
+#### IMPORTANT: Always execute 10-parallel reviews as standard practice
 
-設計レビュー/コードレビュー時は必ず以下を実行:
+Always execute the following for design/code reviews:
 
-- cc x 5: Task tool で reviewer-* agents を並列起動
-- cx x 5: worker-codex 経由で codex exec を順次実行
+- cc x 5: Launch reviewer-* agents in parallel via Task tool
+- cx x 5: Execute codex exec sequentially via worker-codex
 
-2並列（worker-claude + worker-codex のみ）は禁止。
+2-parallel execution (worker-claude + worker-codex only) is prohibited.
 
 Task content template:
 
@@ -477,8 +477,8 @@ Each prompt should include:
 
 ```text
 [SUBAGENT capability=READONLY]
-PR #N のレビュー（{ROLE}観点）
-差分は .i9wa4/tmp/pr-diff.txt を参照。
+Review PR #N from {ROLE} perspective.
+See .i9wa4/tmp/pr-diff.txt for the diff.
 ```
 
 #### Step 3: Launch cx x 5 (Background Processes)
@@ -489,7 +489,7 @@ Use file output to avoid interleaving:
 for ROLE in security architecture historian data qa; do
   FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/reviews --type "review-${ROLE}-cx")
   codex exec --sandbox workspace-write -o "$FILE" \
-    "[SUBAGENT capability=READONLY] PR #N の ${ROLE} レビュー。差分は .i9wa4/tmp/pr-diff.txt を参照。" &
+    "[SUBAGENT capability=READONLY] Review PR #N from ${ROLE} perspective. See .i9wa4/tmp/pr-diff.txt for the diff." &
 done
 wait
 ```
@@ -513,7 +513,66 @@ cat .i9wa4/reviews/*-review-*.md
 | Launch cx x 5    | Immediately (background)    |
 | Collect results  | After wait completes        |
 
-### 10.5. Summary Output
+### 10.5. Observer Deliberation
+
+After Phase 1 review completion, discuss with all observers to collect
+additional findings.
+
+#### 10.5.1. Purpose
+
+1. Collect additional findings from other perspectives
+2. Prevent cross-functional oversights
+3. Ensure comprehensive multi-angle coverage
+
+#### 10.5.2. Deliberation Prompt
+
+Share all Phase 1 review results with each observer and request
+additional findings.
+
+```text
+[SUBAGENT capability=READONLY]
+<!-- DELIBERATION_SESSION
+timestamp: {TS}, role: {ROLE}
+review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
+-->
+
+## Phase 1 Review Results Summary
+
+{List all Phase 1 findings sorted by severity}
+
+## Questions
+
+Based on other reviewers' findings, from your expert perspective ({ROLE}):
+
+1. Are there any additional points to raise?
+2. Are there any supplementary points related to other findings?
+3. Are there any overlooked perspectives?
+
+Output in the same format as Phase 1 only if there are additional findings.
+If no additional findings, explicitly state "No additional findings."
+```
+
+#### 10.5.3. Deliberation Execution
+
+Execute 10-parallel (cc x 5 + cx x 5) same as Phase 1.
+
+```text
+Task tool calls (parallel, single message):
+- subagent_type: reviewer-security (with Phase 1 results)
+- subagent_type: reviewer-architecture (with Phase 1 results)
+- subagent_type: reviewer-historian (with Phase 1 results)
+- subagent_type: reviewer-code or reviewer-data (with Phase 1 results)
+- subagent_type: reviewer-qa (with Phase 1 results)
+```
+
+#### 10.5.4. Result Files
+
+Save deliberation results to `.i9wa4/reviews/`:
+
+- cc: Use Task tool results directly
+- cx: `{timestamp}-deliberation-{ROLE}-cx.md`
+
+### 10.6. Summary Output
 
 Create file:
 
@@ -528,22 +587,30 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews/summary.md
 
 - Type: {review_type} / {target_type}, Target: {target}
 
-## Findings by Severity
+## Findings by Phase
 
-### Critical/High
+### Phase 1: Initial Review
 
-| # | Issue | Reporter | File |
-| - | ----- | -------- | ---- |
+| # | Issue               | Reporter     | Severity | File               |
+| - | ------------------- | ------------ | -------- | ------------------ |
+| 1 | {issue description} | {role}-{src} | High     | `path/to/file:123` |
 
-### Medium
+### Phase 2: Deliberation
 
-| # | Issue | Reporter | File |
-| - | ----- | -------- | ---- |
+| # | Issue                | Reporter     | Triggered By | Severity | File               |
+| - | -------------------- | ------------ | ------------ | -------- | ------------------ |
+| 1 | {additional finding} | {role}-{src} | {role}       | Medium   | `path/to/file:456` |
 
-### Low
+## Coverage Analysis
 
-| # | Issue | Reporter | File |
-| - | ----- | -------- | ---- |
+| Perspective  | Phase 1 | Phase 2 | Total |
+| ------------ | ------- | ------- | ----- |
+| Security     | N       | M       | N+M   |
+| Architecture | N       | M       | N+M   |
+| Historian    | N       | M       | N+M   |
+| Code/Data    | N       | M       | N+M   |
+| QA           | N       | M       | N+M   |
+| **Total**    | **X**   | **Y**   | **Z** |
 ```
 
 ## 11. PR Workflow
