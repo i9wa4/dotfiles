@@ -15,7 +15,7 @@ nix (source of truth)
 
 ```sh
 # nixpkgs packages
-uv run python bin/nix-pkgs-diff.py
+uv run python bin/nix-flake-diff.py
 ```
 
 ### 1.3. Update Packages
