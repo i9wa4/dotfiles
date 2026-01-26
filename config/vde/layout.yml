@@ -33,9 +33,13 @@ presets:
               command: claude --dangerously-skip-permissions
               env:
                 A2A_PEER: orchestrator
-        - name: postman
-          command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
-          delay: 5000
+        - type: horizontal
+          ratio: [1, 1]
+          panes:
+            - name: zsh
+            - name: postman
+              command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
+              delay: 5000
 
   workers:
     name: workers
@@ -50,7 +54,7 @@ presets:
           env:
             A2A_PEER: worker
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
             - name: observer
               command: codex --yolo
