@@ -56,10 +56,10 @@ presets:
               command: codex --yolo
               env:
                 A2A_PEER: observer-codex-1
-            # - name: observer
-            #   command: codex --yolo
-            #   env:
-            #     A2A_PEER: observer-codex-2
+            - name: observer
+              command: codex --yolo
+              env:
+                A2A_PEER: observer-codex-2
             - name: observer
               command: claude --dangerously-skip-permissions
               env:
