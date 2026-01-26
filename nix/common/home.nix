@@ -3,7 +3,6 @@
   lib,
   config,
   username,
-  llmAgentsPkgs,
   ...
 }: let
   # Platform-agnostic paths
@@ -116,14 +115,8 @@ in {
         pkgs.gnumake
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/hosts/<name>/casks.nix
-      ]
-      # AI coding agents (claude-code from overlay, others from llm-agents.nix)
-      ++ [
-        # pkgs.claude-code # moved to nix profile
-        llmAgentsPkgs.ccusage
-        llmAgentsPkgs.codex
-        # llmAgentsPkgs.copilot-cli
-        # llmAgentsPkgs.gemini-cli
+        # NOTE: AI coding agents are managed via nix profile
+        # cf. Makefile nix-profile-add
       ];
 
     # ==========================================================================
