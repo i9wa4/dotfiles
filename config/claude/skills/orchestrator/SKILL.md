@@ -5,7 +5,6 @@ description: |
   Use when:
   - Agent's $A2A_PEER environment variable contains "orchestrator"
   Do NOT use for worker or observer roles.
-disable-model-invocation: true
 ---
 
 # Orchestrator Skill
@@ -99,7 +98,7 @@ Worker writes to `.i9wa4/draft/{response_file}` then moves to `.i9wa4/post/`.
 
 ### 3.4. Worker Discovery
 
-#### A2A_PEER Mode (postman)
+#### 3.4.1. A2A_PEER Mode (postman)
 
 When `$A2A_PEER` is set, discover Workers from postman inbox:
 
@@ -117,7 +116,7 @@ WORKERS=$(discover_workers)
 # worker-codex
 ```
 
-#### Legacy Mode (tmux only)
+#### 3.4.2. Legacy Mode (tmux only)
 
 When `$A2A_PEER` is not set, use tmux pane detection:
 
@@ -393,7 +392,7 @@ Agent file:
 
 ### 10.4. Review Execution
 
-#### IMPORTANT: Always execute 10-parallel reviews as standard practice
+#### 10.4.1. IMPORTANT: Always execute 10-parallel reviews as standard practice
 
 Always execute the following for design/code reviews:
 
@@ -413,7 +412,7 @@ review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
 Return your review directly. Do NOT create files.
 ```
 
-#### Method A: Task Tool (Recommended for Claude Code)
+#### 10.4.2. Method A: Task Tool (Recommended for Claude Code)
 
 Use Task tool with reviewer agents. Launch multiple Task tools in a single
 message for parallel execution with clean output isolation.
@@ -429,7 +428,7 @@ Task tool calls (parallel):
 
 Each reviewer agent reads the agent file automatically.
 
-#### Method B: Codex CLI Sequential (Recommended for Codex)
+#### 10.4.3. Method B: Codex CLI Sequential (Recommended for Codex)
 
 NEVER use background processes (`&`) with codex exec -
 causes output interleaving.
@@ -441,18 +440,18 @@ for ROLE in security architecture historian code qa; do
 done
 ```
 
-#### Method C: Codex CLI Parallel (Advanced)
+#### 10.4.4. Method C: Codex CLI Parallel (Advanced)
 
 For true parallelism without output mixing, use separate terminal sessions
 or accept that outputs will be written to files (not displayed cleanly).
 
 WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
-### 10.4.1 Parallel Execution for 10-Review (cc x 5 + cx x 5)
+### 10.5. 1 Parallel Execution for 10-Review (cc x 5 + cx x 5)
 
 IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
 
-#### Step 1: Prepare PR Diff
+#### 10.5.1. Step 1: Prepare PR Diff
 
 codex exec cannot access PR diff directly. Save it beforehand:
 
@@ -460,7 +459,7 @@ codex exec cannot access PR diff directly. Save it beforehand:
 gh pr diff $PR_NUMBER > .i9wa4/tmp/pr-diff.txt
 ```
 
-#### Step 2: Launch cc x 5 (Single Message)
+#### 10.5.2. Step 2: Launch cc x 5 (Single Message)
 
 In one message, call Task tool 5 times in parallel:
 
@@ -481,7 +480,7 @@ Review PR #N from {ROLE} perspective.
 See .i9wa4/tmp/pr-diff.txt for the diff.
 ```
 
-#### Step 3: Launch cx x 5 (Background Processes)
+#### 10.5.3. Step 3: Launch cx x 5 (Background Processes)
 
 Use file output to avoid interleaving:
 
@@ -494,7 +493,7 @@ done
 wait
 ```
 
-#### Step 4: Collect Results
+#### 10.5.4. Step 4: Collect Results
 
 ```bash
 # Check all review files
@@ -504,7 +503,7 @@ ls -la .i9wa4/reviews/*-review-*.md
 cat .i9wa4/reviews/*-review-*.md
 ```
 
-#### Timing Optimization
+#### 10.5.5. Timing Optimization
 
 | Action           | Timing                      |
 | ---------------- | --------------------------- |
@@ -513,18 +512,18 @@ cat .i9wa4/reviews/*-review-*.md
 | Launch cx x 5    | Immediately (background)    |
 | Collect results  | After wait completes        |
 
-### 10.5. Observer Deliberation
+### 10.6. Observer Deliberation
 
 After Phase 1 review completion, discuss with all observers to collect
 additional findings.
 
-#### 10.5.1. Purpose
+#### 10.6.1. Purpose
 
 1. Collect additional findings from other perspectives
 2. Prevent cross-functional oversights
 3. Ensure comprehensive multi-angle coverage
 
-#### 10.5.2. Deliberation Prompt
+#### 10.6.2. Deliberation Prompt
 
 Share all Phase 1 review results with each observer and request
 additional findings.
@@ -552,7 +551,7 @@ Output in the same format as Phase 1 only if there are additional findings.
 If no additional findings, explicitly state "No additional findings."
 ```
 
-#### 10.5.3. Deliberation Execution
+#### 10.6.3. Deliberation Execution
 
 Execute 10-parallel (cc x 5 + cx x 5) same as Phase 1.
 
@@ -565,14 +564,14 @@ Task tool calls (parallel, single message):
 - subagent_type: reviewer-qa (with Phase 1 results)
 ```
 
-#### 10.5.4. Result Files
+#### 10.6.4. Result Files
 
 Save deliberation results to `.i9wa4/reviews/`:
 
 - cc: Use Task tool results directly
 - cx: `{timestamp}-deliberation-{ROLE}-cx.md`
 
-### 10.6. Summary Output
+### 10.7. Summary Output
 
 Create file:
 
