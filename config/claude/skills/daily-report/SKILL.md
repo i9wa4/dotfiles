@@ -44,19 +44,23 @@ ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --hours 48 --
 
 # Specify datetime directly (ISO8601, UTC)
 ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
+
+# Local repos only (ghq list)
+${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --local-only --no-url
 ```
 
 #### 2.1.3. Options
 
-| Option | Description |
-| --- | --- |
-| --no-url | Output without URLs (prevents mention notifications, for daily reports) |
-| --hours N | Fetch activities from N hours ago to now |
-| --from | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z) |
-| --to | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z) |
-| --hostname | GitHub Enterprise Server hostname |
-| --exclude-owner | Exclude repos by owner (comma-separated, default: i9wa4) |
-| --include-personal | Include personal repos (overrides --exclude-owner) |
+| Option             | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| --no-url           | Output without URLs (prevents mention notifications)             |
+| --hours N          | Fetch activities from N hours ago to now                         |
+| --from             | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z)             |
+| --to               | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z)               |
+| --hostname         | GitHub Enterprise Server hostname                                |
+| --exclude-owner    | Exclude repos by owner (comma-separated, default: i9wa4)         |
+| --include-personal | Include personal repos (overrides --exclude-owner)               |
+| --local-only       | Filter to repos in ghq list (local clones only)                  |
 
 #### 2.1.4. Output Format
 
