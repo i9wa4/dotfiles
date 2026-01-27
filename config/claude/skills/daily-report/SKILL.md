@@ -97,7 +97,7 @@ Create file:
 FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh ".i9wa4/$(date +%Y-%m-%d)-$(whoami).md")
 ```
 
-NOTE: Keep command blocks in "AI Coding Tool Usage" section.
+NOTE: Keep command blocks in "Today's AI Activities" section.
 Execute commands and paste results below the command block.
 
 Template:
@@ -143,18 +143,7 @@ Organize gh-furik output. Classify as follows:
 - Meeting name
     - Supplementary comments
 
-### 1.4. dotfiles
-
-```console
-cd ~/ghq/github.com/i9wa4/dotfiles && \
-OLDEST=$(git log --oneline --since="24 hours ago" --format="%h" | tail -1) && \
-[ -n "$OLDEST" ] && git diff --stat ${OLDEST}^..HEAD
-```
-
-- N files changed, N insertions(+), N deletions(-)
-    - Supplementary comments
-
-## 2. AI Coding Tool Usage
+## 2. Today's AI Activities
 
 ### 2.1. Claude Code
 
@@ -173,6 +162,17 @@ npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
 
 | Date       | Models | Input | Output | Cost (USD) |
 | ---------- | ------ | ----- | ------ | ---------- |
+
+### 2.3. dotfiles
+
+```console
+cd ~/ghq/github.com/i9wa4/dotfiles && \
+OLDEST=$(git log --oneline --since="24 hours ago" --format="%h" | tail -1) && \
+[ -n "$OLDEST" ] && git diff --stat ${OLDEST}^..HEAD
+```
+
+- N files changed, N insertions(+), N deletions(-)
+    - Supplementary comments
 
 ## 3. Reflection
 
