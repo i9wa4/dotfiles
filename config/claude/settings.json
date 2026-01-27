@@ -76,11 +76,11 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|NotebookEdit",
+        "matcher": "Bash|Read|Write|Edit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/deny-edit-write.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/unified-deny.sh"
           }
         ]
       }
