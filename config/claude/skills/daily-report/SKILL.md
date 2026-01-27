@@ -144,6 +144,17 @@ Organize gh-furik output. Classify as follows:
 - Meeting name
     - Supplementary comments
 
+### 1.4. dotfiles
+
+```console
+cd ~/ghq/github.com/i9wa4/dotfiles && \
+OLDEST=$(git log --oneline --since="24 hours ago" --format="%h" | tail -1) && \
+[ -n "$OLDEST" ] && git diff --stat ${OLDEST}^..HEAD
+```
+
+- N files changed, N insertions(+), N deletions(-)
+    - Supplementary comments
+
 ## 2. AI Coding Tool Usage
 
 ### 2.1. Claude Code

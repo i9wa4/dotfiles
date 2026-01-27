@@ -7,7 +7,7 @@ inbox_dir = ".postman/inbox"
 read_dir = ".postman/read"
 dead_letter_dir = ".postman/dead-letter"
 log_file = ".postman/postman.log"
-scan_interval_seconds = 30
+scan_interval_seconds = 10
 enter_delay_seconds = 0.7
 batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N seconds
 
@@ -39,7 +39,7 @@ Move to .postman/read/ after reading
 [observer]
 on_join = ""
 remind_enabled = true
-remind_interval_messages = 15
+remind_probability = 0.3  # Each observer has 30% chance to send reminder per delivery
 remind_message = "Consider consulting observer for feedback"
 digest_message_count = 1
 digest_exclude_self = true   # Exclude messages from/to observer
@@ -72,7 +72,7 @@ File: .postman/read/{filename}
 """
 
 [orchestrator]
-on_join = "/orchestrator"
+on_join = "I'm postman. You are the /orchestrator !"
 template = """
 # ORCHESTRATOR (READONLY)
 

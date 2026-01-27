@@ -26,6 +26,7 @@ import argparse
 import json
 import logging
 import os
+import random
 import re
 import signal
 import subprocess
@@ -72,7 +73,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "read_dir": ".postman/read",
         "draft_dir": ".postman/draft",
         "dead_letter_dir": ".postman/dead-letter",
-        "scan_interval_seconds": 30,
+        "scan_interval_seconds": 10,
         "enter_delay_seconds": 0.5,
         "idle_threshold_seconds": 30,
         "batch_notifications": True,
@@ -87,7 +88,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "template": "",
         "on_join": "",
         "remind_enabled": False,
-        "remind_interval_messages": 10,
+        "remind_probability": 0.3,
         "remind_message": "Consider consulting observer for feedback",
         "digest_message_count": 5,
         "digest_exclude_self": False,
@@ -171,7 +172,7 @@ class Postman:
         scan_interval: int,
         enter_delay: float = 0.5,
         observer_remind_enabled: bool = False,
-        observer_remind_interval_messages: int = 10,
+        observer_remind_probability: float = 0.3,
         observer_remind_message: str = "Consider consulting observer for feedback",
         templates: Optional[dict[str, Any]] = None,
         hooks: Optional[dict[str, Any]] = None,
@@ -190,7 +191,7 @@ class Postman:
         self.scan_interval = scan_interval
         self.enter_delay = enter_delay
         self.observer_remind_enabled = observer_remind_enabled
-        self.observer_remind_interval_messages = observer_remind_interval_messages
+        self.observer_remind_probability = observer_remind_probability
         self.observer_remind_message = observer_remind_message
         self.templates = templates or {}
         self.hooks = hooks or {}
@@ -201,8 +202,6 @@ class Postman:
         self.observer_digest_exclude_self = observer_digest_exclude_self
         self.participants: dict[str, Participant] = {}
         self._participants_lock = threading.Lock()
-        self._observer_remind_lock = threading.Lock()
-        self._observer_remind_count = 0
         self._delivery_failure_lock = threading.Lock()
         self._delivery_failure_last_sent: dict[str, float] = {}
         self._stop_event = threading.Event()
@@ -593,7 +592,7 @@ type: <type>
         return ""
 
     def _acquire_pid_lock(self) -> bool:
-        """Check/create PID file for mutual exclusion. Returns True if lock acquired."""
+        """Kill existing process and acquire PID lock. Returns True if lock acquired."""
         pid_file = self.inbox_dir.parent / "postman.pid"
         current_pid = os.getpid()
 
@@ -604,17 +603,18 @@ type: <type>
                 old_pid = data.get("pid")
                 old_session = data.get("session", "unknown")
 
-                # Check if process is still alive
-                if old_pid:
+                # Check if process is still alive and kill it
+                if old_pid and old_pid != current_pid:
                     try:
                         os.kill(old_pid, 0)  # Signal 0 = check existence
-                        # Process is alive
+                        # Process is alive, kill it
                         msg = f"(PID: {old_pid}, session: {old_session})"
-                        print(f"❌ Another postman is running {msg}")
-                        print(f"   To stop it: kill {old_pid}")
-                        return False
+                        self.logger.info(f"🔪 Killing existing postman {msg}")
+                        os.kill(old_pid, signal.SIGTERM)
+                        # Wait briefly for process to terminate
+                        time.sleep(0.5)
                     except OSError:
-                        # Process is dead, we can take over
+                        # Process is dead or cannot be killed
                         pass
             except (json.JSONDecodeError, KeyError, OSError):
                 # Corrupted PID file, we can take over
@@ -1003,21 +1003,15 @@ type: <type>
         return True
 
     def maybe_send_observer_reminder(self, delivered_count: int) -> None:
-        """Send observer reminder to orchestrator after N deliveries."""
+        """Send observer reminder with probability check on each delivery."""
         if not self.observer_remind_enabled:
             return
-        if self.observer_remind_interval_messages <= 0:
-            return
 
-        send_reminder = False
-        with self._observer_remind_lock:
-            self._observer_remind_count += delivered_count
-            if self._observer_remind_count >= self.observer_remind_interval_messages:
-                self._observer_remind_count = 0
-                send_reminder = True
-
-        if send_reminder:
-            self.send_observer_reminder()
+        # Check probability for each delivered message
+        for _ in range(delivered_count):
+            if random.random() < self.observer_remind_probability:
+                self.send_observer_reminder()
+                break  # Send at most one reminder per delivery batch
 
     def send_observer_reminder(self) -> None:
         """Send observer reminder message to orchestrator."""
@@ -1113,32 +1107,36 @@ Action required: Add template for role '{recipient_role}' in postman.toml
 
     def periodic_scan(self) -> None:
         """Periodically rescan panes."""
+        # Initial scan immediately after startup
+        self._do_periodic_scan()
         while self.running:
             time.sleep(self.scan_interval)
             if not self.running:
                 break
+            self._do_periodic_scan()
 
-            with self._participants_lock:
-                existing = dict(self.participants)
-                old_roles = set(existing.keys())
+    def _do_periodic_scan(self) -> None:
+        """Execute one periodic scan."""
+        with self._participants_lock:
+            existing = dict(self.participants)
+            old_roles = set(existing.keys())
 
-            new_participants = self.discover_panes(existing)
-            with self._participants_lock:
-                self.participants = new_participants
-                new_roles = set(self.participants.keys())
+        new_participants = self.discover_panes(existing)
+        with self._participants_lock:
+            self.participants = new_participants
+            new_roles = set(self.participants.keys())
 
-            if old_roles != new_roles:
-                added = new_roles - old_roles
-                removed = old_roles - new_roles
-                if added:
-                    self.logger.info(f"🔄 Joined: {', '.join(added)}")
-                    # Send welcome hooks to new participants
-                    for role in added:
-                        if role in self.participants:
-                            self.send_welcome_notification(self.participants[role])
-                if removed:
-                    self.logger.info(f"🔄 Left: {', '.join(removed)}")
-                self.print_participants()
+        if old_roles != new_roles:
+            added = new_roles - old_roles
+            removed = old_roles - new_roles
+            if added:
+                self.logger.info(f"🔄 Joined: {', '.join(added)}")
+                for role in added:
+                    if role in self.participants:
+                        self.send_welcome_notification(self.participants[role])
+            if removed:
+                self.logger.info(f"🔄 Left: {', '.join(removed)}")
+            self.print_participants()
 
     def periodic_observer_digest(self) -> None:
         """Check for new files in read/ and send digest when threshold reached."""
@@ -1234,8 +1232,10 @@ Action required: Add template for role '{recipient_role}' in postman.toml
 
     def watch_files(self) -> None:
         """Watch directory for new files using watchfiles."""
+        self.logger.info(f"🔍 Starting file watcher on {self.watch_dir}")
         try:
             for changes in watch(self.watch_dir, stop_event=self._stop_event):
+                self.logger.info(f"🔍 Detected changes: {changes}")
                 if not self.running:
                     break
                 for change_type, path_str in changes:
@@ -1246,6 +1246,9 @@ Action required: Add template for role '{recipient_role}' in postman.toml
         except Exception as e:
             if self.running:
                 self.logger.error(f"❌ Watch error: {e}")
+            import traceback
+
+            self.logger.error(traceback.format_exc())
 
     def print_participants(self) -> None:
         """Print current participants."""
@@ -1419,7 +1422,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     batch_notifications = postman_cfg.get("batch_notifications", True)
     batch_interval = postman_cfg.get("batch_interval_seconds", 15)
     observer_remind_enabled = observer_cfg.get("remind_enabled", False)
-    observer_remind_interval_messages = observer_cfg.get("remind_interval_messages", 10)
+    observer_remind_probability = observer_cfg.get("remind_probability", 0.3)
     observer_remind_message = observer_cfg.get(
         "remind_message", "Consider consulting observer for feedback"
     )
@@ -1437,7 +1440,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         scan_interval=scan_interval,
         enter_delay=enter_delay,
         observer_remind_enabled=observer_remind_enabled,
-        observer_remind_interval_messages=observer_remind_interval_messages,
+        observer_remind_probability=observer_remind_probability,
         observer_remind_message=observer_remind_message,
         templates=templates,
         hooks=hooks,
