@@ -123,6 +123,11 @@ snippets:
     snippet:
       vde-layout dev
 
+  - name: (vde-layout) gtop
+    keyword: vg
+    snippet:
+      vde-layout gtop
+
   - name: (vde-layout) orchestrator
     keyword: vo
     snippet:

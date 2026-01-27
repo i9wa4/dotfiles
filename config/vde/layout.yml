@@ -1,4 +1,17 @@
 presets:
+  gtop:
+    name: gtop
+    description: gtop
+    windowMode: current-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - name: zsh
+          focus: true
+        - name: gtop
+          command: gtop
+
   dev:
     name: dev
     description: dev
