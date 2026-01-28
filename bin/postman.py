@@ -668,7 +668,12 @@ class Postman:
             return
 
         # Build digest message with file paths
-        digest_lines = ["📋 Digest: New messages", ""]
+        digest_lines = [
+            "📋 Digest: New messages",
+            "",
+            "Action: Review message contents for code changes or status updates.",
+            "",
+        ]
         for info, filepath in new_files:
             digest_lines.append(f"  • {info}")
             digest_lines.append(f"    .postman/read/{filepath.name}")
