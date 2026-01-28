@@ -79,7 +79,7 @@ Use `nix run` to temporarily get git
 (no Command Line Developer Tools needed on macOS):
 
 ```sh
-nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
@@ -92,6 +92,9 @@ with unrecognized content.
 
 ```sh
 sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
+```
+
+```sh
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
