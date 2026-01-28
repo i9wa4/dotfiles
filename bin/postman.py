@@ -97,6 +97,7 @@ class AgentCard:
     talks_to: list[str] = field(default_factory=list)
     capabilities: dict[str, Any] = field(default_factory=dict)
     template: str = ""
+    is_observer: bool = False
 
 
 @dataclass
@@ -184,6 +185,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                             "a2a_version" in value
                             or "constraints" in value
                             or "talks_to" in value
+                            or "is_observer" in value
                         ):
                             config.agent_cards[key] = AgentCard(
                                 id=key,
@@ -193,6 +195,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                                 talks_to=value.get("talks_to", []),
                                 capabilities=value.get("capabilities", {}),
                                 template=template,
+                                is_observer=value.get("is_observer", False),
                             )
 
                 return config
@@ -636,16 +639,25 @@ class Postman:
         else:
             self.logger.error(f"❌ Failed to send welcome to {node.name}")
 
+    def _is_observer_node(self, node: Node) -> bool:
+        """Check if a node is an observer using is_observer flag."""
+        if node.agent_card and node.agent_card.is_observer:
+            return True
+        # Fallback: check generic observer card
+        observer_card = self.config.agent_cards.get("observer")
+        if observer_card and observer_card.is_observer:
+            # Node uses generic observer config if name starts with "observer"
+            return node.name.startswith("observer")
+        return False
+
     def send_observer_digest(self) -> None:
         """Send digest of new messages to observer nodes.
 
         Sends directly to pane, not as files.
         """
-        # Find all observer nodes
+        # Find all observer nodes using is_observer flag
         with self._nodes_lock:
-            observers = [
-                n for n in self.nodes.values() if n.name.startswith("observer")
-            ]
+            observers = [n for n in self.nodes.values() if self._is_observer_node(n)]
 
         if not observers:
             return
@@ -659,6 +671,10 @@ class Postman:
                         # Parse to get sender/recipient
                         _, sender, recipient = self.parse_message(filepath.name)
                         if sender and recipient:
+                            # Skip messages from observers (digest loop prevention)
+                            if sender.startswith("observer"):
+                                self._digested_files.add(filepath.name)
+                                continue
                             new_files.append((f"{sender} → {recipient}", filepath))
                             self._digested_files.add(filepath.name)
         except OSError:

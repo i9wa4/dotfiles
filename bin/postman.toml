@@ -7,6 +7,10 @@ ping_every = 30
 startup_delay_seconds = 10
 edges = [
   "concierge --> orchestrator --> worker",
+  "orchestrator --> observer-claude-1",
+  "orchestrator --> observer-claude-2",
+  "orchestrator --> observer-codex-1",
+  "orchestrator --> observer-codex-2",
 ]
 
 [concierge]
@@ -17,9 +21,6 @@ template = """
 - User's interface - receive requests and clarify requirements
 - Delegate to orchestrator for task execution
 """
-a2a_version = "1.0"
-constraints = ["READONLY"]
-talks_to = ["orchestrator"]
 
 [orchestrator]
 on_join = "I'm postman. You are the /orchestrator !"
@@ -29,9 +30,6 @@ template = """
 - Delegate tasks to workers (NEVER Edit/Write directly)
 - Consult observers before planning
 """
-a2a_version = "1.0"
-constraints = ["READONLY"]
-talks_to = ["concierge", "worker"]
 
 [worker]
 on_join = ""
@@ -41,11 +39,9 @@ template = """
 - Execute assigned tasks
 - Report issues to observer
 """
-a2a_version = "1.0"
-constraints = ["WRITABLE"]
-talks_to = ["orchestrator"]
 
 [observer]
+is_observer = true
 observes = ["*"]
 on_join = ""
 template = """
@@ -54,6 +50,4 @@ template = """
 - Monitor and review all activities
 - Report concerns to relevant nodes
 """
-a2a_version = "1.0"
-constraints = ["READONLY"]
-talks_to = ["*"]
+talks_to = ["concierge", "orchestrator", "worker"]
