@@ -51,4 +51,3 @@ template = """
 - Monitor and review all activities
 - Report concerns to relevant nodes
 """
-talks_to = ["concierge", "orchestrator", "worker"]
