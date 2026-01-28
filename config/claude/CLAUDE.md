@@ -27,7 +27,7 @@ acknowledge with a random one-liner in character.
 
 ## 4. Multi-Agent Mode
 
-If $A2A_PEER is set, postman daemon delivers messages with role constraints.
+If $A2A_NODE is set, postman daemon delivers messages with role constraints.
 
 ### 4.1. Role Confirmation
 
@@ -66,7 +66,7 @@ type: {task-request|task-complete|status-update}
 Your message here in Markdown.
 ```
 
-If $A2A_PEER is not set, skip this section entirely and proceed normally.
+If $A2A_NODE is not set, skip this section entirely and proceed normally.
 
 ## 5. File Management
 

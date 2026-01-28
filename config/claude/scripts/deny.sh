@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deny.sh - Role-based deny for A2A_PEER mode
+# deny.sh - Role-based deny for A2A_NODE mode
 #
 # Blocks Edit/Write/NotebookEdit for non-worker agents.
 # Pattern-based deny is handled by settings.json deny list.
@@ -23,10 +23,10 @@ get_file_path() {
 }
 
 # ============================================================
-# Role-based check (A2A_PEER mode)
+# Role-based check (A2A_NODE mode)
 # ============================================================
 
-if [[ -n ${A2A_PEER:-} && ${A2A_PEER} != worker* ]]; then
+if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
   case "$TOOL" in
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
@@ -41,7 +41,7 @@ if [[ -n ${A2A_PEER:-} && ${A2A_PEER} != worker* ]]; then
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow
     else
-      echo "🚫 BLOCKED: ${A2A_PEER} is READONLY. Only worker* can edit files." >&2
+      echo "🚫 BLOCKED: ${A2A_NODE} is READONLY. Only worker* can edit files." >&2
       echo "💡 Alternative: Send task to worker via postman" >&2
       exit 2
     fi

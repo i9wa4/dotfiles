@@ -2,94 +2,58 @@
 # File-based communication daemon for tmux panes
 
 [postman]
-watch_dir = ".postman/post"
-inbox_dir = ".postman/inbox"
-read_dir = ".postman/read"
-dead_letter_dir = ".postman/dead-letter"
-log_file = ".postman/postman.log"
-scan_interval_seconds = 10
-enter_delay_seconds = 0.7
-batch_interval_seconds = 15  # Deliver queued orchestrator notifications every N seconds
+entry = "concierge"
+ping_every = 30
+startup_delay_seconds = 10
+edges = [
+  "concierge --> orchestrator --> worker",
+]
 
-# Template variables: {filename}, {response_file}, {inbox_count}, {inbox_path}, {role}
-
-[worker]
-on_join = ""
+[concierge]
+on_join = "I'm postman. You are the concierge - user's interface!"
 template = """
-# WORKER (WRITABLE)
+# CONCIERGE (READONLY)
 
-## Rules
-
-- NEVER AskUserQuestion - report to Orchestrator
-- All tools allowed
-
-## Inbox
-
-📬 {inbox_count} message(s) - .postman/inbox/{role}/
-Move to .postman/read/ after reading
-
-## Response (if needed)
-
-1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
-2. Edit the draft file
-3. Move to .postman/post/ to send
+- User's interface - receive requests and clarify requirements
+- Delegate to orchestrator for task execution
 """
-
-[observer]
-on_join = ""
-remind_enabled = true
-remind_probability = 0.3  # Each observer has 30% chance to send reminder per delivery
-remind_message = "Consider consulting observer for feedback"
-digest_message_count = 1
-digest_exclude_self = true   # Exclude messages from/to observer
-template = """
-# OBSERVER (READONLY)
-
-## Rules
-
-- READONLY for project files (NEVER Edit/Write)
-- `.postman/` writes ARE allowed for messaging
-- Monitor file changes, review commits
-- Report concerns to orchestrator
-
-## Inbox (Mode 1 - Direct Delivery)
-
-📬 {inbox_count} message(s) - .postman/inbox/{role}/
-Move to .postman/read/ after reading
-
-## New File (Mode 2 - Indirect Monitoring)
-
-File: .postman/read/{filename}
-(Already in read/ - no move needed)
-
-## Response (if needed)
-
-1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
-2. Edit the draft file
-3. Move to .postman/post/ to send
-"""
+a2a_version = "1.0"
+constraints = ["READONLY"]
+talks_to = ["orchestrator"]
 
 [orchestrator]
 on_join = "I'm postman. You are the /orchestrator !"
 template = """
 # ORCHESTRATOR (READONLY)
 
-## Rules
-
-- DELEGATE to workers (NEVER Edit/Write)
+- Delegate tasks to workers (NEVER Edit/Write directly)
 - Consult observers before planning
-
-## Inbox
-
-📬 {inbox_count} message(s) - .postman/inbox/{role}/
-Move to .postman/read/ after reading
-
-## Response (if needed)
-
-1. Generate draft: `uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>`
-   -> .postman/draft/{timestamp}-from-{you}-to-{recipient}.md
-2. Edit the draft file
-3. Move to .postman/post/ to send
 """
+a2a_version = "1.0"
+constraints = ["READONLY"]
+talks_to = ["concierge", "worker"]
+
+[worker]
+on_join = ""
+template = """
+# WORKER (WRITABLE)
+
+- Execute assigned tasks
+- Report issues to observer
+"""
+a2a_version = "1.0"
+constraints = ["WRITABLE"]
+talks_to = ["orchestrator"]
+
+[observer]
+observes = ["*"]
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+"""
+a2a_version = "1.0"
+constraints = ["READONLY"]
+talks_to = ["*"]

@@ -1,14 +1,6 @@
 {
-  "installationMethod": "native",
-  "cleanupPeriodDays": 36000,
-  "autoCompact": true,
-  "checkpointsEnabled": true,
-  "verbose": false,
-  "terminalProgressBar": true,
   "respectGitignore": true,
-  "theme": "dark",
-  "editorMode": "normal",
-  "chromeExtensionEnabledByDefault": true,
+  "cleanupPeriodDays": 36000,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
@@ -35,7 +27,6 @@
   },
   "attribution": {},
   "permissions": {
-    "defaultMode": "plan",
     "allow": [],
     "deny": [
       "Bash(git -C:*)",
@@ -50,8 +41,10 @@
       "Read(~/.ssh/**)",
       "Write(**/secrets/**)",
       "Write(.env*)"
-    ]
+    ],
+    "defaultMode": "plan"
   },
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -111,10 +104,18 @@
       }
     }
   },
-  "alwaysThinkingEnabled": true,
   "language": "follow CLAUDE.md's instructions",
-  "mcpToolSearch": "auto:1",
-  "preferredNotifChannel": "terminal_bell",
   "spinnerTipsEnabled": true,
-  "plansDirectory": ".i9wa4/plans"
+  "alwaysThinkingEnabled": true,
+  "plansDirectory": ".i9wa4/plans",
+  "installationMethod": "native",
+  "autoCompact": true,
+  "checkpointsEnabled": true,
+  "verbose": false,
+  "terminalProgressBar": true,
+  "theme": "dark",
+  "editorMode": "normal",
+  "chromeExtensionEnabledByDefault": true,
+  "mcpToolSearch": "auto:1",
+  "preferredNotifChannel": "terminal_bell"
 }

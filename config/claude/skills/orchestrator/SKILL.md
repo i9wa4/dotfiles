@@ -3,7 +3,7 @@ name: orchestrator
 description: |
   Orchestration workflow for orchestrator role ONLY.
   Use when:
-  - Agent's $A2A_PEER environment variable contains "orchestrator"
+  - Agent's $A2A_NODE environment variable contains "orchestrator"
   Do NOT use for worker or observer roles.
 ---
 
@@ -98,9 +98,9 @@ Worker writes to `.i9wa4/draft/{response_file}` then moves to `.i9wa4/post/`.
 
 ### 3.4. Worker Discovery
 
-#### 3.4.1. A2A_PEER Mode (postman)
+#### 3.4.1. A2A_NODE Mode (postman)
 
-When `$A2A_PEER` is set, discover Workers from postman inbox:
+When `$A2A_NODE` is set, discover Workers from postman inbox:
 
 ```bash
 discover_workers() {
@@ -118,7 +118,7 @@ WORKERS=$(discover_workers)
 
 #### 3.4.2. Legacy Mode (tmux only)
 
-When `$A2A_PEER` is not set, use tmux pane detection:
+When `$A2A_NODE` is not set, use tmux pane detection:
 
 Your own pane: `$TMUX_PANE`
 
