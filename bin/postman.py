@@ -79,13 +79,6 @@ def parse_edges(edges: list[str]) -> dict[str, set[str]]:
     return adjacency
 
 
-def get_node_type(node: str) -> str:
-    """Get base type for a node."""
-    if node.startswith("observer"):
-        return "observer"
-    return "node"
-
-
 @dataclass
 class AgentCard:
     """Agent Card data from postman.toml node sections."""
@@ -263,18 +256,10 @@ class Postman:
 
     def load_agent_card(self, node_name: str) -> Optional[AgentCard]:
         """Load Agent Card for a node from config.agent_cards."""
-        # Exact match first
         card = self.config.agent_cards.get(node_name)
         if card:
             self.logger.info(f"📇 Loaded Agent Card for {node_name}")
             return card
-
-        # Prefix match for observer
-        if node_name.startswith("observer") and "observer" in self.config.agent_cards:
-            card = self.config.agent_cards["observer"]
-            self.logger.info(f"📇 Loaded Agent Card for {node_name} (from observer)")
-            return card
-
         return None
 
     def get_template(self, node_name: str) -> str:
@@ -288,60 +273,15 @@ class Postman:
         # Fallback to config templates
         if node_name in self.config.templates:
             return self.config.templates[node_name]
-        # Prefix match for observer
-        if node_name.startswith("observer") and "observer" in self.config.templates:
-            return self.config.templates["observer"]
         return ""
 
     def get_talks_to(self, node_name: str) -> list[str]:
-        """Get list of nodes this node can talk to (Agent Card > config)."""
+        """Get list of nodes this node can talk to (from edges/adjacency)."""
         talks_to: set[str] = set()
-
-        # Check Agent Card first
-        with self._nodes_lock:
-            node = self.nodes.get(node_name)
-            if node and node.agent_card and node.agent_card.talks_to:
-                talks_to.update(node.agent_card.talks_to)
-                # Entry node can receive from user
-                if node_name == self.config.entry:
-                    talks_to.add("user")
-                return sorted(talks_to)
-
-        # Fallback to config
 
         # From edges (adjacency)
         if node_name in self.config.adjacency:
             talks_to.update(self.config.adjacency[node_name])
-
-        # Observer can talk to all observed nodes
-        node_type = get_node_type(node_name)
-        if node_type == "observer":
-            # Check specific observes config
-            for obs_name, obs_targets in self.config.observes.items():
-                if node_name.startswith(obs_name.rstrip("-")) or node_name == obs_name:
-                    if "*" in obs_targets:
-                        # All nodes
-                        with self._nodes_lock:
-                            talks_to.update(
-                                n for n in self.nodes.keys() if n != node_name
-                            )
-                    else:
-                        talks_to.update(obs_targets)
-            # Default: observer without specific config can talk to all
-            if not any(
-                node_name.startswith(obs.rstrip("-")) or node_name == obs
-                for obs in self.config.observes.keys()
-            ):
-                # Check if there's a generic "observer" config
-                if "observer" in self.config.observes:
-                    obs_targets = self.config.observes["observer"]
-                    if "*" in obs_targets:
-                        with self._nodes_lock:
-                            talks_to.update(
-                                n for n in self.nodes.keys() if n != node_name
-                            )
-                    else:
-                        talks_to.update(obs_targets)
 
         # Entry node can receive from user
         if node_name == self.config.entry:
@@ -624,13 +564,7 @@ class Postman:
 
     def send_welcome(self, node: Node) -> None:
         """Send welcome hook message if configured."""
-        # Try exact match first
         message = self.config.on_join.get(node.name)
-
-        # Try prefix match for observer
-        if not message and node.name.startswith("observer"):
-            message = self.config.on_join.get("observer")
-
         if not message:
             return
 
@@ -641,14 +575,7 @@ class Postman:
 
     def _is_observer_node(self, node: Node) -> bool:
         """Check if a node is an observer using is_observer flag."""
-        if node.agent_card and node.agent_card.is_observer:
-            return True
-        # Fallback: check generic observer card
-        observer_card = self.config.agent_cards.get("observer")
-        if observer_card and observer_card.is_observer:
-            # Node uses generic observer config if name starts with "observer"
-            return node.name.startswith("observer")
-        return False
+        return bool(node.agent_card and node.agent_card.is_observer)
 
     def send_observer_digest(self) -> None:
         """Send digest of new messages to observer nodes.

@@ -41,9 +41,38 @@ template = """
 - Report issues to observer
 """
 
-[observer]
+[observer-claude-1]
 is_observer = true
-observes = ["*"]
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+"""
+
+[observer-claude-2]
+is_observer = true
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+"""
+
+[observer-codex-1]
+is_observer = true
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+"""
+
+[observer-codex-2]
+is_observer = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
