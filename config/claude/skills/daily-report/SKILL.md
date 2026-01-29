@@ -36,7 +36,7 @@ ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh
 #### 2.1.2. Command Examples
 
 ```bash
-# Default: 24 hours ago to now
+# Default: 24 hours ago to now (local repos only via ghq list)
 ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --no-url
 
 # Specify hours: N hours ago to now
@@ -44,23 +44,19 @@ ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --hours 48 --
 
 # Specify datetime directly (ISO8601, UTC)
 ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --from 2025-12-16T15:00:00Z --to 2025-12-17T15:00:00Z --no-url
-
-# Local repos only (ghq list)
-${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --local-only --no-url
 ```
 
 #### 2.1.3. Options
 
-| Option             | Description                                                      |
-| ------------------ | ---------------------------------------------------------------- |
-| --no-url           | Output without URLs (prevents mention notifications)             |
-| --hours N          | Fetch activities from N hours ago to now                         |
-| --from             | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z)             |
-| --to               | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z)               |
-| --hostname         | GitHub Enterprise Server hostname                                |
-| --exclude-owner    | Exclude repos by owner (comma-separated, default: i9wa4)         |
-| --include-personal | Include personal repos (overrides --exclude-owner)               |
-| --local-only       | Filter to repos in ghq list (local clones only)                  |
+| Option             | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| --no-url           | Output without URLs (prevents mention notifications)     |
+| --hours N          | Fetch activities from N hours ago to now                 |
+| --from             | Start datetime (ISO8601, e.g., 2025-12-17T00:00:00Z)     |
+| --to               | End datetime (ISO8601, e.g., 2025-12-17T23:59:59Z)       |
+| --hostname         | GitHub Enterprise Server hostname                        |
+| --exclude-owner    | Exclude repos by owner (comma-separated, default: i9wa4) |
+| --include-personal | Include personal repos (overrides --exclude-owner)       |
 
 #### 2.1.4. Output Format
 
@@ -169,14 +165,8 @@ npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
 
 ### 2.3. dotfiles
 
-```console
-cd ~/ghq/github.com/i9wa4/dotfiles && \
-OLDEST=$(git log --oneline --since="24 hours ago" --format="%h" | tail -1) && \
-[ -n "$OLDEST" ] && git diff --stat ${OLDEST}^..HEAD
-```
-
-- N files changed, N insertions(+), N deletions(-)
-    - Supplementary comments
+- Changed file or feature summary
+- Another change summary
 
 ## 3. Reflection
 
