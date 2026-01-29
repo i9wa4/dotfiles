@@ -1,17 +1,4 @@
 presets:
-  gtop:
-    name: gtop
-    description: gtop
-    windowMode: current-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: zsh
-          focus: true
-        - name: gtop
-          command: gtop
-
   dev:
     name: dev
     description: dev
@@ -33,32 +20,23 @@ presets:
     description: orchestrator
     windowMode: current-window
     layout:
-      type: vertical
-      ratio: [8, 1]
+      type: horizontal
+      ratio: [1, 1]
       panes:
-        - type: horizontal
+        - name: editor
+          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          focus: true
+        - type: vertical
           ratio: [1, 1]
           panes:
-            - name: editor
-              command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
-              focus: true
-            - type: vertical
-              ratio: [1, 1]
-              panes:
-                - name: concierge
-                  command: claude --model haiku --dangerously-skip-permissions
-                  env:
-                    A2A_NODE: concierge
-                - name: orchestrator
-                  command: claude --dangerously-skip-permissions
-                  env:
-                    A2A_NODE: orchestrator
-        - type: horizontal
-          ratio: [1, 1]
-          panes:
-            - name: zsh
-            - name: postman
-              command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
+            - name: concierge
+              command: claude --model haiku --dangerously-skip-permissions
+              env:
+                A2A_NODE: concierge
+            - name: orchestrator
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_NODE: orchestrator
 
   workers:
     name: workers
@@ -68,10 +46,15 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: worker
-          command: claude --dangerously-skip-permissions
-          env:
-            A2A_NODE: worker
+        - type: vertical
+          ratio: [6, 1]
+          panes:
+            - name: worker
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_NODE: worker
+            - name: postman
+              command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:

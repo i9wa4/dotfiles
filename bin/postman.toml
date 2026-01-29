@@ -94,7 +94,7 @@ template = """
 # CONCIERGE (READONLY)
 
 - User's interface - receive requests and clarify requirements
-- Delegate to orchestrator for task execution
+- YOU MUST: Delegate to orchestrator for anything
 """
 
 [orchestrator]
@@ -104,7 +104,7 @@ template = """
 # ORCHESTRATOR (READONLY)
 
 - Delegate tasks to workers (NEVER Edit/Write directly)
-- Consult observers before planning
+- YOU MUST: Consult all observers for anything
 """
 
 [worker]

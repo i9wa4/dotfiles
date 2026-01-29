@@ -19,7 +19,6 @@ fi
 HOSTNAME="github.com"
 NO_URL=false
 EXCLUDE_OWNERS="i9wa4"
-LOCAL_ONLY=false
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -57,10 +56,6 @@ while [ $# -gt 0 ]; do
   --include-personal)
     # 個人リポジトリも含める
     EXCLUDE_OWNERS=""
-    ;;
-  --local-only)
-    # ghq list に存在するリポジトリのみ出力
-    LOCAL_ONLY=true
     ;;
   esac
   shift
@@ -315,26 +310,24 @@ if [ -n "$EXCLUDE_OWNERS" ]; then
 fi
 
 # Filter by local repositories (ghq list)
-if [ "$LOCAL_ONLY" = "true" ]; then
-  GHQ_LIST_FILE=$(mktemp)
-  trap 'rm -f "$TEMP_FILE" "$GHQ_LIST_FILE"' EXIT
-  ghq list >"$GHQ_LIST_FILE"
+GHQ_LIST_FILE=$(mktemp)
+trap 'rm -f "$TEMP_FILE" "$GHQ_LIST_FILE"' EXIT
+ghq list >"$GHQ_LIST_FILE"
 
-  FILTERED_FILE=$(mktemp)
-  trap 'rm -f "$TEMP_FILE" "$GHQ_LIST_FILE" "$FILTERED_FILE"' EXIT
+FILTERED_FILE=$(mktemp)
+trap 'rm -f "$TEMP_FILE" "$GHQ_LIST_FILE" "$FILTERED_FILE"' EXIT
 
-  # Filter: keep only repos that exist in ghq list
-  # ghq list format: github.com/owner/repo
-  # activity repo format: owner/repo
-  # Compare: HOSTNAME/repo == ghq list entry
-  jq -r --arg hostname "$HOSTNAME" --slurpfile ghqList <(jq -R . "$GHQ_LIST_FILE") '
-    . as $activity |
-    ($hostname + "/" + .repo) as $fullPath |
-    if ($ghqList | map(select(. == $fullPath)) | length > 0) then . else empty end
-  ' "$TEMP_FILE" >"$FILTERED_FILE"
+# Filter: keep only repos that exist in ghq list
+# ghq list format: github.com/owner/repo
+# activity repo format: owner/repo
+# Compare: HOSTNAME/repo == ghq list entry
+jq -r --arg hostname "$HOSTNAME" --slurpfile ghqList <(jq -R . "$GHQ_LIST_FILE") '
+  . as $activity |
+  ($hostname + "/" + .repo) as $fullPath |
+  if ($ghqList | map(select(. == $fullPath)) | length > 0) then . else empty end
+' "$TEMP_FILE" >"$FILTERED_FILE"
 
-  mv "$FILTERED_FILE" "$TEMP_FILE"
-fi
+mv "$FILTERED_FILE" "$TEMP_FILE"
 
 # Format and output results
 if [ "$NO_URL" = "true" ]; then
