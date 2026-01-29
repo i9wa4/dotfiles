@@ -5,7 +5,6 @@
 a2a_version = "1.0"
 base_dir = ".postman"  # Directory structure: {base_dir}/{context_id}/post/, inbox/, etc.
 entry = "concierge"
-ping_every = 30
 startup_delay_seconds = 10
 reminder_interval = 5  # Send reminder after 5 messages (0 = disabled)
 message_header = """
@@ -63,7 +62,6 @@ Action: Review message contents and code changes. If you feel any issues, report
 
 # Draft message template
 draft_template = """---
-jsonrpc: "2.0"
 method: message/send
 params:
   contextId: {context_id}

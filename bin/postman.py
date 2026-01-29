@@ -150,7 +150,6 @@ class Config:
     scan_interval: int = 10
     enter_delay: float = 0.7
     entry: str = ""
-    ping_every: int = 30
     adjacency: dict[str, set[str]] = field(default_factory=dict)
     on_join: dict[str, str] = field(default_factory=dict)
     observes: dict[str, list[str]] = field(default_factory=dict)
@@ -193,8 +192,6 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     config.enter_delay = postman_cfg["enter_delay"]
                 if "entry" in postman_cfg:
                     config.entry = postman_cfg["entry"]
-                if "ping_every" in postman_cfg:
-                    config.ping_every = postman_cfg["ping_every"]
                 if "startup_delay_seconds" in postman_cfg:
                     config.startup_delay_seconds = postman_cfg["startup_delay_seconds"]
                 if "reminder_interval" in postman_cfg:
@@ -314,8 +311,6 @@ class Postman:
         self.running = True
         self.my_pane_id = os.environ.get("TMUX_PANE", "")
         self.my_session = self._get_tmux_session()
-        self._message_count = 0  # For ping tracking
-        self._message_count_lock = threading.Lock()
         self._digested_files: set[str] = (
             set()
         )  # Track digested files to prevent duplicates
@@ -852,14 +847,6 @@ class Postman:
             filepath.rename(dest)
             return
 
-        # Track message count for ping (exclude observer messages)
-        if not sender.startswith("observer") and not recipient.startswith("observer"):
-            with self._message_count_lock:
-                self._message_count += 1
-                if self._message_count >= self.config.ping_every:
-                    self._message_count = 0
-                    self.send_ping_to_all()
-
         # Find recipient node
         with self._nodes_lock:
             node = self.nodes.get(recipient)
@@ -973,7 +960,6 @@ class Postman:
         print("━" * 50)
         print(f"Watching: {self.config.watch_dir}/")
         print(f"Entry: {self.config.entry}")
-        print(f"Ping every: {self.config.ping_every} messages")
         if self.config.adjacency:
             print(f"Edges: {len(self.config.adjacency)} nodes connected")
         self.print_nodes()
