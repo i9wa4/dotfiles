@@ -35,8 +35,9 @@ get_file_path() {
 # Role-based check (A2A_NODE mode)
 # ============================================================
 
-# Block if A2A_NODE is empty OR not starting with "worker"
-if [[ -z ${A2A_NODE:-} || ${A2A_NODE} != worker* ]]; then
+# Block only when A2A_NODE is set AND not starting with "worker"
+# (A2A_NODE unset = normal use, allow all)
+if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
   case "$TOOL" in
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
