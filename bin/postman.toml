@@ -7,6 +7,7 @@ base_dir = ".postman"  # Directory structure: {base_dir}/{context_id}/post/, inb
 entry = "concierge"
 startup_delay_seconds = 10
 reminder_interval = 5  # Send reminder after 5 messages (0 = disabled)
+reminder_message = "Check your inbox and continue tasks."
 message_header = """
 📬 Message from {from_node}
 Inbox: .postman/inbox/{node}/

@@ -157,8 +157,10 @@ class Config:
     roles: dict[str, str] = field(default_factory=dict)
     agent_cards: dict[str, AgentCard] = field(default_factory=dict)
     startup_delay_seconds: int = 0
-    reminder_interval: int = 0  # 0 = disabled
-    reminder_messages: dict[str, str] = field(default_factory=dict)
+    reminder_interval: int = 0  # 0 = disabled (global default)
+    reminder_message: str = ""  # Global default reminder message
+    reminder_intervals: dict[str, int] = field(default_factory=dict)  # Per-node
+    reminder_messages: dict[str, str] = field(default_factory=dict)  # Per-node
     message_header: str = ""
     message_footer: str = ""
     reply_command: str = ""
@@ -196,6 +198,10 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     config.startup_delay_seconds = postman_cfg["startup_delay_seconds"]
                 if "reminder_interval" in postman_cfg:
                     config.reminder_interval = postman_cfg["reminder_interval"]
+                if "reminder_message" in postman_cfg:
+                    config.reminder_message = expand_shell_commands(
+                        postman_cfg["reminder_message"].strip()
+                    )
                 if "message_header" in postman_cfg:
                     config.message_header = postman_cfg["message_header"].strip()
                 if "message_footer" in postman_cfg:
@@ -236,6 +242,9 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                             config.reminder_messages[key] = expand_shell_commands(
                                 value["reminder_message"].strip()
                             )
+                        # reminder_interval (per-node)
+                        if "reminder_interval" in value:
+                            config.reminder_intervals[key] = value["reminder_interval"]
                         # role
                         role = ""
                         if "role" in value and value["role"]:
@@ -688,10 +697,17 @@ class Postman:
 
     def check_and_send_reminder(self, node_name: str) -> None:
         """Increment message counter and send reminder if threshold reached."""
-        if self.config.reminder_interval <= 0:
+        # Per-node interval takes priority, else global
+        interval = self.config.reminder_intervals.get(
+            node_name, self.config.reminder_interval
+        )
+        if interval <= 0:
             return
 
-        reminder_msg = self.config.reminder_messages.get(node_name)
+        # Per-node message takes priority, else global
+        reminder_msg = (
+            self.config.reminder_messages.get(node_name) or self.config.reminder_message
+        )
         if not reminder_msg:
             return
 
@@ -702,7 +718,7 @@ class Postman:
 
         with self._reminder_counters_lock:
             count = self._reminder_counters.get(node_name, 0) + 1
-            if count >= self.config.reminder_interval:
+            if count >= interval:
                 # Send reminder
                 if self.send_to_pane(node.pane_id, reminder_msg):
                     self.logger.info(f"⏰ Reminder sent to {node_name}")
