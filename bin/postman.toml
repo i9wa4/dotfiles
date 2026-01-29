@@ -13,7 +13,7 @@ Inbox: .postman/inbox/{node}/
 """
 message_footer = """
 ---
-処理後は inbox → read/ に移動すること。
+After processing, move from inbox/ to read/
 """
 
 # Reply instruction (used in notifications and pings)

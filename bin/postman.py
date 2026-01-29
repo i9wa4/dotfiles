@@ -1104,7 +1104,7 @@ params:
 
 ---
 
-リマインド: 処理後は inbox → read/ に移動すること。
+After processing, move from inbox/ to read/
 """
     filepath.write_text(content)
     print(f"📝 Created: {filepath}")
