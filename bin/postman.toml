@@ -6,6 +6,7 @@ a2a_version = "1.0"
 entry = "concierge"
 ping_every = 30
 startup_delay_seconds = 10
+reminder_interval = 5  # Send reminder after 5 messages (0 = disabled)
 edges = [
   "concierge --> orchestrator --> worker",
   "orchestrator --> observer-claude-1",

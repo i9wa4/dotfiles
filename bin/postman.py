@@ -56,6 +56,31 @@ DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
 # File pattern: {timestamp}-from-{sender}-to-{recipient}.md
 FILE_PATTERN = re.compile(r"^(\d{8}-\d{6})-from-([a-z0-9-]+)-to-([a-z0-9-]+)\.md$")
 
+# Shell command pattern: $(...)
+SHELL_CMD_PATTERN = re.compile(r"\$\(([^)]+)\)")
+
+
+def expand_shell_commands(text: str) -> str:
+    """Expand $(command) patterns in text by executing shell commands."""
+    if not text or "$(" not in text:
+        return text
+
+    def replace_cmd(match: re.Match[str]) -> str:
+        cmd = match.group(1)
+        try:
+            result = subprocess.run(
+                cmd,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            return result.stdout.strip() if result.returncode == 0 else ""
+        except (subprocess.TimeoutExpired, OSError):
+            return ""
+
+    return SHELL_CMD_PATTERN.sub(replace_cmd, text)
+
 
 def parse_edges(edges: list[str]) -> dict[str, set[str]]:
     """Parse edge definitions and build adjacency list (bidirectional)."""
@@ -112,6 +137,8 @@ class Config:
     templates: dict[str, str] = field(default_factory=dict)
     agent_cards: dict[str, AgentCard] = field(default_factory=dict)
     startup_delay_seconds: int = 0
+    reminder_interval: int = 0  # 0 = disabled
+    reminder_messages: dict[str, str] = field(default_factory=dict)
 
 
 def load_config(config_path: Optional[Path] = None) -> Config:
@@ -151,6 +178,8 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     config.ping_every = postman_cfg["ping_every"]
                 if "startup_delay_seconds" in postman_cfg:
                     config.startup_delay_seconds = postman_cfg["startup_delay_seconds"]
+                if "reminder_interval" in postman_cfg:
+                    config.reminder_interval = postman_cfg["reminder_interval"]
 
                 # Parse edges
                 if "edges" in postman_cfg:
@@ -161,17 +190,24 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     if key == "postman":
                         continue
                     if isinstance(value, dict):
-                        # on_join
+                        # on_join (with shell expansion)
                         if "on_join" in value and value["on_join"]:
-                            config.on_join[key] = value["on_join"]
+                            config.on_join[key] = expand_shell_commands(
+                                value["on_join"]
+                            )
                         # observes (for observer nodes)
                         if "observes" in value:
                             config.observes[key] = value["observes"]
-                        # template
+                        # template (with shell expansion)
                         template = ""
                         if "template" in value and value["template"]:
-                            template = value["template"].strip()
+                            template = expand_shell_commands(value["template"].strip())
                             config.templates[key] = template
+                        # reminder_message (with shell expansion)
+                        if "reminder_message" in value and value["reminder_message"]:
+                            config.reminder_messages[key] = expand_shell_commands(
+                                value["reminder_message"].strip()
+                            )
 
                         # Agent Card fields
                         if (
@@ -228,6 +264,8 @@ class Postman:
             set()
         )  # Track digested files to prevent duplicates
         self._digested_files_lock = threading.Lock()
+        self._reminder_counters: dict[str, int] = {}  # Per-node message counters
+        self._reminder_counters_lock = threading.Lock()
 
         # Setup logging
         self.setup_logging(config.log_file)
@@ -573,6 +611,30 @@ class Postman:
         else:
             self.logger.error(f"❌ Failed to send welcome to {node.name}")
 
+    def check_and_send_reminder(self, node_name: str) -> None:
+        """Increment message counter and send reminder if threshold reached."""
+        if self.config.reminder_interval <= 0:
+            return
+
+        reminder_msg = self.config.reminder_messages.get(node_name)
+        if not reminder_msg:
+            return
+
+        with self._nodes_lock:
+            node = self.nodes.get(node_name)
+        if not node:
+            return
+
+        with self._reminder_counters_lock:
+            count = self._reminder_counters.get(node_name, 0) + 1
+            if count >= self.config.reminder_interval:
+                # Send reminder
+                if self.send_to_pane(node.pane_id, reminder_msg):
+                    self.logger.info(f"⏰ Reminder sent to {node_name}")
+                self._reminder_counters[node_name] = 0
+            else:
+                self._reminder_counters[node_name] = count
+
     def _is_observer_node(self, node: Node) -> bool:
         """Check if a node is an observer using is_observer flag."""
         return bool(node.agent_card and node.agent_card.is_observer)
@@ -720,6 +782,8 @@ class Postman:
                 filepath.rename(dest)
                 # Notify observers of new message
                 self.send_observer_digest()
+                # Check reminder for recipient
+                self.check_and_send_reminder(recipient)
             else:
                 self.logger.error(f"❌ Failed to deliver to {recipient}")
                 dest = self.config.dead_letter_dir / filepath.name
