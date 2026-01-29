@@ -26,6 +26,7 @@ Start/Attach Options:
 
 Create-draft Options:
     --to RECIPIENT        Recipient node (required, e.g., orchestrator, worker)
+    --context-id ID       Context ID (overrides A2A_CONTEXT_ID and file fallback)
 
 Setup:
     Pane 1: A2A_NODE=orchestrator claude ...
@@ -69,6 +70,56 @@ FILE_PATTERN = re.compile(r"^(\d{8}-\d{6})-from-([a-z0-9-]+)-to-([a-z0-9-]+)\.md
 
 # Shell command pattern: $(...)
 SHELL_CMD_PATTERN = re.compile(r"\$\(([^)]+)\)")
+
+# Current context file for cross-pane context sharing
+CURRENT_CONTEXT_FILE = Path(".postman/current-context")
+
+
+def write_current_context(context_id: str) -> None:
+    """Write current context to file with metadata."""
+    import atexit
+    import json
+
+    data = {
+        "context_id": context_id,
+        "pid": os.getpid(),
+        "timestamp": datetime.now().isoformat(),
+    }
+    # Atomic write: tmp -> rename
+    tmp_file = CURRENT_CONTEXT_FILE.with_suffix(".tmp")
+    tmp_file.parent.mkdir(parents=True, exist_ok=True)
+    tmp_file.write_text(json.dumps(data))
+    tmp_file.chmod(0o600)
+    tmp_file.rename(CURRENT_CONTEXT_FILE)
+    # Register cleanup
+    atexit.register(cleanup_current_context)
+
+
+def read_current_context() -> Optional[str]:
+    """Read context_id from file. Returns None if not found or invalid."""
+    import json
+
+    try:
+        data = json.loads(CURRENT_CONTEXT_FILE.read_text())
+        context_id = data.get("context_id")
+        if isinstance(context_id, str):
+            return context_id
+        return None
+    except (json.JSONDecodeError, OSError, FileNotFoundError):
+        return None
+
+
+def cleanup_current_context() -> None:
+    """Remove current context file only if owned by this process."""
+    import json
+
+    try:
+        if CURRENT_CONTEXT_FILE.exists():
+            data = json.loads(CURRENT_CONTEXT_FILE.read_text())
+            if data.get("pid") == os.getpid():
+                CURRENT_CONTEXT_FILE.unlink(missing_ok=True)
+    except (json.JSONDecodeError, OSError):
+        pass
 
 
 def expand_shell_commands(text: str) -> str:
@@ -1056,11 +1107,39 @@ class Postman:
 
 def cmd_draft(args: argparse.Namespace) -> None:
     """Create a draft message file."""
-    # Require A2A_CONTEXT_ID
-    context_id = os.environ.get("A2A_CONTEXT_ID")
+    # Get context_id with priority: CLI arg > env var > file
+    context_id = None
+    context_source = None
+
+    # 1. CLI argument (highest priority)
+    if hasattr(args, "context_id") and args.context_id:
+        context_id = args.context_id
+        context_source = "cli"
+
+    # 2. Environment variable
+    if not context_id:
+        context_id = os.environ.get("A2A_CONTEXT_ID")
+        if context_id:
+            context_source = "env"
+
+    # 3. File fallback
+    if not context_id:
+        context_id = read_current_context()
+        if context_id:
+            context_source = "file"
+            print(
+                f"Warning: Using context from {context_source} fallback",
+                file=sys.stderr,
+            )
+
+    # Error if all failed
     if not context_id:
         print(
-            "Error: A2A_CONTEXT_ID not set. Run 'postman.py start' first.",
+            "Error: Context ID not found. Tried:\n"
+            "  1. --context-id argument\n"
+            "  2. A2A_CONTEXT_ID environment variable\n"
+            "  3. .postman/current-context file\n"
+            "Run 'postman.py start' first or specify --context-id.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -1124,6 +1203,8 @@ def _run_daemon(config: Config, args: argparse.Namespace) -> None:
     def signal_handler(sig, frame):
         postman.running = False
         postman._stop_event.set()
+        # Clean up current context file
+        cleanup_current_context()
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
@@ -1144,6 +1225,9 @@ def cmd_start(args: argparse.Namespace) -> None:
         print(
             f"# Run in other panes: export A2A_CONTEXT_ID={context_id}", file=sys.stderr
         )
+
+    # Write context to file for cross-pane sharing
+    write_current_context(context_id)
 
     # Setup paths and create directories
     setup_paths(config, context_id)
@@ -1219,6 +1303,11 @@ def main() -> None:
         "--to",
         required=True,
         help="Recipient node (e.g., orchestrator, worker)",
+    )
+    draft_parser.add_argument(
+        "--context-id",
+        default=None,
+        help="Context ID (overrides A2A_CONTEXT_ID and file fallback)",
     )
 
     args = parser.parse_args()
