@@ -7,6 +7,14 @@ entry = "concierge"
 ping_every = 30
 startup_delay_seconds = 10
 reminder_interval = 5  # Send reminder after 5 messages (0 = disabled)
+message_header = """
+📬 Message from {from_node}
+Inbox: .postman/inbox/{node}/
+"""
+message_footer = """
+---
+処理後は inbox → read/ に移動すること。
+"""
 edges = [
   "concierge --> orchestrator --> worker",
   "orchestrator --> observer-claude-1",

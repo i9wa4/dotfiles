@@ -82,6 +82,22 @@ def expand_shell_commands(text: str) -> str:
     return SHELL_CMD_PATTERN.sub(replace_cmd, text)
 
 
+def expand_variables(text: str, variables: dict[str, str]) -> str:
+    """Expand {variable} patterns in text using provided dict.
+
+    Uses safe substitution - missing keys are left as-is.
+    """
+    if not text or "{" not in text:
+        return text
+
+    # Use string.Template for safe substitution (missing keys stay as-is)
+    # But Template uses $var syntax, so we manually handle {var}
+    result = text
+    for key, value in variables.items():
+        result = result.replace(f"{{{key}}}", value)
+    return result
+
+
 def parse_edges(edges: list[str]) -> dict[str, set[str]]:
     """Parse edge definitions and build adjacency list (bidirectional)."""
     adjacency: dict[str, set[str]] = {}
@@ -139,6 +155,8 @@ class Config:
     startup_delay_seconds: int = 0
     reminder_interval: int = 0  # 0 = disabled
     reminder_messages: dict[str, str] = field(default_factory=dict)
+    message_header: str = ""
+    message_footer: str = ""
 
 
 def load_config(config_path: Optional[Path] = None) -> Config:
@@ -180,6 +198,10 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     config.startup_delay_seconds = postman_cfg["startup_delay_seconds"]
                 if "reminder_interval" in postman_cfg:
                     config.reminder_interval = postman_cfg["reminder_interval"]
+                if "message_header" in postman_cfg:
+                    config.message_header = postman_cfg["message_header"].strip()
+                if "message_footer" in postman_cfg:
+                    config.message_footer = postman_cfg["message_footer"].strip()
 
                 # Parse edges
                 if "edges" in postman_cfg:
@@ -338,14 +360,32 @@ class Postman:
 
         inbox_path = self.config.inbox_dir / recipient
 
+        # Parse timestamp from filename
+        timestamp, _, _ = self.parse_message(filepath.name)
+        timestamp_str = timestamp or datetime.now().strftime("%Y%m%d-%H%M%S")
+
+        # Build variables dict for expansion
+        variables = {
+            "from_node": sender,
+            "node": recipient,
+            "timestamp": timestamp_str,
+            "message_header": self.config.message_header,
+            "message_footer": self.config.message_footer,
+        }
+
         lines = [
             f"📬 New message from {sender}",
         ]
 
-        # Add template (persona/rules)
+        # Add header if configured
+        if self.config.message_header:
+            header = expand_variables(self.config.message_header, variables)
+            lines = [header]
+
+        # Add template (persona/rules) with variable expansion
         if template:
             lines.append("")
-            lines.append(template)
+            lines.append(expand_variables(template, variables))
 
         lines.extend(
             [
@@ -360,6 +400,12 @@ class Postman:
                 "Then: mv .postman/draft/xxx.md .postman/post/",
             ]
         )
+
+        # Add footer if configured
+        if self.config.message_footer:
+            footer = expand_variables(self.config.message_footer, variables)
+            lines.append("")
+            lines.append(footer)
 
         return "\n".join(lines)
 
@@ -381,16 +427,26 @@ class Postman:
         with self._nodes_lock:
             all_peers = sorted(self.nodes.keys())
 
+        # Build variables dict for expansion
+        timestamp_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+        variables = {
+            "from_node": "postman",
+            "node": node_name,
+            "timestamp": timestamp_str,
+            "message_header": self.config.message_header,
+            "message_footer": self.config.message_footer,
+        }
+
         lines = [
             "📬 [PING] Status check",
             "",
             f"You are: {node_name}",
         ]
 
-        # Add template (persona/rules)
+        # Add template (persona/rules) with variable expansion
         if template:
             lines.append("")
-            lines.append(template)
+            lines.append(expand_variables(template, variables))
 
         lines.extend(
             [
