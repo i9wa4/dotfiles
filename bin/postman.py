@@ -1068,9 +1068,16 @@ def cmd_draft(args: argparse.Namespace) -> None:
 
     sender = os.environ.get("A2A_NODE", "unknown")
     recipient = args.to
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    msg_id = f"{timestamp}-{secrets.token_hex(2)}"
+    now = datetime.now()
+    timestamp = now.strftime("%Y%m%d-%H%M%S")
+    task_id = f"{timestamp}-{secrets.token_hex(2)}"
     filename = f"{timestamp}-from-{sender}-to-{recipient}.md"
+
+    # Generate context_id (session-based)
+    # Use env var if set, otherwise generate from date
+    context_id = os.environ.get(
+        "A2A_CONTEXT_ID", f"session-{now.strftime('%Y%m%d-%H%M')}"
+    )
 
     draft_dir = Path(".postman/draft")
     draft_dir.mkdir(parents=True, exist_ok=True)
@@ -1080,10 +1087,12 @@ def cmd_draft(args: argparse.Namespace) -> None:
     # Use template from config if available
     if config.draft_template:
         variables = {
-            "msg_id": msg_id,
+            "context_id": context_id,
+            "task_id": task_id,
+            "msg_id": task_id,  # Backward compatibility
             "sender": sender,
             "recipient": recipient,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": now.isoformat(),
             "message_footer": config.message_footer,
         }
         content = expand_variables(config.draft_template, variables)
@@ -1091,12 +1100,13 @@ def cmd_draft(args: argparse.Namespace) -> None:
         # Fallback to hardcoded template
         content = f"""---
 jsonrpc: "2.0"
-method: task/create
-id: {msg_id}
+method: message/send
 params:
+  contextId: {context_id}
+  taskId: {task_id}
   from: {sender}
   to: {recipient}
-  timestamp: {datetime.now().isoformat()}
+  timestamp: {now.isoformat()}
 ---
 
 ## Content

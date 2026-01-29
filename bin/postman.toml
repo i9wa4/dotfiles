@@ -30,6 +30,14 @@ You are: {node}
 
 Active nodes: {active_nodes}
 
+## A2A Methods
+
+| method        | Usage                                |
+| ------------- | ------------------------------------ |
+| message/send  | Task request/response (A2A standard) |
+| postman/ping  | Status check (postman extension)     |
+| postman/pong  | Ping response (postman extension)    |
+
 ## Reply
 
 {reply_command}
@@ -41,7 +49,7 @@ Then: mv .postman/draft/xxx.md .postman/post/
 digest_template = """
 📋 Digest: New messages
 
-Action: Review message contents for code changes or status updates.
+Action: Review message contents and code changes. If you feel any issues, report to relevant nodes.
 
 {digest_items}
 """
@@ -49,16 +57,16 @@ Action: Review message contents for code changes or status updates.
 # Draft message template
 draft_template = """---
 jsonrpc: "2.0"
-method: task/create
-id: {msg_id}
+method: message/send
 params:
+  contextId: {context_id}
+  taskId: {task_id}
   from: {sender}
   to: {recipient}
   timestamp: {timestamp}
 ---
 
 ## Content
-
 
 {message_footer}
 """
