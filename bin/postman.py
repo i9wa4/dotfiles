@@ -844,17 +844,6 @@ class Postman:
 
         self.logger.info(f"📨 Message: {sender} → {recipient}")
 
-        # Parse content if JSON-RPC format
-        try:
-            content = filepath.read_text()
-            metadata, body = self.parse_frontmatter(content)
-            if metadata.get("jsonrpc") == "2.0":
-                method = metadata.get("method", "unknown")
-                msg_id = metadata.get("id", "no-id")
-                self.logger.info(f"📋 JSON-RPC: method={method}, id={msg_id}")
-        except Exception:
-            pass
-
         # Handle messages to postman (ping responses)
         if recipient == "postman":
             self.logger.info(f"📥 Ping response from {sender}")
@@ -1092,7 +1081,6 @@ def cmd_draft(args: argparse.Namespace) -> None:
     else:
         # Fallback to hardcoded template
         content = f"""---
-jsonrpc: "2.0"
 method: message/send
 params:
   contextId: {context_id}
