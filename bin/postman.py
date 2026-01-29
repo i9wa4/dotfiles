@@ -157,6 +157,10 @@ class Config:
     reminder_messages: dict[str, str] = field(default_factory=dict)
     message_header: str = ""
     message_footer: str = ""
+    reply_command: str = ""
+    ping_template: str = ""
+    digest_template: str = ""
+    draft_template: str = ""
 
 
 def load_config(config_path: Optional[Path] = None) -> Config:
@@ -202,6 +206,14 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                     config.message_header = postman_cfg["message_header"].strip()
                 if "message_footer" in postman_cfg:
                     config.message_footer = postman_cfg["message_footer"].strip()
+                if "reply_command" in postman_cfg:
+                    config.reply_command = postman_cfg["reply_command"].strip()
+                if "ping_template" in postman_cfg:
+                    config.ping_template = postman_cfg["ping_template"].strip()
+                if "digest_template" in postman_cfg:
+                    config.digest_template = postman_cfg["digest_template"].strip()
+                if "draft_template" in postman_cfg:
+                    config.draft_template = postman_cfg["draft_template"].strip()
 
                 # Parse edges
                 if "edges" in postman_cfg:
@@ -365,10 +377,19 @@ class Postman:
         timestamp_str = timestamp or datetime.now().strftime("%Y%m%d-%H%M%S")
 
         # Build variables dict for expansion
+        reply_cmd = self.config.reply_command or (
+            "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
+            "draft --to <recipient>"
+        )
         variables = {
             "from_node": sender,
             "node": recipient,
             "timestamp": timestamp_str,
+            "inbox_path": str(inbox_path),
+            "filename": filepath.name,
+            "talks_to_line": self._format_talks_to(active_talks_to),
+            "template": expand_variables(template, {}) if template else "",
+            "reply_command": reply_cmd,
             "message_header": self.config.message_header,
             "message_footer": self.config.message_footer,
         }
@@ -395,8 +416,7 @@ class Postman:
                 "",
                 self._format_talks_to(active_talks_to),
                 "",
-                "Reply: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-                "draft --to <recipient>",
+                f"Reply: {reply_cmd}",
                 "Then: mv .postman/draft/xxx.md .postman/post/",
             ]
         )
@@ -429,21 +449,33 @@ class Postman:
 
         # Build variables dict for expansion
         timestamp_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+        reply_cmd = self.config.reply_command or (
+            "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
+            "draft --to <recipient>"
+        )
         variables = {
             "from_node": "postman",
             "node": node_name,
             "timestamp": timestamp_str,
+            "template": expand_variables(template, {}) if template else "",
+            "talks_to_line": self._format_talks_to(active_talks_to),
+            "active_nodes": ", ".join(all_peers),
+            "reply_command": reply_cmd,
             "message_header": self.config.message_header,
             "message_footer": self.config.message_footer,
         }
 
+        # Use template from config if available
+        if self.config.ping_template:
+            return expand_variables(self.config.ping_template, variables)
+
+        # Fallback to hardcoded template
         lines = [
             "📬 [PING] Status check",
             "",
             f"You are: {node_name}",
         ]
 
-        # Add template (persona/rules) with variable expansion
         if template:
             lines.append("")
             lines.append(expand_variables(template, variables))
@@ -457,15 +489,14 @@ class Postman:
                 "",
                 "## Reply",
                 "",
-                "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-                "draft --to postman",
+                f"{reply_cmd}",
                 "Then: mv .postman/draft/xxx.md .postman/post/",
-                "",
-                "---",
-                "",
-                "リマインド: 処理後は inbox → read/ に移動すること。",
             ]
         )
+
+        if self.config.message_footer:
+            lines.append("")
+            lines.append(expand_variables(self.config.message_footer, variables))
 
         return "\n".join(lines)
 
@@ -728,17 +759,30 @@ class Postman:
         if not new_files:
             return
 
-        # Build digest message with file paths
-        digest_lines = [
-            "📋 Digest: New messages",
-            "",
-            "Action: Review message contents for code changes or status updates.",
-            "",
-        ]
+        # Build digest items
+        digest_items_lines = []
         for info, filepath in new_files:
-            digest_lines.append(f"  • {info}")
-            digest_lines.append(f"    .postman/read/{filepath.name}")
-        digest_message = "\n".join(digest_lines)
+            digest_items_lines.append(f"  • {info}")
+            digest_items_lines.append(f"    .postman/read/{filepath.name}")
+        digest_items = "\n".join(digest_items_lines)
+
+        # Build digest message
+        if self.config.digest_template:
+            variables = {
+                "digest_items": digest_items,
+                "message_footer": self.config.message_footer,
+            }
+            digest_message = expand_variables(self.config.digest_template, variables)
+        else:
+            # Fallback to hardcoded template
+            digest_lines = [
+                "📋 Digest: New messages",
+                "",
+                "Action: Review message contents for code changes or status updates.",
+                "",
+                digest_items,
+            ]
+            digest_message = "\n".join(digest_lines)
 
         # Send to all observer panes (direct, not as files)
         for observer in observers:
@@ -1020,6 +1064,8 @@ class Postman:
 
 def cmd_draft(args: argparse.Namespace) -> None:
     """Create a draft message file."""
+    config = load_config(args.config)
+
     sender = os.environ.get("A2A_NODE", "unknown")
     recipient = args.to
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -1030,7 +1076,20 @@ def cmd_draft(args: argparse.Namespace) -> None:
     draft_dir.mkdir(parents=True, exist_ok=True)
 
     filepath = draft_dir / filename
-    content = f"""---
+
+    # Use template from config if available
+    if config.draft_template:
+        variables = {
+            "msg_id": msg_id,
+            "sender": sender,
+            "recipient": recipient,
+            "timestamp": datetime.now().isoformat(),
+            "message_footer": config.message_footer,
+        }
+        content = expand_variables(config.draft_template, variables)
+    else:
+        # Fallback to hardcoded template
+        content = f"""---
 jsonrpc: "2.0"
 method: task/create
 id: {msg_id}

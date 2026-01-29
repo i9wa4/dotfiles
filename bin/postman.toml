@@ -15,6 +15,54 @@ message_footer = """
 ---
 処理後は inbox → read/ に移動すること。
 """
+
+# Reply instruction (used in notifications and pings)
+reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>"
+
+# Ping message template
+ping_template = """
+📬 [PING] Status check
+
+You are: {node}
+{template}
+
+{talks_to_line}
+
+Active nodes: {active_nodes}
+
+## Reply
+
+{reply_command}
+Then: mv .postman/draft/xxx.md .postman/post/
+{message_footer}
+"""
+
+# Observer digest template
+digest_template = """
+📋 Digest: New messages
+
+Action: Review message contents for code changes or status updates.
+
+{digest_items}
+"""
+
+# Draft message template
+draft_template = """---
+jsonrpc: "2.0"
+method: task/create
+id: {msg_id}
+params:
+  from: {sender}
+  to: {recipient}
+  timestamp: {timestamp}
+---
+
+## Content
+
+
+{message_footer}
+"""
+
 edges = [
   "concierge --> orchestrator --> worker",
   "orchestrator --> observer-claude-1",
