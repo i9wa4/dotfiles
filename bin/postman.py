@@ -23,7 +23,6 @@ Setup:
 """
 
 import argparse
-import json
 import logging
 import os
 import re
@@ -138,11 +137,15 @@ class AgentCard:
 class Config:
     """Postman configuration."""
 
-    watch_dir: Path = field(default_factory=lambda: Path(".postman/post"))
-    inbox_dir: Path = field(default_factory=lambda: Path(".postman/inbox"))
-    read_dir: Path = field(default_factory=lambda: Path(".postman/read"))
-    dead_letter_dir: Path = field(default_factory=lambda: Path(".postman/dead-letter"))
-    log_file: Path = field(default_factory=lambda: Path(".postman/postman.log"))
+    base_dir: Path = field(default_factory=lambda: Path(".postman"))
+    context_id: str = ""
+    # Paths are computed from base_dir/context_id in setup_paths()
+    watch_dir: Path = field(default_factory=Path)
+    inbox_dir: Path = field(default_factory=Path)
+    read_dir: Path = field(default_factory=Path)
+    dead_letter_dir: Path = field(default_factory=Path)
+    draft_dir: Path = field(default_factory=Path)
+    log_file: Path = field(default_factory=Path)
     scan_interval: int = 10
     enter_delay: float = 0.7
     entry: str = ""
@@ -180,16 +183,8 @@ def load_config(config_path: Optional[Path] = None) -> Config:
 
                 # [postman] section
                 postman_cfg = data.get("postman", {})
-                if "watch_dir" in postman_cfg:
-                    config.watch_dir = Path(postman_cfg["watch_dir"])
-                if "inbox_dir" in postman_cfg:
-                    config.inbox_dir = Path(postman_cfg["inbox_dir"])
-                if "read_dir" in postman_cfg:
-                    config.read_dir = Path(postman_cfg["read_dir"])
-                if "dead_letter_dir" in postman_cfg:
-                    config.dead_letter_dir = Path(postman_cfg["dead_letter_dir"])
-                if "log_file" in postman_cfg:
-                    config.log_file = Path(postman_cfg["log_file"])
+                if "base_dir" in postman_cfg:
+                    config.base_dir = Path(postman_cfg["base_dir"])
                 if "scan_interval" in postman_cfg:
                     config.scan_interval = postman_cfg["scan_interval"]
                 if "enter_delay" in postman_cfg:
@@ -268,6 +263,24 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                 )
 
     return config
+
+
+def setup_paths(config: Config, context_id: str) -> None:
+    """Setup paths based on base_dir and context_id."""
+    config.context_id = context_id
+    session_dir = config.base_dir / context_id
+    config.watch_dir = session_dir / "post"
+    config.inbox_dir = session_dir / "inbox"
+    config.read_dir = session_dir / "read"
+    config.dead_letter_dir = session_dir / "dead-letter"
+    config.draft_dir = session_dir / "draft"
+    config.log_file = session_dir / "postman.log"
+
+
+def generate_context_id() -> str:
+    """Generate a new context ID."""
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return f"session-{timestamp}-{secrets.token_hex(2)}"
 
 
 @dataclass
@@ -573,43 +586,6 @@ class Postman:
         except (subprocess.TimeoutExpired, FileNotFoundError):
             pass
         return ""
-
-    def _acquire_pid_lock(self) -> bool:
-        """Kill existing process and acquire PID lock."""
-        pid_file = self.config.inbox_dir.parent / "postman.pid"
-        current_pid = os.getpid()
-
-        if pid_file.exists():
-            try:
-                with open(pid_file) as f:
-                    data = json.load(f)
-                old_pid = data.get("pid")
-                old_session = data.get("session", "unknown")
-
-                if old_pid and old_pid != current_pid:
-                    try:
-                        os.kill(old_pid, 0)
-                        msg = f"(PID: {old_pid}, session: {old_session})"
-                        self.logger.info(f"🔪 Killing existing postman {msg}")
-                        os.kill(old_pid, signal.SIGTERM)
-                        time.sleep(0.5)
-                    except OSError:
-                        pass
-            except (json.JSONDecodeError, KeyError, OSError):
-                pass
-
-        pid_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(pid_file, "w") as f:
-            json.dump({"pid": current_pid, "session": self.my_session}, f)
-        return True
-
-    def _release_pid_lock(self) -> None:
-        """Delete PID file on exit."""
-        pid_file = self.config.inbox_dir.parent / "postman.pid"
-        try:
-            pid_file.unlink(missing_ok=True)
-        except OSError:
-            pass
 
     def _get_pane_node(self, pid: str) -> Optional[str]:
         """Get A2A_NODE from a process's environment."""
@@ -993,10 +969,7 @@ class Postman:
         self.config.watch_dir.mkdir(parents=True, exist_ok=True)
         self.config.read_dir.mkdir(parents=True, exist_ok=True)
         self.config.dead_letter_dir.mkdir(parents=True, exist_ok=True)
-
-        # Acquire PID lock
-        if not self._acquire_pid_lock():
-            sys.exit(1)
+        self.config.draft_dir.mkdir(parents=True, exist_ok=True)
 
         # Wait for agents to start
         if self.config.startup_delay_seconds > 0:
@@ -1058,13 +1031,22 @@ class Postman:
         finally:
             self.running = False
             self._stop_event.set()
-            self._release_pid_lock()
             print("\n📮 Postman stopped")
 
 
 def cmd_draft(args: argparse.Namespace) -> None:
     """Create a draft message file."""
+    # Require A2A_CONTEXT_ID
+    context_id = os.environ.get("A2A_CONTEXT_ID")
+    if not context_id:
+        print(
+            "Error: A2A_CONTEXT_ID not set. Run 'postman.py start' first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     config = load_config(args.config)
+    setup_paths(config, context_id)
 
     sender = os.environ.get("A2A_NODE", "unknown")
     recipient = args.to
@@ -1073,16 +1055,8 @@ def cmd_draft(args: argparse.Namespace) -> None:
     task_id = f"{timestamp}-{secrets.token_hex(2)}"
     filename = f"{timestamp}-from-{sender}-to-{recipient}.md"
 
-    # Generate context_id (session-based)
-    # Use env var if set, otherwise generate from date
-    context_id = os.environ.get(
-        "A2A_CONTEXT_ID", f"session-{now.strftime('%Y%m%d-%H%M')}"
-    )
-
-    draft_dir = Path(".postman/draft")
-    draft_dir.mkdir(parents=True, exist_ok=True)
-
-    filepath = draft_dir / filename
+    config.draft_dir.mkdir(parents=True, exist_ok=True)
+    filepath = config.draft_dir / filename
 
     # Use template from config if available
     if config.draft_template:
@@ -1120,13 +1094,42 @@ After processing, move from inbox/ to read/
     print(f"📝 Created: {filepath}")
 
 
-def cmd_run(args: argparse.Namespace) -> None:
-    """Run the postman daemon."""
+def cmd_start(args: argparse.Namespace) -> None:
+    """Initialize a new session and output context ID."""
     config = load_config(args.config)
 
+    # Generate or reuse context_id
+    context_id = os.environ.get("A2A_CONTEXT_ID")
+    if not context_id:
+        context_id = generate_context_id()
+
+    # Setup paths and create directories
+    setup_paths(config, context_id)
+    config.watch_dir.mkdir(parents=True, exist_ok=True)
+    config.inbox_dir.mkdir(parents=True, exist_ok=True)
+    config.read_dir.mkdir(parents=True, exist_ok=True)
+    config.dead_letter_dir.mkdir(parents=True, exist_ok=True)
+    config.draft_dir.mkdir(parents=True, exist_ok=True)
+
+    # Output export command for shell
+    print(f"export A2A_CONTEXT_ID={context_id}")
+
+
+def cmd_run(args: argparse.Namespace) -> None:
+    """Run the postman daemon."""
+    # Require A2A_CONTEXT_ID
+    context_id = os.environ.get("A2A_CONTEXT_ID")
+    if not context_id:
+        print(
+            "Error: A2A_CONTEXT_ID not set. Run 'postman.py start' first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    config = load_config(args.config)
+    setup_paths(config, context_id)
+
     # CLI args override config
-    if args.watch_dir:
-        config.watch_dir = args.watch_dir
     if args.scan_interval:
         config.scan_interval = args.scan_interval
 
@@ -1156,14 +1159,11 @@ def main() -> None:
 
     subparsers = parser.add_subparsers(dest="command")
 
+    # start subcommand
+    subparsers.add_parser("start", help="Initialize session and output context ID")
+
     # run subcommand (default)
     run_parser = subparsers.add_parser("run", help="Run the postman daemon")
-    run_parser.add_argument(
-        "--watch-dir",
-        type=Path,
-        default=None,
-        help="Directory to watch (overrides config)",
-    )
     run_parser.add_argument(
         "--scan-interval",
         type=int,
@@ -1183,9 +1183,9 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.command is None or args.command == "run":
-        if not hasattr(args, "watch_dir"):
-            args.watch_dir = None
+    if args.command == "start":
+        cmd_start(args)
+    elif args.command is None or args.command == "run":
         if not hasattr(args, "scan_interval"):
             args.scan_interval = None
         cmd_run(args)

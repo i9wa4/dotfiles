@@ -3,6 +3,7 @@
 
 [postman]
 a2a_version = "1.0"
+base_dir = ".postman"  # Directory structure: {base_dir}/{context_id}/post/, inbox/, etc.
 entry = "concierge"
 ping_every = 30
 startup_delay_seconds = 10
