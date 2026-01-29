@@ -87,6 +87,7 @@ edges = [
 ]
 
 [concierge]
+role = "user interface, clarification"
 on_join = "I'm postman. You are the concierge - user's interface!"
 template = """
 # CONCIERGE (READONLY)
@@ -96,6 +97,7 @@ template = """
 """
 
 [orchestrator]
+role = "coordination, delegation"
 on_join = "I'm postman. You are the /orchestrator !"
 template = """
 # ORCHESTRATOR (READONLY)
@@ -105,6 +107,7 @@ template = """
 """
 
 [worker]
+role = "implementation, consultation"
 on_join = ""
 template = """
 # WORKER (WRITABLE)
@@ -114,6 +117,7 @@ template = """
 """
 
 [observer-claude-1]
+role = "monitoring, review"
 is_observer = true
 on_join = ""
 template = """
@@ -124,6 +128,7 @@ template = """
 """
 
 [observer-claude-2]
+role = "monitoring, review"
 is_observer = true
 on_join = ""
 template = """
@@ -134,6 +139,7 @@ template = """
 """
 
 [observer-codex-1]
+role = "monitoring, review"
 is_observer = true
 on_join = ""
 template = """
@@ -144,6 +150,7 @@ template = """
 """
 
 [observer-codex-2]
+role = "monitoring, review"
 is_observer = true
 on_join = ""
 template = """

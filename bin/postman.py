@@ -131,6 +131,7 @@ class AgentCard:
     capabilities: dict[str, Any] = field(default_factory=dict)
     template: str = ""
     is_observer: bool = False
+    role: str = ""
 
 
 @dataclass
@@ -154,6 +155,7 @@ class Config:
     on_join: dict[str, str] = field(default_factory=dict)
     observes: dict[str, list[str]] = field(default_factory=dict)
     templates: dict[str, str] = field(default_factory=dict)
+    roles: dict[str, str] = field(default_factory=dict)
     agent_cards: dict[str, AgentCard] = field(default_factory=dict)
     startup_delay_seconds: int = 0
     reminder_interval: int = 0  # 0 = disabled
@@ -237,6 +239,11 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                             config.reminder_messages[key] = expand_shell_commands(
                                 value["reminder_message"].strip()
                             )
+                        # role
+                        role = ""
+                        if "role" in value and value["role"]:
+                            role = value["role"]
+                            config.roles[key] = role
 
                         # Agent Card fields
                         if (
@@ -244,6 +251,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                             or "constraints" in value
                             or "talks_to" in value
                             or "is_observer" in value
+                            or "role" in value
                         ):
                             config.agent_cards[key] = AgentCard(
                                 id=key,
@@ -254,6 +262,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                                 capabilities=value.get("capabilities", {}),
                                 template=template,
                                 is_observer=value.get("is_observer", False),
+                                role=role,
                             )
 
                 return config
@@ -443,9 +452,16 @@ class Postman:
         return "\n".join(lines)
 
     def _format_talks_to(self, talks_to: list[str]) -> str:
-        """Format talks_to list for display."""
+        """Format talks_to list for display with roles."""
         if talks_to:
-            return f"Can talk to: {', '.join(talks_to)}"
+            parts = []
+            for name in talks_to:
+                role = self.config.roles.get(name, "")
+                if role:
+                    parts.append(f"{name} ({role})")
+                else:
+                    parts.append(name)
+            return f"Can talk to: {', '.join(parts)}"
         return "Can talk to: (none)"
 
     def build_ping_message(self, node_name: str) -> str:
@@ -470,6 +486,7 @@ class Postman:
             "from_node": "postman",
             "node": node_name,
             "timestamp": timestamp_str,
+            "context_id": self.config.context_id,
             "template": expand_variables(template, {}) if template else "",
             "talks_to_line": self._format_talks_to(active_talks_to),
             "active_nodes": ", ".join(all_peers),
