@@ -4,9 +4,12 @@
 # Blocks Edit/Write/NotebookEdit for non-worker agents.
 # Pattern-based deny is handled by settings.json deny list.
 #
-# Environment variables (from Claude Code PreToolUse hook):
-#   TOOL_NAME  - Tool name (Bash, Read, Write, Edit, NotebookEdit)
-#   TOOL_INPUT - JSON input parameters
+# Input (stdin JSON from Claude Code PreToolUse hook):
+#   {
+#     "hook_event_name": "PreToolUse",
+#     "tool_name": "Edit",
+#     "tool_input": { "file_path": "...", ... }
+#   }
 #
 # Exit codes:
 #   0 - Allow
@@ -14,19 +17,26 @@
 
 set -euo pipefail
 
-TOOL="${TOOL_NAME:-}"
-INPUT="${TOOL_INPUT:-}"
+# Read JSON from stdin
+INPUT=$(cat)
 
-# Extract file_path from tool input
+# Extract tool_name from JSON
+TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
+
+# DEBUG: Output environment info to file
+echo "DEBUG deny.sh: $(date +%Y%m%d-%H%M%S) A2A_NODE=${A2A_NODE:-UNSET} TOOL=${TOOL:-UNSET}" >>/tmp/deny-debug.log
+
+# Extract file_path from tool_input
 get_file_path() {
-  echo "$INPUT" | jq -r '.file_path // empty' 2>/dev/null
+  echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null
 }
 
 # ============================================================
 # Role-based check (A2A_NODE mode)
 # ============================================================
 
-if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
+# Block if A2A_NODE is empty OR not starting with "worker"
+if [[ -z ${A2A_NODE:-} || ${A2A_NODE} != worker* ]]; then
   case "$TOOL" in
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
