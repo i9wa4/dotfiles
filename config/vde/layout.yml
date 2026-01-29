@@ -20,26 +20,23 @@ presets:
     description: orchestrator
     windowMode: current-window
     layout:
-      type: vertical
-      ratio: [8, 1]
+      type: horizontal
+      ratio: [1, 1]
       panes:
-        - type: horizontal
+        - name: editor
+          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          focus: true
+        - type: vertical
           ratio: [1, 1]
           panes:
-            - name: editor
-              command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
-              focus: true
-            - type: vertical
-              ratio: [1, 1]
-              panes:
-                - name: concierge
-                  command: claude --model haiku --dangerously-skip-permissions
-                  env:
-                    A2A_NODE: concierge
-                - name: orchestrator
-                  command: claude --dangerously-skip-permissions
-                  env:
-                    A2A_NODE: orchestrator
+            - name: concierge
+              command: claude --model haiku --dangerously-skip-permissions
+              env:
+                A2A_NODE: concierge
+            - name: orchestrator
+              command: claude --dangerously-skip-permissions
+              env:
+                A2A_NODE: orchestrator
 
   workers:
     name: workers
