@@ -9,16 +9,28 @@ Postman runs in a dedicated pane and monitors all other panes that have
 A2A_NODE environment variable set.
 
 Usage:
-    uv run bin/postman.py
+    uv run bin/postman.py [start] [OPTIONS]
+    uv run bin/postman.py attach [OPTIONS]
+    uv run bin/postman.py create-draft --to <recipient>
 
-Options:
-    --watch-dir PATH      Directory to watch (default: .postman/post)
-    --scan-interval SEC   Pane rescan interval (default: 30)
+Subcommands:
+    start (default)   Initialize new session and start daemon
+    attach            Attach to existing session (requires A2A_CONTEXT_ID)
+    create-draft      Create a draft message file
+
+Global Options:
+    --config PATH         Config file path (default: bin/postman.toml)
+
+Start/Attach Options:
+    --scan-interval SEC   Pane rescan interval in seconds (overrides config)
+
+Create-draft Options:
+    --to RECIPIENT        Recipient node (required, e.g., orchestrator, worker)
 
 Setup:
     Pane 1: A2A_NODE=orchestrator claude ...
     Pane 2: A2A_NODE=worker claude ...
-    Pane 3: A2A_NODE=observer-security codex ...
+    Pane 3: A2A_NODE=observer codex ...
     Pane 4: uv run bin/postman.py   <- Monitors all above
 """
 
