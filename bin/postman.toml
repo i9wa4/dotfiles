@@ -6,8 +6,10 @@ a2a_version = "1.0"
 base_dir = ".postman"  # Directory structure: {base_dir}/{context_id}/post/, inbox/, etc.
 entry = "concierge"
 startup_delay_seconds = 10
-reminder_interval = 5  # Send reminder after 5 messages (0 = disabled)
-reminder_message = "Check your inbox and continue tasks."
+reminder_interval = 20  # Send reminder after 5 messages (0 = disabled)
+reminder_message = """
+$(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
+"""
 message_header = """
 📬 Message from {from_node}
 Inbox: .postman/inbox/{node}/
