@@ -17,7 +17,7 @@ After processing, move from inbox/ to read/
 """
 
 # Reply instruction (used in notifications and pings)
-reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py draft --to <recipient>"
+reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py create-draft --to <recipient>"
 
 # Ping message template
 ping_template = """

@@ -379,7 +379,7 @@ class Postman:
         # Build variables dict for expansion
         reply_cmd = self.config.reply_command or (
             "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-            "draft --to <recipient>"
+            "create-draft --to <recipient>"
         )
         variables = {
             "from_node": sender,
@@ -451,7 +451,7 @@ class Postman:
         timestamp_str = datetime.now().strftime("%Y%m%d-%H%M%S")
         reply_cmd = self.config.reply_command or (
             "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-            "draft --to <recipient>"
+            "create-draft --to <recipient>"
         )
         variables = {
             "from_node": "postman",
@@ -1161,8 +1161,10 @@ def main() -> None:
         help="Pane rescan interval in seconds (overrides config)",
     )
 
-    # draft subcommand
-    draft_parser = subparsers.add_parser("draft", help="Create a draft message file")
+    # create-draft subcommand
+    draft_parser = subparsers.add_parser(
+        "create-draft", help="Create a draft message file"
+    )
     draft_parser.add_argument(
         "--to",
         required=True,
@@ -1177,7 +1179,7 @@ def main() -> None:
         if not hasattr(args, "scan_interval"):
             args.scan_interval = None
         cmd_run(args)
-    elif args.command == "draft":
+    elif args.command == "create-draft":
         cmd_draft(args)
 
 
