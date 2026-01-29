@@ -1094,43 +1094,10 @@ After processing, move from inbox/ to read/
     print(f"📝 Created: {filepath}")
 
 
-def cmd_start(args: argparse.Namespace) -> None:
-    """Initialize a new session and output context ID."""
-    config = load_config(args.config)
-
-    # Generate or reuse context_id
-    context_id = os.environ.get("A2A_CONTEXT_ID")
-    if not context_id:
-        context_id = generate_context_id()
-
-    # Setup paths and create directories
-    setup_paths(config, context_id)
-    config.watch_dir.mkdir(parents=True, exist_ok=True)
-    config.inbox_dir.mkdir(parents=True, exist_ok=True)
-    config.read_dir.mkdir(parents=True, exist_ok=True)
-    config.dead_letter_dir.mkdir(parents=True, exist_ok=True)
-    config.draft_dir.mkdir(parents=True, exist_ok=True)
-
-    # Output export command for shell
-    print(f"export A2A_CONTEXT_ID={context_id}")
-
-
-def cmd_run(args: argparse.Namespace) -> None:
-    """Run the postman daemon."""
-    # Require A2A_CONTEXT_ID
-    context_id = os.environ.get("A2A_CONTEXT_ID")
-    if not context_id:
-        print(
-            "Error: A2A_CONTEXT_ID not set. Run 'postman.py start' first.",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    config = load_config(args.config)
-    setup_paths(config, context_id)
-
+def _run_daemon(config: Config, args: argparse.Namespace) -> None:
+    """Common daemon startup logic."""
     # CLI args override config
-    if args.scan_interval:
+    if hasattr(args, "scan_interval") and args.scan_interval:
         config.scan_interval = args.scan_interval
 
     postman = Postman(config)
@@ -1143,6 +1110,50 @@ def cmd_run(args: argparse.Namespace) -> None:
     signal.signal(signal.SIGTERM, signal_handler)
 
     postman.run()
+
+
+def cmd_start(args: argparse.Namespace) -> None:
+    """Initialize a new session and start daemon."""
+    config = load_config(args.config)
+
+    # Generate or reuse context_id
+    context_id = os.environ.get("A2A_CONTEXT_ID")
+    if not context_id:
+        context_id = generate_context_id()
+        # Output for user to set in other panes
+        print(f"# New session: {context_id}", file=sys.stderr)
+        print(
+            f"# Run in other panes: export A2A_CONTEXT_ID={context_id}", file=sys.stderr
+        )
+
+    # Setup paths and create directories
+    setup_paths(config, context_id)
+    config.watch_dir.mkdir(parents=True, exist_ok=True)
+    config.inbox_dir.mkdir(parents=True, exist_ok=True)
+    config.read_dir.mkdir(parents=True, exist_ok=True)
+    config.dead_letter_dir.mkdir(parents=True, exist_ok=True)
+    config.draft_dir.mkdir(parents=True, exist_ok=True)
+
+    # Start daemon
+    _run_daemon(config, args)
+
+
+def cmd_attach(args: argparse.Namespace) -> None:
+    """Attach to an existing session and run daemon."""
+    # Require A2A_CONTEXT_ID
+    context_id = os.environ.get("A2A_CONTEXT_ID")
+    if not context_id:
+        print(
+            "Error: A2A_CONTEXT_ID not set. Use 'start' command instead.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    config = load_config(args.config)
+    setup_paths(config, context_id)
+
+    # Start daemon
+    _run_daemon(config, args)
 
 
 def main() -> None:
@@ -1159,12 +1170,22 @@ def main() -> None:
 
     subparsers = parser.add_subparsers(dest="command")
 
-    # start subcommand
-    subparsers.add_parser("start", help="Initialize session and output context ID")
+    # start subcommand (default)
+    start_parser = subparsers.add_parser(
+        "start", help="Initialize new session and start daemon"
+    )
+    start_parser.add_argument(
+        "--scan-interval",
+        type=int,
+        default=None,
+        help="Pane rescan interval in seconds (overrides config)",
+    )
 
-    # run subcommand (default)
-    run_parser = subparsers.add_parser("run", help="Run the postman daemon")
-    run_parser.add_argument(
+    # attach subcommand
+    attach_parser = subparsers.add_parser(
+        "attach", help="Attach to existing session (requires A2A_CONTEXT_ID)"
+    )
+    attach_parser.add_argument(
         "--scan-interval",
         type=int,
         default=None,
@@ -1183,12 +1204,10 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.command == "start":
+    if args.command is None or args.command == "start":
         cmd_start(args)
-    elif args.command is None or args.command == "run":
-        if not hasattr(args, "scan_interval"):
-            args.scan_interval = None
-        cmd_run(args)
+    elif args.command == "attach":
+        cmd_attach(args)
     elif args.command == "create-draft":
         cmd_draft(args)
 
