@@ -24,6 +24,9 @@ reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py create-dr
 ping_template = """
 📬 [PING] Status check
 
+contextId: {context_id}
+You MUST reply with PONG to confirm you are active.
+
 You are: {node}
 {template}
 
@@ -41,8 +44,11 @@ Active nodes: {active_nodes}
 
 ## Reply
 
-{reply_command}
-Then: mv .postman/draft/xxx.md .postman/post/
+NOTE: Do NOT use `uv run postman.py` (A2A_CONTEXT_ID is only set in postman shell).
+
+Use direct file operations with contextId-based paths:
+1. Create draft: `.postman/{context_id}/draft/{timestamp}-from-{node}-to-<recipient>.md`
+2. Post: `mv .postman/{context_id}/draft/xxx.md .postman/{context_id}/post/`
 {message_footer}
 """
 
