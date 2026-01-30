@@ -36,6 +36,7 @@ Setup:
 """
 
 import argparse
+import fcntl
 import logging
 import os
 import re
@@ -53,7 +54,7 @@ from typing import Any, Optional
 
 from watchfiles import Change, watch
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 
 # Default timeout constant (seconds) - can be overridden in config
 DEFAULT_TMUX_TIMEOUT_SECONDS = 30
@@ -67,36 +68,67 @@ FILE_PATTERN = re.compile(r"^(\d{8}-\d{6})-from-([a-z0-9-]+)-to-([a-z0-9-]+)\.md
 # Shell command pattern: $(...)
 SHELL_CMD_PATTERN = re.compile(r"\$\(([^)]+)\)")
 
-# Current context file for cross-pane context sharing
-CURRENT_CONTEXT_FILE = Path(".postman/current-context")
+# Current context file for cross-pane context sharing (tmux session specific)
+# Format: .postman/current-context-{tmux_session}
+CURRENT_CONTEXT_BASE = Path(".postman/current-context")
+
+
+def get_tmux_session_name() -> str:
+    """Get the current tmux session name."""
+    try:
+        result = subprocess.run(
+            ["tmux", "display-message", "-p", "#{session_name}"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    return ""
+
+
+def get_current_context_file() -> Path:
+    """Get the current context file path for this tmux session."""
+    session_name = get_tmux_session_name()
+    if session_name:
+        return Path(f".postman/current-context-{session_name}")
+    return CURRENT_CONTEXT_BASE
 
 
 def write_current_context(context_id: str) -> None:
-    """Write current context to file with metadata."""
+    """Write current context to file with metadata (tmux session specific)."""
     import atexit
     import json
 
+    context_file = get_current_context_file()
     data = {
         "context_id": context_id,
         "pid": os.getpid(),
         "timestamp": datetime.now().isoformat(),
+        "tmux_session": get_tmux_session_name(),
     }
     # Atomic write: tmp -> rename
-    tmp_file = CURRENT_CONTEXT_FILE.with_suffix(".tmp")
+    tmp_file = context_file.with_suffix(".tmp")
     tmp_file.parent.mkdir(parents=True, exist_ok=True)
     tmp_file.write_text(json.dumps(data))
     tmp_file.chmod(0o600)
-    tmp_file.rename(CURRENT_CONTEXT_FILE)
+    os.replace(tmp_file, context_file)
     # Register cleanup
     atexit.register(cleanup_current_context)
 
 
 def read_current_context() -> Optional[str]:
-    """Read context_id from file. Returns None if not found or invalid."""
+    """Read context_id from file (tmux session specific).
+
+    Returns None if not found or invalid.
+    """
     import json
 
+    context_file = get_current_context_file()
     try:
-        data = json.loads(CURRENT_CONTEXT_FILE.read_text())
+        data = json.loads(context_file.read_text())
         context_id = data.get("context_id")
         if isinstance(context_id, str):
             return context_id
@@ -105,17 +137,113 @@ def read_current_context() -> Optional[str]:
         return None
 
 
+def find_all_context_files() -> list[tuple[Path, str]]:
+    """Find all current-context files and return list of (path, context_id)."""
+    import json
+
+    result: list[tuple[Path, str]] = []
+    postman_dir = Path(".postman")
+    if not postman_dir.exists():
+        return result
+
+    for path in postman_dir.glob("current-context*"):
+        if path.is_file() and not path.suffix == ".tmp":
+            try:
+                data = json.loads(path.read_text())
+                context_id = data.get("context_id")
+                if isinstance(context_id, str):
+                    result.append((path, context_id))
+            except (json.JSONDecodeError, OSError):
+                pass
+
+    return result
+
+
 def cleanup_current_context() -> None:
     """Remove current context file only if owned by this process."""
     import json
 
+    context_file = get_current_context_file()
     try:
-        if CURRENT_CONTEXT_FILE.exists():
-            data = json.loads(CURRENT_CONTEXT_FILE.read_text())
+        if context_file.exists():
+            data = json.loads(context_file.read_text())
             if data.get("pid") == os.getpid():
-                CURRENT_CONTEXT_FILE.unlink(missing_ok=True)
+                context_file.unlink(missing_ok=True)
     except (json.JSONDecodeError, OSError):
         pass
+
+
+class SessionLock:
+    """Session-level process lock using fcntl.flock().
+
+    Ensures only one postman process runs per context_id.
+    """
+
+    def __init__(self, session_dir: Path):
+        self.lock_file = session_dir / "postman.lock"
+        self.pid_file = session_dir / "postman.pid"
+        self._lock_fd: Optional[int] = None
+
+    def acquire(self) -> bool:
+        """Attempt to acquire the session lock.
+
+        Returns True if lock acquired, False if another process holds it.
+        """
+        self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+
+        # Open or create lock file
+        self._lock_fd = os.open(
+            self.lock_file, os.O_RDWR | os.O_CREAT, 0o600
+        )
+
+        try:
+            # Try to acquire exclusive lock (non-blocking)
+            fcntl.flock(self._lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            # Write our PID
+            os.ftruncate(self._lock_fd, 0)
+            os.write(self._lock_fd, f"{os.getpid()}\n".encode())
+            os.fsync(self._lock_fd)
+            # Also write PID to separate file for easier reading
+            self.pid_file.write_text(f"{os.getpid()}\n")
+            return True
+        except (BlockingIOError, OSError):
+            # Lock already held by another process
+            os.close(self._lock_fd)
+            self._lock_fd = None
+            return False
+
+    def get_existing_pid(self) -> Optional[int]:
+        """Get PID of the process holding the lock."""
+        try:
+            if self.pid_file.exists():
+                pid_str = self.pid_file.read_text().strip()
+                return int(pid_str)
+        except (ValueError, OSError):
+            pass
+        return None
+
+    def is_pid_alive(self, pid: int) -> bool:
+        """Check if a process with given PID is still running."""
+        try:
+            os.kill(pid, 0)
+            return True
+        except (OSError, ProcessLookupError):
+            return False
+
+    def release(self) -> None:
+        """Release the session lock."""
+        if self._lock_fd is not None:
+            try:
+                fcntl.flock(self._lock_fd, fcntl.LOCK_UN)
+                os.close(self._lock_fd)
+            except OSError:
+                pass
+            self._lock_fd = None
+        # Clean up PID file
+        try:
+            self.pid_file.unlink(missing_ok=True)
+        except OSError:
+            pass
 
 
 def expand_shell_commands(text: str) -> str:
@@ -812,12 +940,37 @@ class Postman:
         except Exception:
             return {}, content
 
+    def _safe_move_file(self, src: Path, dest: Path) -> bool:
+        """Safely move a file with conflict handling.
+
+        Uses os.replace for atomic operation.
+        Returns True on success, False on failure.
+        """
+        try:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(src, dest)
+            return True
+        except FileNotFoundError:
+            self.logger.warning(f"⚠️ File already moved: {src.name}")
+            return False
+        except FileExistsError:
+            self.logger.warning(f"⚠️ Destination exists: {dest.name}")
+            return False
+        except OSError as e:
+            self.logger.error(f"❌ Move failed: {src.name} -> {dest.name}: {e}")
+            return False
+
     def handle_new_file(self, filepath: Path) -> None:
         """Handle a newly created file - route to recipient."""
         filename = filepath.name
         timestamp, sender, recipient = self.parse_message(filename)
 
         if not (timestamp and sender and recipient):
+            return
+
+        # Check if file still exists (may have been processed by another instance)
+        if not filepath.exists():
+            self.logger.debug(f"File already processed: {filename}")
             return
 
         self.logger.info(f"📨 Message: {sender} → {recipient}")
@@ -827,7 +980,7 @@ class Postman:
             self.logger.info(f"📥 Ping response from {sender}")
             # Move to read
             dest = self.config.read_dir / filepath.name
-            filepath.rename(dest)
+            self._safe_move_file(filepath, dest)
             return
 
         # Find recipient node
@@ -840,21 +993,20 @@ class Postman:
                 self.logger.info(f"📬 Delivered to {recipient}")
                 # Move to inbox
                 inbox_path = self.config.inbox_dir / recipient
-                inbox_path.mkdir(parents=True, exist_ok=True)
                 dest = inbox_path / filepath.name
-                filepath.rename(dest)
-                # Notify observers of new message
-                self.send_observer_digest()
-                # Check reminder for recipient
-                self.check_and_send_reminder(recipient)
+                if self._safe_move_file(filepath, dest):
+                    # Notify observers of new message
+                    self.send_observer_digest()
+                    # Check reminder for recipient
+                    self.check_and_send_reminder(recipient)
             else:
                 self.logger.error(f"❌ Failed to deliver to {recipient}")
                 dest = self.config.dead_letter_dir / filepath.name
-                filepath.rename(dest)
+                self._safe_move_file(filepath, dest)
         else:
             self.logger.warning(f"⚠️ Recipient '{recipient}' not found")
             dest = self.config.dead_letter_dir / filepath.name
-            filepath.rename(dest)
+            self._safe_move_file(filepath, dest)
 
     def send_ping_to_all(self) -> None:
         """Send ping to all nodes."""
@@ -916,24 +1068,36 @@ class Postman:
         self.send_observer_digest()
 
     def watch_files(self) -> None:
-        """Watch directory for new files using watchfiles."""
-        self.logger.info(f"🔍 Starting file watcher on {self.config.watch_dir}")
-        try:
-            for changes in watch(self.config.watch_dir, stop_event=self._stop_event):
-                self.logger.info(f"🔍 Detected changes: {changes}")
-                if not self.running:
-                    break
-                for change_type, path_str in changes:
-                    if change_type == Change.added:
-                        filepath = Path(path_str)
-                        if filepath.is_file():
-                            self.handle_new_file(filepath)
-        except Exception as e:
-            if self.running:
-                self.logger.error(f"❌ Watch error: {e}")
-            import traceback
+        """Watch directory for new files using watchfiles.
 
-            self.logger.error(traceback.format_exc())
+        Robust exception handling to prevent watcher thread from stopping.
+        """
+        self.logger.info(f"🔍 Starting file watcher on {self.config.watch_dir}")
+        while self.running:
+            try:
+                for changes in watch(
+                    self.config.watch_dir, stop_event=self._stop_event
+                ):
+                    self.logger.info(f"🔍 Detected changes: {changes}")
+                    if not self.running:
+                        return
+                    for change_type, path_str in changes:
+                        if change_type == Change.added:
+                            try:
+                                filepath = Path(path_str)
+                                if filepath.is_file():
+                                    self.handle_new_file(filepath)
+                            except Exception as e:
+                                # Log error but continue watching
+                                self.logger.error(
+                                    f"❌ Error handling file {path_str}: {e}"
+                                )
+            except Exception as e:
+                if not self.running:
+                    return
+                self.logger.error(f"❌ Watch error (will retry): {e}")
+                # Brief sleep before retrying to avoid tight loop
+                time.sleep(1)
 
     def print_nodes(self) -> None:
         """Print current nodes."""
@@ -972,16 +1136,25 @@ class Postman:
             )
             time.sleep(self.config.startup_delay_seconds)
 
-        # Move existing inbox files to read/
+        # Move existing inbox files to read/ (with conflict handling)
         if self.config.inbox_dir.exists():
             for role_dir in self.config.inbox_dir.iterdir():
                 if role_dir.is_dir():
                     for filepath in role_dir.glob("*.md"):
-                        dest = self.config.read_dir / filepath.name
-                        filepath.rename(dest)
-                        self.logger.info(
-                            f"🧹 Moved stale inbox file to read/: {filepath.name}"
-                        )
+                        try:
+                            dest = self.config.read_dir / filepath.name
+                            os.replace(filepath, dest)
+                            self.logger.info(
+                                f"🧹 Moved stale inbox file to read/: {filepath.name}"
+                            )
+                        except FileNotFoundError:
+                            self.logger.debug(
+                                f"File already moved: {filepath.name}"
+                            )
+                        except OSError as e:
+                            self.logger.warning(
+                                f"⚠️ Failed to move stale file: {filepath.name}: {e}"
+                            )
                     try:
                         role_dir.rmdir()
                     except OSError:
@@ -1053,8 +1226,9 @@ def cmd_draft(args: argparse.Namespace) -> None:
         if context_id:
             context_source = "env"
 
-    # 3. File fallback
+    # 3. File fallback (tmux session specific)
     if not context_id:
+        # First try tmux-session-specific file
         context_id = read_current_context()
         if context_id:
             context_source = "file"
@@ -1062,6 +1236,34 @@ def cmd_draft(args: argparse.Namespace) -> None:
                 f"Warning: Using context from {context_source} fallback",
                 file=sys.stderr,
             )
+        else:
+            # Check if multiple context files exist (ambiguous)
+            all_contexts = find_all_context_files()
+            if len(all_contexts) > 1:
+                print(
+                    "Error: Multiple context files found. "
+                    "Ambiguous context selection.\n"
+                    "Found contexts:",
+                    file=sys.stderr,
+                )
+                for path, ctx_id in all_contexts:
+                    print(f"  - {path}: {ctx_id}", file=sys.stderr)
+                print(
+                    "\nSpecify context explicitly:\n"
+                    "  1. --context-id argument\n"
+                    "  2. export A2A_CONTEXT_ID=<context_id>",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            elif len(all_contexts) == 1:
+                # Single context found, use it with warning
+                context_id = all_contexts[0][1]
+                context_source = "file"
+                print(
+                    f"Warning: Using context from {context_source} fallback "
+                    f"({all_contexts[0][0]})",
+                    file=sys.stderr,
+                )
 
     # Error if all failed
     if not context_id:
@@ -1069,7 +1271,7 @@ def cmd_draft(args: argparse.Namespace) -> None:
             "Error: Context ID not found. Tried:\n"
             "  1. --context-id argument\n"
             "  2. A2A_CONTEXT_ID environment variable\n"
-            "  3. .postman/current-context file\n"
+            "  3. .postman/current-context-{tmux_session} file\n"
             "Run 'postman.py start' first or specify --context-id.",
             file=sys.stderr,
         )
@@ -1103,10 +1305,31 @@ def cmd_draft(args: argparse.Namespace) -> None:
 
 
 def _run_daemon(config: Config, args: argparse.Namespace) -> None:
-    """Common daemon startup logic."""
+    """Common daemon startup logic with session lock."""
     # CLI args override config
     if hasattr(args, "scan_interval") and args.scan_interval:
         config.scan_interval_seconds = args.scan_interval
+
+    # Acquire session lock
+    session_dir = config.base_dir / config.context_id
+    lock = SessionLock(session_dir)
+
+    if not lock.acquire():
+        existing_pid = lock.get_existing_pid()
+        if existing_pid and lock.is_pid_alive(existing_pid):
+            print(
+                f"Error: Another postman process (PID {existing_pid}) "
+                f"is already running for context '{config.context_id}'.\n"
+                f"Kill it first: kill {existing_pid}",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"Error: Could not acquire lock for context '{config.context_id}'.\n"
+                f"A stale lock may exist. Check {session_dir}/postman.lock",
+                file=sys.stderr,
+            )
+        sys.exit(1)
 
     postman = Postman(config)
 
@@ -1115,11 +1338,16 @@ def _run_daemon(config: Config, args: argparse.Namespace) -> None:
         postman._stop_event.set()
         # Clean up current context file
         cleanup_current_context()
+        # Release session lock
+        lock.release()
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    postman.run()
+    try:
+        postman.run()
+    finally:
+        lock.release()
 
 
 def cmd_start(args: argparse.Namespace) -> None:
