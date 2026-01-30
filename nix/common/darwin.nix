@@ -10,6 +10,8 @@
       # Increase download buffer to avoid "download buffer is full" warning
       # Default: 64 MiB (64 * 1024 * 1024 = 67108864)
       download-buffer-size = 128 * 1024 * 1024; # 128 MiB
+      # Allow user to use extra substituters (e.g., cache.numtide.com from flake inputs)
+      trusted-users = ["root" username];
     };
     # Deduplicate files via hard links (scheduled, not per-build)
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
