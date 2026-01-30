@@ -192,9 +192,7 @@ class SessionLock:
         self.lock_file.parent.mkdir(parents=True, exist_ok=True)
 
         # Open or create lock file
-        self._lock_fd = os.open(
-            self.lock_file, os.O_RDWR | os.O_CREAT, 0o600
-        )
+        self._lock_fd = os.open(self.lock_file, os.O_RDWR | os.O_CREAT, 0o600)
 
         try:
             # Try to acquire exclusive lock (non-blocking)
@@ -1148,9 +1146,7 @@ class Postman:
                                 f"🧹 Moved stale inbox file to read/: {filepath.name}"
                             )
                         except FileNotFoundError:
-                            self.logger.debug(
-                                f"File already moved: {filepath.name}"
-                            )
+                            self.logger.debug(f"File already moved: {filepath.name}")
                         except OSError as e:
                             self.logger.warning(
                                 f"⚠️ Failed to move stale file: {filepath.name}: {e}"
