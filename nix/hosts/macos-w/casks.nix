@@ -5,6 +5,7 @@ _: {
     "drawio"
     "google-chrome"
     "openvpn-connect"
+    "stats"
     "visual-studio-code"
     "wezterm"
     "zoom"

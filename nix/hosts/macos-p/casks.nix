@@ -4,6 +4,7 @@ _: {
     "docker"
     "drawio"
     "google-chrome"
+    "stats"
     "visual-studio-code"
     "wezterm"
     "zoom"
