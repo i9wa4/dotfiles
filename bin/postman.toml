@@ -1,26 +1,93 @@
 # Postman Configuration
 # File-based communication daemon for tmux panes
 
+# =============================================================================
+# Template Variables Reference
+# =============================================================================
+#
+# notification_template:
+#   {from_node}      - Sender node name
+#   {node}           - Recipient node name
+#   {timestamp}      - Message timestamp (YYYYMMDD-HHMMSS)
+#   {inbox_path}     - Full path to recipient's inbox directory
+#   {filename}       - Message filename
+#   {talks_to_line}  - Formatted list of nodes this node can communicate with
+#   {template}       - Node's role template (from [node].template)
+#   {reply_command}  - Command to create draft message
+#   {context_id}     - Current session context ID
+#
+# ping_template:
+#   {context_id}     - Current session context ID
+#   {node}           - Target node name
+#   {timestamp}      - Message timestamp (YYYYMMDD-HHMMSS)
+#   {from_node}      - Sender node name (always "postman")
+#   {template}       - Node's role template
+#   {talks_to_line}  - Formatted list of nodes this node can communicate with
+#   {active_nodes}   - Comma-separated list of all active nodes
+#   {reply_command}  - Command to create draft message
+#
+# digest_template:
+#   {digest_items}   - Formatted list of new messages
+#
+# draft_template:
+#   {context_id}     - Current session context ID
+#   {task_id}        - Unique task identifier
+#   {msg_id}         - Alias for task_id (backward compatibility)
+#   {sender}         - Sender node name
+#   {recipient}      - Recipient node name
+#   {timestamp}      - ISO format timestamp
+#
+# =============================================================================
+
 [postman]
 a2a_version = "1.0"
 base_dir = ".postman"  # Directory structure: {base_dir}/{context_id}/post/, inbox/, etc.
-entry = "concierge"
 startup_delay_seconds = 10
-reminder_interval = 20  # Send reminder after 5 messages (0 = disabled)
+new_node_ping_delay_seconds = 3  # Delay before sending ping to newly joined nodes
+reminder_interval_seconds = 20  # Send reminder after N messages (0 = disabled)
+
+# Timing settings
+scan_interval_seconds = 1  # Pane rescan interval in seconds
+tmux_timeout_seconds = 30  # Timeout for tmux commands
+enter_delay_seconds = 0.7  # Delay before sending Enter key
+
+edges = [
+  "concierge --> orchestrator --> worker",
+  "orchestrator --> observer-claude-1",
+  "orchestrator --> observer-claude-2",
+  "orchestrator --> observer-codex-1",
+  "orchestrator --> observer-codex-2",
+]
+
+# Reminder message (sent periodically to nodes)
 reminder_message = """
 $(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
 """
-message_header = """
+
+# Reply instruction (used in templates)
+reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py create-draft --to <recipient>"
+
+# Notification template (when new message arrives)
+notification_template = """
 📬 Message from {from_node}
-Inbox: .postman/inbox/{node}/
-"""
-message_footer = """
+
+{template}
+
+{talks_to_line}
+
+## Message Details
+
+Inbox: {inbox_path}/
+File: {filename}
+
+## Reply
+
+1. Create draft: {reply_command}
+2. Post: `mv .postman/{context_id}/draft/xxx.md .postman/{context_id}/post/`
+
 ---
 After processing, move from inbox/ to read/
 """
-
-# Reply instruction (used in notifications and pings)
-reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py create-draft --to <recipient>"
 
 # Ping message template
 ping_template = """
@@ -30,28 +97,17 @@ contextId: {context_id}
 You MUST reply with PONG to confirm you are active.
 
 You are: {node}
+
 {template}
 
 {talks_to_line}
 
 Active nodes: {active_nodes}
 
-## A2A Methods
-
-| method        | Usage                                |
-| ------------- | ------------------------------------ |
-| message/send  | Task request/response (A2A standard) |
-| postman/ping  | Status check (postman extension)     |
-| postman/pong  | Ping response (postman extension)    |
-
 ## Reply
 
-NOTE: Do NOT use `uv run postman.py` (A2A_CONTEXT_ID is only set in postman shell).
-
-Use direct file operations with contextId-based paths:
-1. Create draft: `.postman/{context_id}/draft/{timestamp}-from-{node}-to-<recipient>.md`
+1. Create draft: {reply_command}
 2. Post: `mv .postman/{context_id}/draft/xxx.md .postman/{context_id}/post/`
-{message_footer}
 """
 
 # Observer digest template
@@ -76,16 +132,7 @@ params:
 
 ## Content
 
-{message_footer}
 """
-
-edges = [
-  "concierge --> orchestrator --> worker",
-  "orchestrator --> observer-claude-1",
-  "orchestrator --> observer-claude-2",
-  "orchestrator --> observer-codex-1",
-  "orchestrator --> observer-codex-2",
-]
 
 [concierge]
 role = "user interface, clarification"
@@ -119,7 +166,7 @@ template = """
 
 [observer-claude-1]
 role = "monitoring, review"
-is_observer = true
+subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -130,7 +177,7 @@ template = """
 
 [observer-claude-2]
 role = "monitoring, review"
-is_observer = true
+subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -141,7 +188,7 @@ template = """
 
 [observer-codex-1]
 role = "monitoring, review"
-is_observer = true
+subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -152,7 +199,7 @@ template = """
 
 [observer-codex-2]
 role = "monitoring, review"
-is_observer = true
+subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)

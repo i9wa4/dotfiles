@@ -55,12 +55,8 @@ from watchfiles import Change, watch
 
 VERSION = "2.0.0"
 
-# Timeout constants (seconds)
-TMUX_TIMEOUT = 5
-TMUX_QUICK_TIMEOUT = 2
-
-# Display constants
-MESSAGE_PREVIEW_LENGTH = 100
+# Default timeout constant (seconds) - can be overridden in config
+DEFAULT_TMUX_TIMEOUT_SECONDS = 30
 
 # Default config path (same directory as script)
 DEFAULT_CONFIG_PATH = Path(__file__).parent / "postman.toml"
@@ -193,7 +189,7 @@ class AgentCard:
     talks_to: list[str] = field(default_factory=list)
     capabilities: dict[str, Any] = field(default_factory=dict)
     template: str = ""
-    is_observer: bool = False
+    subscribe_digest: bool = False
     role: str = ""
 
 
@@ -210,9 +206,10 @@ class Config:
     dead_letter_dir: Path = field(default_factory=Path)
     draft_dir: Path = field(default_factory=Path)
     log_file: Path = field(default_factory=Path)
-    scan_interval: int = 10
-    enter_delay: float = 0.7
-    entry: str = ""
+    # Timing settings
+    scan_interval_seconds: int = 1
+    enter_delay_seconds: float = 0.7
+    tmux_timeout_seconds: int = DEFAULT_TMUX_TIMEOUT_SECONDS
     adjacency: dict[str, set[str]] = field(default_factory=dict)
     on_join: dict[str, str] = field(default_factory=dict)
     observes: dict[str, list[str]] = field(default_factory=dict)
@@ -220,13 +217,13 @@ class Config:
     roles: dict[str, str] = field(default_factory=dict)
     agent_cards: dict[str, AgentCard] = field(default_factory=dict)
     startup_delay_seconds: int = 0
-    reminder_interval: int = 0  # 0 = disabled (global default)
+    new_node_ping_delay_seconds: int = 0  # Delay before ping to newly joined nodes
+    reminder_interval_seconds: int = 0  # 0 = disabled (global default)
     reminder_message: str = ""  # Global default reminder message
     reminder_intervals: dict[str, int] = field(default_factory=dict)  # Per-node
     reminder_messages: dict[str, str] = field(default_factory=dict)  # Per-node
-    message_header: str = ""
-    message_footer: str = ""
     reply_command: str = ""
+    notification_template: str = ""
     ping_template: str = ""
     digest_template: str = ""
     draft_template: str = ""
@@ -251,26 +248,32 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                 postman_cfg = data.get("postman", {})
                 if "base_dir" in postman_cfg:
                     config.base_dir = Path(postman_cfg["base_dir"])
-                if "scan_interval" in postman_cfg:
-                    config.scan_interval = postman_cfg["scan_interval"]
-                if "enter_delay" in postman_cfg:
-                    config.enter_delay = postman_cfg["enter_delay"]
-                if "entry" in postman_cfg:
-                    config.entry = postman_cfg["entry"]
+                if "scan_interval_seconds" in postman_cfg:
+                    config.scan_interval_seconds = postman_cfg["scan_interval_seconds"]
+                if "enter_delay_seconds" in postman_cfg:
+                    config.enter_delay_seconds = postman_cfg["enter_delay_seconds"]
+                if "tmux_timeout_seconds" in postman_cfg:
+                    config.tmux_timeout_seconds = postman_cfg["tmux_timeout_seconds"]
                 if "startup_delay_seconds" in postman_cfg:
                     config.startup_delay_seconds = postman_cfg["startup_delay_seconds"]
-                if "reminder_interval" in postman_cfg:
-                    config.reminder_interval = postman_cfg["reminder_interval"]
+                if "new_node_ping_delay_seconds" in postman_cfg:
+                    config.new_node_ping_delay_seconds = postman_cfg[
+                        "new_node_ping_delay_seconds"
+                    ]
+                if "reminder_interval_seconds" in postman_cfg:
+                    config.reminder_interval_seconds = postman_cfg[
+                        "reminder_interval_seconds"
+                    ]
                 if "reminder_message" in postman_cfg:
                     config.reminder_message = expand_shell_commands(
                         postman_cfg["reminder_message"].strip()
                     )
-                if "message_header" in postman_cfg:
-                    config.message_header = postman_cfg["message_header"].strip()
-                if "message_footer" in postman_cfg:
-                    config.message_footer = postman_cfg["message_footer"].strip()
                 if "reply_command" in postman_cfg:
                     config.reply_command = postman_cfg["reply_command"].strip()
+                if "notification_template" in postman_cfg:
+                    config.notification_template = postman_cfg[
+                        "notification_template"
+                    ].strip()
                 if "ping_template" in postman_cfg:
                     config.ping_template = postman_cfg["ping_template"].strip()
                 if "digest_template" in postman_cfg:
@@ -319,7 +322,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                             "a2a_version" in value
                             or "constraints" in value
                             or "talks_to" in value
-                            or "is_observer" in value
+                            or "subscribe_digest" in value
                             or "role" in value
                         ):
                             config.agent_cards[key] = AgentCard(
@@ -330,7 +333,7 @@ def load_config(config_path: Optional[Path] = None) -> Config:
                                 talks_to=value.get("talks_to", []),
                                 capabilities=value.get("capabilities", {}),
                                 template=template,
-                                is_observer=value.get("is_observer", False),
+                                subscribe_digest=value.get("subscribe_digest", False),
                                 role=role,
                             )
 
@@ -444,14 +447,10 @@ class Postman:
         if node_name in self.config.adjacency:
             talks_to.update(self.config.adjacency[node_name])
 
-        # Entry node can receive from user
-        if node_name == self.config.entry:
-            talks_to.add("user")
-
         return sorted(talks_to)
 
     def build_notification(self, recipient: str, sender: str, filepath: Path) -> str:
-        """Build notification message."""
+        """Build notification message using notification_template."""
         template = self.get_template(recipient)
         talks_to = self.get_talks_to(recipient)
         # Filter to only active nodes
@@ -466,10 +465,6 @@ class Postman:
         timestamp_str = timestamp or datetime.now().strftime("%Y%m%d-%H%M%S")
 
         # Build variables dict for expansion
-        reply_cmd = self.config.reply_command or (
-            "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-            "create-draft --to <recipient>"
-        )
         variables = {
             "from_node": sender,
             "node": recipient,
@@ -478,45 +473,11 @@ class Postman:
             "filename": filepath.name,
             "talks_to_line": self._format_talks_to(active_talks_to),
             "template": expand_variables(template, {}) if template else "",
-            "reply_command": reply_cmd,
-            "message_header": self.config.message_header,
-            "message_footer": self.config.message_footer,
+            "reply_command": self.config.reply_command,
+            "context_id": self.config.context_id,
         }
 
-        lines = [
-            f"📬 New message from {sender}",
-        ]
-
-        # Add header if configured
-        if self.config.message_header:
-            header = expand_variables(self.config.message_header, variables)
-            lines = [header]
-
-        # Add template (persona/rules) with variable expansion
-        if template:
-            lines.append("")
-            lines.append(expand_variables(template, variables))
-
-        lines.extend(
-            [
-                "",
-                f"Inbox: {inbox_path}/",
-                f"File: {filepath.name}",
-                "",
-                self._format_talks_to(active_talks_to),
-                "",
-                f"Reply: {reply_cmd}",
-                "Then: mv .postman/draft/xxx.md .postman/post/",
-            ]
-        )
-
-        # Add footer if configured
-        if self.config.message_footer:
-            footer = expand_variables(self.config.message_footer, variables)
-            lines.append("")
-            lines.append(footer)
-
-        return "\n".join(lines)
+        return expand_variables(self.config.notification_template, variables)
 
     def _format_talks_to(self, talks_to: list[str]) -> str:
         """Format talks_to list for display with roles."""
@@ -532,7 +493,7 @@ class Postman:
         return "Can talk to: (none)"
 
     def build_ping_message(self, node_name: str) -> str:
-        """Build ping message with role reminder."""
+        """Build ping message using ping_template."""
         template = self.get_template(node_name)
         talks_to = self.get_talks_to(node_name)
         with self._nodes_lock:
@@ -545,10 +506,6 @@ class Postman:
 
         # Build variables dict for expansion
         timestamp_str = datetime.now().strftime("%Y%m%d-%H%M%S")
-        reply_cmd = self.config.reply_command or (
-            "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py "
-            "create-draft --to <recipient>"
-        )
         variables = {
             "from_node": "postman",
             "node": node_name,
@@ -557,45 +514,10 @@ class Postman:
             "template": expand_variables(template, {}) if template else "",
             "talks_to_line": self._format_talks_to(active_talks_to),
             "active_nodes": ", ".join(all_peers),
-            "reply_command": reply_cmd,
-            "message_header": self.config.message_header,
-            "message_footer": self.config.message_footer,
+            "reply_command": self.config.reply_command,
         }
 
-        # Use template from config if available
-        if self.config.ping_template:
-            return expand_variables(self.config.ping_template, variables)
-
-        # Fallback to hardcoded template
-        lines = [
-            "📬 [PING] Status check",
-            "",
-            f"You are: {node_name}",
-        ]
-
-        if template:
-            lines.append("")
-            lines.append(expand_variables(template, variables))
-
-        lines.extend(
-            [
-                "",
-                self._format_talks_to(active_talks_to),
-                "",
-                f"Active nodes: {', '.join(all_peers)}",
-                "",
-                "## Reply",
-                "",
-                f"{reply_cmd}",
-                "Then: mv .postman/draft/xxx.md .postman/post/",
-            ]
-        )
-
-        if self.config.message_footer:
-            lines.append("")
-            lines.append(expand_variables(self.config.message_footer, variables))
-
-        return "\n".join(lines)
+        return expand_variables(self.config.ping_template, variables)
 
     def discover_panes(
         self, existing_nodes: Optional[dict[str, Node]] = None
@@ -612,7 +534,7 @@ class Postman:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=TMUX_TIMEOUT,
+                timeout=self.config.tmux_timeout_seconds,
             )
 
             if result.returncode != 0:
@@ -663,7 +585,7 @@ class Postman:
                 ["tmux", "display-message", "-p", "#{session_name}"],
                 capture_output=True,
                 text=True,
-                timeout=TMUX_QUICK_TIMEOUT,
+                timeout=self.config.tmux_timeout_seconds,
             )
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -682,7 +604,7 @@ class Postman:
                 ["pgrep", "-P", pid],
                 capture_output=True,
                 text=True,
-                timeout=TMUX_TIMEOUT,
+                timeout=self.config.tmux_timeout_seconds,
             )
             if result.returncode == 0:
                 for child_pid in result.stdout.strip().split("\n"):
@@ -703,7 +625,7 @@ class Postman:
                     ["ps", "eww", "-p", pid],
                     capture_output=True,
                     text=True,
-                    timeout=TMUX_TIMEOUT,
+                    timeout=self.config.tmux_timeout_seconds,
                 )
                 if result.returncode == 0:
                     match = re.search(r"A2A_NODE=([^\s]+)", result.stdout)
@@ -733,15 +655,18 @@ class Postman:
     def send_to_pane(self, pane_id: str, message: str) -> bool:
         """Send message to a tmux pane."""
         try:
-            subprocess.run(["tmux", "set-buffer", message], timeout=TMUX_QUICK_TIMEOUT)
+            subprocess.run(
+                ["tmux", "set-buffer", message],
+                timeout=self.config.tmux_timeout_seconds,
+            )
             subprocess.run(
                 ["tmux", "paste-buffer", "-t", pane_id],
-                timeout=TMUX_QUICK_TIMEOUT,
+                timeout=self.config.tmux_timeout_seconds,
             )
-            time.sleep(self.config.enter_delay)
+            time.sleep(self.config.enter_delay_seconds)
             subprocess.run(
                 ["tmux", "send-keys", "-t", pane_id, "Enter"],
-                timeout=TMUX_QUICK_TIMEOUT,
+                timeout=self.config.tmux_timeout_seconds,
             )
             return True
         except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -762,7 +687,7 @@ class Postman:
         """Increment message counter and send reminder if threshold reached."""
         # Per-node interval takes priority, else global
         interval = self.config.reminder_intervals.get(
-            node_name, self.config.reminder_interval
+            node_name, self.config.reminder_interval_seconds
         )
         if interval <= 0:
             return
@@ -789,18 +714,20 @@ class Postman:
             else:
                 self._reminder_counters[node_name] = count
 
-    def _is_observer_node(self, node: Node) -> bool:
-        """Check if a node is an observer using is_observer flag."""
-        return bool(node.agent_card and node.agent_card.is_observer)
+    def _subscribe_digest_node(self, node: Node) -> bool:
+        """Check if a node is an observer using subscribe_digest flag."""
+        return bool(node.agent_card and node.agent_card.subscribe_digest)
 
     def send_observer_digest(self) -> None:
         """Send digest of new messages to observer nodes.
 
         Sends directly to pane, not as files.
         """
-        # Find all observer nodes using is_observer flag
+        # Find all observer nodes using subscribe_digest flag
         with self._nodes_lock:
-            observers = [n for n in self.nodes.values() if self._is_observer_node(n)]
+            observers = [
+                n for n in self.nodes.values() if self._subscribe_digest_node(n)
+            ]
 
         if not observers:
             return
@@ -833,23 +760,11 @@ class Postman:
             digest_items_lines.append(f"    .postman/read/{filepath.name}")
         digest_items = "\n".join(digest_items_lines)
 
-        # Build digest message
-        if self.config.digest_template:
-            variables = {
-                "digest_items": digest_items,
-                "message_footer": self.config.message_footer,
-            }
-            digest_message = expand_variables(self.config.digest_template, variables)
-        else:
-            # Fallback to hardcoded template
-            digest_lines = [
-                "📋 Digest: New messages",
-                "",
-                "Action: Review message contents for code changes or status updates.",
-                "",
-                digest_items,
-            ]
-            digest_message = "\n".join(digest_lines)
+        # Build digest message using template
+        variables = {
+            "digest_items": digest_items,
+        }
+        digest_message = expand_variables(self.config.digest_template, variables)
 
         # Send to all observer panes (direct, not as files)
         for observer in observers:
@@ -956,7 +871,7 @@ class Postman:
         """Periodically rescan panes."""
         self._do_periodic_scan()
         while self.running:
-            time.sleep(self.config.scan_interval)
+            time.sleep(self.config.scan_interval_seconds)
             if not self.running:
                 break
             self._do_periodic_scan()
@@ -980,7 +895,16 @@ class Postman:
                 for name in added:
                     if name in self.nodes:
                         self.send_welcome(self.nodes[name])
-                        # Send ping to newly joined node
+                # Wait for newly joined nodes to be ready
+                if self.config.new_node_ping_delay_seconds > 0:
+                    self.logger.info(
+                        f"⏳ Waiting {self.config.new_node_ping_delay_seconds}s "
+                        "for new nodes to be ready..."
+                    )
+                    time.sleep(self.config.new_node_ping_delay_seconds)
+                # Send ping to newly joined nodes
+                for name in added:
+                    if name in self.nodes:
                         message = self.build_ping_message(name)
                         if self.send_to_pane(self.nodes[name].pane_id, message):
                             self.logger.info(f"📡 Ping sent to new node {name}")
@@ -1027,7 +951,6 @@ class Postman:
         print(f"📮 Postman v{VERSION}")
         print("━" * 50)
         print(f"Watching: {self.config.watch_dir}/")
-        print(f"Entry: {self.config.entry}")
         if self.config.adjacency:
             print(f"Edges: {len(self.config.adjacency)} nodes connected")
         self.print_nodes()
@@ -1074,6 +997,14 @@ class Postman:
         # Send welcome hooks
         for name, node in self.nodes.items():
             self.send_welcome(node)
+
+        # Wait for nodes to be ready before sending ping
+        if self.config.new_node_ping_delay_seconds > 0:
+            self.logger.info(
+                f"⏳ Waiting {self.config.new_node_ping_delay_seconds}s "
+                "for nodes to be ready..."
+            )
+            time.sleep(self.config.new_node_ping_delay_seconds)
 
         # Send initial ping to all nodes
         self.send_ping_to_all()
@@ -1157,37 +1088,16 @@ def cmd_draft(args: argparse.Namespace) -> None:
     config.draft_dir.mkdir(parents=True, exist_ok=True)
     filepath = config.draft_dir / filename
 
-    # Use template from config if available
-    if config.draft_template:
-        variables = {
-            "context_id": context_id,
-            "task_id": task_id,
-            "msg_id": task_id,  # Backward compatibility
-            "sender": sender,
-            "recipient": recipient,
-            "timestamp": now.isoformat(),
-            "message_footer": config.message_footer,
-        }
-        content = expand_variables(config.draft_template, variables)
-    else:
-        # Fallback to hardcoded template
-        content = f"""---
-method: message/send
-params:
-  contextId: {context_id}
-  taskId: {task_id}
-  from: {sender}
-  to: {recipient}
-  timestamp: {now.isoformat()}
----
-
-## Content
-
-
----
-
-After processing, move from inbox/ to read/
-"""
+    # Build draft content using template
+    variables = {
+        "context_id": context_id,
+        "task_id": task_id,
+        "msg_id": task_id,  # Backward compatibility
+        "sender": sender,
+        "recipient": recipient,
+        "timestamp": now.isoformat(),
+    }
+    content = expand_variables(config.draft_template, variables)
     filepath.write_text(content)
     print(f"📝 Created: {filepath}")
 
@@ -1196,7 +1106,7 @@ def _run_daemon(config: Config, args: argparse.Namespace) -> None:
     """Common daemon startup logic."""
     # CLI args override config
     if hasattr(args, "scan_interval") and args.scan_interval:
-        config.scan_interval = args.scan_interval
+        config.scan_interval_seconds = args.scan_interval
 
     postman = Postman(config)
 
