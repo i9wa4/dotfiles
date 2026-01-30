@@ -183,7 +183,7 @@ in {
       ${lib.optionalString pkgs.stdenv.isDarwin ''
         rm -rf "${homeDir}/Library/Caches/deno"
         ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
-        /usr/bin/xattr -rc ${ghqRoot} || true
+        ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
       ''}
     '';
 
