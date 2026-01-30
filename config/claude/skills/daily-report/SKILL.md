@@ -140,6 +140,8 @@ Organize gh-furik output. Classify as follows:
 
 ### 1.3. Meetings
 
+Get today's meetings from Google Calendar via `/slack $SLACK_GCAL_DM_URL`.
+
 - Meeting name
     - Supplementary comments
 
