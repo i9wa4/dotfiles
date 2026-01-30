@@ -4,9 +4,10 @@
 """Refresh Slack MCP tokens (xoxc/xoxd).
 
 Usage:
-  1. Run this script
-  2. Log in to Slack if prompted (first time only)
-  3. Tokens are extracted and saved to ~/.zshenv.local
+  1. uvx playwright install chromium
+  2. uv run bin/refresh.py
+  3. Log in to Slack if prompted (first time only)
+  4. Tokens are extracted and saved to ~/.zshenv.local
 
 Session is saved in ~/.slack-session for future runs.
 """
