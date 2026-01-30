@@ -161,8 +161,8 @@ repo = 'vim-skk/skkeleton'
 on_source = ['ddc.vim']
 # [記号入力 - SKK辞書Wiki](http://openlab.ring.gr.jp/skk/wiki/wiki.cgi?page=%B5%AD%B9%E6%C6%FE%CE%CF)
 hook_source = '''
-let s:skk_dev_path = '~/ghq/github.com/skk-dev/dict'->expand()
-let s:skk_emoji_path = '~/ghq/github.com/uasi/skk-emoji-jisyo'->expand()
+let s:skk_dev_path = $XDG_CACHE_HOME->expand() .. '/dpp/repos/github.com/skk-dev/dict'
+let s:skk_emoji_path = $XDG_CACHE_HOME->expand() .. '/dpp/repos/github.com/uasi/skk-emoji-jisyo'
 let s:dict_path = $XDG_CONFIG_HOME->expand() .. '/skk/mydict.utf8'
 call skkeleton#config({
 \   'globalDictionaries': [
@@ -187,6 +187,12 @@ on_source = ['skkeleton']
 hook_source = '''
 highlight SkkeletonHenkan term=underline cterm=reverse
 '''
+
+[[plugins]]
+repo = 'skk-dev/dict'
+
+[[plugins]]
+repo = 'uasi/skk-emoji-jisyo'
 
 [[plugins]]
 repo = 'i9wa4/ddc-source-slash-commands'

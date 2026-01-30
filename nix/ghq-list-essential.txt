@@ -1,3 +1,0 @@
-github.com/i9wa4/internal
-github.com/skk-dev/dict
-github.com/uasi/skk-emoji-jisyo

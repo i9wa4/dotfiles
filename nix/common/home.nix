@@ -171,10 +171,8 @@ in {
   home.activation = let
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
-    ghq = "${pkgs.ghq}/bin/ghq";
     git = "${pkgs.git}/bin/git";
     fd = "${pkgs.fd}/bin/fd";
-    ghqListEssential = "${dotfilesDir}/nix/ghq-list-essential.txt";
     tpmDir = "${dotfilesDir}/config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
@@ -187,16 +185,6 @@ in {
         ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
         /usr/bin/xattr -rc ${ghqRoot} || true
       ''}
-    '';
-
-    # 0. Clone essential repositories (ghq-get-essential)
-    # Note: ghq requires git in PATH
-    ghqGetEssential = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      export PATH="${pkgs.git}/bin:$PATH"
-      if [ -f "${ghqListEssential}" ]; then
-        echo "Cloning essential repositories..."
-        ${ghq} get -p < "${ghqListEssential}" || true
-      fi
     '';
 
     # 0. Clone tmux plugin manager (tpm)
