@@ -1,7 +1,6 @@
 ---
 name: restricted-bigquery-dbt-environment
 description: Restricted BigQuery dbt environment
-disable-model-invocation: true
 ---
 
 # restricted-bigquery-dbt-environment
