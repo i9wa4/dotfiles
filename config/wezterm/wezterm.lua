@@ -17,7 +17,7 @@ config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 -- Opacity
 local opacity_default = 0.70
 local titlebar_bg = "none"
-local tab_bar_bg = string.format("rgba(0, 0, 0, %.2f)", opacity_default)
+local tab_bar_bg = "transparent"
 
 -- Integrated titlebar (fancy tab bar for titlebar transparency control)
 config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
@@ -43,28 +43,38 @@ config.colors = {
 
 -- Status display
 local status_fg = "#c0c0c0"
+local left_status_bg_alpha = 0.30
+local left_status_bg = string.format("rgba(0, 0, 0, %.2f)", left_status_bg_alpha)
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
 
-  -- Sync tab bar background with current opacity
-  overrides.colors = {
-    tab_bar = {
-      background = string.format("rgba(0, 0, 0, %.2f)", opacity),
-    },
-  }
-  window:set_config_overrides(overrides)
-
   -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
   local keystroke_display = bongo.get_keystroke_display()
-  local right_status = string.format("%3.0f%% %2.0fpt ", opacity * 100, font_size)
+  local right_text = cat_display
+    .. " "
+    .. keystroke_display
+    .. string.format("%3.0f%% %2.0fpt ", opacity * 100, font_size)
+  local right_status_bg = string.format("rgba(0, 0, 0, %.2f)", math.max(opacity, left_status_bg_alpha))
   window:set_right_status(wezterm.format({
+    { Background = { Color = right_status_bg } },
     { Foreground = { Color = status_fg } },
-    { Text = cat_display .. " " .. keystroke_display .. right_status },
+    { Text = right_text },
   }))
+
+  -- Left: fill remaining space with dark background
+  local dims = pane:get_dimensions()
+  local right_width = wezterm.column_width(right_text)
+  local left_width = dims.cols - right_width - 2
+  if left_width > 0 then
+    window:set_left_status(wezterm.format({
+      { Background = { Color = left_status_bg } },
+      { Text = string.rep(" ", left_width) },
+    }))
+  end
 end)
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
