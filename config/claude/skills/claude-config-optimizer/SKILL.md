@@ -215,3 +215,9 @@ Community Resources:
 - Claude Code config: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
 - site2skill: <https://github.com/laiso/site2skill>
+
+## References
+
+- Hooks Reference: `https://code.claude.com/docs/en/hooks`
+- Skills Dynamic Context: `https://code.claude.com/docs/en/skills#inject-dynamic-context`
+- Vercel AGENTS.md Guide: `https://vercel.com/blog/agents-md`

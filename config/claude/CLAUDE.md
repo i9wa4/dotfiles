@@ -24,6 +24,11 @@ acknowledge with a random one-liner in character.
 - NEVER: Do not pollute global environment (use venv, nvm, rbenv, etc.)
 - NEVER: Do not create lock files (uv.lock, package-lock.json, etc.)
   or virtual environments (.venv/, node_modules/) without permission
+- YOU MUST: Explore before implementing
+  1. Check git status and recent commits
+  2. Read relevant files in full
+  3. Search for related patterns (Grep/Glob)
+  4. Then proceed with implementation
 
 ## 4. Multi-Agent Mode
 
@@ -128,6 +133,15 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .
 NOTE: TodoWrite is Claude Code specific.
 Codex CLI users should track tasks manually.
 
+## Quick Reference Index
+
+| Category | Items                                                                                                                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Rules    | aws, bash, git-github, markdown                                                                                                                                                            |
+| Skills   | atlassian, bigquery, claude-config-optimizer, codex-config-optimizer, daily-report, databricks, dbt, draw-io, git, github, jupyter-notebook, nix, orchestrator, python, restricted-bigquery-dbt-environment, skill-creator, slack, terraform |
+| Agents   | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                   |
+| Scripts  | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                     |
+
 ## 7. File Structure
 
 Files and directories described below are located at:
@@ -193,8 +207,10 @@ Agents are stored in the `agents/` directory.
 
 Helper scripts stored in the `scripts/` directory.
 
-| Script              | Purpose                           | Referenced by             |
-| ------------------- | --------------------------------- | ------------------------- |
-| deny-edit-write.sh  | Non-worker READONLY enforcement   | settings.json PreToolUse  |
-| reload-claude-md.sh | Context reload after compaction   | settings.json SessionStart|
-| touchfile.sh        | Standardized file creation        | CLAUDE.md, skills/*       |
+| Script              | Purpose                           | Referenced by              |
+| ------------------- | --------------------------------- | -------------------------- |
+| deny.sh             | Non-worker READONLY enforcement   | settings.json PreToolUse   |
+| post-write-check.sh | PostToolUse lint/format check     | settings.json PostToolUse  |
+| pre-compact-save.sh | PreCompact context save           | settings.json PreCompact   |
+| reload-claude-md.sh | Context reload after compaction   | settings.json SessionStart |
+| touchfile.sh        | Standardized file creation        | CLAUDE.md, skills/*        |

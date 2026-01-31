@@ -77,6 +77,27 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/post-write-check.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/pre-compact-save.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
