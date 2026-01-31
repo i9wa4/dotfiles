@@ -39,6 +39,7 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 #
 nix-profile-add:  ## add AI coding agents to nix profile
 	nix profile add github:numtide/llm-agents.nix#ccusage
+	nix profile add github:numtide/llm-agents.nix#ccusage-codex
 	nix profile add github:numtide/llm-agents.nix#coderabbit-cli
 	nix profile add github:numtide/llm-agents.nix#codex
 	nix profile add github:numtide/llm-agents.nix#copilot-cli

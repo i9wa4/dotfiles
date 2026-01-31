@@ -150,7 +150,7 @@ Get today's meetings from Google Calendar via `/slack $SLACK_GCAL_DM_URL`.
 ### 2.1. Claude Code
 
 ```console
-npx ccusage@latest --compact --since $(date +%Y%m%d)
+ccusage --compact --since $(date +%Y%m%d)
 ```
 
 | Date       | Models | Input | Output | Cost (USD) |
@@ -159,7 +159,7 @@ npx ccusage@latest --compact --since $(date +%Y%m%d)
 ### 2.2. Codex CLI
 
 ```console
-npx @ccusage/codex@latest --compact --since $(date +%Y%m%d)
+ccusage-codex --compact --since $(date +%Y%m%d)
 ```
 
 | Date       | Models | Input | Output | Cost (USD) |
