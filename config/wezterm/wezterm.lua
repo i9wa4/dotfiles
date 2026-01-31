@@ -14,16 +14,22 @@ config.font = wezterm.font("UDEV Gothic 35LG")
 config.font_size = 20
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
--- Integrated titlebar (use retro tab bar for consistent transparency)
-config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
-config.use_fancy_tab_bar = false
-config.show_new_tab_button_in_tab_bar = false
-config.show_tabs_in_tab_bar = false
-
 -- Opacity
 local opacity_default = 0.70
-local tab_bar_opacity = 0.2
-local tab_bar_bg = string.format("rgba(0, 0, 0, %.2f)", tab_bar_opacity)
+local titlebar_bg = "none"
+local tab_bar_bg = string.format("rgba(0, 0, 0, %.2f)", opacity_default)
+
+-- Integrated titlebar (fancy tab bar for titlebar transparency control)
+config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
+config.use_fancy_tab_bar = true
+config.show_new_tab_button_in_tab_bar = false
+config.show_tabs_in_tab_bar = false
+config.window_frame = {
+  font = config.font,
+  font_size = config.font_size,
+  active_titlebar_bg = titlebar_bg,
+  inactive_titlebar_bg = titlebar_bg,
+}
 config.window_background_opacity = opacity_default
 config.status_update_interval = 100 -- 100ms for faster bongo-cat animation
 config.hide_tab_bar_if_only_one_tab = false
@@ -36,12 +42,20 @@ config.colors = {
 }
 
 -- Status display
-local status_fg = "#202020"
+local status_fg = "#c0c0c0"
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
+
+  -- Sync tab bar background with current opacity
+  overrides.colors = {
+    tab_bar = {
+      background = string.format("rgba(0, 0, 0, %.2f)", opacity),
+    },
+  }
+  window:set_config_overrides(overrides)
 
   -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
