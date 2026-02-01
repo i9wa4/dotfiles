@@ -1,119 +1,119 @@
-# レイアウトガイドライン
+# Layout Guidelines
 
-## 1. AWS アーキテクチャ図
+## 1. AWS Architecture Diagrams
 
-### 1.1. グループ化の原則
+### 1.1. Grouping Principles
 
-- AWS Cloud グループを最外層とする
-- 機能単位でサブグループを作成
-- グループは横並びを基本とし、データフローに沿って配置
+- Use AWS Cloud group as the outermost layer
+- Create subgroups by functional unit
+- Arrange groups horizontally, following data flow
 
 ```text
-AWS Cloud (最外層)
+AWS Cloud (outermost)
 ├── VPC
 │   ├── Public Subnet
-│   │   └── ALB, NAT Gateway など
+│   │   └── ALB, NAT Gateway, etc.
 │   └── Private Subnet
-│       └── ECS, RDS など
+│       └── ECS, RDS, etc.
 ├── S3
 ├── CloudWatch
-└── その他のサービス
+└── Other services
 ```
 
-### 1.2. 接続線のルール
+### 1.2. Connection Line Rules
 
-| フロー種別      | 線種 | 用途         |
-| --------------- | ---- | ------------ |
-| Ingestion Flow  | 破線 | データ取り込み |
-| Query Flow      | 実線 | クエリ・参照 |
-| Control Flow    | 点線 | 制御・管理   |
+| Flow Type      | Line Style | Purpose          |
+| -------------- | ---------- | ---------------- |
+| Ingestion Flow | Dashed     | Data ingestion   |
+| Query Flow     | Solid      | Query / lookup   |
+| Control Flow   | Dotted     | Control / manage |
 
-- 矢印はデータの流れる方向に従う
-- 双方向通信は単方向矢印2本を推奨
+- Arrows follow the direction of data flow
+- For bidirectional communication, use 2 unidirectional arrows
 
-### 1.3. 配置の原則
+### 1.3. Placement Principles
 
-左から右へのフロー (基本):
+Left-to-right flow (default):
 
 ```text
-[データソース] → [処理] → [ストレージ] → [分析/可視化]
+[Data Source] → [Processing] → [Storage] → [Analytics / Visualization]
 ```
 
-上から下へのフロー (代替):
+Top-to-bottom flow (alternative):
 
 ```text
-[ユーザー/クライアント]
-        ↓
-[ロードバランサー]
-        ↓
-[アプリケーション]
-        ↓
-[データベース]
+[User / Client]
+       ↓
+[Load Balancer]
+       ↓
+[Application]
+       ↓
+[Database]
 ```
 
-## 2. スライド図解パターンカタログ
+## 2. Slide Diagram Pattern Catalog
 
-既存スライドから抽出した再利用可能なレイアウトパターン。
-図解作成時はこのカタログから最適なパターンを選択する。
+Reusable layout patterns extracted from existing slides.
+Select the best-matching pattern from this catalog when creating diagrams.
 
-### 2.1. 比較パターン
+### 2.1. Comparison Patterns
 
-#### A. 左右比較パネル
+#### A. Side-by-Side Comparison Panel
 
-2つの概念を横並びで対比する。
+Compare two concepts horizontally.
 
 ```text
-┌─────── 適している ───────┐  ┌───── 適していない ─────┐
+┌─────── Suitable ────────┐  ┌──── Not Suitable ────┐
 │ ┌─────────────────────┐ │  │ ┌─────────────────────┐│
-│ │ 項目1               │ │  │ │ 項目1               ││
+│ │ Item 1              │ │  │ │ Item 1              ││
 │ ├─────────────────────┤ │  │ ├─────────────────────┤│
-│ │ 項目2               │ │  │ │ 項目2               ││
+│ │ Item 2              │ │  │ │ Item 2              ││
 │ └─────────────────────┘ │  │ └─────────────────────┘│
 └─────────────────────────┘  └────────────────────────┘
 ```
 
-- 左: Success 色 (肯定的) / 右: Danger 色 (否定的)
-- 下部に Note 色で補足ボックスを追加可能
+- Left: Success color (positive) / Right: Danger color (negative)
+- Optional Note-colored supplementary box at the bottom
 
-#### B. Before/After (上下2段)
+#### B. Before/After (Vertical Two-Row)
 
-改善効果を時系列で示す。
+Show improvement over time.
 
 ```text
-┌────────── Before (赤系背景) ──────────┐
-│ [Step1] → [Step2] → [Step3] → [合計] │
-└───────────────────────────────────────┘
-┌────────── After (緑系背景) ───────────┐
-│ [Step1] → [Step2] → [合計]           │
-└───────────────────────────────────────┘
+┌────────── Before (red background) ──────────┐
+│ [Step1] → [Step2] → [Step3] → [Total]      │
+└─────────────────────────────────────────────┘
+┌────────── After (green background) ─────────┐
+│ [Step1] → [Step2] → [Total]                │
+└─────────────────────────────────────────────┘
 ```
 
-- Before: Danger 背景 + Warning ステップ
-- After: Success 背景 + Success ステップ
-- 合計時間・コストを右端に明示
+- Before: Danger background + Warning steps
+- After: Success background + Success steps
+- Show total time/cost on the right edge
 
-#### C. 3カラム比較テーブル
+#### C. 3-Column Comparison Table
 
-マッピングや対応関係を示す。
+Show mappings and correspondences.
 
 ```text
 ┌──────────┬──────────┬──────────┐
-│ ヘッダ1  │ ヘッダ2  │ ヘッダ3  │
+│ Header 1 │ Header 2 │ Header 3 │
 ├──────────┼──────────┼──────────┤
-│ 項目     │ 項目     │ 項目     │
+│ Item     │ Item     │ Item     │
 ├──────────┼──────────┼──────────┤
-│ 項目     │ 項目     │ 項目     │
+│ Item     │ Item     │ Item     │
 └──────────┴──────────┴──────────┘
 ```
 
-- 各カラムに異なる色役割を割り当て
-- 矢印 "→" で方向性を示す場合あり
+- Assign different color roles to each column
+- Use arrows "→" to indicate directionality
 
-### 2.2. フロー/プロセスパターン
+### 2.2. Flow / Process Patterns
 
-#### D. 水平ステップフロー
+#### D. Horizontal Step Flow
 
-段階的な手順やプロセスを示す。
+Show sequential steps or processes.
 
 ```text
   ①          ②          ③
@@ -121,65 +121,65 @@ AWS Cloud (最外層)
 │Step│ →  │Step│ →  │Step│
 │    │    │    │    │    │
 └────┘    └────┘    └────┘
-┌──────── 補足・コードブロック ────────┐
-│ export VAR=value                    │
-└─────────────────────────────────────┘
-┌──────── Takeaway (Note色) ──────────┐
-│ 要点メッセージ                      │
-└─────────────────────────────────────┘
+┌──────── Supplement / Code Block ───────┐
+│ export VAR=value                       │
+└────────────────────────────────────────┘
+┌──────── Takeaway (Note color) ─────────┐
+│ Key message                            │
+└────────────────────────────────────────┘
 ```
 
-- 各ステップに番号バッジ (circle, filled stroke, white text)
-- ステップごとに異なる色役割を割り当て
-- 下部に Neutral 色でコード例、Note 色で要点
+- Number badges on each step (circle, filled stroke, white text)
+- Different color role per step
+- Neutral-colored code example and Note-colored takeaway at bottom
 
-#### E. マルチカラム構成図
+#### E. Multi-Column Layout
 
-システム構成を左から右へ展開する。
+Expand system structure from left to right.
 
 ```text
-┌─── 左パネル ───┐     ┌─── 中央パネル ───┐     ┌─── 右パネル ───┐
-│ ┌───────────┐  │     │ ┌─────────────┐  │     │ ┌───────────┐  │
-│ │ 内部要素  │  │ ──→ │ │ 機能1       │  │ ──→ │ │ 要素1     │  │
-│ ├───────────┤  │     │ ├─────────────┤  │     │ ├───────────┤  │
-│ │ 内部要素  │  │     │ │ 機能2       │  │     │ │ 要素2     │  │
-│ └───────────┘  │     │ └─────────────┘  │     │ └───────────┘  │
-└────────────────┘     └─────────────────┘     └────────────────┘
-┌──────────── Takeaway (Primary色) ─────────────┐
-│ 要点メッセージ                                │
-└───────────────────────────────────────────────┘
+┌── Left Panel ──┐     ┌── Center Panel ──┐     ┌── Right Panel ──┐
+│ ┌───────────┐  │     │ ┌─────────────┐  │     │ ┌───────────┐   │
+│ │ Element   │  │ ──→ │ │ Feature 1   │  │ ──→ │ │ Element 1 │   │
+│ ├───────────┤  │     │ ├─────────────┤  │     │ ├───────────┤   │
+│ │ Element   │  │     │ │ Feature 2   │  │     │ │ Element 2 │   │
+│ └───────────┘  │     │ └─────────────┘  │     │ └───────────┘   │
+└────────────────┘     └─────────────────┘     └─────────────────┘
+┌──────────── Takeaway (Primary color) ────────────┐
+│ Key message                                      │
+└──────────────────────────────────────────────────┘
 ```
 
-- 各パネルに異なる色役割
-- パネル間は太い矢印 (strokeWidth=4)
-- 下部にまとめバー
+- Different color role per panel
+- Thick arrows between panels (strokeWidth=4)
+- Summary bar at bottom
 
-#### F. 垂直フロー + 分岐
+#### F. Vertical Flow + Branching
 
-Git フロー風の分岐・統合を示す。
+Show Git-flow-style branching and merging.
 
 ```text
-       [設定ファイル]
+       [Config File]
             ↓
     ┌───────┴───────┐
     ↓               ↓
-[ローカル]      [CI/CD]
+[Local]         [CI/CD]
     ↓               ↓
     └───────┬───────┘
             ↓
-        [PR/レビュー]
+        [PR/Review]
             ↓
         [main]
 ```
 
-- 主線を太く (strokeWidth=3)、分岐を細く
-- 強調ポイントに色付き枠 (Danger stroke)
+- Main line thick (strokeWidth=3), branches thin
+- Highlight points with colored border (Danger stroke)
 
-### 2.3. 集約/分解パターン
+### 2.3. Aggregation / Decomposition Patterns
 
-#### G. 複数 → 統合結果
+#### G. Multiple → Unified Result
 
-複数の入力が1つの結果に集約される。
+Multiple inputs converge into a single result.
 
 ```text
 ┌────┐ ┌────┐ ┌────┐ ┌────┐
@@ -187,104 +187,114 @@ Git フロー風の分岐・統合を示す。
 └──┬─┘ └──┬─┘ └──┬─┘ └──┬─┘
    └───┬───┴───┬──┘      │
        ↓       ↓         ↓
-┌───────────── 統合結果 ──────────────┐
-│ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐  │
-│ │特徴1│ │特徴2│ │特徴3│ │特徴4│  │
-│ └─────┘ └─────┘ └─────┘ └─────┘  │
-└─────────────────────────────────────┘
+┌───────────── Unified Result ──────────────┐
+│ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐         │
+│ │Feat1│ │Feat2│ │Feat3│ │Feat4│         │
+│ └─────┘ └─────┘ └─────┘ └─────┘         │
+└───────────────────────────────────────────┘
 ```
 
-- 入力はそれぞれ異なる色役割
-- 結果ボックスは強調色 (accent stroke)
-- 内部特徴カードは白背景
+- Different color role per input
+- Result box with accent stroke
+- Internal feature cards on white background
 
-#### H. 中央 + 放射 (問題提示)
+#### H. Center + Radial (Problem Statement)
 
-中心アイコンの周囲に問題・特徴を配置する。
+Arrange problems/features around a central icon.
 
 ```text
         ┌────────┐
-        │ 問題1  │
+        │Problem1│
         └───┬────┘
             ↓
 ┌────┐  ┌──────┐  ┌────┐
-│問題2│→ │ 中央 │ ←│問題3│
+│Prob2│→ │Center│ ←│Prob3│
 └────┘  └──────┘  └────┘
             ↑
         ┌───┴────┐
-        │ 問題4  │
+        │Problem4│
         └────────┘
 ```
 
-- 中央にアイコン (絵文字 or 人物)
-- 周囲ボックスは統一色 (Warning or Danger)
-- 矢印は破線 (dashed) で問題から中央へ
+- Central icon (emoji or person)
+- Surrounding boxes in uniform color (Warning or Danger)
+- Dashed arrows from problems to center
 
-### 2.4. カード/指標パターン
+### 2.4. Card / Metric Patterns
 
-#### I. 横並びカード (KPI/指標)
+#### I. Side-by-Side Cards (KPI / Metrics)
 
-独立した指標を並列表示する。
-
-```text
-┌──── 指標1 ────┐ ┌──── 指標2 ────┐ ┌──── 指標3 ────┐
-│ アイコン      │ │ アイコン      │ │ アイコン      │
-│ タイトル      │ │ タイトル      │ │ タイトル      │
-│ Before → After│ │ Before → After│ │ Before → After│
-│ ┌改善値─────┐ │ │ ┌改善値─────┐ │ │ ┌改善値─────┐ │
-│ │ XX% 改善  │ │ │ │ XX% 改善  │ │ │ │ XX% 改善  │ │
-│ └───────────┘ │ │ └───────────┘ │ │ └───────────┘ │
-└───────────────┘ └───────────────┘ └───────────────┘
-```
-
-- 各カードに異なる色役割
-- 改善値は Success 色で強調
-
-### 2.5. 階層/構造パターン
-
-#### J. 多層アーキテクチャ図
-
-ユーザー層から基盤層まで垂直に展開する。
+Display independent metrics in parallel.
 
 ```text
-┌──── ユーザー5種類 ────────────────────────┐
-│ [型1] [型2] [型3] [型4] [型5]            │
-└──────────────────────────────────────────┘
-┌──── 機能レイヤー ────────────────────────┐
-│ ┌────┐ ┌────┐ ┌────┐ ┌──────────────┐  │
-│ │開発│ │ML  │ │SQL │ │Consumer      │  │
-│ └────┘ └────┘ └────┘ └──────────────┘  │
-├──── 共有レイヤー ────────────────────────┤
-│ [Compute] [Storage]                      │
-└──────────────────────────────────────────┘
-┌──── 基盤レイヤー ────────────────────────┐
-│ [ガバナンス/カタログ]                    │
-└──────────────────────────────────────────┘
+┌──── Metric 1 ────┐ ┌──── Metric 2 ────┐ ┌──── Metric 3 ────┐
+│ Icon             │ │ Icon             │ │ Icon             │
+│ Title            │ │ Title            │ │ Title            │
+│ Before → After   │ │ Before → After   │ │ Before → After   │
+│ ┌─────────────┐  │ │ ┌─────────────┐  │ │ ┌─────────────┐  │
+│ │ XX% improved│  │ │ │ XX% improved│  │ │ │ XX% improved│  │
+│ └─────────────┘  │ │ └─────────────┘  │ │ └─────────────┘  │
+└──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-- 各機能セクションに異なる色役割
-- 共有レイヤーは Neutral 色
-- 基盤は Note 色 (重要性を示す)
+- Different color role per card
+- Improvement values highlighted in Success color
 
-#### K. 3列マッピング
+### 2.5. Hierarchy / Structure Patterns
 
-左の要素と右の要素の関係を中央で可視化する。
+#### J. Multi-Layer Architecture Diagram
+
+Expand vertically from user layer to foundation layer.
 
 ```text
-┌──左──┐     ┌──中央──┐     ┌──右──┐
-│ロール1│ ──→ │権限A   │ ──→ │機能X │
-│ロール2│ ──→ │権限B   │ ──→ │機能Y │
-│ロール3│ ──→ │権限C   │ ──→ │機能Z │
-└──────┘     └────────┘     └──────┘
+┌──── 5 User Types ──────────────────────────┐
+│ [Type1] [Type2] [Type3] [Type4] [Type5]    │
+└────────────────────────────────────────────┘
+┌──── Feature Layer ─────────────────────────┐
+│ ┌────┐ ┌────┐ ┌────┐ ┌──────────────┐     │
+│ │Dev │ │ML  │ │SQL │ │Consumer      │     │
+│ └────┘ └────┘ └────┘ └──────────────┘     │
+├──── Shared Layer ──────────────────────────┤
+│ [Compute] [Storage]                        │
+└────────────────────────────────────────────┘
+┌──── Foundation Layer ──────────────────────┐
+│ [Governance / Catalog]                     │
+└────────────────────────────────────────────┘
 ```
 
-- 左・中央・右でそれぞれ色役割を変える
-- 矢印色はソース要素の色に合わせる
+- Different color role per feature section
+- Shared layer in Neutral color
+- Foundation in Note color (indicates importance)
 
-## 3. 視認性の確保
+#### K. 3-Column Mapping
 
-- ラベルは要素の近くに配置
-- 矢印が交差しないように配置を調整
-- 関連する要素はグループ化して近くに配置
-- 余白を適切に確保して見やすくする
-- スライド図解では下部に必ず Takeaway バーを配置
+Visualize relationships between left and right elements via center.
+
+```text
+┌──Left──┐     ┌──Center──┐     ┌──Right──┐
+│ Role 1 │ ──→ │ Perm A   │ ──→ │ Feat X  │
+│ Role 2 │ ──→ │ Perm B   │ ──→ │ Feat Y  │
+│ Role 3 │ ──→ │ Perm C   │ ──→ │ Feat Z  │
+└────────┘     └──────────┘     └─────────┘
+```
+
+- Different color role for left, center, and right
+- Arrow color matches source element color
+
+## 3. Visibility
+
+- Place labels close to their elements
+- Adjust placement to avoid crossing arrows
+- Group related elements and place them nearby
+- Ensure adequate whitespace for readability
+- Always include a Takeaway bar at the bottom of slide diagrams
+
+---
+
+Last updated: 2026-02-02
+Source files analyzed:
+
+- i9wa4.github.io/assets/2026-01-27-jedai-ai-gateway/*.drawio
+- i9wa4.github.io/assets/2025-12-22-aeon-tech-hub-databricks/*.drawio
+- i9wa4.github.io/assets/2025-12-12-databricks-notebook-ai-ready/*.drawio
+- i9wa4.github.io/assets/2025-11-07-tamesare-data-sapporo-uma-chan/*.drawio

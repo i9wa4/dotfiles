@@ -73,31 +73,12 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 - Element center coordinate = `y + (height / 2)`
 - To align multiple elements, calculate and match center coordinates
 
-## 5. Color Palette (Material Design)
+## 5. Color Palette and Layout Patterns
 
-Standard color set extracted from existing slide diagrams.
-Use 1-3 accent colors per diagram to avoid visual noise.
+These are auto-updatable reference files. See section 11 for update protocol.
 
-| Role     | Background | Stroke     | Text       |
-| -------- | ---------- | ---------- | ---------- |
-| Primary  | `#E3F2FD`  | `#2196F3`  | `#1565C0`  |
-| Accent   | `#BBDEFB`  | `#1976D2`  | `#0D47A1`  |
-| Success  | `#E8F5E9`  | `#4CAF50`  | `#2E7D32`  |
-| Warning  | `#FFF3E0`  | `#FF9800`  | `#E65100`  |
-| Danger   | `#FFEBEE`  | `#F44336`  | `#C62828`  |
-| Info     | `#E8EAF6`  | `#3F51B5`  | `#283593`  |
-| Purple   | `#F3E5F5`  | `#9C27B0`  | `#7B1FA2`  |
-| Note     | `#FFF8E1`  | `#FFC107`  | `#F57F17`  |
-| Neutral  | `#ECEFF1`  | `#607D8B`  | `#455A64`  |
-| Code bg  | `#ECEFF1`  | -          | `#37474F`  |
-
-### 5.1. Usage Rules
-
-- Background frame (dashed): use Neutral stroke, no fill
-- Box elements: use `rounded=1`, `strokeWidth=2` or `3`
-- Step numbers (circles): use filled stroke color, white text
-- Arrows: match the source element's stroke color
-- Code blocks: use `fontFamily=monospace`, Code bg fill
+- [Color Palette](references/color-palette.md) - Material Design colors and usage rules
+- [Layout Guidelines](references/layout-guidelines.md) - Pattern catalog (A-K) and AWS layout rules
 
 ## 6. Design Principles
 
@@ -272,7 +253,8 @@ Good example (sufficient margin):
 
 ## 8. Reference
 
-- [Layout Guidelines](references/layout-guidelines.md)
+- [Color Palette](references/color-palette.md) - auto-updatable
+- [Layout Guidelines](references/layout-guidelines.md) - auto-updatable
 - [AWS Icons](references/aws-icons.md)
 - [AWS Icon Search Script](scripts/find_aws_icon.py)
 
@@ -317,10 +299,90 @@ Key items to verify visually:
 - Elements not overflowing background frames
 - Arrows not penetrating boxes or overlapping labels
 - Text not truncated or line-breaking unexpectedly
-- Color palette consistent with section 5 definitions
+- Color palette consistent with references/color-palette.md
 - Sufficient whitespace between elements
 
-## 11. Image Display in reveal.js Slides
+## 11. Self-Update Protocol
+
+This skill maintains auto-updatable reference files that evolve
+as new `.drawio` files are created.
+
+### 11.1. Auto-Updatable Files
+
+| File                            | Content                 | Stability  |
+| ------------------------------- | ----------------------- | ---------- |
+| `references/color-palette.md`   | Color table and rules   | Updatable  |
+| `references/layout-guidelines.md`| Pattern catalog (A-K+) | Updatable  |
+| `SKILL.md` section 7            | Best practices          | Appendable |
+| `SKILL.md` section 9            | Checklist               | Appendable |
+
+### 11.2. Triggers
+
+Execute self-update after:
+
+1. Creating a new `.drawio` file
+2. Significantly editing an existing `.drawio` file
+3. User explicitly requests skill update
+
+### 11.3. Update Procedure
+
+```text
+1. Read the created/edited .drawio file
+2. Extract style attributes from all mxCell elements
+3. Detect:
+   a. New colors (fillColor/strokeColor/fontColor not in color-palette.md)
+      → Add to references/color-palette.md with semantic role
+   b. New layout pattern (structure doesn't match known patterns A-K)
+      → Add to references/layout-guidelines.md with name and diagram
+   c. New best practice (fix applied during quality review)
+      → Append to SKILL.md section 7
+   d. New checklist item (repeated issue caught in review)
+      → Append to SKILL.md section 9
+4. Update "Last updated" and "Source files analyzed" metadata
+5. Report changes to user
+```
+
+### 11.4. Detection Rules
+
+Color detection:
+
+```text
+1. Parse all style="..." attributes in .drawio XML
+2. Extract fillColor, strokeColor, fontColor values
+3. Compare against known colors in references/color-palette.md
+4. If unknown color found:
+   - Check if it belongs to Material Design family
+   - Assign semantic role based on context
+   - Add to palette table
+```
+
+Pattern detection:
+
+```text
+1. Count vertex elements (boxes) and edge elements (arrows)
+2. Analyze nesting (parent-child relationships)
+3. Check spatial arrangement (horizontal/vertical/radial)
+4. Compare against known patterns A-K in layout-guidelines.md
+5. If no match:
+   - Name the pattern based on structure
+   - Create ASCII diagram
+   - Add to appropriate category
+```
+
+### 11.5. Metadata Format
+
+Each auto-updatable file ends with:
+
+```markdown
+---
+
+Last updated: YYYY-MM-DD
+Source files analyzed:
+
+- repo/path/to/*.drawio
+```
+
+## 12. Image Display in reveal.js Slides
 
 Add `auto-stretch: false` to YAML header:
 
