@@ -17,7 +17,7 @@ config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 -- Opacity
 local opacity_default = 0.70
 local titlebar_bg = "none"
-local tab_bar_bg = "transparent"
+local tab_bar_bg = "rgba(0, 0, 0, 0.30)"
 
 -- Integrated titlebar (fancy tab bar for titlebar transparency control)
 config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
@@ -43,8 +43,6 @@ config.colors = {
 
 -- Status display
 local status_fg = "#c0c0c0"
-local left_status_bg_alpha = 0.30
-local left_status_bg = string.format("rgba(0, 0, 0, %.2f)", left_status_bg_alpha)
 
 wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
@@ -57,24 +55,17 @@ wezterm.on("update-status", function(window, pane)
   local right_text = cat_display
     .. " "
     .. keystroke_display
-    .. string.format("%3.0f%% %2.0fpt ", opacity * 100, font_size)
-  local right_status_bg = string.format("rgba(0, 0, 0, %.2f)", math.max(opacity, left_status_bg_alpha))
+    .. " "
+    .. string.format("%3.0f%% %2.0fpt", opacity * 100, font_size)
+    .. " "
+  local dims = pane:get_dimensions()
+  local right_width = wezterm.column_width(right_text)
+  local left_padding = dims.cols - right_width + 1
+  right_text = string.rep(" ", left_padding) .. right_text
   window:set_right_status(wezterm.format({
-    { Background = { Color = right_status_bg } },
     { Foreground = { Color = status_fg } },
     { Text = right_text },
   }))
-
-  -- Left: fill remaining space with dark background
-  local dims = pane:get_dimensions()
-  local right_width = wezterm.column_width(right_text)
-  local left_width = dims.cols - right_width - 2
-  if left_width > 0 then
-    window:set_left_status(wezterm.format({
-      { Background = { Color = left_status_bg } },
-      { Text = string.rep(" ", left_width) },
-    }))
-  end
 end)
 
 -- Opacity adjustment (Opt+a: up, Opt+s: down)
