@@ -23,19 +23,17 @@ User's Codex CLI config is stored at:
 
 Key files:
 
-| File                | Git | Description                              |
-| ------------------- | --- | ---------------------------------------- |
-| `.gitignore`        | Yes | Ignore all except whitelisted files      |
-| `config.common.toml`| Yes | Common settings (model, MCP, etc.)       |
-| `generate-config.sh`| Yes | Generate config.toml from common + repos |
-| `prompts/`          | Yes | Symlink to `../claude/commands/`         |
-| `AGENTS.md`         | No  | Symlink to `../claude/CLAUDE.md`         |
-| `skills/`           | No  | Symlink to `../claude/skills/`           |
-| `config.toml`       | No  | Generated file (common + trusted repos)  |
+| File                 | Git | Description                              |
+| -------------------- | --- | ---------------------------------------- |
+| `.gitignore`         | Yes | Ignore all except whitelisted files      |
+| `config.common.toml` | Yes | Common settings (model, MCP, etc.)       |
+| `AGENTS.md`          | No  | Symlink to `../claude/CLAUDE.md`         |
+| `skills/`            | No  | Symlink to `../claude/skills/`           |
+| `config.toml`        | No  | Manually managed (common + trusted repos)|
 
-## 2. Config Generation
+## 2. Config Management
 
-### Why this structure?
+### Why separate common and full config?
 
 `config.toml` contains full paths for trusted projects:
 
@@ -48,22 +46,13 @@ This path includes username, so `config.toml` cannot be shared across
 machines with different usernames. Solution:
 
 - `config.common.toml` - Shared settings (Git-managed)
-- `generate-config.sh` - Generate machine-specific `config.toml`
-- `config.toml` - Generated, machine-specific (Git-ignored)
+- `config.toml` - Manually managed, machine-specific (Git-ignored)
 
-### How it works
+### How to update
 
-`generate-config.sh` generates `config.toml` by:
-
-1. Copy `config.common.toml` as base
-2. Find all git repos under `~/ghq/github.com/`
-3. Add each repo as `trust_level = "trusted"`
-
-Run when adding new repositories:
-
-```sh
-cd ~/ghq/github.com/i9wa4/dotfiles/config/codex && ./generate-config.sh
-```
+1. Edit `config.common.toml` for shared settings
+2. Copy shared settings to `config.toml` manually
+3. Add project-specific `[projects."..."]` entries as needed
 
 ## 3. Fetch Releases
 
@@ -104,14 +93,16 @@ cat "$FILE"
 
 ## 5. Settings Categories
 
-| Category | Examples                                    |
-| -------- | ------------------------------------------- |
-| Model    | `model`, `model_reasoning`                  |
-| Behavior | `approval_mode`, `sandbox`                  |
-| Display  | `notify`                                    |
-| Shell    | `shell_environment_commands`                |
-| History  | `history`, `project_doc_max_bytes`          |
-| Disable  | `disable_response_storage`, `hide_agent_*` |
+| Category | Examples                                            |
+| -------- | --------------------------------------------------- |
+| Model    | `model`, `model_reasoning`, `model_reasoning_effort` |
+| Behavior | `approval_mode`, `sandbox`, `network_access`        |
+| Display  | `notify`, `tui.notifications_method`                |
+| Shell    | `shell_environment_commands`                        |
+| History  | `history`, `project_doc_max_bytes`                  |
+| Features | `features.skills`, `features.web_search_request`    |
+| Disable  | `disable_response_storage`, `hide_agent_*`          |
+| Analytics| `analytics.enabled`, `feedback.enabled`             |
 
 ## 6. AGENTS.md Design Guidelines
 
@@ -130,19 +121,22 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 8. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.1.2504182016 (2025-04-18)
+Last reviewed Codex CLI version: v0.93.0 (2026-01-31)
 
 ### 8.1. Applied Optimizations
 
 - [x] AGENTS.md symlinked to CLAUDE.md (shared persona)
 - [x] skills/ symlinked to Claude Code skills
-- [x] prompts/ symlinked to Claude Code commands
 - [x] config.common.toml for shared settings
 
 ### 8.2. Pending Considerations
 
-- [ ] Review new config options in future releases
-- [ ] Evaluate MCP server integration if available
+- [ ] Create prompts/ symlink to `../claude/commands/` if needed
+- [ ] Create generate-config.sh for automated config.toml generation
+- [ ] Evaluate MCP server integration (AWS docs MCP etc.)
+- [ ] Review `tui.notifications_method` config option (added in v0.93.0)
+- [ ] Evaluate Plan mode (`/plan`) workflow (added in v0.93.0)
+- [ ] Review smart approvals default behavior (enabled in v0.93.0)
 
 ## 9. Response Format (CHANGELOG)
 

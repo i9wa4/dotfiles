@@ -2,4 +2,3 @@
 !.gitignore
 !config.common.toml
 !generate-config.sh
-!prompts
