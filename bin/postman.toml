@@ -53,10 +53,12 @@ enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
   "concierge --> orchestrator --> worker",
-  "orchestrator --> observer-claude-1",
-  "orchestrator --> observer-claude-2",
-  "orchestrator --> observer-codex-1",
-  "orchestrator --> observer-codex-2",
+  "orchestrator --> observer-claude-leader",
+  "orchestrator --> observer-codex-leader",
+  "observeer-claude-leader --> observer-claude-2",
+  "observeer-claude-leader --> observer-claude-2",
+  "observer-codex-leader --> observer-codex-1",
+  "observer-codex-leader --> observer-codex-2",
 ]
 
 # Reminder message (sent periodically to nodes)
@@ -176,9 +178,20 @@ template = """
 - Report issues to observer
 """
 
-[observer-claude-1]
+[observer-claude-leader]
 role = "monitoring, review"
 subscribe_digest = true
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+- You are the LEAD OBSERVER - if there are your members, coordinate with them
+"""
+
+[observer-claude-1]
+role = "monitoring, review"
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -189,7 +202,6 @@ template = """
 
 [observer-claude-2]
 role = "monitoring, review"
-subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -198,9 +210,20 @@ template = """
 - Report concerns to relevant nodes
 """
 
-[observer-codex-1]
+[observer-codex-leader]
 role = "monitoring, review"
 subscribe_digest = true
+on_join = ""
+template = """
+# OBSERVER (READONLY)
+
+- Monitor and review all activities
+- Report concerns to relevant nodes
+- You are the LEAD OBSERVER - if there are your members, coordinate with them
+"""
+
+[observer-codex-1]
+role = "monitoring, review"
 on_join = ""
 template = """
 # OBSERVER (READONLY)
@@ -211,7 +234,6 @@ template = """
 
 [observer-codex-2]
 role = "monitoring, review"
-subscribe_digest = true
 on_join = ""
 template = """
 # OBSERVER (READONLY)
