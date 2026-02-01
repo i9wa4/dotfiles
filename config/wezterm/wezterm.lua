@@ -16,8 +16,7 @@ config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Opacity
 local opacity_default = 0.70
-local titlebar_bg = "none"
-local tab_bar_bg = "rgba(0, 0, 0, 0.30)"
+local bar_bg = "rgba(0, 0, 0, 0.30)"
 
 -- Integrated titlebar (fancy tab bar for titlebar transparency control)
 config.window_decorations = "INTEGRATED_BUTTONS | RESIZE"
@@ -27,8 +26,8 @@ config.show_tabs_in_tab_bar = false
 config.window_frame = {
   font = config.font,
   font_size = config.font_size,
-  active_titlebar_bg = titlebar_bg,
-  inactive_titlebar_bg = titlebar_bg,
+  active_titlebar_bg = bar_bg,
+  inactive_titlebar_bg = bar_bg,
 }
 config.window_background_opacity = opacity_default
 config.status_update_interval = 100 -- 100ms for faster bongo-cat animation
@@ -37,7 +36,7 @@ config.hide_tab_bar_if_only_one_tab = false
 -- Tab bar background
 config.colors = {
   tab_bar = {
-    background = tab_bar_bg,
+    background = "transparent",
   },
 }
 
@@ -58,11 +57,8 @@ wezterm.on("update-status", function(window, pane)
     .. " "
     .. string.format("%3.0f%% %2.0fpt", opacity * 100, font_size)
     .. " "
-  local dims = pane:get_dimensions()
-  local right_width = wezterm.column_width(right_text)
-  local left_padding = dims.cols - right_width + 1
-  right_text = string.rep(" ", left_padding) .. right_text
   window:set_right_status(wezterm.format({
+    { Background = { Color = "none" } },
     { Foreground = { Color = status_fg } },
     { Text = right_text },
   }))
