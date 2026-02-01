@@ -20,10 +20,6 @@ snippets:
       zinit self-update &&
       zinit update --all &&
       ghq list | ghq get --update &&
-      ghq get -p i9wa4/internal &&
-      cd ~/ghq/github.com/i9wa4/internal &&
-      uv run quarto render work/ &&
-      cd - &&
       ghq-repo-status
 
   - name: (AWS) profile
@@ -114,22 +110,14 @@ snippets:
     snippet:
       uv run quarto render
 
-  - name: (uv) activate
-    keyword: ua
-    snippet:
-      . ~/ghq/github.com/i9wa4/dotfiles/.venv{{}}/bin/activate
-
   - name: (vde-layout) dev
     keyword: vd
     snippet:
       vde-layout dev
 
-  - name: (vde-layout) gtop
-    keyword: vg
+  - name: (vde-layout) preset-a
+    keyword: va
     snippet:
-      vde-layout gtop
-
-  - name: (vde-layout) orchestrator
-    keyword: vo
-    snippet:
-      vde-layout orchestrator && vde-layout workers
+      vde-layout concierge &&
+      vde-layout orchestrator &&
+      vde-layout observers
