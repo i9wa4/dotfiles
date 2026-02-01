@@ -125,7 +125,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.19 (2026-01-24)
+Last reviewed Claude Code version: v2.1.29 (2026-02-02)
 
 ### 10.1. Applied Optimizations
 
@@ -147,6 +147,13 @@ Last reviewed Claude Code version: v2.1.19 (2026-01-24)
 
 ### 10.3. Version Notes
 
+- v2.1.29: SessionStart hook saved_hook_context performance fix
+- v2.1.27: --from-pr flag, auto PR-session linking, debug log improvements
+- v2.1.23: spinnerVerbs setting, terminal rendering perf, mTLS/proxy fix
+- v2.1.21: Zenkaku number input (JP IME), auto-compact timing fix, task ID
+  reuse fix
+- v2.1.20: PR review status indicator, --add-dir CLAUDE.md loading, TaskUpdate
+  delete, config backup rotation, background agent permission prompt
 - v2.1.19: CLAUDE_CODE_ENABLE_TASKS env, $ARGUMENTS[0] syntax, skill
   approval change
 - v2.1.18: Customizable keybindings (/keybindings command)
