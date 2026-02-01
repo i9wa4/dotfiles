@@ -73,15 +73,51 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 - Element center coordinate = `y + (height / 2)`
 - To align multiple elements, calculate and match center coordinates
 
-## 5. Design Principles
+## 5. Color Palette (Material Design)
 
-### 5.1. Basic Principles
+Standard color set extracted from existing slide diagrams.
+Use 1-3 accent colors per diagram to avoid visual noise.
+
+| Role     | Background | Stroke     | Text       |
+| -------- | ---------- | ---------- | ---------- |
+| Primary  | `#E3F2FD`  | `#2196F3`  | `#1565C0`  |
+| Accent   | `#BBDEFB`  | `#1976D2`  | `#0D47A1`  |
+| Success  | `#E8F5E9`  | `#4CAF50`  | `#2E7D32`  |
+| Warning  | `#FFF3E0`  | `#FF9800`  | `#E65100`  |
+| Danger   | `#FFEBEE`  | `#F44336`  | `#C62828`  |
+| Info     | `#E8EAF6`  | `#3F51B5`  | `#283593`  |
+| Purple   | `#F3E5F5`  | `#9C27B0`  | `#7B1FA2`  |
+| Note     | `#FFF8E1`  | `#FFC107`  | `#F57F17`  |
+| Neutral  | `#ECEFF1`  | `#607D8B`  | `#455A64`  |
+| Code bg  | `#ECEFF1`  | -          | `#37474F`  |
+
+### 5.1. Usage Rules
+
+- Background frame (dashed): use Neutral stroke, no fill
+- Box elements: use `rounded=1`, `strokeWidth=2` or `3`
+- Step numbers (circles): use filled stroke color, white text
+- Arrows: match the source element's stroke color
+- Code blocks: use `fontFamily=monospace`, Code bg fill
+
+## 6. Design Principles
+
+### 6.0. Slide Diagram Constraints
+
+For presentation slide diagrams (1920x1080 canvas):
+
+- YOU MUST: Set `page="0"` (transparent background)
+- YOU MUST: Use `fontFamily=Noto Sans JP` for all text
+- YOU MUST: Limit to 1-3 accent colors per diagram
+- YOU MUST: Include a takeaway bar at the bottom (Note or Primary color)
+- NEVER: Use more than 4 color roles in a single diagram
+
+### 6.1. Basic Principles
 
 - Clarity: Create simple, visually clean diagrams
 - Consistency: Unify colors, fonts, icon sizes, line thickness
 - Accuracy: Do not sacrifice accuracy for simplification
 
-### 5.2. Element Rules
+### 6.2. Element Rules
 
 - Label all elements
 - Use arrows to indicate direction
@@ -89,12 +125,12 @@ drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 - Use latest official icons
 - Add legend to explain custom symbols
 
-### 5.3. Accessibility
+### 6.3. Accessibility
 
 - Ensure sufficient color contrast
 - Use patterns in addition to colors
 
-### 5.4. Progressive Disclosure
+### 6.4. Progressive Disclosure
 
 Separate complex systems into staged diagrams:
 
@@ -107,22 +143,22 @@ Separate complex systems into staged diagrams:
 | Data Flow Diagram | Data flow and transformation |
 | Sequence Diagram | Time-series interactions |
 
-### 5.5. Metadata
+### 6.5. Metadata
 
 Include title, description, last updated, author, and version in diagrams.
 
-## 6. Best Practices
+## 7. Best Practices
 
-### 6.1. Background Color
+### 7.1. Background Color
 
 - Remove `background="#ffffff"`
 - Transparent background adapts to various themes
 
-### 6.2. Font Size
+### 7.2. Font Size
 
 - Use 1.5x standard font size (around 18px) for PDF readability
 
-### 6.3. Japanese Text Width
+### 7.3. Japanese Text Width
 
 - Allow 30-40px per character
 - Insufficient width causes unintended line breaks
@@ -132,7 +168,7 @@ Include title, description, last updated, author, and version in diagrams.
 <mxGeometry x="140" y="60" width="400" height="40" />
 ```
 
-### 6.4. Arrow Placement
+### 7.4. Arrow Placement
 
 - Always place arrows at back (position in XML right after Title)
 - Position arrows to avoid overlapping with labels
@@ -149,7 +185,7 @@ Include title, description, last updated, author, and version in diagrams.
 <mxCell id="box1" .../>
 ```
 
-### 6.5. Arrow Connection to Text Labels
+### 7.5. Arrow Connection to Text Labels
 
 For text elements, exitX/exitY don't work, so use explicit coordinates:
 
@@ -167,7 +203,7 @@ For text elements, exitX/exitY don't work, so use explicit coordinates:
 </mxCell>
 ```
 
-### 6.6. edgeLabel Offset Adjustment
+### 7.6. edgeLabel Offset Adjustment
 
 Adjust offset attribute to distance arrow labels from arrows:
 
@@ -179,19 +215,19 @@ Adjust offset attribute to distance arrow labels from arrows:
 <mxPoint x="0" y="40" as="offset"/>
 ```
 
-### 6.7. Remove Unnecessary Elements
+### 7.7. Remove Unnecessary Elements
 
 - Remove decorative icons irrelevant to context
 - Example: If ECR exists, separate Docker icon is unnecessary
 
-### 6.8. Labels and Headings
+### 7.8. Labels and Headings
 
 - Service name only: 1 line
 - Service name + supplementary info: 2 lines with line break
 - Redundant notation (e.g., ECR Container Registry): shorten to 1 line
 - Use `&lt;br&gt;` tag for line breaks
 
-### 6.9. Background Frame and Internal Element Placement
+### 7.9. Background Frame and Internal Element Placement
 
 When placing elements inside background frames (grouping boxes),
 ensure sufficient margin.
@@ -234,7 +270,7 @@ Good example (sufficient margin):
 </mxCell>
 ```
 
-## 7. Reference
+## 8. Reference
 
 - [Layout Guidelines](references/layout-guidelines.md)
 - [AWS Icons](references/aws-icons.md)
@@ -247,7 +283,7 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py ec2
 python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 ```
 
-## 8. Checklist
+## 9. Checklist
 
 - [ ] No background color set (page="0")
 - [ ] Font size appropriate (larger recommended)
@@ -262,7 +298,29 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] No unnecessary elements remaining
 - [ ] Visually verified PNG conversion
 
-## 9. Image Display in reveal.js Slides
+## 10. Visual Quality Review Workflow
+
+After creating or editing a `.drawio` file, run this review loop:
+
+1. Convert to PNG:
+
+   ```sh
+   drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
+   ```
+
+2. Read the PNG with the Read tool (Claude can view images)
+3. Check against the checklist in section 9
+4. If issues found, fix the `.drawio` XML and repeat from step 1
+
+Key items to verify visually:
+
+- Elements not overflowing background frames
+- Arrows not penetrating boxes or overlapping labels
+- Text not truncated or line-breaking unexpectedly
+- Color palette consistent with section 5 definitions
+- Sufficient whitespace between elements
+
+## 11. Image Display in reveal.js Slides
 
 Add `auto-stretch: false` to YAML header:
 
