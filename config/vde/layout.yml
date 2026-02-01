@@ -48,9 +48,9 @@ presets:
           ratio: [1, 1]
           panes:
             - name: observer
-              command: A2A_NODE=observer-claude-leader claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=observer-a-leader claude --dangerously-skip-permissions --model opus
             - name: observer
-              command: A2A_NODE=observer-codex-leader codex --yolo
+              command: A2A_NODE=observer-b-leader claude --dangerously-skip-permissions --model opus
 
   observers:
     name: observers

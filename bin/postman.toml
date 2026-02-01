@@ -53,12 +53,12 @@ enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
   "concierge --> orchestrator --> worker",
-  "orchestrator --> observer-claude-leader",
-  "orchestrator --> observer-codex-leader",
-  "observer-claude-leader --> observer-claude-1",
-  "observer-claude-leader --> observer-claude-2",
-  "observer-codex-leader --> observer-codex-1",
-  "observer-codex-leader --> observer-codex-2",
+  "orchestrator --> observer-a-leader",
+  "orchestrator --> observer-b-leader",
+  "observer-a-leader --> observer-claude-1",
+  "observer-a-leader --> observer-claude-2",
+  "observer-b-leader --> observer-codex-1",
+  "observer-b-leader --> observer-codex-2",
 ]
 
 # Reminder message (sent periodically to nodes)
@@ -176,7 +176,7 @@ template = """
 - Report issues to observer
 """
 
-[observer-claude-leader]
+[observer-a-leader]
 role = "monitoring, review"
 subscribe_digest = true
 on_join = ""
@@ -208,7 +208,7 @@ template = """
 - Report concerns to relevant nodes
 """
 
-[observer-codex-leader]
+[observer-b-leader]
 role = "monitoring, review"
 subscribe_digest = true
 on_join = ""
