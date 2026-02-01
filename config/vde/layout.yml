@@ -11,7 +11,7 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: worker
-          command: claude --dangerously-skip-permissions
+          command: claude --dangerously-skip-permissions --model opus
 
   concierge:
     name: orchestrator
@@ -39,7 +39,7 @@ presets:
           ratio: [1, 1, 1]
           panes:
             - name: orchestrator
-              command: A2A_NODE=orchestrator claude --dangerously-skip-permissions
+              command: A2A_NODE=orchestrator claude --dangerously-skip-permissions --model opus
             - name: worker
               command: A2A_NODE=worker claude --dangerously-skip-permissions --model sonnet
             - name: postman
@@ -48,7 +48,7 @@ presets:
           ratio: [1, 1]
           panes:
             - name: observer
-              command: A2A_NODE=observer-claude-leader claude --dangerously-skip-permissions
+              command: A2A_NODE=observer-claude-leader claude --dangerously-skip-permissions --model opus
             - name: observer
               command: A2A_NODE=observer-codex-leader codex --yolo
 
@@ -64,9 +64,9 @@ presets:
           ratio: [1, 1]
           panes:
             - name: observer
-              command: A2A_NODE=observer-claude-1 claude --dangerously-skip-permissions
+              command: A2A_NODE=observer-claude-1 claude --dangerously-skip-permissions --model sonnet
             - name: observer
-              command: A2A_NODE=observer-claude-2 claude --dangerously-skip-permissions
+              command: A2A_NODE=observer-claude-2 claude --dangerously-skip-permissions --model sonnet
         - type: vertical
           ratio: [1, 1]
           panes:
