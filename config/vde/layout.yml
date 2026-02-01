@@ -11,9 +11,7 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: worker
-          command: claude --dangerously-skip-permissions
-          env:
-            A2A_NODE: worker
+          command: A2A_NODE=worker claude --dangerously-skip-permissions
 
   orchestrator:
     name: orchestrator
@@ -30,13 +28,9 @@ presets:
           ratio: [1, 1]
           panes:
             - name: concierge
-              command: claude --model haiku --dangerously-skip-permissions
-              env:
-                A2A_NODE: concierge
+              command: A2A_NODE=concierge claude --dangerously-skip-permissions --model haiku
             - name: orchestrator
-              command: claude --dangerously-skip-permissions
-              env:
-                A2A_NODE: orchestrator
+              command: A2A_NODE=orchestrator claude --dangerously-skip-permissions
 
   workers:
     name: workers
@@ -50,27 +44,17 @@ presets:
           ratio: [6, 1]
           panes:
             - name: worker
-              command: claude --dangerously-skip-permissions
-              env:
-                A2A_NODE: worker
+              command: A2A_NODE=worker claude --dangerously-skip-permissions
             - name: postman
               command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: observer
-              command: codex --yolo
-              env:
-                A2A_NODE: observer-codex-1
+              command: A2A_NODE=observer-codex-1 codex --yolo
             - name: observer
-              command: codex --yolo
-              env:
-                A2A_NODE: observer-codex-2
+              command: A2A_NODE=observer-codex-2 codex --yolo
             - name: observer
-              command: claude --dangerously-skip-permissions
-              env:
-                A2A_NODE: observer-claude-1
+              command: A2A_NODE=observer-claude-1 claude --dangerously-skip-permissions
             - name: observer
-              command: claude --dangerously-skip-permissions
-              env:
-                A2A_NODE: observer-claude-2
+              command: A2A_NODE=observer-claude-2 claude --dangerously-skip-permissions

@@ -37,7 +37,7 @@ snippets:
     snippet:
       --dangerously-skip-permissions
     context:
-      lbuffer: '^claude\s'
+      lbuffer: 'claude\s'
 
   - name: (Codex CLI) yolo
     keyword: y
