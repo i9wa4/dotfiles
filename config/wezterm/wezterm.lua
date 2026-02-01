@@ -26,8 +26,8 @@ config.show_tabs_in_tab_bar = false
 config.window_frame = {
   font = config.font,
   font_size = config.font_size,
-  active_titlebar_bg = bar_bg,
-  inactive_titlebar_bg = bar_bg,
+  active_titlebar_bg = "none",
+  inactive_titlebar_bg = "none",
 }
 config.window_background_opacity = opacity_default
 config.status_update_interval = 100 -- 100ms for faster bongo-cat animation
@@ -47,18 +47,20 @@ wezterm.on("update-status", function(window, pane)
   local overrides = window:get_config_overrides() or {}
   local opacity = overrides.window_background_opacity or opacity_default
   local font_size = window:effective_config().font_size
+  local dynamic_bar_bg = string.format("rgba(0, 0, 0, %.2f)", opacity)
 
   -- Right: Cat + Keystroke + Opacity + Font
   local cat_display = bongo.get_display(pane)
   local keystroke_display = bongo.get_keystroke_display()
-  local right_text = cat_display
+  local right_text = " "
+    .. cat_display
     .. " "
     .. keystroke_display
     .. " "
     .. string.format("%3.0f%% %2.0fpt", opacity * 100, font_size)
     .. " "
   window:set_right_status(wezterm.format({
-    { Background = { Color = "none" } },
+    { Background = { Color = dynamic_bar_bg } },
     { Foreground = { Color = status_fg } },
     { Text = right_text },
   }))
