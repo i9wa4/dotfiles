@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# Preview script for ghq + fzf.
+# Shows git status, recent commits, and issue/PR state for worktrees.
+#
+# Usage:
+#   ghq-fzf-preview <repo_full_path>
+#
+# Dependencies:
+#   - git
+#   - gh (GitHub CLI, for issue/PR state)
+
+repo_path="$1"
+
+if [[ ! -d $repo_path ]]; then
+  echo "Not a directory: $repo_path"
+  exit 0
+fi
+
+# Check if worktree has associated issue/PR
+dir_name=$(basename "$repo_path")
+
+if [[ $dir_name =~ -issue-([0-9]+)$ ]]; then
+  number="${BASH_REMATCH[1]}"
+  echo "=== Issue #${number} ==="
+  cd "$repo_path"
+  gh issue view "$number" --json state,title,closed,closedAt \
+    --jq '"Title: " + .title + "\nState: " + .state + (if .closedAt then "\nClosed: " + .closedAt else "" end)' \
+    2>/dev/null || echo "Failed to fetch issue info"
+elif [[ $dir_name =~ -pr-([0-9]+)$ ]]; then
+  number="${BASH_REMATCH[1]}"
+  echo "=== PR #${number} ==="
+  cd "$repo_path"
+  gh pr view "$number" --json state,title,closed,closedAt,mergedAt \
+    --jq '"Title: " + .title + "\nState: " + .state + (if .mergedAt then "\nMerged: " + .mergedAt elif .closedAt then "\nClosed: " + .closedAt else "" end)' \
+    2>/dev/null || echo "Failed to fetch PR info"
+fi
+
+# Upstream tracking info
+echo "=== Upstream ==="
+branch_name=$(git -C "$repo_path" symbolic-ref --short HEAD 2>/dev/null || echo "")
+if [[ -n $branch_name ]]; then
+  upstream=$(git -C "$repo_path" for-each-ref --format='%(upstream:short)' "refs/heads/${branch_name}" 2>/dev/null || echo "")
+  if [[ -n $upstream ]]; then
+    echo "Branch: ${branch_name} -> ${upstream}"
+    ahead_behind=$(git -C "$repo_path" rev-list --left-right --count "${branch_name}...${upstream}" 2>/dev/null || echo "")
+    if [[ -n $ahead_behind ]]; then
+      ahead=$(echo "$ahead_behind" | cut -f1)
+      behind=$(echo "$ahead_behind" | cut -f2)
+      echo "Ahead: ${ahead}, Behind: ${behind}"
+    fi
+  else
+    echo "Branch: ${branch_name} (no upstream)"
+  fi
+else
+  echo "Detached HEAD"
+fi
+echo ""
+
+# Git status
+echo "=== Status ==="
+git -C "$repo_path" status -s 2>/dev/null || true
+echo ""
+
+# Git log
+echo "=== Log ==="
+git -C "$repo_path" log -n 10 --oneline 2>/dev/null || true
+echo ""

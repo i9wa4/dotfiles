@@ -90,10 +90,15 @@ snippets:
     context:
       lbuffer: '^git\s'
 
-  - name: (Git) worktree-remove
-    keyword: wr
+  - name: (ghq) fzf preview
+    keyword: gf
     snippet:
-      worktree-remove "$(ghq root)/$(ghq list | fzf)"
+      ghq list -p | fzf --preview 'ghq-fzf-preview {}' --bind 'enter:execute(cd {} && $SHELL)+reload(ghq list -p)'
+
+  # - name: (Git) worktree-remove
+  #   keyword: wr
+  #   snippet:
+  #     worktree-remove "$(ghq root)/$(ghq list | fzf)"
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
