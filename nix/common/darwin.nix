@@ -66,6 +66,12 @@
   # Platform
   nixpkgs.hostPlatform = "aarch64-darwin";
 
+  # Power management
+  power.sleep = {
+    computer = "never";  # システムスリープ無効
+    display = 30;        # ディスプレイスリープ 30分
+  };
+
   # ============================================================================
   # System settings (consolidated to avoid statix W20 warning)
   # ============================================================================
@@ -320,21 +326,6 @@
     # Note: postUserActivation was removed, now using postActivation with sudo -u
     # ==========================================================================
     activationScripts.postActivation.text = ''
-      # ------------------------------------------
-      # Spotlight indexing control (runs as root)
-      # Toggle by uncommenting the desired option
-      # ------------------------------------------
-      # Enable Spotlight indexing [default]
-      mdutil -a -i on 2>/dev/null || true
-      # Disable Spotlight indexing (saves ~500MB RAM)
-      # mdutil -a -i off 2>/dev/null || true
-
-      # ------------------------------------------
-      # バッテリー: スリープ中もネットワーク接続を維持
-      # Note: Requires root (pmset), バッテリー消費が増加する可能性あり
-      # ------------------------------------------
-      pmset -a networkoversleep 1
-
       # Run as user (not root)
       sudo -u ${username} bash -c '
         # ------------------------------------------
