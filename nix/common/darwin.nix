@@ -329,6 +329,12 @@
       # Disable Spotlight indexing (saves ~500MB RAM)
       # mdutil -a -i off 2>/dev/null || true
 
+      # ------------------------------------------
+      # バッテリー: スリープ中もネットワーク接続を維持 [default: 1]
+      # Note: Requires root (pmset)
+      # ------------------------------------------
+      pmset -a tcpkeepalive 1
+
       # Run as user (not root)
       sudo -u ${username} bash -c '
         # ------------------------------------------
