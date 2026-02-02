@@ -11,6 +11,7 @@ enabled = false
 enabled = false
 
 [features]
+collab = true
 skills = true
 web_search_request = true
 
