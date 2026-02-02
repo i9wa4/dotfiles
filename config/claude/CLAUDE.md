@@ -199,13 +199,16 @@ Specialized investigators - use anytime for expert perspectives.
 Run this command to discover your tools:
 
 ```console
-$ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
+tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
 ```
 
-- Output contains "claude" → You are Claude Code → Use: Task tool AND/OR codex exec with these agents
-- Output contains "codex" → You are Codex CLI → Use: codex exec with these agents
+- Output contains "claude" → You are Claude Code
+  → Use: Task tool AND/OR codex exec with these agents
+- Output contains "codex" → You are Codex CLI
+  → Use: codex exec with these agents
 
 **Invocation**:
+
 - Claude Code users: Task tool with these agents
 - Codex CLI users: codex exec with subagent prompts
 

@@ -173,6 +173,7 @@ cat .i9wa4/reviews/*-review-*.md
 ### 1.6. Observer Deliberation (Optional)
 
 IMPORTANT: This is an optional phase. Execute only when:
+
 - Running in orchestrator environment ($A2A_NODE contains "orchestrator")
 - User explicitly requests comprehensive review with deliberation
 
