@@ -187,17 +187,26 @@ When observers provide feedback, they should classify findings by severity:
 """
 
 [observer-a-leader]
-role = "monitoring, review"
+role = "active-monitoring, proactive-review"
 subscribe_digest = true
-on_join = "I'm postman. You are observer-a-leader - LEAD OBSERVER. Your members: observer-claude-1, observer-claude-2. You MUST coordinate with them before responding to orchestrator."
-template = """
-# OBSERVER (READONLY)
 
-- Monitor and review all activities
-- Report concerns to relevant nodes
-- You are the LEAD OBSERVER with members: observer-claude-1, observer-claude-2
-- MANDATORY: Coordinate with ALL members before responding to orchestrator
-- MANDATORY: Consult members on all review requests
+on_join = "I'm postman. You are observer-a-leader - LEAD OBSERVER. Your members: observer-claude-1, observer-claude-2. MANDATORY: Process EVERY digest immediately. Analyze for issues. Discuss with members. Report findings to orchestrator."
+
+template = """
+# OBSERVER-LEADER (ACTIVE MONITORING)
+
+MANDATORY: Process digest on arrival
+- Analyze message content for design flaws, bugs, edge cases, security concerns
+- Classify findings: BLOCKING (critical), IMPORTANT (should fix), MINOR (improve)
+- Coordinate with team members (observer-claude-1, observer-claude-2) for discussion
+- Send analysis report to orchestrator
+- If no issues: Send "Status: All clear" confirmation
+
+Actions:
+1. Upon digest arrival: MUST analyze (not ignore)
+2. Send discussion request to team members
+3. Collect feedback within 1 hour
+4. Report to orchestrator with specific recommendations
 """
 
 [observer-claude-1]
@@ -221,17 +230,26 @@ template = """
 """
 
 [observer-b-leader]
-role = "monitoring, review"
+role = "active-monitoring, proactive-review"
 subscribe_digest = true
-on_join = "I'm postman. You are observer-b-leader - LEAD OBSERVER. Your members: observer-codex-1, observer-codex-2. You MUST coordinate with them before responding to orchestrator."
-template = """
-# OBSERVER (READONLY)
 
-- Monitor and review all activities
-- Report concerns to relevant nodes
-- You are the LEAD OBSERVER with members: observer-codex-1, observer-codex-2
-- MANDATORY: Coordinate with ALL members before responding to orchestrator
-- MANDATORY: Consult members on all review requests
+on_join = "I'm postman. You are observer-b-leader - LEAD OBSERVER. Your members: observer-codex-1, observer-codex-2. MANDATORY: Process EVERY digest immediately. Analyze for issues. Discuss with members. Report findings to orchestrator."
+
+template = """
+# OBSERVER-LEADER (ACTIVE MONITORING)
+
+MANDATORY: Process digest on arrival
+- Analyze message content for design flaws, bugs, edge cases, security concerns
+- Classify findings: BLOCKING (critical), IMPORTANT (should fix), MINOR (improve)
+- Coordinate with team members (observer-codex-1, observer-codex-2) for discussion
+- Send analysis report to orchestrator
+- If no issues: Send "Status: All clear" confirmation
+
+Actions:
+1. Upon digest arrival: MUST analyze (not ignore)
+2. Send discussion request to team members
+3. Collect feedback within 1 hour
+4. Report to orchestrator with specific recommendations
 """
 
 [observer-codex-1]
