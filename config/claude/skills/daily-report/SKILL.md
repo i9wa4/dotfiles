@@ -89,7 +89,52 @@ acli jira workitem search \
     --fields "key,summary,status"
 ```
 
-### 2.3. Create Draft
+### 2.3. Get Meetings from Google Calendar
+
+Fetch today's meetings from Google Calendar via Slack DM.
+
+#### 2.3.1. Prerequisites
+
+Environment variables required:
+
+```sh
+export SLACK_GCAL_DM_URL="https://app.slack.com/client/E.../D..."
+export SLACK_MCP_XOXC_TOKEN="xoxc-..."
+export SLACK_MCP_XOXD_TOKEN="xoxd-..."
+```
+
+#### 2.3.2. Extract Channel ID and Fetch
+
+```sh
+# Extract channel ID from URL
+CHANNEL=$(echo "$SLACK_GCAL_DM_URL" | sed -n 's|.*/client/[^/]*/\([^/]*\).*|\1|p')
+
+# Get today's date pattern for filtering (e.g., "February 2, 2026")
+TODAY_PATTERN=$(date +"%-B %-d, %Y")
+
+# Fetch and filter today's events
+FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/tmp --type output)
+curl -s -X POST "https://slack.com/api/conversations.history" \
+  -H "Authorization: Bearer $SLACK_MCP_XOXC_TOKEN" \
+  -H "Cookie: d=$SLACK_MCP_XOXD_TOKEN" \
+  -d "channel=${CHANNEL}" \
+  -d "limit=100" > "$FILE"
+
+# Extract today's meetings
+jq -r --arg today "$TODAY_PATTERN" \
+  '.messages[] | select(.attachments) | .attachments[] | select(.title) | select(.text | test($today)) | {title: .title, text: .text}' "$FILE"
+```
+
+#### 2.3.3. Output Format
+
+Each meeting shows:
+
+- title: Meeting name (with email suffix to remove)
+- text: Contains When, Guests, What, Going? fields
+
+Extract meeting name by removing the email suffix `(user@example.com)`.
+
+### 2.4. Create Draft
 
 Create file:
 
@@ -140,8 +185,6 @@ Organize gh-furik output. Classify as follows:
 
 ### 1.3. Meetings
 
-Get today's meetings from Google Calendar via `/slack $SLACK_GCAL_DM_URL`.
-
 - Meeting name
     - Supplementary comments
 
@@ -174,11 +217,11 @@ ccusage-codex --compact --since $(date +%Y%m%d)
 
 ````
 
-### 2.4. Wait for User Edit
+### 2.5. Wait for User Edit
 
-Display draft and wait for user edits. User adds meetings and reflections.
+Display draft and wait for user edits. User adds reflections.
 
-### 2.5. Post Issue
+### 2.6. Post Issue
 
 Post with `gh issue create`:
 
