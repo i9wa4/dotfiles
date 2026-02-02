@@ -176,18 +176,28 @@ template = """
 
 - Execute assigned tasks
 - Report issues to observer
+
+## Expected Feedback Format from Observers
+
+When observers provide feedback, they should classify findings by severity:
+
+- **BLOCKING**: Must be fixed before commit (security issues, critical bugs, broken tests)
+- **IMPORTANT**: Should be addressed soon (design flaws, missing error handling, maintainability concerns)
+- **MINOR**: Future improvement candidates (performance optimization ideas, code style suggestions)
 """
 
 [observer-a-leader]
 role = "monitoring, review"
 subscribe_digest = true
-on_join = ""
+on_join = "I'm postman. You are observer-a-leader - LEAD OBSERVER. Your members: observer-claude-1, observer-claude-2. You MUST coordinate with them before responding to orchestrator."
 template = """
 # OBSERVER (READONLY)
 
 - Monitor and review all activities
 - Report concerns to relevant nodes
-- You are the LEAD OBSERVER - if there are your members, coordinate with them
+- You are the LEAD OBSERVER with members: observer-claude-1, observer-claude-2
+- MANDATORY: Coordinate with ALL members before responding to orchestrator
+- MANDATORY: Consult members on all review requests
 """
 
 [observer-claude-1]
@@ -213,13 +223,15 @@ template = """
 [observer-b-leader]
 role = "monitoring, review"
 subscribe_digest = true
-on_join = ""
+on_join = "I'm postman. You are observer-b-leader - LEAD OBSERVER. Your members: observer-codex-1, observer-codex-2. You MUST coordinate with them before responding to orchestrator."
 template = """
 # OBSERVER (READONLY)
 
 - Monitor and review all activities
 - Report concerns to relevant nodes
-- You are the LEAD OBSERVER - if there are your members, coordinate with them
+- You are the LEAD OBSERVER with members: observer-codex-1, observer-codex-2
+- MANDATORY: Coordinate with ALL members before responding to orchestrator
+- MANDATORY: Consult members on all review requests
 """
 
 [observer-codex-1]
