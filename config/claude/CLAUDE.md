@@ -135,12 +135,12 @@ Codex CLI users should track tasks manually.
 
 ## Quick Reference Index
 
-| Category | Items                                                                                                                                                                                      |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Rules    | aws, bash, git-github, markdown                                                                                                                                                            |
-| Skills   | atlassian, bigquery, claude-config-optimizer, codex-config-optimizer, daily-report, databricks, dbt, draw-io, git, github, jupyter-notebook, nix, orchestrator, python, restricted-bigquery-dbt-environment, skill-creator, slack, terraform |
-| Agents   | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                   |
-| Scripts  | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                     |
+| Category  | Items                                                                                                                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Rules     | aws, bash, git-github, markdown                                                                                                                                                            |
+| Skills    | atlassian, bigquery, claude-config-optimizer, codex-config-optimizer, daily-report, databricks, dbt, draw-io, git, github, jupyter-notebook, nix, orchestrator, python, restricted-bigquery-dbt-environment, skill-creator, slack, subagent-review, terraform |
+| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                   |
+| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                     |
 
 ## 7. File Structure
 
@@ -187,21 +187,37 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
 | skill-creator                       | Skill creation guide                |
 | slack                               | Slack thread fetch and search       |
+| subagent-review                     | 10-parallel code/design review      |
 | terraform                           | Terraform development guide         |
 
-### 7.3. Agents
+### 7.3. Subagents
 
-Agents are stored in the `agents/` directory.
+Specialized investigators - use anytime for expert perspectives.
 
-| Agent                 | Description                                |
-| --------------------- | ------------------------------------------ |
-| reviewer-architecture | Design patterns and structure review       |
-| reviewer-code         | Code quality, readability, maintainability |
-| reviewer-data         | Data quality and schema review             |
-| reviewer-historian    | Issue/PR history and commit context        |
-| reviewer-qa           | QA and test coverage review                |
-| reviewer-security     | Security vulnerability review              |
-| researcher-tech       | Technical research and analysis            |
+**Identifying yourself**:
+
+Run this command to discover your tools:
+
+```console
+$ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
+```
+
+- Output contains "claude" → You are Claude Code → Use: Task tool AND/OR codex exec with these agents
+- Output contains "codex" → You are Codex CLI → Use: codex exec with these agents
+
+**Invocation**:
+- Claude Code users: Task tool with these agents
+- Codex CLI users: codex exec with subagent prompts
+
+| Agent                 | Use Case                           |
+| --------------------- | ---------------------------------- |
+| reviewer-architecture | Design patterns and structure      |
+| reviewer-code         | Code quality, readability          |
+| reviewer-data         | Data quality, schema design        |
+| reviewer-historian    | Context, history, decisions        |
+| reviewer-qa           | Test coverage, edge cases          |
+| reviewer-security     | Security, vulnerabilities          |
+| researcher-tech       | Investigation, research            |
 
 ### 7.4. Scripts
 

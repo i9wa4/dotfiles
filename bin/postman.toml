@@ -73,6 +73,8 @@ reply_command = "uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py create-dr
 notification_template = """
 📬 Message from {from_node}
 
+After reading, move from inbox/ to read/
+
 {template}
 
 {talks_to_line}
@@ -82,13 +84,13 @@ notification_template = """
 Inbox: {inbox_path}/
 File: {filename}
 
-## Reply
+## Reply (if needed)
 
-1. Create draft: {reply_command}
-2. Post: `mv .postman/{context_id}/draft/xxx.md .postman/{context_id}/post/`
+NEVER create draft manually. Always:
 
----
-After processing, move from inbox/ to read/
+1. {reply_command}
+2. Edit content
+3. mv draft/ to post/
 """
 
 # Ping message template
