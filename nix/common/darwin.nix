@@ -330,10 +330,10 @@
       # mdutil -a -i off 2>/dev/null || true
 
       # ------------------------------------------
-      # バッテリー: スリープ中もネットワーク接続を維持 [default: 1]
-      # Note: Requires root (pmset)
+      # バッテリー: スリープ中もネットワーク接続を維持
+      # Note: Requires root (pmset), バッテリー消費が増加する可能性あり
       # ------------------------------------------
-      pmset -a tcpkeepalive 1
+      pmset -a networkoversleep 1
 
       # Run as user (not root)
       sudo -u ${username} bash -c '
