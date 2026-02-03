@@ -124,5 +124,4 @@ snippets:
     keyword: va
     snippet:
       vde-layout concierge &&
-      vde-layout orchestrator &&
-      vde-layout observers
+      vde-layout orchestrator
