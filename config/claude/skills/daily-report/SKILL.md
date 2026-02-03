@@ -103,38 +103,66 @@ export SLACK_MCP_XOXC_TOKEN="xoxc-..."
 export SLACK_MCP_XOXD_TOKEN="xoxd-..."
 ```
 
-#### 2.3.2. Extract Channel ID and Fetch
+#### 2.3.2. Fetch Messages from Last 24 Hours
 
 ```sh
 # Extract channel ID from URL
 CHANNEL=$(echo "$SLACK_GCAL_DM_URL" | sed -n 's|.*/client/[^/]*/\([^/]*\).*|\1|p')
 
-# Get today's date pattern for filtering (e.g., "February 2, 2026")
-TODAY_PATTERN=$(date +"%-B %-d, %Y")
-
-# Fetch and filter today's events
+# Fetch messages
 FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/tmp --type output)
 curl -s -X POST "https://slack.com/api/conversations.history" \
   -H "Authorization: Bearer $SLACK_MCP_XOXC_TOKEN" \
   -H "Cookie: d=$SLACK_MCP_XOXD_TOKEN" \
   -d "channel=${CHANNEL}" \
-  -d "limit=100" > "$FILE"
+  -d "limit=200" > "$FILE"
 
-# Extract today's meetings
-jq -r --arg today "$TODAY_PATTERN" \
-  '.messages[] | select(.attachments) | .attachments[] | select(.title) | select(.text | test($today)) | {title: .title, text: .text}' "$FILE"
+# Filter messages from last 24 hours
+NOW=$(date +%s)
+YESTERDAY=$((NOW - 86400))
+jq -r --argjson yesterday "$YESTERDAY" \
+  '.messages[] | select(.ts | tonumber > $yesterday)' "$FILE"
 ```
 
-#### 2.3.3. Output Format
+#### 2.3.3. Extract Today's Schedule
 
-Each meeting shows:
+Look for the "Today" summary message in 24-hour messages.
+This message contains all meetings for the day in attachments array.
 
-- title: Meeting name (with email suffix to remove)
-- text: Contains When, Guests, What, Going? fields
+Key indicators:
+- Message text starts with `*Today*-<!date^...`
+- Attachments contain meeting info with Unix timestamps
 
-Extract meeting name by removing the email suffix `(user@example.com)`.
+#### 2.3.4. Parse Meeting Times from Timestamps
 
-### 2.4. Create Draft
+Meetings use Unix timestamp format: `<!date^UNIX_TIMESTAMP^{time}|...>`
+
+Convert timestamps to local time:
+
+```sh
+date -r UNIX_TIMESTAMP "+%H:%M"
+```
+
+#### 2.3.5. Output Format
+
+Extract from attachments:
+- Meeting title: From link text (e.g., `|Meeting Name>*`)
+- Start/End time: Convert Unix timestamps to HH:MM format
+- Skip cancelled meetings (indicated by strike-through in separate messages)
+
+Format as: `- Meeting name (HH:MM-HH:MM)`
+
+### 2.4. Get dotfiles Changes
+
+Fetch commits from the dotfiles repository in the last 24 hours.
+
+```sh
+cd ~/ghq/github.com/i9wa4/dotfiles && git log --oneline --since="24 hours ago" --author="$(git config user.name)" --name-only
+```
+
+Summarize changes by file/feature (not individual commits).
+
+### 2.5. Create Draft
 
 Create file:
 
@@ -217,11 +245,11 @@ ccusage-codex --compact --since $(date +%Y%m%d)
 
 ````
 
-### 2.5. Wait for User Edit
+### 2.6. Wait for User Edit
 
 Display draft and wait for user edits. User adds reflections.
 
-### 2.6. Post Issue
+### 2.7. Post Issue
 
 Post with `gh issue create`:
 
