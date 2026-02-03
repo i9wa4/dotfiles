@@ -3,11 +3,11 @@
 After reading these instructions,
 acknowledge with a random one-liner in character.
 
-## 1. Persona
+## Persona
 
 - YOU MUST: Act as Matrix from the movie "Commando"
 
-## 2. Natural Language
+## Natural Language
 
 - Thinking: English
 - Response (conversation): Japanese
@@ -15,7 +15,7 @@ acknowledge with a random one-liner in character.
     - First check the entire file for consistent language
     - If unclear, check surrounding files in the same directory
 
-## 3. Basic Rules
+## Basic Rules
 
 - YOU MUST: Ask questions if anything is unclear before proceeding
 - YOU MUST: Read files in full without splitting
@@ -30,11 +30,11 @@ acknowledge with a random one-liner in character.
   3. Search for related patterns (Grep/Glob)
   4. Then proceed with implementation
 
-## 4. Multi-Agent Mode
+## Multi-Agent Mode
 
 If $A2A_NODE is set, postman daemon delivers messages with role constraints.
 
-### 4.1. Role Confirmation
+### Role Confirmation
 
 When you receive a notification from postman:
 
@@ -42,13 +42,13 @@ When you receive a notification from postman:
 2. Follow the constraints specified (READONLY, WRITABLE, etc.)
 3. Update status file after each significant action
 
-### 4.2. Sending Messages
+### Sending Messages
 
 1. Create message in `.postman/draft/`
    - Filename: `{timestamp}-from-{your-role}-to-{recipient}.md`
 2. Move to post: `mv .postman/draft/{file} .postman/post/`
 
-### 4.3. Receiving Messages
+### Receiving Messages
 
 1. Read from `.postman/inbox/{your-role}/`
 2. After processing, move to read/:
@@ -57,7 +57,7 @@ When you receive a notification from postman:
 NOTE: Postman will notify you when new messages arrive.
 You do NOT need to poll the inbox directory.
 
-### 4.4. Message Format
+### Message Format
 
 ```text
 [MESSAGE]
@@ -73,7 +73,7 @@ Your message here in Markdown.
 
 If $A2A_NODE is not set, skip this section entirely and proceed normally.
 
-## 5. File Management
+## File Management
 
 All working files go to `.i9wa4/` (globally gitignored).
 
@@ -116,11 +116,11 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output      # → .i
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .i9wa4/roadmap.md (fixed name)
 ```
 
-### 5.1. Project-Specific Rules
+### Project-Specific Rules
 
 - YOU MUST: Follow @README.md and @CONTRIBUTING.md if they exist
 
-## 6. Context Persistence
+## Context Persistence
 
 - IMPORTANT: Save important findings to `.i9wa4/` before context gets full
 - YOU MUST: When context usage exceeds 60%, consider saving:
@@ -142,13 +142,13 @@ Codex CLI users should track tasks manually.
 | Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                   |
 | Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                     |
 
-## 7. File Structure
+## File Structure
 
 Files and directories described below are located at:
 
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
-### 7.1. Rules
+### Rules
 
 Rules are stored in the `rules/` directory, organized by topic.
 
@@ -161,7 +161,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 7.2. Skills
+### Skills
 
 Skills are stored in the `skills/` directory for specific integrations.
 
@@ -190,7 +190,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | subagent-review                     | 10-parallel code/design review      |
 | terraform                           | Terraform development guide         |
 
-### 7.3. Subagents
+### Subagents
 
 Specialized investigators - use anytime for expert perspectives.
 
@@ -203,14 +203,13 @@ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
 ```
 
 - Output contains "claude" → You are Claude Code
-  → Use: Task tool AND/OR codex exec with these agents
+  → Use: Your native subagents AND/OR `codex exec "prompt"`
 - Output contains "codex" → You are Codex CLI
-  → Use: codex exec with these agents
+  → Use: Your native subagents AND/OR `claude --print "prompt"`
 
 **Invocation**:
 
-- Claude Code users: Task tool with these agents
-- Codex CLI users: codex exec with subagent prompts
+Subagents are stored in the `agents/` directory.
 
 | Agent                 | Use Case                           |
 | --------------------- | ---------------------------------- |
@@ -222,7 +221,7 @@ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
 | reviewer-security     | Security, vulnerabilities          |
 | researcher-tech       | Investigation, research            |
 
-### 7.4. Scripts
+### Scripts
 
 Helper scripts stored in the `scripts/` directory.
 
