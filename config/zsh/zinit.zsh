@@ -45,5 +45,16 @@ zinit ice lucid depth"1" blockf \
     else
       bindkey "^r" history-incremental-search-backward
     fi
+
+    function zeno-ghq-cd-post-hook-impl() {
+      local dir="$ZENO_GHQ_CD_DIR"
+      if [[ -n $TMUX ]]; then
+        local repository=${dir:t}
+        local session=${repository//./-}
+        tmux rename-session "${session}"
+      fi
+    }
+
+    zle -N zeno-ghq-cd-post-hook zeno-ghq-cd-post-hook-impl
   '
 zinit light yuki-yano/zeno.zsh
