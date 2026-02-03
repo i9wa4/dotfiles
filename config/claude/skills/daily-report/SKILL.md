@@ -130,6 +130,7 @@ Look for the "Today" summary message in 24-hour messages.
 This message contains all meetings for the day in attachments array.
 
 Key indicators:
+
 - Message text starts with `*Today*-<!date^...`
 - Attachments contain meeting info with Unix timestamps
 
@@ -146,6 +147,7 @@ date -r UNIX_TIMESTAMP "+%H:%M"
 #### 2.3.5. Output Format
 
 Extract from attachments:
+
 - Meeting title: From link text (e.g., `|Meeting Name>*`)
 - Start/End time: Convert Unix timestamps to HH:MM format
 - Skip cancelled meetings (indicated by strike-through in separate messages)
