@@ -52,13 +52,13 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "concierge --> orchestrator --> worker",
-  "orchestrator --> observer-a-leader",
-  "orchestrator --> observer-b-leader",
-  "observer-a-leader --> observer-claude-1",
-  "observer-a-leader --> observer-claude-2",
-  "observer-b-leader --> observer-codex-1",
-  "observer-b-leader --> observer-codex-2",
+  "watchdog -- concierge -- orchestrator -- worker",
+  "orchestrator -- observer-a-leader",
+  "orchestrator -- observer-b-leader",
+  "observer-a-leader -- observer-claude-1",
+  "observer-a-leader -- observer-claude-2",
+  "observer-b-leader -- observer-codex-1",
+  "observer-b-leader -- observer-codex-2",
 ]
 
 # Reminder message (sent periodically to nodes)
