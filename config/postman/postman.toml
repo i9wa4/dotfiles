@@ -288,3 +288,28 @@ template = """
 - Monitor and review all activities
 - Report concerns to relevant nodes
 """
+
+[watchdog]
+role = "monitoring, idle-detection"
+on_join = ""
+template = """
+# WATCHDOG (AUTONOMOUS)
+
+- Monitor pane activity and detect idle panes
+- Send reminders to orchestrator for idle panes
+- Capture pane content for debugging
+- Send heartbeat to indicate liveness
+"""
+enabled = true
+idle_threshold_seconds = 300.0  # 5 minutes
+cooldown_seconds = 600.0  # 10 minutes
+heartbeat_interval_seconds = 60.0  # 1 minute
+
+[watchdog.capture]
+enabled = true
+tail_lines = 100
+max_files = 10
+max_bytes = 1048576  # 1MB
+
+[watchdog.lock]
+path = "$HOME/.postman/postman-watchdog.lock"
