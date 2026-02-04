@@ -1,4 +1,4 @@
-# Postman Configuration Example
+# Postman Configuration
 # File-based communication daemon for tmux panes
 
 # =============================================================================
@@ -15,6 +15,7 @@
 #   {template}       - Node's role template (from [node].template)
 #   {reply_command}  - Command to create draft message
 #   {context_id}     - Current session context ID
+#   {session_dir}    - Session directory path (e.g., .postman/session-xxx/)
 #
 # ping_template:
 #   {context_id}     - Current session context ID
@@ -39,54 +40,51 @@
 #
 # =============================================================================
 
-# Base directory for postman sessions
-# Defaults to XDG_STATE_HOME/postman/ (or ~/.local/state/postman/)
-# Uncomment to override:
-# base_dir = "~/.local/state/postman"
-base_dir = ""
+[postman]
+a2a_version = "1.0"
+startup_delay_seconds = 10
+new_node_ping_delay_seconds = 3  # Delay before sending ping to newly joined nodes
+reminder_interval_seconds = 20  # Send reminder after N messages (0 = disabled)
 
 # Timing settings
-scan_interval_seconds = 1.0
-enter_delay_seconds = 1.5
-tmux_timeout_seconds = 30.0
-startup_delay_seconds = 10.0
-new_node_ping_delay_seconds = 3.0
-reminder_interval_seconds = 20.0
+scan_interval_seconds = 1  # Pane rescan interval in seconds
+tmux_timeout_seconds = 30  # Timeout for tmux commands
+enter_delay_seconds = 0.7  # Delay before sending Enter key
 
-# Routing edges (Go format: bidirectional chain with --)
-# Each edge defines bidirectional communication between adjacent nodes
 edges = [
-  "concierge -- orchestrator -- worker",
-  "orchestrator -- observer-a-leader",
-  "orchestrator -- observer-b-leader",
-  "observer-a-leader -- observer-claude-1",
-  "observer-a-leader -- observer-claude-2",
-  "observer-b-leader -- observer-codex-1",
-  "observer-b-leader -- observer-codex-2",
+  "concierge --> orchestrator --> worker",
+  "orchestrator --> observer-a-leader",
+  "orchestrator --> observer-b-leader",
+  "observer-a-leader --> observer-claude-1",
+  "observer-a-leader --> observer-claude-2",
+  "observer-b-leader --> observer-codex-1",
+  "observer-b-leader --> observer-codex-2",
 ]
-
-# Reply command for creating draft messages
-reply_command = "postman create-draft --to <recipient>"
 
 # Reminder message (sent periodically to nodes)
 reminder_message = """
-Reminder: Please check your inbox for pending messages.
+$(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
 """
+
+# Reply instruction (used in templates)
+reply_command = "~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman create-draft --to <recipient>"
 
 # Notification template (when new message arrives)
 notification_template = """
-📬 Message from {from_node}
-
-After reading, move from inbox/ to read/
-
+<!-- message start -->
 {template}
 
 {talks_to_line}
 
 ## Message Details
 
-Inbox: {inbox_path}/
-File: {filename}
+📬 Message from {from_node}
+
+After reading, move from inbox/ to read/
+
+- File: {filename}
+- inbox path: {session_dir}/inbox/
+- read path: {session_dir}/read/
 
 ## Reply (if needed)
 
@@ -95,34 +93,49 @@ NEVER create draft manually. Always:
 1. {reply_command}
 2. Edit content
 3. mv draft/ to post/
+  - draft path: {session_dir}/draft/
+  - post path: {session_dir}/post/
+<!-- end of message -->
 """
 
 # Ping message template
 ping_template = """
-📬 [PING] Status check
-
-contextId: {context_id}
-You MUST reply with PONG to confirm you are active.
-
-You are: {node}
-
+<!-- message start -->
 {template}
 
 {talks_to_line}
 
+## Message Details
+
+📬 Message from {from_node}
+
+After reading, move from inbox/ to read/
+
+- File: {filename}
+- inbox path: {session_dir}/inbox/
+- read path: {session_dir}/read/
+
 ## Reply
 
-1. Create draft: {reply_command}
-2. Post: `mv .postman/{context_id}/draft/xxx.md .postman/{context_id}/post/`
+You MUST reply with PONG to confirm you are active.
+
+1. {reply_command}
+2. Edit content
+3. mv draft/ to post/
+  - draft path: {session_dir}/draft/
+  - post path: {session_dir}/post/
+<!-- end of message -->
 """
 
 # Observer digest template
 digest_template = """
-📋 Digest: New messages
+<!-- message start -->
+📋 Carbon Copy: New messages.
 
-Action: Review message contents and code changes. If you feel any issues, report to relevant nodes.
+You MUST Review message contents and code changes. If you feel any issues, report to relevant nodes.
 
 {digest_items}
+<!-- end of message -->
 """
 
 # Draft message template
@@ -140,12 +153,9 @@ params:
 
 """
 
-# =============================================================================
-# Node Configurations
-# =============================================================================
-
-[node.concierge]
+[concierge]
 role = "user interface, clarification"
+on_join = "I'm postman. You are the concierge - user's interface!"
 template = """
 # CONCIERGE (READONLY)
 
@@ -153,8 +163,9 @@ template = """
 - YOU MUST: Delegate to orchestrator for anything
 """
 
-[node.orchestrator]
+[orchestrator]
 role = "coordination, delegation"
+on_join = "I'm postman. You are the /orchestrator !"
 template = """
 # ORCHESTRATOR (READONLY)
 
@@ -174,8 +185,9 @@ When you send requests to multiple nodes:
 - If still no response after URGENT follow-up, proceed with available responses and note the absence in the report
 """
 
-[node.worker]
+[worker]
 role = "implementation, consultation"
+on_join = ""
 template = """
 # WORKER (WRITABLE)
 
@@ -191,21 +203,42 @@ When observers provide feedback, they should classify findings by severity:
 - **MINOR**: Future improvement candidates (performance optimization ideas, code style suggestions)
 """
 
-[node.observer-a-leader]
-role = "monitoring, review"
+[observer-a-leader]
+role = "active-monitoring, proactive-review"
 subscribe_digest = true
+
+on_join = "I'm postman. You are observer-a-leader - LEAD OBSERVER. Your members: observer-claude-1, observer-claude-2. MANDATORY: Process EVERY digest immediately. Analyze for issues. Discuss with members. Report findings to orchestrator."
+
+template = """
+# OBSERVER-LEADER (ACTIVE MONITORING)
+
+MANDATORY: Process digest on arrival
+- Analyze message content for design flaws, bugs, edge cases, security concerns
+- Classify findings: BLOCKING (critical), IMPORTANT (should fix), MINOR (improve)
+- Coordinate with team members (observer-claude-1, observer-claude-2) for discussion
+- Send analysis report to orchestrator
+- If no issues: Send "Status: All clear" confirmation
+
+Actions:
+1. Upon digest arrival: MUST analyze (not ignore)
+2. Send discussion request to team members
+3. Collect feedback within 1 hour
+4. Report to orchestrator with specific recommendations
+"""
+
+[observer-claude-1]
+role = "monitoring, review"
+on_join = ""
 template = """
 # OBSERVER (READONLY)
 
 - Monitor and review all activities
 - Report concerns to relevant nodes
-- You are the LEAD OBSERVER with members: observer-claude-1, observer-claude-2
-- MANDATORY: Coordinate with ALL members before responding to orchestrator
-- MANDATORY: Consult members on all review requests
 """
 
-[node.observer-claude-1]
+[observer-claude-2]
 role = "monitoring, review"
+on_join = ""
 template = """
 # OBSERVER (READONLY)
 
@@ -213,39 +246,42 @@ template = """
 - Report concerns to relevant nodes
 """
 
-[node.observer-claude-2]
-role = "monitoring, review"
-template = """
-# OBSERVER (READONLY)
-
-- Monitor and review all activities
-- Report concerns to relevant nodes
-"""
-
-[node.observer-b-leader]
-role = "monitoring, review"
+[observer-b-leader]
+role = "active-monitoring, proactive-review"
 subscribe_digest = true
+
+on_join = "I'm postman. You are observer-b-leader - LEAD OBSERVER. Your members: observer-codex-1, observer-codex-2. MANDATORY: Process EVERY digest immediately. Analyze for issues. Discuss with members. Report findings to orchestrator."
+
+template = """
+# OBSERVER-LEADER (ACTIVE MONITORING)
+
+MANDATORY: Process digest on arrival
+- Analyze message content for design flaws, bugs, edge cases, security concerns
+- Classify findings: BLOCKING (critical), IMPORTANT (should fix), MINOR (improve)
+- Coordinate with team members (observer-codex-1, observer-codex-2) for discussion
+- Send analysis report to orchestrator
+- If no issues: Send "Status: All clear" confirmation
+
+Actions:
+1. Upon digest arrival: MUST analyze (not ignore)
+2. Send discussion request to team members
+3. Collect feedback within 1 hour
+4. Report to orchestrator with specific recommendations
+"""
+
+[observer-codex-1]
+role = "monitoring, review"
+on_join = ""
 template = """
 # OBSERVER (READONLY)
 
 - Monitor and review all activities
 - Report concerns to relevant nodes
-- You are the LEAD OBSERVER with members: observer-codex-1, observer-codex-2
-- MANDATORY: Coordinate with ALL members before responding to orchestrator
-- MANDATORY: Consult members on all review requests
 """
 
-[node.observer-codex-1]
+[observer-codex-2]
 role = "monitoring, review"
-template = """
-# OBSERVER (READONLY)
-
-- Monitor and review all activities
-- Report concerns to relevant nodes
-"""
-
-[node.observer-codex-2]
-role = "monitoring, review"
+on_join = ""
 template = """
 # OBSERVER (READONLY)
 
