@@ -104,22 +104,22 @@
             types = ["markdown"];
           };
 
-          # Python (via uv - keep Python tooling in Python ecosystem)
+          # Python
           ruff-check = {
             enable = true;
-            entry = "uv run ruff check --fix";
+            entry = "${pkgs.ruff}/bin/ruff check --fix";
             types = ["python"];
           };
           ruff-format = {
             enable = true;
-            entry = "uv run ruff format";
+            entry = "${pkgs.ruff}/bin/ruff format";
             types = ["python"];
           };
 
           # SQL
           sqlfmt = {
             enable = true;
-            entry = "uv run sqlfmt";
+            entry = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
             types = ["sql"];
           };
 
