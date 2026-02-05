@@ -51,10 +51,8 @@ tools:
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
-    format-command: 'sh -c "if [ -f \"${ROOT}/.sqlfluff\" ]; then cat; elif [ -f \"${ROOT}/uv.lock\" ]; then cd \"${ROOT}\" && uv run sqlfmt -; else sqlfmt -; fi"'
+    format-command: "sqlfmt -"
     format-stdin: true
-    root-markers:
-      - pyproject.toml
 
   terraform-fmt: &terraform-fmt
     format-command: "terraform fmt -list=false -write=false ${INPUT}"
