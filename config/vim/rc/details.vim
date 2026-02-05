@@ -233,7 +233,6 @@ function s:copy2clip_wsl(...) abort
   endif
 endfunction
 
-command! GetStatus call s:set_register() | reg abcz
 function! s:set_register() abort
   if empty(&buftype)
     call setreg('a', '%'->expand()->fnamemodify(':p'))
@@ -260,6 +259,7 @@ augroup MyVimrc
   autocmd!
   " https://github.com/vim/vim/issues/5571
   autocmd StdinReadPost * set nomodified
+  autocmd BufEnter * call s:set_register()
 augroup END
 
 
