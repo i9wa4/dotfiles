@@ -1,0 +1,7 @@
+# Statix configuration
+# Exclude external files from linting
+
+[ignore]
+files = [
+  ".direnv/**/*",
+]

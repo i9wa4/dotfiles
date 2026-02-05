@@ -15,7 +15,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   "jupyterlab",
-  "pre-commit",
+  # NOTE: pre-commit is now managed by git-hooks.nix (no Swift dependency)
   "ruff",
   "shandy-sqlfmt[jinjafmt]",
   "sqlfluff",

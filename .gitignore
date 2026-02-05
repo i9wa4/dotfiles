@@ -3,3 +3,6 @@
 /build/
 /dotfiles.egg-info/
 __pycache__/
+
+# git-hooks.nix (auto-generated)
+.pre-commit-config.yaml

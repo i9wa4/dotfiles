@@ -47,21 +47,8 @@ jobs:
         with:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
 
-      - name: Load Nix environment
-        run: nix develop .#ci --command true
+      - name: Run pre-commit checks
+        run: nix flake check --print-build-logs
 
-      - name: Cache pre-commit
-        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
-        with:
-          path: |
-            ~/.cache/pre-commit
-            ~/.cache/uv
-          key: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', 'flake.nix', '.pre-commit-config.yaml', 'uv.lock') }}
-          restore-keys: |
-            pre-commit-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Run pre-commit
-        run: |
-          nix develop .#ci --command uv run pre-commit run --all-files --verbose
-          nix develop .#ci --command uv run pre-commit run gitleaks-history --all-files --verbose --hook-stage manual
+      - name: Run gitleaks history scan
+        run: nix develop .#ci --command gitleaks detect --verbose --redact

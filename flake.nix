@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -27,6 +31,7 @@
     self,
     nixpkgs,
     flake-parts,
+    git-hooks,
     nix-darwin,
     home-manager,
     brew-nix,
@@ -38,8 +43,15 @@
       # Supported systems (x86_64-darwin excluded - Apple Silicon only)
       systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
 
+      # Import flake-parts modules
+      imports = [
+        git-hooks.flakeModule
+        ./nix/pre-commit.nix
+      ];
+
       # Per-system outputs (formatter, devShells, packages, etc.)
       perSystem = {
+        config,
         pkgs,
         system,
         ...
@@ -65,40 +77,30 @@
           inherit system;
           overlays = [versionOverlay];
         };
-        ciPackages = [
-          # nixpkgs (ghalint via versionOverlay)
-          pkgsWithOverlay.actionlint
-          pkgsWithOverlay.alejandra
-          pkgsWithOverlay.ghalint
-          pkgsWithOverlay.ghatm
-          pkgsWithOverlay.gitleaks
-          pkgsWithOverlay.pinact
-          # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
-          pkgsWithOverlay.python3
-          pkgsWithOverlay.rumdl
-          pkgsWithOverlay.shellcheck
-          pkgsWithOverlay.shfmt
-          pkgsWithOverlay.statix
-          pkgsWithOverlay.stylua
-          pkgsWithOverlay.uv
-          pkgsWithOverlay.zizmor
-        ];
       in {
         # nix fmt
         formatter = pkgs.alejandra;
 
         # nix develop
         devShells = {
-          # Local development (includes CI tools)
+          # Local development (includes CI tools + pre-commit hooks)
           default = pkgsWithOverlay.mkShell {
-            packages = ciPackages;
+            packages = [
+              pkgsWithOverlay.python3
+              pkgsWithOverlay.uv
+            ];
             shellHook = ''
               uv sync --frozen
+              ${config.pre-commit.installationScript}
             '';
           };
-          # CI environment (minimal)
+          # CI environment (no pre-commit hooks needed, but includes gitleaks for history scan)
           ci = pkgsWithOverlay.mkShell {
-            packages = ciPackages;
+            packages = [
+              pkgsWithOverlay.gitleaks
+              pkgsWithOverlay.python3
+              pkgsWithOverlay.uv
+            ];
             shellHook = ''
               uv sync --frozen
             '';
