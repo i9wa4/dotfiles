@@ -11,9 +11,18 @@
       check.enable = true;
       settings = {
         hooks = {
-          # === Built-in hooks ===
+          # === Unified formatter (runs first) ===
+          treefmt = {
+            enable = true;
+            # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
+            # treefmt-nix already runs treefmt-check separately
+            entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.nix}/bin/nix fmt'";
+            pass_filenames = false;
+            always_run = true;
+          };
+
+          # === Linters ===
           # Nix
-          alejandra.enable = true;
           statix = {
             enable = true;
             excludes = ["^\\.direnv/"];
@@ -29,12 +38,6 @@
 
           # Shell
           shellcheck.enable = true;
-          shfmt = {
-            enable = true;
-            excludes = ["^config/zsh/"];
-            # Match previous config: 2-space indent
-            entry = "${pkgs.shfmt}/bin/shfmt -i 2 -w";
-          };
 
           # GitHub Actions
           actionlint.enable = true;
@@ -49,13 +52,6 @@
           check-yaml.enable = true;
 
           # === Custom hooks ===
-          # Lua
-          stylua = {
-            enable = true;
-            entry = "${pkgs.stylua}/bin/stylua --indent-type Spaces --indent-width 2";
-            types = ["lua"];
-          };
-
           # Secrets detection
           gitleaks = {
             enable = true;
@@ -85,25 +81,18 @@
             files = ghWorkflowFiles;
           };
 
-          # Markdown (check only - formatting is handled by treefmt/prettier)
+          # Markdown (lint only - formatting is handled by treefmt)
           rumdl-check = {
             enable = true;
             entry = "${pkgs.rumdl}/bin/rumdl --config .rumdl.toml check";
             types = ["markdown"];
           };
 
-          # Python (check only - formatting is handled by treefmt/ruff)
+          # Python (lint only - formatting is handled by treefmt)
           ruff-check = {
             enable = true;
             entry = "${pkgs.ruff}/bin/ruff check --fix";
             types = ["python"];
-          };
-
-          # SQL
-          sqlfmt = {
-            enable = true;
-            entry = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
-            types = ["sql"];
           };
 
           # Commit message check (custom script)

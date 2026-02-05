@@ -2,7 +2,7 @@
 # This module is imported by flake.nix via flake-parts
 # Run: nix fmt
 {
-  perSystem = _: {
+  perSystem = {pkgs, ...}: {
     treefmt = {
       # Required: identifies project root
       projectRootFile = "flake.nix";
@@ -25,8 +25,8 @@
           check = true;
         };
 
-        # NOTE: Lua (stylua) and SQL (sqlfmt) are handled by git-hooks.nix only
-        # to avoid version/config mismatches between treefmt and pre-commit
+        # Lua (uses .stylua.toml for configuration)
+        stylua.enable = true;
 
         # Markdown, YAML, JSON (prettier preserves numbered list format)
         prettier = {
@@ -38,6 +38,12 @@
             "*.yml"
           ];
         };
+      };
+
+      # Custom formatters (not available as built-in programs)
+      settings.formatter.sqlfmt = {
+        command = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
+        includes = ["*.sql"];
       };
 
       # Exclude patterns
