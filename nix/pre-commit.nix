@@ -39,6 +39,8 @@
           shfmt = {
             enable = true;
             excludes = ["^config/zsh/"];
+            # Match previous config: 2-space indent
+            entry = "${pkgs.shfmt}/bin/shfmt -i 2 -w";
           };
 
           # GitHub Actions
