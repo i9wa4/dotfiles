@@ -8,17 +8,6 @@
   }: let
     # GitHub Actions workflow file pattern
     ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
-
-    # Version pinning for ghalint
-    ghalint = pkgs.ghalint.overrideAttrs (old: rec {
-      version = "1.5.4";
-      src = pkgs.fetchFromGitHub {
-        owner = "suzuki-shunsuke";
-        repo = "ghalint";
-        rev = "v${version}";
-        hash = "sha256-pfLXnMbrxXAMpfmjctah85z5GHfI/+NZDrIu1LcBH8M=";
-      };
-    });
   in {
     # Pre-commit hooks (replaces .pre-commit-config.yaml)
     # Run: nix flake check (or automatically on git commit in devShell)
@@ -73,7 +62,7 @@
           # GitHub Actions linters
           ghalint = {
             enable = true;
-            entry = "${ghalint}/bin/ghalint run";
+            entry = "${pkgs.ghalint}/bin/ghalint run";
             files = ghWorkflowFiles;
           };
           ghatm = {

@@ -60,38 +60,15 @@
       perSystem = {
         config,
         pkgs,
-        system,
         ...
-      }: let
-        # Version pinning overlay
-        # NOTE: Override nixpkgs packages when we need specific versions
-        # that aren't yet available in nixpkgs (e.g., due to Go version requirements)
-        # or when we want to track upstream more closely than nixpkgs updates
-        versionOverlay = final: prev: {
-          # ghalint 1.5.5 requires Go 1.25.6, nixpkgs has 1.25.5
-          # Keep at 1.5.4 until nixpkgs Go is updated
-          ghalint = prev.ghalint.overrideAttrs (old: rec {
-            version = "1.5.4";
-            src = prev.fetchFromGitHub {
-              owner = "suzuki-shunsuke";
-              repo = "ghalint";
-              rev = "v${version}";
-              hash = "sha256-pfLXnMbrxXAMpfmjctah85z5GHfI/+NZDrIu1LcBH8M=";
-            };
-          });
-        };
-        pkgsWithOverlay = import nixpkgs {
-          inherit system;
-          overlays = [versionOverlay];
-        };
-      in {
+      }: {
         # nix develop
         devShells = {
           # Local development (includes CI tools + pre-commit hooks)
-          default = pkgsWithOverlay.mkShell {
+          default = pkgs.mkShell {
             packages = [
-              pkgsWithOverlay.python3
-              pkgsWithOverlay.uv
+              pkgs.python3
+              pkgs.uv
             ];
             shellHook = ''
               uv sync --frozen
@@ -99,11 +76,11 @@
             '';
           };
           # CI environment (no pre-commit hooks needed, but includes gitleaks for history scan)
-          ci = pkgsWithOverlay.mkShell {
+          ci = pkgs.mkShell {
             packages = [
-              pkgsWithOverlay.gitleaks
-              pkgsWithOverlay.python3
-              pkgsWithOverlay.uv
+              pkgs.gitleaks
+              pkgs.python3
+              pkgs.uv
             ];
             shellHook = ''
               uv sync --frozen
@@ -114,22 +91,8 @@
 
       # Flake-level outputs (darwinConfigurations, homeConfigurations, etc.)
       flake = let
-        # Version pinning overlay (shared across all configurations)
-        versionOverlay = final: prev: {
-          ghalint = prev.ghalint.overrideAttrs (old: rec {
-            version = "1.5.4";
-            src = prev.fetchFromGitHub {
-              owner = "suzuki-shunsuke";
-              repo = "ghalint";
-              rev = "v${version}";
-              hash = "sha256-pfLXnMbrxXAMpfmjctah85z5GHfI/+NZDrIu1LcBH8M=";
-            };
-          });
-        };
-
         # Common overlays for all darwin/home configurations
         commonOverlays = [
-          versionOverlay
           neovim-nightly-overlay.overlays.default
           (vim-overlay.overlays.features {
             lua = true;
