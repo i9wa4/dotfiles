@@ -84,7 +84,7 @@ snippets:
 
   - name: (Git) worktree-remove
     keyword: wr
-    snippet: worktree-remove "$(ghq root)/$(ghq list | fzf)"
+    snippet: worktree-remove $(ghq list -p | while read -r p; do [ -f "$p/.git" ] && echo "$p"; done | fzf --multi --preview 'ghq-fzf-preview {}')
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
