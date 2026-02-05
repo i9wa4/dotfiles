@@ -17,10 +17,10 @@
   symlink = config.lib.file.mkOutOfStoreSymlink;
 in {
   imports = [
-    ../codex.nix
-    ../editorconfig.nix
-    ../git.nix
-    ../vscode.nix
+    ./codex.nix
+    ./editorconfig.nix
+    ./git.nix
+    ./vscode.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
