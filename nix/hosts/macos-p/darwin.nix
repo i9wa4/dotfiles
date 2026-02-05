@@ -1,7 +1,7 @@
 # Host-specific darwin settings for macos-p (personal)
 _: {
   imports = [
-    ../../common/homebrew.nix
+    ../../darwin/homebrew.nix
     ./casks.nix
   ];
 

@@ -1,11 +1,7 @@
 # Pre-commit hooks configuration (git-hooks.nix)
 # This module is imported by flake.nix via flake-parts
 {
-  perSystem = {
-    pkgs,
-    lib,
-    ...
-  }: let
+  perSystem = {pkgs, ...}: let
     # GitHub Actions workflow file pattern
     ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
   in {
@@ -21,6 +17,14 @@
           statix = {
             enable = true;
             excludes = ["^\\.direnv/"];
+          };
+          flake-check = {
+            enable = true;
+            # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
+            # Running nix flake check inside nix flake check is redundant
+            entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.nix}/bin/nix flake check'";
+            pass_filenames = false;
+            files = "\\.(nix|lock)$";
           };
 
           # Shell

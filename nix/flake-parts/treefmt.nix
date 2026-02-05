@@ -2,7 +2,7 @@
 # This module is imported by flake.nix via flake-parts
 # Run: nix fmt
 {
-  perSystem = {pkgs, ...}: {
+  perSystem = _: {
     treefmt = {
       # Required: identifies project root
       projectRootFile = "flake.nix";

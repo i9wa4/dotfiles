@@ -1,5 +1,5 @@
 # Homebrew casks for macos-p (personal)
-# Common casks are defined in common/homebrew.nix
+# Common casks are defined in darwin/homebrew.nix
 _: {
   homebrew.casks = [
   ];

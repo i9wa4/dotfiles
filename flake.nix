@@ -45,10 +45,10 @@
       imports = [
         git-hooks.flakeModule
         treefmt-nix.flakeModule
-        ./nix/pre-commit.nix
-        ./nix/treefmt.nix
-        ./nix/darwin.nix
-        ./nix/home.nix
+        ./nix/flake-parts/pre-commit.nix
+        ./nix/flake-parts/treefmt.nix
+        ./nix/flake-parts/darwin.nix
+        ./nix/flake-parts/home.nix
       ];
 
       # Per-system outputs (devShells, etc.)

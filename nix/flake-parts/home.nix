@@ -30,7 +30,7 @@ in {
         inherit username;
       };
       modules = [
-        ../nix/common/home.nix
+        ../home
       ];
     };
 }

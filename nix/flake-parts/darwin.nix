@@ -1,11 +1,7 @@
 # Darwin configurations (macOS)
 # This module is imported by flake.nix via flake-parts
-{
-  inputs,
-  lib,
-  ...
-}: let
-  inherit (inputs) nixpkgs nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay;
+{inputs, ...}: let
+  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay;
 
   # Common overlays for all darwin configurations
   commonOverlays = [
@@ -38,8 +34,8 @@
       inherit system;
       specialArgs = {inherit username;};
       modules = [
-        ../nix/common/darwin.nix
-        ../nix/hosts/${hostname}/darwin.nix
+        ../darwin
+        ../hosts/${hostname}/darwin.nix
         home-manager.darwinModules.home-manager
         brew-nix.darwinModules.default
         {
@@ -60,7 +56,7 @@
             extraSpecialArgs = {
               inherit username;
             };
-            users.${username} = import ../nix/hosts/${hostname}/home.nix;
+            users.${username} = import ../hosts/${hostname}/home.nix;
           };
         }
       ];
