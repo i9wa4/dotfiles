@@ -6,3 +6,4 @@ __pycache__/
 
 # git-hooks.nix (auto-generated)
 .pre-commit-config.yaml
+result
