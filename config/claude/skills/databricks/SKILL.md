@@ -237,7 +237,58 @@ Limits:
 - Minimal management (Databricks handles capacity)
 - Low total cost of ownership
 
-## 8. Reference Links
+## 8. Schema Discovery and Validation
+
+### 8.1. Pre-Query Validation Rule
+
+- YOU MUST: Run DESCRIBE before executing SELECT on unfamiliar tables
+- YOU MUST: Verify exact column names and case before writing queries
+
+```sql
+-- Check table columns first
+DESCRIBE TABLE catalog.schema.table_name;
+
+-- Then write your query using verified column names
+SELECT column_name FROM catalog.schema.table_name;
+```
+
+### 8.2. Schema Discovery Commands
+
+```sql
+-- Basic column info
+DESCRIBE TABLE catalog.schema.table_name;
+
+-- Extended info (types, nullability, comments)
+DESCRIBE EXTENDED catalog.schema.table_name;
+
+-- List tables in schema
+SHOW TABLES IN catalog.schema;
+
+-- Table properties and metadata
+DESCRIBE DETAIL catalog.schema.table_name;
+```
+
+### 8.3. Common Gotchas
+
+| Issue                | Cause                         | Prevention                    |
+| -------------------- | ----------------------------- | ----------------------------- |
+| Column name case     | Databricks preserves case     | Use DESCRIBE before query     |
+| Data type mismatch   | Implicit conversion fails     | Check column types explicitly |
+| NULL handling        | Unexpected NULL in aggregation | Use COALESCE or filter NULLs |
+| Timestamp precision  | TIMESTAMP vs TIMESTAMP_NTZ    | Verify type before comparison |
+
+### 8.4. Knowledge Accumulation
+
+When encountering schema-related issues, update this skill with:
+
+- Universal patterns (case sensitivity, type coercion rules)
+- Common column naming conventions in Unity Catalog
+- Databricks-specific SQL behaviors
+
+NOTE: Do not include project-specific table names or business logic.
+Keep entries generalizable across environments.
+
+## 9. Reference Links
 
 - Official docs: <https://docs.databricks.com/>
 - Unity Catalog: <https://docs.databricks.com/en/data-governance/unity-catalog/>

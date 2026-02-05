@@ -131,7 +131,7 @@
         # キーリピート速度 (小さいほど速い) [default: 6]
         KeyRepeat = 2;
         # キーリピート開始までの時間 (小さいほど速い) [default: 25]
-        InitialKeyRepeat = 15;
+        InitialKeyRepeat = 25;
         # ナチュラルなスクロール [default: true]
         # Note: macOS では trackpad と mouse のスクロール方向を別々に設定できない
         # false = 従来の PC 方向 (マウスに合わせる)

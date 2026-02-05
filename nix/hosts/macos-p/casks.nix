@@ -1,12 +1,6 @@
 # Homebrew casks for macos-p (personal)
+# Common casks are defined in common/homebrew.nix
 _: {
   homebrew.casks = [
-    "docker"
-    "drawio"
-    "google-chrome"
-    "stats"
-    "visual-studio-code"
-    "wezterm"
-    "zoom"
   ];
 }

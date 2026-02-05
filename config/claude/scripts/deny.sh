@@ -45,8 +45,8 @@ if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
     # Allow writes to .i9wa4/ directory
     if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
       : # Allow
-    # Allow writes to .postman/ directory
-    elif [[ -n $FILE_PATH && ($FILE_PATH == ".postman/"* || $FILE_PATH == *"/.postman/"*) ]]; then
+    # Allow writes to postman directory
+    elif [[ -n $FILE_PATH && ($FILE_PATH == "$HOME/.local/state/postman/"* || $FILE_PATH == *".postman/"*) ]]; then
       : # Allow
     # Allow writes to /tmp/ directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then

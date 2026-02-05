@@ -95,10 +95,10 @@ snippets:
     snippet:
       ghq list -p | fzf --preview 'ghq-fzf-preview {}' --bind 'enter:execute(cd {} && $SHELL)+reload(ghq list -p)'
 
-  # - name: (Git) worktree-remove
-  #   keyword: wr
-  #   snippet:
-  #     worktree-remove "$(ghq root)/$(ghq list | fzf)"
+  - name: (Git) worktree-remove
+    keyword: wr
+    snippet:
+      worktree-remove "$(ghq root)/$(ghq list | fzf)"
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
@@ -124,5 +124,4 @@ snippets:
     keyword: va
     snippet:
       vde-layout concierge &&
-      vde-layout orchestrator &&
-      vde-layout observers
+      vde-layout orchestrator
