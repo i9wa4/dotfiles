@@ -12,8 +12,8 @@ acknowledge with a random one-liner in character.
 - Thinking: English
 - Response (conversation): Japanese
 - Files (editing): Match the comment style in the target file
-    - First check the entire file for consistent language
-    - If unclear, check surrounding files in the same directory
+  - First check the entire file for consistent language
+  - If unclear, check surrounding files in the same directory
 
 ## Basic Rules
 
@@ -83,12 +83,12 @@ All working files go to `.i9wa4/` (globally gitignored).
 
 Directory structure:
 
-| Directory               | Purpose                    | Example                      |
-| ----------------------- | -------------------------- | ---------------------------- |
-| `.i9wa4/`               | Fixed name files (root)    | `roadmap.md`, `phase.log`    |
-| `.i9wa4/plans/`         | Plan documents             | Timestamped                  |
-| `.i9wa4/reviews/`       | Review results             | Timestamped                  |
-| `.i9wa4/tmp/`           | Temporary/command outputs  | Timestamped                  |
+| Directory         | Purpose                   | Example                   |
+| ----------------- | ------------------------- | ------------------------- |
+| `.i9wa4/`         | Fixed name files (root)   | `roadmap.md`, `phase.log` |
+| `.i9wa4/plans/`   | Plan documents            | Timestamped               |
+| `.i9wa4/reviews/` | Review results            | Timestamped               |
+| `.i9wa4/tmp/`     | Temporary/command outputs | Timestamped               |
 
 NOTE: Message exchange is managed separately in `.postman/` by postman daemon.
 
@@ -98,9 +98,9 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
 ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh PATH [--type TYPE]
 ```
 
-| Argument/Option | Required | Default | Description                  |
-| --------------- | -------- | ------- | ---------------------------- |
-| `PATH`          | Yes      | -       | Directory or fixed file path |
+| Argument/Option | Required | Default | Description                                          |
+| --------------- | -------- | ------- | ---------------------------------------------------- |
+| `PATH`          | Yes      | -       | Directory or fixed file path                         |
 | `--type TYPE`   | No       | memo    | File type (plan, output, review-cc, review-cx, etc.) |
 
 Path detection:
@@ -124,10 +124,10 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .
 
 - IMPORTANT: Save important findings to `.i9wa4/` before context gets full
 - YOU MUST: When context usage exceeds 60%, consider saving:
-    - Research findings (type: research)
-    - Debugging insights (type: debug)
-    - Architecture decisions (type: arch)
-    - Review results (type: review)
+  - Research findings (type: research)
+  - Debugging insights (type: debug)
+  - Architecture decisions (type: arch)
+  - Review results (type: review)
 - YOU MUST: Use TodoWrite to track what needs to be persisted
 
 NOTE: TodoWrite is Claude Code specific.
@@ -135,12 +135,12 @@ Codex CLI users should track tasks manually.
 
 ## Quick Reference Index
 
-| Category  | Items                                                                                                                                                                                      |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Rules     | aws, bash, git-github, markdown                                                                                                                                                            |
+| Category  | Items                                                                                                                                                                                                                                                         |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                               |
 | Skills    | atlassian, bigquery, claude-config-optimizer, codex-config-optimizer, daily-report, databricks, dbt, draw-io, git, github, jupyter-notebook, nix, orchestrator, python, restricted-bigquery-dbt-environment, skill-creator, slack, subagent-review, terraform |
-| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                   |
-| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                     |
+| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                      |
+| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                                                                                         |
 
 ## File Structure
 
@@ -211,24 +211,24 @@ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
 
 Subagents are stored in the `agents/` directory.
 
-| Agent                 | Use Case                           |
-| --------------------- | ---------------------------------- |
-| reviewer-architecture | Design patterns and structure      |
-| reviewer-code         | Code quality, readability          |
-| reviewer-data         | Data quality, schema design        |
-| reviewer-historian    | Context, history, decisions        |
-| reviewer-qa           | Test coverage, edge cases          |
-| reviewer-security     | Security, vulnerabilities          |
-| researcher-tech       | Investigation, research            |
+| Agent                 | Use Case                      |
+| --------------------- | ----------------------------- |
+| reviewer-architecture | Design patterns and structure |
+| reviewer-code         | Code quality, readability     |
+| reviewer-data         | Data quality, schema design   |
+| reviewer-historian    | Context, history, decisions   |
+| reviewer-qa           | Test coverage, edge cases     |
+| reviewer-security     | Security, vulnerabilities     |
+| researcher-tech       | Investigation, research       |
 
 ### Scripts
 
 Helper scripts stored in the `scripts/` directory.
 
-| Script              | Purpose                           | Referenced by              |
-| ------------------- | --------------------------------- | -------------------------- |
-| deny.sh             | Non-worker READONLY enforcement   | settings.json PreToolUse   |
-| post-write-check.sh | PostToolUse lint/format check     | settings.json PostToolUse  |
-| pre-compact-save.sh | PreCompact context save           | settings.json PreCompact   |
-| reload-claude-md.sh | Context reload after compaction   | settings.json SessionStart |
-| touchfile.sh        | Standardized file creation        | CLAUDE.md, skills/*        |
+| Script              | Purpose                         | Referenced by              |
+| ------------------- | ------------------------------- | -------------------------- |
+| deny.sh             | Non-worker READONLY enforcement | settings.json PreToolUse   |
+| post-write-check.sh | PostToolUse lint/format check   | settings.json PostToolUse  |
+| pre-compact-save.sh | PreCompact context save         | settings.json PreCompact   |
+| reload-claude-md.sh | Context reload after compaction | settings.json SessionStart |
+| touchfile.sh        | Standardized file creation      | CLAUDE.md, skills/\*       |

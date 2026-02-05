@@ -181,13 +181,13 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments \
   -f side=RIGHT
 ```
 
-| Parameter | Description                                      |
-| --------- | ------------------------------------------------ |
-| body      | Comment body                                     |
-| commit_id | Target commit SHA                                |
-| path      | File path (relative from repository root)        |
-| line      | Line number (use R number from diff right side)  |
-| side      | RIGHT (added line) or LEFT (deleted line)        |
+| Parameter | Description                                     |
+| --------- | ----------------------------------------------- |
+| body      | Comment body                                    |
+| commit_id | Target commit SHA                               |
+| path      | File path (relative from repository root)       |
+| line      | Line number (use R number from diff right side) |
+| side      | RIGHT (added line) or LEFT (deleted line)       |
 
 Reply to comment:
 
@@ -212,7 +212,7 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies \
 
 ## 5. Related Resources
 
-| Resource           | Purpose                         |
-| ------------------ | ------------------------------- |
-| rules/git-github   | Mandatory rules and permissions |
-| skills/git         | Git-specific operations         |
+| Resource         | Purpose                         |
+| ---------------- | ------------------------------- |
+| rules/git-github | Mandatory rules and permissions |
+| skills/git       | Git-specific operations         |

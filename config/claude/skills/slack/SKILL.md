@@ -34,7 +34,7 @@ https://xxx.slack.com/archives/C1234567890/p1234567890123456
 
 - `C1234567890` = channel ID
 - `p1234567890123456` = timestamp (remove `p`, insert `.` before last 6 digits)
-    - `p1234567890123456` → `1234567890.123456`
+  - `p1234567890123456` → `1234567890.123456`
 
 ### 2.2. Channel URL (client format)
 
@@ -163,7 +163,7 @@ curl -s "https://slack.com/api/search.messages?query=$(echo "$QUERY" | jq -sRr @
 
 - If `ok: false` in response, show error message
 - Common errors:
-    - `channel_not_found` - invalid channel ID
-    - `thread_not_found` - invalid timestamp
-    - `invalid_auth` - token expired or invalid
-    - `enterprise_is_restricted` - Enterprise Grid API restriction
+  - `channel_not_found` - invalid channel ID
+  - `thread_not_found` - invalid timestamp
+  - `invalid_auth` - token expired or invalid
+  - `enterprise_is_restricted` - Enterprise Grid API restriction

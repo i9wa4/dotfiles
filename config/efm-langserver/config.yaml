@@ -5,49 +5,49 @@ lint-debounce: 1s
 
 tools:
   dockerfile-hadolint: &dockerfile-hadolint
-    lint-command: 'hadolint --no-color ${INPUT}'
-    lint-source: 'hadolint'
+    lint-command: "hadolint --no-color ${INPUT}"
+    lint-source: "hadolint"
     lint-stdin: false
     lint-ignore-exit-code: true
     lint-formats:
-      - '%f:%l %m'
+      - "%f:%l %m"
 
   json-jq: &json-jq
-    format-command: 'jq --indent 2'
+    format-command: "jq --indent 2"
     format-stdin: true
 
   markdown-rumdl: &markdown-rumdl
-    lint-command: 'rumdl check --disable MD013 --stdin ${INPUT}'
-    lint-source: 'rumdl'
+    lint-command: "rumdl check --disable MD013 --stdin ${INPUT}"
+    lint-source: "rumdl"
     lint-stdin: true
     lint-formats:
-      - '%f:%l:%c: %m'
-    format-command: 'rumdl fmt --stdin'
+      - "%f:%l:%c: %m"
+    format-command: "rumdl fmt --stdin"
     format-stdin: true
 
   python-ruff-check: &python-ruff-check
-    lint-command: 'ruff check --disable MD013 --stdin-filename ${INPUT} -'
-    lint-source: 'ruff'
+    lint-command: "ruff check --disable MD013 --stdin-filename ${INPUT} -"
+    lint-source: "ruff"
     lint-stdin: true
     lint-formats:
-      - '%f:%l:%c: %m'
+      - "%f:%l:%c: %m"
 
   python-ruff-format: &python-ruff-format
-    format-command: 'ruff format --stdin-filename ${INPUT} -'
+    format-command: "ruff format --stdin-filename ${INPUT} -"
     format-stdin: true
 
   sh-shellcheck: &sh-shellcheck
-    lint-command: 'shellcheck -f gcc -x'
-    lint-source: 'shellcheck'
+    lint-command: "shellcheck -f gcc -x"
+    lint-source: "shellcheck"
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
-      - '%f:%l:%c: %trror: %m'
-      - '%f:%l:%c: %tarning: %m'
-      - '%f:%l:%c: %tote: %m'
+      - "%f:%l:%c: %trror: %m"
+      - "%f:%l:%c: %tarning: %m"
+      - "%f:%l:%c: %tote: %m"
 
   sh-shfmt: &sh-shfmt
-    format-command: 'shfmt -ci -i 2 -s -bn'
+    format-command: "shfmt -ci -i 2 -s -bn"
     format-stdin: true
 
   sql-sqlfmt: &sql-sqlfmt
@@ -57,23 +57,23 @@ tools:
       - pyproject.toml
 
   terraform-fmt: &terraform-fmt
-    format-command: 'terraform fmt -list=false -write=false ${INPUT}'
+    format-command: "terraform fmt -list=false -write=false ${INPUT}"
     format-stdin: true
 
   lua-stylua: &lua-stylua
-    format-command: 'stylua --indent-type Spaces --indent-width 2 -'
+    format-command: "stylua --indent-type Spaces --indent-width 2 -"
     format-stdin: true
 
   nix-alejandra: &nix-alejandra
-    format-command: 'alejandra -q'
+    format-command: "alejandra -q"
     format-stdin: true
 
   nix-statix: &nix-statix
-    lint-command: 'statix check --stdin --format errfmt'
-    lint-source: 'statix'
+    lint-command: "statix check --stdin --format errfmt"
+    lint-source: "statix"
     lint-stdin: true
     lint-formats:
-      - '%f>%l:%c:%t:%n:%m'
+      - "%f>%l:%c:%t:%n:%m"
 
 languages:
   dockerfile:

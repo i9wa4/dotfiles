@@ -51,19 +51,19 @@ see `rules/git-github.md`.
 
 ### 1.1. Type Examples
 
-| Type     | Description                    |
-| -------- | ------------------------------ |
-| feat     | New feature                    |
-| fix      | Bug fix                        |
-| docs     | Documentation only             |
-| style    | Formatting, no code change     |
-| refactor | Code change without fix/feat   |
-| test     | Adding/updating tests          |
-| chore    | Maintenance, dependencies      |
+| Type     | Description                  |
+| -------- | ---------------------------- |
+| feat     | New feature                  |
+| fix      | Bug fix                      |
+| docs     | Documentation only           |
+| style    | Formatting, no code change   |
+| refactor | Code change without fix/feat |
+| test     | Adding/updating tests        |
+| chore    | Maintenance, dependencies    |
 
 ## 2. Related Resources
 
-| Resource           | Purpose                        |
-| ------------------ | ------------------------------ |
-| rules/git-github   | Mandatory rules and permissions|
-| skills/github      | GitHub-specific operations     |
+| Resource         | Purpose                         |
+| ---------------- | ------------------------------- |
+| rules/git-github | Mandatory rules and permissions |
+| skills/github    | GitHub-specific operations      |

@@ -19,10 +19,10 @@ fi
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null)
 
 # Skip if no file path
-[[ -z "$FILE_PATH" ]] && exit 0
+[[ -z $FILE_PATH ]] && exit 0
 
 # Skip if file doesn't exist
-[[ ! -f "$FILE_PATH" ]] && exit 0
+[[ ! -f $FILE_PATH ]] && exit 0
 
 EXT="${FILE_PATH##*.}"
 
@@ -50,7 +50,7 @@ case ".$EXT" in
   ;;
 .md)
   # Check trailing newline
-  if [[ -s "$FILE_PATH" ]] && [[ $(tail -c 1 "$FILE_PATH" | wc -l) -eq 0 ]]; then
+  if [[ -s $FILE_PATH ]] && [[ $(tail -c 1 "$FILE_PATH" | wc -l) -eq 0 ]]; then
     echo "NOTE: $FILE_PATH does not end with newline" >&2
   fi
   ;;

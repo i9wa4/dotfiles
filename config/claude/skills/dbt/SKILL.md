@@ -93,13 +93,13 @@ my_databricks_dbt:
   outputs:
     dev:
       # Existing settings...
-    issue_123:  # Name based on issue number
-      catalog: dbt_dev_{username}  # Same as dev
-      host: dbc-xxxxx.cloud.databricks.com  # Same as dev
-      http_path: /sql/1.0/warehouses/xxxxx  # Same as dev
-      schema: dwh_issue_123  # Include issue number in schema name
+    issue_123: # Name based on issue number
+      catalog: dbt_dev_{username} # Same as dev
+      host: dbc-xxxxx.cloud.databricks.com # Same as dev
+      http_path: /sql/1.0/warehouses/xxxxx # Same as dev
+      schema: dwh_issue_123 # Include issue number in schema name
       threads: 1
-      token: dapixxxxx  # Same as dev
+      token: dapixxxxx # Same as dev
       type: databricks
   target: dev
 ```

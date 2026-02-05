@@ -92,27 +92,17 @@
             files = ghWorkflowFiles;
           };
 
-          # Markdown
+          # Markdown (check only - formatting is handled by treefmt/prettier)
           rumdl-check = {
             enable = true;
-            entry = "${pkgs.rumdl}/bin/rumdl check";
-            types = ["markdown"];
-          };
-          rumdl-fmt = {
-            enable = true;
-            entry = "${pkgs.rumdl}/bin/rumdl fmt";
+            entry = "${pkgs.rumdl}/bin/rumdl --config .rumdl.toml check";
             types = ["markdown"];
           };
 
-          # Python
+          # Python (check only - formatting is handled by treefmt/ruff)
           ruff-check = {
             enable = true;
             entry = "${pkgs.ruff}/bin/ruff check --fix";
-            types = ["python"];
-          };
-          ruff-format = {
-            enable = true;
-            entry = "${pkgs.ruff}/bin/ruff format";
             types = ["python"];
           };
 

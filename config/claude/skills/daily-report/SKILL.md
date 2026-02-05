@@ -71,7 +71,7 @@ ${CLAUDE_CONFIG_DIR}/skills/daily-report/scripts/get-activities.sh --from 2025-1
 ```
 
 Note: Use `--no-url` option to omit URLs and prevent mention notifications.
-Note: Personal repos (i9wa4/*) are excluded by default.
+Note: Personal repos (i9wa4/\*) are excluded by default.
 
 ### 2.2. Get Jira Activities
 
@@ -199,7 +199,7 @@ Organize gh-furik output. Classify as follows:
 
 - [repo-name] PR title
 - [repo-name] PR title (merged)
-    - Add supplementary comments indented
+  - Add supplementary comments indented
 
 #### 1.1.3. Reviewed PRs
 
@@ -216,7 +216,7 @@ Organize gh-furik output. Classify as follows:
 ### 1.3. Meetings
 
 - Meeting name
-    - Supplementary comments
+  - Supplementary comments
 
 ## 2. Today's AI Activities
 
@@ -226,8 +226,8 @@ Organize gh-furik output. Classify as follows:
 ccusage --compact --since $(date +%Y%m%d)
 ```
 
-| Date       | Models | Input | Output | Cost (USD) |
-| ---------- | ------ | ----- | ------ | ---------- |
+| Date | Models | Input | Output | Cost (USD) |
+| ---- | ------ | ----- | ------ | ---------- |
 
 ### 2.2. Codex CLI
 
@@ -235,8 +235,8 @@ ccusage --compact --since $(date +%Y%m%d)
 ccusage-codex --compact --since $(date +%Y%m%d)
 ```
 
-| Date       | Models | Input | Output | Cost (USD) |
-| ---------- | ------ | ----- | ------ | ---------- |
+| Date | Models | Input | Output | Cost (USD) |
+| ---- | ------ | ----- | ------ | ---------- |
 
 ### 2.3. dotfiles
 
@@ -244,7 +244,6 @@ ccusage-codex --compact --since $(date +%Y%m%d)
 - Another change summary
 
 ## 3. Reflection
-
 ````
 
 ### 2.6. Wait for User Edit
@@ -278,7 +277,7 @@ Display Issue URL after posting.
 Classify script output as follows:
 
 | Output Type        | Classification       |
-| ---                | ---                  |
+| ------------------ | -------------------- |
 | Issue              | Created Issues       |
 | PullRequest        | Created PRs          |
 | ReviewedPR         | Reviewed PRs         |

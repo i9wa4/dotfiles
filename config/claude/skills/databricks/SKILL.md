@@ -25,15 +25,15 @@ This skill provides a comprehensive guide for Databricks development.
 
 - When `auth_type=databricks-cli` in profile, run U2M authentication first
 
-    ```sh
-    databricks auth login --host https://xxx.cloud.databricks.com --profile PROFILE_NAME
-    ```
+  ```sh
+  databricks auth login --host https://xxx.cloud.databricks.com --profile PROFILE_NAME
+  ```
 
 - Check authentication status
 
-    ```sh
-    databricks auth profiles
-    ```
+  ```sh
+  databricks auth profiles
+  ```
 
 ### 1.3. Basic Usage
 
@@ -270,12 +270,12 @@ DESCRIBE DETAIL catalog.schema.table_name;
 
 ### 8.3. Common Gotchas
 
-| Issue                | Cause                         | Prevention                    |
-| -------------------- | ----------------------------- | ----------------------------- |
-| Column name case     | Databricks preserves case     | Use DESCRIBE before query     |
-| Data type mismatch   | Implicit conversion fails     | Check column types explicitly |
-| NULL handling        | Unexpected NULL in aggregation | Use COALESCE or filter NULLs |
-| Timestamp precision  | TIMESTAMP vs TIMESTAMP_NTZ    | Verify type before comparison |
+| Issue               | Cause                          | Prevention                    |
+| ------------------- | ------------------------------ | ----------------------------- |
+| Column name case    | Databricks preserves case      | Use DESCRIBE before query     |
+| Data type mismatch  | Implicit conversion fails      | Check column types explicitly |
+| NULL handling       | Unexpected NULL in aggregation | Use COALESCE or filter NULLs  |
+| Timestamp precision | TIMESTAMP vs TIMESTAMP_NTZ     | Verify type before comparison |
 
 ### 8.4. Knowledge Accumulation
 

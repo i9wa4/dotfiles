@@ -6,7 +6,7 @@
 
 CLAUDE_MD="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
 
-if [[ -f "$CLAUDE_MD" ]]; then
+if [[ -f $CLAUDE_MD ]]; then
   CONTENT=$(cat "$CLAUDE_MD" | jq -Rs .)
   echo "{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":$CONTENT}}"
 else

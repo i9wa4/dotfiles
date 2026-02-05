@@ -18,10 +18,10 @@ Good example:
 Bad example:
 
 ```markdown
-| Name | Description | Value |
-| --- | --- | --- |
-| foo | Foo item | 100 |
-| barbaz | Bar baz | 200 |
+| Name   | Description | Value |
+| ------ | ----------- | ----- |
+| foo    | Foo item    | 100   |
+| barbaz | Bar baz     | 200   |
 ```
 
 ## 2. Japanese Markdown Rules

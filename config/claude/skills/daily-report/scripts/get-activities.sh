@@ -159,7 +159,7 @@ select(.publishedAt >= $from and .publishedAt <= $to) |
 
   # Exit when oldest comment is outside the range
   OLDEST_DATE=$(echo "$RESPONSE" | jq -r '.data.viewer.issueComments.nodes[-1].publishedAt // empty')
-  if [ -n "$OLDEST_DATE" ] && [[ "$OLDEST_DATE" < "$FROM" ]]; then
+  if [ -n "$OLDEST_DATE" ] && [[ $OLDEST_DATE < $FROM ]]; then
     break
   fi
 
@@ -287,7 +287,7 @@ select(.createdAt >= $from and .createdAt <= $to) |
   OLDEST_ISSUE=$(echo "$RESPONSE" | jq -r '.data.viewer.issues.nodes[-1].createdAt // empty')
   OLDEST_PR=$(echo "$RESPONSE" | jq -r '.data.viewer.pullRequests.nodes[-1].createdAt // empty')
 
-  if { [ -n "$OLDEST_ISSUE" ] && [[ "$OLDEST_ISSUE" < "$FROM" ]]; } || { [ -n "$OLDEST_PR" ] && [[ "$OLDEST_PR" < "$FROM" ]]; }; then
+  if { [ -n "$OLDEST_ISSUE" ] && [[ $OLDEST_ISSUE < $FROM ]]; } || { [ -n "$OLDEST_PR" ] && [[ $OLDEST_PR < $FROM ]]; }; then
     break
   fi
 

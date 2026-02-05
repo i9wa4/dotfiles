@@ -1,23 +1,19 @@
 snippets:
   - name: ll
     keyword: ll
-    snippet:
-      ls -aFlv
+    snippet: ls -aFlv
 
   - name: ls for macOS
     keyword: llm
-    snippet:
-      ls -aFlv --color=always -D "%Y-%m-%d %H:%M:%S" -h
+    snippet: ls -aFlv --color=always -D "%Y-%m-%d %H:%M:%S" -h
 
   - name: ls for Ubuntu
     keyword: llu
-    snippet:
-      ls -aFlv --color=always --time-style=long-iso -h
+    snippet: ls -aFlv --color=always --time-style=long-iso -h
 
   - name: update
     keyword: up
-    snippet:
-      zinit self-update &&
+    snippet: zinit self-update &&
       zinit update --all &&
       ghq list | ghq get --update &&
       ghq-repo-status
@@ -30,43 +26,37 @@ snippets:
 
   - name: (Claude Code) yolo
     keyword: y
-    snippet:
-      --dangerously-skip-permissions
+    snippet: --dangerously-skip-permissions
     context:
       lbuffer: 'claude\s'
 
   - name: (Codex CLI) yolo
     keyword: y
-    snippet:
-      --yolo
+    snippet: --yolo
     context:
       lbuffer: 'codex\s'
 
   - name: (Docker) remove all containers
     keyword: rm
-    snippet:
-      rm -f $(docker ps -aq)
+    snippet: rm -f $(docker ps -aq)
     context:
       lbuffer: '^docker\s'
 
   - name: (Docker) remove all images
     keyword: rmi
-    snippet:
-      rmi -f $(docker images -aq)
+    snippet: rmi -f $(docker images -aq)
     context:
       lbuffer: '^docker\s'
 
   - name: (Docker) stop all containers
     keyword: s
-    snippet:
-      stop $(docker ps -aq)
+    snippet: stop $(docker ps -aq)
     context:
       lbuffer: '^docker\s'
 
   - name: (Docker) df
     keyword: df
-    snippet:
-      system df
+    snippet: system df
     context:
       lbuffer: '^docker\s'
 
@@ -78,50 +68,41 @@ snippets:
 
   - name: (Git) graph
     keyword: lo
-    snippet:
-      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status
     context:
       lbuffer: '^git\s'
 
   - name: (Git) graph --all
     keyword: la
-    snippet:
-      log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
+    snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all
     context:
       lbuffer: '^git\s'
 
   - name: (ghq) fzf preview
     keyword: gf
-    snippet:
-      ghq list -p | fzf --preview 'ghq-fzf-preview {}' --bind 'enter:execute(cd {} && $SHELL)+reload(ghq list -p)'
+    snippet: ghq list -p | fzf --preview 'ghq-fzf-preview {}' --bind 'enter:execute(cd {} && $SHELL)+reload(ghq list -p)'
 
   - name: (Git) worktree-remove
     keyword: wr
-    snippet:
-      worktree-remove "$(ghq root)/$(ghq list | fzf)"
+    snippet: worktree-remove "$(ghq root)/$(ghq list | fzf)"
 
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
-    snippet:
-      nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)" --command zsh
+    snippet: nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)" --command zsh
 
   - name: (Quarto) preview
     keyword: qp
-    snippet:
-      uv run quarto preview
+    snippet: uv run quarto preview
 
   - name: (Quarto) render
     keyword: qr
-    snippet:
-      uv run quarto render
+    snippet: uv run quarto render
 
   - name: (vde-layout) dev
     keyword: vd
-    snippet:
-      vde-layout dev
+    snippet: vde-layout dev
 
   - name: (vde-layout) preset-a
     keyword: va
-    snippet:
-      vde-layout concierge &&
+    snippet: vde-layout concierge &&
       vde-layout orchestrator

@@ -20,12 +20,12 @@ When /orchestrator is invoked:
 2. Detect task type from user message
 3. Start appropriate workflow
 
-| Keyword                 | Workflow |
-| ----------------------- | -------- |
-| plan, design            | Plan     |
-| review                  | Review   |
-| code, implement         | Code     |
-| pr, pull request        | PR       |
+| Keyword          | Workflow |
+| ---------------- | -------- |
+| plan, design     | Plan     |
+| review           | Review   |
+| code, implement  | Code     |
+| pr, pull request | PR       |
 
 ## 2. Roles and Capabilities
 
@@ -44,10 +44,10 @@ When /orchestrator is invoked:
 | READONLY   | Investigation, review        | Read, Glob, Grep, Bash (ro) |
 | WRITABLE   | Implementation, modification | All tools allowed           |
 
-| Role       | READONLY | WRITABLE |
-| ---------- | -------- | -------- |
-| Worker     | Yes      | Yes      |
-| Subagent   | Yes      | No       |
+| Role     | READONLY | WRITABLE |
+| -------- | -------- | -------- |
+| Worker   | Yes      | Yes      |
+| Subagent | Yes      | No       |
 
 Both modes allow writes to `.i9wa4/`.
 
@@ -140,12 +140,12 @@ If no Workers found, inform user and wait.
 
 ## 4. Delegation Priority
 
-| Task Type             | First Choice      | Fallback   |
-| --------------------- | ----------------- | ---------- |
-| Implementation        | Worker (WRITABLE) | N/A        |
-| Complex investigation | Worker (READONLY) | Task tool  |
-| Simple review         | Task tool         | -          |
-| Parallel reviews      | codex exec        | Task tool  |
+| Task Type             | First Choice      | Fallback  |
+| --------------------- | ----------------- | --------- |
+| Implementation        | Worker (WRITABLE) | N/A       |
+| Complex investigation | Worker (READONLY) | Task tool |
+| Simple review         | Task tool         | -         |
+| Parallel reviews      | codex exec        | Task tool |
 
 ## 5. Subagent Execution
 
@@ -203,14 +203,14 @@ File: `.i9wa4/phase.log`
 
 ### 7.1. Files
 
-| Path                       | Purpose            | Updated by   |
-| -------------------------- | ------------------ | ------------ |
-| `.i9wa4/roadmap.md`        | Overall progress   | Orchestrator |
-| `.i9wa4/status-pane{id}`   | Pane current state | Orchestrator |
-| `.i9wa4/phase.log`         | Phase transitions  | Orchestrator |
-| `.i9wa4/plans/`            | Plan documents     | Orchestrator |
-| `.i9wa4/reviews/`          | Review results     | Subagent     |
-| `.i9wa4/post/`             | Message exchange   | All          |
+| Path                     | Purpose            | Updated by   |
+| ------------------------ | ------------------ | ------------ |
+| `.i9wa4/roadmap.md`      | Overall progress   | Orchestrator |
+| `.i9wa4/status-pane{id}` | Pane current state | Orchestrator |
+| `.i9wa4/phase.log`       | Phase transitions  | Orchestrator |
+| `.i9wa4/plans/`          | Plan documents     | Orchestrator |
+| `.i9wa4/reviews/`        | Review results     | Subagent     |
+| `.i9wa4/post/`           | Message exchange   | All          |
 
 ### 7.2. Status File Format
 
@@ -309,13 +309,13 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan
 
 Break plan steps into atomic tasks:
 
-| Task Type       | Description                          |
-| --------------- | ------------------------------------ |
-| File creation   | Create new files                     |
-| File edit       | Modify existing files                |
-| Multi-file      | 2+ files requiring coordinated edits |
-| Test execution  | Run tests and verify                 |
-| Build           | Build and verify                     |
+| Task Type      | Description                          |
+| -------------- | ------------------------------------ |
+| File creation  | Create new files                     |
+| File edit      | Modify existing files                |
+| Multi-file     | 2+ files requiring coordinated edits |
+| Test execution | Run tests and verify                 |
+| Build          | Build and verify                     |
 
 ### 9.2. Execution
 

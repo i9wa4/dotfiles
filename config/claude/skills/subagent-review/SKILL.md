@@ -14,11 +14,11 @@ description: |
 
 ### 1.1. Setup
 
-| Parameter   | Options                               |
-| ----------- | ------------------------------------- |
-| review_type | code, design                          |
-| target_type | pr, commit, branch, issue, document   |
-| target      | PR number, commit hash, file path     |
+| Parameter   | Options                             |
+| ----------- | ----------------------------------- |
+| review_type | code, design                        |
+| target_type | pr, commit, branch, issue, document |
+| target      | PR number, commit hash, file path   |
 
 Default: 10 parallel (cx x 5 + cc x 5)
 
@@ -54,7 +54,7 @@ Agent file:
 
 Always execute the following for design/code reviews:
 
-- cc x 5: Launch reviewer-* agents in parallel via Task tool
+- cc x 5: Launch reviewer-\* agents in parallel via Task tool
 - cx x 5: Execute codex exec sequentially via worker-codex
 
 2-parallel execution (worker-claude + worker-codex only) is prohibited.
@@ -163,12 +163,12 @@ cat .i9wa4/reviews/*-review-*.md
 
 #### 1.5.5. Timing Optimization
 
-| Action           | Timing                      |
-| ---------------- | --------------------------- |
-| Save PR diff     | Before starting reviews     |
-| Launch cc x 5    | Immediately (Task tool)     |
-| Launch cx x 5    | Immediately (background)    |
-| Collect results  | After wait completes        |
+| Action          | Timing                   |
+| --------------- | ------------------------ |
+| Save PR diff    | Before starting reviews  |
+| Launch cc x 5   | Immediately (Task tool)  |
+| Launch cx x 5   | Immediately (background) |
+| Collect results | After wait completes     |
 
 ### 1.6. Observer Deliberation (Optional)
 
@@ -255,15 +255,15 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews/summary.md
 
 ### Phase 1: Initial Review
 
-| # | Issue               | Reporter     | Severity | File               |
-| - | ------------------- | ------------ | -------- | ------------------ |
-| 1 | {issue description} | {role}-{src} | High     | `path/to/file:123` |
+| #   | Issue               | Reporter     | Severity | File               |
+| --- | ------------------- | ------------ | -------- | ------------------ |
+| 1   | {issue description} | {role}-{src} | High     | `path/to/file:123` |
 
 ### Phase 2: Deliberation
 
-| # | Issue                | Reporter     | Triggered By | Severity | File               |
-| - | -------------------- | ------------ | ------------ | -------- | ------------------ |
-| 1 | {additional finding} | {role}-{src} | {role}       | Medium   | `path/to/file:456` |
+| #   | Issue                | Reporter     | Triggered By | Severity | File               |
+| --- | -------------------- | ------------ | ------------ | -------- | ------------------ |
+| 1   | {additional finding} | {role}-{src} | {role}       | Medium   | `path/to/file:456` |
 
 ## Coverage Analysis
 

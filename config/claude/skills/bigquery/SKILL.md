@@ -275,7 +275,7 @@ LIMIT 10;
 
 ### 5.2. Cost Reduction Best Practices
 
-1. Avoid SELECT *
+1. Avoid SELECT \*
 2. Always use partition filters
 3. Check cost with dry run before queries
 4. Optimize repeated queries with materialized views

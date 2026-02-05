@@ -82,7 +82,7 @@ Task tool with subagent_type: claude-code-guide
 ## 5. Settings Categories
 
 | Category | Examples                            |
-| -------- | --------                            |
+| -------- | ----------------------------------- |
 | Display  | `showTurnDuration`, `language`      |
 | Behavior | `respectGitignore`, `autoUpdate`    |
 | Tools    | `disallowedTools`, `allowedTools`   |
@@ -100,7 +100,7 @@ Task tool with subagent_type: claude-code-guide
 ## 7. Configuration Usage
 
 | Type               | Load Timing                    | Purpose                       |
-| ----               | -----------                    | -------                       |
+| ------------------ | ------------------------------ | ----------------------------- |
 | CLAUDE.md / rules/ | Full load at startup           | Global rules always applied   |
 | commands/          | Explicit user invocation       | Predefined prompts, workflows |
 | skills/            | Auto-triggered by conversation | Specialized knowledge         |
@@ -237,13 +237,13 @@ Community Resources:
 
 ### 14.1. Permission Modes
 
-| Mode                | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `default`           | Prompts for permission on first use of each tool         |
-| `acceptEdits`       | Auto-accepts file edit permissions for the session       |
-| `plan`              | Plan Mode: analyze only, no modifications                |
-| `dontAsk`           | Auto-denies unless pre-approved via allow rules          |
-| `bypassPermissions` | Skips all prompts (use only in isolated environments)    |
+| Mode                | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `default`           | Prompts for permission on first use of each tool      |
+| `acceptEdits`       | Auto-accepts file edit permissions for the session    |
+| `plan`              | Plan Mode: analyze only, no modifications             |
+| `dontAsk`           | Auto-denies unless pre-approved via allow rules       |
+| `bypassPermissions` | Skips all prompts (use only in isolated environments) |
 
 ### 14.2. Rule Evaluation Order
 
@@ -260,9 +260,7 @@ Rules are evaluated: **deny -> ask -> allow**. First matching rule wins.
       "Bash(* --version)",
       "Bash(* --help *)"
     ],
-    "deny": [
-      "Bash(git push *)"
-    ]
+    "deny": ["Bash(git push *)"]
   }
 }
 ```
@@ -271,12 +269,12 @@ NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
 
 ### 14.4. Read/Edit Path Patterns
 
-| Pattern      | Meaning                          | Example                    |
-| ------------ | -------------------------------- | -------------------------- |
-| `//path`     | Absolute path from root          | `Read(//Users/alice/**)` |
-| `~/path`     | Path from home directory         | `Read(~/.zshrc)`           |
-| `/path`      | Relative to settings file        | `Edit(/src/**/*.ts)`       |
-| `path`       | Relative to current directory    | `Read(*.env)`              |
+| Pattern  | Meaning                       | Example                  |
+| -------- | ----------------------------- | ------------------------ |
+| `//path` | Absolute path from root       | `Read(//Users/alice/**)` |
+| `~/path` | Path from home directory      | `Read(~/.zshrc)`         |
+| `/path`  | Relative to settings file     | `Edit(/src/**/*.ts)`     |
+| `path`   | Relative to current directory | `Read(*.env)`            |
 
 NOTE: `*` matches single directory, `**` matches recursively.
 
@@ -293,19 +291,19 @@ NOTE: `*` matches single directory, `**` matches recursively.
 
 ### 14.6. Managed Settings Locations
 
-| Platform    | Path                                             |
-| ----------- | ------------------------------------------------ |
-| macOS       | `/Library/Application Support/ClaudeCode/managed-settings.json` |
-| Linux/WSL   | `/etc/claude-code/managed-settings.json`         |
-| Windows     | `C:\Program Files\ClaudeCode\managed-settings.json` |
+| Platform  | Path                                                            |
+| --------- | --------------------------------------------------------------- |
+| macOS     | `/Library/Application Support/ClaudeCode/managed-settings.json` |
+| Linux/WSL | `/etc/claude-code/managed-settings.json`                        |
+| Windows   | `C:\Program Files\ClaudeCode\managed-settings.json`             |
 
 ### 14.7. Managed-Only Settings
 
-| Setting                         | Description                              |
-| ------------------------------- | ---------------------------------------- |
-| `disableBypassPermissionsMode`  | Set to "disable" to prevent bypass mode  |
-| `allowManagedPermissionRulesOnly` | Only managed rules apply               |
-| `allowManagedHooksOnly`         | Only managed/SDK hooks allowed           |
+| Setting                           | Description                             |
+| --------------------------------- | --------------------------------------- |
+| `disableBypassPermissionsMode`    | Set to "disable" to prevent bypass mode |
+| `allowManagedPermissionRulesOnly` | Only managed rules apply                |
+| `allowManagedHooksOnly`           | Only managed/SDK hooks allowed          |
 
 ## 15. Insights-Based Recommendations
 

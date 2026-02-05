@@ -23,13 +23,13 @@ User's Codex CLI config is stored at:
 
 Key files:
 
-| File                 | Git | Description                              |
-| -------------------- | --- | ---------------------------------------- |
-| `.gitignore`         | Yes | Ignore all except whitelisted files      |
-| `config.common.toml` | Yes | Common settings (model, MCP, etc.)       |
-| `AGENTS.md`          | No  | Symlink to `../claude/CLAUDE.md`         |
-| `skills/`            | No  | Symlink to `../claude/skills/`           |
-| `config.toml`        | No  | Manually managed (common + trusted repos)|
+| File                 | Git | Description                               |
+| -------------------- | --- | ----------------------------------------- |
+| `.gitignore`         | Yes | Ignore all except whitelisted files       |
+| `config.common.toml` | Yes | Common settings (model, MCP, etc.)        |
+| `AGENTS.md`          | No  | Symlink to `../claude/CLAUDE.md`          |
+| `skills/`            | No  | Symlink to `../claude/skills/`            |
+| `config.toml`        | No  | Manually managed (common + trusted repos) |
 
 ## 2. Config Management
 
@@ -93,16 +93,16 @@ cat "$FILE"
 
 ## 5. Settings Categories
 
-| Category | Examples                                            |
-| -------- | --------------------------------------------------- |
-| Model    | `model`, `model_reasoning`, `model_reasoning_effort` |
-| Behavior | `approval_mode`, `sandbox`, `network_access`        |
-| Display  | `notify`, `tui.notifications_method`                |
-| Shell    | `shell_environment_commands`                        |
-| History  | `history`, `project_doc_max_bytes`                  |
-| Features | `features.skills`, `features.web_search_request`    |
-| Disable  | `disable_response_storage`, `hide_agent_*`          |
-| Analytics| `analytics.enabled`, `feedback.enabled`             |
+| Category  | Examples                                             |
+| --------- | ---------------------------------------------------- |
+| Model     | `model`, `model_reasoning`, `model_reasoning_effort` |
+| Behavior  | `approval_mode`, `sandbox`, `network_access`         |
+| Display   | `notify`, `tui.notifications_method`                 |
+| Shell     | `shell_environment_commands`                         |
+| History   | `history`, `project_doc_max_bytes`                   |
+| Features  | `features.skills`, `features.web_search_request`     |
+| Disable   | `disable_response_storage`, `hide_agent_*`           |
+| Analytics | `analytics.enabled`, `feedback.enabled`              |
 
 ## 6. AGENTS.md Design Guidelines
 

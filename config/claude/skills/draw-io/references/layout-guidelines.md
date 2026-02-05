@@ -294,7 +294,7 @@ Visualize relationships between left and right elements via center.
 Last updated: 2026-02-02
 Source files analyzed:
 
-- i9wa4.github.io/assets/2026-01-27-jedai-ai-gateway/*.drawio
-- i9wa4.github.io/assets/2025-12-22-aeon-tech-hub-databricks/*.drawio
-- i9wa4.github.io/assets/2025-12-12-databricks-notebook-ai-ready/*.drawio
-- i9wa4.github.io/assets/2025-11-07-tamesare-data-sapporo-uma-chan/*.drawio
+- i9wa4.github.io/assets/2026-01-27-jedai-ai-gateway/\*.drawio
+- i9wa4.github.io/assets/2025-12-22-aeon-tech-hub-databricks/\*.drawio
+- i9wa4.github.io/assets/2025-12-12-databricks-notebook-ai-ready/\*.drawio
+- i9wa4.github.io/assets/2025-11-07-tamesare-data-sapporo-uma-chan/\*.drawio

@@ -8,6 +8,10 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +36,7 @@
     nixpkgs,
     flake-parts,
     git-hooks,
+    treefmt-nix,
     nix-darwin,
     home-manager,
     brew-nix,
@@ -46,7 +51,9 @@
       # Import flake-parts modules
       imports = [
         git-hooks.flakeModule
+        treefmt-nix.flakeModule
         ./nix/pre-commit.nix
+        ./nix/treefmt.nix
       ];
 
       # Per-system outputs (formatter, devShells, packages, etc.)
@@ -78,9 +85,6 @@
           overlays = [versionOverlay];
         };
       in {
-        # nix fmt
-        formatter = pkgs.alejandra;
-
         # nix develop
         devShells = {
           # Local development (includes CI tools + pre-commit hooks)

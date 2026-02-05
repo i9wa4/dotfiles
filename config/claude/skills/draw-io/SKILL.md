@@ -47,13 +47,13 @@ Internal command used:
 drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 ```
 
-| Option | Description |
-|--------|-------------|
-| `-x` | Export mode |
-| `-f png` | PNG format output |
-| `-s 2` | 2x scale (high resolution) |
-| `-t` | Transparent background |
-| `-o` | Output file path |
+| Option   | Description                |
+| -------- | -------------------------- |
+| `-x`     | Export mode                |
+| `-f png` | PNG format output          |
+| `-s 2`   | 2x scale (high resolution) |
+| `-t`     | Transparent background     |
+| `-o`     | Output file path           |
 
 ## 4. Layout Adjustment
 
@@ -115,14 +115,14 @@ For presentation slide diagrams (1920x1080 canvas):
 
 Separate complex systems into staged diagrams:
 
-| Diagram Type | Purpose |
-|--------------|---------|
-| Context Diagram | System overview from external perspective |
-| System Diagram | Main components and relationships |
-| Component Diagram | Technical details and integration points |
-| Deployment Diagram | Infrastructure configuration |
-| Data Flow Diagram | Data flow and transformation |
-| Sequence Diagram | Time-series interactions |
+| Diagram Type       | Purpose                                   |
+| ------------------ | ----------------------------------------- |
+| Context Diagram    | System overview from external perspective |
+| System Diagram     | Main components and relationships         |
+| Component Diagram  | Technical details and integration points  |
+| Deployment Diagram | Infrastructure configuration              |
+| Data Flow Diagram  | Data flow and transformation              |
+| Sequence Diagram   | Time-series interactions                  |
 
 ### 6.5. Metadata
 
@@ -276,7 +276,7 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] Internal elements not overflowing background frame (verify in PNG)
 - [ ] 30px+ margin between background frame and internal elements
 - [ ] AWS service names are official names/correct abbreviations
-- [ ] AWS icons are latest version (mxgraph.aws4.*)
+- [ ] AWS icons are latest version (mxgraph.aws4.\*)
 - [ ] No unnecessary elements remaining
 - [ ] Visually verified PNG conversion
 
@@ -309,12 +309,12 @@ as new `.drawio` files are created.
 
 ### 11.1. Auto-Updatable Files
 
-| File                            | Content                 | Stability  |
-| ------------------------------- | ----------------------- | ---------- |
-| `references/color-palette.md`   | Color table and rules   | Updatable  |
-| `references/layout-guidelines.md`| Pattern catalog (A-K+) | Updatable  |
-| `SKILL.md` section 7            | Best practices          | Appendable |
-| `SKILL.md` section 9            | Checklist               | Appendable |
+| File                              | Content                | Stability  |
+| --------------------------------- | ---------------------- | ---------- |
+| `references/color-palette.md`     | Color table and rules  | Updatable  |
+| `references/layout-guidelines.md` | Pattern catalog (A-K+) | Updatable  |
+| `SKILL.md` section 7              | Best practices         | Appendable |
+| `SKILL.md` section 9              | Checklist              | Appendable |
 
 ### 11.2. Triggers
 
@@ -379,7 +379,7 @@ Each auto-updatable file ends with:
 Last updated: YYYY-MM-DD
 Source files analyzed:
 
-- repo/path/to/*.drawio
+- repo/path/to/\*.drawio
 ```
 
 ## 12. Image Display in reveal.js Slides

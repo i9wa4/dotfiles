@@ -35,12 +35,12 @@ Create virtual environment with `uv` referring to the blog article:
 
 1. Activate the virtual environment
 
-    ```sh
-    source .venv/bin/activate
-    ```
+   ```sh
+   source .venv/bin/activate
+   ```
 
 2. Execute Python commands
 
-    ```sh
-    dbt debug --profiles-dir ~/.dbt --no-use-colors
-    ```
+   ```sh
+   dbt debug --profiles-dir ~/.dbt --no-use-colors
+   ```
