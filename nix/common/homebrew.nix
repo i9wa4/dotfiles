@@ -11,6 +11,15 @@ _: {
       # Upgrade outdated formulae/casks
       upgrade = true;
     };
-    # NOTE: casks are defined in hosts/<name>/casks.nix
+    # Common casks (host-specific casks are merged from hosts/<name>/casks.nix)
+    casks = [
+      "docker"
+      "drawio"
+      "google-chrome"
+      "stats"
+      "visual-studio-code"
+      "wezterm"
+      "zoom"
+    ];
   };
 }

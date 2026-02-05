@@ -37,7 +37,10 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # --------------------------------------
 # Utility Tasks
 #
-nix-profile-add:  ## add AI coding agents to nix profile
+nix-flake-update:  ## upgrade all packages in nix profile
+	nix flake update
+
+nix-profile:  ## nix profile
 	nix profile add github:numtide/llm-agents.nix#ccusage
 	nix profile add github:numtide/llm-agents.nix#ccusage-codex
 	nix profile add github:numtide/llm-agents.nix#coderabbit-cli
@@ -45,16 +48,12 @@ nix-profile-add:  ## add AI coding agents to nix profile
 	nix profile add github:numtide/llm-agents.nix#copilot-cli
 	nix profile add github:numtide/llm-agents.nix#goose-cli
 	nix profile add github:ryoppippi/claude-code-overlay#claude
-
-nix-profile-upgrade:  ## upgrade all packages in nix profile
 	nix profile upgrade --all
 
 nix-switch:  ## update ghq repos and switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
-else
-	nix run home-manager -- switch --impure --flake '.#ubuntu'
 endif
 	uv run python bin/nix-flake-diff.py
 

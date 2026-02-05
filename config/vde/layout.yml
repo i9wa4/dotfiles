@@ -25,7 +25,8 @@ presets:
           command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
           focus: true
         - name: concierge
-          command: A2A_NODE=concierge claude --dangerously-skip-permissions --model haiku
+          # command: A2A_NODE=concierge claude --dangerously-skip-permissions --model haiku
+          command: A2A_NODE=concierge claude --dangerously-skip-permissions --model opus
 
   orchestrator:
     name: workers
@@ -50,7 +51,7 @@ presets:
             - name: observer
               command: A2A_NODE=observer-a-leader claude --dangerously-skip-permissions --model opus
             - name: observer
-              command: A2A_NODE=observer-b-leader claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=observer-b-leader codex --yolo
 
   observers:
     name: observers

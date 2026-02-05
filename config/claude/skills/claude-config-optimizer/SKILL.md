@@ -125,7 +125,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.29 (2026-02-02)
+Last reviewed Claude Code version: v2.1.31 (2026-02-04)
 
 ### 10.1. Applied Optimizations
 
@@ -142,11 +142,21 @@ Last reviewed Claude Code version: v2.1.29 (2026-02-02)
 
 ### 10.2. Pending Considerations
 
-- [ ] `showTurnDuration` setting - hide "Cooked for Xm Xs" messages
-- [ ] Keybindings customization via `~/.claude/keybindings.json`
+- [x] SQL schema validation - moved to databricks skill (Section 8)
 
-### 10.3. Version Notes
+### 10.3. Not Adopting
 
+- `showTurnDuration` - keep default (show duration)
+- `reducedMotionMode` - keep default (animations enabled)
+- Keybindings customization - use defaults
+- Completion status reporting - no consumer for this output
+
+### 10.4. Version Notes
+
+- v2.1.31: PDF lock fix, sandbox error fix, system prompt improvement for
+  dedicated tools
+- v2.1.30: Read tool `pages` param for PDFs, `/debug` command, MCP OAuth
+  pre-configured credentials, reduced motion mode
 - v2.1.29: SessionStart hook saved_hook_context performance fix
 - v2.1.27: --from-pr flag, auto PR-session linking, debug log improvements
 - v2.1.23: spinnerVerbs setting, terminal rendering perf, mTLS/proxy fix
@@ -223,8 +233,96 @@ Community Resources:
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
 - site2skill: <https://github.com/laiso/site2skill>
 
+## 14. Permission System Reference
+
+### 14.1. Permission Modes
+
+| Mode                | Description                                              |
+| ------------------- | -------------------------------------------------------- |
+| `default`           | Prompts for permission on first use of each tool         |
+| `acceptEdits`       | Auto-accepts file edit permissions for the session       |
+| `plan`              | Plan Mode: analyze only, no modifications                |
+| `dontAsk`           | Auto-denies unless pre-approved via allow rules          |
+| `bypassPermissions` | Skips all prompts (use only in isolated environments)    |
+
+### 14.2. Rule Evaluation Order
+
+Rules are evaluated: **deny -> ask -> allow**. First matching rule wins.
+
+### 14.3. Bash Wildcard Patterns
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git commit *)",
+      "Bash(* --version)",
+      "Bash(* --help *)"
+    ],
+    "deny": [
+      "Bash(git push *)"
+    ]
+  }
+}
+```
+
+NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
+
+### 14.4. Read/Edit Path Patterns
+
+| Pattern      | Meaning                          | Example                    |
+| ------------ | -------------------------------- | -------------------------- |
+| `//path`     | Absolute path from root          | `Read(//Users/alice/**)` |
+| `~/path`     | Path from home directory         | `Read(~/.zshrc)`           |
+| `/path`      | Relative to settings file        | `Edit(/src/**/*.ts)`       |
+| `path`       | Relative to current directory    | `Read(*.env)`              |
+
+NOTE: `*` matches single directory, `**` matches recursively.
+
+### 14.5. MCP and Task Permissions
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp__puppeteer__*"],
+    "deny": ["Task(Explore)"]
+  }
+}
+```
+
+### 14.6. Managed Settings Locations
+
+| Platform    | Path                                             |
+| ----------- | ------------------------------------------------ |
+| macOS       | `/Library/Application Support/ClaudeCode/managed-settings.json` |
+| Linux/WSL   | `/etc/claude-code/managed-settings.json`         |
+| Windows     | `C:\Program Files\ClaudeCode\managed-settings.json` |
+
+### 14.7. Managed-Only Settings
+
+| Setting                         | Description                              |
+| ------------------------------- | ---------------------------------------- |
+| `disableBypassPermissionsMode`  | Set to "disable" to prevent bypass mode  |
+| `allowManagedPermissionRulesOnly` | Only managed rules apply               |
+| `allowManagedHooksOnly`         | Only managed/SDK hooks allowed           |
+
+## 15. Insights-Based Recommendations
+
+Based on usage analysis (55K messages, 4.7K sessions):
+
+### 15.1. Applied
+
+- Schema validation for DB operations: See databricks skill Section 8
+
+### 15.2. Not Applied
+
+- Completion status reporting: No consumer for this output
+- PreToolUse hook for SQL: Handled by skill guidance instead
+
 ## References
 
 - Hooks Reference: `https://code.claude.com/docs/en/hooks`
+- Permissions Reference: `https://code.claude.com/docs/en/permissions`
 - Skills Dynamic Context: `https://code.claude.com/docs/en/skills#inject-dynamic-context`
 - Vercel AGENTS.md Guide: `https://vercel.com/blog/agents-md`
