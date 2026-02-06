@@ -1,1 +1,1 @@
-../claude/CLAUDE.md
+/nix/store/sbxxzhbk9v1125f7km3nwhj3a413jxj4-home-manager-files/.codex/AGENTS.md
