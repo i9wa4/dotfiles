@@ -17,6 +17,7 @@
   symlink = config.lib.file.mkOutOfStoreSymlink;
 in {
   imports = [
+    ./agent-skills.nix
     ./codex.nix
     ./editorconfig.nix
     ./git.nix
@@ -125,8 +126,10 @@ in {
     # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
     # ==========================================================================
     file = {
-      ".claude/skills".source = symlink "${dotfilesDir}/config/claude/skills";
-      ".codex".source = symlink "${dotfilesDir}/config/codex";
+      # .claude/skills is managed by agent-skills.nix
+      # .codex/skills is managed by agent-skills.nix
+      ".codex/AGENTS.md".source = symlink "${dotfilesDir}/config/codex/AGENTS.md";
+      ".codex/config.common.toml".source = symlink "${dotfilesDir}/config/codex/config.common.toml";
       # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
     };

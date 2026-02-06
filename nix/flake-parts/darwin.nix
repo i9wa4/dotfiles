@@ -54,7 +54,7 @@
             useUserPackages = true;
             backupFileExtension = "backup";
             extraSpecialArgs = {
-              inherit username;
+              inherit username inputs;
             };
             users.${username} = import ../hosts/${hostname}/home.nix;
           };

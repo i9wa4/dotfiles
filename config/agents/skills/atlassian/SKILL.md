@@ -119,7 +119,7 @@ JQL date functions:
 
 ```sh
 uvx --with requests --with beautifulsoup4 --with html2text \
-    python ~/ghq/github.com/i9wa4/dotfiles/config/claude/skills/atlassian/scripts/confluence-to-md.py <confluence_url>
+    python ~/ghq/github.com/i9wa4/dotfiles/config/agents/skills/atlassian/scripts/confluence-to-md.py <confluence_url>
 ```
 
 Output: `~/Downloads/{timestamp}-confluence-{title}.md`

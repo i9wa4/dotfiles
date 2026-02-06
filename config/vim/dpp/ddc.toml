@@ -62,7 +62,7 @@ call ddc#custom#patch_global('sourceParams', {
 \   'slash_commands': {
 \     'userDirs': [
 \       '~/.config/claude/commands/',
-\       '~/.config/claude/skills/'
+\       '~/.claude/skills/'
 \     ],
 \     'projectDirs': [
 \       '.claude/commands/',

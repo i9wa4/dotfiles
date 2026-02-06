@@ -11,12 +11,15 @@
     then "/Users/${username}"
     else "/home/${username}";
   ghqRoot = "${homeDir}/ghq";
-  codexConfigDir = "${ghqRoot}/github.com/i9wa4/dotfiles/config/codex";
+  codexSrcDir = "${ghqRoot}/github.com/i9wa4/dotfiles/config/codex";
+  codexDestDir = "${homeDir}/.codex";
 in {
   home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
     echo "Generating Codex CLI config..."
-    _common="${codexConfigDir}/config.common.toml"
-    _output="${codexConfigDir}/config.toml"
+    _common="${codexSrcDir}/config.common.toml"
+    _output="${codexDestDir}/config.toml"
+
+    mkdir -p "${codexDestDir}"
 
     if [ -f "$_common" ]; then
       cp -f "$_common" "$_output"

@@ -29,6 +29,17 @@
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
+    # Agent skills declarative management
+    agent-skills = {
+      url = "github:Kyure-A/agent-skills-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+    # External skill sources (non-flake)
+    dbt-agent-skills = {
+      url = "github:dbt-labs/dbt-agent-skills";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

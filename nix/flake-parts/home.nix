@@ -27,7 +27,7 @@ in {
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit username;
+        inherit username inputs;
       };
       modules = [
         ../home
