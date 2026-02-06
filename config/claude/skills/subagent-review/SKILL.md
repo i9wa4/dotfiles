@@ -12,13 +12,15 @@ description: |
 
 ## 1. Review Workflow
 
-### 1.1. Setup
+### 1.1. Setup (Fully Automatic)
 
-| Parameter   | Options                             |
-| ----------- | ----------------------------------- |
-| review_type | code, design                        |
-| target_type | pr, commit, branch, issue, document |
-| target      | PR number, commit hash, file path   |
+No arguments required. Everything is auto-detected:
+
+| Item        | Detection                                              |
+| ----------- | ------------------------------------------------------ |
+| review_type | `git diff main...HEAD` has output -> code, else design |
+| scope       | Always `git diff main...HEAD`                          |
+| context     | Directory name pattern (see 1.3.2)                     |
 
 Default: 10 parallel (cx x 5 + cc x 5)
 
@@ -35,15 +37,41 @@ Default: 10 parallel (cx x 5 + cc x 5)
 For design review: replace `code` with `data` (Data model, schema).
 Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
 
-### 1.3. References
+### 1.3. Scope and Context
 
-| Target Type | Command                                           |
-| ----------- | ------------------------------------------------- |
-| pr          | `gh pr view {target} --json body,comments` + diff |
-| commit      | `git show {target}`                               |
-| branch      | `git diff main...HEAD`                            |
-| issue       | `gh issue view {target} --json body,comments`     |
-| document    | Read the file at {target}                         |
+#### 1.3.1. Scope (Review Target) - Always Local
+
+| Scope | Command                 | When                       |
+| ----- | ----------------------- | -------------------------- |
+| diff  | `git diff main...HEAD`  | Default. Branch changes    |
+| file  | Read the file at {path} | User specifies a file path |
+
+#### 1.3.2. Context (Metadata) - Auto-detected from Directory Name
+
+Detect PR/Issue number from current directory name pattern:
+
+- `*-pr-{N}` -> PR worktree -> fetch PR #{N} metadata
+- `*-issue-{N}` -> Issue worktree -> fetch Issue #{N} metadata
+- Otherwise -> no metadata (diff only)
+
+Detection command:
+
+```bash
+basename "$(git rev-parse --show-toplevel)" | grep -oP '(pr|issue)-\K[0-9]+'
+```
+
+#### 1.3.3. Context Fetch Procedure
+
+1. Detect type and number from directory name
+2. Fetch primary metadata:
+   - PR: `gh pr view {N} --json body,comments`
+   - Issue: `gh issue view {N} --json body,comments`
+3. For PR: parse body for referenced Issues/PRs (`#123`, `Closes #456`, etc.)
+   and fetch each with `gh issue view` or `gh pr view`
+4. Save all context to `.i9wa4/tmp/review-context.md`
+
+IMPORTANT: For PR reviews, always chase references in the PR body.
+Related Issues/PRs provide critical intent and acceptance criteria.
 
 Agent file:
 `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md`
@@ -65,8 +93,10 @@ Task content template:
 [SUBAGENT capability=READONLY]
 <!-- REVIEW_SESSION
 timestamp: {TS}, source: {SOURCE}, role: {ROLE}
-review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
+review_type: {REVIEW_TYPE}
 -->
+Review the diff in .i9wa4/tmp/review-diff.txt from {ROLE} perspective.
+Context (PR/Issue metadata): .i9wa4/tmp/review-context.md
 Return your review directly. Do NOT create files.
 ```
 
@@ -105,16 +135,49 @@ or accept that outputs will be written to files (not displayed cleanly).
 
 WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
-### 1.5. 1 Parallel Execution for 10-Review (cc x 5 + cx x 5)
+### 1.5. Parallel Execution for 10-Review (cc x 5 + cx x 5)
 
 IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
 
-#### 1.5.1. Step 1: Prepare PR Diff
+#### 1.5.1. Step 1: Auto-detect and Prepare
 
-codex exec cannot access PR diff directly. Save it beforehand:
+Run these steps automatically (no user input needed):
 
 ```bash
-gh pr diff $PR_NUMBER > .i9wa4/tmp/pr-diff.txt
+# 1. Save diff
+git diff main...HEAD > .i9wa4/tmp/review-diff.txt
+
+# 2. Detect review_type
+if [ -s .i9wa4/tmp/review-diff.txt ]; then
+  REVIEW_TYPE="code"
+else
+  REVIEW_TYPE="design"
+fi
+
+# 3. Detect context from directory name
+DIR_NAME=$(basename "$(git rev-parse --show-toplevel)")
+PR_NUM=$(echo "$DIR_NAME" | grep -oP 'pr-\K[0-9]+' || true)
+ISSUE_NUM=$(echo "$DIR_NAME" | grep -oP 'issue-\K[0-9]+' || true)
+
+# 4. Fetch context metadata
+CONTEXT_FILE=".i9wa4/tmp/review-context.md"
+echo "# Review Context" > "$CONTEXT_FILE"
+
+if [ -n "$PR_NUM" ]; then
+  echo "## PR #${PR_NUM}" >> "$CONTEXT_FILE"
+  gh pr view "$PR_NUM" --json title,body,comments >> "$CONTEXT_FILE"
+  # Chase references: extract #NNN from PR body, fetch each
+  gh pr view "$PR_NUM" --json body --jq '.body' \
+    | grep -oP '#\K[0-9]+' | sort -u | while read -r REF; do
+      echo "## Referenced #${REF}" >> "$CONTEXT_FILE"
+      gh issue view "$REF" --json title,body,comments >> "$CONTEXT_FILE" 2>/dev/null \
+        || gh pr view "$REF" --json title,body,comments >> "$CONTEXT_FILE" 2>/dev/null \
+        || echo "(not found)" >> "$CONTEXT_FILE"
+    done
+elif [ -n "$ISSUE_NUM" ]; then
+  echo "## Issue #${ISSUE_NUM}" >> "$CONTEXT_FILE"
+  gh issue view "$ISSUE_NUM" --json title,body,comments >> "$CONTEXT_FILE"
+fi
 ```
 
 #### 1.5.2. Step 2: Launch cc x 5 (Single Message)
@@ -134,8 +197,9 @@ Each prompt should include:
 
 ```text
 [SUBAGENT capability=READONLY]
-Review PR #N from {ROLE} perspective.
-See .i9wa4/tmp/pr-diff.txt for the diff.
+Review from {ROLE} perspective.
+Diff: .i9wa4/tmp/review-diff.txt
+Context: .i9wa4/tmp/review-context.md
 ```
 
 #### 1.5.3. Step 3: Launch cx x 5 (Background Processes)
@@ -146,7 +210,7 @@ Use file output to avoid interleaving:
 for ROLE in security architecture historian data qa; do
   FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/reviews --type "review-${ROLE}-cx")
   codex exec --sandbox workspace-write -o "$FILE" \
-    "[SUBAGENT capability=READONLY] Review PR #N from ${ROLE} perspective. See .i9wa4/tmp/pr-diff.txt for the diff." &
+    "[SUBAGENT capability=READONLY] Review from ${ROLE} perspective. Diff: .i9wa4/tmp/review-diff.txt Context: .i9wa4/tmp/review-context.md" &
 done
 wait
 ```
@@ -163,12 +227,12 @@ cat .i9wa4/reviews/*-review-*.md
 
 #### 1.5.5. Timing Optimization
 
-| Action          | Timing                   |
-| --------------- | ------------------------ |
-| Save PR diff    | Before starting reviews  |
-| Launch cc x 5   | Immediately (Task tool)  |
-| Launch cx x 5   | Immediately (background) |
-| Collect results | After wait completes     |
+| Action           | Timing                   |
+| ---------------- | ------------------------ |
+| Auto-detect/prep | Before starting reviews  |
+| Launch cc x 5    | Immediately (Task tool)  |
+| Launch cx x 5    | Immediately (background) |
+| Collect results  | After wait completes     |
 
 ### 1.6. Observer Deliberation (Optional)
 
@@ -197,7 +261,7 @@ additional findings.
 [SUBAGENT capability=READONLY]
 <!-- DELIBERATION_SESSION
 timestamp: {TS}, role: {ROLE}
-review_type: {REVIEW_TYPE}, target_type: {TARGET_TYPE}, target: {TARGET}
+review_type: {REVIEW_TYPE}
 -->
 
 ## Phase 1 Review Results Summary
@@ -249,7 +313,7 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews/summary.md
 
 ## Target
 
-- Type: {review_type} / {target_type}, Target: {target}
+- Type: {review_type}, Directory: {dir_name}
 
 ## Findings by Phase
 

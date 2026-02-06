@@ -36,8 +36,6 @@ echo "* Created .i9wa4/ directory"
 # Create template file
 cat >.i9wa4/temp.md <<'EOF'
 # temp
-
-/orchestrator
 EOF
 
 # Trust mise.toml if exists
@@ -48,21 +46,21 @@ fi
 
 # Repository-specific setup
 case "${repo_name}" in
-# Example: frontend project
-"my-frontend-app")
-  npm ci
-  echo "* Installed npm dependencies"
-  ;;
-# Example: backend project with .env
-"my-backend-api")
-  if [[ -f "${main_repo}/.env" ]] && [[ ! -f .env ]]; then
-    cp "${main_repo}/.env" .env
-    echo "* Copied .env from main repository"
-  fi
-  ;;
-*)
-  # No repository-specific setup
-  ;;
+  # Example: frontend project
+  "my-frontend-app")
+    npm ci
+    echo "* Installed npm dependencies"
+    ;;
+  # Example: backend project with .env
+  "my-backend-api")
+    if [[ -f "${main_repo}/.env" ]] && [[ ! -f .env ]]; then
+      cp "${main_repo}/.env" .env
+      echo "* Copied .env from main repository"
+    fi
+    ;;
+  *)
+    # No repository-specific setup
+    ;;
 esac
 
 # Reset .mcp.json

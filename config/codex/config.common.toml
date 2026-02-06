@@ -13,7 +13,7 @@ enabled = false
 [features]
 collab = true
 skills = true
-web_search_request = true
+web_search = true
 
 # [mcp_servers.aws_documentation]
 # command = "uvx"

@@ -257,7 +257,7 @@ command! CreateLocalVimrc
 "
 augroup MyVimrc
   autocmd!
-  " https://github.com/vim/vim/issues/5571
+  " `https://github.com/vim/vim/issues/5571`
   autocmd StdinReadPost * set nomodified
   autocmd BufEnter * call s:set_register()
 augroup END

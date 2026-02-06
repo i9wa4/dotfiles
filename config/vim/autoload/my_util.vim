@@ -155,7 +155,7 @@ let s:last_loaded_local_vimrc_path = ''
 
 function! my_util#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
-  " https://github.com/vim-jp/issues/issues/1176
+  " `https://github.com/vim-jp/issues/issues/1176`
   let l:vimrc_path_list = []
   for l:i in reverse(findfile('local.vim', escape(a:path, ' ') . ';', -1))
     call add(l:vimrc_path_list, l:i->expand()->fnamemodify(':p'))

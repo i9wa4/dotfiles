@@ -54,13 +54,17 @@ git remote -v           # Remote check
 
 Applies to: Issues, PRs, commit messages, and all GitHub-posted text.
 
-- NEVER: Include paths in external repo URLs (triggers notifications)
-  - NG: `https://github.com/owner/repo/issues/123`
-  - NG: `https://github.com/owner/repo/pull/456`
-  - NG: `https://github.com/owner/repo/discussions/789`
 - NEVER: Use `owner/repo#123` format (triggers notifications)
-- YOU MUST: Use these formats for external repo references
-  - Repository root URL only (e.g., `https://github.com/nix-darwin/nix-darwin`)
+- NEVER: Include bare external issue/PR/discussion URLs without backticks
+  in GitHub-posted text (Issues, PRs, commit messages)
+  - NG: `https://github.com/owner/repo/issues/123` (bare, triggers mention)
+  - NG: `https://github.com/owner/repo/pull/456` (bare, triggers mention)
+  - NG: `https://github.com/owner/repo/discussions/789` (bare, triggers mention)
+- OK: External URLs that do NOT trigger mentions (no escaping needed)
+  - `https://github.com/owner/repo` (root URL)
+  - `https://github.com/owner/repo/blob/...` (file link)
+  - `https://github.com/owner/repo/tree/...` (directory link)
+- YOU MUST: For issue/PR/discussion references, use these safe formats
   - `cf. <repo-name> issue <number>` (e.g., `cf. nix-darwin issue 149`)
   - Wrap in backticks (e.g., `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
 

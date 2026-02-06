@@ -3,11 +3,15 @@
 # Detect external GitHub URLs that may trigger mentions.
 #
 # Blocked (external owner):
-#   - https://github.com/<owner>/<repo>/<any-path> (owner != i9wa4)
-#   - <owner>/<repo>#<number> (owner != i9wa4)
+#   - https://github.com/<owner>/<repo>/issues/<N> (triggers mention)
+#   - https://github.com/<owner>/<repo>/pull/<N> (triggers mention)
+#   - https://github.com/<owner>/<repo>/discussions/<N> (triggers mention)
+#   - <owner>/<repo>#<number> (triggers mention)
 #
 # Allowed:
-#   - https://github.com/<owner>/<repo> (root URL only, no trailing path)
+#   - https://github.com/<owner>/<repo> (root URL, no mention)
+#   - https://github.com/<owner>/<repo>/blob/... (no mention)
+#   - https://github.com/<owner>/<repo>/tree/... (no mention)
 #   - URLs in backticks: `https://github.com/...`
 #   - Own repository (i9wa4) URLs
 
@@ -32,8 +36,8 @@ while IFS= read -r line; do
   # shellcheck disable=SC2001,SC2016
   cleaned_line=$(echo "$line" | sed 's/`[^`]*`//g')
 
-  # Check for external GitHub URLs with path: https://github.com/<owner>/<repo>/<path>
-  if echo "$cleaned_line" | grep -qE "https://github\.com/[^/]+/[^/]+/[^ ]*"; then
+  # Check for external GitHub URLs that trigger mentions: issues, pull, discussions
+  if echo "$cleaned_line" | grep -qE "https://github\.com/[^/]+/[^/]+/(issues|pull|discussions)/[^ ]*"; then
     url_owner=$(echo "$cleaned_line" | grep -oE "https://github\.com/[^/]+" | sed 's|https://github.com/||' | head -1)
     if [[ -n $url_owner && $url_owner != "$OWNER" ]]; then
       echo "ERROR: External GitHub URL with path detected (may trigger mention):" >&2

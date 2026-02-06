@@ -26,6 +26,13 @@ tmux send-keys -t %N "command" Enter
 - `"command"`: Command to execute in the target pane
 - `Enter`: Simulate pressing Enter key to execute the command
 
+IMPORTANT: `"command"` and `Enter` MUST be on the same line.
+If separated by a newline, the newline is treated as premature Enter.
+
+IMPORTANT: When sending multiple commands consecutively,
+always add `sleep 1` between each send-keys call.
+Without the delay, commands may be dropped or concatenated.
+
 ### 1.2. Capture Output from Another Pane
 
 ```bash
@@ -85,9 +92,11 @@ tmux capture-pane -t %33 -p | tail -30
 ### 2.3. Parallel Task Execution
 
 ```bash
-# Start multiple tasks in different panes
+# Start multiple tasks in different panes (sleep 1 between each)
 tmux send-keys -t %33 "task1" Enter
+sleep 1
 tmux send-keys -t %34 "task2" Enter
+sleep 1
 tmux send-keys -t %35 "task3" Enter
 
 # Check all panes
@@ -100,6 +109,7 @@ tmux capture-pane -t %35 -p | tail -10
 
 ### 3.1. Timing Considerations
 
+- YOU MUST: Add `sleep 1` between consecutive send-keys calls
 - Add `sleep` between send-keys and capture-pane for commands that take time
 - Adjust sleep duration based on expected command execution time
 - For long-running commands, use multiple capture-pane calls with intervals

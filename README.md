@@ -98,7 +98,7 @@ sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
-cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
+cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
 
 ### 4.2. Install Homebrew
 
