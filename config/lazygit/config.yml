@@ -1,5 +1,7 @@
 # lazygit configuration
 # cf. https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+gui:
+  scrollHeight: 15
 customCommands:
   - key: "<c-g>"
     description: "Switch repository (ghq)"
