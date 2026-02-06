@@ -3,8 +3,7 @@
 !CLAUDE.md
 !agents/
 !agents/**
-!rules/
-!rules/**
+!rules
 !scripts/
 !scripts/**
 !settings.json
