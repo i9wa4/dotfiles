@@ -366,11 +366,12 @@ def main():
     input_no_changes = []
     nixpkgs_current_rev = None
     nixpkgs_target_rev = None
+    max_name_len = max(len(name) for name in input_names) if input_names else 0
 
     for name in sorted(input_names):
         info = get_input_info(lock, name)
         if not info:
-            print(f"  {name}: (skipped - not a github input)")
+            print(f"  {name + ':':<{max_name_len + 1}}  (skipped - not a github input)")
             continue
 
         owner = info["owner"]
@@ -380,17 +381,19 @@ def main():
 
         latest = get_latest_commit(owner, repo, info["ref"])
         if not latest:
-            print(f"  {name}: (failed to fetch latest)")
+            print(f"  {name + ':':<{max_name_len + 1}}  (failed to fetch latest)")
             continue
 
         latest_rev = latest["rev"]
         latest_date = latest["date"][:10] if latest["date"] else "unknown"
 
         if current_rev == latest_rev:
-            print(f"  {name}: {current_date} (up to date)")
+            print(f"  {name + ':':<{max_name_len + 1}}  {current_date}  (up to date)")
             input_no_changes.append({"name": name, "date": current_date})
         else:
-            print(f"  {name}: {current_date} -> {latest_date}")
+            print(
+                f"  {name + ':':<{max_name_len + 1}}  {current_date}  ->  {latest_date}"
+            )
             input_changes.append(
                 {
                     "name": name,
