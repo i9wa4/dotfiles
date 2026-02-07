@@ -128,8 +128,7 @@ in {
     file = {
       # .claude/skills is managed by agent-skills.nix
       # .codex/skills is managed by agent-skills.nix
-      ".codex/AGENTS.md".source = symlink "${dotfilesDir}/config/codex/AGENTS.md";
-      ".codex/config.common.toml".source = symlink "${dotfilesDir}/config/codex/config.common.toml";
+      # .codex is symlinked to config/codex via xdg.configFile or manual setup
       # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
     };

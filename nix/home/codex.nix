@@ -1,41 +1,4 @@
 # Codex CLI configuration module
-# Generates config.toml from config.common.toml + trusted projects
-{
-  pkgs,
-  lib,
-  username,
-  ...
-}: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
-  ghqRoot = "${homeDir}/ghq";
-  codexSrcDir = "${ghqRoot}/github.com/i9wa4/dotfiles/config/codex";
-  codexDestDir = "${homeDir}/.codex";
-in {
-  home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    echo "Generating Codex CLI config..."
-    _common="${codexSrcDir}/config.common.toml"
-    _output="${codexDestDir}/config.toml"
-
-    mkdir -p "${codexDestDir}"
-
-    if [ -f "$_common" ]; then
-      cp -f "$_common" "$_output"
-
-      ${pkgs.fd}/bin/fd --type d --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 4 2>/dev/null |
-        sort |
-        while read -r gitdir; do
-          repo=$(dirname "$gitdir")
-          echo ""
-          echo "[projects.\"$repo/\"]"
-          echo "trust_level = \"trusted\""
-        done >> "$_output"
-
-      echo "Generated: $_output"
-    else
-      echo "Warning: $_common not found"
-    fi
-  '';
-}
+# config.toml is managed as a real file in config/codex/
+# ~/.codex should be symlinked to config/codex/
+{_}: {}
