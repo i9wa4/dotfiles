@@ -133,14 +133,9 @@ in {
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
 
       # ~/.claude/ fallback symlinks (CLAUDE_CONFIG_DIR is sometimes ignored)
-      # cf. https://github.com/i9wa4/dotfiles/issues/100
       ".claude/CLAUDE.md".source = symlink "${dotfilesDir}/config/claude/CLAUDE.md";
-      ".claude/settings.json".source = symlink "${dotfilesDir}/config/claude/settings.json";
       ".claude/rules".source = symlink "${dotfilesDir}/config/agents/rules";
-      ".claude/agents".source = symlink "${dotfilesDir}/config/claude/agents";
-      ".claude/scripts".source = symlink "${dotfilesDir}/config/claude/scripts";
-      ".claude/plugins".source = symlink "${dotfilesDir}/config/claude/plugins";
-      ".claude/projects".source = symlink "${dotfilesDir}/config/claude/projects";
+      ".claude/settings.json".source = symlink "${dotfilesDir}/config/claude/settings.json";
     };
   };
 
