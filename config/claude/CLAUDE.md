@@ -65,18 +65,24 @@ When you receive a notification from postman:
 
 ### 7.2. Sending Messages
 
-1. Create message in `.postman/draft/`
-   - Filename: `{timestamp}-from-{your-role}-to-{recipient}.md`
-2. Move to post: `mv .postman/draft/{file} .postman/post/`
+NEVER create draft manually. Use the create-draft command:
+
+1. Run: `{reply_command}` (provided in postman notification)
+2. Edit the draft content
+3. Move from draft/ to post/:
+   `mv .postman/{context_id}/draft/{file} .postman/{context_id}/post/`
+
+NOTE: Exact paths are provided in each postman notification.
 
 ### 7.3. Receiving Messages
 
-1. Read from `.postman/inbox/{your-role}/`
+1. Read from `.postman/{context_id}/inbox/{your-role}/`
 2. After processing, move to read/:
-   `mv .postman/inbox/{your-role}/{file} .postman/read/`
+   `mv .postman/{context_id}/inbox/{your-role}/{file} .postman/{context_id}/read/`
 
 NOTE: Postman will notify you when new messages arrive.
 You do NOT need to poll the inbox directory.
+Exact paths (including context_id) are provided in each notification.
 
 ### 7.4. Message Format
 

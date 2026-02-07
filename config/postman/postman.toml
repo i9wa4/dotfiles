@@ -68,7 +68,7 @@ $(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
 """
 
 # Reply instruction (used in templates)
-reply_command = "~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman create-draft --to <recipient>"
+reply_command = "~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman create-draft --context-id {context_id} --to <recipient>"
 
 # Notification template (when new message arrives)
 notification_template = """
@@ -84,7 +84,7 @@ notification_template = """
 After reading, move from inbox/ to read/
 
 - File: {filename}
-- inbox path: {session_dir}/inbox/
+- inbox path: {inbox_path}
 - read path: {session_dir}/read/
 
 ## Reply (if needed)
@@ -93,7 +93,7 @@ NEVER create draft manually. Always:
 
 1. {reply_command}
 2. Edit content
-3. mv draft/ to post/
+3. mv from draft/ to post/
   - draft path: {session_dir}/draft/
   - post path: {session_dir}/post/
 <!-- end of message -->
@@ -113,7 +113,7 @@ ping_template = """
 After reading, move from inbox/ to read/
 
 - File: {filename}
-- inbox path: {session_dir}/inbox/
+- inbox path: {inbox_path}
 - read path: {session_dir}/read/
 
 ## Reply
@@ -122,7 +122,7 @@ You MUST reply with PONG to confirm you are active.
 
 1. {reply_command}
 2. Edit content
-3. mv draft/ to post/
+3. mv from draft/ to post/
   - draft path: {session_dir}/draft/
   - post path: {session_dir}/post/
 <!-- end of message -->
