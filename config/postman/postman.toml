@@ -52,7 +52,8 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "watchdog -- concierge -- orchestrator -- worker",
+  "watchdog -- concierge -- orchestrator",
+  "orchestrator -- worker",
   "orchestrator -- observer-a-leader",
   "orchestrator -- observer-b-leader",
   "observer-a-leader -- observer-claude-1",
