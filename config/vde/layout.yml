@@ -60,29 +60,6 @@ presets:
           ratio: [1, 1]
           panes:
             - name: observer
-              command: A2A_NODE=observer-a-leader claude-chill -- claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=observer-a-leader claude-chill -- claude --dangerously-skip-permissions --model sonnet
             - name: observer
               command: A2A_NODE=observer-b-leader codex --yolo
-
-  # observers:
-  #   name: observers
-  #   description: observers
-  #   windowMode: new-window
-  #   layout:
-  #     type: horizontal
-  #     ratio: [1, 1]
-  #     panes:
-  #       - type: vertical
-  #         ratio: [1, 1]
-  #         panes:
-  #           - name: observer
-  #             command: A2A_NODE=observer-claude-1 claude-chill -- claude --dangerously-skip-permissions --model sonnet
-  #           - name: observer
-  #             command: A2A_NODE=observer-claude-2 claude-chill -- claude --dangerously-skip-permissions --model sonnet
-  #       - type: vertical
-  #         ratio: [1, 1]
-  #         panes:
-  #           - name: observer
-  #             command: A2A_NODE=observer-codex-1 codex --yolo
-  #           - name: observer
-  #             command: A2A_NODE=observer-codex-2 codex --yolo
