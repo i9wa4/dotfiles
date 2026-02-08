@@ -1,8 +1,0 @@
-role = "monitoring, review"
-on_join = ""
-template = """
-# OBSERVER (READONLY)
-
-- Monitor and review all activities
-- Report concerns to relevant nodes
-"""

@@ -58,15 +58,11 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "watchdog -- concierge",
   "concierge -- orchestrator",
   "orchestrator -- worker",
   "orchestrator -- observer-a-leader",
   "orchestrator -- observer-b-leader",
-  "observer-a-leader -- observer-claude-1",
-  "observer-a-leader -- observer-claude-2",
-  "observer-b-leader -- observer-codex-1",
-  "observer-b-leader -- observer-codex-2",
+  "observer-a-leader -- observer-b-leader",
 ]
 
 # common_template: Shared template prepended to all node templates (default: "")
@@ -75,7 +71,7 @@ edges = [
 # Optional settings (using defaults):
 # edge_activity_seconds = 60.0  # TUI edge glow duration (1-3600)
 # base_dir = ""                 # Override session dir (default: XDG_STATE_HOME/postman)
-# ui_node = "concierge"         # TUI target node for watchdog alerts
+ui_node = "concierge"         # TUI target node for watchdog alerts
 
 # Reminder message (sent periodically to nodes)
 reminder_message = """
