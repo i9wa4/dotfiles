@@ -420,6 +420,8 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] AWS icons are latest version (mxgraph.aws4.\*)
 - [ ] No unnecessary elements remaining
 - [ ] **Visually verified PNG conversion using Read tool**
+- [ ] Padding modifications visually confirmed in PNG (XML values alone are insufficient)
+- [ ] Child elements within container positioned symmetrically relative to parent's center axis
 
 ## 10. Visual Quality Review Workflow
 
