@@ -1,13 +1,11 @@
-# Treefmt configuration (unified formatter)
-# This module is imported by flake.nix via flake-parts
+# Treefmt configuration (dotfiles-specific formatters)
+# This module extends treefmt-base.nix with dotfiles-specific formatters
+# Base configuration (projectRootFile, common excludes) is in treefmt-base.nix
 # Run: nix fmt
 {
   perSystem = {pkgs, ...}: {
     treefmt = {
-      # Required: identifies project root
-      projectRootFile = "flake.nix";
-
-      # === Formatters ===
+      # === Formatters (dotfiles-specific) ===
       programs = {
         # Nix
         alejandra.enable = true;
@@ -46,11 +44,8 @@
         includes = ["*.sql"];
       };
 
-      # Exclude patterns
+      # Dotfiles-specific exclude patterns (common patterns in treefmt-base.nix)
       settings.global.excludes = [
-        ".direnv"
-        ".git"
-        "*.lock"
         "config/zsh/*" # zsh files have special formatting
       ];
     };

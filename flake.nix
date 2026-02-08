@@ -61,11 +61,24 @@
       imports = [
         git-hooks.flakeModule
         treefmt-nix.flakeModule
+        # Common modules (shared across repositories)
+        ./nix/flake-modules/pre-commit-base.nix
+        ./nix/flake-modules/treefmt-base.nix
+        # Dotfiles-specific modules
         ./nix/flake-parts/pre-commit.nix
         ./nix/flake-parts/treefmt.nix
         ./nix/flake-parts/darwin.nix
         ./nix/flake-parts/home.nix
       ];
+
+      # Top-level flake outputs
+      flake = {
+        # Export common modules for other repositories
+        flakeModules = {
+          pre-commit-base = ./nix/flake-modules/pre-commit-base.nix;
+          treefmt-base = ./nix/flake-modules/treefmt-base.nix;
+        };
+      };
 
       # Per-system outputs (devShells, etc.)
       perSystem = {
