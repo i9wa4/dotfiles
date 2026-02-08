@@ -128,6 +128,14 @@ Separate complex systems into staged diagrams:
 
 Include title, description, last updated, author, and version in diagrams.
 
+### 6.6. One Concept Per Diagram
+
+- Avoid cramming multiple concepts into a single diagram
+- Split complex diagrams into focused, single-concept diagrams
+- Each diagram should communicate one clear message
+- Example: Instead of "Session + Window + Pane navigation" in one diagram,
+  create "Session/Window navigation" and "Pane navigation" separately
+
 ## 7. Best Practices
 
 ### 7.1. Background Color
@@ -150,6 +158,8 @@ Include title, description, last updated, author, and version in diagrams.
 ```
 
 ### 7.4. Arrow Placement
+
+For structural/connection arrows (e.g., flowcharts, ER diagrams):
 
 - Always place arrows at back (position in XML right after Title)
 - Position arrows to avoid overlapping with labels
@@ -251,6 +261,123 @@ Good example (sufficient margin):
 </mxCell>
 ```
 
+### 7.10. Canvas Size and Target Display Width
+
+- YOU MUST: Consider the target display width before setting canvas size
+- For Zenn articles: body text width is approximately 700px
+  - Recommended canvas width: 800px or less
+  - Large canvas (3000px+) gets scaled down, making fonts unreadable
+- For presentation slides: use 1920x1080
+- Match canvas size to final display context to ensure readability
+
+### 7.11. Arrow Size and Element Spacing
+
+When using bidirectional arrows (`<-->`):
+
+- Short distance between elements causes arrowheads to overlap,
+  creating a star/diamond shape (`><`) instead of proper arrows
+- YOU MUST: Ensure element spacing is sufficient for arrow length
+  - Minimum 80-100px spacing recommended for badge-style elements
+  - Reduce arrowhead size (`endSize`, `startSize`) to 3-6 for structure diagrams
+  - Use `strokeWidth` 2-3 for auxiliary/structure diagram arrows
+- YOU MUST: Visually verify arrow appearance in PNG output
+
+### 7.12. Bidirectional Arrow Configuration
+
+To create proper `<-->` arrows (not `><`):
+
+- YOU MUST: Set both `startArrow=classic` and `endArrow=classic`
+- YOU MUST: Set both `startFill=1` and `endFill=1`
+- Verify arrow direction: arrows should point outward, not inward
+- Example:
+
+  ```xml
+  <mxCell style="startArrow=classic;endArrow=classic;html=1;strokeWidth=5;
+                 strokeColor=#FF6F00;startSize=6;endSize=6;
+                 startFill=1;endFill=1;" edge="1" parent="1">
+    <mxGeometry relative="1" as="geometry">
+      <mxPoint x="100" y="200" as="sourcePoint" />
+      <mxPoint x="300" y="200" as="targetPoint" />
+    </mxGeometry>
+  </mxCell>
+  ```
+
+### 7.13. Font Size and Canvas Scaling
+
+When increasing font size:
+
+- YOU MUST: Scale canvas and elements proportionally
+- Increasing only font size causes text overflow
+- Calculate proportional scaling:
+  - Font 16pt → 24pt (1.5x): scale canvas and elements by 1.5x
+  - Font 20pt → 30pt (1.5x): scale canvas and elements by 1.5x
+- Example: Canvas 800x600 with 16pt font → Canvas 1200x900 with 24pt font
+
+### 7.14. Symmetry, Arrow Consistency, and Z-Order
+
+#### 7.14.1. Symmetry Principle
+
+When placing badges or arrows with similar roles:
+
+- YOU MUST: Align positions and sizes symmetrically
+- Example: M-Up/M-Down badges should share the same X coordinate,
+  positioned vertically (M-Up above, M-Down below)
+- Example: S-Left/S-Right badges should share the same Y coordinates,
+  positioned horizontally
+- Symmetry enhances visual clarity and intuitive understanding
+
+#### 7.14.2. Arrow Length Uniformity
+
+Within a single diagram:
+
+- YOU MUST: Standardize all arrow lengths to the same value
+- NEVER: Mix short and long arrows (e.g., one 15px, another 35px)
+- Example: If one arrow is 20px, all arrows should be 20px
+- Consistent arrow length improves diagram balance and professionalism
+
+#### 7.14.3. Z-Order Management
+
+For badge-associated directional arrows (e.g., navigation diagrams):
+
+Arrows should always be on the topmost layer:
+
+- YOU MUST: Place arrow mxCell elements after badges and structure elements in XML
+- This ensures arrows render on top and are not hidden behind other elements
+- In draw.io XML, rendering order follows document order (later = front)
+- NEVER: Place arrows before badges/boxes in XML structure
+
+Example XML ordering:
+
+```xml
+<!-- 1. Background/structure elements first -->
+<mxCell id="session" ...>
+<!-- 2. Badges second -->
+<mxCell id="badge_m_up" ...>
+<!-- 3. Arrows last (will render on top) -->
+<mxCell id="arrow_m_up" ...>
+```
+
+### 7.15. Parent Container Internal Symmetry
+
+When placing elements inside parent containers (e.g., badges inside session boxes):
+
+- YOU MUST: Maintain vertical symmetry (top margin = bottom margin)
+- YOU MUST: Align elements on the container's horizontal centerline
+- Example: For a container with x=150, w=400 (center x=350), place a 70px-wide badge at x=315 (350 - 35)
+- Calculation: Container height = 2M + (element heights) + (spacing between elements)
+  - M = top/bottom margin (should be equal for symmetry)
+  - Example: For 2 badges (30px each) with 20px spacing: height = 2M + 60 + 20 = 2M + 80
+- Symmetry applies to all internal elements within parent containers, not just badges
+
+### 7.16. Label Text Padding
+
+Label text should not be placed directly against box edges:
+
+- YOU MUST: Add `spacingLeft` and `spacingTop` attributes to box styles for padding (5-10px recommended)
+- Example: `style="...;spacingLeft=8;spacingTop=8;"`
+- Applies to all container boxes (sessions, windows, panes)
+- Improves readability and visual breathing room
+
 ## 8. Reference
 
 - [Color Palette](references/color-palette.md) - auto-updatable
@@ -269,16 +396,30 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 
 - [ ] No background color set (page="0")
 - [ ] Font size appropriate (larger recommended)
+- [ ] Canvas size matches target display width (800px or less for Zenn)
+- [ ] Font size and canvas scaled proportionally
+- [ ] Diagram follows "one concept per diagram" principle
 - [ ] Arrows placed at back layer
 - [ ] Arrows not overlapping labels (verify in PNG)
 - [ ] Arrow start/end sufficiently distant from labels (at least 20px)
+- [ ] Bidirectional arrows configured correctly (startArrow, endArrow, startFill, endFill)
+- [ ] Arrows appear as `<-->` not `><` (verify in PNG)
+- [ ] Arrow size appropriate for element spacing (endSize/startSize 3-6 recommended)
 - [ ] Arrows not penetrating boxes or icons (verify in PNG)
+- [ ] All arrows have uniform length within a diagram (verify in PNG)
+- [ ] Badges/arrows with similar roles are positioned symmetrically (verify in PNG)
+- [ ] Arrows placed last in XML (z-order: topmost layer)
 - [ ] Internal elements not overflowing background frame (verify in PNG)
 - [ ] 30px+ margin between background frame and internal elements
+- [ ] Parent container internal symmetry (top margin = bottom margin)
+- [ ] Elements aligned on parent container's horizontal centerline
+- [ ] Label text padding set (spacingLeft/spacingTop 5-10px)
+- [ ] Text not truncated or cut off at edges (verify in PNG)
+- [ ] Reference images (if any) actually viewed and understood
 - [ ] AWS service names are official names/correct abbreviations
 - [ ] AWS icons are latest version (mxgraph.aws4.\*)
 - [ ] No unnecessary elements remaining
-- [ ] Visually verified PNG conversion
+- [ ] **Visually verified PNG conversion using Read tool**
 
 ## 10. Visual Quality Review Workflow
 
@@ -290,15 +431,27 @@ After creating or editing a `.drawio` file, run this review loop:
    drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
    ```
 
-2. Read the PNG with the Read tool (Claude can view images)
+2. **CRITICAL**: Read the PNG with the Read tool (Claude can view images)
+   - NEVER claim "no overlaps" or "no issues" based solely on XML coordinate values
+   - XML geometry does not account for actual font rendering size
+   - ALWAYS verify visually using the Read tool before reporting completion
+
 3. Check against the checklist in section 9
 4. If issues found, fix the `.drawio` XML and repeat from step 1
+
+**When reference images exist:**
+
+- YOU MUST: Actually view reference images using Read tool or WebFetch
+- NEVER guess or infer design from descriptions alone
+- If unable to view reference: report honestly, do not pretend
 
 Key items to verify visually:
 
 - Elements not overflowing background frames
 - Arrows not penetrating boxes or overlapping labels
+- Arrows appearing as proper `<-->` (not star/diamond `><` shapes)
 - Text not truncated or line-breaking unexpectedly
+- Text fully visible (no cutoff characters at edges)
 - Color palette consistent with references/color-palette.md
 - Sufficient whitespace between elements
 
