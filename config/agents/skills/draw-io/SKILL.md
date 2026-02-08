@@ -136,6 +136,22 @@ Include title, description, last updated, author, and version in diagrams.
 - Example: Instead of "Session + Window + Pane navigation" in one diagram,
   create "Session/Window navigation" and "Pane navigation" separately
 
+### 6.7. Related Diagram Set Consistency
+
+For multiple diagrams within the same article or presentation:
+
+- YOU MUST: Use identical canvas width across all related diagrams
+- YOU MUST: Use the same color for the same concept across diagrams
+  (e.g., 'Session' always uses the same fillColor/strokeColor)
+- YOU MUST: Use the same font family and size across all related diagrams
+- YOU MUST: Use the same stroke width for the same type of border
+
+Work procedure:
+
+1. Define diagram set specification before creating any diagram
+2. Create each diagram following the specification
+3. After completion, display all diagrams side-by-side and verify consistency
+
 ## 7. Best Practices
 
 ### 7.1. Background Color
@@ -175,6 +191,9 @@ For structural/connection arrows (e.g., flowcharts, ER diagrams):
 <!-- Other elements (front layer) -->
 <mxCell id="box1" .../>
 ```
+
+NOTE: For badge-associated arrows (navigation diagrams),
+see Section 7.14.3 for different z-order requirements.
 
 ### 7.5. Arrow Connection to Text Labels
 
@@ -326,6 +345,14 @@ When placing badges or arrows with similar roles:
   positioned horizontally
 - Symmetry enhances visual clarity and intuitive understanding
 
+Symmetry verification steps:
+
+1. Calculate centerline: `(element1.x + element1.width/2 + element2.x + element2.width/2) / 2`
+2. Dimension match: symmetric pairs must have identical width and height
+3. Verify distances: `|element1.center - centerline| == |element2.center - centerline|`
+4. For vertical symmetry, apply the same calculation to Y coordinates
+5. Record calculations if complex
+
 #### 7.14.2. Arrow Length Uniformity
 
 Within a single diagram:
@@ -357,6 +384,9 @@ Example XML ordering:
 <mxCell id="arrow_m_up" ...>
 ```
 
+NOTE: For structural arrows (flowcharts, ER diagrams),
+see Section 7.4 for back-layer placement requirements.
+
 ### 7.15. Parent Container Internal Symmetry
 
 When placing elements inside parent containers (e.g., badges inside session boxes):
@@ -378,6 +408,40 @@ Label text should not be placed directly against box edges:
 - Applies to all container boxes (sessions, windows, panes)
 - Improves readability and visual breathing room
 
+Usage-specific spacingTop recommendations:
+
+- Container with top-aligned label and child elements: 20px (allows label + child clearance, see 7.17)
+- Container with label only (no children): 8-10px (standard padding)
+- Compact UI elements (badges, buttons): 5-8px (minimal padding)
+
+### 7.17. Parent Container Label Clearance
+
+When parent containers display labels (align=left/right, verticalAlign=top):
+
+- YOU MUST: Calculate first child Y coordinate as:
+  `parent.y + spacingTop + fontSize + 10`
+- YOU MUST: Verify child elements do not overlap with parent label
+- YOU MUST: For nested containers, apply this rule recursively
+
+NOTE: For fontSize >= 24px, use fontSize \* 1.5 instead of fontSize
+to account for line-height rendering.
+
+NOTE: If fontSize is not specified in the style, assume default 12px.
+
+Examples:
+
+```xml
+<!-- Parent: spacingTop=20, fontSize=12 -->
+<mxCell id="container" value="Container Label" style="...;spacingTop=20;fontSize=12;..." ...>
+  <mxGeometry x="100" y="100" width="400" height="200" as="geometry"/>
+</mxCell>
+
+<!-- Child Y must be >= 100 + 20 + 12 + 10 = 142 -->
+<mxCell id="child" value="..." ...>
+  <mxGeometry x="110" y="150" width="100" height="50" as="geometry"/>
+</mxCell>
+```
+
 ## 8. Reference
 
 - [Color Palette](references/color-palette.md) - auto-updatable
@@ -394,12 +458,33 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 
 ## 9. Checklist
 
+### 9.1. Phase 0: Design
+
+- [ ] Diagram follows "one concept per diagram" principle
+- [ ] Reference images (if any) actually viewed and understood
+- [ ] For diagram sets: specification defined (canvas size, colors, fonts, stroke width)
+
+### 9.2. Phase 1: Layout Calculation
+
+- [ ] Parent container sizes calculated
+- [ ] Child element clearance calculated (see 7.17)
+- [ ] Symmetric placement coordinates calculated (see 7.14.1)
+- [ ] Arrow z-order determined (structural → 7.4, badge-associated → 7.14.3)
+
+### 9.3. Phase 2: Implementation
+
 - [ ] No background color set (page="0")
 - [ ] Font size appropriate (larger recommended)
 - [ ] Canvas size matches target display width (800px or less for Zenn)
 - [ ] Font size and canvas scaled proportionally
-- [ ] Diagram follows "one concept per diagram" principle
-- [ ] Arrows placed at back layer
+- [ ] Arrows placed in correct z-order (verify in XML)
+- [ ] Label text padding set (spacingLeft/spacingTop, see 7.16)
+- [ ] AWS service names are official names/correct abbreviations
+- [ ] AWS icons are latest version (mxgraph.aws4.\*)
+- [ ] No unnecessary elements remaining
+
+### 9.4. Phase 3: Verification (PNG Review)
+
 - [ ] Arrows not overlapping labels (verify in PNG)
 - [ ] Arrow start/end sufficiently distant from labels (at least 20px)
 - [ ] Bidirectional arrows configured correctly (startArrow, endArrow, startFill, endFill)
@@ -408,22 +493,45 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] Arrows not penetrating boxes or icons (verify in PNG)
 - [ ] All arrows have uniform length within a diagram (verify in PNG)
 - [ ] Badges/arrows with similar roles are positioned symmetrically (verify in PNG)
-- [ ] Arrows placed last in XML (z-order: topmost layer)
 - [ ] Internal elements not overflowing background frame (verify in PNG)
 - [ ] 30px+ margin between background frame and internal elements
 - [ ] Parent container internal symmetry (top margin = bottom margin)
 - [ ] Elements aligned on parent container's horizontal centerline
-- [ ] Label text padding set (spacingLeft/spacingTop 5-10px)
 - [ ] Text not truncated or cut off at edges (verify in PNG)
-- [ ] Reference images (if any) actually viewed and understood
-- [ ] AWS service names are official names/correct abbreviations
-- [ ] AWS icons are latest version (mxgraph.aws4.\*)
-- [ ] No unnecessary elements remaining
-- [ ] **Visually verified PNG conversion using Read tool**
-- [ ] Padding modifications visually confirmed in PNG (XML values alone are insufficient)
-- [ ] Child elements within container positioned symmetrically relative to parent's center axis
+- [ ] For diagram sets: consistent colors/fonts/stroke width across all diagrams (side-by-side verification)
 
-## 10. Visual Quality Review Workflow
+## 10. Diagram Creation Workflow
+
+### 10.1. Phase 0: Design
+
+Before creating XML:
+
+1. Determine purpose and core message of each diagram
+2. Define diagram set specification (for related diagrams):
+   - Canvas size (see 7.10)
+   - Color palette mapping (see 6.7)
+   - Font family and size
+   - Badge/element dimensions
+3. Split complex concepts into separate diagrams (see 6.6)
+4. Rough sketch of element types and approximate placement
+
+### 10.2. Phase 1: Layout Calculation
+
+Before writing XML:
+
+1. Calculate parent container sizes
+2. Calculate child element clearance (see 7.17)
+3. Calculate symmetric placement coordinates (see 7.14.1)
+4. Determine arrow z-order (structural → 7.4, badge-associated → 7.14.3)
+5. Verify calculations against container boundaries
+
+### 10.3. Phase 2: Implementation
+
+1. Create XML following calculated coordinates
+2. Place elements in correct z-order
+3. Apply consistent styles from diagram set specification
+
+### 10.4. Phase 3: Verification
 
 After creating or editing a `.drawio` file, run this review loop:
 
@@ -456,6 +564,8 @@ Key items to verify visually:
 - Text fully visible (no cutoff characters at edges)
 - Color palette consistent with references/color-palette.md
 - Sufficient whitespace between elements
+- Related diagrams consistent in color and size (see 6.7)
+- Parent label and child elements not intersecting (see 7.17)
 
 ## 11. Self-Update Protocol
 
