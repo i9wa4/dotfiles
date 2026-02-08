@@ -90,6 +90,7 @@ in {
         pkgs.stylua
         pkgs.zizmor
         # Nix development
+        pkgs.comma
         pkgs.nurl
         # CI/CD
         pkgs.act
