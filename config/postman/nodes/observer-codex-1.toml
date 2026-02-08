@@ -1,3 +1,4 @@
+[observer-codex-1]
 role = "monitoring, review"
 on_join = ""
 template = """

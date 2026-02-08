@@ -1,3 +1,4 @@
+[worker]
 role = "implementation, consultation"
 on_join = ""
 template = """

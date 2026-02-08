@@ -1,3 +1,4 @@
+[orchestrator]
 role = "coordination, delegation"
 on_join = "I'm postman. You are the /orchestrator !"
 template = """
