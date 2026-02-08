@@ -128,9 +128,13 @@ After reading, move from inbox/ to read/
 ## Reply
 
 You MUST reply with PONG to confirm you are active.
+If you do not respond, you will be treated as DROPPED (inactive).
+
+Steps:
 
 1. {reply_command}
-2. Edit content
+   - Replace `<recipient>` with `postman`
+2. In the Content section, write only: PONG
 3. mv from draft/ to post/
   - draft path: {session_dir}/draft/
   - post path: {session_dir}/post/
