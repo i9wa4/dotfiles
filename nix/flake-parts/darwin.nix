@@ -1,7 +1,7 @@
 # Darwin configurations (macOS)
 # This module is imported by flake.nix via flake-parts
 {inputs, ...}: let
-  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay;
+  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay claude-chill;
 
   # Common overlays for all darwin configurations
   commonOverlays = [
@@ -9,6 +9,9 @@
     (vim-overlay.overlays.features {
       lua = true;
       python3 = true;
+    })
+    (final: _prev: {
+      claude-chill = claude-chill.packages.${final.system}.default;
     })
   ];
 

@@ -114,6 +114,8 @@ in {
         pkgs.cmake
         pkgs.gettext
         pkgs.gnumake
+        # AI coding agent tools
+        pkgs.claude-chill
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/hosts/<name>/casks.nix
         # NOTE: AI coding agents are managed via nix profile

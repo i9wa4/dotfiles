@@ -29,6 +29,11 @@
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
+    # AI coding agent PTY proxy (terminal rendering optimization)
+    claude-chill = {
+      url = "github:davidbeesley/claude-chill";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Agent skills declarative management
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";

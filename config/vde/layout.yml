@@ -22,10 +22,10 @@ presets:
       ratio: [1, 1]
       panes:
         - name: editor
-          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          command: vim
           focus: true
         - name: worker
-          command: claude --dangerously-skip-permissions --model opus
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
 
   concierge:
     name: orchestrator
@@ -36,11 +36,10 @@ presets:
       ratio: [1, 1]
       panes:
         - name: editor
-          command: vim -c "execute 'edit' '.i9wa4/temp.md'->expand()"
+          command: vim
           focus: true
         - name: concierge
-          # command: A2A_NODE=concierge claude --dangerously-skip-permissions --model haiku
-          command: A2A_NODE=concierge claude --dangerously-skip-permissions --model opus
+          command: A2A_NODE=concierge claude-chill -- claude --dangerously-skip-permissions --model sonnet
 
   orchestrator:
     name: workers
@@ -54,38 +53,36 @@ presets:
           ratio: [1, 1]
           panes:
             - name: orchestrator
-              command: A2A_NODE=orchestrator claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model opus
             - name: worker
-              command: A2A_NODE=worker claude --dangerously-skip-permissions --model sonnet
-            # - name: postman
-            #   command: uv run ~/ghq/github.com/i9wa4/dotfiles/bin/postman.py
+              command: A2A_NODE=worker claude-chill -- claude --dangerously-skip-permissions --model sonnet
         - type: vertical
           ratio: [1, 1]
           panes:
             - name: observer
-              command: A2A_NODE=observer-a-leader claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=observer-a-leader claude-chill -- claude --dangerously-skip-permissions --model opus
             - name: observer
               command: A2A_NODE=observer-b-leader codex --yolo
 
-  observers:
-    name: observers
-    description: observers
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: observer
-              command: A2A_NODE=observer-claude-1 claude --dangerously-skip-permissions --model sonnet
-            - name: observer
-              command: A2A_NODE=observer-claude-2 claude --dangerously-skip-permissions --model sonnet
-        - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: observer
-              command: A2A_NODE=observer-codex-1 codex --yolo
-            - name: observer
-              command: A2A_NODE=observer-codex-2 codex --yolo
+  # observers:
+  #   name: observers
+  #   description: observers
+  #   windowMode: new-window
+  #   layout:
+  #     type: horizontal
+  #     ratio: [1, 1]
+  #     panes:
+  #       - type: vertical
+  #         ratio: [1, 1]
+  #         panes:
+  #           - name: observer
+  #             command: A2A_NODE=observer-claude-1 claude-chill -- claude --dangerously-skip-permissions --model sonnet
+  #           - name: observer
+  #             command: A2A_NODE=observer-claude-2 claude-chill -- claude --dangerously-skip-permissions --model sonnet
+  #       - type: vertical
+  #         ratio: [1, 1]
+  #         panes:
+  #           - name: observer
+  #             command: A2A_NODE=observer-codex-1 codex --yolo
+  #           - name: observer
+  #             command: A2A_NODE=observer-codex-2 codex --yolo

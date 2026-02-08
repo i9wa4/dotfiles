@@ -1,7 +1,7 @@
 # Home Manager configurations (standalone, for Linux/WSL2)
 # This module is imported by flake.nix via flake-parts
 {inputs, ...}: let
-  inherit (inputs) nixpkgs home-manager neovim-nightly-overlay vim-overlay;
+  inherit (inputs) nixpkgs home-manager neovim-nightly-overlay vim-overlay claude-chill;
 
   # Common overlays for all home configurations
   commonOverlays = [
@@ -9,6 +9,9 @@
     (vim-overlay.overlays.features {
       lua = true;
       python3 = true;
+    })
+    (final: _prev: {
+      claude-chill = claude-chill.packages.${final.system}.default;
     })
   ];
 in {
