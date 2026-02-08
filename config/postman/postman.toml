@@ -15,7 +15,7 @@
 #   {template}       - Node's role template (from [node].template)
 #   {reply_command}  - Command to create draft message
 #   {context_id}     - Current session context ID
-#   {session_dir}    - Session directory path (e.g., .postman/session-xxx/)
+#   {session_dir}    - Session directory path
 #
 # ping_template:
 #   {context_id}     - Current session context ID
@@ -26,6 +26,7 @@
 #   {talks_to_line}  - Formatted list of nodes this node can communicate with
 #   {active_nodes}   - Comma-separated list of all active nodes
 #   {reply_command}  - Command to create draft message
+#   {session_dir}    - Session directory path
 #
 # digest_template:
 #   {digest_items}   - Formatted list of new messages
@@ -33,10 +34,15 @@
 # draft_template:
 #   {context_id}     - Current session context ID
 #   {task_id}        - Unique task identifier
-#   {msg_id}         - Alias for task_id (backward compatibility)
 #   {sender}         - Sender node name
 #   {recipient}      - Recipient node name
 #   {timestamp}      - ISO format timestamp
+#   {from}           - Alias for {sender} (backward compatibility)
+#   {to}             - Alias for {recipient} (backward compatibility)
+#
+# common_template:
+#   Shared template string prepended to all node templates.
+#   Applied in ping and notification contexts. Not applied to digest or draft.
 #
 # =============================================================================
 
@@ -52,7 +58,8 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "watchdog -- concierge -- orchestrator",
+  "watchdog -- concierge",
+  "concierge -- orchestrator",
   "orchestrator -- worker",
   "orchestrator -- observer-a-leader",
   "orchestrator -- observer-b-leader",
@@ -61,6 +68,14 @@ edges = [
   "observer-b-leader -- observer-codex-1",
   "observer-b-leader -- observer-codex-2",
 ]
+
+# common_template: Shared template prepended to all node templates (default: "")
+# common_template = ""
+
+# Optional settings (using defaults):
+# edge_activity_seconds = 60.0  # TUI edge glow duration (1-3600)
+# base_dir = ""                 # Override session dir (default: XDG_STATE_HOME/postman)
+# ui_node = "concierge"         # TUI target node for watchdog alerts
 
 # Reminder message (sent periodically to nodes)
 reminder_message = """
@@ -112,8 +127,6 @@ ping_template = """
 
 After reading, move from inbox/ to read/
 
-- File: {filename}
-- inbox path: {inbox_path}
 - read path: {session_dir}/read/
 
 ## Reply
@@ -155,16 +168,6 @@ params:
 """
 
 [watchdog]
-role = "monitoring, idle-detection"
-on_join = ""
-template = """
-# WATCHDOG (AUTONOMOUS)
-
-- Monitor pane activity and detect idle panes
-- Send reminders to orchestrator for idle panes
-- Capture pane content for debugging
-- Send heartbeat to indicate liveness
-"""
 enabled = true
 idle_threshold_seconds = 300.0  # 5 minutes
 cooldown_seconds = 600.0  # 10 minutes
@@ -231,7 +234,7 @@ When observers provide feedback, they should classify findings by severity:
 
 [observer-a-leader]
 role = "active-monitoring, proactive-review"
-subscribe_digest = true
+observes = ["orchestrator"]
 on_join = ""
 template = """
 # OBSERVER-LEADER (ACTIVE MONITORING)
@@ -272,7 +275,7 @@ template = """
 
 [observer-b-leader]
 role = "active-monitoring, proactive-review"
-subscribe_digest = true
+observes = ["orchestrator"]
 on_join = ""
 template = """
 # OBSERVER-LEADER (ACTIVE MONITORING)
