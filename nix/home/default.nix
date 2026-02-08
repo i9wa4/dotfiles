@@ -90,7 +90,7 @@ in {
         pkgs.stylua
         pkgs.zizmor
         # Nix development
-        pkgs.comma
+        # NOTE: comma is provided by nix-index-database module (programs.nix-index-database.comma.enable)
         pkgs.nurl
         # CI/CD
         pkgs.act

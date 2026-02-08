@@ -40,6 +40,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+    # Nix index database (prebuilt for comma)
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # External skill sources (non-flake)
     dbt-agent-skills = {
       url = "github:dbt-labs/dbt-agent-skills";

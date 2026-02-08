@@ -1,7 +1,7 @@
 # Darwin configurations (macOS)
 # This module is imported by flake.nix via flake-parts
 {inputs, ...}: let
-  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay claude-chill;
+  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay claude-chill nix-index-database;
 
   # Common overlays for all darwin configurations
   commonOverlays = [
@@ -40,6 +40,10 @@
         ../darwin
         ../hosts/${hostname}/darwin.nix
         home-manager.darwinModules.home-manager
+        nix-index-database.darwinModules.nix-index
+        {
+          programs.nix-index-database.comma.enable = true;
+        }
         brew-nix.darwinModules.default
         {
           # Allow unfree packages (e.g., terraform with BSL license)
