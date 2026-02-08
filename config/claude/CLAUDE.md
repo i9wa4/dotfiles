@@ -259,3 +259,22 @@ Helper scripts stored in the `scripts/` directory.
 | pre-compact-save.sh | PreCompact context save         | settings.json PreCompact   |
 | reload-claude-md.sh | Context reload after compaction | settings.json SessionStart |
 | touchfile.sh        | Standardized file creation      | CLAUDE.md, skills/\*       |
+
+### 11.5. Permission System
+
+Permission rules in settings.json control tool access.
+
+Key settings:
+
+- `defaultMode`: "plan" (analyze only) or "dontAsk" (auto-deny unless allowed)
+- `deny` rules: Block dangerous operations
+- `allow` rules: Pre-approve safe operations
+
+Rule evaluation order: **deny → ask → allow** (first match wins)
+
+Wildcard syntax:
+
+- `Bash(git push *)` - modern syntax (space before asterisk)
+- `Bash(git push:*)` - deprecated syntax (use space instead)
+
+詳細: config/agents/skills/claude-config-optimizer/SKILL.md Section 14

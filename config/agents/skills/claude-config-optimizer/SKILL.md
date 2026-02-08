@@ -108,12 +108,25 @@ Task tool with subagent_type: claude-code-guide
 
 ## 8. Optimization Checklist
 
+### 8.1. CLAUDE.md Review
+
 Check the following when editing CLAUDE.md:
 
 - [ ] Is the persona definition concise?
 - [ ] Are basic rules truly needed at all times?
 - [ ] Can detailed explanations be moved to rules/ or skills/?
-- [ ] Have reference links been moved to skills/?
+- [ ] Have reference links been moved to skills?
+
+### 8.2. Permission System Review
+
+Check settings.json permissions block:
+
+- [ ] Are deny rules using modern syntax `Bash(cmd *)` not deprecated `:*`?
+- [ ] Are critical commands blocked (git push, git rebase, git reset, rm, sudo)?
+- [ ] Is `git -C *` blocked to prevent cross-repo operations?
+- [ ] Is defaultMode appropriate ("plan" or "dontAsk")?
+- [ ] Are sensitive paths blocked (secrets, .env, .ssh, keys, tokens)?
+- [ ] Are allow rules necessary or can defaultMode handle it?
 
 ## 9. File Structure Maintenance
 
@@ -125,7 +138,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.31 (2026-02-04)
+Last reviewed Claude Code version: v2.1.37 (2026-02-09)
 
 ### 10.1. Applied Optimizations
 
@@ -139,10 +152,19 @@ Last reviewed Claude Code version: v2.1.31 (2026-02-04)
 - [x] `mcpToolSearch` setting - set to "auto:1"
 - [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
 - [x] `plansDirectory` setting - set to ".i9wa4/plans"
+- [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
+- [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
+- [x] Fast mode - available for Opus 4.6 (v2.1.36)
+- [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
+- [x] Automatic memory - enabled by default (v2.1.32)
 
 ### 10.2. Pending Considerations
 
 - [x] SQL schema validation - moved to databricks skill (Section 8)
+- [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
+- [ ] Agent memory frontmatter - `memory: user|project|local` for stateful
+      agents
+- [ ] Task(agent_type) restrictions - enhanced security for subagent spawning
 
 ### 10.3. Not Adopting
 
@@ -153,6 +175,14 @@ Last reviewed Claude Code version: v2.1.31 (2026-02-04)
 
 ### 10.4. Version Notes
 
+- v2.1.37: /fast immediately available after /extra-usage
+- v2.1.36: Fast mode for Opus 4.6
+- v2.1.34: **Sandbox bypass vulnerability fixed** (security), agent teams crash
+  fix
+- v2.1.33: TeammateIdle/TaskCompleted hooks, agent memory frontmatter,
+  Task(agent_type) restrictions, tmux agent sessions fix
+- v2.1.32: **Claude Opus 4.6 available**, automatic memory, agent teams research
+  preview, skills auto-load from --add-dir, Bash template literal fix
 - v2.1.31: PDF lock fix, sandbox error fix, system prompt improvement for
   dedicated tools
 - v2.1.30: Read tool `pages` param for PDFs, `/debug` command, MCP OAuth
