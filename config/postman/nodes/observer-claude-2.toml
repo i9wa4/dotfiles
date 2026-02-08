@@ -1,4 +1,3 @@
-[observer-claude-2]
 role = "monitoring, review"
 on_join = ""
 template = """

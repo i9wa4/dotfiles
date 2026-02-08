@@ -1,4 +1,3 @@
-[concierge]
 role = "user interface, clarification"
 on_join = ""
 template = """
