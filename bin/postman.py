@@ -84,7 +84,7 @@ def get_tmux_session_name() -> str:
         )
         if result.returncode == 0:
             return result.stdout.strip()
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    except subprocess.TimeoutExpired, FileNotFoundError:
         pass
     return ""
 
@@ -133,7 +133,7 @@ def read_current_context() -> Optional[str]:
         if isinstance(context_id, str):
             return context_id
         return None
-    except (json.JSONDecodeError, OSError, FileNotFoundError):
+    except json.JSONDecodeError, OSError, FileNotFoundError:
         return None
 
 
@@ -153,7 +153,7 @@ def find_all_context_files() -> list[tuple[Path, str]]:
                 context_id = data.get("context_id")
                 if isinstance(context_id, str):
                     result.append((path, context_id))
-            except (json.JSONDecodeError, OSError):
+            except json.JSONDecodeError, OSError:
                 pass
 
     return result
@@ -169,7 +169,7 @@ def cleanup_current_context() -> None:
             data = json.loads(context_file.read_text())
             if data.get("pid") == os.getpid():
                 context_file.unlink(missing_ok=True)
-    except (json.JSONDecodeError, OSError):
+    except json.JSONDecodeError, OSError:
         pass
 
 
@@ -204,7 +204,7 @@ class SessionLock:
             # Also write PID to separate file for easier reading
             self.pid_file.write_text(f"{os.getpid()}\n")
             return True
-        except (BlockingIOError, OSError):
+        except BlockingIOError, OSError:
             # Lock already held by another process
             os.close(self._lock_fd)
             self._lock_fd = None
@@ -216,7 +216,7 @@ class SessionLock:
             if self.pid_file.exists():
                 pid_str = self.pid_file.read_text().strip()
                 return int(pid_str)
-        except (ValueError, OSError):
+        except ValueError, OSError:
             pass
         return None
 
@@ -225,7 +225,7 @@ class SessionLock:
         try:
             os.kill(pid, 0)
             return True
-        except (OSError, ProcessLookupError):
+        except OSError, ProcessLookupError:
             return False
 
     def release(self) -> None:
@@ -260,7 +260,7 @@ def expand_shell_commands(text: str) -> str:
                 timeout=5,
             )
             return result.stdout.strip() if result.returncode == 0 else ""
-        except (subprocess.TimeoutExpired, OSError):
+        except subprocess.TimeoutExpired, OSError:
             return ""
 
     return SHELL_CMD_PATTERN.sub(replace_cmd, text)
@@ -699,7 +699,7 @@ class Postman:
                             agent_card=agent_card,
                         )
 
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             pass
 
         return new_nodes
@@ -715,7 +715,7 @@ class Postman:
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             pass
         return ""
 
@@ -738,7 +738,7 @@ class Postman:
                         node = self._get_process_node(child_pid)
                         if node:
                             return node
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             pass
 
         return None
@@ -764,7 +764,7 @@ class Postman:
                     for item in env_content.split("\0"):
                         if item.startswith("A2A_NODE="):
                             return item.split("=", 1)[1]
-        except (subprocess.TimeoutExpired, PermissionError, OSError):
+        except subprocess.TimeoutExpired, PermissionError, OSError:
             pass
 
         return None
@@ -795,7 +795,7 @@ class Postman:
                 timeout=self.config.tmux_timeout_seconds,
             )
             return True
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except subprocess.TimeoutExpired, FileNotFoundError:
             return False
 
     def send_welcome(self, node: Node) -> None:

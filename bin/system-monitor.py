@@ -163,7 +163,7 @@ def collect_process_data() -> tuple[
                     group_data["Others"] = (old_cpu + cpu, old_mem + mem_gb)
                     others_detail.append((name, cpu, mem_gb))
 
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            except psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess:
                 continue
     except Exception:
         pass
@@ -319,7 +319,7 @@ Examples:
     for proc in psutil.process_iter(["cpu_percent"]):
         try:
             proc.cpu_percent(interval=None)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
+        except psutil.NoSuchProcess, psutil.AccessDenied:
             pass
 
     # Stats collectors per group
