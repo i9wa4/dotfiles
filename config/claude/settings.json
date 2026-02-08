@@ -30,12 +30,12 @@
   "permissions": {
     "allow": [],
     "deny": [
-      "Bash(git -C:*)",
-      "Bash(git push:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(rm:*)",
-      "Bash(sudo:*)",
+      "Bash(git -C *)",
+      "Bash(git push *)",
+      "Bash(git rebase *)",
+      "Bash(git reset *)",
+      "Bash(rm *)",
+      "Bash(sudo *)",
       "Read(**/*key*)",
       "Read(**/*token*)",
       "Read(.env.*)",
