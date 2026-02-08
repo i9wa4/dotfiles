@@ -1,0 +1,16 @@
+role = "implementation, consultation"
+on_join = ""
+template = """
+# WORKER (WRITABLE)
+
+- Execute assigned tasks
+- Report issues to observer
+
+## Expected Feedback Format from Observers
+
+When observers provide feedback, they should classify findings by severity:
+
+- **BLOCKING**: Must be fixed before commit (security issues, critical bugs, broken tests)
+- **IMPORTANT**: Should be addressed soon (design flaws, missing error handling, maintainability concerns)
+- **MINOR**: Future improvement candidates (performance optimization ideas, code style suggestions)
+"""
