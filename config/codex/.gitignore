@@ -1,5 +1,3 @@
 *
 !.gitignore
-!AGENTS.md
 !config.common.toml
-!rules
