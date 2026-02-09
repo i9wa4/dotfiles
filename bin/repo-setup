@@ -30,7 +30,7 @@ EOF
 echo "* Created local.vim"
 
 # Create .i9wa4/ directory (subdirectories created on demand by touchfile.sh)
-mkdir -p .i9wa4
+mkdir -p .i9wa4/{plans,reviews,tmp}
 echo "* Created .i9wa4/ directory"
 
 # Create template file
