@@ -1,3 +1,4 @@
+[observer-a-leader]
 role = "active-monitoring, proactive-review"
 observes = ["orchestrator"]
 on_join = ""
