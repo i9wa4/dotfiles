@@ -9,9 +9,11 @@ presets:
       panes:
         - name: editor
           command: vim
+          delay: 500
           focus: true
         - name: postman
           command: ~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman
+          delay: 500
 
   dev:
     name: dev
@@ -23,9 +25,11 @@ presets:
       panes:
         - name: editor
           command: vim
+          delay: 500
           focus: true
         - name: worker
           command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          delay: 500
 
   concierge:
     name: orchestrator
@@ -37,9 +41,11 @@ presets:
       panes:
         - name: editor
           command: vim
+          delay: 500
           focus: true
         - name: concierge
           command: A2A_NODE=concierge claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          delay: 500
 
   orchestrator:
     name: workers
@@ -55,12 +61,16 @@ presets:
             - name: orchestrator
               # command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model opus
               command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              delay: 500
             - name: worker
               command: A2A_NODE=worker claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              delay: 500
         - type: vertical
           ratio: [1, 1]
           panes:
             - name: observer
               command: A2A_NODE=observer-a-leader claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              delay: 500
             - name: observer
               command: A2A_NODE=observer-b-leader codex --yolo
+              delay: 500
