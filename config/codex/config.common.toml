@@ -1,8 +1,11 @@
+# https://developers.openai.com/codex/config-basic
+# https://developers.openai.com/codex/config-advanced
+
 hide_agent_reasoning = true
-# model = "gpt-5.2-codex"
-model_reasoning_effort = "high"
 network_access = true
 notify = ["sh", "-c", "printf '\\a'"]
+project_doc_fallback_filenames = ["README.md", "CONTRIBUTING.md"]
+web_search = "live"
 
 [analytics]
 enabled = false
@@ -13,7 +16,6 @@ enabled = false
 [features]
 collab = true
 skills = true
-web_search_request = true
 
 # [mcp_servers.aws_documentation]
 # command = "uvx"
