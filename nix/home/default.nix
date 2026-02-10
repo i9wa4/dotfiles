@@ -148,7 +148,7 @@ in {
     "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
     "lazygit".source = symlink "${dotfilesDir}/config/lazygit";
     "nvim".source = symlink "${dotfilesDir}/config/nvim";
-    "postman".source = symlink "${dotfilesDir}/config/postman";
+    "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "rumdl/rumdl.toml".source = symlink "${dotfilesDir}/.rumdl.toml";
     "skk".source = symlink "${dotfilesDir}/config/skk";
     "tmux".source = symlink "${dotfilesDir}/config/tmux";
