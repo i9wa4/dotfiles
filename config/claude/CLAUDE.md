@@ -162,12 +162,12 @@ Codex CLI users should track tasks manually.
 
 ## 10. Quick Reference Index
 
-| Category  | Items                                                                                                                                                                                                                                                         |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                               |
-| Skills    | atlassian, bigquery, claude-config-optimizer, codex-config-optimizer, daily-report, databricks, dbt, draw-io, git, github, jupyter-notebook, nix, orchestrator, python, restricted-bigquery-dbt-environment, skill-creator, slack, subagent-review, terraform |
-| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                      |
-| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                                                                                         |
+| Category  | Items                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Skills    | adding-dbt-unit-test, answering-natural-language-questions-with-dbt, atlassian, bigquery, building-dbt-semantic-layer, claude-config-optimizer, codex-config-optimizer, configuring-dbt-mcp-server, daily-report, databricks, dbt, draw-io, fetching-dbt-docs, git, github, jupyter-notebook, migrating-dbt-core-to-fusion, nix, orchestrator, python, restricted-bigquery-dbt-environment, running-dbt-commands, skill-creator, slack, subagent-review, terraform, tmux, troubleshooting-dbt-job-errors, using-dbt-for-analytics-engineering |
+| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## 11. File Structure
 
@@ -177,7 +177,8 @@ Files and directories described below are located at:
 
 ### 11.1. Rules
 
-Rules are stored in the `rules/` directory, organized by topic.
+Rules are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/agents/rules/`.
+Symlink: `config/claude/rules/` -> `../agents/rules`
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
@@ -190,10 +191,15 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 
 ### 11.2. Skills
 
-Skills are stored in the `skills/` directory for specific integrations.
+Skills are stored in two locations:
+
+- Managed: `@~/ghq/github.com/i9wa4/dotfiles/config/agents/skills/`
+- External: `@~/ghq/github.com/i9wa4/dotfiles/config/claude/skills/` (symlinks to Nix store)
 
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
+
+#### Managed Skills
 
 | Skill                               | Description                         |
 | ----------------------------------- | ----------------------------------- |
@@ -216,6 +222,21 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | slack                               | Slack thread fetch and search       |
 | subagent-review                     | 10-parallel code/design review      |
 | terraform                           | Terraform development guide         |
+| tmux                                | tmux pane operations for debugging  |
+
+#### External Skills (Nix Store)
+
+| Skill                                         | Description                           |
+| --------------------------------------------- | ------------------------------------- |
+| adding-dbt-unit-test                          | Add unit tests for dbt models         |
+| answering-natural-language-questions-with-dbt | Answer business questions with dbt    |
+| building-dbt-semantic-layer                   | Create semantic models and metrics    |
+| configuring-dbt-mcp-server                    | Setup dbt MCP server                  |
+| fetching-dbt-docs                             | Fetch dbt documentation               |
+| migrating-dbt-core-to-fusion                  | Migrate dbt projects to Fusion engine |
+| running-dbt-commands                          | Execute dbt CLI commands              |
+| troubleshooting-dbt-job-errors                | Diagnose dbt Cloud job failures       |
+| using-dbt-for-analytics-engineering           | dbt analytics engineering workflows   |
 
 ### 11.3. Subagents
 
@@ -236,7 +257,7 @@ tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
 
 **Invocation**:
 
-Subagents are stored in the `agents/` directory.
+Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`.
 
 | Agent                 | Use Case                      |
 | --------------------- | ----------------------------- |
@@ -250,7 +271,7 @@ Subagents are stored in the `agents/` directory.
 
 ### 11.4. Scripts
 
-Helper scripts stored in the `scripts/` directory.
+Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts/`.
 
 | Script              | Purpose                         | Referenced by              |
 | ------------------- | ------------------------------- | -------------------------- |

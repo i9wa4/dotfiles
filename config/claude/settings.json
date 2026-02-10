@@ -24,18 +24,19 @@
     "IS_DEMO": "true",
     "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
     "CLAUDE_CODE_ENABLE_TASKS": "true",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
   },
   "attribution": {},
   "permissions": {
     "allow": [],
     "deny": [
-      "Bash(git -C*)",
+      "Bash(git -C *)",
       "Bash(git push*)",
       "Bash(git rebase*)",
       "Bash(git reset*)",
-      "Bash(rm*)",
-      "Bash(sudo*)",
+      "Bash(rm *)",
+      "Bash(sudo *)",
       "Read(**/*key*)",
       "Read(**/*token*)",
       "Read(.env.*)",
