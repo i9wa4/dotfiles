@@ -104,5 +104,5 @@ snippets:
 
   - name: (vde-layout) preset-a
     keyword: va
-    snippet: vde-layout concierge &&
+    snippet: vde-layout messenger &&
       vde-layout orchestrator

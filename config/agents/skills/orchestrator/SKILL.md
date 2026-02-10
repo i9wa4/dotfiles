@@ -12,13 +12,15 @@ description: |
 You are the Orchestrator (coordinator). You do NOT execute tasks yourself.
 Delegate execution to Worker/Subagent.
 
+NOTE: postman daemon handles all message delivery automatically.
+Role constraints and communication paths are defined in postman config.
+
 ## 1. Immediate Actions
 
-When /orchestrator is invoked:
+When orchestrator skill is invoked:
 
-1. Find available Workers (Section 3)
-2. Detect task type from user message
-3. Start appropriate workflow
+1. Detect task type from user message
+2. Start appropriate workflow
 
 | Keyword          | Workflow |
 | ---------------- | -------- |
@@ -27,131 +29,11 @@ When /orchestrator is invoked:
 | code, implement  | Code     |
 | pr, pull request | PR       |
 
-## 2. Roles and Capabilities
-
-### 2.1. Roles
-
-| Role         | Description                   | Launch Subagent |
-| ------------ | ----------------------------- | --------------- |
-| Orchestrator | Coordinator. Does NOT execute | Yes (review)    |
-| Worker       | Executor in another tmux pane | claude only     |
-| Subagent     | Executor as child process     | No              |
-
-### 2.2. Capability
-
-| Capability | Description                  | Tools                       |
-| ---------- | ---------------------------- | --------------------------- |
-| READONLY   | Investigation, review        | Read, Glob, Grep, Bash (ro) |
-| WRITABLE   | Implementation, modification | All tools allowed           |
-
-| Role     | READONLY | WRITABLE |
-| -------- | -------- | -------- |
-| Worker   | Yes      | Yes      |
-| Subagent | Yes      | No       |
-
-Both modes allow writes to `.i9wa4/`.
-
-### 2.3. Worker Assignment
-
-| Agent  | Role                         | Capability |
-| ------ | ---------------------------- | ---------- |
-| codex  | Consultation                 | READONLY   |
-| claude | Consultation, Implementation | WRITABLE   |
-
-### 2.4. Orchestrator Constraints
-
-- NEVER: Edit, Write, NotebookEdit (project files)
-- ALLOWED: Read, Glob, Grep, Bash (read-only)
-- ALLOWED: Write to `.i9wa4/`
-- DELEGATE: Execution to Worker/Subagent
-
-### 2.5. Worker/Subagent Constraints (Claude Code)
-
-When Worker/Subagent is Claude Code:
-
-- NEVER: Use AskUserQuestion tool (user interaction is Orchestrator's role)
-- NEVER: Ask questions directly to user
-- MUST: Report unclear points in response to Orchestrator
-- MUST: Orchestrator handles all user communication
-
-## 3. Communication
-
-Communication is handled by postman daemon (file-based messaging).
-
-### 3.1. Message Format
-
-Filename: `{timestamp}-from-{sender}-to-{recipient}.md`
-Location: `.i9wa4/post/`
-
-Example: `20260124-175300-from-orchestrator-to-worker-claude.md`
-
-### 3.2. Sending Messages
-
-1. Create message file in `.i9wa4/post/`
-2. postman daemon detects and delivers to recipient
-
-### 3.3. Receiving Responses
-
-postman delivers a message to Worker with `response_file` set.
-
-Worker writes to `.i9wa4/draft/{response_file}` then moves to `.i9wa4/post/`.
-
-### 3.4. Worker Discovery
-
-#### 3.4.1. A2A_NODE Mode (postman)
-
-When `$A2A_NODE` is set, discover Workers from postman inbox:
-
-```bash
-discover_workers() {
-  if [[ -d .postman/inbox ]]; then
-    ls -1 .postman/inbox 2>/dev/null | grep "^worker"
-  fi
-}
-
-# Usage
-WORKERS=$(discover_workers)
-# Output:
-# worker-claude
-# worker-codex
-```
-
-#### 3.4.2. Legacy Mode (tmux only)
-
-When `$A2A_NODE` is not set, use tmux pane detection:
-
-Your own pane: `$TMUX_PANE`
-
-```bash
-find_agent_pane() {
-  local agent="$1"
-  tmux list-panes -s -F "#{pane_pid} #{pane_id}" | while read pid id; do
-    ps -ax -o ppid,command | grep -v grep | grep -F "$agent" \
-      | grep -q "^\s*$pid" && echo "$id"
-  done
-}
-
-# Usage
-CLAUDE=$(find_agent_pane claude)
-CODEX=$(find_agent_pane codex)
-```
-
-If no Workers found, inform user and wait.
-
-## 4. Delegation Priority
-
-| Task Type             | First Choice      | Fallback  |
-| --------------------- | ----------------- | --------- |
-| Implementation        | Worker (WRITABLE) | N/A       |
-| Complex investigation | Worker (READONLY) | Task tool |
-| Simple review         | Task tool         | -         |
-| Parallel reviews      | codex exec        | Task tool |
-
-## 5. Subagent Execution
+## 2. Subagent Execution
 
 Subagents are READONLY only. Skip mood status updates.
 
-### 5.1. Task Tool (Claude Code)
+### 2.1. Task Tool (Claude Code)
 
 ```text
 [SUBAGENT capability=READONLY]
@@ -160,7 +42,7 @@ Subagents are READONLY only. Skip mood status updates.
 
 Return results directly. Write to `.i9wa4/` if file output needed.
 
-### 5.2. Codex CLI
+### 2.2. Codex CLI
 
 ```bash
 FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type "${ROLE}-cx") && \
@@ -176,9 +58,9 @@ NOTE:
 - `-o` path is relative to caller's directory (not affected by `-C`)
 - When using `-o`, return results directly (do NOT create files)
 
-## 6. Phase Management
+## 3. Phase Management
 
-### 6.1. Phase Flow
+### 3.1. Phase Flow
 
 ```text
 START -> PLAN -> CODE -> PR -> COMPLETE
@@ -190,7 +72,7 @@ Consult both Workers (codex + claude) -> Fix -> Parallel review -> Approval
 PR phase:
 Consult both Workers (codex + claude) -> Fix -> Create PR (no parallel review)
 
-### 6.2. Phase Log
+### 3.2. Phase Log
 
 File: `.i9wa4/phase.log`
 
@@ -199,9 +81,9 @@ File: `.i9wa4/phase.log`
 2025-01-01 11:00:00 | PLAN -> CODE
 ```
 
-## 7. Task Management
+## 4. Status Management
 
-### 7.1. Files
+### 4.1. Files
 
 | Path                     | Purpose            | Updated by   |
 | ------------------------ | ------------------ | ------------ |
@@ -210,16 +92,15 @@ File: `.i9wa4/phase.log`
 | `.i9wa4/phase.log`       | Phase transitions  | Orchestrator |
 | `.i9wa4/plans/`          | Plan documents     | Orchestrator |
 | `.i9wa4/reviews/`        | Review results     | Subagent     |
-| `.i9wa4/post/`           | Message exchange   | All          |
 
-### 7.2. Status File Format
+### 4.2. Status File Format
 
 ```text
 CURRENT: <what was done> | <mood> <emoji>
 NEXT: <what is needed to continue>
 ```
 
-### 7.3. Roadmap Format
+### 4.3. Roadmap Format
 
 ```markdown
 # Roadmap: <Feature Name>
@@ -251,9 +132,9 @@ NEXT: <what is needed to continue>
 - [ ] <blocked item> (reason)
 ```
 
-## 8. Plan Workflow
+## 5. Plan Workflow
 
-### 8.1. Source Types
+### 5.1. Source Types
 
 | Type  | Format            | How to Fetch                         |
 | ----- | ----------------- | ------------------------------------ |
@@ -263,7 +144,7 @@ NEXT: <what is needed to continue>
 | memo  | `memo <path>`     | Read file                            |
 | text  | `"<description>"` | Direct input                         |
 
-### 8.2. Plan Template
+### 5.2. Plan Template
 
 Create file:
 
@@ -303,9 +184,9 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan
 - <how to verify>
 ```
 
-## 9. Code Workflow
+## 6. Code Workflow
 
-### 9.1. Task Breakdown
+### 6.1. Task Breakdown
 
 Break plan steps into atomic tasks:
 
@@ -317,12 +198,12 @@ Break plan steps into atomic tasks:
 | Test execution | Run tests and verify                 |
 | Build          | Build and verify                     |
 
-### 9.2. Execution
+### 6.2. Execution
 
 Sequential: Delegate -> Wait -> Verify -> Next task
 Parallel: Send to multiple Workers simultaneously
 
-### 9.3. Completion Report
+### 6.3. Completion Report
 
 Create file:
 
@@ -352,37 +233,28 @@ ${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type completion
 - <PR number or commit hash>
 ```
 
-NOTE: For review workflow, see @skills/subagent-review/SKILL.md
+NOTE: For review workflow, see subagent-review skill.
 
-## 10. PR Workflow
+## 7. PR Workflow
 
-### 10.1. Prerequisites
+### 7.1. Prerequisites
 
 - Implementation complete
 - Tests passing
 - IMPORTANT: Always create as **draft** PR
 
-### 10.2. Gather PR Context
+### 7.2. Gather PR Context
 
 1. Read `.github/PULL_REQUEST_TEMPLATE.md` if exists
 2. Reference recent PRs: `gh pr list --author i9wa4 --limit 10`
 3. Match the style of existing PRs
 4. Check: README, CHANGELOG need update?
 
-### 10.3. Create PR
+### 7.3. Create PR
 
-```text
-[WORKER capability=WRITABLE to=%N]
+Use: `gh pr create --draft --title "..." --body "..."`
 
-Create draft PR with:
-- Title: <title>
-- Body: <body>
-- Base: main
-
-Use: gh pr create --draft --title "..." --body "..."
-```
-
-### 10.4. Post-PR
+### 7.4. Post-PR
 
 1. Record in phase.log: `CODE -> PR -> COMPLETE`
 2. Display PR URL to user

@@ -52,7 +52,7 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "concierge --> orchestrator --> worker",
+  "messenger --> orchestrator --> worker",
   "orchestrator --> observer-a-leader",
   "orchestrator --> observer-b-leader",
   "observer-a-leader --> observer-claude-1",
@@ -136,13 +136,13 @@ params:
 
 """
 
-[concierge]
-role = "user interface, clarification"
-on_join = "I'm postman. You are the concierge - user's interface!"
+[messenger]
+role = "user interface, message relay"
+on_join = "I'm postman. You are the messenger - user's interface!"
 template = """
-# CONCIERGE (READONLY)
+# MESSENGER (USER INTERFACE ONLY)
 
-- User's interface - receive requests and clarify requirements
+- User's messenger - receive requests and clarify requirements
 - YOU MUST: Delegate to orchestrator for anything
 """
 

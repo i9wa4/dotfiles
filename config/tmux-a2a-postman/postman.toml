@@ -58,7 +58,7 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 0.7  # Delay before sending Enter key
 
 edges = [
-  "concierge -- orchestrator",
+  "messenger -- orchestrator",
   "orchestrator -- worker",
   "orchestrator -- observer-a-leader",
   "orchestrator -- observer-b-leader",
@@ -71,7 +71,7 @@ edges = [
 # Optional settings (using defaults):
 # edge_activity_seconds = 60.0  # TUI edge glow duration (1-3600)
 # base_dir = ""                 # Override session dir (default: XDG_STATE_HOME/postman)
-ui_node = "concierge"         # TUI target node for watchdog alerts
+ui_node = "messenger"         # TUI target node for watchdog alerts
 
 # Reminder message (sent periodically to nodes)
 reminder_message = """

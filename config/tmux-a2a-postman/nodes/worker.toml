@@ -4,12 +4,16 @@ on_join = ""
 template = """
 # WORKER (WRITABLE)
 
-- Execute assigned tasks
-- Report issues to observer
+You are the executor. Implement assigned tasks with full tool access.
 
-## Expected Feedback Format from Observers
+MANDATORY:
+- DO: Execute tasks delegated from orchestrator
+- DO: Report issues and blockers to orchestrator
+- DO: Request clarification when requirements are unclear
 
-When observers provide feedback, they should classify findings by severity:
+## Expected Feedback Format
+
+When receiving feedback, findings are classified by severity:
 
 - **BLOCKING**: Must be fixed before commit (security issues, critical bugs, broken tests)
 - **IMPORTANT**: Should be addressed soon (design flaws, missing error handling, maintainability concerns)

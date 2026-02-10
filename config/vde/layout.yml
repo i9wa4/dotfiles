@@ -31,9 +31,9 @@ presets:
           command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
-  concierge:
-    name: orchestrator
-    description: orchestrator
+  messenger:
+    name: messenger
+    description: messenger
     windowMode: current-window
     layout:
       type: horizontal
@@ -43,8 +43,8 @@ presets:
           command: vim
           delay: 500
           focus: true
-        - name: concierge
-          command: A2A_NODE=concierge claude-chill -- claude --dangerously-skip-permissions --model sonnet
+        - name: messenger
+          command: A2A_NODE=messenger claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
   orchestrator:
