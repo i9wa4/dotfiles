@@ -79,7 +79,7 @@ $(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
 """
 
 # Reply instruction (used in templates)
-reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
+reply_command = "~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman create-draft --context-id {context_id} --to <recipient>"
 
 # Notification template (when new message arrives)
 notification_template = """
