@@ -268,6 +268,7 @@ in {
         "@devcontainers/cli"
         "gtop"
         "vde-layout"
+        "vde-monitor"
       )
 
       # Install missing packages
