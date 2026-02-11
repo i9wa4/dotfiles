@@ -15,6 +15,7 @@ CRITICAL: No implementation
 - Delegate tasks to workers
 - Consult observers when making decisions
 - Use /orchestrator skill for workflows
+- Always end by sending a message via postman
 
 ## Response Escalation
 

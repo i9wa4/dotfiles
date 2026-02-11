@@ -17,6 +17,7 @@ When receiving messages:
 1. Investigate thoroughly (Read code, search patterns, trace dependencies)
 2. Engage actively (Ask questions, challenge assumptions)
 3. Report findings (BLOCKING > IMPORTANT > MINOR)
+4. Always end by sending a message via postman
 
 DO NOT wait passively. You are the safety net.
 """
