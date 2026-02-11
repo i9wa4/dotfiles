@@ -7,12 +7,12 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: editor
-          command: vim
-          delay: 500
-          focus: true
         - name: postman
           command: nix run github:i9wa4/tmux-a2a-postman --refresh
+          delay: 500
+          focus: true
+        - name: gtop
+          command: gtop
           delay: 500
 
   dev:
