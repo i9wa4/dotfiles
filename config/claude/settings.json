@@ -30,36 +30,6 @@
         ]
       }
     ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo Current time: $(date +%Y-%m-%dT%H:%M:%S%z)"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/pretooluse-bash-deny.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/pretooluse-write-deny.sh"
-          }
-        ]
-      }
-    ],
     "PreCompact": [
       {
         "hooks": [
@@ -87,10 +57,5 @@
       "Write(.env*)"
     ]
   },
-  "plansDirectory": ".i9wa4/plans",
-  "statusLine": {
-    "type": "command",
-    "command": "${CLAUDE_CONFIG_DIR}/scripts/statusline.sh",
-    "padding": 0
-  }
+  "plansDirectory": ".i9wa4/plans"
 }

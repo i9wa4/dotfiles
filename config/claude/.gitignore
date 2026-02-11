@@ -8,3 +8,4 @@
 !scripts/
 !scripts/**
 !settings.json
+!settings.hooks.json
