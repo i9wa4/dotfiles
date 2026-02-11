@@ -16,8 +16,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "true",
     "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS": "25000",
     "CLAUDE_CODE_TMPDIR": "/tmp/claude",
-    "ENABLE_LSP_TOOL": "true",
-    "ENABLE_TOOL_SEARCH": "auto:1",
     "IS_DEMO": "true"
   },
   "hooks": {
