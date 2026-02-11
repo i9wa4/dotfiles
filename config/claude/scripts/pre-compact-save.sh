@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
 # pre-compact-save.sh - PreCompact context save
 #
 # Saves context snapshot before auto-compact triggers.
 # Preserves git status and working state for post-compact resumption.
-
-set -euo pipefail
 
 # Create output file
 FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/tmp --type compact-save)

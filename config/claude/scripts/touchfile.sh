@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
 # touchfile.sh - Create file with standardized naming
 #
 # Usage:
@@ -26,8 +31,6 @@
 #   touchfile.sh .i9wa4/roadmap.md
 #   # → .i9wa4/roadmap.md (fixed name, directory created)
 
-set -euo pipefail
-
 # Defaults
 TYPE="memo"
 TARGET_PATH=""
@@ -35,23 +38,23 @@ TARGET_PATH=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-  --type)
-    TYPE="$2"
-    shift 2
-    ;;
-  -*)
-    echo "Unknown option: $1" >&2
-    exit 1
-    ;;
-  *)
-    if [[ -z $TARGET_PATH ]]; then
-      TARGET_PATH="$1"
-    else
-      echo "Error: Multiple paths specified" >&2
+    --type)
+      TYPE="$2"
+      shift 2
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
       exit 1
-    fi
-    shift
-    ;;
+      ;;
+    *)
+      if [[ -z $TARGET_PATH ]]; then
+        TARGET_PATH="$1"
+      else
+        echo "Error: Multiple paths specified" >&2
+        exit 1
+      fi
+      shift
+      ;;
   esac
 done
 

@@ -167,7 +167,7 @@ Codex CLI users should track tasks manually.
 | Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Skills    | adding-dbt-unit-test, answering-natural-language-questions-with-dbt, atlassian, bigquery, building-dbt-semantic-layer, claude-config-optimizer, codex-config-optimizer, configuring-dbt-mcp-server, daily-report, databricks, dbt, draw-io, fetching-dbt-docs, git, github, jupyter-notebook, migrating-dbt-core-to-fusion, nix, orchestrator, python, restricted-bigquery-dbt-environment, running-dbt-commands, skill-creator, slack, subagent-review, terraform, tmux, troubleshooting-dbt-job-errors, using-dbt-for-analytics-engineering |
 | Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Scripts   | deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh, ccstatusline.sh                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Scripts   | bash-deny-check.sh, ccstatusline.sh, deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ## 11. File Structure
 
@@ -275,6 +275,8 @@ Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts
 
 | Script              | Purpose                         | Referenced by              |
 | ------------------- | ------------------------------- | -------------------------- |
+| bash-deny-check.sh  | Bash command deny enforcement   | settings.json PreToolUse   |
+| ccstatusline.sh     | Status line display             | settings.json statusLine   |
 | deny.sh             | Non-worker READONLY enforcement | settings.json PreToolUse   |
 | post-write-check.sh | PostToolUse lint/format check   | settings.json PostToolUse  |
 | pre-compact-save.sh | PreCompact context save         | settings.json PreCompact   |

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
 # deny.sh - Role-based deny for A2A_NODE mode
 #
 # Blocks Edit/Write/NotebookEdit for non-worker agents.
@@ -14,8 +19,6 @@
 # Exit codes:
 #   0 - Allow
 #   2 - Block
-
-set -euo pipefail
 
 # Read JSON from stdin
 INPUT=$(cat)
@@ -39,24 +42,24 @@ get_file_path() {
 # (A2A_NODE unset = normal use, allow all)
 if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
   case "$TOOL" in
-  Write | Edit | NotebookEdit)
-    FILE_PATH=$(get_file_path)
+    Write | Edit | NotebookEdit)
+      FILE_PATH=$(get_file_path)
 
-    # Allow writes to .i9wa4/ directory
-    if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
-      : # Allow
-    # Allow writes to postman directory
-    elif [[ -n $FILE_PATH && ($FILE_PATH == "$HOME/.local/state/tmux-a2a-postman/"* || $FILE_PATH == *".postman/"*) ]]; then
-      : # Allow
-    # Allow writes to /tmp/ directory
-    elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
-      : # Allow
-    else
-      echo "🚫 BLOCKED: ${A2A_NODE} is READONLY. Only worker* can edit files." >&2
-      echo "💡 Alternative: Send task to worker via postman" >&2
-      exit 2
-    fi
-    ;;
+      # Allow writes to .i9wa4/ directory
+      if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
+        : # Allow
+      # Allow writes to postman directory
+      elif [[ -n $FILE_PATH && ($FILE_PATH == "$HOME/.local/state/tmux-a2a-postman/"* || $FILE_PATH == *".postman/"*) ]]; then
+        : # Allow
+      # Allow writes to /tmp/ directory
+      elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
+        : # Allow
+      else
+        echo "🚫 BLOCKED: ${A2A_NODE} is READONLY. Only worker* can edit files." >&2
+        echo "💡 Alternative: Send task to worker via postman" >&2
+        exit 2
+      fi
+      ;;
   esac
 fi
 

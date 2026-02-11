@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
 # reload-claude-md.sh
 #
 # Hook script to force Claude to see CLAUDE.md after compaction/resume.
