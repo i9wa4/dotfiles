@@ -47,10 +47,11 @@ nix-profile:  ## nix profile
 	nix profile add github:numtide/llm-agents.nix#codex
 	nix profile add github:numtide/llm-agents.nix#copilot-cli
 	nix profile add github:numtide/llm-agents.nix#goose-cli
+	# https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
 	# https://github.com/ryoppippi/claude-code-overlay/commits/main/
 	# nix profile add github:ryoppippi/claude-code-overlay#claude
 	nix profile remove claude
-	nix profile add github:ryoppippi/claude-code-overlay/4a1d2830d097ea2a10ea6ba391df7a2c83f1a3f8#claude  # 2.1.16
+	nix profile add github:ryoppippi/claude-code-overlay/ddd1e6055ac0ea75581812a07ae750ab8490797b#claude  # 2.1.31
 	nix profile upgrade --all
 
 nix-switch:  ## update ghq repos and switch nix configuration
