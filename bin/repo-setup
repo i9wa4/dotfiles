@@ -67,7 +67,8 @@ esac
 rm -f .mcp.json
 
 # https://github.com/korotovsky/slack-mcp-server
-claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
 claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest
+claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
+claude mcp add --scope project drawio -- npx @drawio/mcp
 
 echo "* Setup complete"
