@@ -139,6 +139,5 @@
   "theme": "dark",
   "editorMode": "normal",
   "chromeExtensionEnabledByDefault": true,
-  "mcpToolSearch": "auto:1",
-  "preferredNotifChannel": "terminal_bell"
+  "mcpToolSearch": "auto:1"
 }

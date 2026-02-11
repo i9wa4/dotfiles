@@ -3,7 +3,7 @@
 
 hide_agent_reasoning = true
 network_access = true
-notify = ["sh", "-c", "printf '\\a'"]
+# notify = ["sh", "-c", "printf '\\a'"]
 project_doc_fallback_filenames = ["README.md", "CONTRIBUTING.md"]
 web_search = "live"
 
