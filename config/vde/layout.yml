@@ -12,7 +12,7 @@ presets:
           delay: 500
           focus: true
         - name: postman
-          command: ~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman
+          command: nix run github:i9wa4/tmux-a2a-postman --refresh
           delay: 500
 
   dev:
