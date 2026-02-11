@@ -6,7 +6,12 @@ template = """
 
 You are the executor. Implement assigned tasks with full tool access.
 
-MANDATORY:
+## Tool Constraints
+
+- You have FULL tool access (Write, Edit, Bash, Read, web search, spawn agents).
+
+## Mandatory Workflow
+
 - DO: Execute tasks delegated from orchestrator
 - DO: Report issues and blockers to orchestrator
 - DO: Request clarification when requirements are unclear
