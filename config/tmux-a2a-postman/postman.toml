@@ -55,7 +55,7 @@ reminder_interval_seconds = 20  # Send reminder after N messages (0 = disabled)
 # Timing settings
 scan_interval_seconds = 1  # Pane rescan interval in seconds
 tmux_timeout_seconds = 30  # Timeout for tmux commands
-enter_delay_seconds = 0.7  # Delay before sending Enter key
+enter_delay_seconds = 1.0  # Delay before sending Enter key
 
 edges = [
   "messenger -- orchestrator",
@@ -79,7 +79,7 @@ $(cat ~/ghq/github.com/i9wa4/dotfiles/config/claude/CLAUDE.md)
 """
 
 # Reply instruction (used in templates)
-reply_command = "~/ghq/github.com/i9wa4/tmux-a2a-postman/tmux-a2a-postman create-draft --context-id {context_id} --to <recipient>"
+reply_command = "nix run github:i9wa4/tmux-a2a-postman create-draft --context-id {context_id} --to <recipient>"
 
 # Notification template (when new message arrives)
 notification_template = """
@@ -104,7 +104,7 @@ NEVER create draft manually. Always:
 
 1. {reply_command}
 2. Edit content
-3. mv from draft/ to post/
+3. Move from draft/ to post/
   - draft path: {session_dir}/draft/
   - post path: {session_dir}/post/
 <!-- end of message -->
@@ -135,20 +135,9 @@ Steps:
 1. {reply_command}
    - Replace `<recipient>` with `postman`
 2. In the Content section, write only: PONG
-3. mv from draft/ to post/
+3. Move from draft/ to post/
   - draft path: {session_dir}/draft/
   - post path: {session_dir}/post/
-<!-- end of message -->
-"""
-
-# Observer digest template
-digest_template = """
-<!-- message start -->
-📋 Carbon Copy: New messages.
-
-You MUST Review message contents and code changes. If you feel any issues, report to relevant nodes.
-
-{digest_items}
 <!-- end of message -->
 """
 
