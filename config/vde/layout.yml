@@ -34,7 +34,7 @@ presets:
           delay: 500
           focus: true
         - name: worker
-          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          command: A2A_NODE=worker claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
   messenger:
