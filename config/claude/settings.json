@@ -1,52 +1,25 @@
 {
-  "respectGitignore": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "cleanupPeriodDays": 36000,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
-    "CLAUDE_CODE_AUTO_CONNECT_IDE": "false",
-    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "true",
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "true",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
-    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "false",
     "CLAUDE_CODE_ENABLE_TASKS": "true",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "true",
     "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS": "25000",
-    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "true",
-    "CLAUDE_CODE_IDE_SKIP_VALID_CHECK": "true",
     "CLAUDE_CODE_TMPDIR": "/tmp/claude",
-    "DISABLE_AUTOUPDATER": "true",
-    "DISABLE_BUG_COMMAND": "true",
-    "DISABLE_ERROR_REPORTING": "true",
-    "DISABLE_TELEMETRY": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "ENABLE_LSP_TOOL": "true",
-    "ENABLE_TOOL_SEARCH": "true",
-    "FORCE_AUTOUPDATE_PLUGINS": "true",
+    "ENABLE_TOOL_SEARCH": "auto:1",
     "IS_DEMO": "true"
   },
-  "attribution": {},
-  "permissions": {
-    "allow": [],
-    "deny": [
-      "Bash(git -C *)",
-      "Bash(git push*)",
-      "Bash(git rebase*)",
-      "Bash(git reset*)",
-      "Bash(rm *)",
-      "Bash(sudo *)",
-      "Read(**/*key*)",
-      "Read(**/*token*)",
-      "Read(.env.*)",
-      "Read(~/.ssh/**)",
-      "Write(**/secrets/**)",
-      "Write(.env*)"
-    ],
-    "defaultMode": "plan"
-  },
-  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -102,22 +75,26 @@
       }
     ]
   },
+  "permissions": {
+    "deny": [
+      "Bash(git -C *)",
+      "Bash(git push*)",
+      "Bash(git rebase*)",
+      "Bash(git reset*)",
+      "Bash(rm *)",
+      "Bash(sudo *)",
+      "Read(**/*key*)",
+      "Read(**/*token*)",
+      "Read(.env.*)",
+      "Read(~/.ssh/**)",
+      "Write(**/secrets/**)",
+      "Write(.env*)"
+    ]
+  },
+  "plansDirectory": ".i9wa4/plans",
   "statusLine": {
     "type": "command",
     "command": "${CLAUDE_CONFIG_DIR}/scripts/ccstatusline.sh",
     "padding": 0
-  },
-  "language": "follow CLAUDE.md's instructions",
-  "spinnerTipsEnabled": true,
-  "alwaysThinkingEnabled": true,
-  "plansDirectory": ".i9wa4/plans",
-  "installationMethod": "native",
-  "autoCompact": true,
-  "checkpointsEnabled": true,
-  "verbose": false,
-  "terminalProgressBar": true,
-  "theme": "dark",
-  "editorMode": "normal",
-  "chromeExtensionEnabledByDefault": true,
-  "mcpToolSearch": "auto:1"
+  }
 }
