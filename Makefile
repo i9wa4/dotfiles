@@ -47,7 +47,8 @@ nix-profile:  ## nix profile
 	nix profile add github:numtide/llm-agents.nix#codex
 	nix profile add github:numtide/llm-agents.nix#copilot-cli
 	nix profile add github:numtide/llm-agents.nix#goose-cli
-	nix profile add github:ryoppippi/claude-code-overlay#claude
+	# nix profile add github:ryoppippi/claude-code-overlay#claude
+	nix profile add github:ryoppippi/claude-code-overlay/5b3dee2#claude  # 2.1.36
 	nix profile upgrade --all
 
 nix-switch:  ## update ghq repos and switch nix configuration
