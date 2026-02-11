@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# mkoutput - Create timestamped output files
+#
+# Automatically finds project root (.git) or falls back to HOME.
+# Creates files in <root>/.i9wa4/<subdir>/ with timestamped names.
+#
+# Usage:
+#   mkoutput SUBDIR [--type TYPE]
+#
+# Examples:
+#   mkoutput tmp --type compact-save
+#   # → <git-root>/.i9wa4/tmp/20260211-201300-compact-save-a1b2.md
+
+# IMPORTANT: Change this to your directory name
+readonly WORK_DIR=".i9wa4"
+
+# Find project root (where .git exists) or fall back to HOME
+find_work_root() {
+  local dir="$PWD"
+
+  # Recursively search for .git
+  while [[ $dir != "/" ]]; do
+    if [[ -d "$dir/.git" ]]; then
+      echo "$dir/$WORK_DIR"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+
+  # No .git found, use HOME
+  echo "$HOME/$WORK_DIR"
+}
+
+# Defaults
+TYPE="memo"
+SUBDIR=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --type)
+      TYPE="$2"
+      shift 2
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      if [[ -z $SUBDIR ]]; then
+        SUBDIR="$1"
+      else
+        echo "Error: Multiple paths specified" >&2
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+# Validate SUBDIR
+if [[ -z $SUBDIR ]]; then
+  echo "Error: SUBDIR is required" >&2
+  echo "Usage: mkoutput SUBDIR [--type TYPE]" >&2
+  exit 1
+fi
+
+# Find root and construct path
+WORK_ROOT=$(find_work_root)
+TARGET_DIR="$WORK_ROOT/$SUBDIR"
+
+# Generate timestamped filename
+TS=$(date +%Y%m%d-%H%M%S)
+ID=$(printf '%04x' $RANDOM)
+FILE_NAME="${TS}-${TYPE}-${ID}.md"
+FILE_PATH="$TARGET_DIR/$FILE_NAME"
+
+# Create directory and file
+mkdir -p "$TARGET_DIR"
+touch "$FILE_PATH"
+
+# Output the created file path
+echo "$FILE_PATH"
+echo "Created: $FILE_PATH" >&2

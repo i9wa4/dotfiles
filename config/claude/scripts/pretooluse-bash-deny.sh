@@ -4,26 +4,23 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# bash-deny-check.sh - PreToolUse Bash command validator
+# pretooluse-bash-deny.sh - Bash command validator
 #
 # Validates Bash commands against deny patterns to prevent bypassing
 # permission rules via &&, ||, ;, | operators or variable expansion.
 #
-# Input (stdin JSON from Claude Code PreToolUse hook):
+# Hook: PreToolUse
+# Matcher: Bash
+#
+# Input (stdin JSON):
 #   {
 #     "hook_event_name": "PreToolUse",
 #     "tool_name": "Bash",
 #     "tool_input": { "command": "..." }
 #   }
 #
-# Output (JSON with hookSpecificOutput):
-#   {
-#     "hookSpecificOutput": {
-#       "hookEventName": "PreToolUse",
-#       "permissionDecision": "deny",
-#       "permissionDecisionReason": "..."
-#     }
-#   }
+# Output:
+#   JSON with hookSpecificOutput containing permissionDecision and reason
 
 # Read JSON from stdin
 INPUT=$(cat)

@@ -104,8 +104,7 @@ If $A2A_NODE is not set, skip this section entirely and proceed normally.
 
 All working files go to `.i9wa4/` (globally gitignored).
 
-- YOU MUST: Use `touchfile.sh` to create output files
-  (full path: `${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh`)
+- YOU MUST: Use `mkoutput` to create timestamped output files
 - YOU MUST: Save all outputs to `.i9wa4/` subdirectories
 
 Directory structure:
@@ -119,28 +118,35 @@ Directory structure:
 
 NOTE: Message exchange is managed separately in `.postman/` by postman daemon.
 
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh usage:
+mkoutput usage:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh PATH [--type TYPE]
+mkoutput SUBDIR [--type TYPE]
 ```
 
 | Argument/Option | Required | Default | Description                                          |
 | --------------- | -------- | ------- | ---------------------------------------------------- |
-| `PATH`          | Yes      | -       | Directory or fixed file path                         |
+| `SUBDIR`        | Yes      | -       | Subdirectory name (plans, reviews, tmp, etc.)        |
 | `--type TYPE`   | No       | memo    | File type (plan, output, review-cc, review-cx, etc.) |
 
-Path detection:
+Features:
 
-- With extension (`.md`, `.txt`) → Fixed name mode
-- Without extension → Directory mode (auto-generate timestamped filename)
+- Auto-detects git root (recursive parent search)
+- Falls back to `$HOME/.i9wa4/` if not in a git repo
+- Creates timestamped files: `YYYYMMDD-HHMMSS-{type}-{hash}.md`
 
 Examples:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan      # → .i9wa4/plans/20260122-110600-plan-a1b2.md
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/tmp --type output      # → .i9wa4/tmp/20260122-110600-output-a1b2.md
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/roadmap.md              # → .i9wa4/roadmap.md (fixed name)
+mkoutput plans --type plan      # → .i9wa4/plans/20260122-110600-plan-a1b2.md
+mkoutput tmp --type output      # → .i9wa4/tmp/20260122-110600-output-a1b2.md
+mkoutput reviews --type review  # → .i9wa4/reviews/20260122-110600-review-c3d4.md
+```
+
+For fixed-name files, use direct commands:
+
+```bash
+mkdir -p .i9wa4 && touch .i9wa4/roadmap.md
 ```
 
 ### 8.1. Project-Specific Rules
@@ -167,7 +173,7 @@ Codex CLI users should track tasks manually.
 | Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Skills    | adding-dbt-unit-test, answering-natural-language-questions-with-dbt, atlassian, bigquery, building-dbt-semantic-layer, claude-config-optimizer, codex-config-optimizer, configuring-dbt-mcp-server, daily-report, databricks, dbt, draw-io, fetching-dbt-docs, git, github, jupyter-notebook, migrating-dbt-core-to-fusion, nix, orchestrator, python, restricted-bigquery-dbt-environment, running-dbt-commands, skill-creator, slack, subagent-review, terraform, tmux, troubleshooting-dbt-job-errors, using-dbt-for-analytics-engineering |
 | Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Scripts   | bash-deny-check.sh, ccstatusline.sh, deny.sh, post-write-check.sh, pre-compact-save.sh, reload-claude-md.sh, touchfile.sh                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Scripts   | precompact-save.sh, pretooluse-bash-deny.sh, pretooluse-write-deny.sh, sessionstart-reload.sh, statusline.sh                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ## 11. File Structure
 
@@ -273,15 +279,13 @@ Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`
 
 Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts/`.
 
-| Script              | Purpose                         | Referenced by              |
-| ------------------- | ------------------------------- | -------------------------- |
-| bash-deny-check.sh  | Bash command deny enforcement   | settings.json PreToolUse   |
-| ccstatusline.sh     | Status line display             | settings.json statusLine   |
-| deny.sh             | Non-worker READONLY enforcement | settings.json PreToolUse   |
-| post-write-check.sh | PostToolUse lint/format check   | settings.json PostToolUse  |
-| pre-compact-save.sh | PreCompact context save         | settings.json PreCompact   |
-| reload-claude-md.sh | Context reload after compaction | settings.json SessionStart |
-| touchfile.sh        | Standardized file creation      | CLAUDE.md, skills/\*       |
+| Script                   | Purpose                     | Referenced by              |
+| ------------------------ | --------------------------- | -------------------------- |
+| precompact-save.sh       | Context snapshot saver      | settings.json PreCompact   |
+| pretooluse-bash-deny.sh  | Bash command validator      | settings.json PreToolUse   |
+| pretooluse-write-deny.sh | Role-based write deny (A2A) | settings.json PreToolUse   |
+| sessionstart-reload.sh   | CLAUDE.md context reloader  | settings.json SessionStart |
+| statusline.sh            | Status line display         | settings.json statusLine   |
 
 ### 11.5. Permission System
 

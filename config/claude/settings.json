@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/reload-claude-md.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/sessionstart-reload.sh"
           }
         ]
       }
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/bash-deny-check.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/pretooluse-bash-deny.sh"
           }
         ]
       },
@@ -55,18 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/deny.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/post-write-check.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/pretooluse-write-deny.sh"
           }
         ]
       }
@@ -76,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/pre-compact-save.sh"
+            "command": "${CLAUDE_CONFIG_DIR}/scripts/precompact-save.sh"
           }
         ]
       }
@@ -101,7 +90,7 @@
   "plansDirectory": ".i9wa4/plans",
   "statusLine": {
     "type": "command",
-    "command": "${CLAUDE_CONFIG_DIR}/scripts/ccstatusline.sh",
+    "command": "${CLAUDE_CONFIG_DIR}/scripts/statusline.sh",
     "padding": 0
   }
 }

@@ -45,7 +45,7 @@ Return results directly. Write to `.i9wa4/` if file output needed.
 ### 2.2. Codex CLI
 
 ```bash
-FILE=$(${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type "${ROLE}-cx") && \
+FILE=$(mkoutput reviews --type "${ROLE}-cx") && \
 codex exec --sandbox workspace-write -C .i9wa4 \
   -o "$FILE" \
   "[SUBAGENT capability=READONLY] {task content}" &
@@ -149,7 +149,7 @@ NEXT: <what is needed to continue>
 Create file:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/plans --type plan
+mkoutput plans --type plan
 ```
 
 ```markdown
@@ -208,7 +208,7 @@ Parallel: Send to multiple Workers simultaneously
 Create file:
 
 ```bash
-${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh .i9wa4/reviews --type completion
+mkoutput reviews --type completion
 ```
 
 ```markdown

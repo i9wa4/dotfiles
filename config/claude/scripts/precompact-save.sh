@@ -4,13 +4,22 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# pre-compact-save.sh - PreCompact context save
+# precompact-save.sh - Context snapshot saver
 #
 # Saves context snapshot before auto-compact triggers.
 # Preserves git status and working state for post-compact resumption.
+#
+# Hook: PreCompact
+# Matcher: (none)
+#
+# Input (stdin JSON):
+#   { "hook_event_name": "PreCompact", "trigger": "manual|auto", ... }
+#
+# Output:
+#   File saved to .i9wa4/tmp/
 
 # Create output file
-FILE=$("${CLAUDE_CONFIG_DIR}/scripts/touchfile.sh" .i9wa4/tmp --type compact-save)
+FILE=$(mkoutput tmp --type compact-save)
 
 {
   echo "# Pre-Compact Context Save"

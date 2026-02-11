@@ -4,10 +4,19 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# reload-claude-md.sh
+# sessionstart-reload.sh - CLAUDE.md context reloader
 #
-# Hook script to force Claude to see CLAUDE.md after compaction/resume.
+# Force Claude to reload CLAUDE.md after compaction/resume.
 # Outputs CLAUDE.md content in additionalContext using jq for JSON escape.
+#
+# Hook: SessionStart
+# Matcher: compact|resume|clear
+#
+# Input (stdin JSON):
+#   { "hook_event_name": "SessionStart", "source": "compact|resume|clear", ... }
+#
+# Output:
+#   JSON with hookSpecificOutput containing additionalContext
 
 CLAUDE_MD="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
 
