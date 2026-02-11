@@ -1,5 +1,5 @@
 ---
-name: skill-creator
+name: skill-creator-local
 description: |
   Guide for creating effective skills. This skill should be used when
   users want to create a new skill (or update an existing skill) that
