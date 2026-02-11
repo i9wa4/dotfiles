@@ -50,6 +50,10 @@
       url = "github:dbt-labs/dbt-agent-skills";
       flake = false;
     };
+    anthropic-skills = {
+      url = "github:anthropics/skills";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {
