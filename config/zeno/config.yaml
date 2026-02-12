@@ -109,4 +109,9 @@ snippets:
   - name: (vde-layout) preset-a
     keyword: va
     snippet: vde-layout messenger &&
-      vde-layout orchestrator
+      vde-layout opus
+
+  - name: (vde-layout) preset-b
+    keyword: va
+    snippet: vde-layout messenger &&
+      vde-layout sonnet

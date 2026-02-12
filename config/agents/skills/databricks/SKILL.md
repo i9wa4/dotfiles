@@ -37,6 +37,8 @@ This skill provides a comprehensive guide for Databricks development.
 
 ### 1.3. Basic Usage
 
+#### Statements API (Query Execution)
+
 ```sh
 # Execute query
 databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
@@ -49,6 +51,31 @@ databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
 # Get results (statement_id is returned from execution)
 databricks api get /api/2.0/sql/statements/{statement_id} --profile "DEFAULT"
 ```
+
+#### Queries API (Query Object Management)
+
+```sh
+# Create query object (for dashboards, saved queries)
+# IMPORTANT: Use warehouse_id, query_text, display_name (NOT data_source_id, query, name)
+databricks api post /api/2.0/sql/queries --profile "DEFAULT" --json '{
+  "warehouse_id": "xxxxxxxxxx",
+  "display_name": "My Query",
+  "query_text": "SELECT * FROM table_name LIMIT 10",
+  "description": "Optional description"
+}'
+
+# List queries
+databricks api get /api/2.0/sql/queries --profile "DEFAULT"
+
+# Get query by ID
+databricks api get /api/2.0/sql/queries/{query_id} --profile "DEFAULT"
+```
+
+**Common Mistakes:**
+
+- ❌ `data_source_id` → ✅ `warehouse_id`
+- ❌ `query` → ✅ `query_text`
+- ❌ `name` → ✅ `display_name`
 
 ### 1.4. Command Tips
 
@@ -288,7 +315,168 @@ When encountering schema-related issues, update this skill with:
 NOTE: Do not include project-specific table names or business logic.
 Keep entries generalizable across environments.
 
-## 9. Reference Links
+## 9. VARIANT Type and JSON Operations
+
+### 9.1. VARIANT Type (Runtime 15.3+)
+
+**Benefits:**
+
+- 10-30x faster than JSON strings
+- Schema evolution without manual updates
+- No predefined schema required
+
+**Basic Usage:**
+
+```sql
+-- Create table with VARIANT
+CREATE TABLE events (
+  id BIGINT,
+  data VARIANT
+);
+
+-- Insert JSON data
+INSERT INTO events VALUES
+  (1, parse_json('{"name":"太郎","age":25}')),
+  (2, parse_json('{"name":"花子","age":30,"new_field":"value"}'));
+
+-- Query with colon notation
+SELECT
+  data:name::STRING AS name,
+  data:age::INT AS age,
+  data:new_field::STRING AS new_field  -- Auto-recognized
+FROM events;
+```
+
+### 9.2. JSON Access Patterns
+
+**Colon Notation (Recommended):**
+
+```sql
+-- Object fields
+json_data:name
+json_data:metadata.status
+
+-- Array elements
+json_data:tags[0]
+json_data:tags[1]
+
+-- Wildcards (all elements)
+json_data:tags[*]  -- Returns array
+
+-- Nested arrays
+json_data:basket[*][0]  -- First element of each sub-array
+json_data:basket[0][*]  -- All elements of first array
+```
+
+**get_json_object() Function:**
+
+```sql
+-- Basic usage
+get_json_object(json_data, '$.name')
+get_json_object(json_data, '$.tags[0]')
+get_json_object(json_data, '$.metadata.status')
+
+-- Limitation: Path must be STRING literal (no variables)
+```
+
+**json_object_keys() Function:**
+
+```sql
+-- Get all keys as array
+SELECT json_object_keys(json_data) FROM table_name;
+-- Result: ["name", "age", "tags", "metadata"]
+
+-- Access by index (order not guaranteed)
+SELECT
+  json_object_keys(json_data)[0] AS first_key,
+  get_json_object(json_data, '$.' || json_object_keys(json_data)[0]) AS first_value
+FROM table_name;
+```
+
+**Important Notes:**
+
+- Object field order is NOT guaranteed in JSON
+- Array order IS guaranteed
+- Colon notation supports type casting: `json_data:age::INT`
+- Wildcards `[*]` only work with colon notation (not get_json_object)
+
+## 10. Dashboard API (Lakeview)
+
+### 10.1. Important Changes (2026)
+
+- **Legacy Dashboard API**: Deprecated (access disabled 2026-01-12)
+- **Migration deadline**: 2026-03-02
+- **New API**: Lakeview API (`/api/2.0/lakeview/dashboards`)
+
+### 10.2. Dashboard Visualization Limitations
+
+**AI/BI Dashboard (Lakeview):**
+
+- ❌ No custom HTML/JavaScript
+- ❌ No client-side JSON parsing
+- ✅ 20+ predefined visualization types
+- ✅ Query parameters for interactivity
+
+**Recommendation:** Parse JSON in SQL (server-side) before visualization
+
+## 11. dbt Integration Patterns
+
+### 11.1. Auto-Schema Evolution with Jinja
+
+**Macro for Dynamic JSON Expansion:**
+
+```sql
+-- macros/get_json_keys.sql
+{% macro get_json_keys(table_ref, json_column) %}
+  {% set query %}
+    SELECT DISTINCT key
+    FROM {{ table_ref }},
+    LATERAL variant_explode({{ json_column }})
+    ORDER BY key
+  {% endset %}
+
+  {% if execute %}
+    {% set results = run_query(query) %}
+    {% set keys = results.columns[0].values() %}
+    {{ return(keys) }}
+  {% else %}
+    {{ return([]) }}
+  {% endif %}
+{% endmacro %}
+```
+
+**dbt Model:**
+
+```sql
+-- models/staging/stg_events.sql
+{% set json_keys = get_json_keys(source('bronze', 'events'), 'json_data') %}
+
+SELECT
+  id,
+  {% for key in json_keys %}
+  json_data:{{ key }}::STRING AS {{ key | lower }}
+  {%- if not loop.last %},{% endif %}
+  {% endfor %}
+FROM {{ source('bronze', 'events') }}
+```
+
+**Benefits:**
+
+- New JSON fields auto-detected on `dbt run`
+- No manual model updates required
+- Works with VARIANT or JSON string columns
+
+### 11.2. Recommended Architecture
+
+```text
+Source → Bronze (VARIANT) → Silver (dbt expand) → Gold (business logic)
+```
+
+- **Bronze**: VARIANT型でRaw JSON保存
+- **Silver**: dbt Jinjaマクロで必要なフィールドを展開
+- **Gold**: ビジネスロジック、アグリゲーション
+
+## 12. Reference Links
 
 - Official docs: <https://docs.databricks.com/>
 - Unity Catalog: <https://docs.databricks.com/en/data-governance/unity-catalog/>
@@ -296,3 +484,9 @@ Keep entries generalizable across environments.
 - MLflow: <https://docs.databricks.com/en/mlflow/>
 - Delta Lake: <https://docs.databricks.com/en/delta/>
 - Security: <https://docs.databricks.com/en/security/>
+- VARIANT Type: <https://docs.databricks.com/aws/en/semi-structured/variant.html>
+- JSON Operations: <https://docs.databricks.com/aws/en/semi-structured/json.html>
+- Colon Notation: <https://docs.databricks.com/aws/en/sql/language-manual/functions/colonsign.html>
+- Queries API: <https://docs.databricks.com/api/workspace/queries>
+- Lakeview Dashboards: <https://docs.databricks.com/aws/en/dashboards/>
+- dbt Documentation: <https://docs.getdbt.com/>
