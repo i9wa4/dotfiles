@@ -53,7 +53,7 @@ presets:
           command: A2A_NODE=messenger claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
-  orchestrator:
+  opus:
     name: workers
     description: workers
     windowMode: new-window
@@ -65,7 +65,33 @@ presets:
           ratio: [1, 1]
           panes:
             - name: orchestrator
-              # command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model opus
+              delay: 500
+            - name: worker
+              command: A2A_NODE=worker claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              delay: 500
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: observer
+              command: A2A_NODE=observer-a-leader claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              delay: 500
+            - name: observer
+              command: A2A_NODE=observer-b-leader codex --yolo
+              delay: 500
+
+  sonnet:
+    name: workers
+    description: workers
+    windowMode: new-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: orchestrator
               command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: worker
