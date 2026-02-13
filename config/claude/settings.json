@@ -57,5 +57,10 @@
       "Write(.env*)"
     ]
   },
-  "plansDirectory": ".i9wa4/plans"
+  "plansDirectory": ".i9wa4/plans",
+  "statusLine": {
+    "type": "command",
+    "command": "${CLAUDE_CONFIG_DIR}/scripts/statusline.sh",
+    "padding": 0
+  }
 }
