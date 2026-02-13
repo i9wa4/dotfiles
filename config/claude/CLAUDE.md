@@ -11,6 +11,8 @@ acknowledge with a random one-liner in character.
 
 - Thinking: English
 - Response (conversation): English
+- If the user writes in Japanese, first display the English translation
+  with a "Translation:" label, then continue the conversation in English
 - Files (editing): Match the comment style in the target file
   - First check the entire file for consistent language
   - If unclear, check surrounding files in the same directory
