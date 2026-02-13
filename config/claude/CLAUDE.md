@@ -51,56 +51,7 @@ acknowledge with a random one-liner in character.
 - YOU MUST: Revert ONLY the specified changes
 - YOU MUST: Confirm the exact files and lines being reverted before proceeding
 
-## 7. Multi-Agent Mode
-
-If $A2A_NODE is set, postman daemon delivers messages with role constraints.
-
-### 7.1. Role Confirmation
-
-When you receive a notification from postman:
-
-1. Read the notification carefully - it contains your role and constraints
-2. Follow the constraints specified (READONLY, WRITABLE, etc.)
-3. Update status file after each significant action
-
-### 7.2. Sending Messages
-
-NEVER create draft manually. Use the create-draft command:
-
-1. Run: `{reply_command}` (provided in postman notification)
-2. Edit the draft content
-3. Move from draft/ to post/:
-   `mv .postman/{context_id}/draft/{file} .postman/{context_id}/post/`
-
-NOTE: Exact paths are provided in each postman notification.
-
-### 7.3. Receiving Messages
-
-1. Read from `.postman/{context_id}/inbox/{your-role}/`
-2. After processing, move to read/:
-   `mv .postman/{context_id}/inbox/{your-role}/{file} .postman/{context_id}/read/`
-
-NOTE: Postman will notify you when new messages arrive.
-You do NOT need to poll the inbox directory.
-Exact paths (including context_id) are provided in each notification.
-
-### 7.4. Message Format
-
-```text
-[MESSAGE]
-from: {your-role}
-to: {recipient}
-timestamp: YYYY-MM-DDTHH:MM:SS+09:00
-type: {task-request|task-complete|status-update}
-
-## Content
-
-Your message here in Markdown.
-```
-
-If $A2A_NODE is not set, skip this section entirely and proceed normally.
-
-## 8. File Management
+## 7. File Management
 
 All working files go to `.i9wa4/` (globally gitignored).
 
@@ -149,11 +100,11 @@ For fixed-name files, use direct commands:
 mkdir -p .i9wa4 && touch .i9wa4/roadmap.md
 ```
 
-### 8.1. Project-Specific Rules
+### 7.1. Project-Specific Rules
 
 - YOU MUST: Follow @README.md and @CONTRIBUTING.md if they exist
 
-## 9. Context Persistence
+## 8. Context Persistence
 
 - IMPORTANT: Save important findings to `.i9wa4/` before context gets full
 - YOU MUST: When context usage exceeds 60%, consider saving:
@@ -166,7 +117,7 @@ mkdir -p .i9wa4 && touch .i9wa4/roadmap.md
 NOTE: TodoWrite is Claude Code specific.
 Codex CLI users should track tasks manually.
 
-## 10. Quick Reference Index
+## 9. Quick Reference Index
 
 | Category  | Items                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -175,13 +126,13 @@ Codex CLI users should track tasks manually.
 | Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Scripts   | precompact-save.sh, pretooluse-bash-deny.sh, pretooluse-write-deny.sh, sessionstart-reload.sh, statusline.sh                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-## 11. File Structure
+## 10. File Structure
 
 Files and directories described below are located at:
 
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
-### 11.1. Rules
+### 10.1. Rules
 
 Rules are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/agents/rules/`.
 Symlink: `config/claude/rules/` -> `../agents/rules`
@@ -195,7 +146,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 11.2. Skills
+### 10.2. Skills
 
 Skills are stored in two locations:
 
@@ -205,7 +156,7 @@ Skills are stored in two locations:
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
-#### 11.2.1. Managed Skills
+#### 10.2.1. Managed Skills
 
 | Skill                               | Description                         |
 | ----------------------------------- | ----------------------------------- |
@@ -230,7 +181,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | terraform                           | Terraform development guide         |
 | tmux                                | tmux pane operations for debugging  |
 
-#### 11.2.2. External Skills (Nix Store)
+#### 10.2.2. External Skills (Nix Store)
 
 | Skill                                         | Description                           |
 | --------------------------------------------- | ------------------------------------- |
@@ -244,7 +195,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | troubleshooting-dbt-job-errors                | Diagnose dbt Cloud job failures       |
 | using-dbt-for-analytics-engineering           | dbt analytics engineering workflows   |
 
-### 11.3. Subagents
+### 10.3. Subagents
 
 Specialized investigators - use anytime for expert perspectives.
 
@@ -275,7 +226,7 @@ Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`
 | reviewer-security     | Security, vulnerabilities     |
 | researcher-tech       | Investigation, research       |
 
-### 11.4. Scripts
+### 10.4. Scripts
 
 Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts/`.
 
@@ -287,7 +238,7 @@ Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts
 | sessionstart-reload.sh   | CLAUDE.md context reloader  | settings.json SessionStart |
 | statusline.sh            | Status line display         | settings.json statusLine   |
 
-### 11.5. Permission System
+### 10.5. Permission System
 
 Permission rules in settings.json control tool access.
 
