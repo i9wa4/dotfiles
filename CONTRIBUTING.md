@@ -11,13 +11,6 @@ nix (source of truth)
 └── flake.lock          # nixpkgs versions
 ```
 
-### 1.2. Preview Updates
-
-```sh
-# nixpkgs packages
-uv run python bin/nix-flake-diff.py
-```
-
 ### 1.3. Update Packages
 
 ```sh

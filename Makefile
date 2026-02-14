@@ -59,7 +59,6 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
 endif
-	uv run python bin/nix-flake-diff.py
 
 # nvim-build:  ## build Neovim from source
 # 	ghq get -p neovim/neovim
