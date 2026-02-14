@@ -17,7 +17,7 @@
   symlink = config.lib.file.mkOutOfStoreSymlink;
 in {
   home.file = {
-    ".codex/AGENTS.md".source = symlink "${dotfilesDir}/config/claude/CLAUDE.md";
+    ".codex/AGENTS.md".source = symlink "${dotfilesDir}/config/agents/AGENTS.md";
     ".codex/rules".source = symlink "${dotfilesDir}/config/agents/rules";
   };
 

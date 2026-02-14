@@ -136,9 +136,11 @@ in {
       # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
 
-      # ~/.claude/ fallback symlinks (CLAUDE_CONFIG_DIR is sometimes ignored)
-      ".claude/CLAUDE.md".source = symlink "${dotfilesDir}/config/claude/CLAUDE.md";
+      # ~/.claude/
+      ".claude/CLAUDE.md".source = symlink "${dotfilesDir}/config/agents/AGENTS.md";
+      ".claude/agents".source = symlink "${dotfilesDir}/config/agents/subagents";
       ".claude/rules".source = symlink "${dotfilesDir}/config/agents/rules";
+      ".claude/scripts".source = symlink "${dotfilesDir}/config/agents/scripts";
       ".claude/settings.json".source = symlink "${dotfilesDir}/config/claude/settings.json";
     };
   };

@@ -71,7 +71,7 @@ export PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/bin:"${PATH}"
 # Application Settings
 # ==============================================================================
 # Claude
-export CLAUDE_CONFIG_DIR="${HOME}"/ghq/github.com/i9wa4/dotfiles/config/claude
+export CLAUDE_CONFIG_DIR="${HOME}"/.claude
 
 # Deno
 export DENO_NO_PROMPT=1
