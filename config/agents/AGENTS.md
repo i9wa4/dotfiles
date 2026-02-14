@@ -113,7 +113,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | orchestrator                        | Main agent orchestration            |
 | python                              | Python environment and execution    |
 | restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
-| skill-creator                       | Skill creation guide                |
+| skill-creator-local                 | Skill creation guide (local)        |
 | slack                               | Slack thread fetch and search       |
 | subagent-review                     | 10-parallel code/design review      |
 | terraform                           | Terraform development guide         |
@@ -121,17 +121,9 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
 #### 8.2.2. External Skills (Nix Store)
 
-| Skill                                         | Description                           |
-| --------------------------------------------- | ------------------------------------- |
-| adding-dbt-unit-test                          | Add unit tests for dbt models         |
-| answering-natural-language-questions-with-dbt | Answer business questions with dbt    |
-| building-dbt-semantic-layer                   | Create semantic models and metrics    |
-| configuring-dbt-mcp-server                    | Setup dbt MCP server                  |
-| fetching-dbt-docs                             | Fetch dbt documentation               |
-| migrating-dbt-core-to-fusion                  | Migrate dbt projects to Fusion engine |
-| running-dbt-commands                          | Execute dbt CLI commands              |
-| troubleshooting-dbt-job-errors                | Diagnose dbt Cloud job failures       |
-| using-dbt-for-analytics-engineering           | dbt analytics engineering workflows   |
+External skills are auto-loaded from Nix Store and frequently updated.
+
+To view available skills: `/skills` command or `ls ~/.agents/skills/`
 
 ### 8.3. `subagents/`
 
