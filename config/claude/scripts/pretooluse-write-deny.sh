@@ -47,15 +47,12 @@ if [[ -n ${A2A_NODE:-} && ${A2A_NODE} != worker* ]]; then
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
 
-    # Allow writes to .i9wa4/ directory
-    if [[ -n $FILE_PATH && ($FILE_PATH == ".i9wa4/"* || $FILE_PATH == *"/.i9wa4/"*) ]]; then
-      : # Allow
-    # Allow writes to postman directory
-    elif [[ -n $FILE_PATH && ($FILE_PATH == "$HOME/.local/state/tmux-a2a-postman/"* || $FILE_PATH == *".postman/"*) ]]; then
-      : # Allow
-    # Allow writes to /tmp/ directory
+    if [[ -n $FILE_PATH && $FILE_PATH == "$HOME/.local/state/tmux-a2a-postman/"* ]]; then
+      : # Allow writes to postman state directory
+    elif [[ -n $FILE_PATH && $FILE_PATH == "$HOME/.local/state/claude/"* ]]; then
+      : # Allow writes to claude state directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
-      : # Allow
+      : # Allow writes to /tmp/ directory
     else
       REASON="🚫 BLOCKED: ${A2A_NODE} is READONLY. Only worker* can edit files."$'\n'"💡 Alternative: Send task to worker via postman"
       jq -n \
