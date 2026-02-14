@@ -234,7 +234,7 @@ cat .i9wa4/reviews/*-review-*.md
 | Launch cx x 5    | Immediately (background) |
 | Collect results  | After wait completes     |
 
-### 1.6. Observer Deliberation (Optional)
+### 1.6. Reviewer Deliberation (Optional)
 
 IMPORTANT: This is an optional phase. Execute only when:
 
@@ -243,7 +243,7 @@ IMPORTANT: This is an optional phase. Execute only when:
 
 For standalone execution, Phase 1 (Section 1.5) alone is sufficient.
 
-After Phase 1 review completion, discuss with all observers to collect
+After Phase 1 review completion, discuss with critic and guardian to collect
 additional findings.
 
 #### 1.6.1. Purpose
@@ -254,7 +254,7 @@ additional findings.
 
 #### 1.6.2. Deliberation Prompt
 
-Share all Phase 1 review results with each observer and request
+Share all Phase 1 review results with critic and guardian and request
 additional findings.
 
 ```text
@@ -343,7 +343,7 @@ mkdir -p .i9wa4/reviews && touch .i9wa4/reviews/summary.md
 
 ## 2. Standalone Usage (Lightweight Mode)
 
-For quick reviews without Observer Deliberation:
+For quick reviews without Reviewer Deliberation:
 
 1. Execute Phase 1 only (Section 1.5)
 2. Collect results (Section 1.5.4)

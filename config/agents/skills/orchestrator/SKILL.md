@@ -4,7 +4,7 @@ description: |
   Orchestration workflow for orchestrator role ONLY.
   Use when:
   - Agent's $A2A_NODE environment variable contains "orchestrator"
-  Do NOT use for worker or observer roles.
+  Do NOT use for worker, critic, or guardian roles.
 ---
 
 # Orchestrator Skill

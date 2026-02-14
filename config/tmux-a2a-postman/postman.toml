@@ -58,11 +58,12 @@ tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 1.0  # Delay before sending Enter key
 
 edges = [
+  "boss -- orchestrator",
   "messenger -- orchestrator",
   "orchestrator -- worker",
-  "orchestrator -- observer-a-leader",
-  "orchestrator -- observer-b-leader",
-  "observer-a-leader -- observer-b-leader",
+  "orchestrator -- critic",
+  "orchestrator -- guardian",
+  "critic -- guardian",
 ]
 
 # common_template: Shared template prepended to all node templates (default: "")
