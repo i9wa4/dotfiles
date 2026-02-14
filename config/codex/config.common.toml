@@ -1,9 +1,10 @@
 # https://developers.openai.com/codex/config-basic
 # https://developers.openai.com/codex/config-advanced
 
-hide_agent_reasoning = true
-network_access = true
 # notify = ["sh", "-c", "printf '\\a'"]
+hide_agent_reasoning = true
+model = "gpt-5.3-codex"
+network_access = true
 project_doc_fallback_filenames = ["README.md", "CONTRIBUTING.md"]
 web_search = "live"
 
