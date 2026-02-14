@@ -61,15 +61,12 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
+        - name: agent
+          # command: A2A_NODE=boss codex --yolo --model gpt-5.3-codex
+          command: A2A_NODE=boss claude --dangerously-skip-permissions --model opus
+          delay: 500
         - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: agent
-              # command: A2A_NODE=boss codex --yolo --model gpt-5.3-codex
-              command: A2A_NODE=boss claude --dangerously-skip-permissions --model opus
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
             - name: agent
               command: A2A_NODE=orchestrator claude --dangerously-skip-permissions --model sonnet
