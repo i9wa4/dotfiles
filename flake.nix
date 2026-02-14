@@ -54,6 +54,10 @@
       url = "github:anthropics/skills";
       flake = false;
     };
+    streamlit-skills = {
+      url = "github:streamlit/agent-skills";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

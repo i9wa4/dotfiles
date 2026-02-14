@@ -467,8 +467,25 @@
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_2",
+        "streamlit-skills": "streamlit-skills",
         "treefmt-nix": "treefmt-nix",
         "vim-overlay": "vim-overlay"
+      }
+    },
+    "streamlit-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769883720,
+        "narHash": "sha256-aH+xt2o0ymI1ZsEUhCmoDzextKuj7OMMRIdpzS6oElE=",
+        "owner": "streamlit",
+        "repo": "agent-skills",
+        "rev": "0fcd6d0a9590df4fba651f20b5ef3803b6f4e949",
+        "type": "github"
+      },
+      "original": {
+        "owner": "streamlit",
+        "repo": "agent-skills",
+        "type": "github"
       }
     },
     "systems": {

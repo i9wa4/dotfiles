@@ -35,6 +35,11 @@ in {
         path = inputs.anthropic-skills;
         subdir = "skills";
       };
+      # Streamlit official agent skills
+      streamlit = {
+        path = inputs.streamlit-skills;
+        subdir = "skills";
+      };
     };
 
     # Enable all skills from all sources
