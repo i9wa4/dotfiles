@@ -34,7 +34,7 @@ presets:
           delay: 500
           focus: true
         - name: agent
-          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          command: claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
   messenger:
@@ -50,7 +50,7 @@ presets:
           delay: 500
           focus: true
         - name: agent
-          command: A2A_NODE=messenger claude-chill -- claude --dangerously-skip-permissions --model haiku
+          command: A2A_NODE=messenger claude --dangerously-skip-permissions --model haiku
           delay: 500
 
   high:
@@ -65,20 +65,20 @@ presets:
           ratio: [1, 1]
           panes:
             - name: agent
-              command: A2A_NODE=orchestrator claude-chill -- claude --dangerously-skip-permissions --model sonnet
-              delay: 500
-            - name: agent
-              command: A2A_NODE=worker claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              # command: A2A_NODE=boss codex --yolo --model gpt-5.3-codex
+              command: A2A_NODE=boss claude --dangerously-skip-permissions --model opus
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: agent
-              # command: A2A_NODE=boss codex --yolo --model gpt-5.3-codex
-              command: A2A_NODE=boss claude-chill -- claude --dangerously-skip-permissions --model opus
+              command: A2A_NODE=orchestrator claude --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: agent
-              command: A2A_NODE=critic claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              command: A2A_NODE=worker claude --dangerously-skip-permissions --model sonnet
+              delay: 500
+            - name: agent
+              command: A2A_NODE=critic claude --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: agent
               command: A2A_NODE=guardian codex --yolo --model gpt-5.3-codex
