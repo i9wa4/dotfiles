@@ -3,15 +3,12 @@
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "3000000",
     "BASH_MAX_TIMEOUT_MS": "3000000",
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "true",
     "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "true",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true",
     "CLAUDE_CODE_ENABLE_TASKS": "true",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "true",
     "CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS": "25000",
-    "CLAUDE_CODE_TMPDIR": "/tmp/claude",
     "IS_DEMO": "true"
   },
   "attribution": {
@@ -28,7 +25,7 @@
       "Bash(sudo *)",
       "Read(**/*key*)",
       "Read(**/*token*)",
-      "Read(.env.*)",
+      "Read(.env*)",
       "Read(~/.ssh/**)",
       "Write(**/secrets/**)",
       "Write(.env*)"
@@ -59,8 +56,6 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/scripts/statusline.sh",
-    "padding": 0
-  },
-  "plansDirectory": "~/.local/state/claude/plans"
+    "command": "~/.claude/scripts/statusline.sh"
+  }
 }
