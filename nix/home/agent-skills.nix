@@ -42,13 +42,14 @@ in {
 
     # Target destinations (symlink-tree uses activation rsync)
     targets = {
+      # Agents: ~/.agents/skills
+      agents-home = {
+        dest = "${homeDir}/.agents/skills";
+        structure = "symlink-tree";
+      };
       # Claude Code: ~/.claude/skills
       claude-home = {
         dest = "${homeDir}/.claude/skills";
-        structure = "symlink-tree";
-      };
-      claude-config = {
-        dest = "${homeDir}/.config/claude/skills";
         structure = "symlink-tree";
       };
       # Codex CLI: ~/.codex/skills

@@ -1,4 +1,4 @@
-# CLAUDE.md / AGENTS.md
+# AGENTS.md / CLAUDE.md
 
 After reading these instructions,
 acknowledge with a random one-liner in character.
@@ -49,13 +49,7 @@ acknowledge with a random one-liner in character.
 
 ## 7. File Management
 
-All working files follow `mkoutput` paths.
-
-- YOU MUST: Use `mkoutput` to create timestamped output files
-- YOU MUST: Save all outputs under the daily memo directory
-
-Daily memo file (created by `repo-setup` via `mkoutput`):
-`$XDG_STATE_HOME/mkoutput/sessions/<owner>-<repo>/YYYY-MM-DD-<branch>/memo/memo-<id>.md`
+- YOU MUST: create all working files (not tracked by git) by my original command `mkoutput`.
 
 ### 7.1. Project-Specific Rules
 
@@ -70,28 +64,17 @@ Daily memo file (created by `repo-setup` via `mkoutput`):
 NOTE: TodoWrite is Claude Code specific.
 Codex CLI users should track tasks manually.
 
-## 9. Quick Reference Index
+## 9. File Structure
 
-| Category  | Items                                                                    |
-| --------- | ------------------------------------------------------------------------ |
-| Rules     | aws, bash, git-github, markdown                                          |
-| Skills    | Core + external skills (see `config/claude/skills/`)                     |
-| Subagents | reviewer-\*, researcher-tech (see `config/claude/agents/`)               |
-| Scripts   | precompact-save.sh, pretooluse-\*, sessionstart-reload.sh, statusline.sh |
+Files and directories described below are located at: @~/.agents/
 
-## 10. File Structure
+| Category  | Items                                                    |
+| --------- | -------------------------------------------------------- |
+| Rules     | aws, bash, git-github, markdown                          |
+| Skills    | Core + external skills (see @~/.agents/skills/)          |
+| Subagents | reviewer-\*, researcher-tech (see @~/.agents/subagents/) |
 
-Files and directories described below are located at:
-
-@~/ghq/github.com/i9wa4/dotfiles/config/agents/
-@~/ghq/github.com/i9wa4/dotfiles/config/claude/
-@~/ghq/github.com/i9wa4/dotfiles/config/codex/
-
-### 10.1. Rules
-
-Rules are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/agents/rules/`.
-Symlink: `@~/.config/claude/rules/`
-Symlink: `@~/.codex/rules/`
+### 9.1. `rules/`
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
@@ -102,18 +85,12 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 10.2. Skills
-
-Skills are stored in two locations:
-
-- Managed: `@~/ghq/github.com/i9wa4/dotfiles/config/agents/skills/`
-- External: `@~/.claue/skills/` (symlinks to Nix store)
-- External: `@~/.codex/skills/` (symlinks to Nix store)
+### 9.2. `skills/`
 
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
-#### 10.2.1. Managed Skills
+#### 9.2.1. Managed Skills
 
 | Skill                               | Description                         |
 | ----------------------------------- | ----------------------------------- |
@@ -138,7 +115,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | terraform                           | Terraform development guide         |
 | tmux                                | tmux pane operations for debugging  |
 
-#### 10.2.2. External Skills (Nix Store)
+#### 9.2.2. External Skills (Nix Store)
 
 | Skill                                         | Description                           |
 | --------------------------------------------- | ------------------------------------- |
@@ -152,11 +129,9 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | troubleshooting-dbt-job-errors                | Diagnose dbt Cloud job failures       |
 | using-dbt-for-analytics-engineering           | dbt analytics engineering workflows   |
 
-### 10.3. Subagents
+### 9.3. `subagents/`
 
 Specialized investigators - use anytime for expert perspectives.
-
-Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`.
 
 | Agent                 | Use Case                      |
 | --------------------- | ----------------------------- |

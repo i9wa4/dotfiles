@@ -136,6 +136,12 @@ in {
       # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
 
+      # ~/.agents/
+      ".agents/AGENTS.md".source = symlink "${dotfilesDir}/config/agents/AGENTS.md";
+      ".agents/subagents".source = symlink "${dotfilesDir}/config/agents/subagents";
+      ".agents/rules".source = symlink "${dotfilesDir}/config/agents/rules";
+      ".agents/scripts".source = symlink "${dotfilesDir}/config/agents/scripts";
+
       # ~/.claude/
       ".claude/CLAUDE.md".source = symlink "${dotfilesDir}/config/agents/AGENTS.md";
       ".claude/agents".source = symlink "${dotfilesDir}/config/agents/subagents";

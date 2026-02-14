@@ -164,7 +164,7 @@ nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
 " nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)ac <Cmd>execute 'edit' g:my_ac_path<CR>
+nnoremap <Plug>(my-Filer)aa <Cmd>execute 'edit' g:my_aa_path<CR>
 nnoremap <Plug>(my-Filer)c  <Cmd>execute '15Lexplore'<CR>
 nnoremap <Plug>(my-Filer)i0 <Cmd>execute 'edit' g:my_i0_path<CR>
 nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
