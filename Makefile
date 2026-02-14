@@ -41,12 +41,12 @@ nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
 nix-profile:  ## nix profile
+	# nix profile add github:numtide/llm-agents.nix#coderabbit-cli
+	# nix profile add github:numtide/llm-agents.nix#copilot-cli
+	# nix profile add github:numtide/llm-agents.nix#goose-cli
 	nix profile add github:numtide/llm-agents.nix#ccusage
 	nix profile add github:numtide/llm-agents.nix#ccusage-codex
-	nix profile add github:numtide/llm-agents.nix#coderabbit-cli
 	nix profile add github:numtide/llm-agents.nix#codex
-	nix profile add github:numtide/llm-agents.nix#copilot-cli
-	nix profile add github:numtide/llm-agents.nix#goose-cli
 	# https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
 	# https://github.com/ryoppippi/claude-code-overlay/commits/main/
 	# nix profile add github:ryoppippi/claude-code-overlay#claude
