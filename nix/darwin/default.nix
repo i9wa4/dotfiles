@@ -301,6 +301,11 @@
           # プレビューを表示 (0=常に, 1=ロックされていないときのみ, 2=しない)
           content_visibility = 1;
         };
+        # 音声入力 (Dictation)
+        "com.apple.HIToolbox" = {
+          # 音声入力を有効にする [default: 0 (OFF)]
+          AppleDictationAutoEnable = 1;
+        };
         # .DS_Store ファイルを作成しない
         "com.apple.desktopservices" = {
           # ネットワークドライブ [default: false]
