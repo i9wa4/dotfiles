@@ -61,7 +61,6 @@ call ddc#custom#patch_global('sourceOptions', {
 call ddc#custom#patch_global('sourceParams', {
 \   'slash_commands': {
 \     'userDirs': [
-\       '~/ghq/github.com/i9wa4/dotfiles/config/agents/skills/',
 \       '~/.claude/skills/',
 \     ],
 \     'projectDirs': [
