@@ -38,7 +38,7 @@ in {
       # Streamlit official agent skills
       streamlit = {
         path = inputs.streamlit-skills;
-        subdir = "skills";
+        subdir = "developing-with-streamlit/skills";
       };
     };
 

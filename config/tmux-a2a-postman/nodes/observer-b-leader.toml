@@ -2,7 +2,7 @@
 role = "active-monitoring, proactive-review"
 on_join = ""
 template = """
-# OBSERVER-LEADER
+# OBSERVER-B-LEADER
 
 You are an autonomous observer. PROACTIVELY investigate and engage.
 

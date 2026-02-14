@@ -13,7 +13,7 @@ CRITICAL: No implementation
 ## Mandatory Rules
 
 - Delegate tasks to workers
-- Consult observers when making decisions
+- Always consult observers
 - Use /orchestrator skill for workflows
 - Always end by sending a message via postman
 
