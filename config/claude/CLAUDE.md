@@ -11,26 +11,22 @@ acknowledge with a random one-liner in character.
 
 - Thinking: English
 - Response (conversation): English
-- If the user writes in Japanese, first display the English translation
-  with a "Translation:" label, then continue the conversation in English
+- If the user writes in Japanese, respond in English with a "Translation:" line first
 - Files (editing): Match the comment style in the target file
   - First check the entire file for consistent language
   - If unclear, check surrounding files in the same directory
 
 ## 3. Basic Rules
 
-- YOU MUST: Ask questions if anything is unclear before proceeding
-- YOU MUST: Read files in full without splitting
+- YOU MUST: Ask the task owner (user or agent lead) before proceeding when anything is unclear; if unavailable, proceed with a minimal, explicit assumption and state it
+- YOU MUST: Explore before implementing: git status/log, read files, search patterns
+- YOU MUST: Read files in full
 - YOU MUST: Use uppercase for annotation comments
   (NOTE:, TODO:, FIXME:, WARNING:, etc.)
 - NEVER: Do not pollute global environment (use venv, nvm, rbenv, etc.)
-- NEVER: Do not create lock files (uv.lock, package-lock.json, etc.)
-  or virtual environments (.venv/, node_modules/) without permission
-- YOU MUST: Explore before implementing
-  1. Check git status and recent commits
-  2. Read relevant files in full
-  3. Search for related patterns (Grep/Glob)
-  4. Then proceed with implementation
+- NEVER: Do not run commands that create or update lock files (e.g., `uv sync`,
+  `uv lock`, `npm install`) or virtual envs (`.venv/`, `node_modules/`) without
+  permission; if a lock file is created, stop and report it
 
 ## 4. Scope Discipline
 
@@ -53,52 +49,13 @@ acknowledge with a random one-liner in character.
 
 ## 7. File Management
 
-All working files go to `.i9wa4/` (globally gitignored).
+All working files follow `mkoutput` paths.
 
 - YOU MUST: Use `mkoutput` to create timestamped output files
-- YOU MUST: Save all outputs to `.i9wa4/` subdirectories
+- YOU MUST: Save all outputs under the daily memo directory
 
-Directory structure:
-
-| Directory         | Purpose                   | Example                   |
-| ----------------- | ------------------------- | ------------------------- |
-| `.i9wa4/`         | Fixed name files (root)   | `roadmap.md`, `phase.log` |
-| `.i9wa4/plans/`   | Plan documents            | Timestamped               |
-| `.i9wa4/reviews/` | Review results            | Timestamped               |
-| `.i9wa4/tmp/`     | Temporary/command outputs | Timestamped               |
-
-NOTE: Message exchange is managed separately in `.postman/` by postman daemon.
-
-mkoutput usage:
-
-```bash
-mkoutput SUBDIR [--type TYPE]
-```
-
-| Argument/Option | Required | Default | Description                                          |
-| --------------- | -------- | ------- | ---------------------------------------------------- |
-| `SUBDIR`        | Yes      | -       | Subdirectory name (plans, reviews, tmp, etc.)        |
-| `--type TYPE`   | No       | memo    | File type (plan, output, review-cc, review-cx, etc.) |
-
-Features:
-
-- Auto-detects git root (recursive parent search)
-- Falls back to `$HOME/.i9wa4/` if not in a git repo
-- Creates timestamped files: `YYYYMMDD-HHMMSS-{type}-{hash}.md`
-
-Examples:
-
-```bash
-mkoutput plans --type plan      # → .i9wa4/plans/20260122-110600-plan-a1b2.md
-mkoutput tmp --type output      # → .i9wa4/tmp/20260122-110600-output-a1b2.md
-mkoutput reviews --type review  # → .i9wa4/reviews/20260122-110600-review-c3d4.md
-```
-
-For fixed-name files, use direct commands:
-
-```bash
-mkdir -p .i9wa4 && touch .i9wa4/roadmap.md
-```
+Daily memo file (created by `repo-setup` via `mkoutput`):
+`$XDG_STATE_HOME/mkoutput/sessions/<owner>-<repo>/YYYY-MM-DD-<branch>/memo/memo-<id>.md`
 
 ### 7.1. Project-Specific Rules
 
@@ -106,12 +63,8 @@ mkdir -p .i9wa4 && touch .i9wa4/roadmap.md
 
 ## 8. Context Persistence
 
-- IMPORTANT: Save important findings to `.i9wa4/` before context gets full
-- YOU MUST: When context usage exceeds 60%, consider saving:
-  - Research findings (type: research)
-  - Debugging insights (type: debug)
-  - Architecture decisions (type: arch)
-  - Review results (type: review)
+- IMPORTANT: Save important findings under the daily memo directory before context gets full
+- YOU MUST: When context usage exceeds 60%, save key findings with an appropriate type
 - YOU MUST: Use TodoWrite to track what needs to be persisted
 
 NOTE: TodoWrite is Claude Code specific.
@@ -119,23 +72,26 @@ Codex CLI users should track tasks manually.
 
 ## 9. Quick Reference Index
 
-| Category  | Items                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Rules     | aws, bash, git-github, markdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Skills    | adding-dbt-unit-test, answering-natural-language-questions-with-dbt, atlassian, bigquery, building-dbt-semantic-layer, claude-config-optimizer, codex-config-optimizer, configuring-dbt-mcp-server, daily-report, databricks, dbt, draw-io, fetching-dbt-docs, git, github, jupyter-notebook, migrating-dbt-core-to-fusion, nix, orchestrator, python, restricted-bigquery-dbt-environment, running-dbt-commands, skill-creator, slack, subagent-review, terraform, tmux, troubleshooting-dbt-job-errors, using-dbt-for-analytics-engineering |
-| Subagents | reviewer-{security,architecture,historian,code,data,qa}, researcher-tech                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Scripts   | precompact-save.sh, pretooluse-bash-deny.sh, pretooluse-write-deny.sh, sessionstart-reload.sh, statusline.sh                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Category  | Items                                                                    |
+| --------- | ------------------------------------------------------------------------ |
+| Rules     | aws, bash, git-github, markdown                                          |
+| Skills    | Core + external skills (see `config/claude/skills/`)                     |
+| Subagents | reviewer-\*, researcher-tech (see `config/claude/agents/`)               |
+| Scripts   | precompact-save.sh, pretooluse-\*, sessionstart-reload.sh, statusline.sh |
 
 ## 10. File Structure
 
 Files and directories described below are located at:
 
+@~/ghq/github.com/i9wa4/dotfiles/config/agents/
 @~/ghq/github.com/i9wa4/dotfiles/config/claude/
+@~/ghq/github.com/i9wa4/dotfiles/config/codex/
 
 ### 10.1. Rules
 
 Rules are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/agents/rules/`.
-Symlink: `config/claude/rules/` -> `../agents/rules`
+Symlink: `@~/.config/claude/rules/`
+Symlink: `@~/.codex/rules/`
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
@@ -151,7 +107,8 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 Skills are stored in two locations:
 
 - Managed: `@~/ghq/github.com/i9wa4/dotfiles/config/agents/skills/`
-- External: `@~/ghq/github.com/i9wa4/dotfiles/config/claude/skills/` (symlinks to Nix store)
+- External: `@~/.claue/skills/` (symlinks to Nix store)
+- External: `@~/.codex/skills/` (symlinks to Nix store)
 
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
@@ -199,21 +156,6 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
 Specialized investigators - use anytime for expert perspectives.
 
-**Identifying yourself**:
-
-Run this command to discover your tools:
-
-```console
-tmux display-message -p -t "$TMUX_PANE" '#{pane_current_command}'
-```
-
-- Output contains "claude" → You are Claude Code
-  → Use: Your native subagents AND/OR `codex exec "prompt"`
-- Output contains "codex" → You are Codex CLI
-  → Use: Your native subagents AND/OR `claude --print "prompt"`
-
-**Invocation**:
-
 Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`.
 
 | Agent                 | Use Case                      |
@@ -225,34 +167,3 @@ Subagents are stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/`
 | reviewer-qa           | Test coverage, edge cases     |
 | reviewer-security     | Security, vulnerabilities     |
 | researcher-tech       | Investigation, research       |
-
-### 10.4. Scripts
-
-Helper scripts stored in `@~/ghq/github.com/i9wa4/dotfiles/config/claude/scripts/`.
-
-| Script                   | Purpose                     | Referenced by              |
-| ------------------------ | --------------------------- | -------------------------- |
-| precompact-save.sh       | Context snapshot saver      | settings.json PreCompact   |
-| pretooluse-bash-deny.sh  | Bash command validator      | settings.json PreToolUse   |
-| pretooluse-write-deny.sh | Role-based write deny (A2A) | settings.json PreToolUse   |
-| sessionstart-reload.sh   | CLAUDE.md context reloader  | settings.json SessionStart |
-| statusline.sh            | Status line display         | settings.json statusLine   |
-
-### 10.5. Permission System
-
-Permission rules in settings.json control tool access.
-
-Key settings:
-
-- `defaultMode`: "plan" (analyze only) or "dontAsk" (auto-deny unless allowed)
-- `deny` rules: Block dangerous operations
-- `allow` rules: Pre-approve safe operations
-
-Rule evaluation order: **deny → ask → allow** (first match wins)
-
-Wildcard syntax:
-
-- `Bash(git push *)` - modern syntax (space before asterisk)
-- `Bash(git push:*)` - deprecated syntax (use space instead)
-
-詳細: config/agents/skills/claude-config-optimizer/SKILL.md Section 14

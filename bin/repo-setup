@@ -15,18 +15,23 @@ set -o posix
 #   - local.vim: Vim local configuration
 #   - .i9wa4/: Working directory (gitignored globally)
 #   - .i9wa4/temp.md: Template file for notes
+#   - $XDG_STATE_HOME/mkoutput/sessions/.../temp.md: Daily memo file
 
-# Get main repository info (works from worktree too)
-main_repo="$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')"
-repo_name="$(basename "${main_repo}")"
-echo "* Repository: ${repo_name}"
+# Get current worktree root
+worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
+project_dir="$(basename "${worktree_root}")"
+echo "* Repository: ${project_dir}"
 
-# Create local.vim
-cat >local.vim <<'EOF'
+# Create local.vim via CreateLocalVimrc
+vimrc_path="$HOME/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc"
+if command -v vim &>/dev/null && [[ -f $vimrc_path ]]; then
+  vim -Nu "$vimrc_path" -n -es +'CreateLocalVimrc' +qall
+else
+  cat >local.vim <<'EOF'
 " ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
-let g:my_tp_path = '.i9wa4/temp.md'->expand()
 EOF
+fi
 echo "* Created local.vim"
 
 # Create .i9wa4/ directory (subdirectories created on demand by mkoutput)
@@ -38,6 +43,33 @@ cat >.i9wa4/temp.md <<'EOF'
 # temp
 EOF
 
+# Create memo file via mkoutput
+memo_path="$(mkoutput --dir memo --label memo)"
+cat >"$memo_path" <<'EOF'
+# temp
+EOF
+echo "* Memo:"
+echo "${memo_path}"
+tp_line="let g:my_tp_path = '${memo_path}'->expand()"
+if grep -q '^let g:my_tp_path = ' local.vim; then
+  tmp_file="$(mktemp)"
+  awk -v line="$tp_line" '
+    BEGIN { replaced = 0 }
+    /^let g:my_tp_path = / {
+      if (!replaced) {
+        print line
+        replaced = 1
+      }
+      next
+    }
+    { print }
+    END { if (!replaced) print line }
+  ' local.vim >"$tmp_file"
+  mv "$tmp_file" local.vim
+else
+  printf '%s\n' "$tp_line" >>local.vim
+fi
+
 # Trust mise.toml if exists
 if [[ -f "mise.toml" ]]; then
   mise trust mise.toml
@@ -45,7 +77,7 @@ if [[ -f "mise.toml" ]]; then
 fi
 
 # Repository-specific setup
-case "${repo_name}" in
+case "${project_dir}" in
   # Example: frontend project
   "my-frontend-app")
     npm ci
@@ -53,8 +85,8 @@ case "${repo_name}" in
     ;;
   # Example: backend project with .env
   "my-backend-api")
-    if [[ -f "${main_repo}/.env" ]] && [[ ! -f .env ]]; then
-      cp "${main_repo}/.env" .env
+    if [[ -f "${worktree_root}/.env" ]] && [[ ! -f .env ]]; then
+      cp "${worktree_root}/.env" .env
       echo "* Copied .env from main repository"
     fi
     ;;
@@ -67,8 +99,8 @@ esac
 rm -f .mcp.json
 
 # https://github.com/korotovsky/slack-mcp-server
-claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest
-claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
-claude mcp add --scope project drawio -- npx @drawio/mcp
+# claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest
+# claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
+# claude mcp add --scope project drawio -- npx @drawio/mcp
 
 echo "* Setup complete"

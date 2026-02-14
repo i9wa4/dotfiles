@@ -4,47 +4,39 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# mkoutput - Create timestamped output files
-#
-# Automatically finds project root (.git) or falls back to HOME.
-# Creates files in <root>/.i9wa4/<subdir>/ with timestamped names.
-#
-# Usage:
-#   mkoutput SUBDIR [--type TYPE]
-#
-# Examples:
-#   mkoutput tmp --type compact-save
-#   # → <git-root>/.i9wa4/tmp/20260211-201300-compact-save-a1b2.md
+print_usage() {
+  cat <<'EOF'
+Usage:
+  mkoutput --dir DIR --label LABEL
 
-# IMPORTANT: Change this to your directory name
-readonly WORK_DIR=".i9wa4"
+Creates:
+  $XDG_STATE_HOME/mkoutput/sessions/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<ID>.md
+  Requires repository under $(ghq root)/github.com/
 
-# Find project root (where .git exists) or fall back to HOME
-find_work_root() {
-  local dir="$PWD"
-
-  # Recursively search for .git
-  while [[ $dir != "/" ]]; do
-    if [[ -d "$dir/.git" ]]; then
-      echo "$dir/$WORK_DIR"
-      return 0
-    fi
-    dir=$(dirname "$dir")
-  done
-
-  # No .git found, use HOME
-  echo "$HOME/$WORK_DIR"
+Options:
+  --dir DIR    Directory name under the daily session
+  --label LABEL File label included in the filename
+  -h, --help   Show this help and exit
+EOF
 }
 
 # Defaults
-TYPE="memo"
-SUBDIR=""
+LABEL=""
+DIR=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --type)
-      TYPE="$2"
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --dir)
+      DIR="$2"
+      shift 2
+      ;;
+    --label)
+      LABEL="$2"
       shift 2
       ;;
     -*)
@@ -52,32 +44,54 @@ while [[ $# -gt 0 ]]; do
       exit 1
       ;;
     *)
-      if [[ -z $SUBDIR ]]; then
-        SUBDIR="$1"
-      else
-        echo "Error: Multiple paths specified" >&2
-        exit 1
-      fi
-      shift
+      echo "Error: Unknown argument: $1" >&2
+      exit 1
       ;;
   esac
 done
 
-# Validate SUBDIR
-if [[ -z $SUBDIR ]]; then
-  echo "Error: SUBDIR is required" >&2
-  echo "Usage: mkoutput SUBDIR [--type TYPE]" >&2
+# Validate DIR and LABEL
+if [[ -z $DIR || -z $LABEL ]]; then
+  echo "Error: --dir and --label are required" >&2
+  print_usage >&2
   exit 1
 fi
 
-# Find root and construct path
-WORK_ROOT=$(find_work_root)
-TARGET_DIR="$WORK_ROOT/$SUBDIR"
+# Find repo root and construct path
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z $repo_root ]]; then
+  echo "Error: Not a git repository" >&2
+  exit 1
+fi
 
-# Generate timestamped filename
-TS=$(date +%Y%m%d-%H%M%S)
+ghq_root=""
+if command -v ghq &>/dev/null; then
+  ghq_root="$(ghq root 2>/dev/null || true)"
+fi
+if [[ -z $ghq_root ]]; then
+  ghq_root="$HOME/ghq"
+fi
+
+ghq_prefix="${ghq_root}/github.com/"
+if [[ $repo_root != "${ghq_prefix}"* ]]; then
+  echo "Error: Repository is not under ${ghq_prefix}" >&2
+  exit 1
+fi
+
+ghq_rel="${repo_root#"${ghq_prefix}"}"
+ghq_owner="${ghq_rel%%/*}"
+ghq_repo="${ghq_rel#*/}"
+ghq_repo="${ghq_repo%%/*}"
+
+branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+branch_name="${branch_name//\//-}"
+date_dir="$(date +%Y-%m-%d)-${branch_name}"
+state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+TARGET_DIR="${state_home}/mkoutput/sessions/${ghq_owner}-${ghq_repo}/${date_dir}/${DIR}"
+
+# Generate filename
 ID=$(printf '%04x' $RANDOM)
-FILE_NAME="${TS}-${TYPE}-${ID}.md"
+FILE_NAME="${LABEL}-${ID}.md"
 FILE_PATH="$TARGET_DIR/$FILE_NAME"
 
 # Create directory and file
