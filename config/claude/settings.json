@@ -32,6 +32,36 @@
     ]
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo Current time: $(date +%Y-%m-%dT%H:%M:%S%z)"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/pretooluse-bash-deny.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/pretooluse-write-deny.sh"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "compact|resume|clear",
