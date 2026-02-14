@@ -73,6 +73,9 @@ export PATH="${HOME}"/ghq/github.com/i9wa4/dotfiles/bin:"${PATH}"
 # Claude
 export CLAUDE_CONFIG_DIR="${HOME}"/.claude
 
+# Codex
+export CODEX_HOME="${HOME}"/.codex
+
 # Deno
 export DENO_NO_PROMPT=1
 export DENO_NO_UPDATE_CHECK=1

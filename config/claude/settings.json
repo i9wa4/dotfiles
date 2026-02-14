@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/sessionstart-reload.sh"
+            "command": "~/.claude/scripts/sessionstart-reload.sh"
           }
         ]
       }
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR}/scripts/precompact-save.sh"
+            "command": "~/.claude/scripts/precompact-save.sh"
           }
         ]
       }
@@ -59,8 +59,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "${CLAUDE_CONFIG_DIR}/scripts/statusline.sh",
+    "command": "~/.claude/scripts/statusline.sh",
     "padding": 0
   },
-  "plansDirectory": "${XDG_STATE_HOME}/claude/plans"
+  "plansDirectory": "~/.local/state/claude/plans"
 }
