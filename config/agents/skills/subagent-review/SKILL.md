@@ -123,7 +123,7 @@ causes output interleaving.
 
 ```bash
 for ROLE in security architecture historian code qa; do
-  FILE=$(mkoutput reviews --type "${ROLE}-cx")
+  FILE=$(mkoutput --dir reviews --label "${ROLE}-cx")
   codex exec --sandbox workspace-write -C .i9wa4 -o "$FILE" "{task}"
 done
 ```
@@ -208,7 +208,7 @@ Use file output to avoid interleaving:
 
 ```bash
 for ROLE in security architecture historian data qa; do
-  FILE=$(mkoutput reviews --type "review-${ROLE}-cx")
+  FILE=$(mkoutput --dir reviews --label "review-${ROLE}-cx")
   codex exec --sandbox workspace-write -o "$FILE" \
     "[SUBAGENT capability=READONLY] Review from ${ROLE} perspective. Diff: .i9wa4/tmp/review-diff.txt Context: .i9wa4/tmp/review-context.md" &
 done

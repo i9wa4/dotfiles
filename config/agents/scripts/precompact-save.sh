@@ -19,7 +19,7 @@ set -o posix
 #   File saved to .i9wa4/tmp/
 
 # Create output file
-FILE=$(mkoutput tmp --type compact-save)
+FILE=$(mkoutput --dir tmp --label compact-save)
 
 {
   echo "# Pre-Compact Context Save"

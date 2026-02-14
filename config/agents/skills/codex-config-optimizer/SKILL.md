@@ -59,7 +59,7 @@ machines with different usernames. Solution:
 Use `gh` command to fetch the latest releases:
 
 ```sh
-FILE=$(mkoutput tmp --type output)
+FILE=$(mkoutput --dir tmp --label output)
 gh api repos/openai/codex/releases --jq '.[0:5]' > "$FILE"
 cat "$FILE"
 ```

@@ -45,7 +45,7 @@ Return results directly. Write to `.i9wa4/` if file output needed.
 ### 2.2. Codex CLI
 
 ```bash
-FILE=$(mkoutput reviews --type "${ROLE}-cx") && \
+FILE=$(mkoutput --dir reviews --label "${ROLE}-cx") && \
 codex exec --sandbox workspace-write -C .i9wa4 \
   -o "$FILE" \
   "[SUBAGENT capability=READONLY] {task content}" &
@@ -149,7 +149,7 @@ NEXT: <what is needed to continue>
 Create file:
 
 ```bash
-mkoutput plans --type plan
+mkoutput --dir plans --label plan
 ```
 
 ```markdown
@@ -208,7 +208,7 @@ Parallel: Send to multiple Workers simultaneously
 Create file:
 
 ```bash
-mkoutput reviews --type completion
+mkoutput --dir reviews --label completion
 ```
 
 ```markdown

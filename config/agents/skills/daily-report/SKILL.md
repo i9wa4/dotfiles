@@ -110,7 +110,7 @@ export SLACK_MCP_XOXD_TOKEN="xoxd-..."
 CHANNEL=$(echo "$SLACK_GCAL_DM_URL" | sed -n 's|.*/client/[^/]*/\([^/]*\).*|\1|p')
 
 # Fetch messages
-FILE=$(mkoutput tmp --type output)
+FILE=$(mkoutput --dir tmp --label output)
 curl -s -X POST "https://slack.com/api/conversations.history" \
   -H "Authorization: Bearer $SLACK_MCP_XOXC_TOKEN" \
   -H "Cookie: d=$SLACK_MCP_XOXD_TOKEN" \
@@ -169,7 +169,7 @@ Summarize changes by file/feature (not individual commits).
 Create file:
 
 ```bash
-FILE=$(mkoutput tmp --type "daily-$(whoami)")
+FILE=$(mkoutput --dir tmp --label "daily-$(whoami)")
 ```
 
 NOTE: Keep command blocks in "Today's AI Activities" section.

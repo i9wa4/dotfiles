@@ -25,7 +25,7 @@ The Bash tool has syntax limitations. Keep these in mind.
 
 ```sh
 # First Bash tool call - create file and run command
-FILE=$(mkoutput tmp --type output)
+FILE=$(mkoutput --dir tmp --label output)
 gh issue view 1 --json title,body > "$FILE"
 
 # Second Bash tool call (separate invocation)
@@ -44,19 +44,19 @@ FILE=".i9wa4/tmp/issue.json" && gh issue view 1 --json title > "$FILE" && TITLE=
 Good example (wrap pipes in braces when redirecting)
 
 ```sh
-FILE=$(mkoutput tmp --type output) && { git branch -r | grep issue; } > "$FILE" 2>&1 && cat "$FILE"
+FILE=$(mkoutput --dir tmp --label output) && { git branch -r | grep issue; } > "$FILE" 2>&1 && cat "$FILE"
 ```
 
 Bad example (causes parse error - missing braces around pipe)
 
 ```sh
-FILE=$(mkoutput tmp --type output) && git branch -r | grep issue > "$FILE" 2>&1 && cat "$FILE"
+FILE=$(mkoutput --dir tmp --label output) && git branch -r | grep issue > "$FILE" 2>&1 && cat "$FILE"
 ```
 
 Bad example (subshell not allowed)
 
 ```sh
-FILE=$(mkoutput tmp --type output) && (for i in 1 2 3; do echo "$i"; done) > "$FILE" 2>&1
+FILE=$(mkoutput --dir tmp --label output) && (for i in 1 2 3; do echo "$i"; done) > "$FILE" 2>&1
 ```
 
 ### 2.6. HEREDOC Usage
