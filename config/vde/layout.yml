@@ -11,7 +11,7 @@ presets:
           ratio: [1, 1]
           panes:
             - name: postman
-              command: set-a2a-node postman; nix run github:i9wa4/tmux-a2a-postman --refresh
+              command: nix run github:i9wa4/tmux-a2a-postman --refresh
               delay: 500
               focus: true
             - name: agent
@@ -40,7 +40,7 @@ presets:
           delay: 500
           focus: true
         - name: agent
-          command: claude --dangerously-skip-permissions --model sonnet
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
 
   messenger:
