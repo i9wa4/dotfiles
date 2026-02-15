@@ -17,9 +17,15 @@ presets:
             - name: agent
               command: set-a2a-node watchdog -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
-        - name: gtop
-          command: gtop
-          delay: 500
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: gtop
+              command: gtop
+              delay: 500
+            - name: vde-monitor
+              command: vde-monitor --public
+              delay: 500
 
   dev:
     name: dev
