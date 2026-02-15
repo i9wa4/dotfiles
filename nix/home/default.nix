@@ -277,6 +277,7 @@ in {
         "gtop"
         "vde-layout"
         "vde-monitor"
+        "vde-worktree"
       )
 
       # Install missing packages
