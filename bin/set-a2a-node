@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# Set A2A_NODE for tmux pane border display.
+# Updates both the environment variable and tmux pane-local option.
+#
+# Usage:
+#   set-a2a-node orchestrator
+#   set-a2a-node worker
+#   set-a2a-node --clear
+
+print_usage() {
+  cat <<'EOF'
+Usage:
+  set-a2a-node <node_name>
+  set-a2a-node --clear
+
+Set A2A_NODE environment variable and update tmux pane option.
+
+Options:
+  <node_name>  Node name (e.g., orchestrator, worker, observer)
+  --clear      Clear A2A_NODE
+  -h, --help   Show this help and exit
+
+Examples:
+  set-a2a-node orchestrator
+  set-a2a-node worker
+  set-a2a-node --clear
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --clear)
+      unset A2A_NODE 2>/dev/null || true
+      if [[ -n ${TMUX:-} ]]; then
+        tmux set-option -p -u @a2a_node 2>/dev/null || true
+      fi
+      echo "A2A_NODE cleared"
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      node_name="$1"
+      break
+      ;;
+  esac
+done
+
+if [[ -z ${node_name:-} ]]; then
+  echo "Error: node_name is required" >&2
+  print_usage >&2
+  exit 1
+fi
+
+# NOTE: export in script only affects subprocesses, not parent shell
+export A2A_NODE="$node_name"
+
+if [[ -n ${TMUX:-} ]]; then
+  tmux set-option -p @a2a_node "$A2A_NODE"
+fi
+
+echo "A2A_NODE set to: $A2A_NODE"
