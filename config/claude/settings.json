@@ -88,5 +88,6 @@
     "type": "command",
     "command": "~/.claude/scripts/statusline.sh"
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "model": "sonnet"
 }

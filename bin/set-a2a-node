@@ -16,6 +16,7 @@ print_usage() {
   cat <<'EOF'
 Usage:
   set-a2a-node <node_name>
+  set-a2a-node <node_name> -- <command> [args...]
   set-a2a-node --clear
 
 Set A2A_NODE environment variable and update tmux pane option.
@@ -28,6 +29,7 @@ Options:
 Examples:
   set-a2a-node orchestrator
   set-a2a-node worker
+  set-a2a-node watchdog -- claude --model sonnet
   set-a2a-node --clear
 EOF
 }
@@ -53,6 +55,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       node_name="$1"
+      shift
       break
       ;;
   esac
@@ -64,11 +67,17 @@ if [[ -z ${node_name:-} ]]; then
   exit 1
 fi
 
-# NOTE: export in script only affects subprocesses, not parent shell
+# Set A2A_NODE
 export A2A_NODE="$node_name"
 
 if [[ -n ${TMUX:-} ]]; then
   tmux set-option -p @a2a_node "$A2A_NODE"
+fi
+
+# If "--" separator found, exec remaining command
+if [[ $# -gt 0 && "$1" == "--" ]]; then
+  shift
+  exec "$@"
 fi
 
 echo "A2A_NODE set to: $A2A_NODE"
