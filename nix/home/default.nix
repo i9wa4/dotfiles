@@ -207,34 +207,6 @@ in {
       ''}
     '';
 
-    # 0. Disable Google Software Update Agent (Homebrew manages Chrome updates)
-    # cf. https://github.com/Homebrew/homebrew-cask/issues/69898
-    disableGoogleUpdater = lib.hm.dag.entryAfter ["writeBoundary"] (
-      lib.optionalString pkgs.stdenv.isDarwin ''
-        echo "Disabling Google Software Update Agent..."
-        # Unload active LaunchAgents
-        launchctl bootout "gui/$(id -u)/com.google.GoogleUpdater.wake" 2>/dev/null || true
-        launchctl bootout "gui/$(id -u)/com.google.keystone.agent" 2>/dev/null || true
-        launchctl bootout "gui/$(id -u)/com.google.keystone.xpcservice" 2>/dev/null || true
-        # Remove and block LaunchAgent plist files (chmod 000 prevents recreation)
-        for f in \
-          "${homeDir}/Library/LaunchAgents/com.google.GoogleUpdater.wake.plist" \
-          "${homeDir}/Library/LaunchAgents/com.google.keystone.agent.plist" \
-          "${homeDir}/Library/LaunchAgents/com.google.keystone.xpcservice.plist"; do
-          rm -f "$f"
-          touch "$f"
-          chmod 000 "$f"
-        done
-        # Remove and block updater directories (replace with empty files)
-        rm -rf "${homeDir}/Library/Google/GoogleSoftwareUpdate"
-        touch "${homeDir}/Library/Google/GoogleSoftwareUpdate"
-        chmod 000 "${homeDir}/Library/Google/GoogleSoftwareUpdate"
-        rm -rf "${homeDir}/Library/Application Support/Google/GoogleUpdater"
-        touch "${homeDir}/Library/Application Support/Google/GoogleUpdater"
-        chmod 000 "${homeDir}/Library/Application Support/Google/GoogleUpdater"
-      ''
-    );
-
     # 0. Clone tmux plugin manager (tpm)
     cloneTpm = lib.hm.dag.entryAfter ["writeBoundary"] ''
       export PATH="${pkgs.git}/bin:$PATH"

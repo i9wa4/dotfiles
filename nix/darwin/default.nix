@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   username,
   ...
 }: {
@@ -325,6 +326,53 @@
         # };
       };
     };
+
+    # ==========================================================================
+    # Disable Google Software Update Agent (Homebrew manages Chrome updates)
+    # Run BEFORE Homebrew cleanup to disable updater while Chrome still exists
+    # cf. homebrew-cask issue 69898
+    # ==========================================================================
+    activationScripts.disableGoogleUpdater = lib.mkBefore ''
+      echo "Disabling Google Software Update Agent..."
+
+      # Phase 1: User-level operations (run as user)
+      sudo -n -u ${username} bash -c '
+        # Unload active LaunchAgents
+        launchctl bootout "gui/$(id -u)/com.google.GoogleUpdater.wake" 2>/dev/null || true
+        launchctl bootout "gui/$(id -u)/com.google.keystone.agent" 2>/dev/null || true
+        launchctl bootout "gui/$(id -u)/com.google.keystone.xpcservice" 2>/dev/null || true
+
+        # Remove and block LaunchAgent plist files (chmod 000 prevents recreation)
+        for f in \
+          "/Users/${username}/Library/LaunchAgents/com.google.GoogleUpdater.wake.plist" \
+          "/Users/${username}/Library/LaunchAgents/com.google.keystone.agent.plist" \
+          "/Users/${username}/Library/LaunchAgents/com.google.keystone.xpcservice.plist"; do
+          rm -f "$f"
+          touch "$f"
+          chmod 000 "$f"
+        done
+
+        # Phase 2: Disable via macOS preferences
+        defaults write com.google.Keystone.Agent checkInterval 0
+
+        # Remove and block updater directories (replace with empty files)
+        rm -rf "/Users/${username}/Library/Google/GoogleSoftwareUpdate"
+        touch "/Users/${username}/Library/Google/GoogleSoftwareUpdate"
+        chmod 000 "/Users/${username}/Library/Google/GoogleSoftwareUpdate"
+
+        rm -rf "/Users/${username}/Library/Application Support/Google/GoogleUpdater"
+        touch "/Users/${username}/Library/Application Support/Google/GoogleUpdater"
+        chmod 000 "/Users/${username}/Library/Application Support/Google/GoogleUpdater"
+      '
+
+      # Phase 3-4: System-level operations (run as root - no sudo needed)
+      launchctl bootout system/com.google.keystone.daemon 2>/dev/null || true
+
+      # Remove and block system-level updater directory
+      rm -rf /Library/Google/GoogleSoftwareUpdate
+      touch /Library/Google/GoogleSoftwareUpdate
+      chmod 000 /Library/Google/GoogleSoftwareUpdate
+    '';
 
     # ==========================================================================
     # Additional settings via defaults write (not supported by nix-darwin options)
