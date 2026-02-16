@@ -154,17 +154,7 @@ Extract from attachments:
 
 Format as: `- Meeting name (HH:MM-HH:MM)`
 
-### 2.4. Get dotfiles Changes
-
-Fetch commits from the dotfiles repository in the last 24 hours.
-
-```sh
-cd ~/ghq/github.com/i9wa4/dotfiles && git log --oneline --since="24 hours ago" --author="$(git config user.name)" --name-only
-```
-
-Summarize changes by file/feature (not individual commits).
-
-### 2.5. Create Draft
+### 2.4. Create Draft
 
 Create file:
 
@@ -177,7 +167,7 @@ Execute commands and paste results below the command block.
 
 Template:
 
-````markdown
+```markdown
 ---
 title: "YYYY-MM-DD $(whoami)"
 labels:
@@ -185,72 +175,47 @@ labels:
     color: "0887b9"
 ---
 
-## 1. Today's Activities
+## 1. Reflection
 
-### 1.1. GitHub
+## 2. Today's Activities
+
+### 2.1. GitHub
 
 Organize gh-furik output. Classify as follows:
 
-#### 1.1.1. Created Issues
+#### 2.1.1. Created Issues
 
 - [repo-name] Issue title
 
-#### 1.1.2. Created PRs
+#### 2.1.2. Created PRs
 
 - [repo-name] PR title
 - [repo-name] PR title (merged)
   - Add supplementary comments indented
 
-#### 1.1.3. Reviewed PRs
+#### 2.1.3. Reviewed PRs
 
 - [repo-name] PR title
 
-#### 1.1.4. Commented Issues/PRs
+#### 2.1.4. Commented Issues/PRs
 
 - [repo-name] Issue/PR title
 
-### 1.2. Jira
+### 2.2. Jira
 
 - [KEY-123] Issue summary (status)
 
-### 1.3. Meetings
+### 2.3. Meetings
 
 - Meeting name
   - Supplementary comments
-
-## 2. Today's AI Activities
-
-### 2.1. Claude Code
-
-```console
-ccusage --compact --since $(date +%Y%m%d)
 ```
 
-| Date | Models | Input | Output | Cost (USD) |
-| ---- | ------ | ----- | ------ | ---------- |
-
-### 2.2. Codex CLI
-
-```console
-ccusage-codex --compact --since $(date +%Y%m%d)
-```
-
-| Date | Models | Input | Output | Cost (USD) |
-| ---- | ------ | ----- | ------ | ---------- |
-
-### 2.3. dotfiles
-
-- Changed file or feature summary
-- Another change summary
-
-## 3. Reflection
-````
-
-### 2.6. Wait for User Edit
+### 2.5. Wait for User Edit
 
 Display draft and wait for user edits. User adds reflections.
 
-### 2.7. Post Issue
+### 2.6. Post Issue
 
 Post with `gh issue create`:
 
