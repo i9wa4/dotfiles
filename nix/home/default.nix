@@ -152,7 +152,6 @@ in {
   };
 
   xdg.configFile = {
-    "claude".source = symlink "${dotfilesDir}/config/claude";
     "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
     "lazygit".source = symlink "${dotfilesDir}/config/lazygit";
     "nvim".source = symlink "${dotfilesDir}/config/nvim";

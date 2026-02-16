@@ -16,16 +16,13 @@ Rules and tracking for Codex CLI configuration optimization.
 ## 1. Config File Location
 
 User's Codex CLI config is stored at:
-
-```text
-~/ghq/github.com/i9wa4/dotfiles/config/codex/
-```
+@~/ghq/github.com/i9wa4/dotfiles/config/agents/
+@~/ghq/github.com/i9wa4/dotfiles/config/codex/
 
 Key files:
 
 | File                 | Git | Description                               |
 | -------------------- | --- | ----------------------------------------- |
-| `.gitignore`         | Yes | Ignore all except whitelisted files       |
 | `config.common.toml` | Yes | Common settings (model, MCP, etc.)        |
 | `AGENTS.md`          | No  | Symlink to `../claude/CLAUDE.md`          |
 | `skills/`            | No  | Symlink to `../claude/skills/`            |
@@ -33,7 +30,7 @@ Key files:
 
 ## 2. Config Management
 
-### Why separate common and full config?
+### 2.1. Why separate common and full config?
 
 `config.toml` contains full paths for trusted projects:
 
@@ -48,7 +45,7 @@ machines with different usernames. Solution:
 - `config.common.toml` - Shared settings (Git-managed)
 - `config.toml` - Manually managed, machine-specific (Git-ignored)
 
-### How to update
+### 2.2. How to update
 
 1. Edit `config.common.toml` for shared settings
 2. Copy shared settings to `config.toml` manually

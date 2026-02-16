@@ -130,7 +130,6 @@ endfunction
 " Insert Mode
 " i_CTRL-T Insert one indent
 " i_CTRL-D Delete one indent
-inoremap ,cmd <C-r>=fnamemodify("~/ghq/github.com/i9wa4/dotfiles/config/claude/commands/", ":p:~")<CR>
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 

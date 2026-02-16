@@ -74,7 +74,7 @@ IMPORTANT: For PR reviews, always chase references in the PR body.
 Related Issues/PRs provide critical intent and acceptance criteria.
 
 Agent file:
-`@~/ghq/github.com/i9wa4/dotfiles/config/claude/agents/reviewer-{ROLE}.md`
+@~/.agents/subagents/reviewer-{ROLE}.md
 
 ### 1.4. Review Execution
 

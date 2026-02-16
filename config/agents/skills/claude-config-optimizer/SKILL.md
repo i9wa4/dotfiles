@@ -17,10 +17,8 @@ Rules and tracking for Claude Code configuration optimization.
 ## 1. Config File Location
 
 User's Claude Code config is stored at:
-
-```text
-~/ghq/github.com/i9wa4/dotfiles/config/claude/
-```
+@~/ghq/github.com/i9wa4/dotfiles/config/agents/
+@~/ghq/github.com/i9wa4/dotfiles/config/claude/
 
 Key files:
 
@@ -348,7 +346,7 @@ Based on usage analysis (55K messages, 4.7K sessions):
 - Completion status reporting: No consumer for this output
 - PreToolUse hook for SQL: Handled by skill guidance instead
 
-## References
+## 16. References
 
 - Hooks Reference: `https://code.claude.com/docs/en/hooks`
 - Permissions Reference: `https://code.claude.com/docs/en/permissions`
