@@ -158,6 +158,8 @@ nmap <Space>e <Plug>(my-Edit)
 nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
 nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
+nnoremap <Plug>(my-Edit)qa <Cmd>%s/\([^,]*\)/"\1"/g<CR>
+nnoremap <Plug>(my-Edit)qr <Cmd>%s/"//g<CR>
 
 " Filer
 " nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
