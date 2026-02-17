@@ -68,15 +68,12 @@ presets:
       ratio: [1, 1]
       panes:
         - name: agent
-          # command: set-a2a-node boss -- codex --yolo --model gpt-5.3-codex
-          command: set-a2a-node boss -- claude-chill -- claude --dangerously-skip-permissions --model opus
+          # command: set-a2a-node orchestrator -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          command: set-a2a-node orchestrator -- codex --yolo --model gpt-5.3-codex
           delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
-            - name: agent
-              command: set-a2a-node orchestrator -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
-              delay: 500
             - name: agent
               command: set-a2a-node worker -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
@@ -85,4 +82,8 @@ presets:
               delay: 500
             - name: agent
               command: set-a2a-node guardian -- codex --yolo --model gpt-5.3-codex
+              delay: 500
+            - name: agent
+              # command: set-a2a-node boss -- codex --yolo --model gpt-5.3-codex
+              command: set-a2a-node boss -- claude-chill -- claude --dangerously-skip-permissions --model opus
               delay: 500
