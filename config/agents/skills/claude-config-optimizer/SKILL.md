@@ -136,7 +136,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.37 (2026-02-09)
+Last reviewed Claude Code version: v2.1.44 (2026-02-17)
 
 ### 10.1. Applied Optimizations
 
@@ -173,6 +173,15 @@ Last reviewed Claude Code version: v2.1.37 (2026-02-09)
 
 ### 10.4. Version Notes
 
+- v2.1.44: Auth refresh error fix
+- v2.1.43: **Fixed AWS auth refresh hanging indefinitely** (3-min timeout), Vertex/Bedrock fixes
+- v2.1.42: Startup performance improvement, prompt cache hit rate improvement
+- v2.1.41: Guard against nested Claude Code sessions, FileReadTool hang fix,
+  MCP image content crash fix, proactive ticks in plan mode fix
+- v2.1.39: **Fixed process hanging after session close**, terminal rendering
+  performance, fatal error display fix
+- v2.1.38: VS Code scroll regression fix, Tab key autocomplete fix, heredoc
+  command smuggling prevention
 - v2.1.37: /fast immediately available after /extra-usage
 - v2.1.36: Fast mode for Opus 4.6
 - v2.1.34: **Sandbox bypass vulnerability fixed** (security), agent teams crash
