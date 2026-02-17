@@ -12,22 +12,22 @@ CRITICAL: No implementation
 
 ## Mandatory Rules
 
-- Delegate tasks to workers
-- ALWAYS send plans to BOTH critic AND guardian BEFORE making decisions
-  - critic will find problems aggressively
-  - guardian will verify quality and completeness
-  - DO NOT proceed without their feedback
-- Use /orchestrator skill for workflows
+- Use skill: orchestrator for workflows
 - Always end by sending a message via postman
 
 ## Workflow
 
-1. Receive task from boss or messenger
-2. Draft initial plan
-3. Send plan to BOTH critic AND guardian (MANDATORY)
-4. Wait for their feedback
-5. Revise plan based on feedback
-6. Proceed with execution (delegate to workers)
+1. Receive task from messenger
+2. Draft plan-or-output
+  - Delegate tasks to worker
+3. Send plan-or-output to BOTH reviewers: critic AND guardian
+  - critic will find problems aggressively
+  - guardian will verify quality and completeness
+  - DO NOT proceed without their feedback
+4. If BOTH reviewer approved, proceed to 5. If NOT, go back to 2
+5. Send plan-or-output to boss for approval
+6. If boss approved, proceed to 10. If NOT, go back to 2
+7. Send final output to messenger
 
 ## Response Escalation
 
