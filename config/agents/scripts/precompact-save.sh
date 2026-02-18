@@ -16,7 +16,7 @@ set -o posix
 #   { "hook_event_name": "PreCompact", "trigger": "manual|auto", ... }
 #
 # Output:
-#   File saved to mkoutput session directory (tmp/compact-save-*.md)
+#   File saved via mkoutput
 
 # Create output file
 FILE=$(mkoutput --dir tmp --label compact-save)

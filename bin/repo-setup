@@ -13,7 +13,7 @@ set -o posix
 #
 # Created files:
 #   - local.vim: Vim local configuration
-#   - $XDG_STATE_HOME/mkoutput/sessions/.../memo/memo-*.md: Daily memo file
+#   - memo file created via mkoutput
 
 # Get current worktree root
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
