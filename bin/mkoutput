@@ -10,8 +10,8 @@ Usage:
   mkoutput --dir DIR --label LABEL
 
 Creates:
-  $XDG_STATE_HOME/mkoutput/sessions/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<ID>.md
-  Requires repository under $(ghq root)/github.com/
+  $XDG_STATE_HOME/mkoutput/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<ID>.md
+  Works in git repos (uses owner/repo from ghq path) and outside git (uses "local"/dirname).
 
 Options:
   --dir DIR    Directory name under the daily session
@@ -57,50 +57,51 @@ if [[ -z $DIR || -z $LABEL ]]; then
   exit 1
 fi
 
-# Find repo root and construct path
+# Resolve project identity and branch
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-if [[ -z $repo_root ]]; then
-  echo "Error: Not a git repository" >&2
-  exit 1
-fi
 
-ghq_root=""
-if command -v ghq &>/dev/null; then
-  ghq_root="$(ghq root 2>/dev/null || true)"
-fi
-if [[ -z $ghq_root ]]; then
-  ghq_root="$HOME/ghq"
-fi
+if [[ -n $repo_root ]]; then
+  # Inside a git repository
+  ghq_root=""
+  if command -v ghq &>/dev/null; then
+    ghq_root="$(ghq root 2>/dev/null || true)"
+  fi
+  if [[ -z $ghq_root ]]; then
+    ghq_root="$HOME/ghq"
+  fi
 
-ghq_prefix="${ghq_root}/github.com/"
-if [[ $repo_root != "${ghq_prefix}"* ]]; then
-  echo "Error: Repository is not under ${ghq_prefix}" >&2
-  exit 1
-fi
+  ghq_prefix="${ghq_root}/github.com/"
 
-# Resolve main repo root (handles git worktrees)
-git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null || true)"
-if [[ -n $git_common_dir && $git_common_dir != ".git" && $git_common_dir != ".git/" ]]; then
-  # Linked worktree: git_common_dir is absolute path to main repo's .git
-  main_repo_root="${git_common_dir%/.git}"
+  # Resolve main repo root (handles git worktrees)
+  git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null || true)"
+  if [[ -n $git_common_dir && $git_common_dir != ".git" && $git_common_dir != ".git/" ]]; then
+    # Linked worktree: git_common_dir is absolute path to main repo's .git
+    main_repo_root="${git_common_dir%/.git}"
+  else
+    main_repo_root="$repo_root"
+  fi
+
+  if [[ $main_repo_root == "${ghq_prefix}"* ]]; then
+    ghq_rel="${main_repo_root#"${ghq_prefix}"}"
+    project_owner="${ghq_rel%%/*}"
+    project_name="${ghq_rel#*/}"
+    project_name="${project_name%%/*}"
+  else
+    project_owner="local"
+    project_name="$(basename "$main_repo_root")"
+  fi
+
+  branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+  branch_name="${branch_name//\//-}"
 else
-  main_repo_root="$repo_root"
+  # Outside a git repository: use current directory name
+  project_owner="local"
+  project_name="$(basename "$(pwd -P)")"
+  branch_name="local"
 fi
-
-if [[ $main_repo_root != "${ghq_prefix}"* ]]; then
-  main_repo_root="$repo_root"
-fi
-
-ghq_rel="${main_repo_root#"${ghq_prefix}"}"
-ghq_owner="${ghq_rel%%/*}"
-ghq_repo="${ghq_rel#*/}"
-ghq_repo="${ghq_repo%%/*}"
-
-branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-branch_name="${branch_name//\//-}"
 date_dir="$(date +%Y-%m-%d)-${branch_name}"
 state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
-TARGET_DIR="${state_home}/mkoutput/${ghq_owner}-${ghq_repo}/${date_dir}/${DIR}"
+TARGET_DIR="${state_home}/mkoutput/${project_owner}-${project_name}/${date_dir}/${DIR}"
 
 # Generate filename
 ID=$(printf '%04x' $RANDOM)
