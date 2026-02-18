@@ -14,9 +14,9 @@ presets:
               command: nix run github:i9wa4/tmux-a2a-postman --refresh
               delay: 500
               focus: true
-            - name: agent
-              title: agent
-              command: set-a2a-node watchdog -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
+            - name: watchdog
+              title: watchdog
+              command: -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
         - type: vertical
           ratio: [1, 1]
