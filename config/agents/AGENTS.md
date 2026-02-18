@@ -146,3 +146,8 @@ Specialized investigators - use anytime for expert perspectives.
 | reviewer-qa           | Test coverage, edge cases     |
 | reviewer-security     | Security, vulnerabilities     |
 | researcher-tech       | Investigation, research       |
+
+## 9. Environment
+
+- Always running inside a tmux pane
+- Your role name: `tmux display-message -p '#{pane_title}'`

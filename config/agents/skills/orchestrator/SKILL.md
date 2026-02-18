@@ -3,8 +3,7 @@ name: orchestrator
 description: |
   Orchestration workflow for orchestrator role ONLY.
   Use when:
-  - Agent's $A2A_NODE environment variable contains "orchestrator"
-  Do NOT use for worker, critic, or guardian roles.
+  - Agent's role name (tmux pane title) is "orchestrator"
 ---
 
 # Orchestrator Skill

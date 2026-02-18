@@ -32,7 +32,6 @@ eval "$(direnv hook zsh)"
 source "${ZDOTDIR}/aws.zsh"
 source "${ZDOTDIR}/keybind.zsh"
 source "${ZDOTDIR}/prompt.zsh"
-source "${ZDOTDIR}/tmux.zsh"
 source "${ZDOTDIR}/zinit.zsh"
 
 # Safe-chain

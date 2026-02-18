@@ -238,7 +238,7 @@ cat .i9wa4/reviews/*-review-*.md
 
 IMPORTANT: This is an optional phase. Execute only when:
 
-- Running in orchestrator environment ($A2A_NODE contains "orchestrator")
+- Running as orchestrator (role name is "orchestrator")
 - User explicitly requests comprehensive review with deliberation
 
 For standalone execution, Phase 1 (Section 1.5) alone is sufficient.
