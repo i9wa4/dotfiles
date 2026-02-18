@@ -86,6 +86,10 @@ snippets:
     keyword: wr
     snippet: worktree-remove $(ghq list -p | while read -r p; do [ -f "$p/.git" ] && echo "$p"; done | fzf --multi --preview 'ghq-fzf-preview {}')
 
+  - name: (macOS) caffeinate
+    keyword: caffeinate
+    snippet: sudo pmset disablesleep
+
   - name: (Nix) develop (select from ghq repos)
     keyword: nd
     snippet: nix develop "$(ghq root)/$(ghq list | xargs -I{} sh -c 'test -f "$(ghq root)/{}"/flake.nix && echo {}' | fzf)" --command zsh
