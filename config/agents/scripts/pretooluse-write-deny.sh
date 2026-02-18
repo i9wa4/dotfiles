@@ -56,8 +56,6 @@ if [[ -n $ROLE_NAME && $ROLE_NAME != worker && $ROLE_NAME != agent ]]; then
       : # Allow writes to claude state directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow writes to /tmp/ directory
-    elif [[ -n $FILE_PATH && $FILE_PATH == ".i9wa4/"* ]]; then
-      : # Allow writes to .i9wa4/ directory
     else
       REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker* can edit files."$'\n'"💡 Alternative: Send task to worker via postman"
       jq -n \

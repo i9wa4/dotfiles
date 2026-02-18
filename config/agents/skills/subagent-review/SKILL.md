@@ -68,7 +68,7 @@ basename "$(git rev-parse --show-toplevel)" | grep -oP '(pr|issue)-\K[0-9]+'
    - Issue: `gh issue view {N} --json body,comments`
 3. For PR: parse body for referenced Issues/PRs (`#123`, `Closes #456`, etc.)
    and fetch each with `gh issue view` or `gh pr view`
-4. Save all context to `.i9wa4/tmp/review-context.md`
+4. Save all context to CONTEXT_FILE (created with mkoutput)
 
 IMPORTANT: For PR reviews, always chase references in the PR body.
 Related Issues/PRs provide critical intent and acceptance criteria.
@@ -95,8 +95,8 @@ Task content template:
 timestamp: {TS}, source: {SOURCE}, role: {ROLE}
 review_type: {REVIEW_TYPE}
 -->
-Review the diff in .i9wa4/tmp/review-diff.txt from {ROLE} perspective.
-Context (PR/Issue metadata): .i9wa4/tmp/review-context.md
+Review the diff in {DIFF_FILE} from {ROLE} perspective.
+Context (PR/Issue metadata): {CONTEXT_FILE}
 Return your review directly. Do NOT create files.
 ```
 
@@ -124,7 +124,7 @@ causes output interleaving.
 ```bash
 for ROLE in security architecture historian code qa; do
   FILE=$(mkoutput --dir reviews --label "${ROLE}-cx")
-  codex exec --sandbox workspace-write -C .i9wa4 -o "$FILE" "{task}"
+  codex exec --sandbox workspace-write -o "$FILE" "{task}"
 done
 ```
 
@@ -145,10 +145,11 @@ Run these steps automatically (no user input needed):
 
 ```bash
 # 1. Save diff
-git diff main...HEAD > .i9wa4/tmp/review-diff.txt
+DIFF_FILE=$(mkoutput --dir reviews --label review-diff)
+git diff main...HEAD > "$DIFF_FILE"
 
 # 2. Detect review_type
-if [ -s .i9wa4/tmp/review-diff.txt ]; then
+if [ -s "$DIFF_FILE" ]; then
   REVIEW_TYPE="code"
 else
   REVIEW_TYPE="design"
@@ -160,7 +161,7 @@ PR_NUM=$(echo "$DIR_NAME" | grep -oP 'pr-\K[0-9]+' || true)
 ISSUE_NUM=$(echo "$DIR_NAME" | grep -oP 'issue-\K[0-9]+' || true)
 
 # 4. Fetch context metadata
-CONTEXT_FILE=".i9wa4/tmp/review-context.md"
+CONTEXT_FILE=$(mkoutput --dir reviews --label review-context)
 echo "# Review Context" > "$CONTEXT_FILE"
 
 if [ -n "$PR_NUM" ]; then
@@ -198,8 +199,8 @@ Each prompt should include:
 ```text
 [SUBAGENT capability=READONLY]
 Review from {ROLE} perspective.
-Diff: .i9wa4/tmp/review-diff.txt
-Context: .i9wa4/tmp/review-context.md
+Diff: {DIFF_FILE}
+Context: {CONTEXT_FILE}
 ```
 
 #### 1.5.3. Step 3: Launch cx x 5 (Background Processes)
@@ -210,7 +211,7 @@ Use file output to avoid interleaving:
 for ROLE in security architecture historian data qa; do
   FILE=$(mkoutput --dir reviews --label "review-${ROLE}-cx")
   codex exec --sandbox workspace-write -o "$FILE" \
-    "[SUBAGENT capability=READONLY] Review from ${ROLE} perspective. Diff: .i9wa4/tmp/review-diff.txt Context: .i9wa4/tmp/review-context.md" &
+    "[SUBAGENT capability=READONLY] Review from ${ROLE} perspective. Diff: ${DIFF_FILE} Context: ${CONTEXT_FILE}" &
 done
 wait
 ```
@@ -218,11 +219,8 @@ wait
 #### 1.5.4. Step 4: Collect Results
 
 ```bash
-# Check all review files
-ls -la .i9wa4/reviews/*-review-*.md
-
-# Read and summarize
-cat .i9wa4/reviews/*-review-*.md
+# cx review files are referenced by $FILE variables from Step 3
+# cc review results are returned directly by the Task tool
 ```
 
 #### 1.5.5. Timing Optimization
@@ -295,17 +293,17 @@ Task tool calls (parallel, single message):
 
 #### 1.6.4. Result Files
 
-Save deliberation results to `.i9wa4/reviews/`:
+Save deliberation results:
 
 - cc: Use Task tool results directly
-- cx: `{timestamp}-deliberation-{ROLE}-cx.md`
+- cx: `FILE=$(mkoutput --dir reviews --label "deliberation-{ROLE}-cx")`
 
 ### 1.7. Summary Output
 
 Create file:
 
 ```bash
-mkdir -p .i9wa4/reviews && touch .i9wa4/reviews/summary.md
+SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
 ```
 
 ```markdown

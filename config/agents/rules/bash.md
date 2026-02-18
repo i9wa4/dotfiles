@@ -3,7 +3,7 @@
 ## 1. General Command Usage
 
 - NEVER: Do not use the `rm` command (denied in settings.json)
-- YOU MUST: Use `mv .i9wa4/tmp/` when you need to delete files
+- YOU MUST: Use `mv /tmp/` when you need to delete files
 
 ## 2. Bash Tool Syntax Restrictions
 
@@ -36,7 +36,7 @@ jq -r '.title' "$FILE"
 
 ```sh
 # Overly complex one-liner with variable assignments
-FILE=".i9wa4/tmp/issue.json" && gh issue view 1 --json title > "$FILE" && TITLE=$(jq -r '.title' "$FILE") && echo "$TITLE"
+FILE=$(mkoutput --dir tmp --label issue) && gh issue view 1 --json title > "$FILE" && TITLE=$(jq -r '.title' "$FILE") && echo "$TITLE"
 ```
 
 ### 2.5. Brace Group Examples

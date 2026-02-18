@@ -45,7 +45,7 @@ Return results directly. Use mkoutput if file output needed.
 
 ```bash
 FILE=$(mkoutput --dir reviews --label "${ROLE}-cx") && \
-codex exec --sandbox workspace-write -C .i9wa4 \
+codex exec --sandbox workspace-write \
   -o "$FILE" \
   "[Your capability=READONLY] {task content}" &
 wait

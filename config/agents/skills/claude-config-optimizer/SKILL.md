@@ -34,8 +34,9 @@ Key files:
 Use `gh` command to fetch the latest CHANGELOG:
 
 ```sh
+FILE=$(mkoutput --dir tmp --label claude-code-changelog)
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
-  --jq '.content' | base64 -d > .i9wa4/tmp/claude-code-changelog.md
+  --jq '.content' | base64 -d > "$FILE"
 ```
 
 Then read the file to analyze.
@@ -149,7 +150,7 @@ Last reviewed Claude Code version: v2.1.44 (2026-02-17)
 - [x] `language` setting - set to "follow CLAUDE.md's instructions"
 - [x] `mcpToolSearch` setting - set to "auto:1"
 - [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
-- [x] `plansDirectory` setting - set to ".i9wa4/plans"
+- [x] `plansDirectory` setting - set to use mkoutput session directory
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
 - [x] Fast mode - available for Opus 4.6 (v2.1.36)
