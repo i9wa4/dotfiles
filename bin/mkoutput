@@ -100,7 +100,7 @@ branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
 branch_name="${branch_name//\//-}"
 date_dir="$(date +%Y-%m-%d)-${branch_name}"
 state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
-TARGET_DIR="${state_home}/mkoutput/sessions/${ghq_owner}-${ghq_repo}/${date_dir}/${DIR}"
+TARGET_DIR="${state_home}/mkoutput/${ghq_owner}-${ghq_repo}/${date_dir}/${DIR}"
 
 # Generate filename
 ID=$(printf '%04x' $RANDOM)
