@@ -27,7 +27,7 @@ DIR=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -h|--help)
+    -h | --help)
       print_usage
       exit 0
       ;;
@@ -78,7 +78,20 @@ if [[ $repo_root != "${ghq_prefix}"* ]]; then
   exit 1
 fi
 
-ghq_rel="${repo_root#"${ghq_prefix}"}"
+# Resolve main repo root (handles git worktrees)
+git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null || true)"
+if [[ -n $git_common_dir && $git_common_dir != ".git" && $git_common_dir != ".git/" ]]; then
+  # Linked worktree: git_common_dir is absolute path to main repo's .git
+  main_repo_root="${git_common_dir%/.git}"
+else
+  main_repo_root="$repo_root"
+fi
+
+if [[ $main_repo_root != "${ghq_prefix}"* ]]; then
+  main_repo_root="$repo_root"
+fi
+
+ghq_rel="${main_repo_root#"${ghq_prefix}"}"
 ghq_owner="${ghq_rel%%/*}"
 ghq_repo="${ghq_rel#*/}"
 ghq_repo="${ghq_repo%%/*}"
