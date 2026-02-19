@@ -33,10 +33,24 @@ MF_DETECTED_OS := $(shell \
 
 MF_WIN_UTIL_DIR := /mnt/c/work/util
 
+define MF_NIX_CONF
+experimental-features = nix-command flakes
+trusted-users = root @sudo
+max-jobs = auto
+auto-optimise-store = true
+min-free = 104857600
+max-free = 1073741824
+endef
+export MF_NIX_CONF
+
 
 # --------------------------------------
 # Utility Tasks
 #
+nix-conf:  ## write /etc/nix/nix.conf (Linux only)
+	echo "$${MF_NIX_CONF}" | sudo tee /etc/nix/nix.conf
+	sudo systemctl restart nix-daemon.socket nix-daemon.service
+
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
@@ -54,10 +68,12 @@ nix-profile:  ## nix profile
 	nix profile add github:ryoppippi/claude-code-overlay#claude
 	nix profile upgrade --all
 
-nix-switch:  ## update ghq repos and switch nix configuration
+nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
+else
+	home-manager switch --flake '.#ubuntu' --impure
 endif
 
 # nvim-build:  ## build Neovim from source

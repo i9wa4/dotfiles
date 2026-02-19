@@ -137,13 +137,24 @@ git config --global user.email "your@email.com"
 
 ## 5. Linux (Ubuntu / WSL2)
 
-### 5.1. Initial home-manager switch
+### 5.1. Configure Nix Daemon
+
+```sh
+make nix-conf
+```
+
+This writes `/etc/nix/nix.conf` with:
+experimental-features, trusted-users, max-jobs, auto-optimise-store, GC thresholds.
+
+On macOS, these are managed by nix-darwin automatically.
+
+### 5.2. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure
 ```
 
-### 5.2. Set zsh as default shell
+### 5.3. Set zsh as default shell
 
 ```sh
 chsh -s $(which zsh)
@@ -151,7 +162,7 @@ chsh -s $(which zsh)
 
 Open a new terminal after completion.
 
-### 5.3. Set PC-specific Git Config
+### 5.4. Set PC-specific Git Config
 
 ```sh
 touch ~/.gitconfig
@@ -159,7 +170,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-### 5.4. Ubuntu Server Only: Enable SSH
+### 5.5. Ubuntu Server Only: Enable SSH
 
 ```sh
 sudo apt-get install -y openssh-server
@@ -168,7 +179,7 @@ sudo systemctl start ssh.service
 sudo systemctl enable ssh.service
 ```
 
-### 5.5. WSL2 Ubuntu Only: Copy Windows Config
+### 5.6. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
