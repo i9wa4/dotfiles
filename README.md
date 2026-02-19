@@ -201,7 +201,6 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 ### 5.4. Initial home-manager switch
 
 ```sh
-export USER=$(id -un)
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
@@ -211,7 +210,7 @@ nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 is useful for regular SSH connections:
 
 ```sh
-chsh -s $(which zsh)
+sudo chsh -s $(which zsh) $(id -un)
 ```
 
 ### 5.6. Set PC-specific Git Config
@@ -250,7 +249,11 @@ gh auth login
 To copy auth to another machine:
 
 ```sh
-gh auth status --show-token | gh auth login --with-token
+gh auth status --show-token
+```
+
+```sh
+gh auth login --with-token
 ```
 
 ### 6.2. Tailscale
