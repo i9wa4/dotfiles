@@ -44,7 +44,7 @@ else
   _IS_LOCAL=1
 fi
 
-((_IS_LOCAL)) && _HOST_PREFIX="" || _HOST_PREFIX="[%M] "
+((_IS_LOCAL)) && _HOST_PREFIX="" || _HOST_PREFIX="🌐 "
 
 precmd() {
   local context="$(_get_context_line)"
