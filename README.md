@@ -149,7 +149,7 @@ auto-optimise-store = true
 min-free = 104857600
 max-free = 1073741824
 EOF
-sudo systemctl restart nix-daemon.socket nix-daemon.service
+sudo systemctl restart nix-daemon.service
 ```
 
 ### 5.2. Clone dotfiles
