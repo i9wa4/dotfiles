@@ -136,25 +136,45 @@ git config --file ~/.gitconfig user.email "your@email.com"
 
 ## 5. Linux (Ubuntu / WSL2)
 
-### 5.1. EC2 (SSM Session) Only: Fix Shell
+### 5.1. EC2 Only: SSH over SSM Setup
 
-SSM sessions always start with `/bin/sh` (dash) regardless of `chsh` settings.
-Dash does not source `/etc/profile.d/` or `/etc/bash.bashrc`,
-so Nix is not in PATH. SSM also sets `USER=root` for non-root users.
-
-Initial setup (before home-manager):
+#### 5.1.1. Local: Generate SSH Key
 
 ```sh
-exec bash -l
-export USER=$(id -un)
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/ec2-<name>
 ```
 
-After home-manager switch, `~/.bashrc` handles the switch automatically.
-Subsequent SSM connections only need:
+#### 5.1.2. Local: Configure SSH
 
 ```sh
-bash
+cat >> ~/.ssh/config << 'EOF'
+Host i-*
+    ProxyCommand aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p' --profile <your-profile>
+    User ubuntu
+    IdentityFile ~/.ssh/ec2-<name>
+    StrictHostKeyChecking no
+EOF
 ```
+
+#### 5.1.3. EC2 (SSM Console): Register SSH Public Key
+
+Open SSM session from AWS Management Console, then run:
+
+```sh
+sudo mkdir -p /home/ubuntu/.ssh
+sudo bash -c 'echo "<public-key>" >> /home/ubuntu/.ssh/authorized_keys'
+sudo chmod 700 /home/ubuntu/.ssh
+sudo chmod 600 /home/ubuntu/.ssh/authorized_keys
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+```
+
+#### 5.1.4. Local: Connect via SSH
+
+```sh
+ssh i-<instance-id>
+```
+
+Remaining setup (5.2+) is done via this SSH session as `ubuntu`.
 
 ### 5.2. Configure Nix Daemon
 
