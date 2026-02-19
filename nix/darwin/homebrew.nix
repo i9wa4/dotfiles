@@ -1,5 +1,5 @@
 # Common Homebrew settings
-# Host-specific casks are defined in hosts/<name>/casks.nix
+# Host-specific casks are defined in flake-parts/darwin.nix (extraCasks parameter)
 _: {
   homebrew = {
     enable = true;
@@ -11,7 +11,7 @@ _: {
       # Upgrade outdated formulae/casks
       upgrade = true;
     };
-    # Common casks (host-specific casks are merged from hosts/<name>/casks.nix)
+    # Common casks (host-specific casks are merged from flake-parts/darwin.nix)
     casks = [
       "docker"
       "drawio"

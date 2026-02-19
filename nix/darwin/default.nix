@@ -62,7 +62,7 @@
   ];
 
   # NOTE: Homebrew settings are in common/homebrew.nix
-  # Host-specific casks are in hosts/<name>/casks.nix
+  # Host-specific casks are in flake-parts/darwin.nix (extraCasks parameter)
 
   # Platform
   nixpkgs.hostPlatform = "aarch64-darwin";

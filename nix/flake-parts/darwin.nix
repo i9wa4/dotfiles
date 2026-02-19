@@ -26,10 +26,11 @@
     else getUsernameFromSudo;
 
   # Helper to create darwin configurations
-  # Reduces duplication between macos-p and macos-w
+  # All host-specific config is inlined via parameters (no hosts/ directory needed)
   mkDarwinConfiguration = {
     hostname,
     system ? "aarch64-darwin",
+    extraCasks ? [],
   }: let
     username = getUsername;
   in
@@ -38,7 +39,7 @@
       specialArgs = {inherit username;};
       modules = [
         ../darwin
-        ../hosts/${hostname}/darwin.nix
+        ../darwin/homebrew.nix
         home-manager.darwinModules.home-manager
         nix-index-database.darwinModules.nix-index
         {
@@ -46,6 +47,12 @@
         }
         brew-nix.darwinModules.default
         {
+          # Host identification
+          networking.hostName = hostname;
+
+          # Host-specific Homebrew casks (merged with common casks from darwin/homebrew.nix)
+          homebrew.casks = extraCasks;
+
           # Allow unfree packages (e.g., terraform with BSL license)
           nixpkgs.config.allowUnfree = true;
           # Overlays
@@ -63,7 +70,7 @@
             extraSpecialArgs = {
               inherit username inputs;
             };
-            users.${username} = import ../hosts/${hostname}/home.nix;
+            users.${username} = import ../home;
           };
         }
       ];
@@ -74,6 +81,11 @@ in {
   # Requires --impure because we use builtins.getEnv to read SUDO_USER
   flake.darwinConfigurations = {
     "macos-p" = mkDarwinConfiguration {hostname = "macos-p";};
-    "macos-w" = mkDarwinConfiguration {hostname = "macos-w";};
+    "macos-w" = mkDarwinConfiguration {
+      hostname = "macos-w";
+      extraCasks = [
+        "openvpn-connect"
+      ];
+    };
   };
 }
