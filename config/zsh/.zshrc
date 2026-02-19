@@ -11,7 +11,7 @@ if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; 
 fi
 
 # Cancel pending EC2 auto-stop on new session
-if [[ -f /sys/hypervisor/uuid ]] && grep -q ^ec2 /sys/hypervisor/uuid 2>/dev/null; then
+if [[ "$(cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null)" == "Amazon EC2" ]]; then
   sudo shutdown -c 2>/dev/null
 fi
 

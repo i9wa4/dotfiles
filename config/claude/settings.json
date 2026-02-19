@@ -32,6 +32,7 @@
       "Write(.env*)"
     ]
   },
+  "model": "sonnet",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -89,6 +90,5 @@
     "type": "command",
     "command": "~/.claude/scripts/statusline.sh"
   },
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "skipDangerousModePermissionPrompt": true
 }
