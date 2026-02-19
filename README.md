@@ -130,9 +130,8 @@ Open a new terminal after completion.
 ### 4.5. Set PC-specific Git Config
 
 ```sh
-touch ~/.gitconfig
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
+git config --file ~/.gitconfig user.name "Your Name"
+git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
 ## 5. Linux (Ubuntu / WSL2)
@@ -198,9 +197,8 @@ chsh -s $(which zsh)
 ### 5.6. Set PC-specific Git Config
 
 ```sh
-touch ~/.gitconfig
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
+git config --file ~/.gitconfig user.name "Your Name"
+git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
 ### 5.7. Ubuntu Server Only: Enable SSH
