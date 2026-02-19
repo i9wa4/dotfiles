@@ -51,6 +51,7 @@ in {
         # Cloud & Infrastructure
         pkgs.acli # Atlassian CLI
         pkgs.awscli2
+        pkgs.ssm-session-manager-plugin
         pkgs.databricks-cli
         pkgs.google-cloud-sdk
         pkgs.terraform
