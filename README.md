@@ -237,23 +237,24 @@ gh auth status --show-token | gh auth login --with-token
 
 Create an account at <https://login.tailscale.com> first.
 
-Start daemon (needs to run each boot):
+Start daemon (needs to run each boot).
+`sudo` resets PATH, so use `$(which ...)` to find Nix-installed binaries:
 
 ```sh
-sudo tailscaled &
+sudo $(which tailscaled) &
 ```
 
 First time only (opens browser for login):
 
 ```sh
-tailscale up
+sudo $(which tailscale) up
 ```
 
 EC2 (headless, no browser):
 
 ```sh
-sudo tailscaled &
-sudo tailscale up --auth-key=tskey-auth-xxxxx
+sudo $(which tailscaled) &
+sudo $(which tailscale) up --auth-key=tskey-auth-xxxxx
 ```
 
 Generate auth key at <https://login.tailscale.com/admin/settings/keys>
