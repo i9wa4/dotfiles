@@ -1,5 +1,6 @@
 *
 !.gitignore
+!.zlogout
 !.zshenv
 !.zshrc
 !aws.zsh

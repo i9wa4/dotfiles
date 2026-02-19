@@ -10,6 +10,11 @@ if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; 
   command -v tmux &>/dev/null && exec tmux new-session -A -s main
 fi
 
+# Cancel pending EC2 auto-stop on new session
+if [[ -f /sys/hypervisor/uuid ]] && grep -q ^ec2 /sys/hypervisor/uuid 2>/dev/null; then
+  sudo shutdown -c 2>/dev/null
+fi
+
 # Disable XON/XOFF flow control (enable Ctrl-Q for push-line-or-edit)
 stty -ixon -ixoff 2>/dev/null
 
