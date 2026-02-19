@@ -248,7 +248,7 @@ in {
     # cf. https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
     startSshAgent = lib.hm.dag.entryAfter ["writeBoundary"] (
       lib.optionalString pkgs.stdenv.isLinux ''
-        if [ -z "$SSH_AUTH_SOCK" ]; then
+        if [ -z "''${SSH_AUTH_SOCK:-}" ]; then
           eval $(${pkgs.openssh}/bin/ssh-agent)
         fi
       ''
