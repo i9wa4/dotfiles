@@ -233,32 +233,64 @@ To copy auth to another machine:
 gh auth status --show-token | gh auth login --with-token
 ```
 
-### 6.2. AWS CLI
+### 6.2. Tailscale
+
+Create an account at <https://login.tailscale.com> first.
+
+Start daemon (needs to run each boot):
+
+```sh
+sudo tailscaled &
+```
+
+First time only (opens browser for login):
+
+```sh
+tailscale up
+```
+
+EC2 (headless, no browser):
+
+```sh
+sudo tailscaled &
+sudo tailscale up --auth-key=tskey-auth-xxxxx
+```
+
+Generate auth key at <https://login.tailscale.com/admin/settings/keys>
+
+Verify:
+
+```sh
+tailscale status
+tailscale ip -4
+```
+
+### 6.3. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 6.3. Web Browser
+### 6.4. Web Browser
 
-#### 6.3.1. Setting Synchronization
+#### 6.4.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 6.3.2. Search Engine
+#### 6.4.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 6.3.3. Extensions
+#### 6.4.3. Extensions
 
 - Flow Chat for YouTube Live
 - Okta Browser Plugin
 - Slack Channels Grouping
 
-### 6.4. Slack
+### 6.5. Slack
 
 GitHub Notifications:
 
@@ -266,7 +298,7 @@ GitHub Notifications:
 /github subscribe owner/repo reviews,comments,branches,commits:*
 ```
 
-### 6.5. SSH Connection to Ubuntu Server
+### 6.6. SSH Connection to Ubuntu Server
 
 cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106c3925e)
 
