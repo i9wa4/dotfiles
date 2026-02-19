@@ -11,7 +11,7 @@
       python3 = true;
     })
     (final: _prev: {
-      claude-chill = claude-chill.packages.${final.system}.default;
+      claude-chill = claude-chill.packages.${final.stdenv.hostPlatform.system}.default;
     })
   ];
 

@@ -13,7 +13,7 @@ _: {
     };
     # Common casks (host-specific casks are merged from flake-parts/darwin.nix)
     casks = [
-      "docker"
+      "docker-desktop"
       "drawio"
       "google-chrome"
       "stats"

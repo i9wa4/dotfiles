@@ -11,7 +11,7 @@
       python3 = true;
     })
     (final: _prev: {
-      claude-chill = claude-chill.packages.${final.system}.default;
+      claude-chill = claude-chill.packages.${final.stdenv.hostPlatform.system}.default;
     })
   ];
 in {
@@ -46,7 +46,7 @@ in {
         inherit username inputs;
       };
       modules = [
-        nix-index-database.hmModules.nix-index
+        nix-index-database.homeModules.nix-index
         {
           programs.nix-index-database.comma.enable = true;
         }
