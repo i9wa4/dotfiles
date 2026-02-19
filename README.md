@@ -62,7 +62,9 @@
 ### 3.1. Install Nix
 
 ```sh
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install)
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+# or
+curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
 ```
 
 Open a new terminal to verify:
@@ -73,7 +75,9 @@ nix --version
 
 cf. [Nix Official Download](https://nixos.org/download/)
 
-### 3.2. Clone dotfiles
+## 4. macOS
+
+### 4.1. Clone dotfiles
 
 Use `nix run` to temporarily get git
 (no Command Line Developer Tools needed on macOS):
@@ -83,9 +87,7 @@ nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone 
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-## 4. macOS
-
-### 4.1. Backup Shell Configs
+### 4.2. Backup Shell Configs
 
 nix-darwin will fail if /etc/zshenv or /etc/zshrc exist
 with unrecognized content.
@@ -98,9 +100,9 @@ sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
-cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
+cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 4.2. Install Homebrew
+### 4.3. Install Homebrew
 
 nix-darwin manages Homebrew packages,
 but Homebrew itself must be installed manually.
@@ -111,7 +113,7 @@ but Homebrew itself must be installed manually.
 
 cf. [Homebrew](https://brew.sh/)
 
-### 4.3. Initial darwin-rebuild
+### 4.4. Initial darwin-rebuild
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
@@ -125,39 +127,81 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 
 Open a new terminal after completion.
 
-### 4.4. Set PC-specific Git Config
+### 4.5. Set PC-specific Git Config
 
 ```sh
-touch ~/.gitconfig
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
+git config --file ~/.gitconfig user.name "Your Name"
+git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
 ## 5. Linux (Ubuntu / WSL2)
 
-### 5.1. Initial home-manager switch
+### 5.1. EC2 (SSM Session) Only: Fix Shell
+
+SSM sessions always start with `/bin/sh` (dash) regardless of `chsh` settings.
+Dash does not source `/etc/profile.d/` or `/etc/bash.bashrc`,
+so Nix is not in PATH. SSM also sets `USER=root` for non-root users.
+
+Initial setup (before home-manager):
 
 ```sh
-nix run home-manager -- switch --flake '.#ubuntu' --impure
+exec bash -l
+export USER=$(id -un)
 ```
 
-### 5.2. Set zsh as default shell
+After home-manager switch, `~/.bashrc` handles the switch automatically.
+Subsequent SSM connections only need:
+
+```sh
+bash
+```
+
+### 5.2. Configure Nix Daemon
+
+```sh
+sudo tee /etc/nix/nix.conf << 'EOF'
+build-users-group = nixbld
+experimental-features = nix-command flakes
+trusted-users = root @sudo
+max-jobs = auto
+auto-optimise-store = true
+min-free = 104857600
+max-free = 1073741824
+EOF
+sudo systemctl restart nix-daemon.service
+```
+
+### 5.3. Clone dotfiles
+
+```sh
+nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+cd ~/ghq/github.com/i9wa4/dotfiles
+```
+
+### 5.4. Initial home-manager switch
+
+```sh
+export USER=$(id -un)
+nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
+```
+
+### 5.5. Set zsh as default shell (optional)
+
+`~/.bashrc` auto-switches to zsh, but setting the login shell
+is useful for regular SSH connections:
 
 ```sh
 chsh -s $(which zsh)
 ```
 
-Open a new terminal after completion.
-
-### 5.3. Set PC-specific Git Config
+### 5.6. Set PC-specific Git Config
 
 ```sh
-touch ~/.gitconfig
-git config --global user.name "Your Name"
-git config --global user.email "your@email.com"
+git config --file ~/.gitconfig user.name "Your Name"
+git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
-### 5.4. Ubuntu Server Only: Enable SSH
+### 5.7. Ubuntu Server Only: Enable SSH
 
 ```sh
 sudo apt-get install -y openssh-server
@@ -166,7 +210,7 @@ sudo systemctl start ssh.service
 sudo systemctl enable ssh.service
 ```
 
-### 5.5. WSL2 Ubuntu Only: Copy Windows Config
+### 5.8. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
@@ -189,32 +233,64 @@ To copy auth to another machine:
 gh auth status --show-token | gh auth login --with-token
 ```
 
-### 6.2. AWS CLI
+### 6.2. Tailscale
+
+Create an account at <https://login.tailscale.com> first.
+
+Start daemon (needs to run each boot):
+
+```sh
+sudo tailscaled &
+```
+
+First time only (opens browser for login):
+
+```sh
+tailscale up
+```
+
+EC2 (headless, no browser):
+
+```sh
+sudo tailscaled &
+sudo tailscale up --auth-key=tskey-auth-xxxxx
+```
+
+Generate auth key at <https://login.tailscale.com/admin/settings/keys>
+
+Verify:
+
+```sh
+tailscale status
+tailscale ip -4
+```
+
+### 6.3. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 6.3. Web Browser
+### 6.4. Web Browser
 
-#### 6.3.1. Setting Synchronization
+#### 6.4.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 6.3.2. Search Engine
+#### 6.4.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 6.3.3. Extensions
+#### 6.4.3. Extensions
 
 - Flow Chat for YouTube Live
 - Okta Browser Plugin
 - Slack Channels Grouping
 
-### 6.4. Slack
+### 6.5. Slack
 
 GitHub Notifications:
 
@@ -222,7 +298,7 @@ GitHub Notifications:
 /github subscribe owner/repo reviews,comments,branches,commits:*
 ```
 
-### 6.5. SSH Connection to Ubuntu Server
+### 6.6. SSH Connection to Ubuntu Server
 
 cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106c3925e)
 

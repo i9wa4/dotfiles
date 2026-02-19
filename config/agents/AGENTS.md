@@ -34,6 +34,14 @@ acknowledge with a random one-liner in character.
 - Verify changes took effect before reporting success
 - Show actual output as evidence
 
+### 3.4. Messenger Protocol (Critical)
+
+- When receiving a message with an instruction section, READ the entire instruction section
+- Execute the instruction in the message WITHOUT judgment or optimization
+- Do not decide "I already have this information, I can skip asking"
+- If instruction says "ask orchestrator", ask orchestrator even if you have prior context
+- No exceptions: message instructions override all other considerations
+
 ## 4. Safety
 
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
@@ -138,3 +146,8 @@ Specialized investigators - use anytime for expert perspectives.
 | reviewer-qa           | Test coverage, edge cases     |
 | reviewer-security     | Security, vulnerabilities     |
 | researcher-tech       | Investigation, research       |
+
+## 9. Environment
+
+- Always running inside a tmux pane
+- Your role name: `tmux display-message -p '#{pane_title}'`

@@ -6,7 +6,13 @@
 
 # tmux auto-start (local only, not in VSCode, not already in tmux)
 if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; then
+  export SHELL="$(command -v zsh)"
   command -v tmux &>/dev/null && exec tmux new-session -A -s main
+fi
+
+# Cancel pending EC2 auto-stop on new session
+if [[ -f /sys/hypervisor/uuid ]] && grep -q ^ec2 /sys/hypervisor/uuid 2>/dev/null; then
+  sudo shutdown -c 2>/dev/null
 fi
 
 # Disable XON/XOFF flow control (enable Ctrl-Q for push-line-or-edit)
@@ -32,7 +38,6 @@ eval "$(direnv hook zsh)"
 source "${ZDOTDIR}/aws.zsh"
 source "${ZDOTDIR}/keybind.zsh"
 source "${ZDOTDIR}/prompt.zsh"
-source "${ZDOTDIR}/tmux.zsh"
 source "${ZDOTDIR}/zinit.zsh"
 
 # Safe-chain

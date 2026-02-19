@@ -51,6 +51,7 @@ in {
         # Cloud & Infrastructure
         pkgs.acli # Atlassian CLI
         pkgs.awscli2
+        pkgs.ssm-session-manager-plugin
         pkgs.databricks-cli
         pkgs.google-cloud-sdk
         pkgs.terraform
@@ -71,6 +72,7 @@ in {
         pkgs.tmux
         # System
         pkgs.htop
+        pkgs.tailscale
         pkgs.wget
         pkgs.fastfetch
         pkgs.hyperfine
@@ -177,6 +179,19 @@ in {
       enable = true;
       nix-direnv.enable = true;
       enableZshIntegration = false; # Handled by zinit turbo
+    };
+
+    # bash: auto-switch to zsh for environments where zsh is not the login shell
+    # (e.g., SSM sessions start with /bin/sh, user types "bash" to bootstrap)
+    bash = {
+      enable = true;
+      initExtra = ''
+        # Auto-switch to zsh (SSM sets USER=root, fix it before switching)
+        if [ -z "$TMUX" ] && [ -z "$ZSH_VERSION" ] && command -v zsh >/dev/null 2>&1; then
+          export USER=$(id -un)
+          exec zsh -l
+        fi
+      '';
     };
 
     # zsh: disabled - config is in config/zsh/ via ZDOTDIR (home.file.".zshenv")

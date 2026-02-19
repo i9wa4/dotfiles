@@ -3,8 +3,7 @@ name: orchestrator
 description: |
   Orchestration workflow for orchestrator role ONLY.
   Use when:
-  - Agent's $A2A_NODE environment variable contains "orchestrator"
-  Do NOT use for worker, critic, or guardian roles.
+  - Agent's role name (tmux pane title) is "orchestrator"
 ---
 
 # Orchestrator Skill
@@ -36,19 +35,19 @@ Subagents are READONLY only. Skip mood status updates.
 ### 2.1. Task Tool (Claude Code)
 
 ```text
-[SUBAGENT capability=READONLY]
+[Your capability=READONLY]
 {task content}
 ```
 
-Return results directly. Write to `.i9wa4/` if file output needed.
+Return results directly. Use mkoutput if file output needed.
 
 ### 2.2. Codex CLI
 
 ```bash
 FILE=$(mkoutput --dir reviews --label "${ROLE}-cx") && \
-codex exec --sandbox workspace-write -C .i9wa4 \
+codex exec --sandbox workspace-write \
   -o "$FILE" \
-  "[SUBAGENT capability=READONLY] {task content}" &
+  "[Your capability=READONLY] {task content}" &
 wait
 ```
 
@@ -58,83 +57,9 @@ NOTE:
 - `-o` path is relative to caller's directory (not affected by `-C`)
 - When using `-o`, return results directly (do NOT create files)
 
-## 3. Phase Management
+## 3. Plan Workflow
 
-### 3.1. Phase Flow
-
-```text
-START -> PLAN -> CODE -> PR -> COMPLETE
-```
-
-Each phase (except PR):
-Consult both Workers (codex + claude) -> Fix -> Parallel review -> Approval
-
-PR phase:
-Consult both Workers (codex + claude) -> Fix -> Create PR (no parallel review)
-
-### 3.2. Phase Log
-
-File: `.i9wa4/phase.log`
-
-```text
-2025-01-01 10:00:00 | START -> PLAN
-2025-01-01 11:00:00 | PLAN -> CODE
-```
-
-## 4. Status Management
-
-### 4.1. Files
-
-| Path                     | Purpose            | Updated by   |
-| ------------------------ | ------------------ | ------------ |
-| `.i9wa4/roadmap.md`      | Overall progress   | Orchestrator |
-| `.i9wa4/status-pane{id}` | Pane current state | Orchestrator |
-| `.i9wa4/phase.log`       | Phase transitions  | Orchestrator |
-| `.i9wa4/plans/`          | Plan documents     | Orchestrator |
-| `.i9wa4/reviews/`        | Review results     | Subagent     |
-
-### 4.2. Status File Format
-
-```text
-CURRENT: <what was done> | <mood> <emoji>
-NEXT: <what is needed to continue>
-```
-
-### 4.3. Roadmap Format
-
-```markdown
-# Roadmap: <Feature Name>
-
-## Phase: PLAN
-
-- [x] Read requirements
-- [x] Investigate existing code
-- [x] Consult Workers
-- [x] Create plan document
-- [x] Parallel review
-- [x] User approval
-
-## Phase: CODE
-
-- [x] Implement changes
-- [x] Add tests
-- [x] Consult Workers
-- [ ] Parallel review
-- [ ] User approval
-
-## Phase: PR
-
-- [ ] Consult Workers
-- [ ] Create draft PR
-
-## Blocked
-
-- [ ] <blocked item> (reason)
-```
-
-## 5. Plan Workflow
-
-### 5.1. Source Types
+### 3.1. Source Types
 
 | Type  | Format            | How to Fetch                         |
 | ----- | ----------------- | ------------------------------------ |
@@ -144,7 +69,7 @@ NEXT: <what is needed to continue>
 | memo  | `memo <path>`     | Read file                            |
 | text  | `"<description>"` | Direct input                         |
 
-### 5.2. Plan Template
+### 3.2. Plan Template
 
 Create file:
 
@@ -184,9 +109,9 @@ mkoutput --dir plans --label plan
 - <how to verify>
 ```
 
-## 6. Code Workflow
+## 4. Code Workflow
 
-### 6.1. Task Breakdown
+### 4.1. Task Breakdown
 
 Break plan steps into atomic tasks:
 
@@ -198,12 +123,12 @@ Break plan steps into atomic tasks:
 | Test execution | Run tests and verify                 |
 | Build          | Build and verify                     |
 
-### 6.2. Execution
+### 4.2. Execution
 
 Sequential: Delegate -> Wait -> Verify -> Next task
 Parallel: Send to multiple Workers simultaneously
 
-### 6.3. Completion Report
+### 4.3. Completion Report
 
 Create file:
 
@@ -216,7 +141,7 @@ mkoutput --dir reviews --label completion
 
 ## Plan Reference
 
-- File: .i9wa4/plans/plan-file.md
+- File: {mkoutput-generated plan file path}
 
 ## Changes Made
 
@@ -235,26 +160,25 @@ mkoutput --dir reviews --label completion
 
 NOTE: For review workflow, see subagent-review skill.
 
-## 7. PR Workflow
+## 5. PR Workflow
 
-### 7.1. Prerequisites
+### 5.1. Prerequisites
 
 - Implementation complete
 - Tests passing
 - IMPORTANT: Always create as **draft** PR
 
-### 7.2. Gather PR Context
+### 5.2. Gather PR Context
 
 1. Read `.github/PULL_REQUEST_TEMPLATE.md` if exists
 2. Reference recent PRs: `gh pr list --author i9wa4 --limit 10`
 3. Match the style of existing PRs
 4. Check: README, CHANGELOG need update?
 
-### 7.3. Create PR
+### 5.3. Create PR
 
 Use: `gh pr create --draft --title "..." --body "..."`
 
-### 7.4. Post-PR
+### 5.4. Post-PR
 
-1. Record in phase.log: `CODE -> PR -> COMPLETE`
-2. Display PR URL to user
+1. Display PR URL to user

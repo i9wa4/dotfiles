@@ -34,8 +34,9 @@ Key files:
 Use `gh` command to fetch the latest CHANGELOG:
 
 ```sh
+FILE=$(mkoutput --dir tmp --label claude-code-changelog)
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
-  --jq '.content' | base64 -d > .i9wa4/tmp/claude-code-changelog.md
+  --jq '.content' | base64 -d > "$FILE"
 ```
 
 Then read the file to analyze.
@@ -136,7 +137,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.37 (2026-02-09)
+Last reviewed Claude Code version: v2.1.44 (2026-02-17)
 
 ### 10.1. Applied Optimizations
 
@@ -149,7 +150,7 @@ Last reviewed Claude Code version: v2.1.37 (2026-02-09)
 - [x] `language` setting - set to "follow CLAUDE.md's instructions"
 - [x] `mcpToolSearch` setting - set to "auto:1"
 - [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
-- [x] `plansDirectory` setting - set to ".i9wa4/plans"
+- [x] `plansDirectory` setting - set to use mkoutput
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
 - [x] Fast mode - available for Opus 4.6 (v2.1.36)
@@ -173,6 +174,15 @@ Last reviewed Claude Code version: v2.1.37 (2026-02-09)
 
 ### 10.4. Version Notes
 
+- v2.1.44: Auth refresh error fix
+- v2.1.43: **Fixed AWS auth refresh hanging indefinitely** (3-min timeout), Vertex/Bedrock fixes
+- v2.1.42: Startup performance improvement, prompt cache hit rate improvement
+- v2.1.41: Guard against nested Claude Code sessions, FileReadTool hang fix,
+  MCP image content crash fix, proactive ticks in plan mode fix
+- v2.1.39: **Fixed process hanging after session close**, terminal rendering
+  performance, fatal error display fix
+- v2.1.38: VS Code scroll regression fix, Tab key autocomplete fix, heredoc
+  command smuggling prevention
 - v2.1.37: /fast immediately available after /extra-usage
 - v2.1.36: Fast mode for Opus 4.6
 - v2.1.34: **Sandbox bypass vulnerability fixed** (security), agent teams crash

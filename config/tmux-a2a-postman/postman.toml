@@ -57,6 +57,9 @@ scan_interval_seconds = 1  # Pane rescan interval in seconds
 tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 1.0  # Delay before sending Enter key
 
+# Pane capture settings (hybrid idle detection)
+pane_capture_interval_seconds = 10.0
+
 edges = [
   "boss -- orchestrator",
   "messenger -- orchestrator",

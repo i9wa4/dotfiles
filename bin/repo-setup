@@ -5,7 +5,7 @@ set -o pipefail
 set -o posix
 
 # Set up repository environment for development.
-# Creates local.vim, .i9wa4/ directory, and trusts mise.toml.
+# Creates local.vim and trusts mise.toml.
 # Also runs repository-specific setup based on repo name.
 #
 # Usage:
@@ -13,9 +13,7 @@ set -o posix
 #
 # Created files:
 #   - local.vim: Vim local configuration
-#   - .i9wa4/: Working directory (gitignored globally)
-#   - .i9wa4/temp.md: Template file for notes
-#   - $XDG_STATE_HOME/mkoutput/sessions/.../temp.md: Daily memo file
+#   - memo file created via mkoutput
 
 # Get current worktree root
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
@@ -33,15 +31,6 @@ let g:mnh_header_level_shift = 1
 EOF
 fi
 echo "* Created local.vim"
-
-# Create .i9wa4/ directory (subdirectories created on demand by mkoutput)
-mkdir -p .i9wa4/{plans,reviews,tmp}
-echo "* Created .i9wa4/ directory"
-
-# Create template file
-cat >.i9wa4/temp.md <<'EOF'
-# temp
-EOF
 
 # Create memo file via mkoutput
 memo_path="$(mkoutput --dir memo --label memo)"

@@ -1,9 +1,9 @@
 *
 !.gitignore
+!.zlogout
 !.zshenv
 !.zshrc
 !aws.zsh
 !keybind.zsh
 !prompt.zsh
-!tmux.zsh
 !zinit.zsh

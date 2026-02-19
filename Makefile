@@ -54,10 +54,12 @@ nix-profile:  ## nix profile
 	nix profile add github:ryoppippi/claude-code-overlay#claude
 	nix profile upgrade --all
 
-nix-switch:  ## update ghq repos and switch nix configuration
+nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
+else
+	home-manager switch --flake '.#ubuntu' --impure
 endif
 
 # nvim-build:  ## build Neovim from source
