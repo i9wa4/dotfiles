@@ -139,14 +139,14 @@ git config --global user.email "your@email.com"
 
 ### 5.1. EC2 (SSM Session) Only: Fix Shell
 
-SSM sessions start with `/bin/sh` (dash), which does not source Nix profile.
-Change the default shell to bash so that `/etc/bash.bashrc` is sourced:
+SSM sessions always start with `/bin/sh` (dash) regardless of `chsh` settings.
+Dash does not source `/etc/profile.d/` or `/etc/bash.bashrc`,
+so Nix is not in PATH.
+Run `exec bash -l` after connecting to replace the shell:
 
 ```sh
-sudo chsh -s /bin/bash ssm-user
+exec bash -l
 ```
-
-Reconnect the SSM session after this.
 
 ### 5.2. Configure Nix Daemon
 

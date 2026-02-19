@@ -24,17 +24,21 @@ in {
       config.allowUnfree = true;
       overlays = commonOverlays;
     };
-    # On Linux, USER is available directly (no sudo needed for home-manager)
-    # Fallback chain: USER -> LOGNAME -> whoami equivalent via HOME path
+    # SSM sessions set USER=root even for non-root users (EUID != 0).
+    # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)
     username = let
       user = builtins.getEnv "USER";
       logname = builtins.getEnv "LOGNAME";
+      home = builtins.getEnv "HOME";
+      homeUser = builtins.baseNameOf home;
     in
-      if user != ""
-      then user
-      else if logname != ""
+      if logname != ""
       then logname
-      else builtins.abort "Cannot determine username: set USER or LOGNAME environment variable";
+      else if homeUser != "" && homeUser != "root"
+      then homeUser
+      else if user != ""
+      then user
+      else builtins.abort "Cannot determine username: set LOGNAME environment variable";
   in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
