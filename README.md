@@ -141,9 +141,17 @@ git config --global user.email "your@email.com"
 
 SSM sessions always start with `/bin/sh` (dash) regardless of `chsh` settings.
 Dash does not source `/etc/profile.d/` or `/etc/bash.bashrc`,
-so Nix is not in PATH.
-After `home-manager switch`, `~/.bashrc` auto-switches to zsh with tmux.
-Run the following after connecting:
+so Nix is not in PATH. SSM also sets `USER=root` for non-root users.
+
+Initial setup (before home-manager):
+
+```sh
+exec bash -l
+export USER=$(id -un)
+```
+
+After home-manager switch, `~/.bashrc` handles the switch automatically.
+Subsequent SSM connections only need:
 
 ```sh
 bash
@@ -174,16 +182,18 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 ### 5.4. Initial home-manager switch
 
 ```sh
-nix run home-manager -- switch --flake '.#ubuntu' --impure
+export USER=$(id -un)
+nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 5.5. Set zsh as default shell
+### 5.5. Set zsh as default shell (optional)
+
+`~/.bashrc` auto-switches to zsh, but setting the login shell
+is useful for regular SSH connections:
 
 ```sh
 chsh -s $(which zsh)
 ```
-
-Open a new terminal after completion.
 
 ### 5.6. Set PC-specific Git Config
 
