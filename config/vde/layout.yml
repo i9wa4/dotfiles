@@ -21,8 +21,8 @@ presets:
         - type: vertical
           ratio: [1, 1]
           panes:
-            - name: htop
-              command: htop
+            - name: top
+              command: top
               delay: 500
             - name: vde-monitor
               command: vde-monitor --public
