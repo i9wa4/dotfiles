@@ -137,7 +137,7 @@ git config --global user.email "your@email.com"
 
 ## 5. Linux (Ubuntu / WSL2)
 
-### 5.0. EC2 (SSM Session) Only: Fix Shell
+### 5.1. EC2 (SSM Session) Only: Fix Shell
 
 SSM sessions start with `/bin/sh` (dash), which does not source Nix profile.
 Change the default shell to bash so that `/etc/bash.bashrc` is sourced:
@@ -148,7 +148,7 @@ sudo chsh -s /bin/bash ssm-user
 
 Reconnect the SSM session after this.
 
-### 5.1. Configure Nix Daemon
+### 5.2. Configure Nix Daemon
 
 ```sh
 sudo tee /etc/nix/nix.conf << 'EOF'
@@ -163,20 +163,20 @@ EOF
 sudo systemctl restart nix-daemon.service
 ```
 
-### 5.2. Clone dotfiles
+### 5.3. Clone dotfiles
 
 ```sh
 nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 5.3. Initial home-manager switch
+### 5.4. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure
 ```
 
-### 5.4. Set zsh as default shell
+### 5.5. Set zsh as default shell
 
 ```sh
 chsh -s $(which zsh)
@@ -184,7 +184,7 @@ chsh -s $(which zsh)
 
 Open a new terminal after completion.
 
-### 5.5. Set PC-specific Git Config
+### 5.6. Set PC-specific Git Config
 
 ```sh
 touch ~/.gitconfig
@@ -192,7 +192,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-### 5.6. Ubuntu Server Only: Enable SSH
+### 5.7. Ubuntu Server Only: Enable SSH
 
 ```sh
 sudo apt-get install -y openssh-server
@@ -201,7 +201,7 @@ sudo systemctl start ssh.service
 sudo systemctl enable ssh.service
 ```
 
-### 5.7. WSL2 Ubuntu Only: Copy Windows Config
+### 5.8. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
