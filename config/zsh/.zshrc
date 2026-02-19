@@ -6,6 +6,7 @@
 
 # tmux auto-start (local only, not in VSCode, not already in tmux)
 if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; then
+  export SHELL="$(command -v zsh)"
   command -v tmux &>/dev/null && exec tmux new-session -A -s main
 fi
 

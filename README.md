@@ -142,12 +142,11 @@ git config --global user.email "your@email.com"
 SSM sessions always start with `/bin/sh` (dash) regardless of `chsh` settings.
 Dash does not source `/etc/profile.d/` or `/etc/bash.bashrc`,
 so Nix is not in PATH.
-SSM also sets `USER=root` even for non-root users.
+After `home-manager switch`, `~/.bashrc` auto-switches to zsh with tmux.
 Run the following after connecting:
 
 ```sh
-exec bash -l
-export USER=$(id -un)
+bash
 ```
 
 ### 5.2. Configure Nix Daemon
