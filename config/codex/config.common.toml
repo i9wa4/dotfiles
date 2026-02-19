@@ -15,7 +15,7 @@ enabled = false
 enabled = false
 
 [features]
-collab = true
+multi_agent = true
 skills = true
 
 # [mcp_servers.aws_documentation]
