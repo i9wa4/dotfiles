@@ -137,6 +137,17 @@ git config --global user.email "your@email.com"
 
 ## 5. Linux (Ubuntu / WSL2)
 
+### 5.0. EC2 (SSM Session) Only: Fix Shell
+
+SSM sessions start with `/bin/sh` (dash), which does not source Nix profile.
+Change the default shell to bash so that `/etc/bash.bashrc` is sourced:
+
+```sh
+sudo chsh -s /bin/bash ssm-user
+```
+
+Reconnect the SSM session after this.
+
 ### 5.1. Configure Nix Daemon
 
 ```sh

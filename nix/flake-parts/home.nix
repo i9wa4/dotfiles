@@ -25,7 +25,16 @@ in {
       overlays = commonOverlays;
     };
     # On Linux, USER is available directly (no sudo needed for home-manager)
-    username = builtins.getEnv "USER";
+    # Fallback chain: USER -> LOGNAME -> whoami equivalent via HOME path
+    username = let
+      user = builtins.getEnv "USER";
+      logname = builtins.getEnv "LOGNAME";
+    in
+      if user != ""
+      then user
+      else if logname != ""
+      then logname
+      else builtins.abort "Cannot determine username: set USER or LOGNAME environment variable";
   in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
