@@ -16,7 +16,7 @@ presets:
               focus: true
             - name: watchdog
               title: watchdog
-              command: -- claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
         - type: vertical
           ratio: [1, 1]
