@@ -72,7 +72,7 @@ presets:
       panes:
         - name: orchestrator
           title: orchestrator
-          command: codex --yolo --model gpt-5.3-codex
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
           delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
