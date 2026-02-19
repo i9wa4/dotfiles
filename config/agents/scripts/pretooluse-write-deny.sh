@@ -29,7 +29,11 @@ INPUT=$(cat)
 TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 
 # Get role name from tmux pane title
-ROLE_NAME=$(tmux display-message -p '#{pane_title}' 2>/dev/null || true)
+if [[ -n ${TMUX_PANE:-} ]]; then
+  ROLE_NAME=$(tmux display-message -t "$TMUX_PANE" -p '#{pane_title}' 2>/dev/null || true)
+else
+  ROLE_NAME=""
+fi
 
 # DEBUG: Output environment info to file
 echo "DEBUG deny.sh: $(date +%Y%m%d-%H%M%S) ROLE_NAME=${ROLE_NAME:-UNSET} TOOL=${TOOL:-UNSET}" >>/tmp/deny-debug.log

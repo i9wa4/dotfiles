@@ -75,7 +75,9 @@ nix --version
 
 cf. [Nix Official Download](https://nixos.org/download/)
 
-### 3.2. Clone dotfiles
+## 4. macOS
+
+### 4.1. Clone dotfiles
 
 Use `nix run` to temporarily get git
 (no Command Line Developer Tools needed on macOS):
@@ -85,9 +87,7 @@ nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone 
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-## 4. macOS
-
-### 4.1. Backup Shell Configs
+### 4.2. Backup Shell Configs
 
 nix-darwin will fail if /etc/zshenv or /etc/zshrc exist
 with unrecognized content.
@@ -100,9 +100,9 @@ sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
-cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
+cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 4.2. Install Homebrew
+### 4.3. Install Homebrew
 
 nix-darwin manages Homebrew packages,
 but Homebrew itself must be installed manually.
@@ -113,7 +113,7 @@ but Homebrew itself must be installed manually.
 
 cf. [Homebrew](https://brew.sh/)
 
-### 4.3. Initial darwin-rebuild
+### 4.4. Initial darwin-rebuild
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
@@ -127,7 +127,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 
 Open a new terminal after completion.
 
-### 4.4. Set PC-specific Git Config
+### 4.5. Set PC-specific Git Config
 
 ```sh
 touch ~/.gitconfig
@@ -140,21 +140,32 @@ git config --global user.email "your@email.com"
 ### 5.1. Configure Nix Daemon
 
 ```sh
-make nix-conf
+sudo tee /etc/nix/nix.conf << 'EOF'
+build-users-group = nixbld
+experimental-features = nix-command flakes
+trusted-users = root @sudo
+max-jobs = auto
+auto-optimise-store = true
+min-free = 104857600
+max-free = 1073741824
+EOF
+sudo systemctl restart nix-daemon.socket nix-daemon.service
 ```
 
-This writes `/etc/nix/nix.conf` with:
-experimental-features, trusted-users, max-jobs, auto-optimise-store, GC thresholds.
+### 5.2. Clone dotfiles
 
-On macOS, these are managed by nix-darwin automatically.
+```sh
+nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+cd ~/ghq/github.com/i9wa4/dotfiles
+```
 
-### 5.2. Initial home-manager switch
+### 5.3. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure
 ```
 
-### 5.3. Set zsh as default shell
+### 5.4. Set zsh as default shell
 
 ```sh
 chsh -s $(which zsh)
@@ -162,7 +173,7 @@ chsh -s $(which zsh)
 
 Open a new terminal after completion.
 
-### 5.4. Set PC-specific Git Config
+### 5.5. Set PC-specific Git Config
 
 ```sh
 touch ~/.gitconfig
@@ -170,7 +181,7 @@ git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-### 5.5. Ubuntu Server Only: Enable SSH
+### 5.6. Ubuntu Server Only: Enable SSH
 
 ```sh
 sudo apt-get install -y openssh-server
@@ -179,7 +190,7 @@ sudo systemctl start ssh.service
 sudo systemctl enable ssh.service
 ```
 
-### 5.6. WSL2 Ubuntu Only: Copy Windows Config
+### 5.7. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
