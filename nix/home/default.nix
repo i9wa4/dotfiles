@@ -72,6 +72,7 @@ in {
         pkgs.tmux
         # System
         pkgs.htop
+        pkgs.tailscale
         pkgs.wget
         pkgs.fastfetch
         pkgs.hyperfine
