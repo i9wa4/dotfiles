@@ -159,10 +159,10 @@ bash
 ### 5.2. Configure Nix Daemon
 
 ```sh
-sudo tee /etc/nix/nix.conf << 'EOF'
+sudo tee /etc/nix/nix.conf << EOF
 build-users-group = nixbld
 experimental-features = nix-command flakes
-trusted-users = root @sudo
+trusted-users = root @sudo $(id -un)
 max-jobs = auto
 auto-optimise-store = true
 min-free = 104857600
