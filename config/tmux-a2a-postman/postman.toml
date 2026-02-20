@@ -55,7 +55,7 @@ reminder_interval_seconds = 20  # Send reminder after N messages (0 = disabled)
 # Timing settings
 scan_interval_seconds = 1  # Pane rescan interval in seconds
 tmux_timeout_seconds = 30  # Timeout for tmux commands
-enter_delay_seconds = 1.5  # Delay before sending Enter key
+enter_delay_seconds = 3.0  # Delay before sending Enter key
 
 # Pane capture settings (hybrid idle detection)
 pane_capture_interval_seconds = 10.0
