@@ -33,6 +33,11 @@ in {
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
     stateVersion = "24.11";
 
+    # Environment variables (written to hm-session-vars.sh, sourced by .zshenv)
+    sessionVariables = lib.mkIf pkgs.stdenv.isLinux {
+      TZDIR = "${pkgs.tzdata}/share/zoneinfo";
+    };
+
     # PATH additions (prepended to $PATH)
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
     sessionPath = [
