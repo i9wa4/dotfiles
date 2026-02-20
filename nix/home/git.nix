@@ -61,6 +61,7 @@ _: {
         vimdiff.path = "vim";
       };
       push.default = "current";
+      "url \"git@github.com:\"".insteadOf = "https://github.com/";
       user.signingkey = "~/.ssh/github.pub";
     };
   };
