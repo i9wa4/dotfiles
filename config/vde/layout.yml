@@ -18,15 +18,9 @@ presets:
               title: watchdog
               command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
               delay: 500
-        - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: top
-              command: top
-              delay: 500
-            - name: vde-monitor
-              command: vde-monitor --public
-              delay: 500
+        - name: top
+          command: top
+          delay: 500
 
   dev:
     name: dev
