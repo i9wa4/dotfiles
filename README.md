@@ -5,47 +5,50 @@
 ## 1. Target OS
 
 - macOS (Apple Silicon)
-- Ubuntu 24.04 LTS
-  - OpenSSH Installed
-- Ubuntu 24.04 LTS on WSL2
+- Ubuntu 24.04 LTS (including WSL2)
 
-## 2. Prerequisites
+## 2. Common Setup
 
-### 2.1. GitHub SSH Key & Signing Key
+### 2.1. GitHub Authentication
 
-1. SSH Connection if needed
+1. Connect to the machine via SSH with OpenSSH or so if needed
 
    ```sh
+   # server side
    hostname -I
+   ```
+
+   ```sh
+   # client side
    ssh username@hostname
    ```
 
-2. Generate SSH key
+1. Generate SSH key
 
    ```sh
    ssh-keygen -t ed25519 -N "" -f ~/.ssh/github
    ```
 
-3. Copy public key
+1. Copy public key
 
    ```sh
    cat ~/.ssh/github.pub
    ```
 
-4. Add SSH key to GitHub
+1. Add SSH key to GitHub
    - Go to <https://github.com/settings/keys>
    - Click "New SSH key"
    - Title: any name (e.g., PC name)
    - Key type: Authentication Key
    - Paste the public key
 
-5. Add Signing key to GitHub
+1. Add Signing key to GitHub
    - Click "New SSH key" again
    - Title: any name
    - Key type: Signing Key
    - Paste the same public key
 
-6. Configure SSH
+1. Configure SSH
 
    ```sh
    cat >> ~/.ssh/config << 'EOF'
@@ -55,15 +58,13 @@
    EOF
    ```
 
-7. Verify connection
+1. Verify connection
 
    ```sh
    ssh -T github.com
    ```
 
-## 3. Common Setup
-
-### 3.1. Install Nix
+### 2.2. Install Nix
 
 ```sh
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
@@ -83,22 +84,46 @@ nix --version
 
 cf. [Download | Nix & NixOS](https://nixos.org/download/#nix-install-linux)
 
-## 4. macOS
-
-### 4.1. Clone dotfiles
-
-Use `nix run` to temporarily get git
-(no Command Line Developer Tools needed on macOS):
+### 2.3. Enable Nix Flakes
 
 ```sh
-nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+mkdir -p ~/.config/nix
+```
+
+```sh
+echo "experimental-features = nix-command flakes" > ~/.config/nix/nix.conf
+```
+
+### 2.4. Clone dotfiles
+
+```sh
+nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 ```
 
 ```sh
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 4.2. Backup Shell Configs
+## 3. Ubuntu
+
+### 3.1. Initial home-manager switch
+
+```sh
+nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
+```
+
+### 3.2. Set zsh as default shell (optional)
+
+`~/.bashrc` auto-switches to zsh, but setting the login shell
+is useful for regular SSH connections:
+
+```sh
+sudo chsh -s $(which zsh) $(id -un)
+```
+
+## 4. macOS
+
+### 4.1. Backup Shell Configs
 
 nix-darwin will fail if /etc/zshenv or /etc/zshrc exist
 with unrecognized content.
@@ -113,7 +138,7 @@ sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 
 cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
 
-### 4.3. Install Homebrew
+### 4.2. Install Homebrew
 
 nix-darwin manages Homebrew packages,
 but Homebrew itself must be installed manually.
@@ -124,79 +149,30 @@ but Homebrew itself must be installed manually.
 
 cf. [Homebrew](https://brew.sh/)
 
-### 4.4. Initial darwin-rebuild
+### 4.3. Initial darwin-rebuild
 
 ```sh
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
+sudo nix run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
 ```
 
 or
 
 ```sh
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake '.#macos-w' --impure --no-update-lock-file
+sudo nix run nix-darwin -- switch --flake '.#macos-w' --impure --no-update-lock-file
 ```
 
 Open a new terminal after completion.
 
-### 4.5. Set PC-specific Git Config
+## 5. Post Installation
+
+### 5.1. Git
 
 ```sh
 git config --file ~/.gitconfig user.name "Your Name"
 git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
-## 5. Linux (Ubuntu / WSL2)
-
-### 5.1. Clone dotfiles
-
-```sh
-nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
-```
-
-```sh
-cd ~/ghq/github.com/i9wa4/dotfiles
-```
-
-### 5.2. Initial home-manager switch
-
-```sh
-nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
-```
-
-### 5.3. Set zsh as default shell (optional)
-
-`~/.bashrc` auto-switches to zsh, but setting the login shell
-is useful for regular SSH connections:
-
-```sh
-sudo chsh -s $(which zsh) $(id -un)
-```
-
-### 5.4. Set PC-specific Git Config
-
-```sh
-git config --file ~/.gitconfig user.name "Your Name"
-git config --file ~/.gitconfig user.email "your@email.com"
-```
-
-### 5.5. Ubuntu Server Only: Enable SSH
-
-```sh
-sudo apt-get install -y openssh-server
-sudo systemctl daemon-reload
-sudo systemctl start ssh.service
-sudo systemctl enable ssh.service
-```
-
-### 5.6. WSL2 Ubuntu Only: Copy Windows Config
-
-```sh
-make win-copy
-```
-
-## 6. Post Installation
-
-### 6.1. gh (GitHub CLI)
+### 5.2. gh (GitHub CLI)
 
 ```sh
 gh auth login
@@ -215,7 +191,7 @@ gh auth status --show-token
 gh auth login --with-token
 ```
 
-### 6.2. Tailscale
+### 5.3. Tailscale
 
 Create an account at <https://login.tailscale.com> first.
 
@@ -248,55 +224,30 @@ tailscale status
 tailscale ip -4
 ```
 
-### 6.3. AWS CLI
+### 5.4. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 6.4. Web Browser
+### 5.5. Web Browser
 
-#### 6.4.1. Setting Synchronization
+#### 5.5.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 6.4.2. Search Engine
+#### 5.5.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 6.4.3. Extensions
+#### 5.5.3. Extensions
 
-- Flow Chat for YouTube Live
 - Okta Browser Plugin
 - Slack Channels Grouping
 
-### 6.5. Slack
-
-GitHub Notifications:
-
-```text
-/github subscribe owner/repo reviews,comments,branches,commits:*
-```
-
-### 6.6. SSH Connection to Ubuntu Server
-
-cf. [Linux サーバー：SSH 設定](https://zenn.dev/wsuzume/articles/26b26106c3925e)
-
-1. [Server] Set `PasswordAuthentication yes` in `/etc/ssh/sshd_config`
-2. [Server] `sudo systemctl restart ssh.service`
-3. [Client] `ssh-keygen -t ed25519`
-4. [Client] `ssh -p port username@hostname`
-5. [Client] Copy public key to server:
-   `scp -P port ~/.ssh/id_ed25519.pub username@hostname:~/.ssh/register_key`
-6. [Server] Add to authorized_keys:
-   `cat ~/.ssh/register_key >> ~/.ssh/authorized_keys`
-   `chmod 600 ~/.ssh/authorized_keys`
-7. [Server] Set `PasswordAuthentication no` and restart ssh
-8. [Client] Configure `~/.ssh/config`
-
-## 7. Contributing
+## 6. Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
