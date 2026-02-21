@@ -32,7 +32,6 @@
       "Write(.env*)"
     ]
   },
-  "model": "sonnet",
   "hooks": {
     "UserPromptSubmit": [
       {
