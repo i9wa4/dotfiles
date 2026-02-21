@@ -70,7 +70,19 @@
             extraSpecialArgs = {
               inherit username inputs;
             };
-            users.${username} = import ../home;
+            users.${username} = {
+              imports = [../home];
+              programs.vscode = {
+                enable = true;
+                profiles.default.userSettings = {
+                  "breadcrumbs.enabled" = false;
+                  "editor.fontFamily" = "'UDEV Gothic 35LG', monospace";
+                  "editor.minimap.enabled" = false;
+                  "editor.mouseWheelZoom" = true;
+                  "terminal.integrated.fontFamily" = "'UDEV Gothic 35LG', monospace";
+                };
+              };
+            };
           };
         }
       ];

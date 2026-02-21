@@ -21,7 +21,6 @@ in {
     ./codex.nix
     ./editorconfig.nix
     ./git.nix
-    ./vscode.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
