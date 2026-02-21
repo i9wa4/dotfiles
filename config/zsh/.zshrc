@@ -8,16 +8,8 @@
 # if [[ -z "$TMUX" && -z "${SSH_CONNECTION}" && "${TERM_PROGRAM}" != "vscode" ]]; then
 if [[ -z "$TMUX" && "${TERM_PROGRAM}" != "vscode" ]]; then
   export SHELL="$(command -v zsh)"
-  command -v tmux &>/dev/null && exec tmux new-session -A -s main
+  # command -v tmux &>/dev/null && exec tmux new-session -A -s main
 fi
-
-# Cancel pending EC2 auto-stop on new session
-if [[ "$(cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null)" == "Amazon EC2" ]]; then
-  sudo shutdown -c 2>/dev/null
-fi
-
-# Disable XON/XOFF flow control (enable Ctrl-Q for push-line-or-edit)
-stty -ixon -ixoff 2>/dev/null
 
 # Disable Ctrl-D to exit
 setopt IGNORE_EOF

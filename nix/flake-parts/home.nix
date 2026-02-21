@@ -30,7 +30,7 @@ in {
       user = builtins.getEnv "USER";
       logname = builtins.getEnv "LOGNAME";
       home = builtins.getEnv "HOME";
-      homeUser = builtins.baseNameOf home;
+      homeUser = baseNameOf home;
     in
       if logname != ""
       then logname
@@ -38,7 +38,7 @@ in {
       then homeUser
       else if user != ""
       then user
-      else builtins.abort "Cannot determine username: set LOGNAME environment variable";
+      else abort "Cannot determine username: set LOGNAME environment variable";
   in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;

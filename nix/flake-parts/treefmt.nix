@@ -1,11 +1,11 @@
 # Treefmt configuration (dotfiles-specific formatters)
-# This module extends treefmt-base.nix with dotfiles-specific formatters
-# Base configuration (projectRootFile, common excludes) is in treefmt-base.nix
 # Run: nix fmt
 {
   perSystem = {pkgs, ...}: {
     treefmt = {
-      # === Formatters (dotfiles-specific) ===
+      # Required: identifies project root
+      projectRootFile = "flake.nix";
+
       programs = {
         # Nix
         alejandra.enable = true;
@@ -44,8 +44,10 @@
         includes = ["*.sql"];
       };
 
-      # Dotfiles-specific exclude patterns (common patterns in treefmt-base.nix)
       settings.global.excludes = [
+        ".direnv"
+        ".git"
+        "*.lock"
         "config/zsh/*" # zsh files have special formatting
       ];
     };
