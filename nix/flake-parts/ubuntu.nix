@@ -47,11 +47,10 @@ in {
             dates = "12:00";
             options = "--delete-older-than 1d";
           };
-
-          # Nix store optimisation via hard links
-          # Note: Disabled on macOS - corrupts Nix Store on Darwin + causes syspolicyd high CPU
-          # cf. nix-darwin issue 1252
-          nix.optimise.automatic = true;
+          # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
+          # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
+          # Note: nix.optimise module does not exist in HM standalone
+          nix.settings.auto-optimise-store = true;
         }
         ../home
       ];
