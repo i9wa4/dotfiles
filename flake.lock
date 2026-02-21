@@ -39,46 +39,6 @@
         "type": "github"
       }
     },
-    "brew-api": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1764778687,
-        "narHash": "sha256-yagQkVMSU/ZwyfQzo5mFtC7NyPmemmxuIEM9k/WXJts=",
-        "owner": "BatteredBunny",
-        "repo": "brew-api",
-        "rev": "9c960c9aa52990d1459203d9fe7570ab3a94ec37",
-        "type": "github"
-      },
-      "original": {
-        "owner": "BatteredBunny",
-        "repo": "brew-api",
-        "type": "github"
-      }
-    },
-    "brew-nix": {
-      "inputs": {
-        "brew-api": "brew-api",
-        "nix-darwin": [
-          "nix-darwin"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1764779851,
-        "narHash": "sha256-7WrgeIYBEuFG7DZtS8dio0y9nvRHf3otk7oqsPIoECs=",
-        "owner": "BatteredBunny",
-        "repo": "brew-nix",
-        "rev": "b314426c17667bcebd73ed7e57ecae2bac9755cf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "BatteredBunny",
-        "repo": "brew-nix",
-        "type": "github"
-      }
-    },
     "claude-chill": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -457,7 +417,6 @@
       "inputs": {
         "agent-skills": "agent-skills",
         "anthropic-skills": "anthropic-skills",
-        "brew-nix": "brew-nix",
         "claude-chill": "claude-chill",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",

@@ -20,12 +20,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Homebrew casks as Nix packages (no Homebrew needed)
-    brew-nix = {
-      url = "github:BatteredBunny/brew-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nix-darwin.follows = "nix-darwin";
-    };
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
@@ -60,26 +54,12 @@
     };
   };
 
-  outputs = inputs @ {
-    flake-parts,
-    git-hooks,
-    treefmt-nix,
-    ...
-  }:
+  outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake {inherit inputs;} {
       # Supported systems (x86_64-darwin excluded - Apple Silicon only)
       systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
 
-      # Import flake-parts modules
-      imports = [
-        git-hooks.flakeModule
-        treefmt-nix.flakeModule
-        ./nix/flake-parts/pre-commit.nix
-        ./nix/flake-parts/treefmt.nix
-        ./nix/flake-parts/darwin.nix
-        ./nix/flake-parts/home.nix
-      ];
-
+      imports = [./nix/flake-parts];
 
       # Per-system outputs (devShells, etc.)
       perSystem = {

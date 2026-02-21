@@ -2,8 +2,16 @@
   pkgs,
   lib,
   username,
+  commonOverlays,
   ...
 }: {
+  nixpkgs = {
+    # Allow unfree packages (e.g., terraform with BSL license)
+    config.allowUnfree = true;
+    overlays = commonOverlays;
+    hostPlatform = "aarch64-darwin";
+  };
+
   # Nix settings
   nix = {
     settings = {
@@ -61,11 +69,18 @@
     pkgs.udev-gothic
   ];
 
-  # NOTE: Homebrew settings are in common/homebrew.nix
-  # Host-specific casks are in flake-parts/darwin.nix (extraCasks parameter)
-
-  # Platform
-  nixpkgs.hostPlatform = "aarch64-darwin";
+  # Homebrew
+  homebrew = {
+    enable = true;
+    onActivation = {
+      # Remove formulae/casks not listed in configuration
+      cleanup = "uninstall";
+      # Update Homebrew before installing
+      autoUpdate = true;
+      # Upgrade outdated formulae/casks
+      upgrade = true;
+    };
+  };
 
   # Power management
   power.sleep = {

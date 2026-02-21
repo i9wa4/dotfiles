@@ -1,19 +1,11 @@
 # Darwin configurations (macOS)
 # This module is imported by flake.nix via flake-parts
-{inputs, ...}: let
-  inherit (inputs) nix-darwin home-manager brew-nix neovim-nightly-overlay vim-overlay claude-chill nix-index-database;
-
-  # Common overlays for all darwin configurations
-  commonOverlays = [
-    neovim-nightly-overlay.overlays.default
-    (vim-overlay.overlays.features {
-      lua = true;
-      python3 = true;
-    })
-    (final: _prev: {
-      claude-chill = claude-chill.packages.${final.stdenv.hostPlatform.system}.default;
-    })
-  ];
+{
+  inputs,
+  commonOverlays,
+  ...
+}: let
+  inherit (inputs) nix-darwin home-manager nix-index-database;
 
   # Helper to get username from environment
   # SUDO_USER is automatically set by sudo to the original username
@@ -30,39 +22,25 @@
   mkDarwinConfiguration = {
     hostname,
     system ? "aarch64-darwin",
-    extraCasks ? [],
+    casks ? [],
   }: let
     username = getUsername;
   in
     nix-darwin.lib.darwinSystem {
       inherit system;
-      specialArgs = {inherit username;};
+      specialArgs = {inherit username inputs commonOverlays;};
       modules = [
-        ../darwin
-        ../darwin/homebrew.nix
+        ../nix-darwin
         home-manager.darwinModules.home-manager
         nix-index-database.darwinModules.nix-index
-        {
-          programs.nix-index-database.comma.enable = true;
-        }
-        brew-nix.darwinModules.default
         {
           # Host identification
           networking.hostName = hostname;
 
-          # Host-specific Homebrew casks (merged with common casks from darwin/homebrew.nix)
-          homebrew.casks = extraCasks;
+          # Homebrew casks
+          homebrew.casks = casks;
 
-          # Allow unfree packages (e.g., terraform with BSL license)
-          nixpkgs.config.allowUnfree = true;
-          # Overlays
-          nixpkgs.overlays =
-            commonOverlays
-            ++ [
-              brew-nix.overlays.default
-            ];
-          # Enable brew-nix to symlink apps to /Applications/Nix Apps
-          brew-nix.enable = true;
+          # Home Manager integration
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
@@ -91,13 +69,24 @@ in {
   # darwin-rebuild switch --flake '.#macos-p' --impure
   # darwin-rebuild switch --flake '.#macos-w' --impure
   # Requires --impure because we use builtins.getEnv to read SUDO_USER
-  flake.darwinConfigurations = {
-    "macos-p" = mkDarwinConfiguration {hostname = "macos-p";};
+  flake.darwinConfigurations = let
+    commonCasks = [
+      "docker-desktop"
+      "drawio"
+      "google-chrome"
+      "stats"
+      "visual-studio-code"
+      "wezterm"
+      "zoom"
+    ];
+  in {
+    "macos-p" = mkDarwinConfiguration {
+      hostname = "macos-p";
+      casks = commonCasks;
+    };
     "macos-w" = mkDarwinConfiguration {
       hostname = "macos-w";
-      extraCasks = [
-        "openvpn-connect"
-      ];
+      casks = commonCasks ++ ["openvpn-connect"];
     };
   };
 }

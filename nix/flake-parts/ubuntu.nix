@@ -1,19 +1,11 @@
 # Home Manager configurations (standalone, for Linux/WSL2)
 # This module is imported by flake.nix via flake-parts
-{inputs, ...}: let
-  inherit (inputs) nixpkgs home-manager neovim-nightly-overlay vim-overlay claude-chill nix-index-database;
-
-  # Common overlays for all home configurations
-  commonOverlays = [
-    neovim-nightly-overlay.overlays.default
-    (vim-overlay.overlays.features {
-      lua = true;
-      python3 = true;
-    })
-    (final: _prev: {
-      claude-chill = claude-chill.packages.${final.stdenv.hostPlatform.system}.default;
-    })
-  ];
+{
+  inputs,
+  commonOverlays,
+  ...
+}: let
+  inherit (inputs) nixpkgs home-manager nix-index-database;
 in {
   # home-manager switch --flake '.#ubuntu' --impure
   # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
@@ -48,7 +40,18 @@ in {
       modules = [
         nix-index-database.homeModules.nix-index
         {
-          programs.nix-index-database.comma.enable = true;
+          # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
+          # cf. nix-darwin's nix.gc.interval in nix-darwin/default.nix
+          nix.gc = {
+            automatic = true;
+            dates = "12:00";
+            options = "--delete-older-than 1d";
+          };
+
+          # Nix store optimisation via hard links
+          # Note: Disabled on macOS - corrupts Nix Store on Darwin + causes syspolicyd high CPU
+          # cf. nix-darwin issue 1252
+          nix.optimise.automatic = true;
         }
         ../home
       ];

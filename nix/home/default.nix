@@ -50,6 +50,7 @@ in {
       lib.optionals pkgs.stdenv.isLinux [
         pkgs.zsh
         pkgs.wslu # WSL utilities (harmless on non-WSL)
+        pkgs.udev-gothic # Font (macOS installs via nix-darwin fonts.packages)
       ]
       ++ [
         # Cloud & Infrastructure
@@ -173,9 +174,15 @@ in {
     "zsh".source = symlink "${dotfilesDir}/config/zsh";
   };
 
+  # Nix settings (user-level, written to ~/.config/nix/nix.conf)
+  nix.settings.experimental-features = ["nix-command" "flakes"];
+
   programs = {
     # Let Home Manager manage itself
     home-manager.enable = true;
+
+    # nix-index-database: comma (run uninstalled commands via nix-index)
+    nix-index-database.comma.enable = true;
 
     # direnv (auto-activate devShell when cd into project)
     # Note: zsh hook is handled by zinit turbo mode for faster startup
