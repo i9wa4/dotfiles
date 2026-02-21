@@ -175,6 +175,8 @@ in {
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
+  # nix.package is required by HM when writing nix.conf
+  nix.package = pkgs.nix;
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   programs = {
