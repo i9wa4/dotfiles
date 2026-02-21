@@ -6,42 +6,46 @@
 
 - macOS (Apple Silicon)
 - Ubuntu 24.04 LTS
+  - OpenSSH Installed
 - Ubuntu 24.04 LTS on WSL2
 
 ## 2. Prerequisites
 
 ### 2.1. GitHub SSH Key & Signing Key
 
-1. Generate SSH key
+1. SSH Connection if needed
+
+   ```sh
+   hostname -I
+   ssh username@hostname
+   ```
+
+2. Generate SSH key
 
    ```sh
    ssh-keygen -t ed25519 -N "" -f ~/.ssh/github
    ```
 
-2. Copy public key
+3. Copy public key
 
    ```sh
-   # macOS
-   pbcopy < ~/.ssh/github.pub
-
-   # Linux
    cat ~/.ssh/github.pub
    ```
 
-3. Add SSH key to GitHub
+4. Add SSH key to GitHub
    - Go to <https://github.com/settings/keys>
    - Click "New SSH key"
    - Title: any name (e.g., PC name)
    - Key type: Authentication Key
    - Paste the public key
 
-4. Add Signing key to GitHub
+5. Add Signing key to GitHub
    - Click "New SSH key" again
    - Title: any name
    - Key type: Signing Key
    - Paste the same public key
 
-5. Configure SSH
+6. Configure SSH
 
    ```sh
    cat >> ~/.ssh/config << 'EOF'
@@ -51,7 +55,7 @@
    EOF
    ```
 
-6. Verify connection
+7. Verify connection
 
    ```sh
    ssh -T github.com
@@ -63,7 +67,11 @@
 
 ```sh
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-# or
+```
+
+or
+
+```sh
 curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
 ```
 
@@ -73,7 +81,7 @@ Open a new terminal to verify:
 nix --version
 ```
 
-cf. [Nix Official Download](https://nixos.org/download/)
+cf. [Download | Nix & NixOS](https://nixos.org/download/#nix-install-linux)
 
 ## 4. macOS
 
@@ -83,9 +91,10 @@ Use `nix run` to temporarily get git
 (no Command Line Developer Tools needed on macOS):
 
 ```sh
-ssh-keygen -t ed25519 -N "" -f ~/.ssh/github
-nix --extra-experimental-features 'nix-command flakes' run nixpkgs@gh -- auth login
 nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+```
+
+```sh
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
@@ -138,76 +147,23 @@ git config --file ~/.gitconfig user.email "your@email.com"
 
 ## 5. Linux (Ubuntu / WSL2)
 
-### 5.1. EC2 Only: SSH over SSM Setup
-
-#### 5.1.1. Local: Generate SSH Key
+### 5.1. Clone dotfiles
 
 ```sh
-ssh-keygen -t ed25519 -N "" -f ~/.ssh/ec2-<name>
+nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-#### 5.1.2. Local: Configure SSH
-
 ```sh
-cat >> ~/.ssh/config << 'EOF'
-Host i-*
-    ProxyCommand aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p' --profile <your-profile>
-    User ubuntu
-    IdentityFile ~/.ssh/ec2-<name>
-    StrictHostKeyChecking no
-EOF
-```
-
-#### 5.1.3. EC2 (SSM Console): Register SSH Public Key
-
-Open SSM session from AWS Management Console, then run:
-
-```sh
-sudo mkdir -p /home/ubuntu/.ssh
-sudo bash -c 'echo "<public-key>" >> /home/ubuntu/.ssh/authorized_keys'
-sudo chmod 700 /home/ubuntu/.ssh
-sudo chmod 600 /home/ubuntu/.ssh/authorized_keys
-sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-```
-
-#### 5.1.4. Local: Connect via SSH
-
-```sh
-ssh i-<instance-id>
-```
-
-Remaining setup (5.2+) is done via this SSH session as `ubuntu`.
-
-### 5.2. Configure Nix Daemon
-
-```sh
-sudo tee /etc/nix/nix.conf << EOF
-build-users-group = nixbld
-experimental-features = nix-command flakes
-trusted-users = root @sudo $(id -un)
-max-jobs = auto
-auto-optimise-store = true
-min-free = 104857600
-max-free = 1073741824
-EOF
-sudo systemctl restart nix-daemon.service
-```
-
-### 5.3. Clone dotfiles
-
-```sh
-nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
-sudo nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 5.4. Initial home-manager switch
+### 5.2. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 5.5. Set zsh as default shell (optional)
+### 5.3. Set zsh as default shell (optional)
 
 `~/.bashrc` auto-switches to zsh, but setting the login shell
 is useful for regular SSH connections:
@@ -216,14 +172,14 @@ is useful for regular SSH connections:
 sudo chsh -s $(which zsh) $(id -un)
 ```
 
-### 5.6. Set PC-specific Git Config
+### 5.4. Set PC-specific Git Config
 
 ```sh
 git config --file ~/.gitconfig user.name "Your Name"
 git config --file ~/.gitconfig user.email "your@email.com"
 ```
 
-### 5.7. Ubuntu Server Only: Enable SSH
+### 5.5. Ubuntu Server Only: Enable SSH
 
 ```sh
 sudo apt-get install -y openssh-server
@@ -232,7 +188,7 @@ sudo systemctl start ssh.service
 sudo systemctl enable ssh.service
 ```
 
-### 5.8. WSL2 Ubuntu Only: Copy Windows Config
+### 5.6. WSL2 Ubuntu Only: Copy Windows Config
 
 ```sh
 make win-copy
