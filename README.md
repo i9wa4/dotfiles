@@ -83,6 +83,8 @@ Use `nix run` to temporarily get git
 (no Command Line Developer Tools needed on macOS):
 
 ```sh
+ssh-keygen -t ed25519 -N "" -f ~/.ssh/github
+nix --extra-experimental-features 'nix-command flakes' run nixpkgs@gh -- auth login
 nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
@@ -195,6 +197,7 @@ sudo systemctl restart nix-daemon.service
 
 ```sh
 nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
+sudo nix --extra-experimental-features 'nix-command flakes' run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 

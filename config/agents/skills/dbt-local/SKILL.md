@@ -1,5 +1,5 @@
 ---
-name: dbt
+name: dbt-local
 description: |
   dbt Expert Engineer Skill - Comprehensive guide for dbt development best practices, command execution, and environment configuration
   Use when:
