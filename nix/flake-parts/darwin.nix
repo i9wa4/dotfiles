@@ -49,7 +49,10 @@
               inherit username inputs;
             };
             users.${username} = {
-              imports = [../home];
+              imports = [
+                nix-index-database.homeModules.nix-index
+                ../home
+              ];
               programs.vscode = {
                 enable = true;
                 profiles.default.userSettings = {
