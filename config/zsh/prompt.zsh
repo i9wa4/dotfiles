@@ -38,13 +38,15 @@ function _get_context_line() {
 }
 
 # SSH connection detection
-if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
-  _IS_LOCAL=0
-else
-  _IS_LOCAL=1
-fi
+# if [[ -n "${SSH_CONNECTION}" || -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+#   _IS_LOCAL=0
+# else
+#   _IS_LOCAL=1
+# fi
 
-((_IS_LOCAL)) && _HOST_PREFIX="" || _HOST_PREFIX="🌐 "
+# Deterministic hex derived from hostname (cksum is POSIX, works on macOS/Linux)
+_HOST_HASH=$(printf '%s' "${HOST}" | cksum | awk '{printf "%x", $1}' | cut -c1-3)
+_HOST_PREFIX="[${_HOST_HASH}] "
 
 precmd() {
   local context="$(_get_context_line)"
