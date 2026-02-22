@@ -7,12 +7,17 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: postman
-          command: nix run github:i9wa4/tmux-a2a-postman --refresh
-          delay: 500
-          focus: true
-        - name: top
-          command: top
+        - type: vertical
+          ratio: [5, 1]
+          panes:
+            - name: top
+              command: top
+              delay: 500
+            - name: tailscale
+              command: sudo $(which tailscaled)
+              delay: 500
+        - name: vde-monitor
+          command: vde-monitor --tailscale
           delay: 500
 
   main-2:
@@ -23,19 +28,14 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - type: vertical
-          ratio: [4, 1]
-          panes:
-            - name: watchdog
-              title: watchdog
-              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
-              delay: 500
-            - name: tailscale
-              command: sudo $(which tailscaled)
-              delay: 500
-        - name: vde-monitor
-          command: vde-monitor --tailscale
-          delay: 2000
+        - name: postman
+          command: nix run github:i9wa4/tmux-a2a-postman --refresh
+          delay: 500
+          focus: true
+        - name: watchdog
+          title: watchdog
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          delay: 500
 
   dev:
     name: dev
