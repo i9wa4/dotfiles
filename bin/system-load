@@ -17,60 +17,60 @@ os_type=$(uname -s)
 # Get total CPU usage percentage
 get_total_cpu_usage() {
   case "${os_type}" in
-  Darwin)
-    # Parse top output for CPU usage (user + sys)
-    top -l 1 -s 0 2>/dev/null | awk '/CPU usage/ {
+    Darwin)
+      # Parse top output for CPU usage (user + sys)
+      top -l 1 -s 0 2>/dev/null | awk '/CPU usage/ {
         gsub(/%/, "", $3)
         gsub(/%/, "", $5)
         printf "%.0f", $3 + $5
       }'
-    ;;
-  Linux)
-    # Parse /proc/stat for CPU usage
-    read -r _cpu user nice system idle rest </proc/stat
-    total1=$((user + nice + system + idle))
-    idle1=${idle}
-    sleep 0.1
-    read -r _cpu user nice system idle rest </proc/stat
-    total2=$((user + nice + system + idle))
-    idle2=${idle}
-    total_diff=$((total2 - total1))
-    idle_diff=$((idle2 - idle1))
-    if [ "${total_diff}" -gt 0 ]; then
-      echo $(((total_diff - idle_diff) * 100 / total_diff))
-    else
+      ;;
+    Linux)
+      # Parse /proc/stat for CPU usage
+      read -r _cpu user nice system idle rest </proc/stat
+      total1=$((user + nice + system + idle))
+      idle1=${idle}
+      sleep 0.1
+      read -r _cpu user nice system idle rest </proc/stat
+      total2=$((user + nice + system + idle))
+      idle2=${idle}
+      total_diff=$((total2 - total1))
+      idle_diff=$((idle2 - idle1))
+      if [ "${total_diff}" -gt 0 ]; then
+        echo $(((total_diff - idle_diff) * 100 / total_diff))
+      else
+        echo "0"
+      fi
+      ;;
+    *)
       echo "0"
-    fi
-    ;;
-  *)
-    echo "0"
-    ;;
+      ;;
   esac
 }
 
 # Get RAM usage percentage
 get_ram_usage() {
   case "${os_type}" in
-  Darwin)
-    # vm_stat: free + inactive pages are reclaimable (= available)
-    local page_size total_mem
-    page_size=$(vm_stat | awk '/page size/ {print $8}')
-    total_mem=$(sysctl -n hw.memsize)
-    vm_stat | awk -v total="${total_mem}" -v ps="${page_size}" '
+    Darwin)
+      # vm_stat: free + inactive pages are reclaimable (= available)
+      local page_size total_mem
+      page_size=$(vm_stat | awk '/page size/ {print $8}')
+      total_mem=$(sysctl -n hw.memsize)
+      vm_stat | awk -v total="${total_mem}" -v ps="${page_size}" '
       /Pages free:/     { gsub(/\./, "", $3); free = $3 }
       /Pages inactive:/ { gsub(/\./, "", $3); inactive = $3 }
       END {
         avail = (free + inactive) * ps
         printf "%.0f", (total - avail) * 100 / total
       }'
-    ;;
-  Linux)
-    # /proc/meminfo: MemAvailable is the most accurate available memory
-    awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0f", (total-avail)*100/total}' /proc/meminfo
-    ;;
-  *)
-    echo "0"
-    ;;
+      ;;
+    Linux)
+      # /proc/meminfo: MemAvailable is the most accurate available memory
+      awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0f", (total-avail)*100/total}' /proc/meminfo
+      ;;
+    *)
+      echo "0"
+      ;;
   esac
 }
 
@@ -78,4 +78,4 @@ get_ram_usage() {
 total_cpu=$(get_total_cpu_usage)
 ram=$(get_ram_usage)
 
-echo "CPU:${total_cpu}% RAM:${ram}%"
+echo "RAM:${ram}% CPU:${total_cpu}%"
