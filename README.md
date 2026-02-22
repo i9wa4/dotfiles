@@ -112,7 +112,15 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 3.2. Set zsh as default shell (optional)
+### 3.2. Add user to Nix trusted-users
+
+Required to allow user-level `nix.conf` settings (e.g., `auto-optimise-store`):
+
+```sh
+echo "trusted-users = root $(id -un)" | sudo tee -a /etc/nix/nix.conf && sudo systemctl restart nix-daemon
+```
+
+### 3.3. Set zsh as default shell (optional)
 
 `~/.bashrc` auto-switches to zsh, but setting the login shell
 is useful for regular SSH connections:
