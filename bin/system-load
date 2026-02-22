@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Display system load (CPU usage) for tmux status line.
+# Display system load (CPU and RAM usage) for tmux status line.
 #
 # Usage:
 #   system-load
 #
 # Output format:
-#   CPU:XX%
+#   CPU:XX% RAM:XX%
 #
 # Supported platforms:
 #   - macOS (Darwin)
@@ -48,7 +48,34 @@ get_total_cpu_usage() {
   esac
 }
 
+# Get RAM usage percentage
+get_ram_usage() {
+  case "${os_type}" in
+  Darwin)
+    # vm_stat: free + inactive pages are reclaimable (= available)
+    local page_size total_mem
+    page_size=$(vm_stat | awk '/page size/ {print $8}')
+    total_mem=$(sysctl -n hw.memsize)
+    vm_stat | awk -v total="${total_mem}" -v ps="${page_size}" '
+      /Pages free:/     { gsub(/\./, "", $3); free = $3 }
+      /Pages inactive:/ { gsub(/\./, "", $3); inactive = $3 }
+      END {
+        avail = (free + inactive) * ps
+        printf "%.0f", (total - avail) * 100 / total
+      }'
+    ;;
+  Linux)
+    # /proc/meminfo: MemAvailable is the most accurate available memory
+    awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0f", (total-avail)*100/total}' /proc/meminfo
+    ;;
+  *)
+    echo "0"
+    ;;
+  esac
+}
+
 # Main
 total_cpu=$(get_total_cpu_usage)
+ram=$(get_ram_usage)
 
-echo "CPU:${total_cpu}%"
+echo "CPU:${total_cpu}% RAM:${ram}%"
