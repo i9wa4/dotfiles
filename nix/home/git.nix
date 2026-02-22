@@ -14,9 +14,6 @@ _: {
       # dotfiles
       ".i9wa4/"
       "local.vim"
-      # Claude
-      ".claude/"
-      ".mcp.json"
       # Python
       ".ipynb_checkpoints/"
       ".virtual_documents/"
