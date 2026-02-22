@@ -199,59 +199,26 @@ gh auth status --show-token
 gh auth login --with-token
 ```
 
-### 5.3. Tailscale
-
-Create an account at <https://login.tailscale.com> first.
-
-Start daemon (needs to run each boot).
-`sudo` resets PATH, so use `$(which ...)` to find Nix-installed binaries:
-
-```sh
-sudo $(which tailscaled) &
-```
-
-First time only (opens browser for login):
-
-```sh
-sudo $(which tailscale) up
-```
-
-EC2 (headless, no browser):
-
-```sh
-sudo $(which tailscaled) &
-sudo $(which tailscale) up --auth-key=tskey-auth-xxxxx
-```
-
-Generate auth key at <https://login.tailscale.com/admin/settings/keys>
-
-Verify:
-
-```sh
-tailscale status
-tailscale ip -4
-```
-
-### 5.4. AWS CLI
+### 5.3. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 5.5. Web Browser
+### 5.4. Web Browser
 
-#### 5.5.1. Setting Synchronization
+#### 5.4.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 5.5.2. Search Engine
+#### 5.4.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 5.5.3. Extensions
+#### 5.4.3. Extensions
 
 - Okta Browser Plugin
 - Slack Channels Grouping

@@ -108,9 +108,11 @@ snippets:
 
   - name: (vde-layout) main
     keyword: vm
-    snippet: vde-layout main
+    snippet: vde-layout main-1 &&
+      vde-layout main-2
 
   - name: (vde-layout) preset-a
     keyword: va
-    snippet: vde-layout messenger &&
+    snippet: |
+      vde-layout messenger &&
       vde-layout high
