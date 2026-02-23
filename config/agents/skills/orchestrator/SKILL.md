@@ -69,7 +69,31 @@ NOTE:
 | memo  | `memo <path>`     | Read file                            |
 | text  | `"<description>"` | Direct input                         |
 
-### 3.2. Plan Template
+### 3.2. Planning Process
+
+Before creating the plan file:
+
+1. **Research phase**: Create a research artifact first.
+
+   ```bash
+   mkoutput --dir research --label "${feature}-investigation"
+   ```
+
+   Document: files examined, patterns found, design decisions, recommendations.
+
+2. **Annotation cycle** (1-6 rounds): Iterate on the plan draft.
+   Guard: do NOT dispatch workers until all annotation cycles complete.
+   - Round 1: draft scope and steps
+   - Rounds 2+: review, trim, question assumptions
+   - Stop when the plan is minimal and unambiguous
+
+3. **Decision logging**: For each non-obvious choice, record:
+   - What: the chosen approach
+   - Why: rationale, constraints, trade-offs considered
+
+4. **Scope checkpoint**: Trim to minimum before dispatching. "When in doubt, do less."
+
+### 3.3. Plan Template
 
 Create file:
 
@@ -108,6 +132,20 @@ mkoutput --dir plans --label plan
 
 - <how to verify>
 ```
+
+### 3.4. Living Document Management
+
+Update plan.md during implementation when:
+
+- A surprise or blocker invalidates a step
+- A design pivot changes the approach
+- New information changes scope
+
+How to update:
+
+- Mark completed steps (add `[done]` to step heading)
+- Append evidence: terminal transcripts, test results
+- Escalate to user before proceeding if a design change is required
 
 ## 4. Code Workflow
 

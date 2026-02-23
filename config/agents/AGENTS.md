@@ -55,6 +55,16 @@ acknowledge with a random one-liner in character.
 
 - Create with `mkoutput` command (not tracked by git)
 
+| Purpose            | Command                                                      |
+| ------------------ | ------------------------------------------------------------ |
+| Research artifacts | `mkoutput --dir research --label "${feature}-investigation"` |
+| Plan artifacts     | `mkoutput --dir plans --label plan`                          |
+| Completion reports | `mkoutput --dir reviews --label completion`                  |
+| Throwaway outputs  | `mkoutput --dir tmp --label "${purpose}"`                    |
+
+NOTE: `plan` and `completion` are orchestrator conventions. The `${feature}` suffix
+is optional for disambiguation when multiple plans exist in the same session.
+
 ### 5.2. Editing Style
 
 - Match comment language in target file

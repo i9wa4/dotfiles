@@ -77,6 +77,7 @@ in {
       "docker-desktop"
       "drawio"
       "google-chrome"
+      "obsidian"
       "stats"
       "visual-studio-code"
       "wezterm"

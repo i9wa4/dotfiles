@@ -13,6 +13,7 @@ set -o posix
 SWAPFILE="/swapfile"
 SWAP_SIZE_GB=16
 SWAP_SIZE_BYTES=$((SWAP_SIZE_GB * 1024 * 1024 * 1024))
+SWAPPINESS_TARGET=30
 
 if [[ $EUID -ne 0 ]]; then
   echo "ERROR: Run as root (sudo setup-swap)" >&2
@@ -25,7 +26,8 @@ swapon --show || echo "(no active swap)"
 echo ""
 echo "=== Target ==="
 echo "  Swapfile : ${SWAPFILE}"
-echo "  Size     : ${SWAP_SIZE_GB}GB"
+echo "  Size      : ${SWAP_SIZE_GB}GB"
+echo "  Swappiness: ${SWAPPINESS_TARGET}"
 echo ""
 
 # Determine what actions are needed
@@ -51,6 +53,10 @@ fi
 
 if ! grep -q "$SWAPFILE" /etc/fstab 2>/dev/null; then
   actions+=("Add ${SWAPFILE} entry to /etc/fstab")
+fi
+
+if [[ "$(sysctl -n vm.swappiness)" -ne $SWAPPINESS_TARGET ]]; then
+  actions+=("Set vm.swappiness=${SWAPPINESS_TARGET}")
 fi
 
 # If nothing to do, exit early
@@ -112,6 +118,12 @@ fi
 if ! grep -q "$SWAPFILE" /etc/fstab; then
   echo "${SWAPFILE} none swap sw 0 0" >> /etc/fstab
   echo "* Added to /etc/fstab"
+fi
+
+# Swappiness
+if [[ "$(sysctl -n vm.swappiness)" -ne $SWAPPINESS_TARGET ]]; then
+  sysctl vm.swappiness="${SWAPPINESS_TARGET}"
+  echo "* vm.swappiness set to ${SWAPPINESS_TARGET}"
 fi
 
 echo ""
