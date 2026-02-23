@@ -13,6 +13,8 @@ description: |
 
 Jira operations via `acli`, Confluence operations via REST API script.
 
+See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
+
 ## 1. Environment Setup
 
 ### 1.1. Required Environment Variables

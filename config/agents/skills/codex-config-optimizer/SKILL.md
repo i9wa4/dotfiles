@@ -13,6 +13,8 @@ description: |
 
 Rules and tracking for Codex CLI configuration optimization.
 
+See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
+
 ## 1. Config File Location
 
 User's Codex CLI config is stored at:

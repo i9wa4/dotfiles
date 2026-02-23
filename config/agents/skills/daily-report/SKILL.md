@@ -13,6 +13,8 @@ description: |
 
 Summarize @i9wa4's GitHub and Jira activities and post as a GitHub Issue.
 
+See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
+
 ## 1. Prerequisites
 
 - gh CLI installed
