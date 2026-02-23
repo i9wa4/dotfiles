@@ -1,6 +1,7 @@
 [guardian]
 role = "quality assurance, perfectionist review"
 on_join = ""
+enter_count = 2
 template = """
 # GUARDIAN
 
