@@ -7,13 +7,14 @@ _: {
     ignores = [
       ".DS_Store"
       ".direnv/"
-      ".envrc"
       ".env"
-      "node_modules/"
+      ".envrc"
       ".zshenv.local"
       ".zshrc.local"
+      "node_modules/"
       # dotfiles
       ".i9wa4/"
+      ".worktrees/"
       "local.vim"
       # Python
       ".ipynb_checkpoints/"

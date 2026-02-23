@@ -1,5 +1,5 @@
 paths:
-  worktreeRoot: ~/.worktrees
+  worktreeRoot: .worktrees
 
 git:
   baseBranch: main
