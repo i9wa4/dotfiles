@@ -1,14 +1,12 @@
 {inputs, ...}: let
-  inherit (inputs) neovim-nightly-overlay vim-overlay claude-chill;
+  inherit (inputs) neovim-nightly-overlay vim-overlay ai-tools;
 
   commonOverlays = [
     neovim-nightly-overlay.overlays.default
+    ai-tools.overlays.default
     (vim-overlay.overlays.features {
       lua = true;
       python3 = true;
-    })
-    (final: _prev: {
-      claude-chill = claude-chill.packages.${final.stdenv.hostPlatform.system}.default;
     })
   ];
 in {

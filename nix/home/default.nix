@@ -124,11 +124,11 @@ in {
         pkgs.gettext
         pkgs.gnumake
         # AI coding agent tools
-        pkgs.claude-chill
+        pkgs.llm-agents.ccusage
+        pkgs.llm-agents.claude-code
+        pkgs.llm-agents.codex
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/flake-parts/darwin.nix
-        # NOTE: AI coding agents are managed via nix profile
-        # cf. Makefile nix-profile-add
       ];
 
     # ==========================================================================
