@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# Set up a 16GB swapfile on Ubuntu.
+# Idempotent: safe to run multiple times.
+#
+# Usage:
+#   sudo setup-swap
+
+SWAPFILE="/swapfile"
+SWAP_SIZE_GB=16
+SWAP_SIZE_BYTES=$((SWAP_SIZE_GB * 1024 * 1024 * 1024))
+
+if [[ $EUID -ne 0 ]]; then
+  echo "ERROR: Run as root (sudo setup-swap)" >&2
+  exit 1
+fi
+
+# Show current state
+echo "=== Current swap status ==="
+swapon --show || echo "(no active swap)"
+echo ""
+echo "=== Target ==="
+echo "  Swapfile : ${SWAPFILE}"
+echo "  Size     : ${SWAP_SIZE_GB}GB"
+echo ""
+
+# Determine what actions are needed
+actions=()
+
+if [[ ! -f "$SWAPFILE" ]]; then
+  actions+=("Create swapfile (${SWAP_SIZE_GB}GB) at ${SWAPFILE}")
+else
+  actual_size=$(stat -c%s "$SWAPFILE")
+  if [[ "$actual_size" -ne "$SWAP_SIZE_BYTES" ]]; then
+    actual_gb=$(( actual_size / 1024 / 1024 / 1024 ))
+    actions+=("Recreate swapfile (current: ${actual_gb}GB -> target: ${SWAP_SIZE_GB}GB)")
+  fi
+fi
+
+if ! file "$SWAPFILE" 2>/dev/null | grep -q "swap file"; then
+  actions+=("Format ${SWAPFILE} as swap")
+fi
+
+if ! swapon --show 2>/dev/null | grep -q "$SWAPFILE"; then
+  actions+=("Enable swap (swapon ${SWAPFILE})")
+fi
+
+if ! grep -q "$SWAPFILE" /etc/fstab 2>/dev/null; then
+  actions+=("Add ${SWAPFILE} entry to /etc/fstab")
+fi
+
+# If nothing to do, exit early
+if [[ ${#actions[@]} -eq 0 ]]; then
+  echo "* Already configured correctly. Nothing to do."
+  exit 0
+fi
+
+# Show planned actions and prompt
+echo "=== Actions to perform ==="
+for action in "${actions[@]}"; do
+  echo "  - ${action}"
+done
+echo ""
+read -r -p "Proceed? [y/N] " answer
+case "$answer" in
+  [yY] | [yY][eE][sS]) ;;
+  *)
+    echo "Aborted."
+    exit 0
+    ;;
+esac
+echo ""
+
+# Execute actions
+
+# Swapfile creation / recreation
+if [[ ! -f "$SWAPFILE" ]]; then
+  echo "* Creating swapfile (${SWAP_SIZE_GB}GB)..."
+  fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
+  echo "* Swapfile created"
+else
+  actual_size=$(stat -c%s "$SWAPFILE")
+  if [[ "$actual_size" -ne "$SWAP_SIZE_BYTES" ]]; then
+    echo "* Recreating swapfile..."
+    swapoff "$SWAPFILE" 2>/dev/null || true
+    fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
+    echo "* Swapfile recreated"
+  fi
+fi
+
+# Permissions
+chmod 600 "$SWAPFILE"
+echo "* Permissions set (600)"
+
+# Format as swap
+if ! file "$SWAPFILE" | grep -q "swap file"; then
+  mkswap "$SWAPFILE"
+  echo "* Formatted as swap"
+fi
+
+# Enable swap
+if ! swapon --show | grep -q "$SWAPFILE"; then
+  swapon "$SWAPFILE"
+  echo "* Swap enabled"
+fi
+
+# Add to /etc/fstab
+if ! grep -q "$SWAPFILE" /etc/fstab; then
+  echo "${SWAPFILE} none swap sw 0 0" >> /etc/fstab
+  echo "* Added to /etc/fstab"
+fi
+
+echo ""
+echo "=== Setup complete ==="
+swapon --show
