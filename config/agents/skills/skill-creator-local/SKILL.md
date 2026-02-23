@@ -275,6 +275,17 @@ features.
   lines, include a table of contents at the top so Claude can see
   the full scope when previewing.
 
+### 2.5. Composability
+
+Claude can load multiple skills simultaneously. Design each skill to
+function independently without assuming it is the only skill loaded.
+
+### 2.6. Portability
+
+Skills work identically across Claude.ai, Claude Code, and API. Create
+a skill once and it works across all surfaces, provided the environment
+supports any dependencies the skill requires.
+
 ## 3. Skill Creation Process
 
 Skill creation involves these steps:
@@ -318,6 +329,22 @@ up as needed for better effectiveness.
 Conclude this step when there is a clear sense of the functionality
 the skill should support.
 
+#### 3.1.1. Define Success Criteria
+
+Before moving on, establish how to measure effectiveness:
+
+**Quantitative (aspirational targets):**
+
+- Skill triggers on 90%+ of relevant queries
+- Workflow completes without errors in target tool calls
+- Reduced token usage vs. baseline (no skill)
+
+**Qualitative:**
+
+- Users don't need to redirect Claude mid-workflow
+- Consistent outputs across sessions
+- New users succeed on first try
+
 ### 3.2. Step 2: Planning the Reusable Skill Contents
 
 To turn concrete examples into an effective skill, analyze each
@@ -354,6 +381,18 @@ Example: When building a `big-query` skill to handle queries like
 To establish the skill's contents, analyze each concrete example to
 create a list of the reusable resources to include: scripts,
 references, and assets.
+
+Common categories to orient planning:
+
+- **Document & Asset Creation**: Generating documents, designs, code,
+  etc. Use embedded style guides, templates, quality checklists. No
+  MCP required.
+- **Workflow Automation**: Multi-step processes with consistent
+  methodology. Use step-by-step workflows, validation gates, iterative
+  refinement.
+- **MCP Enhancement**: Workflow guidance on top of MCP tool access.
+  Coordinates MCP calls in sequence, embeds domain expertise, handles
+  errors.
 
 ### 3.3. Step 3: Initializing the Skill
 
@@ -404,6 +443,11 @@ Consult these helpful guides based on your skill's needs:
   workflows and conditional logic
 - **Specific output formats or quality standards**: See
   references/output-patterns.md for template and example patterns
+- **Skill design patterns**: See references/patterns.md for sequential
+  workflows, multi-MCP coordination, iterative refinement, and
+  domain-specific intelligence patterns
+- **Troubleshooting**: See references/troubleshooting.md for common
+  issues and fixes (triggering, instruction compliance, MCP failures)
 
 These files contain established best practices for effective skill
 design.
@@ -452,7 +496,18 @@ Write the YAML frontmatter with `name` and `description`:
     content, (3) Working with tracked changes, (4) Adding comments,
     or any other document tasks"
 
-Do not include any other fields in YAML frontmatter.
+Additional optional fields:
+
+- `license`: Open-source license identifier (e.g., MIT, Apache-2.0)
+- `allowed-tools`: Restrict tool access (e.g., `"Bash(python:*) WebFetch"`)
+- `compatibility`: Environment requirements, 1-500 characters
+- `metadata`: Custom key-value pairs (author, version, mcp-server, etc.)
+
+Constraints:
+
+- `name`: kebab-case only, no spaces or capitals, no "claude" or
+  "anthropic" prefix (reserved)
+- `description`: Under 1024 characters. No XML angle brackets (< >).
 
 ##### 3.4.3.2. Body
 
@@ -492,15 +547,30 @@ If validation fails, the script will report the errors and exit
 without creating a package. Fix any validation errors and run the
 packaging command again.
 
-### 3.6. Step 6: Iterate
+### 3.6. Step 6: Test and Iterate
 
-After testing the skill, users may request improvements. Often this
-happens right after using the skill, with fresh context of how the
-skill performed.
+Test on real tasks before distributing, then iterate based on results.
 
-**Iteration workflow:**
+**Three testing areas:**
 
-1. Use the skill on real tasks
-2. Notice struggles or inefficiencies
-3. Identify how SKILL.md or bundled resources should be updated
-4. Implement changes and test again
+1. **Triggering**: Skill loads for obvious tasks and paraphrased
+   requests; does not load for unrelated topics. Test 10-20
+   should-trigger queries and 10+ should-not-trigger queries.
+2. **Functional**: Outputs are correct, tool integrations work, edge
+   cases handled. Run the same request 3-5 times for consistency.
+3. **Performance**: Compare token count and tool call count with vs.
+   without the skill.
+
+**Iteration signals:**
+
+- **Undertriggering**: Add more keywords and trigger phrases to
+  `description`
+- **Overtriggering**: Add negative triggers ("Do NOT use for..."),
+  narrow scope
+- **Instructions ignored**: Shorten instructions, elevate critical
+  items, move detail to `references/`, add explicit validation steps
+- **Inconsistent results**: Add quality criteria and stopping
+  conditions; consider deterministic scripts over prose instructions
+
+Bring edge cases back to improve the skill. Skills are living
+documents.
