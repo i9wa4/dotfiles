@@ -13,26 +13,28 @@ set -euo pipefail
 #   - Subagent: ~/.claude/agents/manager-digest.md
 #   - Team wrapper: ~/.agents/skills/daily-report/scripts/get-team-activities.sh (after home-manager switch)
 
-# NOTE: HOLIDAYS array is a placeholder structure.
-# Step 6 (#13) will replace these entries with verified 2026 Cabinet Office dates.
+# 2026 Japanese national holidays — verified from Cabinet Office CSV
+# Source: https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv
+# Count: 18 dates (16 national holidays + 2 振替休日)
 HOLIDAYS=(
-  "20260101" # placeholder — Step 6 fills verified Cabinet Office dates
-  "20260102" # placeholder
-  "20260103" # placeholder
-  "20260111" # placeholder
-  "20260211" # placeholder
-  "20260223" # placeholder
-  "20260320" # placeholder
-  "20260429" # placeholder
-  "20260503" # placeholder
-  "20260504" # placeholder
-  "20260505" # placeholder
-  "20260720" # placeholder
-  "20260811" # placeholder
-  "20260921" # placeholder
-  "20261012" # placeholder
-  "20261103" # placeholder
-  "20261123" # placeholder
+  "20260101" # 元日 (New Year's Day)
+  "20260112" # 成人の日 (Coming of Age Day)
+  "20260211" # 建国記念の日 (Foundation Day)
+  "20260223" # 天皇誕生日 (Emperor's Birthday)
+  "20260320" # 春分の日 (Vernal Equinox Day)
+  "20260429" # 昭和の日 (Showa Day)
+  "20260503" # 憲法記念日 (Constitution Day)
+  "20260504" # みどりの日 (Greenery Day)
+  "20260505" # こどもの日 (Children's Day)
+  "20260506" # 振替休日 (Substitute Holiday — Children's Day cluster)
+  "20260720" # 海の日 (Marine Day)
+  "20260811" # 山の日 (Mountain Day)
+  "20260921" # 敬老の日 (Respect for the Aged Day)
+  "20260922" # 振替休日 (Substitute Holiday — Respect for the Aged Day)
+  "20260923" # 秋分の日 (Autumnal Equinox Day)
+  "20261012" # スポーツの日 (Sports Day)
+  "20261103" # 文化の日 (Culture Day)
+  "20261123" # 勤労感謝の日 (Labor Thanksgiving Day)
 )
 
 # --- Environment variable checks ---
