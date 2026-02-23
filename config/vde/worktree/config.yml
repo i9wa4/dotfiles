@@ -1,0 +1,27 @@
+paths:
+  worktreeRoot: ~/.worktrees
+
+git:
+  baseBranch: main
+  baseRemote: origin
+
+github:
+  enabled: true
+
+hooks:
+  enabled: true
+  timeoutMs: 30000
+
+locks:
+  timeoutMs: 15000
+  staleLockTTLSeconds: 1800
+
+list:
+  table:
+    columns: [branch, dirty, merged, pr, locked, ahead, behind, path]
+
+selector:
+  cd:
+    prompt: "worktree> "
+    surface: auto
+    tmuxPopupOpts: "80%,70%"
