@@ -2,6 +2,7 @@
 # https://developers.openai.com/codex/config-advanced
 
 # notify = ["sh", "-c", "printf '\\a'"]
+command_attribution = "disable"
 hide_agent_reasoning = true
 model = "gpt-5.3-codex"
 network_access = true

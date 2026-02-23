@@ -118,7 +118,7 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 8. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.93.0 (2026-01-31)
+Last reviewed Codex CLI version: v0.104.0 (2026-02-23)
 
 ### 8.1. Applied Optimizations
 
@@ -132,8 +132,41 @@ Last reviewed Codex CLI version: v0.93.0 (2026-01-31)
 - [ ] Create generate-config.sh for automated config.toml generation
 - [ ] Evaluate MCP server integration (AWS docs MCP etc.)
 - [ ] Review `tui.notifications_method` config option (added in v0.93.0)
-- [ ] Evaluate Plan mode (`/plan`) workflow (added in v0.93.0)
+- [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [ ] Review smart approvals default behavior (enabled in v0.93.0)
+- [ ] `personality` setting - now stable (default: "friendly"); consider
+      setting explicitly or using `personality = "pragmatic"` (v0.94.0)
+- [ ] `AfterToolUse` hook - new hook event for post-tool automation (v0.99.0)
+- [x] `command_attribution = "disable"` - co-author attribution disabled
+      (v0.103.0)
+- [ ] `approval_policy: on-failure` - deprecated; review if used (v0.102.0)
+- [ ] `log_dir` config - redirect logs to custom directory (v0.97.0)
+
+### 8.3. Version Notes
+
+- v0.104.0: `WS_PROXY`/`WSS_PROXY` env for websocket proxying,
+  `ConfigChange` hook from app-server, command approval ID plumbing
+- v0.103.0: Commit co-author attribution via `command_attribution` config,
+  richer app details in listings
+- v0.102.0: Unified permissions flow with TUI history, slash command to grant
+  sandbox read access, customizable multi-agent roles, `model/rerouted`
+  notification, `approval_policy: on-failure` deprecated
+- v0.101.0: Bug fixes for memory and model resolution
+- v0.100.0: Experimental JS REPL runtime, memory slash commands
+  (`/m_update`, `/m_drop`), `ReadOnlyAccess` sandbox policy,
+  `AfterToolUse` hook
+- v0.99.0: `/statusline` command for TUI footer config, shell commands no
+  longer interrupt in-flight turns, GIF/WebP image support, `AfterToolUse`
+  hook added, security fix (RUSTSEC-2026-0009)
+- v0.98.0: **GPT-5.3-Codex** model introduced, steer mode stable by default
+  (Enter sends, Tab queues)
+- v0.97.0: "Allow and remember" for MCP/App tools, live skill updates,
+  `/debug-config` slash command, configurable `log_dir`
+- v0.96.0: `unified_exec` enabled on all non-Windows platforms
+- v0.95.0: `~/.agents/skills` personal skill loading, `/plan` accepts args
+  and images, parallel shell tools, `CODEX_THREAD_ID` env injected
+- v0.94.0: **Plan mode enabled by default**, `personality` config stable
+  (default: friendly), skills from `.agents/skills`
 
 ## 9. Response Format (CHANGELOG)
 

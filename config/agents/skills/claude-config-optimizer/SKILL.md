@@ -137,7 +137,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.44 (2026-02-17)
+Last reviewed Claude Code version: v2.1.50 (2026-02-23)
 
 ### 10.1. Applied Optimizations
 
@@ -164,6 +164,13 @@ Last reviewed Claude Code version: v2.1.44 (2026-02-17)
 - [ ] Agent memory frontmatter - `memory: user|project|local` for stateful
       agents
 - [ ] Task(agent_type) restrictions - enhanced security for subagent spawning
+- [ ] WorktreeCreate/WorktreeRemove hooks - custom VCS setup/teardown for
+      worktree isolation (v2.1.50)
+- [ ] ConfigChange hook - security auditing of settings changes (v2.1.49)
+- [ ] `isolation: worktree` in agent defs - isolated git worktree per agent
+      (v2.1.49, v2.1.50)
+- [ ] `background: true` in agent defs - agents always run as background tasks
+      (v2.1.49)
 
 ### 10.3. Not Adopting
 
@@ -174,6 +181,20 @@ Last reviewed Claude Code version: v2.1.44 (2026-02-17)
 
 ### 10.4. Version Notes
 
+- v2.1.50: WorktreeCreate/WorktreeRemove hooks, `isolation: worktree` in agent
+  defs, `claude agents` CLI command, `CLAUDE_CODE_DISABLE_1M_CONTEXT` env,
+  Opus 4.6 fast mode now has 1M context, multiple memory leak fixes
+- v2.1.49: `--worktree` flag, `isolation: worktree` for subagents,
+  `background: true` for agents, Ctrl+F kills background agents,
+  `ConfigChange` hook event, Sonnet 4.5 1M context removed from Max plan,
+  `disableAllHooks` managed settings hierarchy fix
+- v2.1.47: `last_assistant_message` in Stop hooks, `chat:newline` keybinding,
+  `added_dirs` in statusline JSON, config backups moved to `~/.claude/backups/`,
+  **plan mode lost after compaction fix**, bash permission classifier hallucination
+  fix, VS Code plan preview auto-update
+- v2.1.46: claude.ai MCP connectors support
+- v2.1.45: **Claude Sonnet 4.6**, `spinnerTipsOverride` setting,
+  Agent Teams Bedrock/Vertex fix, macOS sandbox temp file fix
 - v2.1.44: Auth refresh error fix
 - v2.1.43: **Fixed AWS auth refresh hanging indefinitely** (3-min timeout), Vertex/Bedrock fixes
 - v2.1.42: Startup performance improvement, prompt cache hit rate improvement
