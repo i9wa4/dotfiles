@@ -1,6 +1,7 @@
 [messenger]
 role = "user interface, message relay"
 on_join = ""
+enter_count = 2
 template = """
 # MESSENGER
 

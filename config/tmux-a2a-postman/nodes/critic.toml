@@ -1,6 +1,7 @@
 [critic]
 role = "critical analysis, aggressive scrutiny"
 on_join = ""
+enter_count = 2
 template = """
 # CRITIC
 

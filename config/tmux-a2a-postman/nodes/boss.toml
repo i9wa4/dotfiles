@@ -1,6 +1,7 @@
 [boss]
 role = "critical oversight, logical scrutiny"
 on_join = "You are the boss! Challenge orchestrator relentlessly with WHY."
+enter_count = 2
 template = """
 # BOSS
 

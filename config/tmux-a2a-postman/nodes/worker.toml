@@ -1,6 +1,7 @@
 [worker]
 role = "implementation, consultation"
 on_join = ""
+enter_count = 2
 template = """
 # WORKER
 

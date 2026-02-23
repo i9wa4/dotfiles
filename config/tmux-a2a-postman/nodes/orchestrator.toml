@@ -1,6 +1,7 @@
 [orchestrator]
 role = "coordination, delegation"
 on_join = "You are the orchestrator! For details, see orchestrator skill."
+enter_count = 2
 template = """
 # ORCHESTRATOR
 
