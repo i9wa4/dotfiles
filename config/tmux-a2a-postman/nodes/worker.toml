@@ -2,6 +2,7 @@
 role = "implementation, consultation"
 on_join = ""
 enter_count = 2
+materialize_template = true
 template = """
 # WORKER
 

@@ -2,6 +2,7 @@
 role = "critical analysis, aggressive scrutiny"
 on_join = ""
 enter_count = 2
+materialize_template = true
 template = """
 # CRITIC
 
