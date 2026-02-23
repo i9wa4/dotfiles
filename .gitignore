@@ -1,3 +1,6 @@
+# direnv
+.envrc
+
 # uv
 .venv/
 /build/

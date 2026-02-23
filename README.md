@@ -104,6 +104,20 @@ nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
+### 2.5. Set up direnv
+
+`.envrc` is gitignored. Create it from the example file:
+
+```sh
+cp ~/ghq/github.com/i9wa4/dotfiles/.envrc.example ~/ghq/github.com/i9wa4/dotfiles/.envrc
+```
+
+Then allow direnv:
+
+```sh
+direnv allow ~/ghq/github.com/i9wa4/dotfiles
+```
+
 ## 3. Ubuntu
 
 ### 3.1. Initial home-manager switch

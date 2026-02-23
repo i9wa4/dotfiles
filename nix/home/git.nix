@@ -7,6 +7,7 @@ _: {
     ignores = [
       ".DS_Store"
       ".direnv/"
+      ".envrc"
       ".env"
       "node_modules/"
       ".zshenv.local"
