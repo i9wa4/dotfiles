@@ -53,9 +53,18 @@ in {
               # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
               # NOTE: nix.optimise module does not exist in HM standalone
               auto-optimise-store = true;
-              # Numtide binary cache (prebuilt llm-agents packages)
-              extra-substituters = ["https://cache.numtide.com"];
-              extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
+              # Increase download buffer to avoid "download buffer is full" warning
+              # Default: 64 MiB (64 * 1024 * 1024 = 67108864)
+              download-buffer-size = 128 * 1024 * 1024; # 128 MiB
+              # Binary caches
+              extra-substituters = [
+                "https://cache.numtide.com" # prebuilt llm-agents packages
+                "https://nix-community.cachix.org" # neovim-nightly, vim-overlay, etc.
+              ];
+              extra-trusted-public-keys = [
+                "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+                "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+              ];
             };
           };
         }
