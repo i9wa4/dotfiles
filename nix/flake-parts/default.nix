@@ -8,6 +8,13 @@
       lua = true;
       python3 = true;
     })
+    # Workaround: deno 2.6.10 checkPhase references wrong test target name
+    # TODO: Remove after nixpkgs fixes deno derivation
+    (final: prev: {
+      deno = prev.deno.overrideAttrs (old: {
+        doCheck = false;
+      });
+    })
   ];
 in {
   _module.args = {inherit commonOverlays;};
