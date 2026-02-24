@@ -26,6 +26,7 @@
 #   {talks_to_line}  - Formatted list of nodes this node can communicate with
 #   {active_nodes}   - Comma-separated list of all active nodes
 #   {reply_command}  - Command to create draft message
+#   {inbox_path}     - Full path to recipient's inbox directory
 #   {session_dir}    - Session directory path
 #
 # digest_template:
@@ -127,6 +128,7 @@ ping_template = """
 
 After reading, move from inbox/ to read/
 
+- inbox path: {inbox_path}
 - read path: {session_dir}/read/
 
 ## Reply
