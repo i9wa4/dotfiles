@@ -86,6 +86,9 @@ export FZF_DEFAULT_OPTS="--reverse --bind 'ctrl-y:accept'"
 # Neovim
 export NVIM_APPNAME=nvim
 
+# Nix
+export NIXPKGS_ALLOW_UNFREE=1
+
 # Node.js
 export NODE_OPTIONS="--max-old-space-size=16384"
 

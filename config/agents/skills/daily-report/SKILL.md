@@ -19,7 +19,7 @@ See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-
 
 - gh CLI installed
 - jq installed
-- acli installed (for Jira)
+- acli available via `nix run nixpkgs#acli` (for Jira)
 
 ## 2. Workflow
 
@@ -81,12 +81,12 @@ Use acli to fetch Jira activities.
 
 ```sh
 # Today's activities
-acli jira workitem search \
+nix run nixpkgs#acli -- jira workitem search \
     --jql "updated >= startOfDay() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Specific date range
-acli jira workitem search \
+nix run nixpkgs#acli -- jira workitem search \
     --jql "updated >= 'YYYY-MM-DD' AND updated < 'YYYY-MM-DD' AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 ```

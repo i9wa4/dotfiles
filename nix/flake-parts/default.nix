@@ -1,19 +1,12 @@
 {inputs, ...}: let
-  inherit (inputs) neovim-nightly-overlay vim-overlay ai-tools;
+  inherit (inputs) neovim-nightly-overlay vim-overlay llm-agents;
 
   commonOverlays = [
+    llm-agents.overlays.default
     neovim-nightly-overlay.overlays.default
-    ai-tools.overlays.default
     (vim-overlay.overlays.features {
       lua = true;
       python3 = true;
-    })
-    # Workaround: deno 2.6.10 checkPhase references wrong test target name
-    # TODO: Remove after nixpkgs fixes deno derivation
-    (final: prev: {
-      deno = prev.deno.overrideAttrs (old: {
-        doCheck = false;
-      });
     })
   ];
 in {

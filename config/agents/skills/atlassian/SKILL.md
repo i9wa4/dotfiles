@@ -39,39 +39,39 @@ Classic tokens work with both acli and REST API scripts.
 
 ```sh
 # Check status
-acli jira auth status
+nix run nixpkgs#acli -- jira auth status
 
 # Login (if needed)
-acli jira auth login
+nix run nixpkgs#acli -- jira auth login
 ```
 
 ### 2.2. Work Items
 
 ```sh
 # View issue
-acli jira workitem view <ISSUE-KEY>
+nix run nixpkgs#acli -- jira workitem view <ISSUE-KEY>
 
 # Search issues (JQL)
-acli jira workitem search --jql "assignee = currentUser() AND status = 'In Progress'"
+nix run nixpkgs#acli -- jira workitem search --jql "assignee = currentUser() AND status = 'In Progress'"
 
 # Create issue
-acli jira workitem create --project <PROJECT> --type Task --summary "Title"
+nix run nixpkgs#acli -- jira workitem create --project <PROJECT> --type Task --summary "Title"
 
 # Transition issue
-acli jira workitem transition <ISSUE-KEY> --transition "Done"
+nix run nixpkgs#acli -- jira workitem transition <ISSUE-KEY> --transition "Done"
 
 # Add comment
-acli jira workitem comment add <ISSUE-KEY> --body "Comment text"
+nix run nixpkgs#acli -- jira workitem comment add <ISSUE-KEY> --body "Comment text"
 ```
 
 ### 2.3. Boards and Sprints
 
 ```sh
 # List boards
-acli jira board list
+nix run nixpkgs#acli -- jira board list
 
 # List sprints
-acli jira sprint list --board <BOARD-ID>
+nix run nixpkgs#acli -- jira sprint list --board <BOARD-ID>
 ```
 
 ### 2.4. Common JQL Patterns
@@ -91,17 +91,17 @@ created >= startOfWeek() AND project = <PROJECT>
 
 ```sh
 # Today's activities
-acli jira workitem search \
+nix run nixpkgs#acli -- jira workitem search \
     --jql "updated >= startOfDay() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Specific date range (YYYY-MM-DD)
-acli jira workitem search \
+nix run nixpkgs#acli -- jira workitem search \
     --jql "updated >= '2026-01-20' AND updated < '2026-01-21' AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Relative days
-acli jira workitem search \
+nix run nixpkgs#acli -- jira workitem search \
     --jql "updated >= -7d AND assignee = currentUser() ORDER BY updated DESC" \
     --fields "key,summary,status"
 ```

@@ -74,7 +74,7 @@ opened, merged, or reviewed on the target date.
 Use the atlassian skill to fetch Jira tickets updated on the target date:
 
 ```sh
-acli jira --action getIssueList \
+nix run nixpkgs#acli -- jira --action getIssueList \
   --jql "updated >= '${DATE}' AND updated <= '${DATE}' AND assignee in (${JIRA_USERS})" \
   --outputFormat 2
 ```

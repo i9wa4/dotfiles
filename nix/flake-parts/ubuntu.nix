@@ -40,17 +40,24 @@ in {
       modules = [
         nix-index-database.homeModules.nix-index
         {
-          # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
-          # cf. nix-darwin's nix.gc.interval in nix-darwin/default.nix
-          nix.gc = {
-            automatic = true;
-            dates = "12:00";
-            options = "--delete-older-than 1d";
+          nix = {
+            # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
+            # cf. nix-darwin's nix.gc.interval in nix-darwin/default.nix
+            gc = {
+              automatic = true;
+              dates = "12:00";
+              options = "--delete-older-than 1d";
+            };
+            settings = {
+              # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
+              # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
+              # NOTE: nix.optimise module does not exist in HM standalone
+              auto-optimise-store = true;
+              # Numtide binary cache (prebuilt llm-agents packages)
+              extra-substituters = ["https://cache.numtide.com"];
+              extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
+            };
           };
-          # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
-          # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
-          # Note: nix.optimise module does not exist in HM standalone
-          nix.settings.auto-optimise-store = true;
         }
         ../home
       ];

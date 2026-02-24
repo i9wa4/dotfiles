@@ -29,6 +29,8 @@ in {
 
     # Home Manager state version
     # Set to the version of home-manager at initial installation. Do not change.
+    # NOTE: This is NOT the home-manager release version. It controls internal
+    # migration behavior. Bumping it can trigger unexpected state changes.
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
     stateVersion = "24.11";
 
@@ -55,7 +57,6 @@ in {
       ]
       ++ [
         # Cloud & Infrastructure
-        pkgs.acli # Atlassian CLI
         pkgs.awscli2
         pkgs.ssm-session-manager-plugin
         pkgs.databricks-cli
@@ -106,7 +107,7 @@ in {
         pkgs.gitleaks
         pkgs.mise
         pkgs.ghalint
-        pkgs.ghatm
+        # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
         pkgs.pinact
         pkgs.rumdl
         # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
@@ -125,6 +126,7 @@ in {
         pkgs.gnumake
         # AI coding agent tools
         pkgs.llm-agents.ccusage
+        pkgs.llm-agents.ccusage-codex
         pkgs.llm-agents.claude-code
         pkgs.llm-agents.codex
         # NOTE: GUI applications are managed via Homebrew casks

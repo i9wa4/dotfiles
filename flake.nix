@@ -2,7 +2,7 @@
   description = "i9wa4 dotfiles";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
     flake-parts.url = "github:hercules-ci/flake-parts";
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
@@ -13,18 +13,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/master";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
-    # AI tools sub-flake (independent flake.lock for frequent updates)
-    ai-tools.url = "path:./nix/ai-tools";
+    # AI coding agent tools (claude-code, codex, ccusage)
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Agent skills declarative management
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";

@@ -33,9 +33,11 @@
           files = ghWorkflowFiles;
         };
 
+        # NOTE: ghatm not in nixos-25.11 stable, runs via nix run
+        # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
         ghatm = {
           enable = true;
-          entry = "${pkgs.ghatm}/bin/ghatm set -t 5";
+          entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || nix run nixpkgs#ghatm -- set -t 5 \"$@\"' --";
           files = ghWorkflowFiles;
         };
 
