@@ -23,11 +23,8 @@
     # Latest neovim/vim from source
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
-    # AI coding agent tools (claude-code, codex, ccusage)
-    llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # AI tools sub-flake (independent flake.lock for cache hits + frequent updates)
+    ai-tools.url = "path:./nix/ai-tools";
     # Agent skills declarative management
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";

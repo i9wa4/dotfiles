@@ -40,6 +40,8 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
+nix-ai-tools-update:  ## update AI tools sub-flake only (claude-code, codex, ccusage)
+	cd nix/ai-tools && nix flake update
 
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)

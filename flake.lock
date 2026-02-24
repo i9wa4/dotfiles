@@ -23,6 +23,21 @@
         "type": "github"
       }
     },
+    "ai-tools": {
+      "inputs": {
+        "llm-agents": "llm-agents",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "path": "./nix/ai-tools",
+        "type": "path"
+      },
+      "original": {
+        "path": "./nix/ai-tools",
+        "type": "path"
+      },
+      "parent": []
+    },
     "anthropic-skills": {
       "flake": false,
       "locked": {
@@ -42,6 +57,7 @@
     "blueprint": {
       "inputs": {
         "nixpkgs": [
+          "ai-tools",
           "llm-agents",
           "nixpkgs"
         ],
@@ -238,6 +254,7 @@
       "inputs": {
         "blueprint": "blueprint",
         "nixpkgs": [
+          "ai-tools",
           "nixpkgs"
         ],
         "treefmt-nix": "treefmt-nix"
@@ -260,7 +277,7 @@
       "inputs": {
         "flake-parts": "flake-parts_2",
         "neovim-src": "neovim-src",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
         "lastModified": 1771891493,
@@ -335,11 +352,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771423170,
-        "narHash": "sha256-K7Dg9TQ0mOcAtWTO/FX/FaprtWQ8BmEXTpLIaNRhEwU=",
+        "lastModified": 1771482645,
+        "narHash": "sha256-MpAKyXfJRDTgRU33Hja+G+3h9ywLAJJNRq4Pjbb4dQs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "bcc4a9d9533c033d806a46b37dc444f9b0da49dd",
+        "rev": "724cf38d99ba81fbb4a347081db93e2e3a9bc2ae",
         "type": "github"
       },
       "original": {
@@ -366,6 +383,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1771423170,
+        "narHash": "sha256-K7Dg9TQ0mOcAtWTO/FX/FaprtWQ8BmEXTpLIaNRhEwU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bcc4a9d9533c033d806a46b37dc444f9b0da49dd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1771714954,
         "narHash": "sha256-nhZJPnBavtu40/L2aqpljrfUNb2rxmWTmSjK2c9UKds=",
         "owner": "NixOS",
@@ -380,7 +413,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1771207753,
         "narHash": "sha256-b9uG8yN50DRQ6A7JdZBfzq718ryYrlmGgqkRm9OOwCE=",
@@ -422,16 +455,16 @@
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
+        "ai-tools": "ai-tools",
         "anthropic-skills": "anthropic-skills",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
         "home-manager": "home-manager",
-        "llm-agents": "llm-agents",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "streamlit-skills": "streamlit-skills",
         "treefmt-nix": "treefmt-nix_2",
         "vim-overlay": "vim-overlay"
@@ -471,6 +504,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
+          "ai-tools",
           "llm-agents",
           "nixpkgs"
         ]
@@ -511,7 +545,7 @@
     },
     "vim-overlay": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "pre-commit-hooks": "pre-commit-hooks",
         "vim-src": "vim-src"
       },

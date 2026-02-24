@@ -1,8 +1,8 @@
 {inputs, ...}: let
-  inherit (inputs) neovim-nightly-overlay vim-overlay llm-agents;
+  inherit (inputs) neovim-nightly-overlay vim-overlay ai-tools;
 
   commonOverlays = [
-    llm-agents.overlays.default
+    ai-tools.overlays.default
     neovim-nightly-overlay.overlays.default
     (vim-overlay.overlays.features {
       lua = true;
