@@ -43,26 +43,6 @@ nix-flake-update:  ## upgrade all packages in nix profile
 nix-ai-tools-update:  ## update AI tools sub-flake only (claude-code, codex, ccusage)
 	cd nix/ai-tools && nix flake update
 
-nix-profile:  ## nix profile
-	# nix profile add github:numtide/llm-agents.nix#coderabbit-cli
-	# nix profile add github:numtide/llm-agents.nix#copilot-cli
-	# nix profile add github:numtide/llm-agents.nix#goose-cli
-	nix profile add github:numtide/llm-agents.nix#ccusage
-	nix profile add github:numtide/llm-agents.nix#ccusage-codex
-	nix profile add github:numtide/llm-agents.nix#codex
-	# https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
-	# https://github.com/ryoppippi/claude-code-overlay/commits/main/
-	# nix profile remove claude
-	# nix profile add github:ryoppippi/claude-code-overlay/ddd1e6055ac0ea75581812a07ae750ab8490797b#claude  # 2.1.31
-	nix profile add github:ryoppippi/claude-code-overlay#claude
-	nix profile upgrade --all
-
-ccusage:  ## show Claude Code token usage statistics
-	ccusage
-
-ccusage-codex:  ## show Codex token usage statistics
-	ccusage-codex
-
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
