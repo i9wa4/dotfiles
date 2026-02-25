@@ -99,6 +99,7 @@ After reading, move from inbox/ to read/
 - File: {filename}
 - inbox path: {inbox_path}
 - read path: {session_dir}/read/
+- protocol reference: {session_dir}/RULES.md
 
 ## Reply (if needed)
 
@@ -136,6 +137,27 @@ Then: mv {session_dir}/draft/<file> {session_dir}/post/
 <!-- end of message -->
 """
 
+rules_template = """
+## Messaging Protocol
+
+### Sending Messages
+1. {reply_command}
+   - Replace `<recipient>` with the target node name
+2. Edit the draft content
+3. Move draft to post/: mv {session_dir}/draft/<file> {session_dir}/post/
+
+### Receiving Messages
+- Messages arrive in inbox/<node>/
+- After reading: mv {session_dir}/inbox/<node>/<file> {session_dir}/read/
+
+### Standard Replies
+
+PONG — liveness confirmation (reply to PING from postman)
+HEARTBEAT_OK — system healthy
+[status] — current task, blockers, next action
+[error] — description, mitigation, next step
+"""
+
 # Draft message template
 draft_template = """---
 method: message/send
@@ -157,7 +179,7 @@ Can talk to: {can_talk_to}
 enabled = true
 idle_threshold_seconds = 300.0  # 5 minutes
 cooldown_seconds = 600.0  # 10 minutes
-heartbeat_interval_seconds = 60.0  # 1 minute
+liveness_ping_interval_seconds = 60.0  # 1 minute
 
 [watchdog.capture]
 enabled = true

@@ -61,7 +61,7 @@ if [[ -n $ROLE_NAME && $ROLE_NAME != worker && $ROLE_NAME != agent ]]; then
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow writes to /tmp/ directory
     else
-      REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker can edit files."$'\n'"💡 Alternative: Delegate task to worker via postman."
+      REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker can edit files."$'\n'"💡 Alternative: Delegate task to worker via tmux-a2a-postman."
       jq -n \
         --arg reason "$REASON" \
         '{
