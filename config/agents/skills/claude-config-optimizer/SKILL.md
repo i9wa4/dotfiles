@@ -139,7 +139,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 10. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.50 (2026-02-23)
+Last reviewed Claude Code version: v2.1.56 (2026-02-25)
 
 ### 10.1. Applied Optimizations
 
@@ -173,6 +173,9 @@ Last reviewed Claude Code version: v2.1.50 (2026-02-23)
       (v2.1.49, v2.1.50)
 - [ ] `background: true` in agent defs - agents always run as background tasks
       (v2.1.49)
+- [ ] `claude remote-control` subcommand - external builds / local env serving
+      (v2.1.51)
+- [ ] Managed settings via macOS plist or Windows Registry (v2.1.51)
 
 ### 10.3. Not Adopting
 
@@ -180,9 +183,23 @@ Last reviewed Claude Code version: v2.1.50 (2026-02-23)
 - `reducedMotionMode` - keep default (animations enabled)
 - Keybindings customization - use defaults
 - Completion status reporting - no consumer for this output
+- `CLAUDE_BASH_NO_LOGIN` - obsolete since v2.1.51 (auto-skip when snapshot
+  available)
 
 ### 10.4. Version Notes
 
+- v2.1.56: VS Code fixed "command 'claude-vscode.editor.openLast' not found"
+  crashes (another cause)
+- v2.1.55: BashTool EINVAL error fix on Windows
+- v2.1.53: UI flicker fix, bulk agent kill fix, graceful shutdown fix, multiple
+  Windows/WebAssembly crash fixes
+- v2.1.52: VS Code extension crash fix on Windows
+- v2.1.51: `claude remote-control` subcommand, BashTool auto-skips login shell
+  (replaces `CLAUDE_BASH_NO_LOGIN=true`), tool results persisted at 50K chars
+  (was 100K), **security fix for `statusLine`/`fileSuggestion` hooks** (require
+  workspace trust), managed settings via macOS plist/Windows Registry,
+  `CLAUDE_CODE_PLUGIN_GIT_TIMEOUT_MS` env, custom npm registries for plugins,
+  `/model` picker shows human-readable labels
 - v2.1.50: WorktreeCreate/WorktreeRemove hooks, `isolation: worktree` in agent
   defs, `claude agents` CLI command, `CLAUDE_CODE_DISABLE_1M_CONTEXT` env,
   Opus 4.6 fast mode now has 1M context, multiple memory leak fixes
