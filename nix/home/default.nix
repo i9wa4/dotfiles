@@ -20,7 +20,11 @@ in {
     ./agent-skills.nix
     ./codex.nix
     ./editorconfig.nix
+    ./efm-langserver.nix
     ./git.nix
+    ./lazygit.nix
+    ./rumdl.nix
+    ./tmux.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -72,7 +76,6 @@ in {
       pkgs.gh
       pkgs.ghq
       pkgs.hadolint
-      pkgs.lazygit
       pkgs.mise
       pkgs.nixd
       pkgs.nodejs
@@ -84,7 +87,6 @@ in {
       pkgs.shellcheck
       pkgs.shfmt
       pkgs.stylua
-      pkgs.tmux
       pkgs.uv
       # NOTE: GUI applications are managed via Homebrew casks
       # cf. nix/flake-parts/darwin.nix
@@ -119,13 +121,14 @@ in {
   };
 
   xdg.configFile = {
-    "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
-    "lazygit".source = symlink "${dotfilesDir}/config/lazygit";
+    # efm-langserver: managed by efm-langserver.nix
+    # lazygit: managed by lazygit.nix
+    # rumdl: managed by rumdl.nix
+    # tmux: managed by tmux.nix
     "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
-    "rumdl/rumdl.toml".source = symlink "${dotfilesDir}/.rumdl.toml";
     "skk".source = symlink "${dotfilesDir}/config/skk";
-    "tmux".source = symlink "${dotfilesDir}/config/tmux";
+    # tmux/plugins: tpm clones directly into ~/.config/tmux/plugins/
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
     "wezterm".source = symlink "${dotfilesDir}/config/wezterm";
@@ -180,7 +183,7 @@ in {
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
     git = "${pkgs.git}/bin/git";
-    tpmDir = "${dotfilesDir}/config/tmux/plugins/tpm";
+    tpmDir = "${homeDir}/.config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
     cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
