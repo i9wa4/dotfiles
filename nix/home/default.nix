@@ -45,9 +45,6 @@ in {
     # For project-specific tools, use devShell or mise instead
     packages = [
       # System
-      pkgs.fastfetch
-      pkgs.htop
-      pkgs.hyperfine
       pkgs.tailscale
       pkgs.wget
       # Cloud & Infrastructure
@@ -58,33 +55,23 @@ in {
       # Editors
       pkgs.neovim
       pkgs.vim
-      pkgs.vim-startuptime
       # AI coding agent tools
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       pkgs.llm-agents.claude-code
       pkgs.llm-agents.codex
       # Development tools
-      # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
-      # pkgs.pinact
-      # pkgs.statix
-      # pkgs.zizmor
+      # pkgs.go
       pkgs.act
-      pkgs.actionlint
       pkgs.alejandra
-      pkgs.bat
       pkgs.deno
       pkgs.devcontainer
       pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf
       pkgs.gh
-      pkgs.ghalint
       pkgs.ghq
-      pkgs.gitleaks
-      pkgs.go
       pkgs.hadolint
-      pkgs.jq
       pkgs.lazygit
       pkgs.mise
       pkgs.nixd
@@ -94,7 +81,6 @@ in {
       pkgs.python3
       pkgs.ripgrep
       pkgs.rumdl
-      pkgs.rustup
       pkgs.shellcheck
       pkgs.shfmt
       pkgs.stylua
