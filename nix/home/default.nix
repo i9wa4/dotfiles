@@ -107,6 +107,8 @@ in {
       pkgs.neovim
       pkgs.vim
       pkgs.vim-startuptime
+      # Dev containers
+      pkgs.devcontainer
       # AI coding agent tools
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
@@ -242,7 +244,6 @@ in {
     installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       NPM_PACKAGES=(
-        "@devcontainers/cli"
         "vde-layout"
         "vde-monitor"
         "vde-worktree"
@@ -264,10 +265,14 @@ in {
       fi
 
       # Remove unlisted packages (keep npm, corepack, safe-chain)
-      installed=$(${npm} --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 | xargs -I{} basename {} || true)
-      for pkg in $installed; do
+      # --parseable gives paths like .../node_modules/pkg or .../node_modules/@scope/pkg
+      # Extract package name by stripping the node_modules prefix
+      node_modules="${npmPrefix}/lib/node_modules"
+      installed=$(${npm} --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 || true)
+      for pkg_path in $installed; do
+        pkg="''${pkg_path#"$node_modules"/}"
         case "$pkg" in
-          npm|corepack|@aikidosec/safe-chain) continue ;;
+          npm|corepack|@aikidosec/*) continue ;;
         esac
         found=0
         for want in "''${NPM_PACKAGES[@]}"; do
