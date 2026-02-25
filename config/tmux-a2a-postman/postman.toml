@@ -109,34 +109,6 @@ Edit content, then: mv {session_dir}/draft/<file> {session_dir}/post/
 <!-- end of message -->
 """
 
-# Ping message template
-ping_template = """
-<!-- message start -->
-{template}
-
-{talks_to_line}
-
-## Message Details
-
-📬 Message from {from_node}
-
-After reading, move from inbox/ to read/
-
-- inbox path: {inbox_path}
-- read path: {session_dir}/read/
-
-## Reply
-
-You MUST reply with PONG to confirm you are active.
-If you do not respond, you will be treated as DROPPED (inactive).
-
-NEVER create draft manually. Always:
-{reply_command} (replace `<recipient>` with `postman`)
-Set Content to: PONG
-Then: mv {session_dir}/draft/<file> {session_dir}/post/
-<!-- end of message -->
-"""
-
 rules_template = """
 ## Messaging Protocol
 
@@ -179,7 +151,6 @@ Can talk to: {can_talk_to}
 enabled = true
 idle_threshold_seconds = 300.0  # 5 minutes
 cooldown_seconds = 600.0  # 10 minutes
-liveness_ping_interval_seconds = 60.0  # 1 minute
 
 [watchdog.capture]
 enabled = true
