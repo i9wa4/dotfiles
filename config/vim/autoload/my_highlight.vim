@@ -21,10 +21,10 @@ function! my_highlight#highlight() abort
   call matchadd('HlSA', 'HlSA')
   call matchadd('HlSV', 'HlSV')
 
-  call matchadd('WildMenu', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
-  call matchadd('WildMenu', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
-  call matchadd('WildMenu', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
-  call matchadd('WildMenu', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('HlSA', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
+  call matchadd('HlMS', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
+  call matchadd('HlMS', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('HlMS', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
 
   " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal

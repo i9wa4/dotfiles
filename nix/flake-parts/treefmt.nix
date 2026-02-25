@@ -23,7 +23,7 @@
           check = true;
         };
 
-        # Lua (uses .stylua.toml for configuration)
+        # Lua
         stylua.enable = true;
 
         # Markdown, YAML, JSON (prettier preserves numbered list format)
@@ -38,18 +38,30 @@
         };
       };
 
-      # Custom formatters (not available as built-in programs)
-      settings.formatter.sqlfmt = {
-        command = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
-        includes = ["*.sql"];
+      settings = {
+        formatter = {
+          # Stylua options (inlined to avoid .stylua.toml at repo root)
+          stylua.options = [
+            "--column-width=120"
+            "--line-endings=Unix"
+            "--indent-type=Spaces"
+            "--indent-width=2"
+            "--quote-style=AutoPreferDouble"
+            "--call-parentheses=Always"
+          ];
+          # Custom formatters (not available as built-in programs)
+          sqlfmt = {
+            command = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
+            includes = ["*.sql"];
+          };
+        };
+        global.excludes = [
+          ".direnv"
+          ".git"
+          "*.lock"
+          "config/zsh/*" # zsh files have special formatting
+        ];
       };
-
-      settings.global.excludes = [
-        ".direnv"
-        ".git"
-        "*.lock"
-        "config/zsh/*" # zsh files have special formatting
-      ];
     };
   };
 }

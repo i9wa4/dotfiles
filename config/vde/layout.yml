@@ -10,8 +10,8 @@ presets:
         - type: vertical
           ratio: [5, 1]
           panes:
-            - name: top
-              command: top
+            - name: htop
+              command: nix run nixpkgs#htop
               delay: 500
             - name: tailscale
               command: sudo $(which tailscaled)

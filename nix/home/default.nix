@@ -20,7 +20,10 @@ in {
     ./agent-skills.nix
     ./codex.nix
     ./editorconfig.nix
+    ./efm-langserver.nix
     ./git.nix
+    ./lazygit.nix
+    ./tmux.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -44,75 +47,46 @@ in {
     # User packages (managed by home-manager)
     # For project-specific tools, use devShell or mise instead
     packages = [
+      # System
+      pkgs.tailscale
+      pkgs.wget
       # Cloud & Infrastructure
       pkgs.awscli2
-      pkgs.ssm-session-manager-plugin
       pkgs.databricks-cli
       pkgs.google-cloud-sdk
       pkgs.terraform
-      pkgs.tflint
-      # Version control (git is managed by programs.git)
-      pkgs.gh
-      pkgs.ghq
-      pkgs.lazygit
-      # Search
-      pkgs.ripgrep
-      pkgs.fd
-      pkgs.fzf
-      # File viewers
-      pkgs.bat
-      pkgs.jq
-      pkgs.yq-go
-      # Terminal
-      pkgs.tmux
-      # System
-      pkgs.htop
-      pkgs.tailscale
-      pkgs.wget
-      pkgs.fastfetch
-      pkgs.hyperfine
-      # Language runtimes
-      pkgs.deno
-      pkgs.go
-      pkgs.nodejs
-      pkgs.python3
-      pkgs.rustup
-      pkgs.uv
-      # Linters & Formatters
-      pkgs.alejandra
-      pkgs.hadolint
-      pkgs.shellcheck
-      pkgs.shfmt
-      pkgs.statix
-      pkgs.stylua
-      pkgs.zizmor
-      # Nix development
-      # NOTE: comma is provided by nix-index-database module (programs.nix-index-database.comma.enable)
-      pkgs.nurl
-      # CI/CD
-      pkgs.act
-      pkgs.actionlint
-      pkgs.gitleaks
-      pkgs.mise
-      pkgs.ghalint
-      # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
-      pkgs.pinact
-      pkgs.rumdl
-      # LSP
-      pkgs.efm-langserver
-      pkgs.nixd
-      pkgs.pyright
       # Editors
       pkgs.neovim
       pkgs.vim
-      pkgs.vim-startuptime
-      # Dev containers
-      pkgs.devcontainer
       # AI coding agent tools
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       pkgs.llm-agents.claude-code
       pkgs.llm-agents.codex
+      # Development tools
+      # pkgs.go
+      pkgs.act
+      pkgs.alejandra
+      pkgs.deno
+      pkgs.devcontainer
+      pkgs.efm-langserver
+      pkgs.fd
+      pkgs.fzf
+      pkgs.gh
+      pkgs.ghq
+      pkgs.hadolint
+      pkgs.mise
+      pkgs.nixd
+      pkgs.nodejs
+      pkgs.nurl
+      pkgs.pyright
+      pkgs.python3
+      pkgs.ripgrep
+      pkgs.rumdl
+      pkgs.shellcheck
+      pkgs.shfmt
+      pkgs.stylua
+      pkgs.uv
       # NOTE: GUI applications are managed via Homebrew casks
       # cf. nix/flake-parts/darwin.nix
     ];
@@ -146,13 +120,14 @@ in {
   };
 
   xdg.configFile = {
-    "efm-langserver".source = symlink "${dotfilesDir}/config/efm-langserver";
-    "lazygit".source = symlink "${dotfilesDir}/config/lazygit";
+    # efm-langserver: managed by efm-langserver.nix
+    # lazygit: managed by lazygit.nix
+    # rumdl: managed by rumdl.nix
+    # tmux: managed by tmux.nix
     "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
-    "rumdl/rumdl.toml".source = symlink "${dotfilesDir}/.rumdl.toml";
     "skk".source = symlink "${dotfilesDir}/config/skk";
-    "tmux".source = symlink "${dotfilesDir}/config/tmux";
+    # tmux/plugins: tpm clones directly into ~/.config/tmux/plugins/
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
     "wezterm".source = symlink "${dotfilesDir}/config/wezterm";
@@ -206,23 +181,12 @@ in {
   home.activation = let
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
-    git = "${pkgs.git}/bin/git";
-    tpmDir = "${dotfilesDir}/config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
     cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
       echo "Cleaning temporary files..."
       # Node.js caches
       rm -rf "${homeDir}/.npm"
-    '';
-
-    # 0. Clone tmux plugin manager (tpm)
-    cloneTpm = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      export PATH="${pkgs.git}/bin:$PATH"
-      if [ ! -d "${tpmDir}" ]; then
-        echo "Cloning tmux plugin manager..."
-        ${git} clone https://github.com/tmux-plugins/tpm "${tpmDir}"
-      fi
     '';
 
     # 1. Install/update safe-chain first (security scanner for npm)

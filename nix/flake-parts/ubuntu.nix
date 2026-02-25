@@ -67,7 +67,6 @@ in {
             packages = [
               pkgs.zsh
               pkgs.wslu # WSL utilities (harmless on non-WSL)
-              pkgs.udev-gothic # Font (macOS installs via nix-darwin fonts.packages)
             ];
             # Timezone data (not needed on macOS)
             sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";
