@@ -2,14 +2,10 @@
 # cf. https://github.com/Kyure-A/agent-skills-nix
 {
   inputs,
-  pkgs,
-  username,
+  config,
   ...
 }: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+  homeDir = config.home.homeDirectory;
 in {
   imports = [
     inputs.agent-skills.homeManagerModules.default

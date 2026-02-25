@@ -1,6 +1,5 @@
 {
   pkgs,
-  pkgsUnstable,
   lib,
   config,
   username,
@@ -22,6 +21,7 @@ in {
     ./codex.nix
     ./editorconfig.nix
     ./git.nix
+    ./vscode.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -35,11 +35,6 @@ in {
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
     stateVersion = "24.11";
 
-    # Environment variables (written to hm-session-vars.sh, sourced by .zshenv)
-    sessionVariables = lib.mkIf pkgs.stdenv.isLinux {
-      TZDIR = "${pkgs.tzdata}/share/zoneinfo";
-    };
-
     # PATH additions (prepended to $PATH)
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
     sessionPath = [
@@ -49,90 +44,77 @@ in {
 
     # User packages (managed by home-manager)
     # For project-specific tools, use devShell or mise instead
-    packages =
-      lib.optionals pkgs.stdenv.isLinux [
-        pkgs.zsh
-        pkgs.wslu # WSL utilities (harmless on non-WSL)
-        pkgs.udev-gothic # Font (macOS installs via nix-darwin fonts.packages)
-      ]
-      ++ [
-        # Cloud & Infrastructure
-        pkgs.awscli2
-        pkgs.ssm-session-manager-plugin
-        pkgs.databricks-cli
-        pkgs.google-cloud-sdk
-        pkgs.terraform
-        pkgs.tflint
-        # Version control (git is managed by programs.git)
-        pkgs.gh
-        pkgs.ghq
-        pkgs.lazygit
-        # Search
-        pkgs.ripgrep
-        pkgs.fd
-        pkgs.fzf
-        # File viewers
-        pkgs.bat
-        pkgs.jq
-        pkgs.yq-go
-        # Terminal
-        pkgs.tmux
-        # System
-        pkgs.htop
-        pkgs.tailscale
-        pkgs.wget
-        pkgs.fastfetch
-        pkgs.hyperfine
-        # Language runtimes
-        pkgs.deno
-        pkgs.go
-        pkgs.nodejs
-        pkgs.python3
-        pkgs.rustup
-        pkgs.uv
-        # Linters & Formatters
-        pkgs.alejandra
-        pkgs.hadolint
-        pkgs.shellcheck
-        pkgs.shfmt
-        pkgs.statix
-        pkgs.stylua
-        pkgs.zizmor
-        # Nix development
-        # NOTE: comma is provided by nix-index-database module (programs.nix-index-database.comma.enable)
-        pkgs.nurl
-        # CI/CD
-        pkgs.act
-        pkgs.actionlint
-        pkgs.gitleaks
-        pkgs.mise
-        pkgs.ghalint
-        # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
-        pkgs.pinact
-        pkgs.rumdl
-        # LSP
-        pkgs.efm-langserver
-        pkgs.nixd
-        pkgs.pyright
-        # Editors (nixpkgs-unstable for cached binaries)
-        # pkgsUnstable.neovim
-        # pkgsUnstable.vim
-        pkgs.neovim
-        pkgs.vim
-        pkgs.vim-startuptime
-        # Neovim build dependencies
-        pkgs.ninja
-        pkgs.cmake
-        pkgs.gettext
-        pkgs.gnumake
-        # AI coding agent tools
-        pkgs.llm-agents.ccusage
-        pkgs.llm-agents.ccusage-codex
-        pkgs.llm-agents.claude-code
-        pkgs.llm-agents.codex
-        # NOTE: GUI applications are managed via Homebrew casks
-        # cf. nix/flake-parts/darwin.nix
-      ];
+    packages = [
+      # Cloud & Infrastructure
+      pkgs.awscli2
+      pkgs.ssm-session-manager-plugin
+      pkgs.databricks-cli
+      pkgs.google-cloud-sdk
+      pkgs.terraform
+      pkgs.tflint
+      # Version control (git is managed by programs.git)
+      pkgs.gh
+      pkgs.ghq
+      pkgs.lazygit
+      # Search
+      pkgs.ripgrep
+      pkgs.fd
+      pkgs.fzf
+      # File viewers
+      pkgs.bat
+      pkgs.jq
+      pkgs.yq-go
+      # Terminal
+      pkgs.tmux
+      # System
+      pkgs.htop
+      pkgs.tailscale
+      pkgs.wget
+      pkgs.fastfetch
+      pkgs.hyperfine
+      # Language runtimes
+      pkgs.deno
+      pkgs.go
+      pkgs.nodejs
+      pkgs.python3
+      pkgs.rustup
+      pkgs.uv
+      # Linters & Formatters
+      pkgs.alejandra
+      pkgs.hadolint
+      pkgs.shellcheck
+      pkgs.shfmt
+      pkgs.statix
+      pkgs.stylua
+      pkgs.zizmor
+      # Nix development
+      # NOTE: comma is provided by nix-index-database module (programs.nix-index-database.comma.enable)
+      pkgs.nurl
+      # CI/CD
+      pkgs.act
+      pkgs.actionlint
+      pkgs.gitleaks
+      pkgs.mise
+      pkgs.ghalint
+      # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
+      pkgs.pinact
+      pkgs.rumdl
+      # LSP
+      pkgs.efm-langserver
+      pkgs.nixd
+      pkgs.pyright
+      # Editors
+      pkgs.neovim
+      pkgs.vim
+      pkgs.vim-startuptime
+      # AI coding agent tools
+      pkgs.llm-agents.ccusage
+      pkgs.llm-agents.ccusage-codex
+      pkgs.llm-agents.claude-code
+      pkgs.llm-agents.codex
+      # NOTE: GUI applications are managed via Homebrew casks
+      # cf. nix/flake-parts/darwin.nix
+    ];
 
     # ==========================================================================
     # Dotfiles (direct symlink via mkOutOfStoreSymlink)
@@ -213,7 +195,7 @@ in {
     };
 
     # zsh: disabled - config is in config/zsh/ via ZDOTDIR (home.file.".zshenv")
-    # zsh package is installed via home.packages on Linux, system-wide on macOS
+    # zsh package is installed via ubuntu.nix on Linux, nix-darwin programs.zsh on macOS
     zsh.enable = false;
   };
 
@@ -224,7 +206,6 @@ in {
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
     git = "${pkgs.git}/bin/git";
-    fd = "${pkgs.fd}/bin/fd";
     tpmDir = "${dotfilesDir}/config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
@@ -232,11 +213,6 @@ in {
       echo "Cleaning temporary files..."
       # Node.js caches
       rm -rf "${homeDir}/.npm"
-      ${lib.optionalString pkgs.stdenv.isDarwin ''
-        rm -rf "${homeDir}/Library/Caches/deno"
-        ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
-        ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
-      ''}
     '';
 
     # 0. Clone tmux plugin manager (tpm)
@@ -262,23 +238,11 @@ in {
       fi
     '';
 
-    # 2. Start ssh-agent if not running (Linux only)
-    # cf. https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
-    startSshAgent = lib.hm.dag.entryAfter ["writeBoundary"] (
-      lib.optionalString pkgs.stdenv.isLinux ''
-        if [ -z "''${SSH_AUTH_SOCK:-}" ]; then
-          eval $(${pkgs.openssh}/bin/ssh-agent)
-        fi
-      ''
-    );
-
-    # 3. Install/update npm packages (after safe-chain, so they get scanned)
+    # 2. Install/update npm packages (after safe-chain, so they get scanned)
     installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
-      # AI tools moved to Nix: claude-code, ccusage, codex, copilot, gemini-cli
       NPM_PACKAGES=(
         "@devcontainers/cli"
-        "gtop"
         "vde-layout"
         "vde-monitor"
         "vde-worktree"
@@ -298,6 +262,22 @@ in {
         echo "Updating outdated packages: $outdated"
         echo "$outdated" | xargs ${npm} --prefix ${npmPrefix} install -g
       fi
+
+      # Remove unlisted packages (keep npm, corepack, safe-chain)
+      installed=$(${npm} --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 | xargs -I{} basename {} || true)
+      for pkg in $installed; do
+        case "$pkg" in
+          npm|corepack|@aikidosec/safe-chain) continue ;;
+        esac
+        found=0
+        for want in "''${NPM_PACKAGES[@]}"; do
+          if [ "$pkg" = "$want" ]; then found=1; break; fi
+        done
+        if [ "$found" = "0" ]; then
+          echo "Removing unlisted package: $pkg"
+          ${npm} --prefix ${npmPrefix} uninstall -g "$pkg"
+        fi
+      done
     '';
   };
 }

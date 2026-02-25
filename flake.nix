@@ -2,48 +2,53 @@
   description = "i9wa4 dotfiles";
 
   inputs = {
+    # No follows
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
+    # Latest VSCode from nixpkgs-unstable (darwin-only, managed by vscode.nix)
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+
+    # Follows nixpkgs or nixpkgs-unstable
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Latest neovim/vim from nixpkgs-unstable (cached binaries)
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    # neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-    # vim-overlay.url = "github:kawarimidoll/vim-overlay";
-    # AI tools sub-flake (independent flake.lock for cache hits + frequent updates)
-    ai-tools.url = "path:./nix/ai-tools";
-    # Agent skills declarative management
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # Follows nixpkgs + home-manager
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
-    # Nix index database (prebuilt for comma)
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # External skill sources (non-flake)
-    dbt-agent-skills = {
-      url = "github:dbt-labs/dbt-agent-skills";
-      flake = false;
-    };
+
+    # Non-flake sources
     anthropic-skills = {
       url = "github:anthropics/skills";
+      flake = false;
+    };
+    dbt-agent-skills = {
+      url = "github:dbt-labs/dbt-agent-skills";
       flake = false;
     };
     streamlit-skills = {

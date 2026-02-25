@@ -3,9 +3,10 @@
 {
   inputs,
   commonOverlays,
+  commonNixSettings,
   ...
 }: let
-  inherit (inputs) nixpkgs nixpkgs-unstable home-manager nix-index-database;
+  inherit (inputs) nixpkgs home-manager nix-index-database;
 in {
   # home-manager switch --flake '.#ubuntu' --impure
   # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
@@ -36,11 +37,14 @@ in {
       inherit pkgs;
       extraSpecialArgs = {
         inherit username inputs;
-        pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
       };
       modules = [
         nix-index-database.homeModules.nix-index
-        {
+        ({
+          pkgs,
+          lib,
+          ...
+        }: {
           nix = {
             # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
             # cf. nix-darwin's nix.gc.interval in nix-darwin/default.nix
@@ -49,26 +53,33 @@ in {
               dates = "12:00";
               options = "--delete-older-than 1d";
             };
-            settings = {
-              # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
-              # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
-              # NOTE: nix.optimise module does not exist in HM standalone
-              auto-optimise-store = true;
-              # Increase download buffer to avoid "download buffer is full" warning
-              # Default: 64 MiB (64 * 1024 * 1024 = 67108864)
-              download-buffer-size = 128 * 1024 * 1024; # 128 MiB
-              # Binary caches
-              extra-substituters = [
-                "https://cache.numtide.com" # prebuilt llm-agents packages
-                "https://nix-community.cachix.org" # nix-community packages
-              ];
-              extra-trusted-public-keys = [
-                "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-                "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-              ];
-            };
+            settings =
+              commonNixSettings
+              // {
+                # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
+                # cf. nix-darwin's nix.optimise.automatic in nix-darwin/default.nix
+                # NOTE: nix.optimise module does not exist in HM standalone
+                auto-optimise-store = true;
+              };
           };
-        }
+          # Linux-specific home-manager settings
+          home = {
+            packages = [
+              pkgs.zsh
+              pkgs.wslu # WSL utilities (harmless on non-WSL)
+              pkgs.udev-gothic # Font (macOS installs via nix-darwin fonts.packages)
+            ];
+            # Timezone data (not needed on macOS)
+            sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";
+            # Start ssh-agent if not running
+            # cf. https://inno-tech-life.com/dev/infra/wsl2-ssh-agent/
+            activation.startSshAgent = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              if [ -z "''${SSH_AUTH_SOCK:-}" ]; then
+                eval $(${pkgs.openssh}/bin/ssh-agent)
+              fi
+            '';
+          };
+        })
         ../home
       ];
     };

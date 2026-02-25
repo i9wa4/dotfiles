@@ -3,6 +3,7 @@
   lib,
   username,
   commonOverlays,
+  commonNixSettings,
   ...
 }: {
   nixpkgs = {
@@ -14,23 +15,13 @@
 
   # Nix settings
   nix = {
-    settings = {
-      experimental-features = "nix-command flakes";
-      # Increase download buffer to avoid "download buffer is full" warning
-      # Default: 64 MiB (64 * 1024 * 1024 = 67108864)
-      download-buffer-size = 128 * 1024 * 1024; # 128 MiB
-      # Allow user to use extra substituters
-      trusted-users = ["root" username];
-      # Binary caches
-      extra-substituters = [
-        "https://cache.numtide.com" # prebuilt llm-agents packages
-        "https://nix-community.cachix.org" # neovim-nightly, vim-overlay, etc.
-      ];
-      extra-trusted-public-keys = [
-        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
-    };
+    settings =
+      commonNixSettings
+      // {
+        experimental-features = "nix-command flakes";
+        # Allow user to use extra substituters
+        trusted-users = ["root" username];
+      };
     # Deduplicate files via hard links (scheduled, not per-build)
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
     # Note: Disabled because large binaries are now Homebrew-managed,
@@ -53,12 +44,12 @@
   # Note: All features disabled - home-manager programs.zsh handles ~/.zshrc
   programs.zsh = {
     enable = true;
-    # History is managed by home-manager programs.zsh.history
+    # History (handled by config/zsh/ via ZDOTDIR)
     # Completion (handled by zinit turbo mode)
     enableCompletion = false;
     enableBashCompletion = false;
     enableGlobalCompInit = false;
-    # Prompt (handled by home-manager initExtra)
+    # Prompt (handled by config/zsh/ via ZDOTDIR)
     promptInit = "";
     # Plugins (handled by zinit/zeno)
     enableSyntaxHighlighting = false;

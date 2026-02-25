@@ -3,6 +3,7 @@
 {
   inputs,
   commonOverlays,
+  commonNixSettings,
   ...
 }: let
   inherit (inputs) nix-darwin home-manager nix-index-database;
@@ -28,7 +29,7 @@
   in
     nix-darwin.lib.darwinSystem {
       inherit system;
-      specialArgs = {inherit username inputs commonOverlays;};
+      specialArgs = {inherit username inputs commonOverlays commonNixSettings;};
       modules = [
         ../nix-darwin
         home-manager.darwinModules.home-manager
@@ -49,20 +50,25 @@
               inherit username inputs;
             };
             users.${username} = {
+              pkgs,
+              lib,
+              config,
+              ...
+            }: {
               imports = [
                 nix-index-database.homeModules.nix-index
                 ../home
               ];
-              programs.vscode = {
-                enable = true;
-                profiles.default.userSettings = {
-                  "breadcrumbs.enabled" = false;
-                  "editor.fontFamily" = "'UDEV Gothic 35LG', monospace";
-                  "editor.minimap.enabled" = false;
-                  "editor.mouseWheelZoom" = true;
-                  "terminal.integrated.fontFamily" = "'UDEV Gothic 35LG', monospace";
-                };
-              };
+              # Darwin-specific cleanup (.DS_Store, xattr)
+              home.activation.cleanDarwinFiles = let
+                fd = "${pkgs.fd}/bin/fd";
+                homeDir = config.home.homeDirectory;
+                ghqRoot = "${homeDir}/ghq";
+              in
+                lib.hm.dag.entryAfter ["writeBoundary"] ''
+                  ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
+                  ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
+                '';
             };
           };
         }
@@ -79,7 +85,6 @@ in {
       "google-chrome"
       "obsidian"
       "stats"
-      "visual-studio-code"
       "wezterm"
       "zoom"
     ];

@@ -5,13 +5,9 @@
   pkgs,
   lib,
   config,
-  username,
   ...
 }: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+  homeDir = config.home.homeDirectory;
   ghqRoot = "${homeDir}/ghq";
   dotfilesDir = "${ghqRoot}/github.com/i9wa4/dotfiles";
   symlink = config.lib.file.mkOutOfStoreSymlink;

@@ -23,21 +23,6 @@
         "type": "github"
       }
     },
-    "ai-tools": {
-      "inputs": {
-        "llm-agents": "llm-agents",
-        "nixpkgs": "nixpkgs"
-      },
-      "locked": {
-        "path": "./nix/ai-tools",
-        "type": "path"
-      },
-      "original": {
-        "path": "./nix/ai-tools",
-        "type": "path"
-      },
-      "parent": []
-    },
     "anthropic-skills": {
       "flake": false,
       "locked": {
@@ -57,7 +42,6 @@
     "blueprint": {
       "inputs": {
         "nixpkgs": [
-          "ai-tools",
           "llm-agents",
           "nixpkgs"
         ],
@@ -195,17 +179,16 @@
       "inputs": {
         "blueprint": "blueprint",
         "nixpkgs": [
-          "ai-tools",
-          "nixpkgs"
+          "nixpkgs-unstable"
         ],
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1771944434,
-        "narHash": "sha256-xJOtVIQ52zM9EZeUHKKJ+aGhn1svUTkJI3S8s445NFc=",
+        "lastModified": 1772017858,
+        "narHash": "sha256-3X6NIW3MEalc+D9Kv+nsSm5FY8rqM3XOhcjIOlmwOlw=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "aba9382852d7757b45147deee70e464b58e3bd7c",
+        "rev": "ee0ccf8111ef8db4a849f9f4aff81a36fb6513e7",
         "type": "github"
       },
       "original": {
@@ -257,16 +240,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771923393,
-        "narHash": "sha256-Fy0+UXELv9hOE8WjYhJt8fMDLYTU2Dqn3cX4BwoGBos=",
+        "lastModified": 1771903837,
+        "narHash": "sha256-sdaqdnsQCv3iifzxwB22tUwN/fSHoN7j2myFW5EIkGk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ea7f1f06811ce7fcc81d6c6fd4213150c23edcf2",
+        "rev": "e764fc9a405871f1f6ca3d1394fb422e0a0c3951",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
+        "ref": "nixpkgs-25.11-darwin",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -302,34 +285,18 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1771903837,
-        "narHash": "sha256-sdaqdnsQCv3iifzxwB22tUwN/fSHoN7j2myFW5EIkGk=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "e764fc9a405871f1f6ca3d1394fb422e0a0c3951",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-25.11-darwin",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
-        "ai-tools": "ai-tools",
         "anthropic-skills": "anthropic-skills",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
         "home-manager": "home-manager",
+        "llm-agents": "llm-agents",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "streamlit-skills": "streamlit-skills",
         "treefmt-nix": "treefmt-nix_2"
@@ -369,7 +336,6 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
-          "ai-tools",
           "llm-agents",
           "nixpkgs"
         ]
