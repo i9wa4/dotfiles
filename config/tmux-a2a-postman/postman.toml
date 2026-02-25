@@ -1,61 +1,9 @@
-# Postman Configuration
-# File-based communication daemon for tmux panes
-
-# =============================================================================
-# Template Variables Reference
-# =============================================================================
-#
-# notification_template:
-#   {from_node}      - Sender node name
-#   {node}           - Recipient node name
-#   {timestamp}      - Message timestamp (YYYYMMDD-HHMMSS)
-#   {inbox_path}     - Full path to recipient's inbox directory
-#   {filename}       - Message filename
-#   {talks_to_line}  - Formatted list of nodes this node can communicate with
-#   {template}       - Node's role template (from [node].template)
-#   {reply_command}  - Command to create draft message
-#   {context_id}     - Current session context ID
-#   {session_dir}    - Session directory path
-#
-# ping_template:
-#   {context_id}     - Current session context ID
-#   {node}           - Target node name
-#   {timestamp}      - Message timestamp (YYYYMMDD-HHMMSS)
-#   {from_node}      - Sender node name (always "postman")
-#   {template}       - Node's role template
-#   {talks_to_line}  - Formatted list of nodes this node can communicate with
-#   {active_nodes}   - Comma-separated list of all active nodes
-#   {reply_command}  - Command to create draft message
-#   {inbox_path}     - Full path to recipient's inbox directory
-#   {session_dir}    - Session directory path
-#
-# digest_template:
-#   {digest_items}   - Formatted list of new messages
-#
-# draft_template:
-#   {context_id}     - Current session context ID
-#   {task_id}        - Unique task identifier
-#   {sender}         - Sender node name
-#   {recipient}      - Recipient node name
-#   {timestamp}      - ISO format timestamp
-#   {from}           - Alias for {sender} (backward compatibility)
-#   {to}             - Alias for {recipient} (backward compatibility)
-#   {can_talk_to}    - Formatted list of nodes this sender can communicate with
-#
-# common_template:
-#   Shared template string prepended to all node templates.
-#   Applied in ping and notification contexts. Not applied to digest or draft.
-#
-# =============================================================================
-
 [postman]
 a2a_version = "1.0"
 startup_delay_seconds = 10
-new_node_ping_delay_seconds = 3  # Delay before sending ping to newly joined nodes
 reminder_interval_messages = 20  # Send reminder after N messages (0 = disabled)
 
 # Timing settings
-scan_interval_seconds = 1  # Pane rescan interval in seconds
 tmux_timeout_seconds = 30  # Timeout for tmux commands
 enter_delay_seconds = 3.0  # Delay before sending Enter key
 
@@ -79,73 +27,8 @@ edges = [
 # base_dir = ""                 # Override session dir (default: XDG_STATE_HOME/postman)
 ui_node = "messenger"         # TUI target node for watchdog alerts
 
-# Reminder message (sent periodically to nodes)
-reminder_message = "{template}"
-
 # Reply instruction (used in templates)
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
-
-# Notification template (when new message arrives)
-notification_template = """
-<!-- message start -->
-{talks_to_line}
-
-## Message Details
-
-📬 Message from {from_node}
-
-After reading, move from inbox/ to read/
-
-- File: {filename}
-- inbox path: {inbox_path}
-- read path: {session_dir}/read/
-- protocol reference: {session_dir}/RULES.md
-
-## Reply (if needed)
-
-NEVER create draft manually. Always:
-{reply_command}
-Edit content, then: mv {session_dir}/draft/<file> {session_dir}/post/
-<!-- end of message -->
-"""
-
-rules_template = """
-## Messaging Protocol
-
-### Sending Messages
-1. {reply_command}
-   - Replace `<recipient>` with the target node name
-2. Edit the draft content
-3. Move draft to post/: mv {session_dir}/draft/<file> {session_dir}/post/
-
-### Receiving Messages
-- Messages arrive in inbox/<node>/
-- After reading: mv {session_dir}/inbox/<node>/<file> {session_dir}/read/
-
-### Standard Replies
-
-PONG — liveness confirmation (reply to PING from postman)
-HEARTBEAT_OK — system healthy
-[status] — current task, blockers, next action
-[error] — description, mitigation, next step
-"""
-
-# Draft message template
-draft_template = """---
-method: message/send
-params:
-  contextId: {context_id}
-  taskId: {task_id}
-  from: {sender}
-  to: {recipient}
-  timestamp: {timestamp}
----
-
-Can talk to: {can_talk_to}
-
-## Content
-
-"""
 
 [watchdog]
 enabled = true
