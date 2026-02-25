@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgsUnstable,
   lib,
   config,
   username,
@@ -115,9 +116,9 @@ in {
         pkgs.efm-langserver
         pkgs.nixd
         pkgs.pyright
-        # Editors (latest from neovim-nightly-overlay and vim-overlay)
-        pkgs.neovim
-        pkgs.vim
+        # Editors (nixpkgs-unstable for cached binaries)
+        pkgsUnstable.neovim
+        pkgsUnstable.vim
         pkgs.vim-startuptime
         # Neovim build dependencies
         pkgs.ninja
@@ -128,7 +129,7 @@ in {
         pkgs.llm-agents.ccusage
         pkgs.llm-agents.ccusage-codex
         pkgs.llm-agents.claude-code
-        pkgs.llm-agents.codex
+        pkgs.codex
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/flake-parts/darwin.nix
       ];

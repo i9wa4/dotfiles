@@ -120,13 +120,53 @@ direnv allow ~/ghq/github.com/i9wa4/dotfiles
 
 ## 3. Ubuntu
 
-### 3.1. Initial home-manager switch
+### 3.1. Configure /etc/nix/nix.conf
+
+`/etc/nix/nix.conf` is a real file (not managed by Nix). Configure it manually with `sudo`.
+
+Add the current user to `trusted-users` so that binary caches (e.g., `cache.numtide.com`) work.
+Without this, caches are silently ignored and packages are compiled from source.
+
+```sh
+cat /etc/nix/nix.conf
+```
+
+Ensure there is exactly one `trusted-users` line that includes your username:
+
+```sh
+sudo nano /etc/nix/nix.conf
+```
+
+Example:
+
+```ini
+# Bad: last line wins, earlier entries are ignored
+trusted-users = root userA
+trusted-users = root userB
+
+# Good: all users in one line
+trusted-users = root userA userB
+```
+
+Also consider setting `max-jobs = auto` to use all available CPU cores for builds (default is 1):
+
+```ini
+max-jobs = auto
+```
+
+Restart nix-daemon to apply:
+
+```sh
+sudo systemctl restart nix-daemon
+```
+
+### 3.2. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 3.2. Set zsh as default shell (optional)
+### 3.3. Set zsh as default shell (optional)
 
 `~/.bashrc` auto-switches to zsh, but setting the login shell
 is useful for regular SSH connections:

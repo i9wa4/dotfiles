@@ -1,13 +1,8 @@
 {inputs, ...}: let
-  inherit (inputs) neovim-nightly-overlay vim-overlay ai-tools;
+  inherit (inputs) ai-tools;
 
   commonOverlays = [
     ai-tools.overlays.default
-    neovim-nightly-overlay.overlays.default
-    (vim-overlay.overlays.features {
-      lua = true;
-      python3 = true;
-    })
   ];
 in {
   _module.args = {inherit commonOverlays;};

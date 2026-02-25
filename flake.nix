@@ -20,7 +20,8 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Latest neovim/vim from source
+    # Latest neovim/vim from nixpkgs-unstable (cached binaries)
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     vim-overlay.url = "github:kawarimidoll/vim-overlay";
     # AI tools sub-flake (independent flake.lock for cache hits + frequent updates)

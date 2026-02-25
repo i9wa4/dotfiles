@@ -5,7 +5,7 @@
   commonOverlays,
   ...
 }: let
-  inherit (inputs) nixpkgs home-manager nix-index-database;
+  inherit (inputs) nixpkgs nixpkgs-unstable home-manager nix-index-database;
 in {
   # home-manager switch --flake '.#ubuntu' --impure
   # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
@@ -36,6 +36,7 @@ in {
       inherit pkgs;
       extraSpecialArgs = {
         inherit username inputs;
+        pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
       };
       modules = [
         nix-index-database.homeModules.nix-index
@@ -59,7 +60,7 @@ in {
               # Binary caches
               extra-substituters = [
                 "https://cache.numtide.com" # prebuilt llm-agents packages
-                "https://nix-community.cachix.org" # neovim-nightly, vim-overlay, etc.
+                "https://nix-community.cachix.org" # nix-community packages
               ];
               extra-trusted-public-keys = [
                 "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
