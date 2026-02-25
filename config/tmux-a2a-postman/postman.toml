@@ -40,6 +40,7 @@
 #   {timestamp}      - ISO format timestamp
 #   {from}           - Alias for {sender} (backward compatibility)
 #   {to}             - Alias for {recipient} (backward compatibility)
+#   {can_talk_to}    - Formatted list of nodes this sender can communicate with
 #
 # common_template:
 #   Shared template string prepended to all node templates.
@@ -51,7 +52,7 @@
 a2a_version = "1.0"
 startup_delay_seconds = 10
 new_node_ping_delay_seconds = 3  # Delay before sending ping to newly joined nodes
-reminder_interval_seconds = 20  # Send reminder after N messages (0 = disabled)
+reminder_interval_messages = 20  # Send reminder after N messages (0 = disabled)
 
 # Timing settings
 scan_interval_seconds = 1  # Pane rescan interval in seconds
@@ -79,9 +80,7 @@ edges = [
 ui_node = "messenger"         # TUI target node for watchdog alerts
 
 # Reminder message (sent periodically to nodes)
-reminder_message = """
-$(cat ~/.agents/AGENTS.md)
-"""
+reminder_message = "{template}"
 
 # Reply instruction (used in templates)
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
@@ -89,8 +88,6 @@ reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context
 # Notification template (when new message arrives)
 notification_template = """
 <!-- message start -->
-{template}
-
 {talks_to_line}
 
 ## Message Details
@@ -106,12 +103,8 @@ After reading, move from inbox/ to read/
 ## Reply (if needed)
 
 NEVER create draft manually. Always:
-
-1. {reply_command}
-2. Edit content
-3. Move from draft/ to post/
-  - draft path: {session_dir}/draft/
-  - post path: {session_dir}/post/
+{reply_command}
+Edit content, then: mv {session_dir}/draft/<file> {session_dir}/post/
 <!-- end of message -->
 """
 
@@ -136,14 +129,10 @@ After reading, move from inbox/ to read/
 You MUST reply with PONG to confirm you are active.
 If you do not respond, you will be treated as DROPPED (inactive).
 
-Steps:
-
-1. {reply_command}
-   - Replace `<recipient>` with `postman`
-2. In the Content section, write only: PONG
-3. Move from draft/ to post/
-  - draft path: {session_dir}/draft/
-  - post path: {session_dir}/post/
+NEVER create draft manually. Always:
+{reply_command} (replace `<recipient>` with `postman`)
+Set Content to: PONG
+Then: mv {session_dir}/draft/<file> {session_dir}/post/
 <!-- end of message -->
 """
 
@@ -157,6 +146,8 @@ params:
   to: {recipient}
   timestamp: {timestamp}
 ---
+
+Can talk to: {can_talk_to}
 
 ## Content
 
