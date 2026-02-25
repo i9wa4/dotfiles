@@ -11,6 +11,7 @@ syntax off
 " Minimum setting
 "
 " Variable
+let g:editorconfig = v:true
 let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 " System

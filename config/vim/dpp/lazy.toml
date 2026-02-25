@@ -20,10 +20,6 @@ let g:tmux_ai_cli_additional_processes = ['cursor-agent']
 '''
 
 [[plugins]]
-repo = 'editorconfig/editorconfig-vim'
-on_event = ['VimEnter']
-
-[[plugins]]
 repo = 'tyru/caw.vim'
 on_event = ['VimEnter']
 hook_add = '''

@@ -26,12 +26,10 @@ call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/rc/local.defa
 set backspace=indent,eol,start
 set completeopt=menuone,noinsert,noselect
 set fileencodings=utf-8,euc-jp,cp932
-set fileformat=unix
 set fileformats=unix,dos,mac
 set hidden
-set nofoldenable autoindent expandtab
+set nofoldenable autoindent
 set nrformats=unsigned
-set shiftwidth=4 softtabstop=4 tabstop=4
 set virtualedit=block
 
 " Search

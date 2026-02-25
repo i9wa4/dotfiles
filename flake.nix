@@ -4,11 +4,10 @@
   inputs = {
     # No follows
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
-    # Latest VSCode from nixpkgs-unstable (darwin-only, managed by vscode.nix)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
-    # Follows nixpkgs or nixpkgs-unstable
+    # Follows nixpkgs
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,6 +29,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Follows nixpkgs-unstable
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
