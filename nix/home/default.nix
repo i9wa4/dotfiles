@@ -54,7 +54,6 @@ in {
         pkgs.zsh
         pkgs.wslu # WSL utilities (harmless on non-WSL)
         pkgs.udev-gothic # Font (macOS installs via nix-darwin fonts.packages)
-        pkgs.obsidian
       ]
       ++ [
         # Cloud & Infrastructure
@@ -111,14 +110,15 @@ in {
         # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
         pkgs.pinact
         pkgs.rumdl
-        # NOTE: pre-commit is managed via `uv run pre-commit` to avoid Swift build dependency
         # LSP
         pkgs.efm-langserver
         pkgs.nixd
         pkgs.pyright
         # Editors (nixpkgs-unstable for cached binaries)
-        pkgsUnstable.neovim
-        pkgsUnstable.vim
+        # pkgsUnstable.neovim
+        # pkgsUnstable.vim
+        pkgs.neovim
+        pkgs.vim
         pkgs.vim-startuptime
         # Neovim build dependencies
         pkgs.ninja
@@ -129,7 +129,7 @@ in {
         pkgs.llm-agents.ccusage
         pkgs.llm-agents.ccusage-codex
         pkgs.llm-agents.claude-code
-        pkgs.codex
+        pkgs.llm-agents.codex
         # NOTE: GUI applications are managed via Homebrew casks
         # cf. nix/flake-parts/darwin.nix
       ];

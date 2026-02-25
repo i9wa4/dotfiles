@@ -22,8 +22,8 @@
     };
     # Latest neovim/vim from nixpkgs-unstable (cached binaries)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-    vim-overlay.url = "github:kawarimidoll/vim-overlay";
+    # neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    # vim-overlay.url = "github:kawarimidoll/vim-overlay";
     # AI tools sub-flake (independent flake.lock for cache hits + frequent updates)
     ai-tools.url = "path:./nix/ai-tools";
     # Agent skills declarative management
