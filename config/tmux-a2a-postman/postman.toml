@@ -30,6 +30,23 @@ ui_node = "messenger"         # TUI target node for watchdog alerts
 # Reply instruction (used in templates)
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
 
+rules_template = """
+## Messaging Protocol
+
+### Sending Messages
+See: {session_dir}/boilerplate/how_to_reply.md
+
+### Receiving Messages
+- Messages arrive in inbox/<node>/
+- After reading: mv {session_dir}/inbox/<node>/<file> {session_dir}/read/
+
+### Standard Replies
+- PONG: see {session_dir}/boilerplate/pong.md
+- HEARTBEAT_OK: see {session_dir}/boilerplate/heartbeat_ok.md
+- [status] - current task, blockers, next action
+- [error] - description, mitigation, next step
+"""
+
 [watchdog]
 enabled = true
 idle_threshold_seconds = 300.0  # 5 minutes
