@@ -4,6 +4,17 @@
   perSystem = {pkgs, ...}: let
     # GitHub Actions workflow file pattern
     ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
+    # Inline linter configs (avoids repo-root config files)
+    rumdlConfig = pkgs.writeText "rumdl.toml" ''
+      [global]
+      disable = ["MD013"]
+
+      [MD007]
+      indent = 2
+    '';
+    statixConfig = pkgs.writeText "statix.toml" ''
+      nix_version = "2.4"
+    '';
   in {
     pre-commit = {
       check.enable = true;
@@ -68,9 +79,12 @@
 
         # === Linters (dotfiles-specific) ===
         # Nix
+        # Run on explicit targets to avoid scanning .direnv/ (statix ignore paths
+        # resolve relative to config file, not CWD, so -i/.direnv doesn't work)
         statix = {
           enable = true;
-          excludes = ["^\\.direnv/"];
+          entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check --config ${statixConfig} \"$t\" || exit 1; done'";
+          pass_filenames = false;
         };
         flake-check = {
           enable = true;
@@ -82,9 +96,10 @@
         };
 
         # Markdown (lint only - formatting is handled by treefmt)
+        # Skip in nix build sandbox (NIX_BUILD_TOP set during nix flake check)
         rumdl-check = {
           enable = true;
-          entry = "${pkgs.rumdl}/bin/rumdl --config .rumdl.toml check";
+          entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.rumdl}/bin/rumdl --config ${rumdlConfig} check \"$@\"' --";
           types = ["markdown"];
         };
 

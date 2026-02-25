@@ -5,25 +5,6 @@ _: {
     enable = true;
     settings = {
       gui.scrollHeight = 15;
-      customCommands = [
-        {
-          key = "<c-g>";
-          description = "Switch repository (ghq)";
-          prompts = [
-            {
-              type = "menuFromCommand";
-              title = "Select repository";
-              command = "ghq list";
-              filter = "(?P<repo>.*)";
-              valueFormat = "{{ .repo }}";
-              labelFormat = "{{ .repo }}";
-            }
-          ];
-          command = ''lazygit --path "$(ghq root)/{{index .PromptResponses 0}}"'';
-          context = "global";
-          output = "terminal";
-        }
-      ];
     };
   };
 }

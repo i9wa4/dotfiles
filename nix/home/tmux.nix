@@ -19,9 +19,6 @@ in {
     escapeTime = 10;
     focusEvents = true;
     extraConfig = ''
-      # List of plugins
-      set -g @plugin 'tmux-plugins/tpm'
-
       # Panes control
       bind-key -r H resize-pane -L 1
       bind-key -r J resize-pane -D 1
@@ -93,8 +90,8 @@ in {
       # Terminal
       set-option -sa terminal-features ",*:RGB"
 
-      # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
-      run '~/.config/tmux/plugins/tpm/tpm'
+      # Reload config
+      bind-key I source-file ~/.config/tmux/tmux.conf \; display-message "Config reloaded"
     '';
   };
 }

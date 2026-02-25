@@ -268,7 +268,3 @@ gh auth login --with-token
 
 - Okta Browser Plugin
 - Slack Channels Grouping
-
-## 6. Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).

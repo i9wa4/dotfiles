@@ -1,8 +1,0 @@
-# Rumdl configuration
-# Match prettier's 2-space indentation for nested lists
-
-[global]
-disable = ["MD013"]  # Disable line length check (prettier uses proseWrap: preserve)
-
-[MD007]
-indent = 2

@@ -23,7 +23,6 @@ in {
     ./efm-langserver.nix
     ./git.nix
     ./lazygit.nix
-    ./rumdl.nix
     ./tmux.nix
   ];
   home = {
@@ -182,23 +181,12 @@ in {
   home.activation = let
     npm = "${pkgs.nodejs}/bin/npm";
     npmPrefix = "${homeDir}/.local";
-    git = "${pkgs.git}/bin/git";
-    tpmDir = "${homeDir}/.config/tmux/plugins/tpm";
   in {
     # 0. Clean temporary files (node caches for security)
     cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
       echo "Cleaning temporary files..."
       # Node.js caches
       rm -rf "${homeDir}/.npm"
-    '';
-
-    # 0. Clone tmux plugin manager (tpm)
-    cloneTpm = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      export PATH="${pkgs.git}/bin:$PATH"
-      if [ ! -d "${tpmDir}" ]; then
-        echo "Cloning tmux plugin manager..."
-        ${git} clone https://github.com/tmux-plugins/tpm "${tpmDir}"
-      fi
     '';
 
     # 1. Install/update safe-chain first (security scanner for npm)
