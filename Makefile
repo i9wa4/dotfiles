@@ -40,9 +40,6 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
-nix-ai-tools-update:  ## update AI tools sub-flake only (claude-code, codex, ccusage)
-	cd nix/ai-tools && nix flake update
-
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
@@ -50,6 +47,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 else
 	home-manager switch -b backup --flake '.#ubuntu' --impure
 endif
+
 
 # nvim-build:  ## build Neovim from source
 # 	ghq get -p neovim/neovim
