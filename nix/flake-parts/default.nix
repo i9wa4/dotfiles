@@ -1,13 +1,6 @@
 {inputs, ...}: let
-  inherit (inputs) neovim-nightly-overlay vim-overlay;
-
   commonOverlays = [
     inputs.llm-agents.overlays.default
-    neovim-nightly-overlay.overlays.default
-    (vim-overlay.overlays.features {
-      lua = true;
-      python3 = true;
-    })
   ];
 
   # Shared nix.settings for darwin and ubuntu (substituters, keys, buffer)

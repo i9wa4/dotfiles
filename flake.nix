@@ -35,10 +35,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Latest neovim/vim from source
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-    vim-overlay.url = "github:kawarimidoll/vim-overlay";
-
     # Follows nixpkgs + home-manager
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";
