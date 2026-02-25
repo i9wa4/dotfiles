@@ -189,7 +189,6 @@ nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
 nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
-nnoremap <Plug>(my-Switch)c <Cmd>call <SID>switch_colorscheme()<CR>
 nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! list?<CR>
 nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
 nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
@@ -197,11 +196,6 @@ nnoremap <Plug>(my-Switch)r <Cmd>setlocal relativenumber! relativenumber?<CR>
 nnoremap <Plug>(my-Switch)s <Cmd>setlocal spell! spell?<CR>
 nnoremap <Plug>(my-Switch)t <Cmd>setlocal expandtab! expandtab?<CR>
 nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
-
-function! s:switch_colorscheme() abort
-  call my_colorscheme#setup()
-  call my_highlight#highlight()
-endfunction
 
 " --------------------------------------
 " Command
