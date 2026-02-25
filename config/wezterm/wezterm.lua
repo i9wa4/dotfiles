@@ -11,7 +11,7 @@ config.send_composed_key_when_right_alt_is_pressed = false
 
 -- Font
 config.font = wezterm.font("UDEV Gothic 35LG")
-config.font_size = 20
+config.font_size = 18
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Opacity
