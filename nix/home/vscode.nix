@@ -4,7 +4,10 @@
   pkgs,
   ...
 }: let
-  pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system};
+  pkgsUnstable = import inputs.nixpkgs-unstable {
+    localSystem = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
 in {
   programs.vscode = {
     enable = true;
