@@ -18,6 +18,18 @@ let g:netrw_home = $XDG_CACHE_HOME->expand()
 set clipboard&
 if has('mac')
   set clipboard^=unnamed
+  if !has('clipboard_working') && has('clipboard_provider')
+    let v:clipproviders['pbcopy'] = {
+      \   'available': {-> '*'},
+      \   'copy': {
+      \     '*': {reg, type, lines -> system('pbcopy', lines)},
+      \   },
+      \   'paste': {
+      \     '*': {reg, access -> ['v', systemlist('pbpaste')]},
+      \   },
+      \ }
+    set clipmethod=pbcopy
+  endif
 else
   set clipboard^=unnamedplus
 endif
