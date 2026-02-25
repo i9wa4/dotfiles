@@ -1,17 +1,13 @@
-# Uses nixpkgs-unstable for latest VSCode (stable lags behind)
-{
-  inputs,
-  pkgs,
-  ...
-}: let
-  pkgsUnstable = import inputs.nixpkgs-unstable {
-    localSystem = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
-  };
-in {
+# VS Code settings management only (binary installed via Homebrew cask)
+{pkgs, ...}: {
   programs.vscode = {
     enable = true;
-    package = pkgsUnstable.vscode;
+    package =
+      pkgs.emptyDirectory
+      // {
+        pname = "vscode";
+        version = "0";
+      }; # Installed via Homebrew cask
     profiles.default.userSettings = {
       "breadcrumbs.enabled" = false;
       "editor.fontFamily" = "'UDEV Gothic 35LG', monospace";
@@ -19,6 +15,7 @@ in {
       "editor.mouseWheelZoom" = true;
       "terminal.integrated.fontFamily" = "'UDEV Gothic 35LG', monospace";
       "update.mode" = "none";
+      "workbench.colorTheme" = "Default Light Modern";
     };
   };
 }
