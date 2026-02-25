@@ -44,75 +44,62 @@ in {
     # User packages (managed by home-manager)
     # For project-specific tools, use devShell or mise instead
     packages = [
+      # System
+      pkgs.fastfetch
+      pkgs.htop
+      pkgs.hyperfine
+      pkgs.tailscale
+      pkgs.wget
       # Cloud & Infrastructure
       pkgs.awscli2
-      pkgs.ssm-session-manager-plugin
       pkgs.databricks-cli
       pkgs.google-cloud-sdk
       pkgs.terraform
-      pkgs.tflint
-      # Version control (git is managed by programs.git)
-      pkgs.gh
-      pkgs.ghq
-      pkgs.lazygit
-      # Search
-      pkgs.ripgrep
-      pkgs.fd
-      pkgs.fzf
-      # File viewers
-      pkgs.bat
-      pkgs.jq
-      pkgs.yq-go
-      # Terminal
-      pkgs.tmux
-      # System
-      pkgs.htop
-      pkgs.tailscale
-      pkgs.wget
-      pkgs.fastfetch
-      pkgs.hyperfine
-      # Language runtimes
-      pkgs.deno
-      pkgs.go
-      pkgs.nodejs
-      pkgs.python3
-      pkgs.rustup
-      pkgs.uv
-      # Linters & Formatters
-      pkgs.alejandra
-      pkgs.hadolint
-      pkgs.shellcheck
-      pkgs.shfmt
-      pkgs.statix
-      pkgs.stylua
-      pkgs.zizmor
-      # Nix development
-      # NOTE: comma is provided by nix-index-database module (programs.nix-index-database.comma.enable)
-      pkgs.nurl
-      # CI/CD
-      pkgs.act
-      pkgs.actionlint
-      pkgs.gitleaks
-      pkgs.mise
-      pkgs.ghalint
-      # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
-      pkgs.pinact
-      pkgs.rumdl
-      # LSP
-      pkgs.efm-langserver
-      pkgs.nixd
-      pkgs.pyright
       # Editors
       pkgs.neovim
       pkgs.vim
       pkgs.vim-startuptime
-      # Dev containers
-      pkgs.devcontainer
       # AI coding agent tools
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       pkgs.llm-agents.claude-code
       pkgs.llm-agents.codex
+      # Development tools
+      # NOTE: ghatm not in nixos-25.11 stable, use `nix run nixpkgs#ghatm`
+      # pkgs.pinact
+      # pkgs.statix
+      # pkgs.zizmor
+      pkgs.act
+      pkgs.actionlint
+      pkgs.alejandra
+      pkgs.bat
+      pkgs.deno
+      pkgs.devcontainer
+      pkgs.efm-langserver
+      pkgs.fd
+      pkgs.fzf
+      pkgs.gh
+      pkgs.ghalint
+      pkgs.ghq
+      pkgs.gitleaks
+      pkgs.go
+      pkgs.hadolint
+      pkgs.jq
+      pkgs.lazygit
+      pkgs.mise
+      pkgs.nixd
+      pkgs.nodejs
+      pkgs.nurl
+      pkgs.pyright
+      pkgs.python3
+      pkgs.ripgrep
+      pkgs.rumdl
+      pkgs.rustup
+      pkgs.shellcheck
+      pkgs.shfmt
+      pkgs.stylua
+      pkgs.tmux
+      pkgs.uv
       # NOTE: GUI applications are managed via Homebrew casks
       # cf. nix/flake-parts/darwin.nix
     ];
