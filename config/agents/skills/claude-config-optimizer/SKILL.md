@@ -98,6 +98,43 @@ Task tool with subagent_type: claude-code-guide
 - NEVER: Include unnecessary information at startup
   (reference links, usage details)
 
+### 6.1. Include vs Exclude
+
+| Include                                              | Exclude                                            |
+| ---------------------------------------------------- | -------------------------------------------------- |
+| Bash commands Claude can't guess                     | Anything Claude can figure out by reading code     |
+| Code style rules that differ from defaults           | Standard language conventions Claude already knows |
+| Testing instructions and preferred test runners      | Detailed API documentation (link to docs instead)  |
+| Repository etiquette (branch naming, PR conventions) | Information that changes frequently                |
+| Architectural decisions specific to your project     | Long explanations or tutorials                     |
+| Developer environment quirks (required env vars)     | File-by-file descriptions of the codebase          |
+| Common gotchas or non-obvious behaviors              | Self-evident practices like "write clean code"     |
+
+Test each line: "Would removing this cause Claude to make mistakes?" If not, cut it.
+
+### 6.2. @import Syntax
+
+CLAUDE.md can import additional files:
+
+```markdown
+See @README.md for project overview and @package.json for available npm commands.
+
+# Additional Instructions
+
+- Git workflow: @docs/git-instructions.md
+- Personal overrides: @~/.claude/my-project-instructions.md
+```
+
+### 6.3. CLAUDE.md Locations
+
+| Location              | Scope                                                   |
+| --------------------- | ------------------------------------------------------- |
+| `~/.claude/CLAUDE.md` | All Claude sessions (global)                            |
+| `./CLAUDE.md`         | Project root — check into git to share with team        |
+| `./CLAUDE.local.md`   | Project root — add to .gitignore for personal overrides |
+| Parent directories    | Useful for monorepos (auto-loaded)                      |
+| Child directories     | Loaded on demand when working with files there          |
+
 ## 7. Configuration Usage
 
 | Type               | Load Timing                    | Purpose                       |
@@ -117,6 +154,9 @@ Check the following when editing CLAUDE.md:
 - [ ] Are basic rules truly needed at all times?
 - [ ] Can detailed explanations be moved to rules/ or skills/?
 - [ ] Have reference links been moved to skills?
+- [ ] Does each line pass the "remove this → Claude makes mistakes?" test?
+- [ ] Are @imports used for large doc sections instead of inline content?
+- [ ] Is the file short enough that Claude won't ignore rules buried in the middle?
 
 ### 8.2. Permission System Review
 
@@ -129,7 +169,40 @@ Check settings.json permissions block:
 - [ ] Are sensitive paths blocked (secrets, .env, .ssh, keys, tokens)?
 - [ ] Are allow rules necessary or can defaultMode handle it?
 
-## 9. File Structure Maintenance
+## 9. Skill and Agent Frontmatter Reference
+
+### 9.1. Skill Frontmatter (SKILL.md)
+
+```yaml
+---
+name: skill-name
+description: |
+  When to trigger this skill.
+  Use when:
+  - condition 1
+  - condition 2
+disable-model-invocation: true # For workflows with side effects (manual invoke only)
+---
+```
+
+- `disable-model-invocation: true` — Prevents auto-triggering; user must invoke
+  explicitly with `/skill-name`. Use for workflows that have side effects.
+- Invoke with `$ARGUMENTS` for parameterized workflows: `/fix-issue 1234`
+
+### 9.2. Agent Frontmatter (.claude/agents/\*.md)
+
+```yaml
+---
+name: agent-name
+description: What this agent does and when to use it
+tools: Read, Grep, Glob, Bash # Restrict available tools
+model: opus # Optional: specify model
+isolation: worktree # Run in isolated git worktree (v2.1.49+)
+background: true # Always run as background task (v2.1.49+)
+---
+```
+
+## 10. File Structure Maintenance
 
 When adding/removing files in rules/, skills/, agents/, or commands/:
 
@@ -137,9 +210,9 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 - YOU MUST: Keep tables alphabetically sorted or logically grouped
 - IMPORTANT: Verify actual files match documentation after changes
 
-## 10. Optimization Tracking
+## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.56 (2026-02-25)
+Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 
 ### 10.1. Applied Optimizations
 
@@ -188,6 +261,11 @@ Last reviewed Claude Code version: v2.1.56 (2026-02-25)
 
 ### 10.4. Version Notes
 
+- v2.1.59: Auto-memory saving to auto-memory (manage with `/memory`), `/copy`
+  command for code block selection, smarter "always allow" prefix suggestions
+  for compound bash commands, config file corruption fix (multi-instance),
+  MCP OAuth token refresh race condition fix
+- v2.1.58: Remote Control expanded to more users
 - v2.1.56: VS Code fixed "command 'claude-vscode.editor.openLast' not found"
   crashes (another cause)
 - v2.1.55: BashTool EINVAL error fix on Windows
@@ -255,7 +333,7 @@ Last reviewed Claude Code version: v2.1.56 (2026-02-25)
 - v2.1.3: Merged slash commands and skills
 - v2.1.0: language setting, skill hot-reload, context: fork
 
-## 11. Response Format (CHANGELOG)
+## 12. Response Format (CHANGELOG)
 
 ```text
 # Claude Code vX.X.X
@@ -276,7 +354,7 @@ Last reviewed Claude Code version: v2.1.56 (2026-02-25)
 Source: https://github.com/anthropics/claude-code
 ```
 
-## 12. site2skill Usage
+## 13. site2skill Usage
 
 Convert documentation websites into Claude Agent Skills.
 
@@ -298,7 +376,7 @@ Options:
 
 To update existing skill docs, re-run without `--skip-fetch`.
 
-## 13. Reference Links
+## 14. Reference Links
 
 Official Documentation:
 
@@ -311,7 +389,7 @@ Community Resources:
 - CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
 - site2skill: <https://github.com/laiso/site2skill>
 
-## 14. Permission System Reference
+## 15. Permission System Reference
 
 ### 14.1. Permission Modes
 
@@ -383,7 +461,7 @@ NOTE: `*` matches single directory, `**` matches recursively.
 | `allowManagedPermissionRulesOnly` | Only managed rules apply                |
 | `allowManagedHooksOnly`           | Only managed/SDK hooks allowed          |
 
-## 15. Insights-Based Recommendations
+## 16. Insights-Based Recommendations
 
 Based on usage analysis (55K messages, 4.7K sessions):
 
@@ -396,7 +474,7 @@ Based on usage analysis (55K messages, 4.7K sessions):
 - Completion status reporting: No consumer for this output
 - PreToolUse hook for SQL: Handled by skill guidance instead
 
-## 16. References
+## 17. References
 
 - Hooks Reference: `https://code.claude.com/docs/en/hooks`
 - Permissions Reference: `https://code.claude.com/docs/en/permissions`
