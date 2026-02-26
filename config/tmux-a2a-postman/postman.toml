@@ -1,14 +1,5 @@
 [postman]
 a2a_version = "1.0"
-startup_delay_seconds = 10
-reminder_interval_messages = 20  # Send reminder after N messages (0 = disabled)
-
-# Timing settings
-tmux_timeout_seconds = 30  # Timeout for tmux commands
-enter_delay_seconds = 3.0  # Delay before sending Enter key
-
-# Pane capture settings (hybrid idle detection)
-pane_capture_interval_seconds = 10.0
 
 edges = [
   "boss -- orchestrator",
@@ -19,44 +10,20 @@ edges = [
   "critic -- guardian",
 ]
 
-# common_template: Shared template prepended to all node templates (default: "")
-# common_template = ""
+ui_node = "messenger"
 
-# Optional settings (using defaults):
-# edge_activity_seconds = 60.0  # TUI edge glow duration (1-3600)
-# base_dir = ""                 # Override session dir (default: XDG_STATE_HOME/postman)
-ui_node = "messenger"         # TUI target node for watchdog alerts
-
-# Reply instruction (used in templates)
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
-
-rules_template = """
-## Messaging Protocol
-
-### Sending Messages
-See: {session_dir}/boilerplate/how_to_reply.md
-
-### Receiving Messages
-- Messages arrive in inbox/<node>/
-- After reading: mv {session_dir}/inbox/<node>/<file> {session_dir}/read/
-
-### Standard Replies
-- PONG: see {session_dir}/boilerplate/pong.md
-- HEARTBEAT_OK: see {session_dir}/boilerplate/heartbeat_ok.md
-- [status] - current task, blockers, next action
-- [error] - description, mitigation, next step
-"""
 
 [watchdog]
 enabled = true
-idle_threshold_seconds = 300.0  # 5 minutes
-cooldown_seconds = 600.0  # 10 minutes
+idle_threshold_seconds = 300.0
+cooldown_seconds = 600.0
 
 [watchdog.capture]
 enabled = true
 tail_lines = 100
 max_files = 10
-max_bytes = 1048576  # 1MB
+max_bytes = 1048576
 
 [watchdog.lock]
 path = "$HOME/.postman/postman-watchdog.lock"
