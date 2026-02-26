@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo Current time: $(date +%Y-%m-%dT%H:%M:%S%z)"
+            "command": "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Current time: %s\"}}' \"$(date +%Y-%m-%dT%H:%M:%S%z)\""
           }
         ]
       }
