@@ -14,8 +14,42 @@ ui_node = "messenger"
 
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
 
+draft_template = """---
+method: message/send
+params:
+  contextId: {context_id}
+  taskId: {task_id}
+  from: {sender}
+  to: {recipient}
+  timestamp: {timestamp}
+---
+
+## ROLE OF RECIPIENT ({recipient}):
+
+{template}
+
+---
+
+You can only talk to: {can_talk_to}
+
+Role directory (complete list — your contacts are listed above):
+- boss: final approver, task authority
+- critic: critical analysis, aggressive scrutiny
+- guardian: quality assurance review + routing gate; forwards approved plans to boss
+- messenger: user interface, message relay
+- orchestrator: coordination, delegation
+- worker: implementation, consultation
+
+How to reply: {reply_command}
+
+## Content
+
+"""
+
 [watchdog]
-enabled = true
+# Disabled pending watchdog/heartbeat spec finalization.
+# Re-enable once specs are complete — see GitHub Issue #145.
+enabled = false
 idle_threshold_seconds = 300.0
 cooldown_seconds = 600.0
 
