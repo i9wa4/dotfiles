@@ -88,7 +88,9 @@ is optional for disambiguation when multiple plans exist in the same session.
 
 ## 8. Reference
 
-Files and directories described below are located at: @~/.agents/
+Files and directories described below are located at:
+
+- @~/ghq/github.com/i9wa4/dotfiles/config/agents/
 
 | Category  | Items                                                    |
 | --------- | -------------------------------------------------------- |
@@ -140,8 +142,6 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 #### 8.2.2. External Skills (Nix Store)
 
 External skills are auto-loaded from Nix Store and frequently updated.
-
-To view available skills: `/skills` command or `ls ~/.agents/skills/`
 
 ### 8.3. `subagents/`
 

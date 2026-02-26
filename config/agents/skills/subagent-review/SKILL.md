@@ -10,8 +10,6 @@ description: |
 
 # Subagent Review Skill
 
-See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
-
 ## 1. Review Workflow
 
 ### 1.1. Setup (Fully Automatic)

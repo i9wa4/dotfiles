@@ -14,22 +14,24 @@ description: |
 
 Rules and tracking for Claude Code configuration optimization.
 
-See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
-
 ## 1. Config File Location
 
-User's Claude Code config is stored at:
-@~/ghq/github.com/i9wa4/dotfiles/config/agents/
-@~/ghq/github.com/i9wa4/dotfiles/config/claude/
+Config is managed declaratively via Nix (`programs.claude-code` home-manager module).
 
-Key files:
+Source of truth:
 
-- `settings.json` - Main settings
-- `CLAUDE.md` - Persona and core rules
-- `rules/` - Detailed rules (auto-loaded at startup)
-- `skills/` - Specialized knowledge (loaded on demand)
-- `agents/` - Custom agents
-- `commands/` - Slash commands
+- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/claude-code.nix
+- @~/ghq/github.com/i9wa4/dotfiles/config/agents/
+
+| Destination               | Source                             | Managed by         |
+| ----------------------    | ------------------------------     | ------------------ |
+| `~/.claude/settings.json` | Generated from Nix attributes      | claude-code.nix    |
+| `~/.claude/CLAUDE.md`     | `config/agents/AGENTS.md`          | claude-code.nix    |
+| `~/.claude/rules/`        | `config/agents/rules/`             | claude-code.nix    |
+| `~/.claude/agents/`       | `config/agents/subagents/`         | claude-code.nix    |
+| `~/.claude/scripts/`      | `config/agents/scripts/`           | claude-code.nix    |
+| `~/.claude/skills/`       | Multiple flake inputs + local      | agent-skills.nix   |
+| MCP servers               | `nix/home-manager/mcp-servers.nix` | claude-code.nix    |
 
 ## 2. Fetch CHANGELOG
 
@@ -127,13 +129,13 @@ See @README.md for project overview and @package.json for available npm commands
 
 ### 6.3. CLAUDE.md Locations
 
-| Location              | Scope                                                   |
-| --------------------- | ------------------------------------------------------- |
-| `~/.claude/CLAUDE.md` | All Claude sessions (global)                            |
+| Location              | Scope                                                    |
+| --------------------- | -------------------------------------------------------  |
+| `~/.claude/CLAUDE.md` | All Claude sessions (global)                             |
 | `./CLAUDE.md`         | Project root — check into git to share with team        |
 | `./CLAUDE.local.md`   | Project root — add to .gitignore for personal overrides |
-| Parent directories    | Useful for monorepos (auto-loaded)                      |
-| Child directories     | Loaded on demand when working with files there          |
+| Parent directories    | Useful for monorepos (auto-loaded)                       |
+| Child directories     | Loaded on demand when working with files there           |
 
 ## 7. Configuration Usage
 
@@ -214,7 +216,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 
-### 10.1. Applied Optimizations
+### 11.1. Applied Optimizations
 
 - [x] Persona definition minimized
 - [x] Rules split into rules/ directory
@@ -232,7 +234,7 @@ Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
 
-### 10.2. Pending Considerations
+### 11.2. Pending Considerations
 
 - [x] SQL schema validation - moved to databricks skill (Section 8)
 - [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
@@ -250,7 +252,7 @@ Last reviewed Claude Code version: v2.1.59 (2026-02-27)
       (v2.1.51)
 - [ ] Managed settings via macOS plist or Windows Registry (v2.1.51)
 
-### 10.3. Not Adopting
+### 11.3. Not Adopting
 
 - `showTurnDuration` - keep default (show duration)
 - `reducedMotionMode` - keep default (animations enabled)
@@ -259,7 +261,7 @@ Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 - `CLAUDE_BASH_NO_LOGIN` - obsolete since v2.1.51 (auto-skip when snapshot
   available)
 
-### 10.4. Version Notes
+### 11.4. Version Notes
 
 - v2.1.59: Auto-memory saving to auto-memory (manage with `/memory`), `/copy`
   command for code block selection, smarter "always allow" prefix suggestions
@@ -391,7 +393,7 @@ Community Resources:
 
 ## 15. Permission System Reference
 
-### 14.1. Permission Modes
+### 15.1. Permission Modes
 
 | Mode                | Description                                           |
 | ------------------- | ----------------------------------------------------- |
@@ -401,11 +403,11 @@ Community Resources:
 | `dontAsk`           | Auto-denies unless pre-approved via allow rules       |
 | `bypassPermissions` | Skips all prompts (use only in isolated environments) |
 
-### 14.2. Rule Evaluation Order
+### 15.2. Rule Evaluation Order
 
 Rules are evaluated: **deny -> ask -> allow**. First matching rule wins.
 
-### 14.3. Bash Wildcard Patterns
+### 15.3. Bash Wildcard Patterns
 
 ```json
 {
@@ -423,7 +425,7 @@ Rules are evaluated: **deny -> ask -> allow**. First matching rule wins.
 
 NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
 
-### 14.4. Read/Edit Path Patterns
+### 15.4. Read/Edit Path Patterns
 
 | Pattern  | Meaning                       | Example                  |
 | -------- | ----------------------------- | ------------------------ |
@@ -434,7 +436,7 @@ NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
 
 NOTE: `*` matches single directory, `**` matches recursively.
 
-### 14.5. MCP and Task Permissions
+### 15.5. MCP and Task Permissions
 
 ```json
 {
@@ -445,7 +447,7 @@ NOTE: `*` matches single directory, `**` matches recursively.
 }
 ```
 
-### 14.6. Managed Settings Locations
+### 15.6. Managed Settings Locations
 
 | Platform  | Path                                                            |
 | --------- | --------------------------------------------------------------- |
@@ -453,7 +455,7 @@ NOTE: `*` matches single directory, `**` matches recursively.
 | Linux/WSL | `/etc/claude-code/managed-settings.json`                        |
 | Windows   | `C:\Program Files\ClaudeCode\managed-settings.json`             |
 
-### 14.7. Managed-Only Settings
+### 15.7. Managed-Only Settings
 
 | Setting                           | Description                             |
 | --------------------------------- | --------------------------------------- |
@@ -465,11 +467,11 @@ NOTE: `*` matches single directory, `**` matches recursively.
 
 Based on usage analysis (55K messages, 4.7K sessions):
 
-### 15.1. Applied
+### 16.1. Applied
 
 - Schema validation for DB operations: See databricks skill Section 8
 
-### 15.2. Not Applied
+### 16.2. Not Applied
 
 - Completion status reporting: No consumer for this output
 - PreToolUse hook for SQL: Handled by skill guidance instead

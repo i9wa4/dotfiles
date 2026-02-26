@@ -16,8 +16,6 @@ description: |
 Guide for GitHub operations using gh CLI.
 For mandatory rules, see `rules/git-github.md`.
 
-See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
-
 ## 1. Prerequisites
 
 - gh CLI installed and authenticated

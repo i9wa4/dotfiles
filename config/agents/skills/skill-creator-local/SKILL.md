@@ -13,8 +13,6 @@ license: Complete terms in LICENSE.txt
 
 This skill provides guidance for creating effective skills.
 
-See frontmatter schema: ~/ghq/github.com/i9wa4/internal/docs/schema/frontmatter-schema.md
-
 ## 1. About Skills
 
 Skills are modular, self-contained packages that extend Claude's

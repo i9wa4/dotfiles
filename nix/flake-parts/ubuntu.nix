@@ -79,7 +79,7 @@ in {
             '';
           };
         })
-        ../home
+        ../home-manager
       ];
     };
 }
