@@ -88,6 +88,5 @@
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/scripts/claude-statusline.sh"
-  },
-  "skipDangerousModePermissionPrompt": true
+  }
 }
