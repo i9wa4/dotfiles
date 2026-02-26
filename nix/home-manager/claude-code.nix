@@ -113,10 +113,10 @@ in {
           }
         ];
       };
-      statusLine = {
-        type = "command";
-        command = "~/.claude/scripts/claude-statusline.sh";
-      };
+      # statusLine = {
+      #   type = "command";
+      #   command = "~/.claude/scripts/claude-statusline.sh";
+      # };
     };
   };
 
