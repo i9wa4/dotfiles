@@ -37,6 +37,7 @@ in {
         CLAUDE_CODE_ENABLE_TASKS = "true";
         CLAUDE_CODE_ENABLE_TELEMETRY = "false";
         CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
+        ENABLE_TOOL_SEARCH = "auto:1";
         IS_DEMO = "true";
       };
       attribution = {
