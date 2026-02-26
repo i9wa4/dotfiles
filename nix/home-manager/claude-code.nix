@@ -22,6 +22,9 @@ in {
     # directory, HM follows through and replaces repo files with Nix store
     # symlinks. Using home.file with directory-level Nix store source avoids this.
 
+    # MCP servers (compiled into --mcp-config CLI flag on the wrapped binary)
+    mcpServers = builtins.mapAttrs (_: srv: {type = "stdio";} // srv) mcpServers;
+
     settings = {
       cleanupPeriodDays = 36000;
       env = {
@@ -73,7 +76,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-pretooluse-bash-deny.sh";
+                command = "~/.claude/scripts/claude-pretooluse-bash-deny.sh";
               }
             ];
           }
@@ -82,7 +85,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-pretooluse-write-deny.sh";
+                command = "~/.claude/scripts/claude-pretooluse-write-deny.sh";
               }
             ];
           }
@@ -93,7 +96,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-sessionstart-reload.sh";
+                command = "~/.claude/scripts/claude-sessionstart-reload.sh";
               }
             ];
           }
@@ -103,16 +106,15 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-precompact-save.sh";
+                command = "~/.claude/scripts/claude-precompact-save.sh";
               }
             ];
           }
         ];
       };
-      mcpServers = builtins.mapAttrs (_: srv: {type = "stdio";} // srv) mcpServers;
       statusLine = {
         type = "command";
-        command = "bash ~/.claude/scripts/claude-statusline.sh";
+        command = "~/.claude/scripts/claude-statusline.sh";
       };
     };
   };
@@ -124,3 +126,4 @@ in {
     ".claude/scripts".source = ../../config/agents/scripts;
   };
 }
+
