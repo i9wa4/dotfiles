@@ -16,9 +16,11 @@ in {
     # CLAUDE.md
     memory.source = ../../config/agents/AGENTS.md;
 
-    # ~/.claude/rules/ and ~/.claude/agents/ (recursive symlinks to Nix store)
-    rulesDir = ../../config/agents/rules;
-    agentsDir = ../../config/agents/subagents;
+    # NOTE: rulesDir/agentsDir intentionally NOT used here.
+    # They create per-file Nix store symlinks under ~/.claude/rules/ and
+    # ~/.claude/agents/. When ~/.agents is an OOS symlink to the same source
+    # directory, HM follows through and replaces repo files with Nix store
+    # symlinks. Using home.file with directory-level Nix store source avoids this.
 
     settings = {
       cleanupPeriodDays = 36000;
@@ -115,6 +117,10 @@ in {
     };
   };
 
-  # Scripts directory (no module option for this)
-  home.file.".claude/scripts".source = ../../config/agents/scripts;
+  # Nix store directory symlinks (rebuild required to update)
+  home.file = {
+    ".claude/rules".source = ../../config/agents/rules;
+    ".claude/agents".source = ../../config/agents/subagents;
+    ".claude/scripts".source = ../../config/agents/scripts;
+  };
 }

@@ -43,11 +43,6 @@ in {
 
     # Target destinations (symlink-tree uses activation rsync)
     targets = {
-      # Agents: ~/.agents/skills
-      agents-home = {
-        dest = "${homeDir}/.agents/skills";
-        structure = "symlink-tree";
-      };
       # Claude Code: ~/.claude/skills
       claude-home = {
         dest = "${homeDir}/.claude/skills";
@@ -64,3 +59,4 @@ in {
     excludePatterns = ["/.system"];
   };
 }
+

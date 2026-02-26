@@ -47,7 +47,7 @@ in {
     custom-instructions = builtins.readFile ../../config/agents/AGENTS.md;
   };
 
-  # Rules directory (no module option for this in programs.codex)
+  # Rules directory (Nix store, rebuild required to update)
   home.file.".codex/rules".source = ../../config/agents/rules;
 
   # Generate config.toml from Nix base config + dynamic trusted projects

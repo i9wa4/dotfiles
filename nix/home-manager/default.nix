@@ -31,6 +31,9 @@ in {
     inherit username;
     homeDirectory = lib.mkForce homeDir;
 
+    # Suppress version mismatch warning (HM unstable + stable nixpkgs)
+    enableNixpkgsReleaseCheck = false;
+
     # Home Manager state version
     # Set to the version of home-manager at initial installation. Do not change.
     # NOTE: This is NOT the home-manager release version. It controls internal
@@ -100,9 +103,6 @@ in {
     file = {
       # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
       ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
-
-      # ~/.agents/
-      ".agents".source = symlink "${dotfilesDir}/config/agents";
     };
   };
 
