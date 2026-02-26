@@ -49,7 +49,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/pretooluse-bash-deny.sh"
+            "command": "bash ~/.claude/scripts/claude-pretooluse-bash-deny.sh"
           }
         ]
       },
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/pretooluse-write-deny.sh"
+            "command": "bash ~/.claude/scripts/claude-pretooluse-write-deny.sh"
           }
         ]
       }
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/sessionstart-reload.sh"
+            "command": "bash ~/.claude/scripts/claude-sessionstart-reload.sh"
           }
         ]
       }
@@ -79,7 +79,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/precompact-save.sh"
+            "command": "bash ~/.claude/scripts/claude-precompact-save.sh"
           }
         ]
       }
@@ -87,8 +87,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/scripts/statusline.sh"
+    "command": "bash ~/.claude/scripts/claude-statusline.sh"
   },
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "skipDangerousModePermissionPrompt": true
 }
