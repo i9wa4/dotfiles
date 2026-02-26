@@ -23,15 +23,15 @@ Source of truth:
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/claude-code.nix
 - @~/ghq/github.com/i9wa4/dotfiles/config/agents/
 
-| Destination               | Source                             | Managed by         |
-| ----------------------    | ------------------------------     | ------------------ |
-| `~/.claude/settings.json` | Generated from Nix attributes      | claude-code.nix    |
-| `~/.claude/CLAUDE.md`     | `config/agents/AGENTS.md`          | claude-code.nix    |
-| `~/.claude/rules/`        | `config/agents/rules/`             | claude-code.nix    |
-| `~/.claude/agents/`       | `config/agents/subagents/`         | claude-code.nix    |
-| `~/.claude/scripts/`      | `config/agents/scripts/`           | claude-code.nix    |
-| `~/.claude/skills/`       | Multiple flake inputs + local      | agent-skills.nix   |
-| MCP servers               | `nix/home-manager/mcp-servers.nix` | claude-code.nix    |
+| Destination               | Source                             | Managed by       |
+| ------------------------- | ---------------------------------- | ---------------- |
+| `~/.claude/settings.json` | Generated from Nix attributes      | claude-code.nix  |
+| `~/.claude/CLAUDE.md`     | `config/agents/AGENTS.md`          | claude-code.nix  |
+| `~/.claude/rules/`        | `config/agents/rules/`             | claude-code.nix  |
+| `~/.claude/agents/`       | `config/agents/subagents/`         | claude-code.nix  |
+| `~/.claude/scripts/`      | `config/agents/scripts/`           | claude-code.nix  |
+| `~/.claude/skills/`       | Multiple flake inputs + local      | agent-skills.nix |
+| MCP servers               | `nix/home-manager/mcp-servers.nix` | claude-code.nix  |
 
 ## 2. Fetch CHANGELOG
 
@@ -129,13 +129,13 @@ See @README.md for project overview and @package.json for available npm commands
 
 ### 6.3. CLAUDE.md Locations
 
-| Location              | Scope                                                    |
-| --------------------- | -------------------------------------------------------  |
-| `~/.claude/CLAUDE.md` | All Claude sessions (global)                             |
+| Location              | Scope                                                   |
+| --------------------- | ------------------------------------------------------- |
+| `~/.claude/CLAUDE.md` | All Claude sessions (global)                            |
 | `./CLAUDE.md`         | Project root — check into git to share with team        |
 | `./CLAUDE.local.md`   | Project root — add to .gitignore for personal overrides |
-| Parent directories    | Useful for monorepos (auto-loaded)                       |
-| Child directories     | Loaded on demand when working with files there           |
+| Parent directories    | Useful for monorepos (auto-loaded)                      |
+| Child directories     | Loaded on demand when working with files there          |
 
 ## 7. Configuration Usage
 

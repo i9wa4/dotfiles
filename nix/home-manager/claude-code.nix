@@ -113,10 +113,6 @@ in {
           }
         ];
       };
-      # statusLine = {
-      #   type = "command";
-      #   command = "~/.claude/scripts/claude-statusline.sh";
-      # };
     };
   };
 
@@ -127,4 +123,3 @@ in {
     ".claude/scripts".source = ../../config/agents/scripts;
   };
 }
-

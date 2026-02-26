@@ -1,7 +1,9 @@
 # Shared MCP server definitions for Claude Code and Codex CLI
 # Used by claude-code.nix and codex.nix
-{pkgs, inputs}:
-let
+{
+  pkgs,
+  inputs,
+}: let
   # Servers managed by mcp-servers-nix (pinned Nix packages)
   nixServers =
     (inputs.mcp-servers-nix.lib.evalModule pkgs {
