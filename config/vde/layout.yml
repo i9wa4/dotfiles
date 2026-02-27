@@ -96,7 +96,7 @@ presets:
               delay: 500
             - name: guardian
               title: guardian
-              command: nix run 'github:numtide/llm-agents.nix#codex' -- --model gpt-5.3-codex
+              command: nix run 'github:numtide/llm-agents.nix#codex' -- --yolo --model gpt-5.3-codex
               delay: 500
             - name: boss
               title: boss
