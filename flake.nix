@@ -78,12 +78,7 @@
         devShells = {
           # Local development (includes CI tools + pre-commit hooks)
           default = pkgs.mkShell {
-            packages = [
-              pkgs.python3
-              pkgs.uv
-            ];
             shellHook = ''
-              uv sync --frozen
               ${config.pre-commit.installationScript}
             '';
           };
@@ -91,12 +86,7 @@
           ci = pkgs.mkShell {
             packages = [
               pkgs.gitleaks
-              pkgs.python3
-              pkgs.uv
             ];
-            shellHook = ''
-              uv sync --frozen
-            '';
           };
         };
       };

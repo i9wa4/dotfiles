@@ -84,7 +84,7 @@ in {
       pkgs.nodejs
       pkgs.nurl
       pkgs.pyright
-      pkgs.python3
+      (pkgs.python3.withPackages (ps: [ps.pynvim]))
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
