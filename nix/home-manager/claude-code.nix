@@ -22,6 +22,9 @@ in {
     # directory, HM follows through and replaces repo files with Nix store
     # symlinks. Using home.file with directory-level Nix store source avoids this.
 
+    # MCP servers (compiled into --mcp-config CLI flag on the wrapped binary)
+    mcpServers = builtins.mapAttrs (_: srv: {type = "stdio";} // srv) mcpServers;
+
     settings = {
       cleanupPeriodDays = 36000;
       env = {
@@ -34,6 +37,7 @@ in {
         CLAUDE_CODE_ENABLE_TASKS = "true";
         CLAUDE_CODE_ENABLE_TELEMETRY = "false";
         CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
+        ENABLE_TOOL_SEARCH = "auto:3";
         IS_DEMO = "true";
       };
       attribution = {
@@ -73,7 +77,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-pretooluse-bash-deny.sh";
+                command = "~/.claude/scripts/claude-pretooluse-bash-deny.sh";
               }
             ];
           }
@@ -82,7 +86,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-pretooluse-write-deny.sh";
+                command = "~/.claude/scripts/claude-pretooluse-write-deny.sh";
               }
             ];
           }
@@ -93,7 +97,7 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-sessionstart-reload.sh";
+                command = "~/.claude/scripts/claude-sessionstart-reload.sh";
               }
             ];
           }
@@ -103,16 +107,11 @@ in {
             hooks = [
               {
                 type = "command";
-                command = "bash ~/.claude/scripts/claude-precompact-save.sh";
+                command = "~/.claude/scripts/claude-precompact-save.sh";
               }
             ];
           }
         ];
-      };
-      mcpServers = builtins.mapAttrs (_: srv: {type = "stdio";} // srv) mcpServers;
-      statusLine = {
-        type = "command";
-        command = "bash ~/.claude/scripts/claude-statusline.sh";
       };
     };
   };

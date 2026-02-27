@@ -21,10 +21,14 @@ in {
         path = inputs.self;
         subdir = "config/agents/skills";
       };
-      # dbt-labs official agent skills
+      # dbt-labs official agent skills (split by skill group)
       dbt = {
         path = inputs.dbt-agent-skills;
-        subdir = "skills";
+        subdir = "skills/dbt/skills";
+      };
+      dbt-migration = {
+        path = inputs.dbt-agent-skills;
+        subdir = "skills/dbt-migration/skills";
       };
       # Anthropic official agent skills
       anthropic = {
@@ -59,4 +63,3 @@ in {
     excludePatterns = ["/.system"];
   };
 }
-
