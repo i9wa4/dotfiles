@@ -86,14 +86,7 @@
           entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check --config ${statixConfig} \"$t\" || exit 1; done'";
           pass_filenames = false;
         };
-        flake-check = {
-          enable = true;
-          # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
-          # Running nix flake check inside nix flake check is redundant
-          entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.nix}/bin/nix flake check'";
-          pass_filenames = false;
-          files = "\\.(nix|lock)$";
-        };
+        # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
         # Markdown (lint only - formatting is handled by treefmt)
         # Skip in nix build sandbox (NIX_BUILD_TOP set during nix flake check)

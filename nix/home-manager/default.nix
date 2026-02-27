@@ -113,7 +113,7 @@ in {
     "vim".source = symlink "${dotfilesDir}/config/vim";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
-    "wezterm".source = ../../../config/wezterm;
+    "wezterm".source = ../../config/wezterm;
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
