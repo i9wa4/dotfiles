@@ -57,8 +57,8 @@
             }: {
               imports = [
                 nix-index-database.homeModules.nix-index
-                ../home-manager
-                ../home-manager/modules/vscode.nix
+                ../../home-manager
+                ../../home-manager/modules/vscode.nix
               ];
               # Darwin-specific cleanup (.DS_Store, xattr)
               home.activation.cleanDarwinFiles = let

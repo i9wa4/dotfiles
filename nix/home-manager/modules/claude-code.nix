@@ -14,7 +14,7 @@ in {
     package = pkgs.llm-agents.claude-code;
 
     # CLAUDE.md
-    memory.source = ../../config/agents/AGENTS.md;
+    memory.source = ../../../config/agents/AGENTS.md;
 
     # NOTE: rulesDir/agentsDir intentionally NOT used here.
     # They create per-file Nix store symlinks under ~/.claude/rules/ and
@@ -118,8 +118,8 @@ in {
 
   # Nix store directory symlinks (rebuild required to update)
   home.file = {
-    ".claude/rules".source = ../../config/agents/rules;
-    ".claude/agents".source = ../../config/agents/subagents;
-    ".claude/scripts".source = ../../config/agents/scripts;
+    ".claude/rules".source = ../../../config/agents/rules;
+    ".claude/agents".source = ../../../config/agents/subagents;
+    ".claude/scripts".source = ../../../config/agents/scripts;
   };
 }
