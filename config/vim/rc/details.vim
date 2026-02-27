@@ -57,7 +57,7 @@ set signcolumn=number
 
 " Window
 set noequalalways
-set pumheight=10
+" set pumheight=10
 set splitbelow
 set splitright
 set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
@@ -209,23 +209,7 @@ function s:copy2clip(...) abort
   endif
 endfunction
 
-command! -nargs=? CW call s:copy2clip_wsl(<q-args>)
-function s:copy2clip_wsl(...) abort
-  if a:0 >= 1
-    if has('win32unix')
-      call system('clip.exe', getreg(a:1))
-    else
-      call system('clip.exe', system('nkf -sc', getreg(a:1)))
-    endif
-  else
-    if has('win32unix')
-      call system('clip.exe', getreg('"'))
-    else
-      call system('clip.exe', system('nkf -sc', getreg('"')))
-    endif
-  endif
-endfunction
-
+command! S call s:set_register()
 function! s:set_register() abort
   if empty(&buftype)
     call setreg('a', '%'->expand()->fnamemodify(':p'))
@@ -243,17 +227,6 @@ endfunction
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
-
-
-" --------------------------------------
-" Autocommand
-"
-augroup MyVimrc
-  autocmd!
-  " `https://github.com/vim/vim/issues/5571`
-  autocmd StdinReadPost * set nomodified
-  autocmd BufEnter * call s:set_register()
-augroup END
 
 
 " --------------------------------------

@@ -48,93 +48,6 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 '''
 
 [[plugins]]
-repo = 'kamecha/bimove'
-on_event = ['VimEnter']
-hook_source = '''
-nnoremap M <Plug>(bimove-enter)<Plug>(bimove)
-
-nnoremap <Plug>(bimove)H <Plug>(bimove-high)<Plug>(bimove)
-nnoremap <Plug>(bimove)L <Plug>(bimove-low)<Plug>(bimove)
-
-highlight link BimoveHigh Search
-highlight link BimoveCursor Visual
-highlight link BimoveLow Visual
-
-" Horizontal binary search (multibyte-aware)
-let s:bimove_h = {'low': 0, 'high': 0, 'match_id': 0}
-
-function! s:bimove_h_enter() abort
-  let l:line = getline('.')
-  let s:bimove_h.low = 0
-  let s:bimove_h.high = strchars(l:line) - 1
-  if s:bimove_h.high < 1
-    return
-  endif
-  call s:bimove_h_move_to_mid(l:line)
-  call s:bimove_h_highlight(l:line)
-endfunction
-
-function! s:bimove_h_left() abort
-  let l:line = getline('.')
-  let l:cur = charidx(l:line, col('.') - 1)
-  let s:bimove_h.high = l:cur
-  if s:bimove_h.low >= s:bimove_h.high
-    call s:bimove_h_clear()
-    return
-  endif
-  call s:bimove_h_move_to_mid(l:line)
-  call s:bimove_h_highlight(l:line)
-endfunction
-
-function! s:bimove_h_right() abort
-  let l:line = getline('.')
-  let l:cur = charidx(l:line, col('.') - 1)
-  let s:bimove_h.low = l:cur
-  if s:bimove_h.low >= s:bimove_h.high
-    call s:bimove_h_clear()
-    return
-  endif
-  call s:bimove_h_move_to_mid(l:line)
-  call s:bimove_h_highlight(l:line)
-endfunction
-
-function! s:bimove_h_move_to_mid(line) abort
-  let l:mid = (s:bimove_h.low + s:bimove_h.high) / 2
-  let l:byte = byteidx(a:line, l:mid)
-  if l:byte < 0
-    let l:byte = strlen(a:line) - 1
-  endif
-  call cursor(line('.'), l:byte + 1)
-endfunction
-
-function! s:bimove_h_highlight(line) abort
-  call s:bimove_h_clear()
-  let l:lnum = line('.')
-  let l:low_byte = byteidx(a:line, s:bimove_h.low) + 1
-  let l:high_byte = byteidx(a:line, s:bimove_h.high + 1)
-  if l:high_byte < 0
-    let l:high_byte = strlen(a:line)
-  endif
-  let s:bimove_h.match_id = matchaddpos('Visual', [[l:lnum, l:low_byte, l:high_byte - l:low_byte + 1]])
-endfunction
-
-function! s:bimove_h_clear() abort
-  if s:bimove_h.match_id > 0
-    silent! call matchdelete(s:bimove_h.match_id)
-    let s:bimove_h.match_id = 0
-  endif
-endfunction
-
-nnoremap <Plug>(bimove-h) <Nop>
-nnoremap <Space>m <Cmd>call <SID>bimove_h_enter()<CR><Plug>(bimove-h)
-nnoremap <Plug>(bimove-h)H <Cmd>call <SID>bimove_h_left()<CR><Plug>(bimove-h)
-nnoremap <Plug>(bimove-h)L <Cmd>call <SID>bimove_h_right()<CR><Plug>(bimove-h)
-nnoremap <Plug>(bimove-h)<Esc> <Cmd>call <SID>bimove_h_clear()<CR>
-nnoremap <Plug>(bimove-h)h <Cmd>call <SID>bimove_h_clear()<CR>h
-nnoremap <Plug>(bimove-h)l <Cmd>call <SID>bimove_h_clear()<CR>l
-'''
-
-[[plugins]]
 repo = 'lambdalisue/vim-gin'
 depends = ['denops.vim']
 on_event = ['VimEnter']
@@ -206,13 +119,6 @@ let g:mnh_header_level_shift = 1
 hook_source = '''
 augroup mnh
   autocmd!
-  autocmd BufWritePre *.md,*.rmd,*.qmd execute 'NumberHeader'
+  autocmd BufWritePre *.md,*.qmd execute 'NumberHeader'
 augroup END
 '''
-
-# --------------------------------------
-# Terraform
-#
-[[plugins]]
-repo = 'hashivim/vim-terraform'
-on_ft = ['terraform', 'terraform-vars', 'tf']

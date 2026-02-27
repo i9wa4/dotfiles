@@ -1,5 +1,6 @@
 " let &statusline = ' '->repeat(&columns)
-set statusline=%!my_util#statusline()
+" set statusline=%!my_util#statusline()
+set statusline=%{'%'->expand()->fnamemodify(':~')}
 set tabline=%!my_util#tabline()
 
 augroup MyUtil

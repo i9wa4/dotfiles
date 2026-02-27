@@ -10,8 +10,9 @@ syntax off
 " --------------------------------------
 " Minimum setting
 "
+packadd! editorconfig
+
 " Variable
-let g:editorconfig = v:true
 let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 " System

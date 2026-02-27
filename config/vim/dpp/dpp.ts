@@ -37,7 +37,9 @@ export class Config extends BaseConfig {
       },
     });
 
-    const [context, options] = await args.contextBuilder.get(args.denops);
+    const [context, options] = await args.contextBuilder.get(
+      args.denops,
+    );
 
     // Load toml plugins
     const tomls: Toml[] = [];
@@ -102,11 +104,17 @@ export class Config extends BaseConfig {
       }
 
       if (toml.ftplugins) {
-        for (const filetype of Object.keys(toml.ftplugins)) {
+        for (
+          const filetype of Object.keys(
+            toml.ftplugins,
+          )
+        ) {
           if (ftplugins[filetype]) {
             ftplugins[filetype] += `\n${toml.ftplugins[filetype]}`;
           } else {
-            ftplugins[filetype] = toml.ftplugins[filetype];
+            ftplugins[filetype] = toml.ftplugins[
+              filetype
+            ];
           }
         }
       }
@@ -144,7 +152,9 @@ export class Config extends BaseConfig {
         for (const plugin of localPlugins) {
           if (plugin.name in recordPlugins) {
             recordPlugins[plugin.name] = Object.assign(
-              recordPlugins[plugin.name],
+              recordPlugins[
+                plugin.name
+              ],
               plugin,
             );
           } else {
