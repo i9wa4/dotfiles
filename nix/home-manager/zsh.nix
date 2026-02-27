@@ -4,6 +4,7 @@
 {
   pkgs,
   lib,
+  config,
   username,
   ...
 }: let
@@ -16,7 +17,7 @@
 in {
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh";
+    dotDir = "${config.xdg.configHome}/zsh";
 
     # ========================================================================
     # .zshenv (envExtra)
@@ -117,9 +118,9 @@ in {
     ];
 
     # ========================================================================
-    # .zshrc (initExtra)
+    # .zshrc (initContent)
     # ========================================================================
-    initExtra = ''
+    initContent = ''
       # tmux auto-start (not in VSCode, not already in tmux)
       export SHELL="$(command -v zsh)"
       # if [[ -z "$TMUX" && "''${TERM_PROGRAM}" != "vscode" ]]; then
