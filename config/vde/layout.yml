@@ -51,7 +51,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model sonnet
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
           delay: 500
 
   messenger:
@@ -96,7 +96,7 @@ presets:
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --model gpt-5.3-codex
+              command: nix run 'github:numtide/llm-agents.nix#codex' -- --model gpt-5.3-codex
               delay: 500
             - name: boss
               title: boss

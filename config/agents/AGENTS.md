@@ -86,19 +86,24 @@ is optional for disambiguation when multiple plans exist in the same session.
 - Use TodoWrite to track what needs to be persisted
   - NOTE: TodoWrite is Claude Code specific. Codex CLI users should track tasks manually.
 
-## 8. Reference
+## 8. Environment
+
+- Always running inside a tmux pane
+- Your role name: `tmux display-message -p '#{pane_title}'`
+
+## 9. Reference
 
 Files and directories described below are located at:
 
 - @~/ghq/github.com/i9wa4/dotfiles/config/agents/
 
-| Category  | Items                                                    |
-| --------- | -------------------------------------------------------- |
-| Rules     | aws, bash, git-github, markdown                          |
-| Skills    | Core + external skills (see @~/.agents/skills/)          |
-| Subagents | reviewer-\*, researcher-tech (see @~/.agents/subagents/) |
+| Category  | Items                                                     |
+| --------- | --------------------------------------------------------- |
+| Rules     | aws, bash, git-github, markdown                           |
+| Skills    | managed skills + external skills (see @~/.claude/skills/) |
+| Subagents | reviewer-\*, researcher-tech                              |
 
-### 8.1. `rules/`
+### 9.1. `rules/`
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
@@ -109,12 +114,12 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 
-### 8.2. `skills/`
+### 9.2. `skills/`
 
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
 Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
-#### 8.2.1. Managed Skills
+#### 9.2.1. Managed Skills
 
 | Skill                               | Description                         |
 | ----------------------------------- | ----------------------------------- |
@@ -139,11 +144,11 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | terraform                           | Terraform development guide         |
 | tmux                                | tmux pane operations for debugging  |
 
-#### 8.2.2. External Skills (Nix Store)
+#### 9.2.2. External Skills (Nix Store)
 
 External skills are auto-loaded from Nix Store and frequently updated.
 
-### 8.3. `subagents/`
+### 9.3. `subagents/`
 
 Specialized investigators - use anytime for expert perspectives.
 
@@ -156,8 +161,3 @@ Specialized investigators - use anytime for expert perspectives.
 | reviewer-qa           | Test coverage, edge cases     |
 | reviewer-security     | Security, vulnerabilities     |
 | researcher-tech       | Investigation, research       |
-
-## 9. Environment
-
-- Always running inside a tmux pane
-- Your role name: `tmux display-message -p '#{pane_title}'`
