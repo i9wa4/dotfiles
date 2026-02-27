@@ -10,8 +10,3 @@ let g:python3_host_prog = exepath('python3')
 
 " Denops Plugin Development
 let g:denops#debug = 1
-
-" Tabline
-function! MyStatuslineRightTabline() abort
-  return get(g:, 'colors_name', 'default')
-endfunction

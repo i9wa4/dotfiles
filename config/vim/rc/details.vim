@@ -6,6 +6,9 @@ let g:netrw_banner = 0
 let g:netrw_dirhistmax = 0
 let g:netrw_hide = 0
 let g:netrw_liststyle = 0
+let g:vim_indent = #{
+\   line_continuation: 0
+\ }
 
 let g:auto_reload = timer_start(
 \   1000,
@@ -15,15 +18,9 @@ let g:auto_reload = timer_start(
 
 
 " --------------------------------------
-" hook_source
-"
-call my_util#set_preload_vimrc($XDG_CONFIG_HOME->expand() .. '/vim/rc/local.default.vim')
-
-" --------------------------------------
 " Option
 "
 " Edit
-set backspace=indent,eol,start
 set completeopt=menuone,noinsert,noselect
 set fileencodings=utf-8,euc-jp,cp932
 set fileformats=unix,dos,mac
@@ -35,7 +32,6 @@ set virtualedit=block
 " Search
 if executable('rg')
   let &grepprg = 'rg --vimgrep --no-heading'
-  " let &grepprg = 'rg --vimgrep --no-heading --no-ignore --hidden'
   set grepformat=%f:%l:%c:%m
 endif
 set hlsearch
@@ -50,14 +46,11 @@ set wrapscan
 set ambiwidth=double
 " space:\\u2423,extends:\\u00BB,precedes:\\u00AB
 set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
-set nowrap
 set number
-set relativenumber
 set signcolumn=number
 
 " Window
 set noequalalways
-" set pumheight=10
 set splitbelow
 set splitright
 set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
@@ -67,19 +60,14 @@ set cmdheight=1
 set showcmd
 
 " StatusLine
-" set laststatus=0
 set laststatus=2
-" set noshowmode
-
 
 " TabLine
 set showtabline=2
 
 " Highlight
-set cursorcolumn
 set cursorline
-set diffopt=internal,filler,algorithm:histogram,indent-heuristic
-set showmatch matchtime=1 matchpairs+=\<:\>
+set diffopt=internal,filler,closeoff,indent-heuristic,inline:char,algorithm:histogram
 
 " Abbreviation
 " :w' --> :w
@@ -153,9 +141,9 @@ nnoremap <script> <SID>wsL <C-w>><SID>ws
 " Edit
 nnoremap <Plug>(my-Edit) <Nop>
 nmap <Space>e <Plug>(my-Edit)
-nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
-nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
-nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
+nnoremap <Plug>(my-Edit)r  <Cmd>%s/\r$//e<CR>
+nnoremap <Plug>(my-Edit)s  <Cmd>%s/\s\+$//e<CR>
+nnoremap <Plug>(my-Edit)n  <Cmd>%s/\%ua0//e<CR>
 nnoremap <Plug>(my-Edit)qa <Cmd>%s/\([^,]*\)/"\1"/g<CR>
 nnoremap <Plug>(my-Edit)qr <Cmd>%s/"//g<CR>
 
@@ -168,22 +156,9 @@ nnoremap <Plug>(my-Filer)c  <Cmd>execute '15Lexplore'<CR>
 nnoremap <Plug>(my-Filer)i0 <Cmd>execute 'edit' g:my_i0_path<CR>
 nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
-nnoremap <Plug>(my-Filer)l  <Cmd>execute 'edit' my_util#get_last_loaded_local_vimrc_path()<CR>
 nnoremap <Plug>(my-Filer)o  <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t  <Cmd>execute 'edit' g:my_tp_path<CR>
 nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
-
-" eNcoding
-nnoremap <Plug>(my-eNcoding) <Nop>
-nmap <Space>n <Plug>(my-eNcoding)
-nnoremap <Plug>(my-eNcoding)ec <Cmd>setlocal fileencoding=cp932<CR>
-nnoremap <Plug>(my-eNcoding)ee <Cmd>setlocal fileencoding=euc-jp<CR>
-nnoremap <Plug>(my-eNcoding)eu <Cmd>setlocal fileencoding=utf-8<CR>
-nnoremap <Plug>(my-eNcoding)fd <Cmd>edit ++fileformat=dos<CR>
-nnoremap <Plug>(my-eNcoding)fu <Cmd>edit ++fileformat=unix<CR>
-nnoremap <Plug>(my-eNcoding)nc <Cmd>edit ++encoding=cp932<CR>
-nnoremap <Plug>(my-eNcoding)ne <Cmd>edit ++encoding=euc-jp<CR>
-nnoremap <Plug>(my-eNcoding)nu <Cmd>edit ++encoding=utf-8<CR>
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
@@ -215,18 +190,34 @@ function! s:set_register() abort
     call setreg('a', '%'->expand()->fnamemodify(':p'))
     call setreg('b', '%'->expand()->fnamemodify(':p:~'))
     call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
-
-    let l:status = (&expandtab ? 'Spaces ' : 'TabSize ') .. &tabstop
-    let l:status ..= '  ' .. ((&fileencoding != '') ? &fileencoding : &encoding)
-    let l:status ..= '  ' .. ((&fileformat == 'doc') ? 'CRLF' : 'LF')
-    let l:status ..= '  ' .. ((&filetype == '') ? 'no_ft' : &filetype)
-    call setreg('z', l:status)
   endif
 endfunction
 
 command! CreateLocalVimrc
 \   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim" > ./local.vim')
 \|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
+
+
+" --------------------------------------
+" Command
+"
+augroup MyAutocmd
+  autocmd!
+
+  autocmd BufEnter,CursorHold * checktime
+  autocmd BufReadPost * call utils#restore_cursor()
+  autocmd VimEnter,BufNewFile,BufReadPost,BufEnter *
+  \ call utils#source_local_vimrc('<afile>:p'->expand())
+
+  autocmd FileType * call utils#filetype()
+  autocmd BufNewFile,BufReadPost *.tf,*.tftpl
+  \ setfiletype terraform
+  autocmd BufNewFile,BufReadPost *.zshenv,*.zshrc
+  \ setfiletype zsh
+
+  autocmd VimEnter,BufEnter,WinEnter,FileType *
+  \ call utils#highlight()
+augroup END
 
 
 " --------------------------------------

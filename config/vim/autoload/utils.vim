@@ -1,30 +1,54 @@
-function! my_highlight#highlight() abort
+function! utils#restore_cursor() abort
+  if (line("'\"") >= 1) && (line("'\"") <= line("$"))
+    execute "normal! g'\""
+  endif
+endfunction
+
+
+function! utils#source_local_vimrc(path) abort
+  " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
+  " `https://github.com/vim-jp/issues/issues/1176`
+  let l:vimrc_path_list = []
+  for l:i in reverse(findfile('local.vim', escape(a:path, ' ') . ';', -1))
+    call add(l:vimrc_path_list, l:i->expand()->fnamemodify(':p'))
+  endfor
+
+  execute 'source' $XDG_CONFIG_HOME->expand() .. '/vim/rc/local.default.vim'
+
+  for l:i in l:vimrc_path_list
+    if filereadable(l:i)
+      execute 'source' l:i
+    endif
+  endfor
+endfunction
+
+
+function! utils#filetype() abort
+  setlocal spelllang+=cjk spell
+
+  if &diff
+    setlocal nospell
+  endif
+endfunction
+
+
+function! utils#highlight() abort
   call clearmatches()
 
-  highlight HlEC guibg=#DAFFF9 guifg=#000000
-  highlight HlIN guibg=#E6325F guifg=#000000
-  highlight HlIR guibg=#FF8C3C guifg=#000000
-  highlight HlKM guibg=#EB4682 guifg=#000000
-  highlight HlKR guibg=#198CAA guifg=#000000
-  highlight HlKT guibg=#CDA5FF guifg=#000000
   highlight HlMS guibg=#FFB6C1 guifg=#000000
-  highlight HlSA guibg=#FFD728 guifg=#000000
-  highlight HlSV guibg=#C8C3DC guifg=#000000
+  highlight Databricks guibg=#FF3621 guifg=#F9F7F4
+  highlight dbt guibg=#FE6703 guifg=#000000
 
-  call matchadd('HlEC', 'HlEC')
-  call matchadd('HlIN', 'HlIN')
-  call matchadd('HlIR', 'HlIR')
-  call matchadd('HlKM', 'HlKM')
-  call matchadd('HlKR', 'HlKR')
-  call matchadd('HlKT', 'HlKT')
   call matchadd('HlMS', 'HlMS')
-  call matchadd('HlSA', 'HlSA')
-  call matchadd('HlSV', 'HlSV')
+  call matchadd('Databricks', 'Databricks')
+  call matchadd('dbt', 'dbt')
 
-  call matchadd('HlSA', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
+  call matchadd('HlMS', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
   call matchadd('HlMS', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
   call matchadd('HlMS', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
   call matchadd('HlMS', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('Databricks', 'Databricks\|databricks')
+  call matchadd('dbt', 'dbt')
 
   " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
   highlight link markdownError Normal
