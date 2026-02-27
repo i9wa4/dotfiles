@@ -133,7 +133,7 @@ in {
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
 
-      # Source modular configs from ZDOTDIR
+      # Source modular configs
       source "${zshDir}/aws.zsh"
       source "${zshDir}/prompt.zsh"
       source "${zshDir}/zinit.zsh"
