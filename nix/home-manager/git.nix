@@ -16,6 +16,8 @@ _: {
       ".i9wa4/"
       ".worktrees/"
       "local.vim"
+      # Nix
+      "result"
       # Python
       ".ipynb_checkpoints/"
       ".virtual_documents/"
