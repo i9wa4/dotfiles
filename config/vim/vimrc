@@ -312,7 +312,7 @@ else
   endif
 endif
 
-" Plugins
+" Plugin
 if !has('nvim')
   packadd! editorconfig
 endif
