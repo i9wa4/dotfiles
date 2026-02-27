@@ -41,17 +41,13 @@
   };
 
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
-  # Note: All features disabled - home-manager programs.zsh handles ~/.zshrc
+  # NOTE: All features disabled - home-manager zsh.nix handles user config
   programs.zsh = {
     enable = true;
-    # History (handled by config/zsh/ via ZDOTDIR)
-    # Completion (handled by zinit turbo mode)
     enableCompletion = false;
     enableBashCompletion = false;
     enableGlobalCompInit = false;
-    # Prompt (handled by config/zsh/ via ZDOTDIR)
     promptInit = "";
-    # Plugins (handled by zinit/zeno)
     enableSyntaxHighlighting = false;
     enableAutosuggestions = false;
     enableFzfCompletion = false;

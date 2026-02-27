@@ -25,6 +25,7 @@ in {
     ./git.nix
     ./lazygit.nix
     ./tmux.nix
+    ./zsh.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -101,8 +102,6 @@ in {
     # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
     # ==========================================================================
     file = {
-      # zsh: ~/.zshenv sets ZDOTDIR, so zsh reads ~/.config/zsh/.zshrc
-      ".zshenv".source = symlink "${dotfilesDir}/config/zsh/.zshenv";
     };
   };
 
@@ -114,8 +113,6 @@ in {
     "vim".source = symlink "${dotfilesDir}/config/vim";
     "wezterm".source = symlink "${dotfilesDir}/config/wezterm";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
-    # zsh: ZDOTDIR points here
-    "zsh".source = symlink "${dotfilesDir}/config/zsh";
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
@@ -152,9 +149,7 @@ in {
       '';
     };
 
-    # zsh: disabled - config is in config/zsh/ via ZDOTDIR (home.file.".zshenv")
-    # zsh package is installed via ubuntu.nix on Linux, nix-darwin programs.zsh on macOS
-    zsh.enable = false;
+    # zsh: managed by zsh.nix (programs.zsh.enable = true)
   };
 
   # ============================================================================

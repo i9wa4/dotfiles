@@ -1,9 +1,5 @@
 *
 !.gitignore
-!.zlogout
-!.zshenv
-!.zshrc
 !aws.zsh
-!keybind.zsh
 !prompt.zsh
 !zinit.zsh
