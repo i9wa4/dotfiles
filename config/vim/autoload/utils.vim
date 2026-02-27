@@ -1,10 +1,3 @@
-function! utils#restore_cursor() abort
-  if (line("'\"") >= 1) && (line("'\"") <= line("$"))
-    execute "normal! g'\""
-  endif
-endfunction
-
-
 function! utils#source_local_vimrc(path) abort
   " https://vim-jp.org/vim-users-jp/2009/12/27/Hack-112.html
   " `https://github.com/vim-jp/issues/issues/1176`
@@ -18,15 +11,6 @@ function! utils#source_local_vimrc(path) abort
       execute 'source' l:i
     endif
   endfor
-endfunction
-
-
-function! utils#filetype() abort
-  setlocal spelllang+=cjk spell
-
-  if &diff
-    setlocal nospell
-  endif
 endfunction
 
 

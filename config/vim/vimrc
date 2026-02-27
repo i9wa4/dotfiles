@@ -165,7 +165,8 @@ augroup MyAutocmd
   autocmd!
 
   autocmd BufEnter,CursorHold * checktime
-  autocmd BufReadPost * call utils#restore_cursor()
+  autocmd BufReadPost *
+  \ if line("'\"") >= 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
   autocmd VimEnter,BufNewFile,BufReadPost,BufEnter *
   \ call utils#source_local_vimrc('<afile>:p'->expand())
 
