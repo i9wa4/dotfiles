@@ -67,7 +67,7 @@ set showtabline=2
 
 " Highlight
 set cursorline
-set diffopt=internal,filler,closeoff,indent-heuristic,inline:char,algorithm:histogram
+" set diffopt=internal,filler,closeoff,indent-heuristic,algorithm:histogram
 
 " Abbreviation
 " :w' --> :w
