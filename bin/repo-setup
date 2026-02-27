@@ -26,7 +26,6 @@ if command -v vim &>/dev/null && [[ -f $vimrc_path ]]; then
   vim -Nu "$vimrc_path" -n -es +'CreateLocalVimrc' +qall
 else
   cat >local.vim <<'EOF'
-" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim
 let g:mnh_header_level_shift = 1
 EOF
 fi
@@ -83,13 +82,5 @@ case "${project_dir}" in
     # No repository-specific setup
     ;;
 esac
-
-# Reset .mcp.json
-rm -f .mcp.json
-
-# https://github.com/korotovsky/slack-mcp-server
-# claude mcp add --scope project awslabs-aws-documentation-mcp-server -- uvx awslabs.aws-documentation-mcp-server@latest
-# claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp
-# claude mcp add --scope project drawio -- npx @drawio/mcp
 
 echo "* Setup complete"

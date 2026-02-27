@@ -18,12 +18,6 @@ let g:vim_indent = #{
 \   line_continuation: 0
 \ }
 
-let g:auto_reload = timer_start(
-\   1000,
-\   {-> execute('silent! checktime')},
-\   {'repeat': -1}
-\ )
-
 let g:mnh_header_level_shift = 7
 let g:my_aa_path = '~/ghq/github.com/i9wa4/dotfiles/config/agents/AGENTS.md'->expand()
 let g:my_i0_path = '~/ghq/github.com/i9wa4/internal/work/00/index.qmd'->expand()
@@ -50,27 +44,8 @@ nnoremap - "_
 xnoremap - "_
 
 " Toggle Quote
-nnoremap gqq :call <SID>toggle_quote()<CR>
-vnoremap gqq :call <SID>toggle_quote()<CR>
-
-function! s:toggle_quote() range abort
-  let l:all_quoted = v:true
-  for l:lnum in range(a:firstline, a:lastline)
-    if getline(l:lnum) !~ '^>'
-      let l:all_quoted = v:false
-      break
-    endif
-  endfor
-
-  for l:lnum in range(a:firstline, a:lastline)
-    let l:line = getline(l:lnum)
-    if l:all_quoted
-      call setline(l:lnum, substitute(l:line, '^>\s\?', '', ''))
-    else
-      call setline(l:lnum, '> ' .. l:line)
-    endif
-  endfor
-endfunction
+nnoremap gqq :call utils#toggle_quote()<CR>
+vnoremap gqq :call utils#toggle_quote()<CR>
 
 " Insert Mode
 " i_CTRL-T Insert one indent
@@ -135,27 +110,10 @@ nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 " --------------------------------------
 " Command
 "
-command! -nargs=? C call s:copy2clip(<q-args>)
-function s:copy2clip(...) abort
-  if a:0 >= 1
-    call setreg('+', getreg(a:1))
-  else
-    call setreg('+', getreg('"'))
-  endif
-endfunction
-
-command! S call s:set_register()
-function! s:set_register() abort
-  if empty(&buftype)
-    call setreg('a', '%'->expand()->fnamemodify(':p'))
-    call setreg('b', '%'->expand()->fnamemodify(':p:~'))
-    call setreg('c', '%'->expand()->fnamemodify(':p:~:t'))
-  endif
-endfunction
+command! -nargs=? C call setreg('+', getreg(<q-args>))
 
 command! CreateLocalVimrc
-\   call system('echo "\" ~/ghq/github.com/i9wa4/dotfiles/config/vim/rc/local.default.vim" > ./local.vim')
-\|  call system('echo "let g:mnh_header_level_shift = 1" >> ./local.vim')
+\ call system('echo "let g:mnh_header_level_shift = 1" > ./local.vim')
 
 
 " --------------------------------------
@@ -164,9 +122,9 @@ command! CreateLocalVimrc
 augroup MyAutocmd
   autocmd!
 
-  autocmd BufEnter,CursorHold * checktime
+  autocmd BufEnter * checktime
   autocmd BufReadPost * silent! normal! g`"
-  autocmd VimEnter,BufNewFile,BufReadPost,BufEnter *
+  autocmd BufEnter,BufNewFile *
   \ call utils#source_local_vimrc('<afile>:p'->expand())
 
   autocmd FileType *
@@ -174,12 +132,16 @@ augroup MyAutocmd
   \|  if &diff | setlocal nospell | endif
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
   \ setfiletype terraform
-  autocmd BufNewFile,BufReadPost *.zshenv,*.zshrc
-  \ setfiletype zsh
 
-  autocmd VimEnter,BufEnter,WinEnter,FileType *
+  autocmd BufEnter,WinEnter,ColorScheme *
   \ call utils#highlight()
 augroup END
+
+let g:auto_reload = timer_start(
+\   1000,
+\   {-> execute('silent! checktime')},
+\   {'repeat': -1}
+\ )
 
 
 " --------------------------------------

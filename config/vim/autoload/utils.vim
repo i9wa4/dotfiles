@@ -14,6 +14,26 @@ function! utils#source_local_vimrc(path) abort
 endfunction
 
 
+function! utils#toggle_quote() range abort
+  let l:all_quoted = v:true
+  for l:lnum in range(a:firstline, a:lastline)
+    if getline(l:lnum) !~ '^>'
+      let l:all_quoted = v:false
+      break
+    endif
+  endfor
+
+  for l:lnum in range(a:firstline, a:lastline)
+    let l:line = getline(l:lnum)
+    if l:all_quoted
+      call setline(l:lnum, substitute(l:line, '^>\s\?', '', ''))
+    else
+      call setline(l:lnum, '> ' .. l:line)
+    endif
+  endfor
+endfunction
+
+
 function! utils#highlight() abort
   call clearmatches()
 
