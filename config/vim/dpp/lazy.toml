@@ -48,47 +48,6 @@ xmap g<C-x> g<Plug>(dps-dial-decrement)
 '''
 
 [[plugins]]
-repo = 'lambdalisue/vim-gin'
-depends = ['denops.vim']
-on_event = ['VimEnter']
-hook_add = '''
-let g:gin_proxy_apply_without_confirm = v:true
-'''
-hook_source = '''
-function! s:my_gin_log() abort
-  let g:gin_log_default_args = [
-  \   "--graph",
-  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
-  \   "--name-status"
-  \ ]
-  execute 'GinLog'
-  let g:gin_log_default_args = []
-endfunction
-
-function! s:my_gin_log_all() abort
-  let g:gin_log_default_args = [
-  \   "--graph",
-  \   "--all",
-  \   "--format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>'",
-  \   "--name-status"
-  \ ]
-  execute 'GinLog'
-  let g:gin_log_default_args = []
-endfunction
-
-nnoremap <Plug>(my-Gin) <Nop>
-nmap <Space>g <Plug>(my-Gin)
-nnoremap <Plug>(my-Gin)aa <Cmd>execute 'Gin add -A'<CR>
-nnoremap <Plug>(my-Gin)au <Cmd>execute 'Gin add -u'<CR>
-nnoremap <Plug>(my-Gin)c  <Cmd>execute 'Gin commit'<CR>
-nnoremap <Plug>(my-Gin)d  <Cmd>execute 'GinDiff'<CR>
-nnoremap <Plug>(my-Gin)la <Cmd>call <SID>my_gin_log_all()<CR>
-nnoremap <Plug>(my-Gin)lo <Cmd>call <SID>my_gin_log()<CR>
-nnoremap <Plug>(my-Gin)p  <Cmd>execute 'Gin push'<CR>
-nnoremap <Plug>(my-Gin)s  <Cmd>execute 'GinStatus'<CR>
-'''
-
-[[plugins]]
 repo = 'yuki-yano/auto-backup.vim'
 depends = ['denops.vim']
 on_event = ['VimEnter']
