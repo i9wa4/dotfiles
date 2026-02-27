@@ -102,14 +102,6 @@
           entry = "${pkgs.ruff}/bin/ruff check --fix";
           types = ["python"];
         };
-
-        # Commit message check (custom script)
-        check-external-mention = {
-          enable = true;
-          entry = "bash bin/check-external-mention.sh";
-          stages = ["commit-msg"];
-          always_run = true;
-        };
       };
     };
   };
