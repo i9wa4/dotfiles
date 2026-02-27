@@ -15,7 +15,7 @@ ui_node = "messenger"
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
 
 [watchdog]
-enabled = true
+enabled = false
 idle_threshold_seconds = 300.0
 cooldown_seconds = 600.0
 
