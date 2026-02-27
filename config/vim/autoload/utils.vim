@@ -13,8 +13,6 @@ function! utils#source_local_vimrc(path) abort
     call add(l:vimrc_path_list, l:i->expand()->fnamemodify(':p'))
   endfor
 
-  execute 'source' $XDG_CONFIG_HOME->expand() .. '/vim/rc/local.default.vim'
-
   for l:i in l:vimrc_path_list
     if filereadable(l:i)
       execute 'source' l:i
