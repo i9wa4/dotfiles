@@ -31,7 +31,7 @@
       inherit system;
       specialArgs = {inherit username inputs commonOverlays commonNixSettings;};
       modules = [
-        ../nix-darwin
+        ../../nix-darwin
         home-manager.darwinModules.home-manager
         nix-index-database.darwinModules.nix-index
         {

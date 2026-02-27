@@ -70,8 +70,8 @@ in {
       pkgs.neovim
       pkgs.vim
       # AI coding agent tools
-      # claude-code: managed by claude-code.nix (programs.claude-code)
-      # codex: managed by codex-cli.nix (programs.codex)
+      # claude-code: externally managed (see claude-code.nix for config)
+      # codex: externally managed (see codex-cli.nix for config)
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       # Development tools

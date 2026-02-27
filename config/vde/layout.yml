@@ -34,7 +34,7 @@ presets:
           focus: true
         - name: watchdog
           title: watchdog
-          command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model sonnet
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
           delay: 500
 
   dev:
@@ -68,7 +68,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model haiku
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model haiku
           delay: 500
 
   high:
@@ -81,18 +81,18 @@ presets:
       panes:
         - name: orchestrator
           title: orchestrator
-          command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model sonnet
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
           delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: worker
               title: worker
-              command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model sonnet
+              command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: critic
               title: critic
-              command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model sonnet
+              command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: guardian
               title: guardian
@@ -100,5 +100,5 @@ presets:
               delay: 500
             - name: boss
               title: boss
-              command: nix run github:davidbeesley/claude-chill -- claude -- --dangerously-skip-permissions --model opus
+              command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model opus
               delay: 500
