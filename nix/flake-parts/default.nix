@@ -6,6 +6,7 @@
   # Shared nix.settings for darwin and ubuntu (substituters, keys, buffer)
   commonNixSettings = {
     download-buffer-size = 128 * 1024 * 1024; # 128 MiB
+    tarball-ttl = 60 * 60 * 24; # 1 day
     extra-substituters = [
       "https://cache.numtide.com" # llm-agents packages
       "https://nix-community.cachix.org" # home-manager, nix-index-database, etc.

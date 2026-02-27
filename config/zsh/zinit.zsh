@@ -17,7 +17,7 @@ zinit ice lucid \
   atload'
     autoload -Uz compinit
     if [[ -n "${_zcompdump}"(#qN.mh+24) ]]; then
-      compinit -d "${_zcompdump}"
+      compinit -u -d "${_zcompdump}"
     else
       compinit -C -d "${_zcompdump}"
     fi
