@@ -29,7 +29,7 @@ presets:
       ratio: [1, 1]
       panes:
         - name: postman
-          command: nix run github:i9wa4/tmux-a2a-postman --refresh
+          command: nix run github:i9wa4/tmux-a2a-postman
           delay: 500
           focus: true
         - name: watchdog
