@@ -37,6 +37,9 @@ MF_WIN_UTIL_DIR := /mnt/c/work/util
 # --------------------------------------
 # Utility Tasks
 #
+nix-flake-check:  ## c
+	nix flake check --all-systems
+
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
