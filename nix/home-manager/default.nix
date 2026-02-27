@@ -17,15 +17,21 @@
   symlink = config.lib.file.mkOutOfStoreSymlink;
 in {
   imports = [
-    ./agent-skills.nix
+    # programs.*
+    ./bash.nix
     ./claude-code.nix
     ./codex-cli.nix
-    ./editorconfig.nix
-    ./efm-langserver.nix
     ./git.nix
     ./lazygit.nix
-    ./tmux.nix
     ./zsh.nix
+    # xdg.configFile
+    ./editorconfig.nix
+    ./efm-langserver.nix
+    # home.file
+    ./agent-skills.nix
+    ./tmux.nix
+    # home.activation
+    ./npm.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -107,12 +113,12 @@ in {
 
   xdg.configFile = {
     # symlink
-    "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
-    "vim".source = symlink "${dotfilesDir}/config/vim";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
+    "nvim".source = ../../config/nvim;
+    "vim".source = ../../config/vim;
     "wezterm".source = ../../config/wezterm;
   };
 
@@ -136,94 +142,5 @@ in {
       nix-direnv.enable = true;
       enableZshIntegration = false; # Handled by zinit turbo
     };
-
-    # bash: auto-switch to zsh for environments where zsh is not the login shell
-    # (e.g., SSM sessions start with /bin/sh, user types "bash" to bootstrap)
-    bash = {
-      enable = true;
-      initExtra = ''
-        # Auto-switch to zsh (SSM sets USER=root, fix it before switching)
-        if [ -z "$TMUX" ] && [ -z "$ZSH_VERSION" ] && command -v zsh >/dev/null 2>&1; then
-          export USER=$(id -un)
-          exec zsh -l
-        fi
-      '';
-    };
-
-    # zsh: managed by zsh.nix (programs.zsh.enable = true)
-  };
-
-  # ============================================================================
-  # Activation scripts (run on darwin-rebuild switch / home-manager switch)
-  # ============================================================================
-  home.activation = let
-    npm = "${pkgs.nodejs}/bin/npm";
-    npmPrefix = "${homeDir}/.local";
-  in {
-    # 0. Clean temporary files (node caches for security)
-    cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      echo "Cleaning temporary files..."
-      # Node.js caches
-      rm -rf "${homeDir}/.npm"
-    '';
-
-    # 1. Install/update safe-chain first (security scanner for npm)
-    setupSafeChain = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      mkdir -p ${npmPrefix}
-      export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
-      if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 @aikidosec/safe-chain >/dev/null 2>&1; then
-        echo "Installing @aikidosec/safe-chain..."
-        ${npm} --prefix ${npmPrefix} install -g @aikidosec/safe-chain
-        safe-chain setup
-      else
-        echo "Updating @aikidosec/safe-chain..."
-        ${npm} --prefix ${npmPrefix} update -g @aikidosec/safe-chain
-      fi
-    '';
-
-    # 2. Install/update npm packages (after safe-chain, so they get scanned)
-    installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
-      export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
-      NPM_PACKAGES=(
-        "vde-layout"
-        "vde-monitor"
-        "vde-worktree"
-      )
-
-      # Install missing packages
-      for pkg in "''${NPM_PACKAGES[@]}"; do
-        if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
-          echo "Installing $pkg..."
-          ${npm} --prefix ${npmPrefix} install -g "$pkg"
-        fi
-      done
-
-      # Update outdated packages in one batch
-      outdated=$(${npm} --prefix ${npmPrefix} outdated -g --parseable --depth=0 2>/dev/null | cut -d: -f4 || true)
-      if [ -n "$outdated" ]; then
-        echo "Updating outdated packages: $outdated"
-        echo "$outdated" | xargs ${npm} --prefix ${npmPrefix} install -g
-      fi
-
-      # Remove unlisted packages (keep npm, corepack, safe-chain)
-      # --parseable gives paths like .../node_modules/pkg or .../node_modules/@scope/pkg
-      # Extract package name by stripping the node_modules prefix
-      node_modules="${npmPrefix}/lib/node_modules"
-      installed=$(${npm} --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 || true)
-      for pkg_path in $installed; do
-        pkg="''${pkg_path#"$node_modules"/}"
-        case "$pkg" in
-          npm|corepack|@aikidosec/*) continue ;;
-        esac
-        found=0
-        for want in "''${NPM_PACKAGES[@]}"; do
-          if [ "$pkg" = "$want" ]; then found=1; break; fi
-        done
-        if [ "$found" = "0" ]; then
-          echo "Removing unlisted package: $pkg"
-          ${npm} --prefix ${npmPrefix} uninstall -g "$pkg"
-        fi
-      done
-    '';
   };
 }
