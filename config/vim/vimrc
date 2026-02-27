@@ -169,7 +169,9 @@ augroup MyAutocmd
   autocmd VimEnter,BufNewFile,BufReadPost,BufEnter *
   \ call utils#source_local_vimrc('<afile>:p'->expand())
 
-  autocmd FileType * call utils#filetype()
+  autocmd FileType *
+  \   setlocal spelllang+=cjk spell
+  \|  if &diff | setlocal nospell | endif
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
   \ setfiletype terraform
   autocmd BufNewFile,BufReadPost *.zshenv,*.zshrc

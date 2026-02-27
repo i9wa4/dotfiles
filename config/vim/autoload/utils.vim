@@ -48,10 +48,6 @@ function! utils#highlight() abort
   call matchadd('Databricks', 'Databricks\|databricks')
   call matchadd('dbt', 'dbt')
 
-  " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
-  highlight link markdownError Normal
-  highlight link markdownItalic Normal
-
   if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
     let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
   else
@@ -61,6 +57,10 @@ function! utils#highlight() abort
       unlet w:trailing_space_match_id
     endif
   endif
+
+  " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
+  highlight link markdownError Normal
+  highlight link markdownItalic Normal
 
   " transparent background
   highlight EndOfBuffer   guibg=NONE
