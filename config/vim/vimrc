@@ -10,7 +10,9 @@ syntax off
 " --------------------------------------
 " Minimum setting
 "
-packadd! editorconfig
+if !has('nvim')
+  packadd! editorconfig
+endif
 
 " Variable
 let g:netrw_home = $XDG_CACHE_HOME->expand()
