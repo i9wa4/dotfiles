@@ -10,25 +10,77 @@ syntax off
 " --------------------------------------
 " Minimum setting
 "
-if !has('nvim')
-  packadd! editorconfig
-endif
-
 " Variable
 let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 " System
-set clipboard&
-if has('mac')
-  set clipboard^=unnamed
-else
-  set clipboard^=unnamedplus
-endif
 set autoread
 set belloff=all
 set nobackup
 set noswapfile
 set noundofile
+set clipboard&
+
+if has('mac')
+  set clipboard^=unnamed
+else
+  set clipboard^=unnamedplus
+endif
+
+if has('mac')
+  if !has('nvim') && exists('v:clipproviders')
+    " Vim 9.1+ on macOS
+    function! s:PBAvailable() abort
+      return '+*'
+    endfunction
+    function! s:PBPaste(reg, opts) abort
+      return [systemlist('pbpaste'), 'v']
+    endfunction
+    function! s:PBCopy(reg, regtype, lines) abort
+      call system('pbcopy', join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
+    endfunction
+    let v:clipproviders.pb = {
+    \   'available': function('s:PBAvailable'),
+    \   'paste': {'+': function('s:PBPaste'), '*': function('s:PBPaste')},
+    \   'copy':  {'+': function('s:PBCopy'),  '*': function('s:PBCopy')},
+    \ }
+    set clipmethod=pb,gui,x11,wayland
+  else
+    " Neovim on macOS
+    let g:clipboard = {
+    \   'name': 'pbcopy',
+    \   'copy':  {'+': ['pbcopy'], '*': ['pbcopy']},
+    \   'paste': {'+': ['pbpaste'], '*': ['pbpaste']},
+    \   'cache_enabled': 0,
+    \ }
+  endif
+else
+  " Linux: Neovim auto-detects, Vim needs explicit provider
+  if !has('nvim')
+    if executable('xclip')
+      let g:clipboard = {
+      \   'name': 'xclip',
+      \   'copy':  {'+': ['xclip', '-selection', 'clipboard'], '*': ['xclip', '-selection', 'primary']},
+      \   'paste': {'+': ['xclip', '-selection', 'clipboard', '-o'], '*': ['xclip', '-selection', 'primary', '-o']},
+      \   'cache_enabled': 0,
+      \ }
+    elseif executable('xsel')
+      let g:clipboard = {
+      \   'name': 'xsel',
+      \   'copy':  {'+': ['xsel', '--clipboard', '--input'], '*': ['xsel', '--primary', '--input']},
+      \   'paste': {'+': ['xsel', '--clipboard', '--output'], '*': ['xsel', '--primary', '--output']},
+      \   'cache_enabled': 0,
+      \ }
+    elseif executable('wl-copy')
+      let g:clipboard = {
+      \   'name': 'wl-clipboard',
+      \   'copy':  {'+': ['wl-copy'], '*': ['wl-copy', '--primary']},
+      \   'paste': {'+': ['wl-paste'], '*': ['wl-paste', '--primary']},
+      \   'cache_enabled': 0,
+      \ }
+    endif
+  endif
+endif
 
 
 " --------------------------------------
@@ -37,6 +89,14 @@ set noundofile
 let s:details_path = $XDG_CONFIG_HOME->expand() .. '/vim/rc/details.vim'
 if filereadable(s:details_path)
   execute 'source' s:details_path
+endif
+
+
+" --------------------------------------
+" Plugins
+"
+if !has('nvim')
+  packadd! editorconfig
 endif
 
 
