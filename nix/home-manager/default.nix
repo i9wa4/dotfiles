@@ -75,7 +75,7 @@ in {
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       # Development tools
-      # pkgs.go
+      (pkgs.python3.withPackages (ps: [ps.pynvim]))
       pkgs.act
       pkgs.alejandra
       pkgs.deno
@@ -85,21 +85,19 @@ in {
       pkgs.fzf
       pkgs.gh
       pkgs.ghq
+      pkgs.go
       pkgs.hadolint
       pkgs.mise
       pkgs.nixd
       pkgs.nodejs
       pkgs.nurl
       pkgs.pyright
-      (pkgs.python3.withPackages (ps: [ps.pynvim]))
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
       pkgs.shfmt
       pkgs.stylua
       pkgs.uv
-      # NOTE: GUI applications are managed via Homebrew casks
-      # cf. nix/flake-parts/modules/darwin.nix
     ];
 
     # ==========================================================================
@@ -111,15 +109,19 @@ in {
     };
   };
 
+  home.activation.setupEnvrc = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    [[ -f "${dotfilesDir}/.envrc" ]] || echo 'use flake' | tee "${dotfilesDir}/.envrc" >/dev/null
+  '';
+
   xdg.configFile = {
     # symlink
+    "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
+    "vde".source = symlink "${dotfilesDir}/config/vde";
+    "vim".source = symlink "${dotfilesDir}/config/vim";
+    "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
-    "nvim".source = ../../config/nvim;
-    "vde".source = ../../config/vde;
-    "vim".source = ../../config/vim;
     "wezterm".source = ../../config/wezterm;
-    "zeno".source = ../../config/zeno;
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
