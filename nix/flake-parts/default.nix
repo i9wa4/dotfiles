@@ -21,9 +21,9 @@ in {
   imports = [
     inputs.git-hooks.flakeModule
     inputs.treefmt-nix.flakeModule
-    ./pre-commit.nix
-    ./treefmt.nix
-    ./darwin.nix
-    ./ubuntu.nix
+    ./modules/pre-commit.nix
+    ./modules/treefmt.nix
+    ./modules/darwin.nix
+    ./modules/ubuntu.nix
   ];
 }

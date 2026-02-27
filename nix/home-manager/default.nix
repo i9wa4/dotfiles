@@ -18,20 +18,20 @@
 in {
   imports = [
     # programs.*
-    ./bash.nix
-    ./claude-code.nix
-    ./codex-cli.nix
-    ./git.nix
-    ./lazygit.nix
-    ./zsh.nix
+    ./modules/bash.nix
+    ./modules/claude-code.nix
+    ./modules/codex-cli.nix
+    ./modules/git.nix
+    ./modules/lazygit.nix
+    ./modules/zsh.nix
     # xdg.configFile
-    ./editorconfig.nix
-    ./efm-langserver.nix
+    ./modules/editorconfig.nix
+    ./modules/efm-langserver.nix
     # home.file
-    ./agent-skills.nix
-    ./tmux.nix
+    ./modules/agent-skills.nix
+    ./modules/tmux.nix
     # home.activation
-    ./npm.nix
+    ./modules/npm.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -99,7 +99,7 @@ in {
       pkgs.stylua
       pkgs.uv
       # NOTE: GUI applications are managed via Homebrew casks
-      # cf. nix/flake-parts/darwin.nix
+      # cf. nix/flake-parts/modules/darwin.nix
     ];
 
     # ==========================================================================
