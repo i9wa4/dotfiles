@@ -40,7 +40,7 @@ in {
     # NOTE: This is NOT the home-manager release version. It controls internal
     # migration behavior. Bumping it can trigger unexpected state changes.
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.stateVersion
-    stateVersion = "24.11";
+    stateVersion = "25.11";
 
     # PATH additions (prepended to $PATH)
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
@@ -106,13 +106,14 @@ in {
   };
 
   xdg.configFile = {
+    # symlink
     "nvim".source = symlink "${dotfilesDir}/config/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
-    "skk".source = symlink "${dotfilesDir}/config/skk";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
-    "wezterm".source = symlink "${dotfilesDir}/config/wezterm";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
+    # Nix store
+    "wezterm".source = ../../../config/wezterm;
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
