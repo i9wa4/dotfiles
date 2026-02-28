@@ -2,7 +2,6 @@
   pkgs,
   lib,
   username,
-  commonOverlays,
   commonNixSettings,
   ...
 }:
@@ -10,7 +9,6 @@
   nixpkgs = {
     # Allow unfree packages (e.g., terraform with BSL license)
     config.allowUnfree = true;
-    overlays = commonOverlays;
     hostPlatform = "aarch64-darwin";
   };
 

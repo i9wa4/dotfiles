@@ -64,15 +64,9 @@ in
       pkgs.awscli2
       pkgs.databricks-cli
       pkgs.google-cloud-sdk
-      pkgs.terraform
       # Editors
       pkgs.neovim
       pkgs.vim
-      # AI coding agent tools
-      # claude-code: externally managed (see claude-code.nix for config)
-      # codex: externally managed (see codex-cli.nix for config)
-      pkgs.llm-agents.ccusage
-      pkgs.llm-agents.ccusage-codex
       # Development tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs.deno
@@ -81,19 +75,9 @@ in
       pkgs.fzf
       pkgs.gh
       pkgs.ghq
-      pkgs.go
-      pkgs.hadolint
       pkgs.mise
       pkgs.nixd
-      pkgs.nixfmt-rfc-style
-      pkgs.nodejs
-      pkgs.nurl
-      pkgs.pyright
       pkgs.ripgrep
-      pkgs.rumdl
-      pkgs.shellcheck
-      pkgs.shfmt
-      pkgs.stylua
       pkgs.uv
     ];
 

@@ -32,7 +32,7 @@ description: |
 
 - YOU MUST: See CONTRIBUTING.md section 1.4.2 for adding new custom packages
 - IMPORTANT: Hash acquisition flow
-  1. Get `hash` using nurl: `nurl https://github.com/<owner>/<repo> <tag>`
+  1. Get `hash` using nurl: `nix run 'nixpkgs#nurl' -- https://github.com/<owner>/<repo> <tag>`
   2. Get `vendorHash`/`cargoHash` via build error (`got:` line)
 - IMPORTANT: Add `doCheck = false;` if tests fail
 
@@ -41,7 +41,7 @@ description: |
 - IMPORTANT: nurl generates Nix fetcher calls from repository URLs
 
   ```sh
-  nurl https://github.com/rvben/rumdl v0.0.206
+  nix run 'nixpkgs#nurl' -- https://github.com/rvben/rumdl v0.0.206
   ```
 
 - IMPORTANT: Output can be used directly in fetchFromGitHub

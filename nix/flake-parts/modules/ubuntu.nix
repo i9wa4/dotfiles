@@ -2,7 +2,6 @@
 # This module is imported by flake.nix via flake-parts
 {
   inputs,
-  commonOverlays,
   commonNixSettings,
   ...
 }:
@@ -18,7 +17,6 @@ in
       pkgs = import nixpkgs {
         localSystem = system;
         config.allowUnfree = true;
-        overlays = commonOverlays;
       };
       # SSM sessions set USER=root even for non-root users (EUID != 0).
       # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)

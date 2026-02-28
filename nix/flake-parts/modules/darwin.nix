@@ -2,7 +2,6 @@
 # This module is imported by flake.nix via flake-parts
 {
   inputs,
-  commonOverlays,
   commonNixSettings,
   ...
 }:
@@ -35,7 +34,6 @@ let
         inherit
           username
           inputs
-          commonOverlays
           commonNixSettings
           ;
       };
