@@ -77,6 +77,7 @@ in
       pkgs.ghq
       pkgs.mise
       pkgs.nixd
+      pkgs.nodejs
       pkgs.ripgrep
       pkgs.uv
     ];
