@@ -100,6 +100,10 @@ let
         }
       ];
     };
+    statusLine = {
+      type = "command";
+      command = "~/.claude/scripts/claude-statusline.sh";
+    };
     # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
     mcpServers = builtins.mapAttrs (_: srv: { type = "stdio"; } // srv) mcpServers;
   };
