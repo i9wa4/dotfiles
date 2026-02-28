@@ -105,12 +105,6 @@ function! utils#highlight_match() abort
   call matchadd('dbt', 'dbt')
 
   if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
-    let w:trailing_space_match_id = matchadd('SpellBad', '　\|\s\+$')
-  else
-    " Remove trailing space highlight in ddu windows
-    if exists('w:trailing_space_match_id')
-      silent! call matchdelete(w:trailing_space_match_id)
-      unlet w:trailing_space_match_id
-    endif
+    let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
   endif
 endfunction
