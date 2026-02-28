@@ -140,7 +140,7 @@ augroup MyAutocmd
   \ setfiletype terraform
 
   autocmd ColorScheme * call utils#highlight_define()
-  autocmd WinEnter * call utils#highlight_match()
+  autocmd WinEnter,FileType * call utils#highlight_match()
   autocmd VimLeave * call utils#clean_viminfo()
 augroup END
 
