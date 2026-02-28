@@ -1,6 +1,4 @@
 [postman]
-a2a_version = "1.0"
-
 edges = [
   "boss -- orchestrator",
   "messenger -- orchestrator",
@@ -13,17 +11,3 @@ edges = [
 ui_node = "messenger"
 
 reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
-
-[watchdog]
-enabled = false
-idle_threshold_seconds = 300.0
-cooldown_seconds = 600.0
-
-[watchdog.capture]
-enabled = true
-tail_lines = 100
-max_files = 10
-max_bytes = 1048576
-
-[watchdog.lock]
-path = "$HOME/.postman/postman-watchdog.lock"
