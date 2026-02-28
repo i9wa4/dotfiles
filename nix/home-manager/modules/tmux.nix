@@ -87,6 +87,11 @@ in {
       set-option -g window-status-current-format '#[reverse]  #{window_index}#{?window_zoomed_flag,🔎,  }#[default]'
       set-option -g window-status-format '  #{window_index}#{?window_zoomed_flag,🔎,  }'
 
+      # Clipboard (OSC 52)
+      set-option -g set-clipboard on
+      set-option -g allow-passthrough on
+      bind-key Y run-shell 'printf "\033]52;c;%s\007" "$(tmux save-buffer - | base64)" > /dev/tty'
+
       # Terminal
       set-option -sa terminal-features ",*:RGB"
 
