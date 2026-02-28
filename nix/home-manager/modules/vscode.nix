@@ -1,13 +1,12 @@
 # VS Code settings management only (binary installed via Homebrew cask)
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   programs.vscode = {
     enable = true;
-    package =
-      pkgs.emptyDirectory
-      // {
-        pname = "vscode";
-        version = "0";
-      }; # Installed via Homebrew cask
+    package = pkgs.emptyDirectory // {
+      pname = "vscode";
+      version = "0";
+    }; # Installed via Homebrew cask
     profiles.default.userSettings = {
       "breadcrumbs.enabled" = false;
       "editor.fontFamily" = "'UDEV Gothic 35LG', monospace";

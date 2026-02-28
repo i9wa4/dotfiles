@@ -7,14 +7,13 @@
   config,
   username,
   ...
-}: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+}:
+let
+  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   dotfilesDir = "${homeDir}/ghq/github.com/i9wa4/dotfiles";
   zshDir = "${dotfilesDir}/config/zsh";
-in {
+in
+{
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
@@ -50,21 +49,22 @@ in {
 
       # Platform-specific PATH recovery
       (
-        if pkgs.stdenv.isDarwin
-        then ''
-          # Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
-          if [ -z "''${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
-            if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-              . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+        if pkgs.stdenv.isDarwin then
+          ''
+            # Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
+            if [ -z "''${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
+              if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+                . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+              fi
             fi
-          fi
-        ''
-        else ''
-          # Home-manager session variables (standalone HM without nix-darwin)
-          if [ -f "/etc/profiles/per-user/''${USER}/etc/profile.d/hm-session-vars.sh" ]; then
-            source "/etc/profiles/per-user/''${USER}/etc/profile.d/hm-session-vars.sh"
-          fi
-        ''
+          ''
+        else
+          ''
+            # Home-manager session variables (standalone HM without nix-darwin)
+            if [ -f "/etc/profiles/per-user/''${USER}/etc/profile.d/hm-session-vars.sh" ]; then
+              source "/etc/profiles/per-user/''${USER}/etc/profile.d/hm-session-vars.sh"
+            fi
+          ''
       )
 
       # PATH deduplication (prevents duplicates in nested shells, e.g. tmux)

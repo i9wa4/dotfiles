@@ -8,13 +8,14 @@
   config,
   inputs,
   ...
-}: let
+}:
+let
   homeDir = config.home.homeDirectory;
   ghqRoot = "${homeDir}/ghq";
 
-  mcpServers = import ./mcp-servers.nix {inherit pkgs inputs;};
+  mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
 
-  tomlFormat = pkgs.formats.toml {};
+  tomlFormat = pkgs.formats.toml { };
 
   # Static config (everything except dynamic trusted projects)
   codexConfig = {
@@ -22,7 +23,10 @@
     hide_agent_reasoning = true;
     model = "gpt-5.3-codex";
     network_access = true;
-    project_doc_fallback_filenames = ["README.md" "CONTRIBUTING.md"];
+    project_doc_fallback_filenames = [
+      "README.md"
+      "CONTRIBUTING.md"
+    ];
     web_search = "live";
 
     analytics.enabled = false;
@@ -38,7 +42,8 @@
 
   # Base config file in Nix store (used as template by activation script)
   baseConfigFile = tomlFormat.generate "codex-config-base.toml" codexConfig;
-in {
+in
+{
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
     ".codex/AGENTS.md".source = ../../../config/agents/AGENTS.md;
@@ -47,7 +52,7 @@ in {
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
-  home.activation.generateCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.generateCodexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     echo "Generating Codex CLI config..."
     _output="${homeDir}/.codex/config.toml"
 

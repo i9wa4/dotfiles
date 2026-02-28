@@ -5,24 +5,23 @@
   lib,
   username,
   ...
-}: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+}:
+let
+  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   npm = "${pkgs.nodejs}/bin/npm";
   npmPrefix = "${homeDir}/.local";
-in {
+in
+{
   home.activation = {
     # 0. Clean temporary files (node caches for security)
-    cleanTemporaryFiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    cleanTemporaryFiles = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       echo "Cleaning temporary files..."
       # Node.js caches
       rm -rf "${homeDir}/.npm"
     '';
 
     # 1. Install/update safe-chain first (security scanner for npm)
-    setupSafeChain = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    setupSafeChain = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       mkdir -p ${npmPrefix}
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 @aikidosec/safe-chain >/dev/null 2>&1; then
@@ -36,7 +35,7 @@ in {
     '';
 
     # 2. Install/update npm packages (after safe-chain, so they get scanned)
-    installNpmPackages = lib.hm.dag.entryAfter ["setupSafeChain"] ''
+    installNpmPackages = lib.hm.dag.entryAfter [ "setupSafeChain" ] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       NPM_PACKAGES=(
         "vde-layout"

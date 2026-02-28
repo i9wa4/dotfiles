@@ -29,7 +29,7 @@ let g:lsp_settings = {
 \     'workspace_config': {
 \       'nixd': {
 \         'formatting': {
-\           'command': ['alejandra', '-q'],
+\           'command': ['nixfmt'],
 \         },
 \       },
 \     },

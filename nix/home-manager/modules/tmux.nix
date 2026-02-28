@@ -2,13 +2,12 @@
   pkgs,
   username,
   ...
-}: let
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+}:
+let
+  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   dotfilesDir = "${homeDir}/ghq/github.com/i9wa4/dotfiles";
-in {
+in
+{
   # Tmux configuration
   # cf. https://man.openbsd.org/OpenBSD-current/man1/tmux.1
   programs.tmux = {

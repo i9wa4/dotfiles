@@ -6,10 +6,11 @@
   pkgs,
   inputs,
   ...
-}: let
-  mcpServers = import ./mcp-servers.nix {inherit pkgs inputs;};
+}:
+let
+  mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
 
-  jsonFormat = pkgs.formats.json {};
+  jsonFormat = pkgs.formats.json { };
 
   claudeSettings = {
     cleanupPeriodDays = 36000;
@@ -100,11 +101,12 @@
       ];
     };
     # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
-    mcpServers = builtins.mapAttrs (_: srv: {type = "stdio";} // srv) mcpServers;
+    mcpServers = builtins.mapAttrs (_: srv: { type = "stdio"; } // srv) mcpServers;
   };
 
   settingsFile = jsonFormat.generate "claude-settings.json" claudeSettings;
-in {
+in
+{
   home.file = {
     # CLAUDE.md (Nix store, rebuild required to update)
     ".claude/CLAUDE.md".source = ../../../config/agents/AGENTS.md;

@@ -61,34 +61,41 @@
     };
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       # Supported systems (x86_64-darwin excluded - Apple Silicon only)
-      systems = ["aarch64-darwin" "x86_64-linux" "aarch64-linux"];
+      systems = [
+        "aarch64-darwin"
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-      imports = [./nix/flake-parts];
+      imports = [ ./nix/flake-parts ];
 
       # Per-system outputs (devShells, etc.)
-      perSystem = {
-        config,
-        pkgs,
-        ...
-      }: {
-        # nix develop
-        devShells = {
-          # Local development (includes CI tools + pre-commit hooks)
-          default = pkgs.mkShell {
-            shellHook = ''
-              ${config.pre-commit.installationScript}
-            '';
-          };
-          # CI environment (no pre-commit hooks needed, but includes gitleaks for history scan)
-          ci = pkgs.mkShell {
-            packages = [
-              pkgs.gitleaks
-            ];
+      perSystem =
+        {
+          config,
+          pkgs,
+          ...
+        }:
+        {
+          # nix develop
+          devShells = {
+            # Local development (includes CI tools + pre-commit hooks)
+            default = pkgs.mkShell {
+              shellHook = ''
+                ${config.pre-commit.installationScript}
+              '';
+            };
+            # CI environment (no pre-commit hooks needed, but includes gitleaks for history scan)
+            ci = pkgs.mkShell {
+              packages = [
+                pkgs.gitleaks
+              ];
+            };
           };
         };
-      };
     };
 }

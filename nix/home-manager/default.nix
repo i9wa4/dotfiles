@@ -4,18 +4,17 @@
   config,
   username,
   ...
-}: let
+}:
+let
   # Platform-agnostic paths
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${username}"
-    else "/home/${username}";
+  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   ghqRoot = "${homeDir}/ghq"; # cf. git config --global ghq.root
   dotfilesDir = "${ghqRoot}/github.com/i9wa4/dotfiles";
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-in {
+in
+{
   imports = [
     # programs.*
     ./modules/bash.nix
@@ -75,9 +74,9 @@ in {
       pkgs.llm-agents.ccusage
       pkgs.llm-agents.ccusage-codex
       # Development tools
-      (pkgs.python3.withPackages (ps: [ps.pynvim]))
+      (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs.act
-      pkgs.alejandra
+      pkgs.nixfmt-rfc-style
       pkgs.deno
       pkgs.devcontainer
       pkgs.efm-langserver
@@ -109,7 +108,7 @@ in {
     };
   };
 
-  home.activation.setupEnvrc = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.setupEnvrc = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     [[ -f "${dotfilesDir}/.envrc" ]] || echo 'use flake' | tee "${dotfilesDir}/.envrc" >/dev/null
   '';
 
@@ -128,7 +127,10 @@ in {
   # nix.package is required by HM when writing nix.conf
   # mkDefault allows nix-darwin integration to forward its own nix.package without conflict
   nix.package = lib.mkDefault pkgs.nix;
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   programs = {
     # Let Home Manager manage itself

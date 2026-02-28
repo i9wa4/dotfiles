@@ -1,4 +1,5 @@
-{inputs, ...}: let
+{ inputs, ... }:
+let
   commonOverlays = [
     inputs.llm-agents.overlays.default
   ];
@@ -16,8 +17,9 @@
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
-in {
-  _module.args = {inherit commonOverlays commonNixSettings;};
+in
+{
+  _module.args = { inherit commonOverlays commonNixSettings; };
 
   imports = [
     inputs.git-hooks.flakeModule

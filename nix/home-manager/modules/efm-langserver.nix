@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   # efm-langserver configuration (general-purpose language server)
   # Provides lint/format integration for Vim/Neovim via LSP
   xdg.configFile."efm-langserver/config.yaml".text = ''

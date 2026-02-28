@@ -4,9 +4,11 @@
   inputs,
   config,
   ...
-}: let
+}:
+let
   homeDir = config.home.homeDirectory;
-in {
+in
+{
   imports = [
     inputs.agent-skills.homeManagerModules.default
   ];
@@ -60,6 +62,6 @@ in {
     };
 
     # Preserve .system directory (created by agents at runtime)
-    excludePatterns = ["/.system"];
+    excludePatterns = [ "/.system" ];
   };
 }

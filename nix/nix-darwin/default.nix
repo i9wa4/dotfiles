@@ -5,7 +5,8 @@
   commonOverlays,
   commonNixSettings,
   ...
-}: {
+}:
+{
   nixpkgs = {
     # Allow unfree packages (e.g., terraform with BSL license)
     config.allowUnfree = true;
@@ -15,13 +16,14 @@
 
   # Nix settings
   nix = {
-    settings =
-      commonNixSettings
-      // {
-        experimental-features = "nix-command flakes";
-        # Allow user to use extra substituters
-        trusted-users = ["root" username];
-      };
+    settings = commonNixSettings // {
+      experimental-features = "nix-command flakes";
+      # Allow user to use extra substituters
+      trusted-users = [
+        "root"
+        username
+      ];
+    };
     # Deduplicate files via hard links (scheduled, not per-build)
     # Note: auto-optimise-store is known to corrupt Nix Store on Darwin
     # Note: Disabled because large binaries are now Homebrew-managed,
