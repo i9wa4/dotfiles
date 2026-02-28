@@ -52,7 +52,7 @@
           hooks = [
             {
               type = "command";
-              command = "printf '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"Current time: %s\"}}' \"$(date +%Y-%m-%dT%H:%M:%S%z)\"";
+              command = "printf '{\"additionalContext\":\"Current time: %s\"}' \"$(date +%Y-%m-%dT%H:%M:%S%z)\"";
             }
           ];
         }
