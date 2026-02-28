@@ -1,41 +1,35 @@
 presets:
-  main-1:
-    name: main-1
-    description: main-1
+  main:
+    name: main
+    description: main
     windowMode: current-window
     layout:
       type: horizontal
       ratio: [1, 1]
       panes:
         - type: vertical
-          ratio: [5, 1]
+          ratio: [1, 1]
           panes:
+            - name: postman
+              command: nix run github:i9wa4/tmux-a2a-postman
+              delay: 500
+              focus: true
             - name: htop
               command: nix run 'nixpkgs#htop'
+              delay: 500
+        - type: vertical
+          ratio: [2, 1, 1]
+          panes:
+            - name: watchdog
+              title: watchdog
+              command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
               delay: 500
             - name: tailscale
               command: sudo $(which tailscaled)
               delay: 500
-        - name: vde-monitor
-          command: vde-monitor --tailscale
-          delay: 500
-
-  main-2:
-    name: main-2
-    description: main-2
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: postman
-          command: nix run github:i9wa4/tmux-a2a-postman
-          delay: 500
-          focus: true
-        - name: watchdog
-          title: watchdog
-          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
-          delay: 500
+            - name: vde-monitor
+              command: vde-monitor --tailscale
+              delay: 500
 
   dev:
     name: dev
@@ -68,7 +62,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model haiku
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
           delay: 500
 
   high:
