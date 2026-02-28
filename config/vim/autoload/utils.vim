@@ -31,6 +31,42 @@ function! utils#toggle_quote() range abort
 endfunction
 
 
+function! utils#send_register() abort
+  call system('tmux load-buffer -', @+)
+  call system('printf "\033]52;c;%s\007" "$(printf %s '
+  \ .. shellescape(@+) .. ' | base64)" > /dev/tty')
+endfunction
+
+
+function! utils#clean_viminfo() abort
+  " delete history
+  call histdel("search")
+  call histdel("expr")
+  call histdel("input")
+  call histdel("debug")
+
+  " delete registers
+  let l:reg_list = split(
+  \   'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-"',
+  \   '\zs'
+  \ )
+  for l:r in l:reg_list
+    call setreg(l:r, [])
+  endfor
+
+  " delete marks
+  delmarks!
+  delmarks A-Z0-9
+
+  " save viminfo
+  if has('nvim')
+    wshada!
+  else
+    wviminfo!
+  endif
+endfunction
+
+
 function! utils#highlight_define() abort
   highlight HlMS guibg=#FFB6C1 guifg=#000000
   highlight Databricks guibg=#FF3621 guifg=#F9F7F4

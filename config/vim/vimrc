@@ -11,12 +11,11 @@ syntax off
 "
 let g:markdown_recommended_style = 0
 let g:netrw_banner = 0
+let g:netrw_clipboard = 0
 let g:netrw_dirhistmax = 0
 let g:netrw_hide = 0
 let g:netrw_liststyle = 0
-let g:vim_indent = #{
-\   line_continuation: 0
-\ }
+let g:vim_indent = #{line_continuation: 0}
 
 let g:mnh_header_level_shift = 7
 let g:my_aa_path = '~/ghq/github.com/i9wa4/dotfiles/config/agents/AGENTS.md'->expand()
@@ -82,7 +81,6 @@ nnoremap <Plug>(my-Edit)qa <Cmd>%s/\([^,]*\)/"\1"/g<CR>
 nnoremap <Plug>(my-Edit)qr <Cmd>%s/"//g<CR>
 
 " Filer
-" nnoremap <Plug>(my-Filer)cd <Cmd>execute 'cd' fnamemodify(finddir('.git', escape(expand(getcwd()), ' ') .. ';', 1), ':h')<CR>
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
 nnoremap <Plug>(my-Filer)aa <Cmd>execute 'edit' g:my_aa_path<CR>
@@ -93,6 +91,12 @@ nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
 nnoremap <Plug>(my-Filer)o  <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t  <Cmd>execute 'edit' g:my_tp_path<CR>
 nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
+
+" Register
+nnoremap <Plug>(my-Register) <Nop>
+nmap <Space>r <Plug>(my-Register)
+nnoremap <expr> <Plug>(my-Register)r ':let @+ = @' .. nr2char(getchar()) .. "\<CR>"
+nnoremap <Plug>(my-Register)t <Cmd>call utils#send_register()<CR>
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
@@ -110,8 +114,6 @@ nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 " --------------------------------------
 " Command
 "
-command! -nargs=? C call setreg('+', getreg(<q-args>))
-
 command! CreateLocalVimrc
 \ call system('echo "let g:mnh_header_level_shift = 1" > ./local.vim')
 
@@ -125,6 +127,11 @@ augroup MyAutocmd
   autocmd BufReadPost * silent! normal! g`"
   autocmd BufEnter,BufNewFile *
   \ call utils#source_local_vimrc('<afile>:p'->expand())
+  autocmd BufEnter *
+  \   if empty(&buftype)
+  \|    call setreg('a', '%'->expand()->fnamemodify(':p:~'))
+  \|    call setreg('b', '%'->expand()->fnamemodify(':p'))
+  \|  endif
 
   autocmd FileType *
   \   setlocal spelllang+=cjk spell
@@ -134,6 +141,7 @@ augroup MyAutocmd
 
   autocmd ColorScheme * call utils#highlight_define()
   autocmd WinEnter * call utils#highlight_match()
+  autocmd VimLeave * call utils#clean_viminfo()
 augroup END
 
 let g:auto_reload = timer_start(
