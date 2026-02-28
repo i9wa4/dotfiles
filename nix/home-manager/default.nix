@@ -75,10 +75,7 @@ in
       pkgs.llm-agents.ccusage-codex
       # Development tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
-      pkgs.act
-      pkgs.nixfmt-rfc-style
       pkgs.deno
-      pkgs.devcontainer
       pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf
@@ -88,6 +85,7 @@ in
       pkgs.hadolint
       pkgs.mise
       pkgs.nixd
+      pkgs.nixfmt-rfc-style
       pkgs.nodejs
       pkgs.nurl
       pkgs.pyright
@@ -148,3 +146,4 @@ in
     };
   };
 }
+
