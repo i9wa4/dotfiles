@@ -42,6 +42,14 @@ acknowledge with a random one-liner in character.
 - If instruction says "ask orchestrator", ask orchestrator even if you have prior context
 - No exceptions: message instructions override all other considerations
 
+### 3.5. tmux-a2a-postman Workflow
+
+After any implementation work:
+
+- Run: `nix flake check`
+- Run: `nix build`
+- Both must pass before switching sessions or creating new tasks
+
 ## 4. Safety
 
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
