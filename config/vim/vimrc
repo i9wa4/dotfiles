@@ -122,7 +122,6 @@ command! CreateLocalVimrc
 augroup MyAutocmd
   autocmd!
 
-  autocmd BufEnter * checktime
   autocmd BufReadPost * silent! normal! g`"
   autocmd BufEnter,BufNewFile *
   \ call utils#source_local_vimrc('<afile>:p'->expand())
@@ -133,8 +132,8 @@ augroup MyAutocmd
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
   \ setfiletype terraform
 
-  autocmd BufEnter,WinEnter,ColorScheme *
-  \ call utils#highlight()
+  autocmd ColorScheme * call utils#highlight_define()
+  autocmd WinEnter * call utils#highlight_match()
 augroup END
 
 let g:auto_reload = timer_start(
