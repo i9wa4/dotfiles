@@ -64,10 +64,10 @@
   services.skhd = {
     enable = true;
     skhdConfig = ''
-      # App switching: Ctrl + 1/2/3
-      ctrl - 1 : open -a "WezTerm"
-      ctrl - 2 : open -a "Obsidian"
-      ctrl - 3 : open -a "Google Chrome"
+      # App switching: Alt + 1/2/3
+      alt - 1 : open -a "WezTerm"
+      alt - 2 : open -a "Obsidian"
+      alt - 3 : open -a "Google Chrome"
     '';
   };
 
