@@ -45,7 +45,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model sonnet
+          command: nix run github:davidbeesley/claude-chill -- nix run 'github:numtide/llm-agents.nix#claude-code' -- --dangerously-skip-permissions --model opus
           delay: 500
 
   messenger:
