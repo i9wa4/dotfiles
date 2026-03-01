@@ -5,10 +5,10 @@
     "enabled": true
   },
   "lockFileMaintenance": {
-    "enabled": true
+    "enabled": false
   },
-  "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  "stabilityDays": 7,
   "automerge": true,
   "automergeType": "pr"
 }
