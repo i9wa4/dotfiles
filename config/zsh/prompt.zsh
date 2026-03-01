@@ -50,9 +50,7 @@ _HOST_PREFIX="[${_HOST_HASH}] "
 
 precmd() {
   local context="$(_get_context_line)"
-  if [[ -n "${context}" ]]; then
-    PROMPT=$'\n'"${context}"$'\n'"${_HOST_PREFIX}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
-  else
-    PROMPT=$'\n'"${_HOST_PREFIX}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
-  fi
+  local context_line=""
+  [[ -n "${context}" ]] && context_line="${context}"$'\n'
+  PROMPT=$'\n'"${context_line}${_HOST_PREFIX}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
 }
