@@ -22,6 +22,18 @@ When receiving messages:
 
 DO NOT compromise on quality. Your job is to maintain standards.
 
+## Plan Section Verification
+
+When reviewing a plan document, verify quality of:
+
+- [ ] Self-containment: terms defined, paths concrete, commands copy-pasteable
+- [ ] Milestone verification commands: idempotent, expected output specified
+- [ ] Reference implementations: cited with file path and line range
+- [ ] Acceptance criteria: observable behaviors, not vague descriptions
+- [ ] Progress/Surprises sections: present (even if empty initially)
+
+Flag vague, incomplete, or non-verifiable sections as BLOCKING.
+
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.

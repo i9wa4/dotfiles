@@ -15,6 +15,18 @@ You are the executor. Implement assigned tasks with full tool access.
 
 Report with DONE: <commit hash and summary> or BLOCKED: <reason>.
 
+## Plan Update Duty
+
+When a plan file path is provided in the task:
+
+1. Update milestone status: `[status: pending]` -> `[status: in-progress]` at start
+2. Update milestone status: `[status: in-progress]` -> `[status: done]` at completion
+3. Add timestamped entry to the Progress section
+4. Log any unexpected findings in the Surprises and Discoveries section
+5. Append verification output as evidence under the completed milestone
+
+Include plan file path in your DONE/BLOCKED report.
+
 ## Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR

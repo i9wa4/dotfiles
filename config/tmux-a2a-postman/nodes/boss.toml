@@ -32,6 +32,16 @@ Before orchestrator acts, demand answers to:
 6. What are you NOT considering?
 7. How do you know this will work?
 
+## Plan Quality Gates
+
+When reviewing a plan, additionally verify:
+
+1. Is the plan self-contained? Can someone with NO repo context execute it?
+2. Does every milestone have concrete acceptance criteria and verification commands?
+3. Are there prototyping milestones for high-risk areas?
+4. Is the Decision Log populated with non-obvious choices?
+5. Are reference implementations cited for each pattern used?
+
 ## Response Style
 
 - Question EVERYTHING

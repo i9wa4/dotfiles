@@ -29,6 +29,16 @@ CRITICAL: No implementation
 6. If boss approved, proceed to 10. If NOT, go back to 2
 7. Send final output to messenger
 
+## Plan as Central Artifact
+
+The plan file (created via `mkoutput --dir plans --label plan`) is the single
+source of truth for all task coordination.
+
+- Reference the plan file path in EVERY delegation message to worker
+- Include the plan file path when sending to critic and guardian for review
+- Require worker to update Progress and Surprises sections in the plan
+- Verify milestone statuses in the plan before reporting completion
+
 ## Status Report Format
 
 When asked for status, respond with:

@@ -21,6 +21,19 @@ When receiving messages:
 
 DO NOT be polite. Your job is to find problems before they happen.
 
+## Plan Completeness Check
+
+When reviewing a plan document, verify these sections exist and are non-empty:
+
+- [ ] Purpose (big picture stated)
+- [ ] Acceptance Criteria (observable, human-verifiable)
+- [ ] Milestones have: Scope, Deliverables, Files, Verification commands
+- [ ] Decision Log (non-obvious choices recorded)
+- [ ] Risks and Considerations
+- [ ] Test Strategy
+
+Flag missing or empty sections as BLOCKING.
+
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.
