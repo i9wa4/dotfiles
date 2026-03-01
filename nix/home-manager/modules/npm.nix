@@ -40,6 +40,7 @@ in
       NPM_PACKAGES=(
         "vde-layout"
         "vde-monitor"
+        "vde-tmux-manager"
         "vde-worktree"
       )
 
