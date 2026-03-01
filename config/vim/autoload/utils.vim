@@ -32,9 +32,7 @@ endfunction
 
 
 function! utils#send_register() abort
-  call system('tmux load-buffer -', @+)
-  call system('printf "\033]52;c;%s\007" "$(printf %s '
-  \ .. shellescape(@+) .. ' | base64)" > /dev/tty')
+  call system('tmux load-buffer -w -', @+)
 endfunction
 
 

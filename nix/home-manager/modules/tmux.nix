@@ -89,7 +89,7 @@ in
       # Clipboard (OSC 52)
       set-option -g set-clipboard on
       set-option -g allow-passthrough on
-      bind-key Y run-shell 'printf "\033]52;c;%s\007" "$(tmux save-buffer - | base64)" > /dev/tty'
+      bind-key Y run-shell 'tmux save-buffer - | tmux load-buffer -w -'
 
       # Terminal
       set-option -sa terminal-features ",*:RGB"
