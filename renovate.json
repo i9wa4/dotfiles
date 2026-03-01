@@ -8,5 +8,7 @@
     "enabled": true
   },
   "minimumReleaseAge": "7 days",
-  "internalChecksFilter": "strict"
+  "internalChecksFilter": "strict",
+  "automerge": true,
+  "automergeType": "pr"
 }
