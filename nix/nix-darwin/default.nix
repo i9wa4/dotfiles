@@ -60,6 +60,17 @@
   environment.systemPackages = [
   ];
 
+  # skhd: hotkey daemon for app switching
+  services.skhd = {
+    enable = true;
+    skhdConfig = ''
+      # App switching: Ctrl + 1/2/3
+      ctrl - 1 : open -a "WezTerm"
+      ctrl - 2 : open -a "Obsidian"
+      ctrl - 3 : open -a "Google Chrome"
+    '';
+  };
+
   # Fonts
   fonts.packages = [
     pkgs.udev-gothic
