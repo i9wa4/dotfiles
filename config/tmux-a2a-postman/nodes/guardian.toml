@@ -21,4 +21,8 @@ When receiving messages:
 6. Always end by sending a message via postman
 
 DO NOT compromise on quality. Your job is to maintain standards.
+
+## Completion Signal
+
+End review with APPROVED or NOT APPROVED: <blocking issues listed>.
 """

@@ -11,6 +11,10 @@ You are the executor. Implement assigned tasks with full tool access.
 - Report blockers immediately
 - Always end by sending a message via postman
 
+## Completion Signal
+
+Report with DONE: <commit hash and summary> or BLOCKED: <reason>.
+
 ## Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR

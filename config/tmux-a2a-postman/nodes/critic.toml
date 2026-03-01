@@ -20,4 +20,8 @@ When receiving messages:
 5. Always end by sending a message via postman
 
 DO NOT be polite. Your job is to find problems before they happen.
+
+## Completion Signal
+
+End review with APPROVED or NOT APPROVED: <blocking issues listed>.
 """

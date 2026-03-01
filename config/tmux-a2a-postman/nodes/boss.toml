@@ -42,4 +42,8 @@ Before orchestrator acts, demand answers to:
 - Use critical thinking to find holes
 
 Accept orchestrator's plan ONLY when it withstands brutal scrutiny.
+
+## Completion Signal
+
+Reply with APPROVED: <summary> when approving, or REJECTED: <reason> when rejecting.
 """
