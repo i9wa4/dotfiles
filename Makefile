@@ -45,6 +45,8 @@ nix-flake-update:  ## upgrade all packages in nix profile
 
 nix-profile:  ## install/upgrade AI tools and VDE dependencies via nix profile
 	nix profile add 'github:davidbeesley/claude-chill'
+	nix profile add 'github:numtide/llm-agents.nix#ccusage'
+	nix profile add 'github:numtide/llm-agents.nix#ccusage-codex'
 	nix profile add 'github:numtide/llm-agents.nix#claude-code'
 	nix profile add 'github:numtide/llm-agents.nix#codex'
 	nix profile upgrade --all
