@@ -87,9 +87,7 @@ let
     language = "English";
     # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
     mcpServers = builtins.mapAttrs (
-      _: srv:
-      { type = "stdio"; }
-      // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
+      _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
     ) mcpServers;
     permissions = {
       deny = [
