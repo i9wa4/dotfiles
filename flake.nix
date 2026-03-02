@@ -42,6 +42,11 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    # No follows (manages its own nixpkgs — Node.js bundle, mismatch harmless)
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+    };
+
     # Non-flake sources
     anthropic-skills = {
       url = "github:anthropics/skills";

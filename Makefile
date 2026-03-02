@@ -43,13 +43,13 @@ nix-flake-check:  ## che
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
-nix-profile:  ## install/upgrade AI tools and VDE dependencies via nix profile
+nix-profile:  ## install/upgrade AI tools via nix profile (run from dotfiles repo root)
+	nix profile remove ccusage ccusage-codex claude-code codex 2>/dev/null || true
+	nix profile add '.#claude-code'
+	nix profile add '.#codex'
+	nix profile add '.#ccusage'
+	nix profile add '.#ccusage-codex'
 	nix profile add 'github:davidbeesley/claude-chill'
-	nix profile add 'github:numtide/llm-agents.nix#ccusage'
-	nix profile add 'github:numtide/llm-agents.nix#ccusage-codex'
-	nix profile add 'github:numtide/llm-agents.nix#claude-code'
-	nix profile add 'github:numtide/llm-agents.nix#codex'
-	nix profile upgrade --all
 
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)

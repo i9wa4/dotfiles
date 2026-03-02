@@ -22,5 +22,6 @@ in
     ./modules/treefmt.nix
     ./modules/darwin.nix
     ./modules/ubuntu.nix
+    ./modules/llm-agents.nix
   ];
 }
