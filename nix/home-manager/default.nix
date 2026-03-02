@@ -93,6 +93,9 @@ in
 
   home.activation.setupEnvrc = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     [[ -f "${dotfilesDir}/.envrc" ]] || echo 'use flake' | tee "${dotfilesDir}/.envrc" >/dev/null
+    nix build 'github:davidbeesley/claude-chill' --refresh --no-link
+    nix build 'github:numtide/llm-agents.nix#claude-code' --refresh --no-link
+    nix build 'github:numtide/llm-agents.nix#codex' --refresh --no-link
   '';
 
   xdg.configFile = {
