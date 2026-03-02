@@ -1,4 +1,8 @@
-{ lib, stdenv, fetchurl }:
+{
+  lib,
+  stdenv,
+  fetchurl,
+}:
 
 let
   # Hashes sourced from github:openclaw/nix-steipete-tools nix/pkgs/gogcli.nix:5-16
