@@ -43,6 +43,12 @@ nix-flake-check:  ## che
 nix-flake-update:  ## upgrade all packages in nix profile
 	nix flake update
 
+nix-profile:  ## install/upgrade AI tools and VDE dependencies via nix profile
+	nix profile add 'github:davidbeesley/claude-chill'
+	nix profile add 'github:numtide/llm-agents.nix#claude-code'
+	nix profile add 'github:numtide/llm-agents.nix#codex'
+	nix profile upgrade --all
+
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
