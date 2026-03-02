@@ -5,6 +5,7 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }:
 let
@@ -114,11 +115,15 @@ in
   home.file = {
     # CLAUDE.md (Nix store, rebuild required to update)
     ".claude/CLAUDE.md".source = ../../../config/agents/AGENTS.md;
-    # settings.json (Nix store, rebuild required to update)
-    ".claude/settings.json".source = settingsFile;
     # Nix store directory symlinks (rebuild required to update)
     ".claude/rules".source = ../../../config/agents/rules;
     ".claude/agents".source = ../../../config/agents/subagents;
     ".claude/scripts".source = ../../../config/agents/scripts;
   };
+
+  # Copy settings.json as a writable file (not symlink).
+  # Claude Code needs write access for MCP server runtime state.
+  home.activation.claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    install -Dm644 ${settingsFile} "$HOME/.claude/settings.json"
+  '';
 }
