@@ -22,7 +22,7 @@ presets:
           panes:
             - name: watchdog
               title: watchdog
-              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet --add-dir ~/ghq/github.com/i9wa4/internal
               delay: 500
             - name: tailscale
               command: sudo $(which tailscaled)
@@ -45,7 +45,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: claude-chill -- claude --dangerously-skip-permissions --model opus
+          command: claude-chill -- claude --dangerously-skip-permissions --model opus --add-dir ~/ghq/github.com/i9wa4/internal
           delay: 500
 
   messenger:
@@ -62,7 +62,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet --add-dir ~/ghq/github.com/i9wa4/internal
           delay: 500
 
   high:
@@ -75,24 +75,24 @@ presets:
       panes:
         - name: orchestrator
           title: orchestrator
-          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+          command: claude-chill -- claude --dangerously-skip-permissions --model sonnet --add-dir ~/ghq/github.com/i9wa4/internal
           delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: worker
               title: worker
-              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet --add-dir ~/ghq/github.com/i9wa4/internal
               delay: 500
             - name: critic
               title: critic
-              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet
+              command: claude-chill -- claude --dangerously-skip-permissions --model sonnet --add-dir ~/ghq/github.com/i9wa4/internal
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --model gpt-5.3-codex
+              command: codex --yolo --model gpt-5.3-codex --add-dir ~/ghq/github.com/i9wa4/internal
               delay: 500
             - name: boss
               title: boss
-              command: claude-chill -- claude --dangerously-skip-permissions --model opus
+              command: claude-chill -- claude --dangerously-skip-permissions --model opus --add-dir ~/ghq/github.com/i9wa4/internal
               delay: 500
