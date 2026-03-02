@@ -80,6 +80,7 @@ in
       pkgs.nodejs
       pkgs.ripgrep
       pkgs.uv
+      (pkgs.callPackage ./pkgs/gogcli.nix { })
     ];
 
     # ==========================================================================
