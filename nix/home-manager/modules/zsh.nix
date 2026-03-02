@@ -112,6 +112,7 @@ in
 
       # Local config (machine-specific, not version controlled)
       ''
+        export SUBDIR=~/ghq/github.com/i9wa4/internal
         if [[ -f ~/.zshenv.local ]]; then
           source ~/.zshenv.local
         fi
