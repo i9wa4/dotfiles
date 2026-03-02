@@ -47,8 +47,12 @@ in
           {
             pkgs,
             lib,
+            inputs,
             ...
           }:
+          let
+            pkgsUnstable = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system};
+          in
           {
             nix = {
               # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
@@ -70,6 +74,7 @@ in
               packages = [
                 # zsh: installed by home-manager programs.zsh (zsh.nix)
                 pkgs.wslu # WSL utilities (harmless on non-WSL)
+                pkgsUnstable.claude-code # guaranteed cache.nixos.org; nixpkgs-unstable v2.1.59
               ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";

@@ -45,6 +45,7 @@
     # No follows (manages its own nixpkgs — Node.js bundle, mismatch harmless)
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Non-flake sources
