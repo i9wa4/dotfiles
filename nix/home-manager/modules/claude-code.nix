@@ -13,6 +13,10 @@ let
   jsonFormat = pkgs.formats.json { };
 
   claudeSettings = {
+    attribution = {
+      commit = "";
+      pr = "";
+    };
     cleanupPeriodDays = 36000;
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
@@ -21,31 +25,10 @@ let
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "true";
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
-      CLAUDE_CODE_ENABLE_TASKS = "true";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
       ENABLE_TOOL_SEARCH = "auto:3";
       IS_DEMO = "true";
-    };
-    attribution = {
-      commit = "";
-      pr = "";
-    };
-    permissions = {
-      deny = [
-        "Bash(git -C *)"
-        "Bash(git push*)"
-        "Bash(git rebase*)"
-        "Bash(git reset*)"
-        "Bash(rm *)"
-        "Bash(sudo *)"
-        "Read(**/*key*)"
-        "Read(**/*token*)"
-        "Read(.env*)"
-        "Read(~/.ssh/**)"
-        "Write(**/secrets/**)"
-        "Write(.env*)"
-      ];
     };
     hooks = {
       UserPromptSubmit = [
@@ -100,12 +83,29 @@ let
         }
       ];
     };
+    language = "English";
+    # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
+    mcpServers = builtins.mapAttrs (_: srv: { type = "stdio"; } // srv) mcpServers;
+    permissions = {
+      deny = [
+        "Bash(git -C *)"
+        "Bash(git push*)"
+        "Bash(git rebase*)"
+        "Bash(git reset*)"
+        "Bash(rm *)"
+        "Bash(sudo *)"
+        "Read(**/*key*)"
+        "Read(**/*token*)"
+        "Read(.env*)"
+        "Read(~/.ssh/**)"
+        "Write(**/secrets/**)"
+        "Write(.env*)"
+      ];
+    };
     statusLine = {
       type = "command";
       command = "~/.claude/scripts/claude-statusline.sh";
     };
-    # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
-    mcpServers = builtins.mapAttrs (_: srv: { type = "stdio"; } // srv) mcpServers;
   };
 
   settingsFile = jsonFormat.generate "claude-settings.json" claudeSettings;

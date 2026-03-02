@@ -214,7 +214,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.59 (2026-02-27)
+Last reviewed Claude Code version: v2.1.63 (2026-03-03)
 
 ### 11.1. Applied Optimizations
 
@@ -224,15 +224,14 @@ Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 - [x] Agents split into agents/ directory
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
-- [x] `language` setting - set to "follow CLAUDE.md's instructions"
-- [x] `mcpToolSearch` setting - set to "auto:1"
-- [x] `ENABLE_TOOL_SEARCH` env - set to "true" (force enable)
-- [x] `plansDirectory` setting - set to use mkoutput
+- [x] `language` setting - set to "English"
+- [x] `ENABLE_TOOL_SEARCH` env - set to "auto:3"
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
 - [x] Fast mode - available for Opus 4.6 (v2.1.36)
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
+- [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
 
 ### 11.2. Pending Considerations
 
@@ -260,9 +259,18 @@ Last reviewed Claude Code version: v2.1.59 (2026-02-27)
 - Completion status reporting - no consumer for this output
 - `CLAUDE_BASH_NO_LOGIN` - obsolete since v2.1.51 (auto-skip when snapshot
   available)
+- `plansDirectory` - not needed
+- `mcpToolSearch` - setting does not exist; `ENABLE_TOOL_SEARCH` env is the
+  only mechanism (currently set to "auto:3")
 
 ### 11.4. Version Notes
 
+- v2.1.63: `/simplify` and `/batch` bundled commands, HTTP hooks,
+  `ENABLE_CLAUDEAI_MCP_SERVERS=false` env, project configs shared across
+  worktrees, "Always copy full response" for `/copy`, many memory leak fixes,
+  `/clear` now resets cached skills
+- v2.1.62: Fixed prompt suggestion cache regression
+- v2.1.61: Fixed concurrent config writes on Windows
 - v2.1.59: Auto-memory saving to auto-memory (manage with `/memory`), `/copy`
   command for code block selection, smarter "always allow" prefix suggestions
   for compound bash commands, config file corruption fix (multi-instance),

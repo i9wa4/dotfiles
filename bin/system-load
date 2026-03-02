@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Display system load (CPU and RAM usage) for tmux status line.
+# Display system load (CPU temperature, CPU and RAM usage) for tmux status line.
 #
 # Usage:
 #   system-load
 #
 # Output format:
-#   CPU:XX% RAM:XX%
+#   TEMP:XXC CPU:XX% RAM:XX%
 #
 # Supported platforms:
 #   - macOS (Darwin)
@@ -74,8 +74,35 @@ get_ram_usage() {
   esac
 }
 
+# Get CPU temperature in Celsius
+get_cpu_temp() {
+  case "${os_type}" in
+    Darwin)
+      if command -v osx-cpu-temp >/dev/null 2>&1; then
+        osx-cpu-temp | grep -o '[0-9]*\.[0-9]*' | awk '{printf "%.0f", $1}'
+      else
+        echo "-"
+      fi
+      ;;
+    Linux)
+      for zone_type_file in /sys/class/thermal/thermal_zone*/type; do
+        if [ "$(cat "${zone_type_file}")" = "x86_pkg_temp" ]; then
+          temp_file="${zone_type_file%/type}/temp"
+          echo $(( $(cat "${temp_file}") / 1000 ))
+          return
+        fi
+      done
+      echo "-"
+      ;;
+    *)
+      echo "-"
+      ;;
+  esac
+}
+
 # Main
+temp=$(get_cpu_temp)
 total_cpu=$(get_total_cpu_usage)
 ram=$(get_ram_usage)
 
-echo "RAM:${ram}% CPU:${total_cpu}%"
+echo "TEMP:${temp}C CPU:${total_cpu}% RAM:${ram}%"
