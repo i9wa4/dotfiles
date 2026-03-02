@@ -78,7 +78,6 @@ in
       pkgs.mise
       pkgs.nixd
       pkgs.nodejs
-      pkgs.python3
       pkgs.ripgrep
       pkgs.uv
       (pkgs.callPackage ./pkgs/gogcli.nix { })
