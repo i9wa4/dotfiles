@@ -42,15 +42,17 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    # Follows nixpkgs-unstable
+    # No follows (use upstream nixpkgs pin to match cache.numtide.com binaries)
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # No follows
     claude-chill = {
       url = "github:davidbeesley/claude-chill";
+    };
+    tmux-a2a-postman = {
+      url = "github:i9wa4/tmux-a2a-postman";
     };
 
     # Non-flake sources

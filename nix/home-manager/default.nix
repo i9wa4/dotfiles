@@ -89,6 +89,7 @@ in
       inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
       # Shell wrapper for claude-code session management
       inputs.claude-chill.packages.${pkgs.system}.default
+      inputs.tmux-a2a-postman.packages.${pkgs.system}.default
     ];
 
     # ==========================================================================
