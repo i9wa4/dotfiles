@@ -15,7 +15,7 @@ presets:
               delay: 500
               focus: true
             - name: htop
-              command: htop
+              command: nix run 'nixpkgs#htop'
               delay: 500
         - type: vertical
           ratio: [2, 1, 1]
