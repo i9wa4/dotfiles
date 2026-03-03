@@ -41,14 +41,14 @@ nix-flake-check:  ## che
 	nix flake check --all-systems
 
 nix-flake-update:  ## upgrade all packages in nix profile
-	nix flake update
+	nix flake update --access-tokens github.com=$$(gh auth token)
 
 nix-switch:  ## switch nix configuration
 ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
 else
-	nix run home-manager -- switch -b backup --flake '.#ubuntu' --impure
+	nix run --access-tokens github.com=$$(gh auth token) home-manager -- switch -b backup --flake '.#ubuntu' --impure
 endif
 
 
