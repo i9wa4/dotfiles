@@ -3,6 +3,7 @@ edges = [
   "boss -- orchestrator",
   "messenger -- orchestrator",
   "orchestrator -- worker",
+  "orchestrator -- worker-alt",
   "orchestrator -- critic",
   "orchestrator -- guardian",
   "critic -- guardian",
