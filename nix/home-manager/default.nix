@@ -3,6 +3,7 @@
   lib,
   config,
   username,
+  inputs,
   ...
 }:
 let
@@ -81,6 +82,13 @@ in
       pkgs.ripgrep
       pkgs.uv
       (pkgs.callPackage ./pkgs/gogcli.nix { })
+      # AI tools (llm-agents.nix — cross-platform, both Ubuntu and Darwin)
+      inputs.llm-agents.packages.${pkgs.system}.claude-code
+      inputs.llm-agents.packages.${pkgs.system}.codex
+      inputs.llm-agents.packages.${pkgs.system}.ccusage
+      inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
+      # Shell wrapper for claude-code session management
+      inputs.claude-chill.packages.${pkgs.system}.default
     ];
 
     # ==========================================================================

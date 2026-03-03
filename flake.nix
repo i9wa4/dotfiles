@@ -42,10 +42,15 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    # No follows (manages its own nixpkgs — Node.js bundle, mismatch harmless)
+    # Follows nixpkgs-unstable
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # No follows
+    claude-chill = {
+      url = "github:davidbeesley/claude-chill";
     };
 
     # Non-flake sources
