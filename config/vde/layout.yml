@@ -14,22 +14,12 @@ presets:
               command: tmux-a2a-postman
               delay: 500
               focus: true
-            - name: htop
-              command: nix run 'nixpkgs#htop'
-              delay: 500
-        - type: vertical
-          ratio: [2, 1, 1]
-          panes:
-            - name: watchdog
-              title: watchdog
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet
-              delay: 500
             - name: tailscale
               command: sudo $(which tailscaled)
               delay: 500
-            - name: vde-monitor
-              command: vde-monitor --tailscale
-              delay: 500
+        - name: vde-monitor
+          command: vde-monitor --tailscale
+          delay: 500
 
   dev:
     name: dev
