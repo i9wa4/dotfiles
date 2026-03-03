@@ -10,4 +10,4 @@ edges = [
 
 ui_node = "messenger"
 
-reply_command = "nix run github:i9wa4/tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
+reply_command = "tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"

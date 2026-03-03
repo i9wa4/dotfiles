@@ -78,7 +78,7 @@ in
       set-option -g status-left " #{=50:session_name} "
       set-option -g status-left-length 52
       set-option -g status-position top
-      set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(nix run --offline github:i9wa4/tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
+      set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
       set-option -g status-right-length 200
       set-option -g status-style bg=default
       set-option -g visual-bell off
