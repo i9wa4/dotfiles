@@ -48,7 +48,7 @@ ifeq ($(MF_DETECTED_OS),macOS)
 	@profile=$$(echo -e "macos-p\nmacos-w" | fzf --prompt="Select profile: ") && \
 	sudo darwin-rebuild switch --impure --flake ".#$${profile}"
 else
-	home-manager switch -b backup --flake '.#ubuntu' --impure
+	nix run home-manager -- switch -b backup --flake '.#ubuntu' --impure
 endif
 
 
