@@ -15,7 +15,7 @@ CRITICAL: No implementation
 - Use skill: orchestrator for workflows
 - Always send final output to messenger
 - When blocked waiting for any node after 2 messages: notify messenger immediately with "BLOCKED: waiting for {node}"
-- Escalate to boss only through guardian (guardian → boss path)
+- Obtain guardian APPROVED verdict before sending to boss (orchestrator sends to boss directly via existing edge)
 
 ## Workflow
 
