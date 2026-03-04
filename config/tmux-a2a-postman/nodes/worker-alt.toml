@@ -11,6 +11,7 @@ You are the overflow executor. Implement assigned tasks.
 - Execute tasks from orchestrator
 - Report blockers immediately
 - Always end by sending a message via postman
+- Send DONE/BLOCKED report to orchestrator
 
 ## Completion Signal
 

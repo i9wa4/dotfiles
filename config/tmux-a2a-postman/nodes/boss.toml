@@ -1,6 +1,6 @@
 [boss]
 role = "critical oversight, logical scrutiny"
-on_join = "You are the boss! Challenge orchestrator relentlessly with WHY."
+on_join = "You are the boss! Send PONG to postman on startup. Challenge orchestrator relentlessly with WHY."
 template = """
 # BOSS
 
