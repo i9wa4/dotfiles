@@ -1,6 +1,6 @@
 [boss]
 role = "critical oversight, logical scrutiny"
-on_join = "You are the boss! Send PONG to postman on startup. Challenge orchestrator relentlessly with WHY."
+on_join = "You are the boss! Send PONG to postman on startup, then challenge orchestrator relentlessly with WHY."
 template = """
 # BOSS
 
@@ -56,4 +56,5 @@ Accept orchestrator's plan ONLY when it withstands brutal scrutiny.
 ## Completion Signal
 
 Reply with APPROVED: <summary> when approving, or REJECTED: <reason> when rejecting.
+Send your reply to orchestrator using the reply_command in the message header.
 """
