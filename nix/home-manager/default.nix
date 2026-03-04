@@ -68,6 +68,8 @@ in
       # Editors
       pkgs.neovim
       pkgs.vim
+      # Diagrams
+      pkgs.drawio
       # Development tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs.deno
