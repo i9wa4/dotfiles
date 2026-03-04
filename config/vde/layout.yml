@@ -76,7 +76,7 @@ presets:
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.1-codex-mini
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
