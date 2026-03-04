@@ -1,6 +1,6 @@
 [orchestrator]
 role = "coordination, delegation"
-on_join = "You are the orchestrator! For details, see orchestrator skill."
+on_join = "You are the orchestrator. Send PONG to postman on startup, then use skill: orchestrator."
 template = """
 # ORCHESTRATOR
 
@@ -63,6 +63,6 @@ When asked for status, respond with:
 
 If no response from a node within 2 messages:
 1. Send URGENT follow-up to the unresponsive node
-2. If still no response, proceed with available reviews only
-3. Note the skip in the boss approval request
+2. Check if the node has a draft/ file that was not moved to post/ (common issue with non-Claude agents)
+3. Wait for response — NEVER skip a reviewer or proceed without their feedback
 """
