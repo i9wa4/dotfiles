@@ -19,6 +19,7 @@ let
       pr = "";
     };
     cleanupPeriodDays = 36000;
+    reasoningEffort = "high";
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";

@@ -107,7 +107,7 @@ Files and directories described below are located at:
 
 | Category  | Items                                                     |
 | --------- | --------------------------------------------------------- |
-| Rules     | aws, bash, git-github, markdown                           |
+| Rules     | aws, bash, git-github, markdown, python                   |
 | Skills    | managed skills + external skills (see @~/.claude/skills/) |
 | Subagents | reviewer-\*, researcher-tech                              |
 
@@ -121,6 +121,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | bash.md       | Bash syntax and command rules      | Command execution     |
 | git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
+| python.md     | Python shebang and venv rules      | Python execution      |
 
 ### 9.2. `skills/`
 
@@ -129,27 +130,26 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
 #### 9.2.1. Managed Skills
 
-| Skill                               | Description                              |
-| ----------------------------------- | ---------------------------------------- |
-| atlassian                           | Jira (acli) and Confluence (REST)        |
-| bigquery                            | BigQuery development guide               |
-| claude-config-optimizer             | Claude Code config and changelog         |
-| codex-config-optimizer              | Codex CLI config and changelog           |
-| daily-report                        | Daily work report generation             |
-| databricks-local                    | Queries API, VARIANT/JSON, Dashboard,    |
-|                                     | dbt integration, Jupyter kernel          |
-| dbt-local                           | Issue target setup, SQL dialect          |
-| draw-io                             | draw.io diagram creation/editing         |
-| git                                 | Git operations guide                     |
-| github                              | GitHub and PR operations guide           |
-| nix                                 | Nix commands and package management      |
-| orchestrator                        | Main agent orchestration                 |
-| python                              | Python environment and execution         |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment      |
-| skill-creator-local                 | Skill creation guide (local)             |
-| slack                               | Slack thread fetch and search            |
-| subagent-review                     | 10-parallel code/design review           |
-| tmux                                | tmux pane operations for debugging       |
+| Skill                               | Description                           |
+| ----------------------------------- | ------------------------------------- |
+| atlassian                           | Jira (acli) and Confluence (REST)     |
+| bigquery                            | BigQuery development guide            |
+| claude-config-optimizer             | Claude Code config and changelog      |
+| codex-config-optimizer              | Codex CLI config and changelog        |
+| daily-report                        | Daily work report generation          |
+| databricks-local                    | Queries API, VARIANT/JSON, Dashboard, |
+|                                     | dbt integration, Jupyter kernel       |
+| dbt-local                           | Issue target setup, SQL dialect       |
+| draw-io                             | draw.io diagram creation/editing      |
+| git                                 | Git operations guide                  |
+| github                              | GitHub and PR operations guide        |
+| nix                                 | Nix commands and package management   |
+| orchestrator                        | Main agent orchestration              |
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment   |
+| skill-creator-local                 | Skill creation guide (local)          |
+| slack                               | Slack thread fetch and search         |
+| subagent-review                     | 10-parallel code/design review        |
+| tmux                                | tmux pane operations for debugging    |
 
 #### 9.2.2. External Skills (Nix Store)
 

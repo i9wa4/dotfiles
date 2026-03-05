@@ -1,13 +1,4 @@
----
-name: python
-description: |
-  Python environment and execution guide.
-  Use when:
-  - Running Python scripts
-  - Working with uv, poetry, venv
----
-
-# Python Skill
+# Python Rules
 
 ## 1. Python-specific Rules
 
