@@ -94,7 +94,6 @@ in
     let
       commonCasks = [
         "docker-desktop"
-        "drawio"
         "google-chrome"
         "obsidian"
         "stats"
