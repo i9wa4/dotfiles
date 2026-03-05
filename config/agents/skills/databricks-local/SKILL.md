@@ -1,58 +1,23 @@
 ---
 name: databricks-local
 description: |
-  Databricks Expert Engineer Skill - Comprehensive guide for data engineering, machine learning infrastructure, and permission design
+  Databricks local additions - Queries API, VARIANT/JSON, Dashboard API, dbt integration, Jupyter kernel
+  Supplements the official `databricks` skill with project-specific patterns.
   Use when:
-  - Running databricks CLI commands (auth, api)
-  - Executing SQL queries via Databricks SQL Warehouse
-  - Working with Unity Catalog permissions
-  - Managing Lakeflow Jobs or Delta Lake
+  - Working with Databricks Queries API (saved queries)
+  - Handling VARIANT type or JSON operations
+  - Working with Lakeview Dashboard API
+  - Integrating dbt with Databricks JSON/VARIANT columns
+  - Running Jupyter notebooks with Databricks kernel
 ---
 
-# Databricks Expert Engineer Skill
+# Databricks Local Additions
 
-This skill provides a comprehensive guide for Databricks development.
+Supplements the official `databricks` skill. For CLI basics, auth, Unity Catalog,
+Delta Lake, Lakeflow Jobs, ML, Security, and Schema Discovery, use the parent
+`databricks` skill.
 
-## 1. Databricks CLI Usage
-
-### 1.1. About warehouse_id
-
-- Find and select one Serverless SQL Warehouse for warehouse_id
-- Note: databricks CLI does not auto-read warehouse_id from config files,
-  so explicitly include it in JSON each time
-
-### 1.2. Authentication
-
-- When `auth_type=databricks-cli` in profile, run U2M authentication first
-
-  ```sh
-  databricks auth login --host https://xxx.cloud.databricks.com --profile PROFILE_NAME
-  ```
-
-- Check authentication status
-
-  ```sh
-  databricks auth profiles
-  ```
-
-### 1.3. Basic Usage
-
-#### Statements API (Query Execution)
-
-```sh
-# Execute query
-databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
-  "warehouse_id": "xxxxxxxxxx",
-  "catalog": "catalog_name",
-  "schema": "schema_name",
-  "statement": "select * from table_name limit 10"
-}'
-
-# Get results (statement_id is returned from execution)
-databricks api get /api/2.0/sql/statements/{statement_id} --profile "DEFAULT"
-```
-
-#### Queries API (Query Object Management)
+## 1. Queries API (Query Object Management)
 
 ```sh
 # Create query object (for dashboards, saved queries)
@@ -77,247 +42,9 @@ databricks api get /api/2.0/sql/queries/{query_id} --profile "DEFAULT"
 - ❌ `query` → ✅ `query_text`
 - ❌ `name` → ✅ `display_name`
 
-### 1.4. Command Tips
+## 2. VARIANT Type and JSON Operations
 
-1. Query execution flow
-   - `post` executes query -> returns `statement_id`
-   - `get` retrieves results (wait until `state` is `SUCCEEDED`)
-   - For long queries, add `sleep` and retry
-
-2. Error handling
-   - `state: CLOSED`: Result retrieval was too slow. Get earlier
-   - `state: FAILED`: SQL error. Check error_message
-   - `state: RUNNING`: Still executing. Wait and retry `get`
-   - Timeout: For large data, use `limit` to verify
-
-3. Reading results
-   - `data_array`: Actual data (2D array)
-   - `schema.columns`: Column names and type info
-   - `total_row_count`: Total count (shown even with limit)
-   - `state`: Query execution state
-
-4. Parameterized queries
-
-```sh
-databricks api post /api/2.0/sql/statements --profile "DEFAULT" --json '{
-  "warehouse_id": "xxxxxxxxxx",
-  "statement": "select * from table where date >= :start_date",
-  "parameters": [{"name": "start_date", "value": "2025-01-01", "type": "DATE"}]
-}'
-```
-
-## 2. Well-Architected Lakehouse Framework
-
-Consists of 7 pillars:
-
-### 2.1. Data and AI Governance
-
-Policies and practices to securely manage data and AI assets.
-Minimize data copies with unified governance solution.
-
-### 2.2. Interoperability and Usability
-
-Consistent user experience and seamless integration with external systems.
-
-### 2.3. Operational Excellence
-
-Processes supporting continuous production operations.
-
-### 2.4. Security, Privacy, and Compliance
-
-Implement safeguards against threats.
-
-### 2.5. Reliability
-
-Ensure disaster recovery capabilities.
-
-### 2.6. Performance Efficiency
-
-Adaptability to workload changes.
-
-### 2.7. Cost Optimization
-
-Cost management to maximize value delivery.
-
-## 3. Unity Catalog
-
-### 3.1. Basic Concepts
-
-- "Define once, secure everywhere" approach
-- Unified access control policies across multiple workspaces
-- ANSI SQL compliant permission management
-
-### 3.2. Object Model
-
-3-level namespace: `catalog.schema.table`
-
-1. Catalog layer: Data isolation unit (by department, etc.)
-2. Schema layer: Logical group containing tables, views, volumes
-3. Object layer: Tables, views, volumes, functions, models
-
-### 3.3. Permission Management
-
-- Users cannot access data by default
-- Explicit permission grants required
-- Permissions inherit from parent to child (catalog -> schema -> table)
-
-```sql
--- Check permissions
-SHOW GRANTS ON SCHEMA main.default;
-
--- Grant permissions
-GRANT CREATE TABLE ON SCHEMA main.default TO `finance-team`;
-
--- Revoke permissions
-REVOKE CREATE TABLE ON SCHEMA main.default FROM `finance-team`;
-```
-
-### 3.4. Best Practices
-
-- Managed tables/volumes recommended
-  (Delta Lake format, full lifecycle management)
-- Catalog isolation across workspaces possible
-- Independent managed storage location per catalog recommended
-
-## 4. Data Engineering
-
-### 4.1. Lakeflow Solution
-
-Unifies data ingestion, transformation, and orchestration.
-
-- Lakeflow Connect: Simplifies data ingestion
-- Lakeflow Spark Declarative Pipelines (SDP): Declarative pipeline framework
-- Lakeflow Jobs: Workflow automation
-
-### 4.2. Delta Lake
-
-- Parquet data files with file-based transaction log
-- ACID transactions
-- Time travel functionality
-- Optimizations: liquid clustering, data skipping,
-  file layout optimization, vacuum
-
-### 4.3. Lakeflow Jobs
-
-Task types:
-
-- Notebook tasks
-- Pipeline tasks
-- Python script tasks
-
-Triggers:
-
-- Time-based (e.g., daily at 2 AM)
-- Event-based (on new data arrival)
-
-Limits:
-
-- Workspace: Max 2000 concurrent task executions
-- Saved jobs: Max 12000
-- Tasks per job: Max 1000
-
-## 5. Machine Learning Infrastructure
-
-### 5.1. MLflow
-
-- Core tool for experiment tracking and model management
-- Dedicated features for GenAI
-
-### 5.2. Feature Store
-
-- Feature management system
-- Automatic data pipelines and feature discovery
-
-### 5.3. Model Serving
-
-- Deploy custom models and LLMs as REST endpoints
-- Auto-scaling and GPU support
-
-## 6. Security
-
-### 6.1. Authentication and Access Control
-
-- SSO configuration
-- Multi-factor authentication
-- Access control lists
-
-### 6.2. Network Security
-
-- Private connectivity
-- Serverless egress control
-- Firewall settings
-- VPC management
-
-### 6.3. Data Encryption
-
-- Encryption at rest and in transit
-- Customer-managed keys
-- Inter-cluster communication encryption
-- Automatic credential masking
-
-## 7. SQL Warehouse
-
-### 7.1. Serverless SQL Warehouse Benefits
-
-- Instant and elastic compute
-- Auto-scaling
-- Minimal management (Databricks handles capacity)
-- Low total cost of ownership
-
-## 8. Schema Discovery and Validation
-
-### 8.1. Pre-Query Validation Rule
-
-- YOU MUST: Run DESCRIBE before executing SELECT on unfamiliar tables
-- YOU MUST: Verify exact column names and case before writing queries
-
-```sql
--- Check table columns first
-DESCRIBE TABLE catalog.schema.table_name;
-
--- Then write your query using verified column names
-SELECT column_name FROM catalog.schema.table_name;
-```
-
-### 8.2. Schema Discovery Commands
-
-```sql
--- Basic column info
-DESCRIBE TABLE catalog.schema.table_name;
-
--- Extended info (types, nullability, comments)
-DESCRIBE EXTENDED catalog.schema.table_name;
-
--- List tables in schema
-SHOW TABLES IN catalog.schema;
-
--- Table properties and metadata
-DESCRIBE DETAIL catalog.schema.table_name;
-```
-
-### 8.3. Common Gotchas
-
-| Issue               | Cause                          | Prevention                    |
-| ------------------- | ------------------------------ | ----------------------------- |
-| Column name case    | Databricks preserves case      | Use DESCRIBE before query     |
-| Data type mismatch  | Implicit conversion fails      | Check column types explicitly |
-| NULL handling       | Unexpected NULL in aggregation | Use COALESCE or filter NULLs  |
-| Timestamp precision | TIMESTAMP vs TIMESTAMP_NTZ     | Verify type before comparison |
-
-### 8.4. Knowledge Accumulation
-
-When encountering schema-related issues, update this skill with:
-
-- Universal patterns (case sensitivity, type coercion rules)
-- Common column naming conventions in Unity Catalog
-- Databricks-specific SQL behaviors
-
-NOTE: Do not include project-specific table names or business logic.
-Keep entries generalizable across environments.
-
-## 9. VARIANT Type and JSON Operations
-
-### 9.1. VARIANT Type (Runtime 15.3+)
+### 2.1. VARIANT Type (Runtime 15.3+)
 
 **Benefits:**
 
@@ -347,7 +74,7 @@ SELECT
 FROM events;
 ```
 
-### 9.2. JSON Access Patterns
+### 2.2. JSON Access Patterns
 
 **Colon Notation (Recommended):**
 
@@ -400,15 +127,15 @@ FROM table_name;
 - Colon notation supports type casting: `json_data:age::INT`
 - Wildcards `[*]` only work with colon notation (not get_json_object)
 
-## 10. Dashboard API (Lakeview)
+## 3. Dashboard API (Lakeview)
 
-### 10.1. Important Changes (2026)
+### 3.1. Important Changes (2026)
 
 - **Legacy Dashboard API**: Deprecated (access disabled 2026-01-12)
 - **Migration deadline**: 2026-03-02
 - **New API**: Lakeview API (`/api/2.0/lakeview/dashboards`)
 
-### 10.2. Dashboard Visualization Limitations
+### 3.2. Dashboard Visualization Limitations
 
 **AI/BI Dashboard (Lakeview):**
 
@@ -419,9 +146,9 @@ FROM table_name;
 
 **Recommendation:** Parse JSON in SQL (server-side) before visualization
 
-## 11. dbt Integration Patterns
+## 4. dbt Integration Patterns
 
-### 11.1. Auto-Schema Evolution with Jinja
+### 4.1. Auto-Schema Evolution with Jinja
 
 **Macro for Dynamic JSON Expansion:**
 
@@ -466,27 +193,53 @@ FROM {{ source('bronze', 'events') }}
 - No manual model updates required
 - Works with VARIANT or JSON string columns
 
-### 11.2. Recommended Architecture
+### 4.2. Recommended Architecture
 
 ```text
 Source → Bronze (VARIANT) → Silver (dbt expand) → Gold (business logic)
 ```
 
-- **Bronze**: VARIANT型でRaw JSON保存
-- **Silver**: dbt Jinjaマクロで必要なフィールドを展開
-- **Gold**: ビジネスロジック、アグリゲーション
+- **Bronze**: Raw JSON stored as VARIANT
+- **Silver**: dbt Jinja macro expands required fields
+- **Gold**: Business logic, aggregation
 
-## 12. Reference Links
+## 5. Databricks Jupyter Kernel
 
-- Official docs: <https://docs.databricks.com/>
-- Unity Catalog: <https://docs.databricks.com/en/data-governance/unity-catalog/>
-- Lakeflow Jobs: <https://docs.databricks.com/en/jobs/>
-- MLflow: <https://docs.databricks.com/en/mlflow/>
-- Delta Lake: <https://docs.databricks.com/en/delta/>
-- Security: <https://docs.databricks.com/en/security/>
+For generic Jupyter execution options, use the official `jupyter-notebook` skill.
+
+### 5.1. Installation
+
+<https://github.com/i9wa4/jupyter-databricks-kernel>
+
+```bash
+uv pip install jupyter-databricks-kernel
+uv run python -m jupyter_databricks_kernel.install
+```
+
+### 5.2. Execute with Databricks Kernel
+
+```sh
+uv run jupyter execute <notebook_path> --inplace --kernel_name=databricks --timeout=300
+```
+
+Required environment variables:
+
+- `DATABRICKS_HOST`: Databricks workspace URL
+- `DATABRICKS_TOKEN`: Personal Access Token
+- `DATABRICKS_CLUSTER_ID`: Cluster ID
+
+### 5.3. Notes
+
+- For Databricks kernel, cluster startup takes 5-6 minutes if stopped
+- Verify required environment variables are properly set before execution
+
+## 6. Reference Links
+
 - VARIANT Type: <https://docs.databricks.com/aws/en/semi-structured/variant.html>
 - JSON Operations: <https://docs.databricks.com/aws/en/semi-structured/json.html>
 - Colon Notation: <https://docs.databricks.com/aws/en/sql/language-manual/functions/colonsign.html>
 - Queries API: <https://docs.databricks.com/api/workspace/queries>
 - Lakeview Dashboards: <https://docs.databricks.com/aws/en/dashboards/>
 - dbt Documentation: <https://docs.getdbt.com/>
+- jupyter-databricks-kernel: <https://github.com/i9wa4/jupyter-databricks-kernel>
+- Jupyter nbclient: <https://nbclient.readthedocs.io/>

@@ -129,28 +129,27 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
 #### 9.2.1. Managed Skills
 
-| Skill                               | Description                         |
-| ----------------------------------- | ----------------------------------- |
-| atlassian                           | Jira (acli) and Confluence (REST)   |
-| bigquery                            | BigQuery development guide          |
-| claude-config-optimizer             | Claude Code config and changelog    |
-| codex-config-optimizer              | Codex CLI config and changelog      |
-| daily-report                        | Daily work report generation        |
-| databricks-local                    | Databricks development guide        |
-| dbt                                 | dbt development guide               |
-| draw-io                             | draw.io diagram creation/editing    |
-| git                                 | Git operations guide                |
-| github                              | GitHub and PR operations guide      |
-| jupyter-notebook                    | Jupyter Notebook execution guide    |
-| nix                                 | Nix commands and package management |
-| orchestrator                        | Main agent orchestration            |
-| python                              | Python environment and execution    |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment |
-| skill-creator-local                 | Skill creation guide (local)        |
-| slack                               | Slack thread fetch and search       |
-| subagent-review                     | 10-parallel code/design review      |
-| terraform                           | Terraform development guide         |
-| tmux                                | tmux pane operations for debugging  |
+| Skill                               | Description                              |
+| ----------------------------------- | ---------------------------------------- |
+| atlassian                           | Jira (acli) and Confluence (REST)        |
+| bigquery                            | BigQuery development guide               |
+| claude-config-optimizer             | Claude Code config and changelog         |
+| codex-config-optimizer              | Codex CLI config and changelog           |
+| daily-report                        | Daily work report generation             |
+| databricks-local                    | Queries API, VARIANT/JSON, Dashboard,    |
+|                                     | dbt integration, Jupyter kernel          |
+| dbt-local                           | Issue target setup, SQL dialect          |
+| draw-io                             | draw.io diagram creation/editing         |
+| git                                 | Git operations guide                     |
+| github                              | GitHub and PR operations guide           |
+| nix                                 | Nix commands and package management      |
+| orchestrator                        | Main agent orchestration                 |
+| python                              | Python environment and execution         |
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment      |
+| skill-creator-local                 | Skill creation guide (local)             |
+| slack                               | Slack thread fetch and search            |
+| subagent-review                     | 10-parallel code/design review           |
+| tmux                                | tmux pane operations for debugging       |
 
 #### 9.2.2. External Skills (Nix Store)
 
