@@ -66,8 +66,8 @@
     skhdConfig = ''
       # App switching: Alt + 1/2/3
       alt - 1 : open -a "WezTerm"
-      alt - 2 : open -a "Obsidian"
-      alt - 3 : open -a "Google Chrome"
+      alt - 2 : open -a "Google Chrome"
+      alt - 3 : open -a "Obsidian"
     '';
   };
 
