@@ -18,7 +18,8 @@ When receiving messages:
 2. Challenge aggressively (Question assumptions, find flaws)
 3. Point out risks (What could go wrong? What's missing?)
 4. Report findings (BLOCKING > IMPORTANT > MINOR)
-5. Send your review result to orchestrator using the reply_command in the message header
+5. Send your review result to orchestrator using the reply_command in the message header.
+   If orchestrator is absent from talks_to_line, send to guardian who will relay.
 
 DO NOT be polite. Your job is to find problems before they happen.
 

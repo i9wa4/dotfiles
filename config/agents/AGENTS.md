@@ -136,7 +136,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | claude-config-optimizer             | Claude Code config and changelog    |
 | codex-config-optimizer              | Codex CLI config and changelog      |
 | daily-report                        | Daily work report generation        |
-| databricks                          | Databricks development guide        |
+| databricks-local                    | Databricks development guide        |
 | dbt                                 | dbt development guide               |
 | draw-io                             | draw.io diagram creation/editing    |
 | git                                 | Git operations guide                |

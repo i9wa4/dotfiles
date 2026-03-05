@@ -79,6 +79,10 @@
       url = "github:streamlit/agent-skills";
       flake = false;
     };
+    databricks-agent-skills = {
+      url = "github:databricks/databricks-agent-skills";
+      flake = false;
+    };
   };
 
   outputs =

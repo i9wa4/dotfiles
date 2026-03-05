@@ -42,6 +42,11 @@ in
         path = inputs.streamlit-skills;
         subdir = "developing-with-streamlit/skills";
       };
+      # Databricks official agent skills
+      databricks = {
+        path = inputs.databricks-agent-skills;
+        subdir = "skills";
+      };
     };
 
     # Enable all skills from all sources
