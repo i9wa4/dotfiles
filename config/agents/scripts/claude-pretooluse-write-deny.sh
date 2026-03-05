@@ -49,7 +49,7 @@ get_file_path() {
 
 # Block only when role name is set AND not starting with "worker"
 # (not in tmux or no pane title = normal use, allow all)
-if [[ -n $ROLE_NAME && $ROLE_NAME != worker && $ROLE_NAME != agent ]]; then
+if [[ -n $ROLE_NAME ]] && case "$ROLE_NAME" in worker* | agent) false ;; *) true ;; esac then
   case "$TOOL" in
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
