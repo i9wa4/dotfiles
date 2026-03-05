@@ -442,6 +442,36 @@ Examples:
 </mxCell>
 ```
 
+### 7.18. Edge Label Z-Order
+
+In draw.io XML, elements are rendered in document order (later = on top / front layer).
+Edge label cells placed BEFORE column/background boxes are hidden behind those boxes.
+
+- YOU MUST: Place all edge label `<mxCell>` elements at the END of `<root>`, after all
+  shape/box elements
+- YOU MUST: Add `labelBackgroundColor=#ffffff;labelBorderColor=none;` to every edge
+  label's style attribute (belt-and-suspenders — ensures readability even if coordinates overlap)
+
+WRONG (label hidden behind col-box):
+
+```xml
+<!-- WRONG: label placed before column boxes -->
+<mxCell id="label-zeromq" style="...fillColor=#ffffff;..." vertex="1" parent="1">...</mxCell>
+<mxCell id="col1-box" style="...fillColor=#d1d6d9;..." vertex="1" parent="1">...</mxCell>
+```
+
+CORRECT (label on top of everything):
+
+```xml
+<!-- column and background boxes first -->
+<mxCell id="col1-box" style="...fillColor=#d1d6d9;..." vertex="1" parent="1">...</mxCell>
+<!-- ... all other shapes ... -->
+<!-- edge labels LAST — rendered on top -->
+<mxCell id="label-zeromq" style="...fillColor=#ffffff;...labelBackgroundColor=#ffffff;labelBorderColor=none;" vertex="1" parent="1">...</mxCell>
+```
+
+Verification: `tail -40 diagram.drawio | grep -c 'id="label-'` — count should equal number of edge labels.
+
 ## 8. Reference
 
 - [Color Palette](references/color-palette.md) - auto-updatable
@@ -499,6 +529,8 @@ python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 - [ ] Elements aligned on parent container's horizontal centerline
 - [ ] Text not truncated or cut off at edges (verify in PNG)
 - [ ] For diagram sets: consistent colors/fonts/stroke width across all diagrams (side-by-side verification)
+- [ ] Edge label `<mxCell>` elements placed at END of `<root>` (z-order on top of all shapes)
+- [ ] All edge labels have `labelBackgroundColor=#ffffff` in style
 
 ## 10. Diagram Creation Workflow
 
@@ -530,6 +562,7 @@ Before writing XML:
 1. Create XML following calculated coordinates
 2. Place elements in correct z-order
 3. Apply consistent styles from diagram set specification
+4. Move any edge label cells to the END of `<root>` (see 7.18 Edge Label Z-Order)
 
 ### 10.4. Phase 3: Verification
 
