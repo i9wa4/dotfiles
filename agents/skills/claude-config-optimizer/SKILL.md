@@ -26,7 +26,7 @@ Source of truth:
 | Destination               | Source                                     | Managed by       |
 | ------------------------- | ------------------------------------------ | ---------------- |
 | `~/.claude/settings.json` | Generated from Nix attributes              | claude-code.nix  |
-| `~/.claude/CLAUDE.md`     | `agents/AGENTS.md`                         | claude-code.nix  |
+| `~/.claude/CLAUDE.md`     | `agents/CLAUDE.md`                         | claude-code.nix  |
 | `~/.claude/rules/`        | `agents/rules/`                            | claude-code.nix  |
 | `~/.claude/agents/`       | `agents/subagents/`                        | claude-code.nix  |
 | `~/.claude/scripts/`      | `agents/scripts/`                          | claude-code.nix  |
