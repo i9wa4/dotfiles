@@ -108,6 +108,9 @@ in
 
         # Node.js
         export NODE_OPTIONS="--max-old-space-size=16384"
+
+        # Python
+        export PIP_REQUIRE_VIRTUALENV=1
       ''
 
       # Local config (machine-specific, not version controlled)
