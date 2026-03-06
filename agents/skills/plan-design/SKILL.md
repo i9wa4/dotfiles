@@ -13,14 +13,14 @@ Use this skill when the output is a plan artifact requiring:
 - Iterative review gates
 - Newcomer-safe clarity and verifiability
 
-## Relationship to Existing Skills
+## 1. Relationship to Existing Skills
 
 - Base orchestration mechanics: use `orchestrator` skill.
 - Multi-perspective review mechanics: reuse `subagent-review` concepts selectively.
 - GitHub fetch/comment commands: use `github` skill where needed.
 - Do not duplicate those skills; add only plan-design specific workflow.
 
-## Trigger Conditions
+## 2. Trigger Conditions
 
 Use this skill when one or more apply:
 - User asks for a migration plan, rollout plan, or execution roadmap.
@@ -28,7 +28,7 @@ Use this skill when one or more apply:
 - User asks for beginner-friendly documentation or says they cannot understand the current plan.
 - Plan must pass explicit approval gates (critic/guardian/boss or equivalents).
 
-## Pre-Step: Overlap Check (Mandatory)
+## 3. Pre-Step: Overlap Check (Mandatory)
 
 Before drafting, run the following and read the results:
 
@@ -47,14 +47,14 @@ Before drafting, run the following and read the results:
 
 Do not proceed until the unique delta is explicit.
 
-## 5-Step Workflow
+## 4. 5-Step Workflow
 
 NOTE: This workflow departs from orchestrator base behavior by dispatching workers (Step 2)
 BEFORE the annotation cycle (Step 3). This is intentional for plan authoring: workers provide
 raw investigation inputs that the annotation cycle then synthesizes. This overrides orchestrator
 section 3.2 for plan-design tasks only. In all other contexts, follow the base orchestrator order.
 
-### Step 1: Fetch Source and Build Ground Truth
+### 4.1. Step 1: Fetch Source and Build Ground Truth
 
 1. Create a research artifact for source digestion:
    mkoutput --dir research --label "plan-investigation"
@@ -71,7 +71,7 @@ section 3.2 for plan-design tasks only. In all other contexts, follow the base o
 
 Output: source digest with section references.
 
-### Step 2: Parallel Investigation
+### 4.2. Step 2: Parallel Investigation
 
 Dispatch worker and worker-alt in parallel with non-overlapping focus:
 
@@ -88,7 +88,7 @@ Required response format from each worker:
 - Severity buckets: `BLOCKING`, `IMPORTANT`, `MINOR`
 - For each finding: section reference + missing detail + suggested addition
 
-### Step 3: Annotation and Synthesis
+### 4.3. Step 3: Annotation and Synthesis
 
 1. Aggregate both worker outputs into one review package.
 2. Resolve contradictions between worker findings:
@@ -103,7 +103,7 @@ Required response format from each worker:
 When synthesis is complete, proceed to Step 4 (formal review gate).
 Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
-### Step 4: Review Gate Order (Strict)
+### 4.4. Step 4: Review Gate Order (Strict)
 
 1. Send to critic and guardian in parallel.
 2. If either rejects: revise the plan artifact, resubmit to both. Repeat until both approve.
@@ -121,7 +121,7 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
    e. If boss rejects a second time, notify messenger: "BLOCKED: plan rejected twice by boss -- escalate."
 5. Do not finalize or send to messenger until boss approves.
 
-### Step 5: Beginner-Friendly Final Plan Packaging
+### 4.5. Step 5: Beginner-Friendly Final Plan Packaging
 
 This step augments the base orchestrator plan template. The sections below are ADDITIONAL
 to the base template defined in the orchestrator skill. Sections already in the base template
@@ -147,7 +147,7 @@ Additional required sections:
 7. Rollback per phase
    - trigger + steps + verification
 
-## Worker Routing Strategy (Default)
+## 5. Worker Routing Strategy (Default)
 
 - Investigation tasks: dispatch to `worker` + `worker-alt` in parallel.
 - Execution (complex reasoning/design): `worker`.
@@ -155,7 +155,7 @@ Additional required sections:
 
 If risk is high or ambiguity is high, run parallel and compare.
 
-## Ambiguity Escalation (Mandatory)
+## 6. Ambiguity Escalation (Mandatory)
 
 If any worker encounters ambiguous or unclear points while rewriting content for a beginner audience:
 
@@ -166,7 +166,7 @@ If any worker encounters ambiguous or unclear points while rewriting content for
 
 This rule applies to all plan rewriting tasks, including glossary entries, command templates, and decision gate prose.
 
-## Quality Checklist Before Approval
+## 7. Quality Checklist Before Approval
 
 A plan is ready for boss review only if all are true:
 - Every technical term used is defined once.
@@ -175,7 +175,7 @@ A plan is ready for boss review only if all are true:
 - Placeholder decisions are resolved or converted into named decision gates.
 - Critic and guardian approved the same artifact version.
 
-## Deliverables
+## 8. Deliverables
 
 - Plan file created via:
   - `mkoutput --dir plans --label plan`
