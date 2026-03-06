@@ -54,19 +54,44 @@ git remote -v           # Remote check
 
 Applies to: Issues, PRs, commit messages, and all GitHub-posted text.
 
+### 4.1. Determine Org Membership
+
+Before posting issue/PR/discussion URLs, check if the referenced repo's
+org matches the current repo's org AND the user is a member:
+
+```sh
+gh api user/memberships/orgs --jq '.[].organization.login'
+```
+
+### 4.2. Same Org (User is a Member) -- Bare URLs OK
+
+If the URL points to a repo in the same org as the current repo
+and the user belongs to that org, bare issue/PR/discussion URLs are allowed.
+
+- OK: `https://github.com/my-org/other-repo/issues/123`
+- OK: `https://github.com/my-org/other-repo/pull/456`
+- OK: `my-org/other-repo#123`
+
+### 4.3. Cross-Org or External -- Must Escape
+
+If the URL points to a repo in a different org, escaping is required.
+
 - NEVER: Use `owner/repo#123` format (triggers notifications)
 - NEVER: Include bare external issue/PR/discussion URLs without backticks
-  in GitHub-posted text (Issues, PRs, commit messages)
-  - NG: `https://github.com/owner/repo/issues/123` (bare, triggers mention)
-  - NG: `https://github.com/owner/repo/pull/456` (bare, triggers mention)
-  - NG: `https://github.com/owner/repo/discussions/789` (bare, triggers mention)
-- OK: External URLs that do NOT trigger mentions (no escaping needed)
-  - `https://github.com/owner/repo` (root URL)
-  - `https://github.com/owner/repo/blob/...` (file link)
-  - `https://github.com/owner/repo/tree/...` (directory link)
-- YOU MUST: For issue/PR/discussion references, use these safe formats
+  - NG: `https://github.com/external-org/repo/issues/123` (bare, triggers mention)
+  - NG: `https://github.com/external-org/repo/pull/456` (bare, triggers mention)
+  - NG: `https://github.com/external-org/repo/discussions/789` (bare, triggers mention)
+- YOU MUST: For external issue/PR/discussion references, use these safe formats
   - `cf. <repo-name> issue <number>` (e.g., `cf. nix-darwin issue 149`)
   - Wrap in backticks (e.g., `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
+
+### 4.4. Always OK (No Escaping Needed)
+
+Regardless of org, these URL types do not trigger mentions:
+
+- `https://github.com/owner/repo` (root URL)
+- `https://github.com/owner/repo/blob/...` (file link)
+- `https://github.com/owner/repo/tree/...` (directory link)
 
 ## 5. Commit Message Rules
 

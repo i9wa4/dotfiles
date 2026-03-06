@@ -133,6 +133,22 @@
         "type": "github"
       }
     },
+    "databricks-official-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772547749,
+        "narHash": "sha256-6/Y4MHyLINUH111bbvWT2LRNp+GjoSbWrJ4ixzrjhY0=",
+        "owner": "databricks",
+        "repo": "databricks-agent-skills",
+        "rev": "56534acc0d5a719c692dd355482da92c46e14ccb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "databricks",
+        "repo": "databricks-agent-skills",
+        "type": "github"
+      }
+    },
     "dbt-agent-skills": {
       "flake": false,
       "locked": {
@@ -341,6 +357,22 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "gitignore.nix",
+        "type": "github"
+      }
+    },
+    "hashicorp-agent-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772625576,
+        "narHash": "sha256-gtXcigFYy5xMEBMgTa0pQjmwXfO0uHCLb0ybT22r5xM=",
+        "owner": "hashicorp",
+        "repo": "agent-skills",
+        "rev": "876a095c71079e4c112fb1de2f1a66dca0ffea23",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hashicorp",
+        "repo": "agent-skills",
         "type": "github"
       }
     },
@@ -579,9 +611,11 @@
         "anthropic-skills": "anthropic-skills",
         "claude-chill": "claude-chill",
         "databricks-agent-skills": "databricks-agent-skills",
+        "databricks-official-skills": "databricks-official-skills",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
+        "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "mcp-servers-nix": "mcp-servers-nix",

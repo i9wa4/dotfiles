@@ -83,6 +83,14 @@
       url = "github:databricks-solutions/ai-dev-kit";
       flake = false;
     };
+    databricks-official-skills = {
+      url = "github:databricks/databricks-agent-skills";
+      flake = false;
+    };
+    hashicorp-agent-skills = {
+      url = "github:hashicorp/agent-skills";
+      flake = false;
+    };
   };
 
   outputs =

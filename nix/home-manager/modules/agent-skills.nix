@@ -53,6 +53,26 @@ in
         path = inputs.databricks-agent-skills;
         subdir = ".claude/skills";
       };
+      # Databricks official agent skills (databricks org)
+      # cf. https://github.com/databricks/databricks-agent-skills
+      databricks-official = {
+        path = inputs.databricks-official-skills;
+        subdir = "skills";
+      };
+      # HashiCorp agent skills (split by plugin)
+      # cf. https://github.com/hashicorp/agent-skills
+      hashicorp-terraform-codegen = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/code-generation/skills";
+      };
+      hashicorp-terraform-module = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/module-generation/skills";
+      };
+      hashicorp-terraform-provider = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/provider-development/skills";
+      };
     };
 
     # Enable all skills from all sources
