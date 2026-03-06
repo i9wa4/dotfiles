@@ -68,30 +68,41 @@ gh api user/memberships/orgs --jq '.[].organization.login'
 If the URL points to a repo in the same org as the current repo
 and the user belongs to that org, bare issue/PR/discussion URLs are allowed.
 
-- OK: `https://github.com/my-org/other-repo/issues/123`
-- OK: `https://github.com/my-org/other-repo/pull/456`
-- OK: `my-org/other-repo#123`
+OK examples (output as-is):
+
+- https://github.com/my-org/other-repo/issues/123
+- https://github.com/my-org/other-repo/pull/456
+- my-org/other-repo#123
 
 ### 4.3. Cross-Org or External -- Must Escape
 
 If the URL points to a repo in a different org, escaping is required.
 
-- NEVER: Use `owner/repo#123` format (triggers notifications)
-- NEVER: Include bare external issue/PR/discussion URLs without backticks
-  - NG: `https://github.com/external-org/repo/issues/123` (bare, triggers mention)
-  - NG: `https://github.com/external-org/repo/pull/456` (bare, triggers mention)
-  - NG: `https://github.com/external-org/repo/discussions/789` (bare, triggers mention)
-- YOU MUST: For external issue/PR/discussion references, use these safe formats
-  - `cf. <repo-name> issue <number>` (e.g., `cf. nix-darwin issue 149`)
-  - Wrap in backticks (e.g., `` `https://github.com/nix-darwin/nix-darwin/issues/149` ``)
+NG examples (bare URLs trigger mentions):
 
-### 4.4. Always OK (No Escaping Needed)
+- https://github.com/external-org/repo/issues/123
+- https://github.com/external-org/repo/pull/456
+- external-org/repo#123
 
-Regardless of org, these URL types do not trigger mentions:
+OK examples (escaped, output as-is):
 
-- `https://github.com/owner/repo` (root URL)
-- `https://github.com/owner/repo/blob/...` (file link)
-- `https://github.com/owner/repo/tree/...` (directory link)
+- cf. nix-darwin issue 149
+- `https://github.com/nix-darwin/nix-darwin/issues/149`
+
+### 4.4. Non-GitHub URLs -- Always OK
+
+Non-GitHub URLs never trigger mentions (output as-is):
+
+- https://genda-inc.slack.com/archives/C070AJC0A81/p1772703119689899
+- https://dbc-55810bf1-184f.cloud.databricks.com/dashboardsv3/...
+
+### 4.5. GitHub URLs That Do Not Trigger Mentions -- Always OK
+
+Regardless of org, these GitHub URL types do not trigger mentions (output as-is):
+
+- https://github.com/owner/repo
+- https://github.com/owner/repo/blob/main/README.md
+- https://github.com/owner/repo/tree/main/src
 
 ## 5. Commit Message Rules
 

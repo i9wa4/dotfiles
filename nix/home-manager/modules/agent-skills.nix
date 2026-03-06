@@ -48,11 +48,6 @@ in
         path = inputs.databricks-agent-skills;
         subdir = "databricks-skills";
       };
-      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
-      databricks-claude = {
-        path = inputs.databricks-agent-skills;
-        subdir = ".claude/skills";
-      };
       # Databricks official agent skills (databricks org)
       # cf. https://github.com/databricks/databricks-agent-skills
       databricks-official = {
