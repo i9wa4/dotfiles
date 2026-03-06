@@ -20,8 +20,8 @@ let
   # Static config (everything except dynamic trusted projects)
   codexConfig = {
     command_attribution = "disable";
-    hide_agent_reasoning = true;
-    model = "gpt-5.3-codex";
+    # hide_agent_reasoning = true;
+    # model = "gpt-5.3-codex";
     network_access = true;
     project_doc_fallback_filenames = [
       "README.md"
