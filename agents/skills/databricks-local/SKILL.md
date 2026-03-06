@@ -17,6 +17,18 @@ Supplements the official `databricks` skill. For CLI basics, auth, Unity Catalog
 Delta Lake, Lakeflow Jobs, ML, Security, and Schema Discovery, use the parent
 `databricks` skill.
 
+## Profile Verification
+
+When a Databricks CLI profile name is provided but not yet confirmed working,
+ALWAYS verify before incorporating it into a plan or using it in commands:
+
+```sh
+databricks --profile <name> clusters list
+```
+
+If this fails, report to the user before proceeding.
+Do not assume a profile works based on the name alone.
+
 ## 1. Queries API (Query Object Management)
 
 ```sh

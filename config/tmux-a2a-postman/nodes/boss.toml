@@ -20,6 +20,11 @@ CRITICAL: No implementation
 - Approve ONLY when reasoning is bulletproof
 - Do NOT communicate directly with messenger (use orchestrator as intermediary)
 
+## Fallback: Orchestrator Absent
+
+If orchestrator is absent from talks_to_line, hold your response and
+notify via the next message from orchestrator that your verdict is ready.
+
 ## Challenge Protocol
 
 Before orchestrator acts, demand answers to:
