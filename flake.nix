@@ -80,7 +80,7 @@
       flake = false;
     };
     databricks-agent-skills = {
-      url = "github:databricks/databricks-agent-skills";
+      url = "github:databricks-solutions/ai-dev-kit";
       flake = false;
     };
   };

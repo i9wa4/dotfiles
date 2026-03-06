@@ -43,9 +43,15 @@ in
         subdir = "developing-with-streamlit/skills";
       };
       # Databricks official agent skills
+      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills
       databricks = {
         path = inputs.databricks-agent-skills;
-        subdir = "skills";
+        subdir = "databricks-skills";
+      };
+      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
+      databricks-claude = {
+        path = inputs.databricks-agent-skills;
+        subdir = ".claude/skills";
       };
     };
 
