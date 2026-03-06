@@ -28,6 +28,7 @@ let
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
+      CLAUDE_CODE_ENABLE_PROMPT_SUGGESTIONS = "false";
       ENABLE_TOOL_SEARCH = "auto:3";
       IS_DEMO = "true";
     };
@@ -116,11 +117,11 @@ in
 {
   home.file = {
     # CLAUDE.md (Nix store, rebuild required to update)
-    ".claude/CLAUDE.md".source = ../../../config/agents/AGENTS.md;
+    ".claude/CLAUDE.md".source = ../../../agents/CLAUDE.md;
     # Nix store directory symlinks (rebuild required to update)
-    ".claude/rules".source = ../../../config/agents/rules;
-    ".claude/agents".source = ../../../config/agents/subagents;
-    ".claude/scripts".source = ../../../config/agents/scripts;
+    ".claude/rules".source = ../../../agents/rules;
+    ".claude/agents".source = ../../../agents/subagents;
+    ".claude/scripts".source = ../../../agents/scripts;
   };
 
   # Copy settings.json as a writable file (not symlink).

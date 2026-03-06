@@ -21,15 +21,15 @@ Config is managed declaratively via Nix (`programs.claude-code` home-manager mod
 Source of truth:
 
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/modules/claude-code.nix
-- @~/ghq/github.com/i9wa4/dotfiles/config/agents/
+- @~/ghq/github.com/i9wa4/dotfiles/agents/
 
 | Destination               | Source                                     | Managed by       |
 | ------------------------- | ------------------------------------------ | ---------------- |
 | `~/.claude/settings.json` | Generated from Nix attributes              | claude-code.nix  |
-| `~/.claude/CLAUDE.md`     | `config/agents/AGENTS.md`                  | claude-code.nix  |
-| `~/.claude/rules/`        | `config/agents/rules/`                     | claude-code.nix  |
-| `~/.claude/agents/`       | `config/agents/subagents/`                 | claude-code.nix  |
-| `~/.claude/scripts/`      | `config/agents/scripts/`                   | claude-code.nix  |
+| `~/.claude/CLAUDE.md`     | `agents/AGENTS.md`                         | claude-code.nix  |
+| `~/.claude/rules/`        | `agents/rules/`                            | claude-code.nix  |
+| `~/.claude/agents/`       | `agents/subagents/`                        | claude-code.nix  |
+| `~/.claude/scripts/`      | `agents/scripts/`                          | claude-code.nix  |
 | `~/.claude/skills/`       | Multiple flake inputs + local              | agent-skills.nix |
 | MCP servers               | `nix/home-manager/modules/mcp-servers.nix` | claude-code.nix  |
 

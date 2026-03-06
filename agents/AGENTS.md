@@ -1,4 +1,4 @@
-# AGENTS.md / CLAUDE.md
+# AGENTS.md
 
 After reading these instructions,
 acknowledge with a random one-liner in character.
@@ -103,7 +103,7 @@ is optional for disambiguation when multiple plans exist in the same session.
 
 Files and directories described below are located at:
 
-- @~/ghq/github.com/i9wa4/dotfiles/config/agents/
+- @~/ghq/github.com/i9wa4/dotfiles/agents/
 
 | Category  | Items                                                     |
 | --------- | --------------------------------------------------------- |

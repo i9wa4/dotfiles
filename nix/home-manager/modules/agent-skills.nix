@@ -21,7 +21,7 @@ in
       # Local skills from this dotfiles repository
       local = {
         path = inputs.self;
-        subdir = "config/agents/skills";
+        subdir = "agents/skills";
       };
       # dbt-labs official agent skills (split by skill group)
       dbt = {

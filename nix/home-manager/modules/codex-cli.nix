@@ -46,9 +46,9 @@ in
 {
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
-    ".codex/AGENTS.md".source = ../../../config/agents/AGENTS.md;
+    ".codex/AGENTS.md".source = ../../../agents/AGENTS.md;
     # Rules directory (Nix store, rebuild required to update)
-    ".codex/rules".source = ../../../config/agents/rules;
+    ".codex/rules".source = ../../../agents/rules;
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
