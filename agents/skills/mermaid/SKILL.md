@@ -80,3 +80,39 @@ PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google
 ```
 
 NOTE: Strip code fence markers — mmdc needs raw mermaid syntax (no ` ```{mermaid} ` wrapper).
+
+## 6. revealjs Text Color Fix
+
+`%%{init}%%` themeVariables do NOT work in revealjs — revealjs applies its own CSS variables
+after SVG generation, overriding any inline settings.
+
+Working fix: override the CSS variables at `:root` level in YAML `include-in-header`:
+
+```css
+:root {
+  --mermaid-edge-color: #000000 !important;     /* signal text */
+  --mermaid-label-fg-color: #000000 !important; /* actor names */
+  --mermaid-node-fg-color: #000000 !important;  /* alt/loop labels */
+}
+```
+
+Do NOT use `.mermaid text { fill: #000000 !important; }` — it is ineffective because
+revealjs renders mermaid client-side and CSS vars take precedence over static SVG fill.
+
+Why `[alt/else labels]` appear black by default: they use `--mermaid-node-fg-color`
+which defaults to `#000` — while signal text and actor names use different vars.
+
+## 7. Coloring alt/loop/actor in sequenceDiagram (revealjs)
+
+CSS class names (sourced from mermaid-init.js defaultCSS):
+
+| Element              | CSS class    | Example color           |
+| -------------------- | ------------ | ----------------------- |
+| Actor boxes          | `rect.actor` | `#dbeafe` (light blue)  |
+| alt/loop section bg  | `.loopLine`  | `#fef3c7` (amber)       |
+| alt/loop label boxes | `.labelBox`  | `#e0e7ff` (pale indigo) |
+
+IMPORTANT limitation: `alt` and `loop` blocks share the same `.loopLine` CSS class.
+They cannot be styled with different colors without more invasive CSS.
+
+Apply via `include-in-header` `<style>` block with `!important`.
