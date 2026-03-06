@@ -41,19 +41,7 @@ mise exec -- pre-commit run convert-drawio-to-png --files assets/my-diagram.draw
 bash ~/.claude/skills/draw-io/scripts/convert-drawio-to-png.sh assets/diagram1.drawio
 ```
 
-Internal command used:
-
-```sh
-drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
-```
-
-| Option   | Description                |
-| -------- | -------------------------- |
-| `-x`     | Export mode                |
-| `-f png` | PNG format output          |
-| `-s 2`   | 2x scale (high resolution) |
-| `-t`     | Transparent background     |
-| `-o`     | Output file path           |
+NOTE: For draw.io CLI flags and export options, see the `drawio-skills` skill.
 
 ## 4. Layout Adjustment
 

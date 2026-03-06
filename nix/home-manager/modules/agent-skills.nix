@@ -42,15 +42,61 @@ in
         path = inputs.streamlit-skills;
         subdir = "developing-with-streamlit/skills";
       };
-      # Databricks official agent skills
+      # Databricks official agent skills (ai-dev-kit)
+      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills
       databricks = {
         path = inputs.databricks-agent-skills;
+        subdir = "databricks-skills";
+      };
+      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
+      databricks-claude = {
+        path = inputs.databricks-agent-skills;
+        subdir = ".claude/skills";
+        filter.nameRegex = "python-dev"; # exclude databricks-python-sdk (duplicate)
+      };
+      # Databricks official agent skills (databricks org)
+      # cf. https://github.com/databricks/databricks-agent-skills
+      databricks-official = {
+        path = inputs.databricks-official-skills;
         subdir = "skills";
+        filter.nameRegex = "databricks(-apps|-pipelines)?"; # exclude databricks-jobs (duplicate)
+      };
+      # draw.io skill (jgraph/drawio-mcp)
+      # cf. https://github.com/jgraph/drawio-mcp
+      drawio-mcp = {
+        path = inputs.drawio-mcp;
+        filter.nameRegex = "DISABLED"; # prevent auto-discovery; use skills.explicit
+      };
+      # HashiCorp agent skills (split by plugin)
+      # cf. https://github.com/hashicorp/agent-skills
+      hashicorp-terraform-codegen = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/code-generation/skills";
+      };
+      hashicorp-terraform-module = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/module-generation/skills";
+      };
+      hashicorp-terraform-provider = {
+        path = inputs.hashicorp-agent-skills;
+        subdir = "terraform/provider-development/skills";
       };
     };
 
     # Enable all skills from all sources
-    skills.enableAll = true;
+    skills = {
+      enableAll = true;
+      # Explicit skill definitions (for rename or custom config)
+      explicit.drawio-skills = {
+        from = "drawio-mcp";
+        path = "skill-cli";
+      };
+      explicit.databricks-jobs-bundles = {
+        from = "databricks-official";
+        path = "databricks-jobs";
+        rename = "databricks-jobs-bundles"; # avoid duplicate with ai-dev-kit
+      };
+    };
 
     # Target destinations (symlink-tree uses activation rsync)
     targets = {

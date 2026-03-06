@@ -120,6 +120,22 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
+        "lastModified": 1772736873,
+        "narHash": "sha256-KMB0CLz+wtpfJTQjoP0FZB4TnWi5L1BOUJDCQXybRkA=",
+        "owner": "databricks-solutions",
+        "repo": "ai-dev-kit",
+        "rev": "a0371cb23220359645e4a639bcb294fbf0ff6d06",
+        "type": "github"
+      },
+      "original": {
+        "owner": "databricks-solutions",
+        "repo": "ai-dev-kit",
+        "type": "github"
+      }
+    },
+    "databricks-official-skills": {
+      "flake": false,
+      "locked": {
         "lastModified": 1772547749,
         "narHash": "sha256-6/Y4MHyLINUH111bbvWT2LRNp+GjoSbWrJ4ixzrjhY0=",
         "owner": "databricks",
@@ -146,6 +162,22 @@
       "original": {
         "owner": "dbt-labs",
         "repo": "dbt-agent-skills",
+        "type": "github"
+      }
+    },
+    "drawio-mcp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772718743,
+        "narHash": "sha256-CDXjsRob3dJtFefx6NaUCavVUlIFd2LB2sZ7QsyG5Z8=",
+        "owner": "jgraph",
+        "repo": "drawio-mcp",
+        "rev": "fac2437c4cd9e7c0bd75a70a211f0f52fd7f21e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jgraph",
+        "repo": "drawio-mcp",
         "type": "github"
       }
     },
@@ -344,6 +376,22 @@
         "type": "github"
       }
     },
+    "hashicorp-agent-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772625576,
+        "narHash": "sha256-gtXcigFYy5xMEBMgTa0pQjmwXfO0uHCLb0ybT22r5xM=",
+        "owner": "hashicorp",
+        "repo": "agent-skills",
+        "rev": "876a095c71079e4c112fb1de2f1a66dca0ffea23",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hashicorp",
+        "repo": "agent-skills",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -409,11 +457,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772738721,
-        "narHash": "sha256-ewQ7Q+s/vKQqFSOUIKy99n6WBvmQRUddWMa25M1nT14=",
+        "lastModified": 1772760127,
+        "narHash": "sha256-GO8yrPLKjQ/aK5xhcRVdGOd1yRmBuZyucgNehXX1JO8=",
         "owner": "natsukium",
         "repo": "mcp-servers-nix",
-        "rev": "8139a1be3f593cb26a70c7cd98fb216e840abb72",
+        "rev": "bf994c1c54510ff9663811a1fd2509278432d892",
         "type": "github"
       },
       "original": {
@@ -579,9 +627,12 @@
         "anthropic-skills": "anthropic-skills",
         "claude-chill": "claude-chill",
         "databricks-agent-skills": "databricks-agent-skills",
+        "databricks-official-skills": "databricks-official-skills",
         "dbt-agent-skills": "dbt-agent-skills",
+        "drawio-mcp": "drawio-mcp",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
+        "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "mcp-servers-nix": "mcp-servers-nix",
