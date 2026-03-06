@@ -60,6 +60,8 @@ if [[ -n $ROLE_NAME ]] && case "$ROLE_NAME" in worker* | agent) false ;; *) true
       : # Allow writes to mkoutput state directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow writes to /tmp/ directory
+    elif [[ -n $FILE_PATH && -n ${SUBDIR:-} && $FILE_PATH == "${SUBDIR}/"* ]]; then
+      : # Allow writes to SUBDIR directory
     else
       REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker can edit files."$'\n'"💡 Alternative: Delegate task to worker via tmux-a2a-postman."
       jq -n \
