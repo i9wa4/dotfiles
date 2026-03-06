@@ -87,6 +87,10 @@
       url = "github:databricks/databricks-agent-skills";
       flake = false;
     };
+    drawio-mcp = {
+      url = "github:jgraph/drawio-mcp";
+      flake = false;
+    };
     hashicorp-agent-skills = {
       url = "github:hashicorp/agent-skills";
       flake = false;

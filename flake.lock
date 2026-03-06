@@ -165,6 +165,22 @@
         "type": "github"
       }
     },
+    "drawio-mcp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772718743,
+        "narHash": "sha256-CDXjsRob3dJtFefx6NaUCavVUlIFd2LB2sZ7QsyG5Z8=",
+        "owner": "jgraph",
+        "repo": "drawio-mcp",
+        "rev": "fac2437c4cd9e7c0bd75a70a211f0f52fd7f21e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jgraph",
+        "repo": "drawio-mcp",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -613,6 +629,7 @@
         "databricks-agent-skills": "databricks-agent-skills",
         "databricks-official-skills": "databricks-official-skills",
         "dbt-agent-skills": "dbt-agent-skills",
+        "drawio-mcp": "drawio-mcp",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
         "hashicorp-agent-skills": "hashicorp-agent-skills",
