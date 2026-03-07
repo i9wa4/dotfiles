@@ -8,6 +8,7 @@ description: Create high-quality, executable implementation plans for complex ta
 Extend (not replace) the base `orchestrator` workflow for high-rigor plan authoring.
 
 Use this skill when the output is a plan artifact requiring:
+
 - Multi-source synthesis
 - Parallel investigation
 - Iterative review gates
@@ -23,6 +24,7 @@ Use this skill when the output is a plan artifact requiring:
 ## 2. Trigger Conditions
 
 Use this skill when one or more apply:
+
 - User asks for a migration plan, rollout plan, or execution roadmap.
 - Input includes large docs, predecessor notes, or investigation artifacts.
 - User asks for beginner-friendly documentation or says they cannot understand the current plan.
@@ -58,7 +60,9 @@ section 3.2 for plan-design tasks only. In all other contexts, follow the base o
 
 1. Create a research artifact for source digestion:
    mkoutput --dir research --label "plan-investigation"
+
    # Note: add a suffix to disambiguate if multiple plans exist in the same session, e.g.
+
    # mkoutput --dir research --label "plan-investigation-dbt-merge"
 
 2. Read all source artifacts in full.
@@ -85,6 +89,7 @@ Dispatch worker and worker-alt in parallel with non-overlapping focus:
   - Preconditions/tools/access completeness
 
 Required response format from each worker:
+
 - Severity buckets: `BLOCKING`, `IMPORTANT`, `MINOR`
 - For each finding: section reference + missing detail + suggested addition
 
@@ -130,6 +135,7 @@ Test Strategy, Progress, Surprises) must still be present. The sections listed h
 be added for beginner-friendly plan outputs.
 
 Additional required sections:
+
 1. Plain-language background
 2. Glossary (define all domain terms/acronyms used)
 3. Prerequisites
@@ -169,6 +175,7 @@ This rule applies to all plan rewriting tasks, including glossary entries, comma
 ## 7. Quality Checklist Before Approval
 
 A plan is ready for boss review only if all are true:
+
 - Every technical term used is defined once.
 - Every phase has commands + expected outputs + done criteria.
 - Prerequisites and access requirements are explicit.

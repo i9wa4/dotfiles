@@ -14,11 +14,11 @@ description: |
 `%%{init}%%` themeVariables work in mmdc PNG but are **overridden** by revealjs CSS at
 render time. Quarto revealjs injects CSS vars via `mermaid-init.js defaultCSS`:
 
-| CSS variable                  | Targets                       | Default value |
-| ----------------------------- | ----------------------------- | ------------- |
-| `--mermaid-edge-color`        | signal text, loop text        | `#999` (gray) |
-| `--mermaid-label-fg-color`    | actor names                   | `#2a76dd` (blue) |
-| `--mermaid-node-fg-color`     | alt/else labels               | `#000` (black) |
+| CSS variable               | Targets                | Default value    |
+| -------------------------- | ---------------------- | ---------------- |
+| `--mermaid-edge-color`     | signal text, loop text | `#999` (gray)    |
+| `--mermaid-label-fg-color` | actor names            | `#2a76dd` (blue) |
+| `--mermaid-node-fg-color`  | alt/else labels        | `#000` (black)   |
 
 Result: mmdc shows black text; revealjs shows faint/colored text.
 
