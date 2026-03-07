@@ -36,7 +36,7 @@
         Hour = 12;
         Minute = 0;
       };
-      options = "--delete-older-than 1d";
+      options = "--delete-older-than 14d";
     };
   };
 
