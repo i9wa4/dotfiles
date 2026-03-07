@@ -54,7 +54,7 @@ Or use the webapp-testing skill (Playwright) to screenshot the rendered slide.
 
 ### 4.1. %%{init}%% Config
 
-```
+```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'textColor': '#000000', ...}, 'sequence': {'mirrorActors': false}}}%%
 ```
 
@@ -90,9 +90,9 @@ Working fix: override the CSS variables at `:root` level in YAML `include-in-hea
 
 ```css
 :root {
-  --mermaid-edge-color: #000000 !important;     /* signal text */
+  --mermaid-edge-color: #000000 !important; /* signal text */
   --mermaid-label-fg-color: #000000 !important; /* actor names */
-  --mermaid-node-fg-color: #000000 !important;  /* alt/loop labels */
+  --mermaid-node-fg-color: #000000 !important; /* alt/loop labels */
 }
 ```
 

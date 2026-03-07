@@ -94,6 +94,13 @@ endif
 
 
 # --------------------------------------
+# Ubuntu Tasks
+#
+ubuntu-apt:  ## update and upgrade packages in Ubuntu
+	sudo apt-get update && sudo apt-get upgrade -y
+
+
+# --------------------------------------
 # WSL Tasks (Windows integration)
 #
 define MF_WSLCONF_IN_WSL
