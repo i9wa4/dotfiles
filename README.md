@@ -104,18 +104,10 @@ nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa
 cd ~/ghq/github.com/i9wa4/dotfiles
 ```
 
-### 2.5. Set up direnv
-
-`.envrc` is gitignored. Create it from the example file:
+### 2.5. Create .envrc for direnv
 
 ```sh
-cp ~/ghq/github.com/i9wa4/dotfiles/.envrc.example ~/ghq/github.com/i9wa4/dotfiles/.envrc
-```
-
-Then allow direnv:
-
-```sh
-direnv allow ~/ghq/github.com/i9wa4/dotfiles
+echo "use flake" > .envrc
 ```
 
 ## 3. Ubuntu
@@ -134,7 +126,7 @@ cat /etc/nix/nix.conf
 Ensure there is exactly one `trusted-users` line that includes your username:
 
 ```sh
-sudo nano /etc/nix/nix.conf
+sudo vim /etc/nix/nix.conf
 ```
 
 Example:
