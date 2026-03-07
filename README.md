@@ -53,8 +53,8 @@
    ```sh
    cat >> ~/.ssh/config << 'EOF'
    Host github.com
-       IdentityFile ~/.ssh/github
-       User git
+   	IdentityFile ~/.ssh/github
+   	User git
    EOF
    ```
 
