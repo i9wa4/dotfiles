@@ -63,9 +63,11 @@ call ddc#custom#patch_global('sourceParams', {
 \     'prefix': ['/', '$'],
 \     'userDirs': [
 \       '~/.claude/skills/',
+\       '~/.codex/skills/',
 \     ],
 \     'projectDirs': [
-\       '.claude/skills/'
+\       '.claude/skills/',
+\       '.codex/skills/',
 \     ],
 \ }})
 

@@ -115,7 +115,7 @@ presets:
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.3-codex --config model_reasoning_effort=medium
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.3-codex-spark --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
