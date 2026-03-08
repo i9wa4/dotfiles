@@ -22,9 +22,9 @@ let
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";
+      CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70";
       CLAUDE_CODE_DISABLE_AUTO_MEMORY = "true";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
-      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "true";
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
@@ -85,6 +85,7 @@ let
         }
       ];
     };
+    includeGitInstructions = false;
     language = "English";
     # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
     mcpServers = builtins.mapAttrs (

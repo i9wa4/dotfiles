@@ -214,7 +214,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.63 (2026-03-03)
+Last reviewed Claude Code version: v2.1.71 (2026-03-08)
 
 ### 11.1. Applied Optimizations
 
@@ -232,6 +232,11 @@ Last reviewed Claude Code version: v2.1.63 (2026-03-03)
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
+- [x] `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` removed - enables Remote Control
+      and feature flag refresh (v2.1.51+)
+- [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context usage
+- [x] `includeGitInstructions = false` - disables built-in git instructions;
+      custom `rules/git-github.md` is sole authority (v2.1.69)
 
 ### 11.2. Pending Considerations
 
@@ -245,11 +250,6 @@ Last reviewed Claude Code version: v2.1.63 (2026-03-03)
 - [ ] ConfigChange hook - security auditing of settings changes (v2.1.49)
 - [ ] `isolation: worktree` in agent defs - isolated git worktree per agent
       (v2.1.49, v2.1.50)
-- [ ] `background: true` in agent defs - agents always run as background tasks
-      (v2.1.49)
-- [ ] `claude remote-control` subcommand - external builds / local env serving
-      (v2.1.51)
-- [ ] Managed settings via macOS plist or Windows Registry (v2.1.51)
 
 ### 11.3. Not Adopting
 
@@ -262,9 +262,29 @@ Last reviewed Claude Code version: v2.1.63 (2026-03-03)
 - `plansDirectory` - not needed
 - `mcpToolSearch` - setting does not exist; `ENABLE_TOOL_SEARCH` env is the
   only mechanism (currently set to "auto:3")
+- `background: true` in agent defs - UI-level background for Claude Code's own
+  Agent tool; no benefit for tmux-a2a-postman (OS-level parallelism)
+- Managed settings (plist/Registry) - enterprise MDM feature; solo Ubuntu user
+- `InstructionsLoaded` hook - observability only, cannot inject context;
+  existing `SessionStart` hook with `compact` matcher already handles reload
+- `/loop` command - available since v2.1.71 (current); no config needed
 
 ### 11.4. Version Notes
 
+- v2.1.71: `/loop` recurring prompt command (e.g. `/loop 5m check deploy`),
+  cron scheduling tools, `voice:pushToTalk` rebindable keybinding, stdin
+  freeze fix in long sessions, background agent completion path fix
+- v2.1.70: Remote Control poll rate cut 300× (once/10min while connected),
+  VSCode native MCP management dialog, compaction preserves images for cache
+  reuse, skill re-injection on `--resume` fix (~600 tokens saved)
+- v2.1.69: `InstructionsLoaded` hook, `includeGitInstructions` setting +
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS` env, `/remote-control` custom name
+  arg, `${CLAUDE_SKILL_DIR}` variable for skills, `agent_id`/`agent_type` in
+  hook events, Voice STT 20 languages, security fix (nested skill discovery
+  from gitignored dirs), trust dialog fix for `.mcp.json`
+- v2.1.68: Opus 4.6 defaults to medium effort for Max/Team; "ultrathink"
+  re-introduced for high effort; Opus 4/4.1 removed from first-party API
+- v2.1.66: Reduced spurious error logging
 - v2.1.63: `/simplify` and `/batch` bundled commands, HTTP hooks,
   `ENABLE_CLAUDEAI_MCP_SERVERS=false` env, project configs shared across
   worktrees, "Always copy full response" for `/copy`, many memory leak fixes,

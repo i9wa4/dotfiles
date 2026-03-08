@@ -17,9 +17,13 @@ let
 
   tomlFormat = pkgs.formats.toml { };
 
+  # All gpt-5.x models share this context window size
+  codexContextWindow = 272000;
+
   # Static config (everything except dynamic trusted projects)
   codexConfig = {
     command_attribution = "disable";
+    model_auto_compact_token_limit = builtins.floor (codexContextWindow * 0.7); # 70%
     # hide_agent_reasoning = true;
     # model = "gpt-5.3-codex";
     network_access = true;
