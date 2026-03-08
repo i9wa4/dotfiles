@@ -31,8 +31,10 @@ function! utils#toggle_quote() range abort
 endfunction
 
 
-function! utils#send_register() abort
-  call system('tmux load-buffer -w -', @+)
+function! utils#send_register(reg) abort
+  let l:content = getreg(a:reg)
+  silent! let @+ = l:content
+  call system('tmux load-buffer -w -', l:content)
 endfunction
 
 

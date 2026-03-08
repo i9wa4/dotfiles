@@ -95,12 +95,7 @@ nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
 " Register
 nnoremap <Plug>(my-Register) <Nop>
 nmap <Space>r <Plug>(my-Register)
-if has('mac')
-  nnoremap <expr> <Plug>(my-Register)r ':let @+ = @' .. nr2char(getchar()) .. "\<CR>"
-else
-  nnoremap <expr> <Plug>(my-Register)r ':let @* = @' .. nr2char(getchar()) .. "\<CR>"
-endif
-nnoremap <Plug>(my-Register)t <Cmd>call utils#send_register()<CR>
+nnoremap <expr> <Plug>(my-Register)t ':call utils#send_register(' .. string(nr2char(getchar())) .. ")\<CR>"
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
@@ -227,7 +222,7 @@ set clipboard&
 
 if has('mac')
   set clipboard^=unnamed
-else
+elseif has('nvim') || has('clipboard')
   set clipboard^=unnamedplus
 endif
 
@@ -258,28 +253,61 @@ if has('mac')
     \ }
   endif
 else
-  " Linux: Neovim auto-detects, Vim needs explicit provider
-  if !has('nvim')
+  " Linux
+  if has('nvim')
+    " Neovim auto-detects xclip/xsel/wl-copy; add tmux fallback
+    if !executable('xclip') && !executable('xsel') && !executable('wl-copy')
+    \   && executable('tmux') && !empty($TMUX)
+      let g:clipboard = {
+      \   'name': 'tmux',
+      \   'copy':  {'+': ['tmux', 'load-buffer', '-w', '-'], '*': ['tmux', 'load-buffer', '-w', '-']},
+      \   'paste': {'+': ['tmux', 'save-buffer', '-'], '*': ['tmux', 'save-buffer', '-']},
+      \   'cache_enabled': 0,
+      \ }
+    endif
+  elseif exists('v:clipproviders')
+    " Vim 9.1+ on Linux
     if executable('xclip')
-      let g:clipboard = {
-      \   'name': 'xclip',
-      \   'copy':  {'+': ['xclip', '-selection', 'clipboard'], '*': ['xclip', '-selection', 'primary']},
-      \   'paste': {'+': ['xclip', '-selection', 'clipboard', '-o'], '*': ['xclip', '-selection', 'primary', '-o']},
-      \   'cache_enabled': 0,
-      \ }
+      let s:clip_copy_plus  = 'xclip -selection clipboard'
+      let s:clip_copy_star  = 'xclip -selection primary'
+      let s:clip_paste_plus = 'xclip -selection clipboard -o'
+      let s:clip_paste_star = 'xclip -selection primary -o'
+      let s:clip_name = 'xclip'
     elseif executable('xsel')
-      let g:clipboard = {
-      \   'name': 'xsel',
-      \   'copy':  {'+': ['xsel', '--clipboard', '--input'], '*': ['xsel', '--primary', '--input']},
-      \   'paste': {'+': ['xsel', '--clipboard', '--output'], '*': ['xsel', '--primary', '--output']},
-      \   'cache_enabled': 0,
-      \ }
+      let s:clip_copy_plus  = 'xsel --clipboard --input'
+      let s:clip_copy_star  = 'xsel --primary --input'
+      let s:clip_paste_plus = 'xsel --clipboard --output'
+      let s:clip_paste_star = 'xsel --primary --output'
+      let s:clip_name = 'xsel'
     elseif executable('wl-copy')
-      let g:clipboard = {
-      \   'name': 'wl-clipboard',
-      \   'copy':  {'+': ['wl-copy'], '*': ['wl-copy', '--primary']},
-      \   'paste': {'+': ['wl-paste'], '*': ['wl-paste', '--primary']},
-      \   'cache_enabled': 0,
+      let s:clip_copy_plus  = 'wl-copy'
+      let s:clip_copy_star  = 'wl-copy --primary'
+      let s:clip_paste_plus = 'wl-paste'
+      let s:clip_paste_star = 'wl-paste --primary'
+      let s:clip_name = 'wl'
+    elseif executable('tmux') && !empty($TMUX)
+      let s:clip_copy_plus  = 'tmux load-buffer -w -'
+      let s:clip_copy_star  = 'tmux load-buffer -w -'
+      let s:clip_paste_plus = 'tmux save-buffer -'
+      let s:clip_paste_star = 'tmux save-buffer -'
+      let s:clip_name = 'tmux'
+    endif
+    if exists('s:clip_name')
+      function! s:ClipAvailable() abort
+        return '+*'
+      endfunction
+      function! s:ClipPaste(reg, opts) abort
+        let l:cmd = a:reg ==# '+' ? s:clip_paste_plus : s:clip_paste_star
+        return [systemlist(l:cmd), 'v']
+      endfunction
+      function! s:ClipCopy(reg, regtype, lines) abort
+        let l:cmd = a:reg ==# '+' ? s:clip_copy_plus : s:clip_copy_star
+        call system(l:cmd, join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
+      endfunction
+      let v:clipproviders[s:clip_name] = {
+      \   'available': function('s:ClipAvailable'),
+      \   'paste': {'+': function('s:ClipPaste'), '*': function('s:ClipPaste')},
+      \   'copy':  {'+': function('s:ClipCopy'),  '*': function('s:ClipCopy')},
       \ }
     endif
   endif
