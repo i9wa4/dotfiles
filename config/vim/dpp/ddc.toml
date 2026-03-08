@@ -8,7 +8,7 @@ let s:sources_list = [
 \   'denippet',
 \   'file',
 \   'skkeleton',
-\   'slash_commands',
+\   'agent_skills',
 \ ]
 if !has('nvim')
   call add(s:sources_list, 'lsp')
@@ -51,20 +51,20 @@ call ddc#custom#patch_global('sourceOptions', {
 \     'forceCompletionPattern': '\S/\S*',
 \ }})
 call ddc#custom#patch_global('sourceOptions', {
-\   'slash_commands': {
+\   'agent_skills': {
 \     'mark': 'slash',
 \     'matchers': ['matcher_fuzzy'],
 \     'minAutoCompleteLength': 1,
 \     'isVolatile': v:true,
-\     'forceCompletionPattern': '\/[a-zA-Z0-9_-]*',
+\     'forceCompletionPattern': '[\/\$][a-zA-Z0-9_:-]*',
 \ }})
 call ddc#custom#patch_global('sourceParams', {
-\   'slash_commands': {
+\   'agent_skills': {
+\     'prefix': ['/', '$'],
 \     'userDirs': [
 \       '~/.claude/skills/',
 \     ],
 \     'projectDirs': [
-\       '.claude/commands/',
 \       '.claude/skills/'
 \     ],
 \ }})
@@ -135,6 +135,7 @@ on_source = ['ddc.vim']
 repo = 'Shougo/pum.vim'
 on_source = ['ddc.vim']
 hook_source = '''
+call pum#set_option('preview', v:true)
 inoremap <C-n> <Cmd>call pum#map#select_relative(+1)<CR>
 inoremap <C-p> <Cmd>call pum#map#select_relative(-1)<CR>
 inoremap <C-y> <Cmd>call pum#map#confirm()<CR>
@@ -194,5 +195,5 @@ repo = 'skk-dev/dict'
 repo = 'uasi/skk-emoji-jisyo'
 
 [[plugins]]
-repo = 'i9wa4/ddc-source-slash-commands'
+repo = 'i9wa4/ddc-source-agent-skills'
 on_source = ['ddc.vim']
