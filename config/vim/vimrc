@@ -96,9 +96,9 @@ nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
 nnoremap <Plug>(my-Register) <Nop>
 nmap <Space>r <Plug>(my-Register)
 if has('mac')
-  nnoremap <expr> <Plug>(my-Register)r ':let @* = @' .. nr2char(getchar()) .. "\<CR>"
-else
   nnoremap <expr> <Plug>(my-Register)r ':let @+ = @' .. nr2char(getchar()) .. "\<CR>"
+else
+  nnoremap <expr> <Plug>(my-Register)r ':let @* = @' .. nr2char(getchar()) .. "\<CR>"
 endif
 nnoremap <Plug>(my-Register)t <Cmd>call utils#send_register()<CR>
 
