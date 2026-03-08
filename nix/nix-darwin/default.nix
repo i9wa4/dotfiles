@@ -389,11 +389,26 @@
 
       # Phase 3-4: System-level operations (run as root - no sudo needed)
       launchctl bootout system/com.google.keystone.daemon 2>/dev/null || true
+      launchctl bootout system/com.google.GoogleUpdater.system 2>/dev/null || true
 
-      # Remove and block system-level updater directory
+      # Remove and block system-level updater directories
       rm -rf /Library/Google/GoogleSoftwareUpdate
       touch /Library/Google/GoogleSoftwareUpdate
       chmod 000 /Library/Google/GoogleSoftwareUpdate
+
+      rm -rf "/Library/Application Support/Google/GoogleUpdater"
+      touch "/Library/Application Support/Google/GoogleUpdater"
+      chmod 000 "/Library/Application Support/Google/GoogleUpdater"
+
+      # Remove and block system-level LaunchDaemon plist files
+      for f in \
+        /Library/LaunchDaemons/com.google.keystone.daemon.plist \
+        /Library/LaunchDaemons/com.google.GoogleUpdater.system.plist \
+        /Library/LaunchDaemons/com.google.GoogleUpdater.wake.system.plist; do
+        rm -f "$f"
+        touch "$f"
+        chmod 000 "$f"
+      done
     '';
 
     # ==========================================================================
