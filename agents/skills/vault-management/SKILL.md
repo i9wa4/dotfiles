@@ -20,23 +20,23 @@ Vault base: `~/ghq/github.com/i9wa4/internal/`
 
 ## 1. Directory Map
 
-| Directory              | Content type                                                   |
-| ---------------------- | -------------------------------------------------------------- |
-| `decisions/`           | Decision records (YYYY-MM-DD-{slug}.md)                        |
-| `docs/tracking/`       | Issue plans, checklists, roadmaps, investigations, deprecated  |
-| `docs/prerequisites/`  | Vault reference values, config snippets for ongoing tasks      |
-| `docs/meetings/`       | Meeting notes and event notes                                  |
-| `docs/adr/`            | ADR archive (legacy, NNNN-{slug}.md)                           |
-| `docs/design/`         | Design stubs for deferred issues                               |
-| `docs/schema/`         | Data schema specifications                                     |
-| `notes/`               | Session logs, Slack threads, dated research, personal memos    |
-| `notes/slack/`         | Saved Slack threads                                            |
-| `action-items/`        | Action items (YYYY-MM-DD-{slug}.md)                            |
-| `digests/`             | Agent-generated digests                                        |
-| `agent-data/`          | Agent runtime data (memory, watchlists) — git-tracked          |
-| `moc/`                 | Map of Content index files (Dataview dashboards)               |
-| `people/`              | Person profiles for 1:1 management                             |
-| `sprints/`             | Sprint planning records                                        |
+| Directory             | Content type                                                  |
+| --------------------- | ------------------------------------------------------------- |
+| `decisions/`          | Decision records (YYYY-MM-DD-{slug}.md)                       |
+| `docs/tracking/`      | Issue plans, checklists, roadmaps, investigations, deprecated |
+| `docs/prerequisites/` | Vault reference values, config snippets for ongoing tasks     |
+| `docs/meetings/`      | Meeting notes and event notes                                 |
+| `docs/adr/`           | ADR archive (legacy, NNNN-{slug}.md)                          |
+| `docs/design/`        | Design stubs for deferred issues                              |
+| `docs/schema/`        | Data schema specifications                                    |
+| `notes/`              | Session logs, Slack threads, dated research, personal memos   |
+| `notes/slack/`        | Saved Slack threads                                           |
+| `action-items/`       | Action items (YYYY-MM-DD-{slug}.md)                           |
+| `digests/`            | Agent-generated digests                                       |
+| `agent-data/`         | Agent runtime data (memory, watchlists) — git-tracked         |
+| `moc/`                | Map of Content index files (Dataview dashboards)              |
+| `people/`             | Person profiles for 1:1 management                            |
+| `sprints/`            | Sprint planning records                                       |
 
 **NEVER use `projects/`** — legacy directory, not in convention. Migrate files on contact.
 
@@ -48,15 +48,15 @@ Vault base: `~/ghq/github.com/i9wa4/internal/`
 
 Pattern: `{issue-slug}-{type}.md` — lowercase, hyphenated, no date prefix.
 
-| File type           | Suffix                    | Example                               |
-| ------------------- | ------------------------- | ------------------------------------- |
-| Active plan         | `-plan-final.md`          | `usdt-647-plan-final.md`              |
-| Checklist           | `-checklist.md`           | `usdt-647-checklist.md`               |
-| Roadmap             | `-roadmap.md`             | `usdt-647-roadmap.md`                 |
-| Investigation       | `-{topic}.md`             | `usdt-647-repo-investigation.md`      |
-| GitHub issues plan  | `-github-issues-plan.md`  | `usdt-647-github-issues-plan.md`      |
-| Deprecated plan v1  | `-plan-v1-deprecated.md`  | `usdt-647-plan-v1-deprecated.md`      |
-| Deprecated plan vN  | `-plan-vN-deprecated.md`  | `usdt-647-plan-v2-deprecated.md`      |
+| File type          | Suffix                   | Example                          |
+| ------------------ | ------------------------ | -------------------------------- |
+| Active plan        | `-plan-final.md`         | `usdt-647-plan-final.md`         |
+| Checklist          | `-checklist.md`          | `usdt-647-checklist.md`          |
+| Roadmap            | `-roadmap.md`            | `usdt-647-roadmap.md`            |
+| Investigation      | `-{topic}.md`            | `usdt-647-repo-investigation.md` |
+| GitHub issues plan | `-github-issues-plan.md` | `usdt-647-github-issues-plan.md` |
+| Deprecated plan v1 | `-plan-v1-deprecated.md` | `usdt-647-plan-v1-deprecated.md` |
+| Deprecated plan vN | `-plan-vN-deprecated.md` | `usdt-647-plan-v2-deprecated.md` |
 
 ### 2.2. Prerequisites / vault references (in `docs/prerequisites/`)
 
@@ -72,16 +72,16 @@ Example: `2026-03-05-usdt-647-session-log.md`
 
 ### 2.4. Other typed files
 
-| Type        | Directory       | Pattern                          |
-| ----------- | --------------- | -------------------------------- |
-| meeting     | docs/meetings/  | `YYYY-MM-DD-{slug}.md`          |
-| decision    | decisions/      | `YYYY-MM-DD-{slug}.md`          |
-| digest      | digests/        | `YYYY-MM-DD-manager-digest.md`  |
-| action item | action-items/   | `YYYY-MM-DD-{slug}.md`          |
-| daily note  | notes/          | `YYYY-MM-DD.md`                 |
-| ADR         | docs/adr/       | `NNNN-{slug}.md`                |
-| MOC         | moc/            | `{topic}.md`                    |
-| person      | people/         | `{slug}.md`                     |
+| Type        | Directory      | Pattern                        |
+| ----------- | -------------- | ------------------------------ |
+| meeting     | docs/meetings/ | `YYYY-MM-DD-{slug}.md`         |
+| decision    | decisions/     | `YYYY-MM-DD-{slug}.md`         |
+| digest      | digests/       | `YYYY-MM-DD-manager-digest.md` |
+| action item | action-items/  | `YYYY-MM-DD-{slug}.md`         |
+| daily note  | notes/         | `YYYY-MM-DD.md`                |
+| ADR         | docs/adr/      | `NNNN-{slug}.md`               |
+| MOC         | moc/           | `{topic}.md`                   |
+| person      | people/        | `{slug}.md`                    |
 
 ---
 
@@ -92,10 +92,11 @@ Example: `2026-03-05-usdt-647-session-log.md`
 All vault directories are organized by content type. Use `project:` frontmatter to associate a file with a project zone:
 
 ```yaml
-project: genda   # or: pivot, admin, personal
+project: genda # or: pivot, admin, personal
 ```
 
 Filter by project in Dataview:
+
 ```dataview
 TABLE file.name, status FROM "docs/tracking"
 WHERE project = "genda"
@@ -103,12 +104,12 @@ WHERE project = "genda"
 
 Project zones:
 
-| Slug     | Description                          |
-| -------- | ------------------------------------ |
-| genda    | GENDA full-time work                 |
-| pivot    | PIVOT freelance work                 |
-| admin    | Tax filing, invoicing, contracts     |
-| personal | Career, housing, private life        |
+| Slug     | Description                      |
+| -------- | -------------------------------- |
+| genda    | GENDA full-time work             |
+| pivot    | PIVOT freelance work             |
+| admin    | Tax filing, invoicing, contracts |
+| personal | Career, housing, private life    |
 
 ---
 
@@ -165,13 +166,13 @@ If a file of this type already exists in the vault, move it to `/tmp/` on contac
 
 ## 7. Quick Reference: Where Does This File Go?
 
-| I have a...                          | Put it in...                       |
-| ------------------------------------ | ---------------------------------- |
-| New migration plan                   | `docs/tracking/`                   |
-| Checklist for an ongoing task        | `docs/tracking/`                   |
-| Config value referenced by plan      | `docs/prerequisites/`              |
-| Old plan replaced by a new one       | `docs/tracking/` (renamed, deprecated) |
-| Session work log                     | `notes/` (with date prefix)        |
-| Investigation dump from mkoutput     | Do not vault — keep in mkoutput    |
-| Decision (architecture, tooling)     | `decisions/`                       |
-| Meeting notes                        | `docs/meetings/`                   |
+| I have a...                      | Put it in...                           |
+| -------------------------------- | -------------------------------------- |
+| New migration plan               | `docs/tracking/`                       |
+| Checklist for an ongoing task    | `docs/tracking/`                       |
+| Config value referenced by plan  | `docs/prerequisites/`                  |
+| Old plan replaced by a new one   | `docs/tracking/` (renamed, deprecated) |
+| Session work log                 | `notes/` (with date prefix)            |
+| Investigation dump from mkoutput | Do not vault — keep in mkoutput        |
+| Decision (architecture, tooling) | `decisions/`                           |
+| Meeting notes                    | `docs/meetings/`                       |
