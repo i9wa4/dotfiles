@@ -10,6 +10,7 @@
 }:
 let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
+  prohibitedBash = import ./prohibited-bash-commands.nix;
 
   jsonFormat = pkgs.formats.json { };
 
@@ -92,13 +93,7 @@ let
       _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
     ) mcpServers;
     permissions = {
-      deny = [
-        "Bash(git -C *)"
-        "Bash(git push*)"
-        "Bash(git rebase*)"
-        "Bash(git reset*)"
-        "Bash(rm *)"
-        "Bash(sudo *)"
+      deny = (map (cmd: "Bash(${cmd.claudeGlob})") prohibitedBash) ++ [
         "Read(**/*key*)"
         "Read(**/*token*)"
         "Read(.env*)"

@@ -15,6 +15,32 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
 
+  prohibitedBash = import ./prohibited-bash-commands.nix;
+
+  mkPrefixRule =
+    cmd:
+    let
+      patternItems = builtins.concatStringsSep ", " (map (s: "\"${s}\"") cmd.argv);
+    in
+    ''
+      prefix_rule(
+          pattern = [${patternItems}],
+          decision = "forbidden",
+          justification = "${cmd.justification}",
+      )
+    '';
+
+  defaultRulesContent = ''
+    # Exec policy rules for Codex CLI
+    # Generated from nix/home-manager/modules/prohibited-bash-commands.nix
+    # Equivalent of Claude Code permissions.deny (Bash entries only)
+    # File access restrictions (Read/Write patterns) have no Codex equivalent.
+
+    ${builtins.concatStringsSep "\n" (map mkPrefixRule prohibitedBash)}
+  '';
+
+  generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;
+
   tomlFormat = pkgs.formats.toml { };
 
   # All gpt-5.x models share this context window size
@@ -51,8 +77,8 @@ in
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
     ".codex/AGENTS.md".source = ../../../agents/AGENTS.md;
-    # Rules directory (Nix store, rebuild required to update)
-    ".codex/rules".source = ../../../agents/rules;
+    # Generated rules file (Nix store, rebuild required to update)
+    ".codex/rules/default.rules".source = generatedDefaultRules;
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
