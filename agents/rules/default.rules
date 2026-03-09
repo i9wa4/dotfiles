@@ -1,0 +1,39 @@
+# Exec policy rules for Codex CLI
+# Equivalent of Claude Code's permissions.deny (Bash entries only)
+# File access restrictions (Read/Write patterns) have no Codex equivalent.
+
+prefix_rule(
+    pattern = ["git", "-C"],
+    decision = "forbidden",
+    justification = "cross-directory git operations are prohibited",
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "forbidden",
+    justification = "pushing is prohibited",
+)
+
+prefix_rule(
+    pattern = ["git", "rebase"],
+    decision = "forbidden",
+    justification = "rebase is prohibited",
+)
+
+prefix_rule(
+    pattern = ["git", "reset"],
+    decision = "forbidden",
+    justification = "reset is prohibited",
+)
+
+prefix_rule(
+    pattern = ["rm"],
+    decision = "forbidden",
+    justification = "rm is prohibited; use mv /tmp/ instead",
+)
+
+prefix_rule(
+    pattern = ["sudo"],
+    decision = "forbidden",
+    justification = "sudo is prohibited",
+)
