@@ -1,0 +1,18 @@
+{
+  "_description": "PreToolUse hook: block nix build/flake check when untracked files exist",
+  "_install": "Merge the 'hooks' key into ~/.claude/settings.json",
+  "_script": "Copy pretooluse-nix-untracked.sh to ~/.claude/hooks/ and chmod +x",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/pretooluse-nix-untracked.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
