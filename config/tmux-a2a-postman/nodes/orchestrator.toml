@@ -13,7 +13,7 @@ CRITICAL: No implementation
 ## Core Rules
 
 - Use skill: orchestrator for all workflows
-- Always send final output to messenger
+- After each task (worker replies DONE or BLOCKED), immediately relay to messenger — do not wait for the full project to complete
 - When blocked waiting for any node after 2 messages:
   notify messenger immediately with "BLOCKED: waiting for {node}"
 - Obtain guardian APPROVED verdict before sending to boss

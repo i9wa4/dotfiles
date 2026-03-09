@@ -33,6 +33,8 @@ Classic tokens work with both acli and REST API scripts.
 
 ## 2. Jira Operations (acli)
 
+> NOTE: acli is unavailable in this environment (bwrap sandbox error). Use Jira REST API via curl as the working alternative. See section 2.6 for the curl-based patterns.
+
 ### 2.1. Authentication
 
 ```sh
@@ -112,6 +114,53 @@ JQL date functions:
 | startOfWeek() | This week's Monday |
 | -1d, -7d      | Relative days      |
 | 'YYYY-MM-DD'  | Specific date      |
+
+## 2.6. REST API via curl (acli fallback)
+
+Use when acli is unavailable (e.g., `bwrap: setting up uid map: Permission denied` in Nix sandbox environments).
+
+### Get project issue types
+
+```sh
+# Find valid issue type IDs for a project (required before creating issues)
+curl -s "$ATLASSIAN_SITE/rest/api/3/issue/createmeta?projectKeys=<PROJECT>&expand=projects.issuetypes" \
+  -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+  | python3 -c "import sys,json; data=json.load(sys.stdin); proj=data['projects'][0]; [print(f'{x[\"name\"]} — {x[\"id\"]} — subtask:{x.get(\"subtask\",\"?\")}') for x in proj['issuetypes']]"
+```
+
+### Create subtask under a parent issue
+
+```sh
+# issuetype id: use the subtask id from the project's issuetypes (e.g., 10003 for USDT project)
+curl -s -X POST "$ATLASSIAN_SITE/rest/api/3/issue" \
+  -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fields": {
+      "project": {"key": "<PROJECT>"},
+      "issuetype": {"id": "<SUBTASK_TYPE_ID>"},
+      "parent": {"key": "<PARENT-ISSUE-KEY>"},
+      "summary": "Subtask title"
+    }
+  }'
+# Response: {"id":"...","key":"<PROJECT>-NNN","self":"..."}
+```
+
+### Search issues (JQL via POST)
+
+```sh
+curl -s -X POST "$ATLASSIAN_SITE/rest/api/3/search/jql" \
+  -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jql": "assignee = currentUser() AND status = \"In Progress\"", "fields": ["key","summary","status"]}'
+```
+
+### View issue
+
+```sh
+curl -s "$ATLASSIAN_SITE/rest/api/3/issue/<ISSUE-KEY>" \
+  -u "$ATLASSIAN_EMAIL:$ATLASSIAN_API_TOKEN" | python3 -m json.tool
+```
 
 ## 3. Confluence Operations (Script)
 
