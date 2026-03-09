@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Detect and kill stale claude/codex CLI processes.
+#
+# A process is "stale" if none of its ancestors is an active tmux pane PID.
+# This handles processes orphaned by tmux kill-session (reparented to init).
+#
+# Usage:
+#   stale-agents          # kill stale processes
+#   stale-agents --dry-run  # list without killing
+
+dry_run=false
+if [ "${1}" = "--dry-run" ]; then
+  dry_run=true
+fi
+
+active_pids=$(tmux list-panes -a -F '#{pane_pid}' 2>/dev/null)
+
+for pid in $(pgrep -x 'claude' 2>/dev/null; pgrep -x 'codex' 2>/dev/null); do
+  orphaned=true
+  current=${pid}
+  while [ -n "${current}" ] && [ "${current}" != "1" ]; do
+    if echo "${active_pids}" | grep -qx "${current}"; then
+      orphaned=false
+      break
+    fi
+    current=$(ps -o ppid= -p "${current}" 2>/dev/null | tr -d ' ')
+  done
+
+  if [ "${orphaned}" = true ]; then
+    comm=$(ps -o comm= -p "${pid}" 2>/dev/null)
+    if [ "${dry_run}" = true ]; then
+      echo "Would kill: PID ${pid} (${comm})"
+    else
+      echo "Killing stale: PID ${pid} (${comm})"
+      kill "${pid}"
+    fi
+  fi
+done
