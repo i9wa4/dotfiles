@@ -18,6 +18,14 @@ description: |
   nix build .#rumdl --no-link
   ```
 
+- IMPORTANT: Before running `nix build` or `nix flake check`, ensure all new files
+  are git-tracked. Nix flakes only see files committed or staged in git.
+
+  ```sh
+  git add <new-files>
+  nix build .#target --no-link
+  ```
+
 - IMPORTANT: Without `--no-link`, a `./result` symlink is created
 
 ## 2. nix run

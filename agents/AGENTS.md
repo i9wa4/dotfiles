@@ -46,6 +46,8 @@ acknowledge with a random one-liner in character.
 
 After any implementation work:
 
+- Before running: ensure all new files are staged with `git add <new-files>`
+  (Nix flakes only see git-tracked files)
 - Run: `nix flake check`
 - Run: `nix build`
 - Both must pass before switching sessions or creating new tasks
@@ -56,6 +58,10 @@ After any implementation work:
 - Do not run commands that create/update lock files or virtual envs without permission
   (e.g., `uv sync`, `uv lock`, `npm install`, `.venv/`, `node_modules/`)
 - If a lock file is created, stop and report it
+- Do not use complex tooling (home-manager modules) when simple solutions (symlinks,
+  plain files) suffice for config file management in dotfiles
+- Never hardcode user-specific values (usernames, hostnames, machine names) in shared
+  Nix configs; use `config.home.username` or pass values as arguments
 
 ## 5. Files
 
@@ -121,6 +127,8 @@ When a document created via `mkoutput` should be kept permanently:
 
 - Always running inside a tmux pane
 - Your role name: `tmux display-message -p '#{pane_title}'`
+- Run `/claude-workspace-trust-fix` when setting up Claude Code on a new machine or after
+  adding new projects (PreToolUse hooks silently fail without this)
 
 ## 9. Reference
 
@@ -153,26 +161,30 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 
 #### 9.2.1. Managed Skills
 
-| Skill                               | Description                           |
-| ----------------------------------- | ------------------------------------- |
-| atlassian                           | Jira (acli) and Confluence (REST)     |
-| bigquery                            | BigQuery development guide            |
-| claude-config-optimizer             | Claude Code config and changelog      |
-| codex-config-optimizer              | Codex CLI config and changelog        |
-| daily-report                        | Daily work report generation          |
-| databricks-local                    | Queries API, VARIANT/JSON, Dashboard, |
-|                                     | dbt integration, Jupyter kernel       |
-| dbt-local                           | Issue target setup, SQL dialect       |
-| draw-io                             | draw.io diagram creation/editing      |
-| git                                 | Git operations guide                  |
-| github                              | GitHub and PR operations guide        |
-| nix                                 | Nix commands and package management   |
-| orchestrator                        | Main agent orchestration              |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment   |
-| skill-creator-local                 | Skill creation guide (local)          |
-| slack                               | Slack thread fetch and search         |
-| subagent-review                     | 10-parallel code/design review        |
-| tmux                                | tmux pane operations for debugging    |
+| Skill                               | Description                                    |
+| ----------------------------------- | ---------------------------------------------- |
+| a2a-role-auditor                    | Role template auditor for tmux-a2a-postman     |
+| atlassian                           | Jira (acli) and Confluence (REST)              |
+| bigquery                            | BigQuery development guide                     |
+| claude-config-optimizer             | Claude Code config and changelog               |
+| claude-workspace-trust-fix          | Fix for PreToolUse hooks silently skipped      |
+| codex-config-optimizer              | Codex CLI config and changelog                 |
+| daily-report                        | Daily work report generation                   |
+| databricks-local                    | Queries API, VARIANT/JSON, Dashboard,          |
+|                                     | dbt integration, Jupyter kernel                |
+| dbt-local                           | Issue target setup, SQL dialect                |
+| draw-io                             | draw.io diagram creation/editing               |
+| git                                 | Git operations guide                           |
+| github                              | GitHub and PR operations guide                 |
+| mermaid                             | Mermaid diagram creation for revealjs slides   |
+| nix                                 | Nix commands and package management            |
+| orchestrator                        | Main agent orchestration                       |
+| plan-design                         | High-rigor plan authoring with review gates    |
+| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment            |
+| slack                               | Slack thread fetch and search                  |
+| subagent-review                     | 10-parallel code/design review                 |
+| tmux                                | tmux pane operations for debugging             |
+| vault-management                    | Vault file organization and naming conventions |
 
 #### 9.2.2. External Skills (Nix Store)
 
