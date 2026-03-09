@@ -83,6 +83,7 @@ in
       pkgs.nodejs
       pkgs.ripgrep
       pkgs.uv
+      pkgs.yq
       (pkgs.callPackage ./pkgs/gogcli.nix { })
       # AI tools (llm-agents.nix — cross-platform, both Ubuntu and Darwin)
       inputs.llm-agents.packages.${pkgs.system}.claude-code
