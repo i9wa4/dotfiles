@@ -12,6 +12,31 @@ description: |
 
 ## 1. Review Workflow
 
+### 1.0. Pre-flight Check (Run Before Everything Else)
+
+Before starting any code review, verify the review is possible:
+
+```bash
+# Check current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
+  echo "HALT: On main/master branch. Switch to a feature/PR branch before reviewing."
+  # Halt: report to user that no reviewable diff was found before proceeding.
+fi
+
+# Check diff exists
+if ! git diff --quiet main...HEAD; then
+  echo "Diff detected: code review."
+else
+  echo "No diff detected."
+  echo "If this is a PR review, halt and report to user: no changes found on this branch."
+  echo "If this is a design review, proceed -- no diff is expected."
+fi
+```
+
+If intended review type is code/PR and no diff exists: halt immediately and report to user.
+Do NOT fall back silently to design review mode when a code review was requested.
+
 ### 1.1. Setup (Fully Automatic)
 
 No arguments required. Everything is auto-detected:
@@ -98,6 +123,14 @@ review_type: {REVIEW_TYPE}
 Review the diff in {DIFF_FILE} from {ROLE} perspective.
 Context (PR/Issue metadata): {CONTEXT_FILE}
 Return your review directly. Do NOT create files.
+
+Output format per finding:
+- Finding: <specific description, not high-level observation>
+- File/Location: <file:line or section>
+- Severity: BLOCKING | IMPORTANT | MINOR
+- Proposed fix: <exact text change or concrete diff, not "consider improving X">
+
+If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
 #### 1.4.2. Method A: Task Tool (Recommended for Claude Code)
@@ -201,6 +234,14 @@ Each prompt should include:
 Review from {ROLE} perspective.
 Diff: {DIFF_FILE}
 Context: {CONTEXT_FILE}
+
+Output format per finding:
+- Finding: <specific description, not high-level observation>
+- File/Location: <file:line or section>
+- Severity: BLOCKING | IMPORTANT | MINOR
+- Proposed fix: <exact text change or concrete diff, not "consider improving X">
+
+If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
 #### 1.5.3. Step 3: Launch cx x 5 (Background Processes)
@@ -274,8 +315,13 @@ Based on other reviewers' findings, from your expert perspective ({ROLE}):
 2. Are there any supplementary points related to other findings?
 3. Are there any overlooked perspectives?
 
-Output in the same format as Phase 1 only if there are additional findings.
-If no additional findings, explicitly state "No additional findings."
+Output format per finding:
+- Finding: <specific description, not high-level observation>
+- File/Location: <file:line or section>
+- Severity: BLOCKING | IMPORTANT | MINOR
+- Proposed fix: <exact text change or concrete diff, not "consider improving X">
+
+If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
 #### 1.6.3. Deliberation Execution
