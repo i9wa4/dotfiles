@@ -41,16 +41,14 @@ For every node referenced in `postman.toml` edges, verify `nodes/{node}.toml` ex
 - PASS: file present
 - FAIL: file missing → emit BLOCKING finding; abort all further checks for that node
 
-### 2.2. Check 1 — PONG Awareness
+### 2.2. Check 1 — PONG Anachronism (inverted post-1fbd73f)
 
-The daemon calls `MarkPongReceived()` only when `info.To == "postman"` (message.go).
-A node that does not send TO postman as the explicit recipient is never marked
-PONG-active and remains invisible in other nodes' `talks_to_line`.
+The PONG protocol was removed (commit 1fbd73f). Nodes must NOT send PONG to
+postman. The daemon now uses PING-based discovery instead of PONG registration.
 
-- PASS: template explicitly instructs the node to send a message with "postman" as
-  recipient (e.g., "Send a PONG addressed to postman")
-- FAIL: template references postman only as a routing mechanism ("via postman"), or has
-  no postman mention at all
+- PASS: template does NOT instruct the node to send PONG to postman
+- FAIL: template contains "Send PONG to postman" or similar PONG instruction
+  — anachronistic protocol that causes dead-letter entries
 
 ### 2.3. Check 2 — Routing Clarity
 
