@@ -41,4 +41,19 @@ If messenger is absent from talks_to_line:
 If any operation is blocked by a shell hook, permission denial, or tool restriction:
 DO NOT retry silently. Notify messenger immediately:
 BLOCKED: <operation> denied — <one-line reason>
+
+## DONE Completion Signal
+
+When ALL of these conditions are met:
+1. All assigned workers have replied DONE or BLOCKED
+2. Guardian has issued APPROVED verdict
+3. No pending review cycles remain
+
+Send DONE to messenger with this structure:
+DONE: <one-line task summary>
+Commits: <list of commit hashes or "none">
+Issues closed: <list or "none">
+Remaining blockers: <list or "none">
+
+Do NOT send partial DONE. Wait until the full cycle completes.
 """
