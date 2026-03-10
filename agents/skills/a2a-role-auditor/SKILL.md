@@ -30,9 +30,9 @@ template-level.
 
 **Template-level confirmed** (node exists, edges correct, but behavior is wrong):
 
-- Proceed to the 10-check audit below.
+- Proceed to the 11-check audit below.
 
-## 2. 10-Check Audit
+## 2. 11-Check Audit
 
 ### 2.1. Pre-check: File Existence (binary)
 
@@ -114,6 +114,14 @@ Applies only to nodes that define a `draft_template` field.
 - FAIL: `draft_template` is present but lacks a reachability disclaimer — agents may
   assume all nodes listed in the template are contactable, leading to dead-lettered messages
 
+### 2.12. Check 11 — Dropped Ball Timeout Configured
+
+Applies to all non-observer nodes (nodes whose role does NOT contain "observer").
+
+- PASS: `dropped_ball_timeout_seconds` is greater than 0
+- FAIL: `dropped_ball_timeout_seconds` is 0 or absent — the node can hold the ball
+  indefinitely without triggering a dropped-ball alert, causing silent stalls
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -138,7 +146,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–10 in order
+3. For each node: run Pre-check, then Checks 1–11 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
