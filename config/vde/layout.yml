@@ -35,7 +35,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort high
+          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model opus
           delay: 500
 
   messenger:
@@ -52,7 +52,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort medium --model sonnet
           delay: 500
 
   high:
@@ -68,30 +68,30 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model sonnet
               delay: 500
             - name: worker
               title: worker
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model sonnet
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.3-codex --config model_reasoning_effort=high
+              command: codex --yolo --add-dir "${SUBDIR}" --config model_reasoning_effort=high --model gpt-5.3-codex
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: critic
               title: critic
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model sonnet
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=high
+              command: codex --yolo --add-dir "${SUBDIR}" --config model_reasoning_effort=high --model gpt-5.4
               delay: 500
             - name: boss
               title: boss
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort high
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model opus
               delay: 500
 
   medium:
@@ -107,28 +107,28 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort medium --model sonnet
               delay: 500
             - name: worker
               title: worker
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort medium --model sonnet
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.3-codex-spark --config model_reasoning_effort=medium
+              command: codex --yolo --add-dir "${SUBDIR}" --config model_reasoning_effort=medium --model gpt-5.3-codex-spark
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: critic
               title: critic
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort medium --model sonnet
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=medium
+              command: codex --yolo --add-dir "${SUBDIR}" --config model_reasoning_effort=medium --model gpt-5.4
               delay: 500
             - name: boss
               title: boss
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort high
+              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --effort high --model opus
               delay: 500
