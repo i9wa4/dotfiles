@@ -41,6 +41,13 @@ let
 
   generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;
 
+  # Combined rules directory: agents/rules/*.md + generated default.rules
+  codexRulesDir = pkgs.runCommand "codex-rules" { } ''
+    mkdir -p $out
+    cp ${../../../agents/rules}/* $out/
+    cp ${generatedDefaultRules} $out/default.rules
+  '';
+
   tomlFormat = pkgs.formats.toml { };
 
   # All gpt-5.x models share this context window size
@@ -77,8 +84,8 @@ in
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
     ".codex/AGENTS.md".source = ../../../agents/AGENTS.md;
-    # Generated rules file (Nix store, rebuild required to update)
-    ".codex/rules/default.rules".source = generatedDefaultRules;
+    # Rules directory: agents/rules/*.md + generated default.rules
+    ".codex/rules".source = codexRulesDir;
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
