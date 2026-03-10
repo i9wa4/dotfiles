@@ -352,6 +352,12 @@ Create file:
 SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
 ```
 
+IMPORTANT: The summary MUST include both the findings table AND the Key Findings
+Detail section in a single generation. Do NOT require a follow-up request to
+produce details. Generate the complete summary in one pass.
+
+#### 1.7.1. Summary Template
+
 ```markdown
 # Review Summary
 
@@ -363,15 +369,45 @@ SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
 
 ### Phase 1: Initial Review
 
-| #   | Issue               | Reporter     | Severity | File               |
-| --- | ------------------- | ------------ | -------- | ------------------ |
-| 1   | {issue description} | {role}-{src} | High     | `path/to/file:123` |
+| #   | Issue               | Reporter     | Severity  | File               |
+| --- | ------------------- | ------------ | --------- | ------------------ |
+| 1   | {issue description} | {role}-{src} | BLOCKING  | `path/to/file:123` |
+| 2   | {issue description} | {role}-{src} | IMPORTANT | `path/to/file:456` |
+| 3   | {issue description} | {role}-{src} | MINOR     | `path/to/file:789` |
 
 ### Phase 2: Deliberation
 
-| #   | Issue                | Reporter     | Triggered By | Severity | File               |
-| --- | -------------------- | ------------ | ------------ | -------- | ------------------ |
-| 1   | {additional finding} | {role}-{src} | {role}       | Medium   | `path/to/file:456` |
+(Include only when Phase 2 was executed)
+
+| #   | Issue                | Reporter     | Triggered By | Severity  | File               |
+| --- | -------------------- | ------------ | ------------ | --------- | ------------------ |
+| 1   | {additional finding} | {role}-{src} | {role}       | IMPORTANT | `path/to/file:456` |
+
+## Key Findings Detail
+
+(For each finding that meets the selection criteria in 1.7.2)
+
+### #{N} [{SEVERITY}] {title}
+
+{Problem description: what is wrong, why it matters, what the consequence is.
+Include cross-references to other reviewers who flagged the same issue.}
+
+Affected files:
+
+- `path/to/file.sql:NN` -- `problematic code snippet`
+- `path/to/other_file.sql:MM` -- `same pattern`
+
+Fix:
+
+\```sql
+-- Before
+{exact current code}
+-- After
+{exact corrected code}
+\```
+
+(Repeat for each qualifying finding. Include code/YAML/config examples
+as appropriate for the fix type.)
 
 ## Coverage Analysis
 
@@ -384,6 +420,16 @@ SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
 | QA           | N       | M       | N+M   |
 | **Total**    | **X**   | **Y**   | **Z** |
 ```
+
+#### 1.7.2. Key Findings Selection Criteria
+
+Include in "Key Findings Detail" when ANY of these conditions is met:
+
+- Severity is BLOCKING
+- Severity is IMPORTANT
+- 3+ reviewers independently flagged the same issue (regardless of severity)
+
+MINOR findings that do not meet these criteria go in the table only (no detail).
 
 ## 2. Standalone Usage (Lightweight Mode)
 
