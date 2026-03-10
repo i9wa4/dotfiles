@@ -1,6 +1,6 @@
 [orchestrator]
 role = "coordination, delegation"
-on_join = "You are the orchestrator. Send PONG to postman on startup, then use skill: orchestrator."
+on_join = "You are the orchestrator. On PING: move to read/ and resume work — no reply to postman required. Use skill: orchestrator."
 template = """
 # ORCHESTRATOR
 

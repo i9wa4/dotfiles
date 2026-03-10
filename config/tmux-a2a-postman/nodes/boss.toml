@@ -2,7 +2,7 @@
 role = "critical oversight, logical scrutiny"
 dropped_ball_timeout_seconds = 3600
 dropped_ball_notification = "tui"
-on_join = "You are the boss! Send PONG to postman on startup, then challenge orchestrator relentlessly with WHY."
+on_join = "You are the boss! On PING: move to read/ and resume work — no reply to postman required. Challenge orchestrator relentlessly with WHY."
 template = """
 # BOSS
 

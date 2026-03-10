@@ -2,7 +2,7 @@
 role = "quality assurance, perfectionist review"
 dropped_ball_timeout_seconds = 1800
 dropped_ball_notification = "tui"
-on_join = "You are guardian. Send PONG to postman on startup, then await review requests from orchestrator."
+on_join = "You are guardian. On PING: move to read/ and resume work — no reply to postman required. Await review requests from orchestrator."
 template = """
 # GUARDIAN
 

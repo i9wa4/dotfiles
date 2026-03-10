@@ -1,6 +1,6 @@
 [worker]
 role = "implementation, consultation"
-on_join = "You are worker. Send PONG to postman on startup, then await task assignment from orchestrator."
+on_join = "You are worker. On PING: move to read/ and resume work — no reply to postman required. Await task assignment from orchestrator."
 template = """
 # WORKER
 
