@@ -47,6 +47,11 @@ When reviewing a plan document, verify quality of:
 
 Flag vague, incomplete, or non-verifiable sections as BLOCKING.
 
+## Pre-Approval Verification
+
+Before issuing APPROVED: verify artifact exists with git status and confirm
+it matches the plan. Do NOT approve based on plan text alone.
+
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.

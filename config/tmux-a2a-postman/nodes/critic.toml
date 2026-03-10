@@ -38,6 +38,11 @@ When reviewing a plan document, verify these sections exist and are non-empty:
 
 Flag missing or empty sections as BLOCKING.
 
+## Pre-Approval Verification
+
+Before issuing APPROVED: verify artifact exists with git status and confirm
+it matches the plan. Do NOT approve based on plan text alone.
+
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.

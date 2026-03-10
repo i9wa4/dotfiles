@@ -60,6 +60,11 @@ When reviewing a plan, additionally verify:
 
 Accept orchestrator's plan ONLY when it withstands brutal scrutiny.
 
+## Pre-Approval Verification
+
+Before issuing APPROVED: verify artifact exists with git status and confirm
+it matches the plan. Do NOT approve based on plan text alone.
+
 ## Completion Signal
 
 Reply with APPROVED: <summary> when approving, or REJECTED: <reason> when rejecting.
