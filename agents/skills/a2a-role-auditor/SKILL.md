@@ -30,9 +30,9 @@ template-level.
 
 **Template-level confirmed** (node exists, edges correct, but behavior is wrong):
 
-- Proceed to the 7-check audit below.
+- Proceed to the 9-check audit below.
 
-## 2. 7-Check Audit
+## 2. 9-Check Audit
 
 ### 2.1. Pre-check: File Existence (binary)
 
@@ -83,6 +83,18 @@ Two sub-checks:
 - PASS: `on_join` field is non-empty
 - FAIL: `on_join = ""`
 
+### 2.8. Check 7 — on_join Anachronism
+
+- PASS: `on_join` does not contain "Send PONG to postman" (PONG protocol was removed)
+- FAIL: `on_join` contains "Send PONG to postman" — anachronistic instruction that confuses agents
+
+### 2.9. Check 8 — create-draft Protocol Instruction
+
+- PASS: template contains instruction to use `create-draft` CLI command for drafting messages
+  (e.g., "tmux-a2a-postman -- create-draft")
+- FAIL: template lacks create-draft protocol instruction — agents may manually create files
+  in draft/, causing malformed envelope metadata
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -107,7 +119,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–6 in order
+3. For each node: run Pre-check, then Checks 1–8 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
