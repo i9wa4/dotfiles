@@ -30,9 +30,9 @@ template-level.
 
 **Template-level confirmed** (node exists, edges correct, but behavior is wrong):
 
-- Proceed to the 9-check audit below.
+- Proceed to the 10-check audit below.
 
-## 2. 9-Check Audit
+## 2. 10-Check Audit
 
 ### 2.1. Pre-check: File Existence (binary)
 
@@ -95,6 +95,16 @@ Two sub-checks:
 - FAIL: template lacks create-draft protocol instruction — agents may manually create files
   in draft/, causing malformed envelope metadata
 
+### 2.10. Check 9 — Pre-Approval Verification
+
+Applies only to nodes whose template contains APPROVED or REJECTED signal words
+(typically critic, guardian, boss).
+
+- PASS: template contains an explicit verification step before issuing verdict
+  (e.g., "verify artifact exists with git status")
+- FAIL: template issues APPROVED/REJECTED without requiring artifact verification
+  — approvals based on plan text alone are unreliable
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -119,7 +129,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–8 in order
+3. For each node: run Pre-check, then Checks 1–9 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
