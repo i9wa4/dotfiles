@@ -30,9 +30,9 @@ template-level.
 
 **Template-level confirmed** (node exists, edges correct, but behavior is wrong):
 
-- Proceed to the 12-check audit below.
+- Proceed to the 13-check audit below.
 
-## 2. 12-Check Audit
+## 2. 13-Check Audit
 
 ### 2.1. Pre-check: File Existence (binary)
 
@@ -129,6 +129,13 @@ Applies to all non-observer nodes (nodes whose role does NOT contain "observer")
 - FAIL: template lacks any protocol reminder — agents may ignore messaging
   conventions, leading to malformed messages or manual file creation
 
+### 2.14. Check B-I9 — on_join Help Reference
+
+- PASS: `on_join` field references the help command (e.g., contains
+  "tmux-a2a-postman -- help")
+- FAIL: `on_join` does not reference the help command — agents miss the
+  self-service protocol docs and command reference available via CLI
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -153,7 +160,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–11 and B-I8 in order
+3. For each node: run Pre-check, then Checks 1–11, B-I8, and B-I9 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
