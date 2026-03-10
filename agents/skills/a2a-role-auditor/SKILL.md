@@ -30,9 +30,9 @@ template-level.
 
 **Template-level confirmed** (node exists, edges correct, but behavior is wrong):
 
-- Proceed to the 11-check audit below.
+- Proceed to the 12-check audit below.
 
-## 2. 11-Check Audit
+## 2. 12-Check Audit
 
 ### 2.1. Pre-check: File Existence (binary)
 
@@ -122,6 +122,13 @@ Applies to all non-observer nodes (nodes whose role does NOT contain "observer")
 - FAIL: `dropped_ball_timeout_seconds` is 0 or absent — the node can hold the ball
   indefinitely without triggering a dropped-ball alert, causing silent stalls
 
+### 2.13. Check B-I8 — Protocol Reminder Presence
+
+- PASS: template references the postman protocol (e.g., contains "RULES.md",
+  "protocol", "tmux-a2a-postman", or "create-draft")
+- FAIL: template lacks any protocol reminder — agents may ignore messaging
+  conventions, leading to malformed messages or manual file creation
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -146,7 +153,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–11 in order
+3. For each node: run Pre-check, then Checks 1–11 and B-I8 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
