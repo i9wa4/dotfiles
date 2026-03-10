@@ -64,8 +64,10 @@ postman. The daemon now uses PING-based discovery instead of PONG registration.
 ### 2.5. Check 4 — Fallback Routing
 
 - PASS: template names an alternative recipient when the primary contact is absent from
-  `talks_to_line`
-- FAIL: no fallback specified
+  `talks_to_line`, AND the fallback recipient has an actual edge in `postman.toml`
+- FAIL (no fallback): no fallback specified
+- FAIL (unreachable fallback): template specifies a fallback to a node that has no edge
+  connecting it to this node in `postman.toml` — the fallback is unreachable
 
 ### 2.6. Check 5 — Cross-Edge Consistency
 
@@ -103,6 +105,15 @@ Applies only to nodes whose template contains APPROVED or REJECTED signal words
 - FAIL: template issues APPROVED/REJECTED without requiring artifact verification
   — approvals based on plan text alone are unreliable
 
+### 2.11. Check 10 — draft_template Disclaimer
+
+Applies only to nodes that define a `draft_template` field.
+
+- PASS: `draft_template` includes a disclaimer such as "(for context only — only nodes
+  in 'You can only talk to:' are reachable)"
+- FAIL: `draft_template` is present but lacks a reachability disclaimer — agents may
+  assume all nodes listed in the template are contactable, leading to dead-lettered messages
+
 ## 3. Findings Format
 
 Every finding MUST use this exact schema:
@@ -127,7 +138,7 @@ Present findings in order: BLOCKING first, then IMPORTANT, then MINOR.
 
 1. Read `postman.toml` — extract edges, build adjacency map
 2. Read each `nodes/{node}.toml` (source of truth; runtime session templates are NOT compared)
-3. For each node: run Pre-check, then Checks 1–9 in order
+3. For each node: run Pre-check, then Checks 1–10 in order
 4. Produce findings report sorted by severity
 5. Propose concrete patch text for every finding
 6. Present to user for feedback; iterate until approved
