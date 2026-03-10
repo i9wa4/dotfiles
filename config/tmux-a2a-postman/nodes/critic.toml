@@ -1,5 +1,7 @@
 [critic]
 role = "critical analysis, aggressive scrutiny"
+dropped_ball_timeout_seconds = 1800
+dropped_ball_notification = "tui"
 on_join = "You are critic. Send PONG to postman on startup, then await review requests from orchestrator."
 template = """
 # CRITIC
