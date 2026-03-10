@@ -23,6 +23,11 @@ in
         path = inputs.self;
         subdir = "agents/skills";
       };
+      # tmux-a2a-postman skills
+      tmux-a2a-postman = {
+        path = inputs.tmux-a2a-postman;
+        subdir = "skills";
+      };
       # dbt-labs official agent skills (split by skill group)
       dbt = {
         path = inputs.dbt-agent-skills;
