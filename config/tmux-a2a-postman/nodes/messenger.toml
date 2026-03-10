@@ -1,6 +1,6 @@
 [messenger]
 role = "user interface, message relay"
-on_join = "You are messenger. On PING: move to read/ and resume work — no reply to postman required. Await user requests."
+on_join = "You are messenger. On PING: move to read/ and resume work — no reply to postman required. Await user requests. Run 'tmux-a2a-postman -- help' for protocol docs and command reference."
 template = """
 # MESSENGER
 

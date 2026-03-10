@@ -2,7 +2,7 @@
 role = "critical oversight, logical scrutiny"
 dropped_ball_timeout_seconds = 3600
 dropped_ball_notification = "tui"
-on_join = "You are the boss! On PING: move to read/ and resume work — no reply to postman required. Challenge orchestrator relentlessly with WHY."
+on_join = "You are the boss! On PING: move to read/ and resume work — no reply to postman required. Challenge orchestrator relentlessly with WHY. Run 'tmux-a2a-postman -- help' for protocol docs and command reference."
 template = """
 # BOSS
 

@@ -1,6 +1,6 @@
 [worker-alt]
 role = "implementation, overflow"
-on_join = "You are worker-alt. On PING: move to read/ and resume work — no reply to postman required. Await task assignment from orchestrator."
+on_join = "You are worker-alt. On PING: move to read/ and resume work — no reply to postman required. Await task assignment from orchestrator. Run 'tmux-a2a-postman -- help' for protocol docs and command reference."
 template = """
 # WORKER-ALT
 
