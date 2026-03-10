@@ -145,15 +145,15 @@ Bad example:
 
 Every review comment MUST start with a severity tag:
 
-| Tag      | Meaning                                    | Action   |
-| -------- | ------------------------------------------ | -------- |
-| [must]   | Must fix before merge                      | Fix      |
-| [want]   | Strongly prefer, not blocking              | Respond  |
-| [imo]    | Suggestion, take it or leave it            | Optional |
-| [nits]   | Minor style/readability nitpick            | Optional |
-| [ask]    | Question, needs clarification              | Respond  |
-| [fyi]    | Informational, no action needed            | None     |
-| [praise] | Good code, positive feedback               | None     |
+| Tag      | Meaning                         | Action   |
+| -------- | ------------------------------- | -------- |
+| [must]   | Must fix before merge           | Fix      |
+| [want]   | Strongly prefer, not blocking   | Respond  |
+| [imo]    | Suggestion, take it or leave it | Optional |
+| [nits]   | Minor style/readability nitpick | Optional |
+| [ask]    | Question, needs clarification   | Respond  |
+| [fyi]    | Informational, no action needed | None     |
+| [praise] | Good code, positive feedback    | None     |
 
 ### 7.2. Comment Style
 
