@@ -358,7 +358,7 @@ produce details. Generate the complete summary in one pass.
 
 #### 1.7.1. Summary Template
 
-```markdown
+````markdown
 # Review Summary
 
 ## Target
@@ -419,7 +419,7 @@ as appropriate for the fix type.)
 | Code/Data    | N       | M       | N+M   |
 | QA           | N       | M       | N+M   |
 | **Total**    | **X**   | **Y**   | **Z** |
-```
+````
 
 #### 1.7.2. Key Findings Selection Criteria
 
