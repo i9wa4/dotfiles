@@ -138,3 +138,29 @@ Good example:
 Bad example:
 - [ ] Commit changes  <- Risk of auto-execution without permission mark
 ```
+
+## 7. PR Review Comment Rules
+
+### 7.1. Tag Format
+
+Every review comment MUST start with a severity tag:
+
+| Tag      | Meaning                                    | Action   |
+| -------- | ------------------------------------------ | -------- |
+| [must]   | Must fix before merge                      | Fix      |
+| [want]   | Strongly prefer, not blocking              | Respond  |
+| [imo]    | Suggestion, take it or leave it            | Optional |
+| [nits]   | Minor style/readability nitpick            | Optional |
+| [ask]    | Question, needs clarification              | Respond  |
+| [fyi]    | Informational, no action needed            | None     |
+| [praise] | Good code, positive feedback               | None     |
+
+### 7.2. Comment Style
+
+- Write in Japanese
+- Be concise: describe the problem, not the fix
+- Do not include Before/After code blocks
+- One concern per comment
+- Tone reference: match writing style from
+  @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and
+  @~/ghq/github.com/i9wa4/i9wa4.github.io/zenn/
