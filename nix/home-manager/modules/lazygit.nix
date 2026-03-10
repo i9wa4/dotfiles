@@ -5,6 +5,7 @@ _: {
     enable = true;
     settings = {
       gui.scrollHeight = 15;
+      gui.showCommandLog = true;
     };
   };
 }
