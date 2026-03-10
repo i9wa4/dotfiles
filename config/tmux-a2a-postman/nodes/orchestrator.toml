@@ -63,4 +63,14 @@ Issues closed: <list or "none">
 Remaining blockers: <list or "none">
 
 Do NOT send partial DONE. Wait until the full cycle completes.
+
+### Signal Vocabulary Table
+
+| Signal                    | Meaning                                    |
+| ------------------------- | ------------------------------------------ |
+| DONE: <summary>           | All tasks complete, guardian approved       |
+| BLOCKED: <reason>         | Cannot proceed, needs intervention          |
+| DONE (partial): <summary> | Some tasks done, others blocked             |
+| ACK: <topic>              | Received, working on it                    |
+| HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
 """
