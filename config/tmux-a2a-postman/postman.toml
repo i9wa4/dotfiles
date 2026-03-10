@@ -7,8 +7,11 @@ edges = [
   "orchestrator -- critic",
   "orchestrator -- guardian",
   "critic -- guardian",
+  "guardian -- messenger",
 ]
 
 ui_node = "messenger"
 
 reply_command = "tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
+
+common_template = "PROTOCOL CRITICAL: NEVER manually create files in draft/. ALWAYS use: tmux-a2a-postman -- create-draft --context-id {context_id} --to <recipient>"
