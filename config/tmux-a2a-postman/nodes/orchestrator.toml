@@ -42,6 +42,13 @@ If any operation is blocked by a shell hook, permission denial, or tool restrict
 DO NOT retry silently. Notify messenger immediately:
 BLOCKED: <operation> denied — <one-line reason>
 
+## Guardian Watchdog Protocol
+
+If guardian does not reply within 3 consecutive message cycles:
+1. Re-send the review request with "[WATCHDOG] Please respond with APPROVED or NOT APPROVED"
+2. If still no reply after 1 more attempt: notify messenger "BLOCKED: guardian unresponsive"
+3. Do NOT bypass guardian review — escalate, never skip
+
 ## DONE Completion Signal
 
 When ALL of these conditions are met:

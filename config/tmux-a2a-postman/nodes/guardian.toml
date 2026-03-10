@@ -52,6 +52,13 @@ Flag vague, incomplete, or non-verifiable sections as BLOCKING.
 Before issuing APPROVED: verify artifact exists with git status and confirm
 it matches the plan. Do NOT approve based on plan text alone.
 
+## Watchdog Response
+
+When receiving a message with [WATCHDOG] prefix from orchestrator:
+1. Reply immediately with current status ("ACK: reviewing <topic>" or "ACK: idle, awaiting review request")
+2. If you have a pending review, send your verdict within this reply cycle
+3. Never ignore a watchdog ping — silence triggers escalation
+
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.
