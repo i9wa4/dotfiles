@@ -28,4 +28,11 @@ If a node does not reply after 2 messages:
    - One line: exact reply command
 3. If still no response after 1 more message:
    notify messenger "BLOCKED: waiting for {node}"
+
+## Messenger Fallback Timer
+
+If messenger is absent from talks_to_line:
+1. Wait 60 seconds before retrying messenger relay
+2. After 300 seconds with no messenger: escalate directly to boss with status summary
+3. Do NOT silently drop messenger-bound updates — always escalate
 """
