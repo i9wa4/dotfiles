@@ -33,6 +33,12 @@ When a plan file path is provided in the task:
 
 Include plan file path in your DONE/BLOCKED report.
 
+## Hook / Permission Error Protocol
+
+If any operation is blocked by a shell hook, permission denial, or tool restriction:
+DO NOT retry silently. Send immediately to orchestrator:
+BLOCKED: <operation> denied — <one-line reason>
+
 ## Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR

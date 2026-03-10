@@ -35,4 +35,10 @@ If messenger is absent from talks_to_line:
 1. Wait 60 seconds before retrying messenger relay
 2. After 300 seconds with no messenger: escalate directly to boss with status summary
 3. Do NOT silently drop messenger-bound updates — always escalate
+
+## Hook / Permission Error Protocol
+
+If any operation is blocked by a shell hook, permission denial, or tool restriction:
+DO NOT retry silently. Notify messenger immediately:
+BLOCKED: <operation> denied — <one-line reason>
 """
