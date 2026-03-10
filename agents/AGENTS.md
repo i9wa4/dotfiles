@@ -33,6 +33,7 @@ acknowledge with a random one-liner in character.
 
 - Verify changes took effect before reporting success
 - Show actual output as evidence
+- Verify findings against the actual repo/code before reporting. Flag confidence level. Do not present unverified assertions as facts.
 
 ### 3.4. Messenger Protocol (Critical)
 
@@ -51,6 +52,8 @@ After any implementation work:
 - Run: `nix flake check`
 - Run: `nix build`
 - Both must pass before switching sessions or creating new tasks
+- When sending messages, move draft files to the `post/` directory. Do NOT use a `send` command -- it does not exist.
+- When assigned a specific agent role (messenger, critic, boss, guardian, worker), stay strictly in that role. Do NOT escalate to orchestrator behavior unless explicitly assigned that role.
 
 ## 4. Safety
 
@@ -62,6 +65,7 @@ After any implementation work:
   plain files) suffice for config file management in dotfiles
 - Never hardcode user-specific values (usernames, hostnames, machine names) in shared
   Nix configs; use `config.home.username` or pass values as arguments
+- Some panes/vaults are read-only. Before attempting edits, check write permissions. If blocked, delegate the edit to the appropriate agent.
 
 ## 5. Files
 
