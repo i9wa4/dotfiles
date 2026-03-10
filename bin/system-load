@@ -105,4 +105,4 @@ temp=$(get_cpu_temp)
 total_cpu=$(get_total_cpu_usage)
 ram=$(get_ram_usage)
 
-echo "TEMP:${temp}C CPU:${total_cpu}% RAM:${ram}%"
+printf "TEMP:%2sC CPU:%2s%% RAM:%2s%%\n" "${temp}" "${total_cpu}" "${ram}"

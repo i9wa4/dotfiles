@@ -53,6 +53,11 @@ if [ -n "${action}" ]; then
   branch="${branch}|${action}"
 fi
 
+# Truncate branch name to 15 characters
+if [ "${#branch}" -gt 15 ]; then
+  branch="${branch:0:15}..."
+fi
+
 # Get git status counts
 status_output=$(git status --porcelain 2>/dev/null)
 untracked=$(echo "${status_output}" | grep -c "^??" 2>/dev/null)
