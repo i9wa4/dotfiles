@@ -16,7 +16,7 @@ fi
 
 active_pids=$(tmux list-panes -a -F '#{pane_pid}' 2>/dev/null)
 
-for pid in $(pgrep -x 'claude' 2>/dev/null; pgrep -x 'codex' 2>/dev/null); do
+for pid in $(pgrep -u "$(id -u)" -x 'claude' 2>/dev/null; pgrep -u "$(id -u)" -x 'codex' 2>/dev/null); do
   orphaned=true
   current=${pid}
   while [ -n "${current}" ] && [ "${current}" != "1" ]; do
