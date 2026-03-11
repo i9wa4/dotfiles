@@ -35,7 +35,19 @@ Source of truth:
 
 ## 2. Fetch CHANGELOG
 
-Use `gh` command to fetch the latest CHANGELOG:
+### 2.1. Detect Local Version
+
+Always detect the installed version first:
+
+```sh
+claude --version
+```
+
+This returns the locally installed version (e.g. `2.1.72 (Claude Code)`).
+All CHANGELOG analysis MUST be scoped to this version and below.
+Do NOT report features or changes from versions newer than the local install.
+
+### 2.2. Fetch from GitHub
 
 ```sh
 FILE=$(mkoutput --dir tmp --label claude-code-changelog)
@@ -43,33 +55,41 @@ gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
   --jq '.content' | base64 -d > "$FILE"
 ```
 
-Then read the file to analyze.
+Then read the file, but only analyze sections up to and including the local
+version.
 
 ## 3. CHANGELOG Operations
 
+IMPORTANT: All operations below are scoped to the locally installed version.
+Ignore any CHANGELOG sections for versions newer than `claude --version`.
+
 ### 3.1. Latest Release Summary
 
-1. Fetch CHANGELOG using the command above
-2. Extract the first `## x.x.x` section
-3. Categorize changes into:
+1. Detect local version with `claude --version`
+2. Fetch CHANGELOG using the command above
+3. Extract the `## <local-version>` section (not the first section)
+4. Categorize changes into:
    - New features (Added)
    - Bug fixes (Fixed)
    - Improvements (Improved/Changed)
    - Deprecations (Deprecated)
-4. Present in Japanese with brief explanations
+5. Present in Japanese with brief explanations
 
 ### 3.2. Version Diff
 
-1. Ask user for start and end versions
-2. Extract all sections between those versions
-3. Summarize cumulative changes
-4. Highlight breaking changes and deprecations
+1. Detect local version with `claude --version`
+2. Ask user for start version (end version defaults to local version)
+3. Extract all sections between start and local version (inclusive)
+4. Summarize cumulative changes
+5. Highlight breaking changes and deprecations
 
 ### 3.3. Breaking Changes Detection
 
-1. Search for keywords: `Deprecated`, `Removed`, `Breaking`, `Changed`
-2. List affected settings and migration paths
-3. Check user's config for affected settings
+1. Detect local version with `claude --version`
+2. Search sections up to local version for: `Deprecated`, `Removed`,
+   `Breaking`, `Changed`
+3. List affected settings and migration paths
+4. Check user's config for affected settings
 
 ## 4. Specification Reference
 
@@ -214,7 +234,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.71 (2026-03-08)
+Last reviewed Claude Code version: v2.1.72 (2026-03-11)
 
 ### 11.1. Applied Optimizations
 
@@ -267,10 +287,20 @@ Last reviewed Claude Code version: v2.1.71 (2026-03-08)
 - Managed settings (plist/Registry) - enterprise MDM feature; solo Ubuntu user
 - `InstructionsLoaded` hook - observability only, cannot inject context;
   existing `SessionStart` hook with `compact` matcher already handles reload
-- `/loop` command - available since v2.1.71 (current); no config needed
+- `/loop` command - available since v2.1.71; no config needed
+- `CLAUDE_CODE_DISABLE_CRON` env - cron scheduling useful for `/loop`; keep
+  enabled
+- Effort level simplification (v2.1.72) - low/medium/high with `/effort auto`;
+  no config needed
 
 ### 11.4. Version Notes
 
+- v2.1.72: `/copy` write-to-file (`w` key), `/plan` description arg,
+  `ExitWorktree` tool, `CLAUDE_CODE_DISABLE_CRON` env, bash auto-approval
+  expanded (lsof, pgrep, tput, ss, fd, fdfind), `model` param on Agent tool
+  restored, effort simplified to low/medium/high (○ ◐ ●), CLAUDE.md HTML
+  comments hidden when auto-injected, prompt cache fix (up to 12x savings),
+  many memory/performance improvements, Sonnet 4.5 auto-migrated to 4.6
 - v2.1.71: `/loop` recurring prompt command (e.g. `/loop 5m check deploy`),
   cron scheduling tools, `voice:pushToTalk` rebindable keybinding, stdin
   freeze fix in long sessions, background agent completion path fix

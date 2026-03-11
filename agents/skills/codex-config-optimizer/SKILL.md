@@ -40,40 +40,63 @@ To update settings, edit `nix/home-manager/modules/codex-cli.nix` and rebuild.
 
 ## 3. Fetch Releases
 
-Use `gh` command to fetch the latest releases:
+### 3.1. Detect Local Version
+
+Always detect the installed version first:
+
+```sh
+codex --version
+```
+
+This returns the locally installed version (e.g. `codex-cli 0.113.0`).
+All release analysis MUST be scoped to this version and below.
+Do NOT report features or changes from versions newer than the local install.
+
+### 3.2. Fetch from GitHub
 
 ```sh
 FILE=$(mkoutput --dir tmp --label output)
-gh api repos/openai/codex/releases --jq '.[0:5]' > "$FILE"
-cat "$FILE"
+gh api repos/openai/codex/releases --jq '.[0:10]' > "$FILE"
+```
+
+Then extract entries up to and including the local version using:
+
+```sh
+jq '.[] | select(.tag_name == "rust-v<LOCAL_VERSION>") | {tag_name, body}' "$FILE"
 ```
 
 ## 4. CHANGELOG Operations
 
+IMPORTANT: All operations below are scoped to the locally installed version.
+Ignore any release entries for versions newer than `codex --version`.
+
 ### 4.1. Latest Release Summary
 
-1. Fetch releases using the command above
-2. Extract the first release entry
-3. Categorize changes into:
+1. Detect local version with `codex --version`
+2. Fetch releases using the command above
+3. Extract the `rust-v<local-version>` release entry (not the first entry)
+4. Categorize changes into:
    - New features (Added)
    - Bug fixes (Fixed)
    - Improvements (Improved/Changed)
    - Breaking changes
-4. Present in Japanese with brief explanations
+5. Present in Japanese with brief explanations
 
 ### 4.2. Version Diff
 
-1. Ask user for start and end versions
-2. Extract all releases between those versions
-3. Summarize cumulative changes
-4. Highlight breaking changes and deprecations
+1. Detect local version with `codex --version`
+2. Ask user for start version (end version defaults to local version)
+3. Extract all releases between start and local version (inclusive)
+4. Summarize cumulative changes
+5. Highlight breaking changes and deprecations
 
 ### 4.3. Breaking Changes Detection
 
-1. Search for keywords: `breaking`, `removed`, `deprecated`,
-   `changed` (behavior changes)
-2. List affected commands and options
-3. Provide migration guidance
+1. Detect local version with `codex --version`
+2. Search releases up to local version for: `breaking`, `removed`,
+   `deprecated`, `changed` (behavior changes)
+3. List affected commands and options
+4. Provide migration guidance
 
 ## 5. Settings Categories
 
@@ -105,7 +128,7 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 8. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.111.0 (2026-03-05)
+Last reviewed Codex CLI version: v0.113.0 (2026-03-11)
 
 ### 8.1. Applied Optimizations
 
@@ -131,8 +154,22 @@ Last reviewed Codex CLI version: v0.111.0 (2026-03-05)
 - [ ] `approval_policy: on-failure` - deprecated; review if used (v0.102.0)
 - [ ] `log_dir` config - redirect logs to custom directory (v0.97.0)
 
-### 8.3. Version Notes
+### 8.3. Not Adopting
 
+- `personality` setting - keep default ("friendly"); no benefit from changing
+- `log_dir` config - default log location is fine
+- `tui.notifications_method` - keep default
+- `CLAUDE_CODE_DISABLE_CRON` env - N/A for Codex CLI
+
+### 8.4. Version Notes
+
+- v0.113.0: `request_permissions` tool (runtime permission requests), plugin
+  marketplace + curated discovery + uninstall, app-server streaming exec with
+  TTY/PTY, web search full tool config, permission profile config language,
+  image gen saves to cwd, SQLite DB for logs, winget auto-update
+- v0.112.0: `@plugin` mentions for direct plugin reference, permission profiles
+  merged into per-turn sandbox, JS REPL binding persistence fix, SIGTERM
+  graceful shutdown, bubblewrap userns hardening, macOS Seatbelt improvements
 - v0.111.0: Fast mode enabled by default, TUI shows Fast/Standard mode,
   `js_repl` can import local `.js`/`.mjs` files, plugins reported to model
   at session start, app-server v2 MCP elicitation as structured request/response
