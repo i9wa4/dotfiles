@@ -41,10 +41,9 @@ let
 
   generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;
 
-  # Combined rules directory: agents/rules/*.md + generated default.rules
+  # Exec policy rules only (.rules files); .md instructions go via AGENTS.md
   codexRulesDir = pkgs.runCommand "codex-rules" { } ''
     mkdir -p $out
-    cp ${../../../agents/rules}/* $out/
     cp ${generatedDefaultRules} $out/default.rules
   '';
 
@@ -90,7 +89,8 @@ in
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
     ".codex/AGENTS.md".source = ../../../agents/AGENTS.md;
-    # Rules directory: agents/rules/*.md + generated default.rules
+    # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
+    # NOTE: Codex CLI may also read agents/rules/*.md via AGENTS.md references
     ".codex/rules".source = codexRulesDir;
   };
 
