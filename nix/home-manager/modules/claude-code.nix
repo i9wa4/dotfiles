@@ -63,6 +63,26 @@ let
             }
           ];
         }
+        {
+          matcher = "*";
+          hooks = [
+            {
+              type = "command";
+              command = "~/.claude/scripts/claude-observe.sh pre";
+            }
+          ];
+        }
+      ];
+      PostToolUse = [
+        {
+          matcher = "*";
+          hooks = [
+            {
+              type = "command";
+              command = "~/.claude/scripts/claude-observe.sh post";
+            }
+          ];
+        }
       ];
       SessionStart = [
         {
