@@ -10,7 +10,7 @@ description: |
 # Git Skill
 
 Guide for Git operations. For mandatory rules and permissions,
-see `rules/git-github.md`.
+see `rules/github.md`.
 
 ## 1. Commit Message Format (Conventional Commits)
 
@@ -65,5 +65,5 @@ see `rules/git-github.md`.
 
 | Resource         | Purpose                         |
 | ---------------- | ------------------------------- |
-| rules/git-github | Mandatory rules and permissions |
+| rules/github     | Mandatory rules and permissions |
 | skills/github    | GitHub-specific operations      |

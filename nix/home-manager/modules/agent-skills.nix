@@ -72,6 +72,12 @@ in
         path = inputs.drawio-mcp;
         filter.nameRegex = "DISABLED"; # prevent auto-discovery; use skills.explicit
       };
+      # freee MCP skills
+      # cf. https://github.com/freee/freee-mcp
+      freee = {
+        path = inputs.freee-mcp;
+        subdir = "skills";
+      };
       # HashiCorp agent skills (split by plugin)
       # cf. https://github.com/hashicorp/agent-skills
       hashicorp-terraform-codegen = {

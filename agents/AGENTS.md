@@ -108,7 +108,7 @@ Files and directories described below are located at:
 
 | Category  | Items                                                     |
 | --------- | --------------------------------------------------------- |
-| Rules     | aws, bash, git-github, markdown, python                   |
+| Rules     | aws, bash, github, markdown, python                       |
 | Skills    | managed skills + external skills (see @~/.claude/skills/) |
 | Subagents | reviewer-\*, researcher-tech                              |
 
@@ -120,7 +120,7 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 | ------------- | ---------------------------------- | --------------------- |
 | aws.md        | AWS CLI usage rules                | AWS operations        |
 | bash.md       | Bash syntax and command rules      | Command execution     |
-| git-github.md | Git and GitHub rules (constraints) | Git/GitHub operations |
+| github.md     | GitHub rules (constraints)         | GitHub operations     |
 | markdown.md   | Markdown creation rules            | Markdown creation     |
 | python.md     | Python shebang and venv rules      | Python execution      |
 

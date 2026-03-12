@@ -288,6 +288,22 @@
         "type": "github"
       }
     },
+    "freee-mcp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1773287377,
+        "narHash": "sha256-Rrtjdz5PrwTPlMnHVAEbTHGcL+xIB17RXjwaoScW24Q=",
+        "owner": "freee",
+        "repo": "freee-mcp",
+        "rev": "bb3249504bbb7d119dbb0d49eabfb7627725f365",
+        "type": "github"
+      },
+      "original": {
+        "owner": "freee",
+        "repo": "freee-mcp",
+        "type": "github"
+      }
+    },
     "git-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -631,6 +647,7 @@
         "dbt-agent-skills": "dbt-agent-skills",
         "drawio-mcp": "drawio-mcp",
         "flake-parts": "flake-parts",
+        "freee-mcp": "freee-mcp",
         "git-hooks": "git-hooks",
         "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",

@@ -20,7 +20,6 @@ let
       pr = "";
     };
     cleanupPeriodDays = 36000;
-    defaultMode = "auto";
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";
@@ -124,7 +123,6 @@ let
         "Write(.env*)"
       ];
     };
-    skipAutoPermissionPrompt = true;
     statusLine = {
       type = "command";
       command = "~/.claude/scripts/claude-statusline.sh";

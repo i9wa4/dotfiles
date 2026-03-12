@@ -14,7 +14,7 @@ description: |
 # GitHub Skill
 
 Guide for GitHub operations using gh CLI.
-For mandatory rules, see `rules/git-github.md`.
+For mandatory rules, see `rules/github.md`.
 
 ## 1. Prerequisites
 
@@ -214,5 +214,5 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies \
 
 | Resource         | Purpose                         |
 | ---------------- | ------------------------------- |
-| rules/git-github | Mandatory rules and permissions |
+| rules/github     | Mandatory rules and permissions |
 | skills/git       | Git-specific operations         |
