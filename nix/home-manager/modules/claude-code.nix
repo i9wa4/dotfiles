@@ -124,7 +124,7 @@ let
         "Write(.env*)"
       ];
     };
-    skipAutoPermissionPrompt = "true";
+    skipAutoPermissionPrompt = true;
     statusLine = {
       type = "command";
       command = "~/.claude/scripts/claude-statusline.sh";
