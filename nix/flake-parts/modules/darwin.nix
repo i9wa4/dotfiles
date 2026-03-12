@@ -3,6 +3,7 @@
 {
   inputs,
   commonNixSettings,
+  mkPkgsUnstable,
   ...
 }:
 let
@@ -27,6 +28,7 @@ let
     }:
     let
       username = getUsername;
+      pkgs-unstable = mkPkgsUnstable system;
     in
     nix-darwin.lib.darwinSystem {
       inherit system;
@@ -54,7 +56,7 @@ let
             useUserPackages = true;
             backupFileExtension = "backup";
             extraSpecialArgs = {
-              inherit username inputs;
+              inherit username inputs pkgs-unstable;
             };
             users.${username} =
               {
@@ -95,7 +97,6 @@ in
       commonCasks = [
         "docker-desktop"
         "google-chrome"
-        "obsidian"
         "visual-studio-code"
         "wezterm"
         "zoom"

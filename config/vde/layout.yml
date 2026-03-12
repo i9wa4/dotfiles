@@ -52,7 +52,8 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          # command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
           delay: 500
 
   medium:

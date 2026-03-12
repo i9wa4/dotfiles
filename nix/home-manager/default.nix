@@ -1,5 +1,6 @@
 {
   pkgs,
+  pkgs-unstable,
   lib,
   config,
   username,
@@ -19,8 +20,6 @@ in
   imports = [
     # programs.*
     ./modules/bash.nix
-    ./modules/claude-code.nix
-    ./modules/codex-cli.nix
     ./modules/git.nix
     ./modules/lazygit.nix
     ./modules/zsh.nix
@@ -28,10 +27,13 @@ in
     ./modules/editorconfig.nix
     ./modules/efm-langserver.nix
     # home.file
-    ./modules/agent-skills.nix
     ./modules/tmux.nix
     # home.activation
     ./modules/npm.nix
+    # AI agent tools
+    ./agents/agent-skills.nix
+    ./agents/claude-code.nix
+    ./agents/codex-cli.nix
   ];
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
@@ -61,38 +63,38 @@ in
       # System
       pkgs.tailscale
       pkgs.wget
-      # Cloud & Infrastructure
+      # Tools
+      (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
+      pkgs-unstable.acli
+      pkgs-unstable.obsidian
       pkgs.awscli2
       pkgs.databricks-cli
-      pkgs.google-cloud-sdk
-      # Editors
-      pkgs.neovim
-      pkgs.vim
-      # Diagrams
-      pkgs.drawio
-      # Development tools
-      (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs.deno
+      pkgs.drawio
       pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf
       pkgs.gh
       pkgs.ghq
+      pkgs.google-cloud-sdk
       pkgs.mise
+      pkgs.neovim
       pkgs.nixd
       pkgs.nodejs
       pkgs.ripgrep
       pkgs.uv
+      pkgs.vim
       pkgs.yq
-      (pkgs.callPackage ./pkgs/gogcli.nix { })
-      # AI tools (llm-agents.nix — cross-platform, both Ubuntu and Darwin)
+      # llm-agents
       inputs.llm-agents.packages.${pkgs.system}.claude-code
       inputs.llm-agents.packages.${pkgs.system}.codex
       inputs.llm-agents.packages.${pkgs.system}.ccusage
       inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
-      # Shell wrapper for claude-code session management
+      # GitHub
       inputs.claude-chill.packages.${pkgs.system}.default
       inputs.tmux-a2a-postman.packages.${pkgs.system}.default
+      # Custom
+      (pkgs.callPackage ./pkgs/gogcli.nix { })
     ];
 
     # ==========================================================================

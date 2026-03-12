@@ -17,7 +17,7 @@ Summarize @i9wa4's GitHub and Jira activities and post as a GitHub Issue.
 
 - gh CLI installed
 - jq installed
-- acli available via `nix run nixpkgs#acli` (for Jira)
+- acli installed (for Jira)
 
 ## 2. Workflow
 
@@ -79,12 +79,12 @@ Use acli to fetch Jira activities.
 
 ```sh
 # Today's activities
-nix run nixpkgs#acli -- jira workitem search \
+acli jira workitem search \
     --jql "updated >= startOfDay() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Specific date range
-nix run nixpkgs#acli -- jira workitem search \
+acli jira workitem search \
     --jql "updated >= 'YYYY-MM-DD' AND updated < 'YYYY-MM-DD' AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 ```

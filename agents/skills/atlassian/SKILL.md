@@ -33,45 +33,43 @@ Classic tokens work with both acli and REST API scripts.
 
 ## 2. Jira Operations (acli)
 
-> NOTE: acli is unavailable in this environment (bwrap sandbox error). Use Jira REST API via curl as the working alternative. See section 2.6 for the curl-based patterns.
-
 ### 2.1. Authentication
 
 ```sh
 # Check status
-nix run nixpkgs#acli -- jira auth status
+acli jira auth status
 
 # Login (if needed)
-nix run nixpkgs#acli -- jira auth login
+acli jira auth login
 ```
 
 ### 2.2. Work Items
 
 ```sh
 # View issue
-nix run nixpkgs#acli -- jira workitem view <ISSUE-KEY>
+acli jira workitem view <ISSUE-KEY>
 
 # Search issues (JQL)
-nix run nixpkgs#acli -- jira workitem search --jql "assignee = currentUser() AND status = 'In Progress'"
+acli jira workitem search --jql "assignee = currentUser() AND status = 'In Progress'"
 
 # Create issue
-nix run nixpkgs#acli -- jira workitem create --project <PROJECT> --type Task --summary "Title"
+acli jira workitem create --project <PROJECT> --type Task --summary "Title"
 
 # Transition issue
-nix run nixpkgs#acli -- jira workitem transition <ISSUE-KEY> --transition "Done"
+acli jira workitem transition <ISSUE-KEY> --transition "Done"
 
 # Add comment
-nix run nixpkgs#acli -- jira workitem comment add <ISSUE-KEY> --body "Comment text"
+acli jira workitem comment add <ISSUE-KEY> --body "Comment text"
 ```
 
 ### 2.3. Boards and Sprints
 
 ```sh
 # List boards
-nix run nixpkgs#acli -- jira board list
+acli jira board list
 
 # List sprints
-nix run nixpkgs#acli -- jira sprint list --board <BOARD-ID>
+acli jira sprint list --board <BOARD-ID>
 ```
 
 ### 2.4. Common JQL Patterns
@@ -91,17 +89,17 @@ created >= startOfWeek() AND project = <PROJECT>
 
 ```sh
 # Today's activities
-nix run nixpkgs#acli -- jira workitem search \
+acli jira workitem search \
     --jql "updated >= startOfDay() AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Specific date range (YYYY-MM-DD)
-nix run nixpkgs#acli -- jira workitem search \
+acli jira workitem search \
     --jql "updated >= '2026-01-20' AND updated < '2026-01-21' AND (assignee = currentUser() OR reporter = currentUser()) ORDER BY updated DESC" \
     --fields "key,summary,status"
 
 # Relative days
-nix run nixpkgs#acli -- jira workitem search \
+acli jira workitem search \
     --jql "updated >= -7d AND assignee = currentUser() ORDER BY updated DESC" \
     --fields "key,summary,status"
 ```
@@ -117,7 +115,7 @@ JQL date functions:
 
 ## 2.6. REST API via curl (acli fallback)
 
-Use when acli is unavailable (e.g., `bwrap: setting up uid map: Permission denied` in Nix sandbox environments).
+Use when acli is unavailable.
 
 ### Get project issue types
 

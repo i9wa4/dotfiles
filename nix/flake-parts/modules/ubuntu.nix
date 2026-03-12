@@ -3,6 +3,7 @@
 {
   inputs,
   commonNixSettings,
+  mkPkgsUnstable,
   ...
 }:
 let
@@ -18,6 +19,7 @@ in
         localSystem = system;
         config.allowUnfree = true;
       };
+      pkgs-unstable = mkPkgsUnstable system;
       # SSM sessions set USER=root even for non-root users (EUID != 0).
       # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)
       username =
@@ -39,7 +41,7 @@ in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit username inputs;
+        inherit username inputs pkgs-unstable;
       };
       modules = [
         nix-index-database.homeModules.nix-index

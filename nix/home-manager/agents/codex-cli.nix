@@ -32,7 +32,7 @@ let
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
-    # Generated from nix/home-manager/modules/prohibited-bash-commands.nix
+    # Generated from nix/home-manager/agents/prohibited-bash-commands.nix
     # Equivalent of Claude Code permissions.deny (Bash entries only)
     # File access restrictions (Read/Write patterns) have no Codex equivalent.
 
