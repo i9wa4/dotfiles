@@ -12,7 +12,7 @@ description: |
 
 ## 1. Review Workflow
 
-### 1.0. Pre-flight Check (Run Before Everything Else)
+### 1.1. Pre-flight Check (Run Before Everything Else)
 
 Before starting any code review, verify the review is possible:
 
@@ -37,7 +37,7 @@ fi
 If intended review type is code/PR and no diff exists: halt immediately and report to user.
 Do NOT fall back silently to design review mode when a code review was requested.
 
-### 1.1. Setup (Fully Automatic)
+### 1.2. Setup (Fully Automatic)
 
 No arguments required. Everything is auto-detected:
 
@@ -49,7 +49,7 @@ No arguments required. Everything is auto-detected:
 
 Default: 10 parallel (cx x 5 + cc x 5)
 
-### 1.2. Priority (Code Review)
+### 1.3. Priority (Code Review)
 
 | Priority | Role         | Focus                  |
 | -------- | ------------ | ---------------------- |
@@ -62,16 +62,16 @@ Default: 10 parallel (cx x 5 + cc x 5)
 For design review: replace `code` with `data` (Data model, schema).
 Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
 
-### 1.3. Scope and Context
+### 1.4. Scope and Context
 
-#### 1.3.1. Scope (Review Target) - Always Local
+#### 1.4.1. Scope (Review Target) - Always Local
 
 | Scope | Command                 | When                       |
 | ----- | ----------------------- | -------------------------- |
 | diff  | `git diff main...HEAD`  | Default. Branch changes    |
 | file  | Read the file at {path} | User specifies a file path |
 
-#### 1.3.2. Context (Metadata) - Auto-detected from Directory Name
+#### 1.4.2. Context (Metadata) - Auto-detected from Directory Name
 
 Detect PR/Issue number from current directory name pattern:
 
@@ -85,7 +85,7 @@ Detection command:
 basename "$(git rev-parse --show-toplevel)" | rg -o --pcre2 '(pr|issue)-\K[0-9]+'
 ```
 
-#### 1.3.3. Context Fetch Procedure
+#### 1.4.3. Context Fetch Procedure
 
 1. Detect type and number from directory name
 2. Fetch primary metadata:
@@ -101,9 +101,9 @@ Related Issues/PRs provide critical intent and acceptance criteria.
 Agent file:
 @~/.agents/subagents/reviewer-{ROLE}.md
 
-### 1.4. Review Execution
+### 1.5. Review Execution
 
-#### 1.4.1. IMPORTANT: Always execute 10-parallel reviews as standard practice
+#### 1.5.1. IMPORTANT: Always execute 10-parallel reviews as standard practice
 
 Always execute the following for design/code reviews:
 
@@ -133,7 +133,7 @@ Output format per finding:
 If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
-#### 1.4.2. Method A: Task Tool (Recommended for Claude Code)
+#### 1.5.2. Method A: Task Tool (Recommended for Claude Code)
 
 Use Task tool with reviewer agents. Launch multiple Task tools in a single
 message for parallel execution with clean output isolation.
@@ -149,7 +149,7 @@ Task tool calls (parallel):
 
 Each reviewer agent reads the agent file automatically.
 
-#### 1.4.3. Method B: Codex CLI Sequential (Recommended for Codex)
+#### 1.5.3. Method B: Codex CLI Sequential (Recommended for Codex)
 
 NEVER use background processes (`&`) with codex exec -
 causes output interleaving.
@@ -161,18 +161,18 @@ for ROLE in security architecture historian code qa; do
 done
 ```
 
-#### 1.4.4. Method C: Codex CLI Parallel (Advanced)
+#### 1.5.4. Method C: Codex CLI Parallel (Advanced)
 
 For true parallelism without output mixing, use separate terminal sessions
 or accept that outputs will be written to files (not displayed cleanly).
 
 WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
 
-### 1.5. Parallel Execution for 10-Review (cc x 5 + cx x 5)
+### 1.6. Parallel Execution for 10-Review (cc x 5 + cx x 5)
 
 IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
 
-#### 1.5.1. Step 1: Auto-detect and Prepare
+#### 1.6.1. Step 1: Auto-detect and Prepare
 
 Run these steps automatically (no user input needed):
 
@@ -214,7 +214,7 @@ elif [ -n "$ISSUE_NUM" ]; then
 fi
 ```
 
-#### 1.5.2. Step 2: Launch cc x 5 (Single Message)
+#### 1.6.2. Step 2: Launch cc x 5 (Single Message)
 
 In one message, call Task tool 5 times in parallel:
 
@@ -244,7 +244,7 @@ Output format per finding:
 If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
-#### 1.5.3. Step 3: Launch cx x 5 (Background Processes)
+#### 1.6.3. Step 3: Launch cx x 5 (Background Processes)
 
 Use file output to avoid interleaving:
 
@@ -257,14 +257,14 @@ done
 wait
 ```
 
-#### 1.5.4. Step 4: Collect Results
+#### 1.6.4. Step 4: Collect Results
 
 ```bash
 # cx review files are referenced by $FILE variables from Step 3
 # cc review results are returned directly by the Task tool
 ```
 
-#### 1.5.5. Timing Optimization
+#### 1.6.5. Timing Optimization
 
 | Action           | Timing                   |
 | ---------------- | ------------------------ |
@@ -273,7 +273,7 @@ wait
 | Launch cx x 5    | Immediately (background) |
 | Collect results  | After wait completes     |
 
-### 1.6. Reviewer Deliberation (Optional)
+### 1.7. Reviewer Deliberation (Optional)
 
 IMPORTANT: This is an optional phase. Execute only when:
 
@@ -285,13 +285,13 @@ For standalone execution, Phase 1 (Section 1.5) alone is sufficient.
 After Phase 1 review completion, discuss with critic and guardian to collect
 additional findings.
 
-#### 1.6.1. Purpose
+#### 1.7.1. Purpose
 
 1. Collect additional findings from other perspectives
 2. Prevent cross-functional oversights
 3. Ensure comprehensive multi-angle coverage
 
-#### 1.6.2. Deliberation Prompt
+#### 1.7.2. Deliberation Prompt
 
 Share all Phase 1 review results with critic and guardian and request
 additional findings.
@@ -324,7 +324,7 @@ Output format per finding:
 If no findings for your perspective: state "No findings from {ROLE} perspective."
 ```
 
-#### 1.6.3. Deliberation Execution
+#### 1.7.3. Deliberation Execution
 
 Execute 10-parallel (cc x 5 + cx x 5) same as Phase 1.
 
@@ -337,14 +337,14 @@ Task tool calls (parallel, single message):
 - subagent_type: reviewer-qa (with Phase 1 results)
 ```
 
-#### 1.6.4. Result Files
+#### 1.7.4. Result Files
 
 Save deliberation results:
 
 - cc: Use Task tool results directly
 - cx: `FILE=$(mkoutput --dir reviews --label "deliberation-{ROLE}-cx")`
 
-### 1.7. Summary Output
+### 1.8. Summary Output
 
 Create file:
 
@@ -356,7 +356,7 @@ IMPORTANT: The summary MUST include both the findings table AND the Key Findings
 Detail section in a single generation. Do NOT require a follow-up request to
 produce details. Generate the complete summary in one pass.
 
-#### 1.7.1. Summary Template
+#### 1.8.1. Summary Template
 
 ````markdown
 # Review Summary
@@ -421,7 +421,7 @@ as appropriate for the fix type.)
 | **Total**    | **X**   | **Y**   | **Z** |
 ````
 
-#### 1.7.2. Key Findings Selection Criteria
+#### 1.8.2. Key Findings Selection Criteria
 
 Include in "Key Findings Detail" when ANY of these conditions is met:
 
