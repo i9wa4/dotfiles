@@ -94,7 +94,7 @@ in
       # Explicit skill definitions (for rename or custom config)
       explicit.drawio-skills = {
         from = "drawio-mcp";
-        path = "skill-cli";
+        path = "skill-cli/drawio";
       };
       explicit.databricks-jobs-bundles = {
         from = "databricks-official";
