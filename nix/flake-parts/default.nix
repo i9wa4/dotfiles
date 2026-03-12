@@ -9,10 +9,12 @@ let
   };
 
   # SSOT for nixpkgs-unstable instantiation (used by ubuntu.nix and darwin.nix)
-  mkPkgsUnstable = system: import inputs.nixpkgs-unstable {
-    localSystem = system;
-    config.allowUnfree = true;
-  };
+  mkPkgsUnstable =
+    system:
+    import inputs.nixpkgs-unstable {
+      localSystem = system;
+      config.allowUnfree = true;
+    };
 in
 {
   _module.args = { inherit commonNixSettings mkPkgsUnstable; };
