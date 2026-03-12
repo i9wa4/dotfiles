@@ -45,420 +45,85 @@ NOTE: For draw.io CLI flags and export options, see the `drawio-skills` skill.
 
 ## 4. Layout Adjustment
 
-### 4.1. Coordinate Adjustment Steps
-
-1. Open `.drawio` file in text editor (plain XML format)
-2. Find `mxCell` for element to adjust (search by `value` attribute for text)
-3. Adjust coordinates in `mxGeometry` tag
-   - `x`: Position from left
-   - `y`: Position from top
-   - `width`: Width
-   - `height`: Height
-4. Run conversion and verify
-
-### 4.2. Coordinate Calculation
-
-- Element center coordinate = `y + (height / 2)`
-- To align multiple elements, calculate and match center coordinates
+- Open `.drawio` in text editor; find `mxCell` by `value` attribute
+- Adjust `mxGeometry`: `x` (left), `y` (top), `width`, `height`
+- Element center = `y + (height / 2)`; match centers to align elements
 
 ## 5. Color Palette and Layout Patterns
 
-These are auto-updatable reference files. See section 11 for update protocol.
+Auto-updatable reference files (see Section 10 for update protocol):
 
 - [Color Palette](references/color-palette.md) - Material Design colors and usage rules
 - [Layout Guidelines](references/layout-guidelines.md) - Pattern catalog (A-K) and AWS layout rules
 
 ## 6. Design Principles
 
-### 6.0. Slide Diagram Constraints
-
-For presentation slide diagrams (1920x1080 canvas):
+### 6.1. Slide Diagram Constraints (1920x1080)
 
 - YOU MUST: Set `page="0"` (transparent background)
 - YOU MUST: Use `fontFamily=Noto Sans JP` for all text
 - YOU MUST: Limit to 1-3 accent colors per diagram
 - YOU MUST: Include a takeaway bar at the bottom (Note or Primary color)
-- NEVER: Use more than 4 color roles in a single diagram
 
-### 6.1. Basic Principles
+### 6.2. Core Principles
 
-- Clarity: Create simple, visually clean diagrams
-- Consistency: Unify colors, fonts, icon sizes, line thickness
-- Accuracy: Do not sacrifice accuracy for simplification
+- Clarity, consistency, accuracy
+- Label all elements; use arrows for direction (prefer unidirectional)
+- One concept per diagram; split complex systems into staged diagrams
+- Ensure color contrast; use patterns in addition to colors
 
-### 6.2. Element Rules
+### 6.3. Related Diagram Set Consistency
 
-- Label all elements
-- Use arrows to indicate direction
-  (prefer 2 unidirectional arrows over bidirectional)
-- Use latest official icons
-- Add legend to explain custom symbols
-
-### 6.3. Accessibility
-
-- Ensure sufficient color contrast
-- Use patterns in addition to colors
-
-### 6.4. Progressive Disclosure
-
-Separate complex systems into staged diagrams:
-
-| Diagram Type       | Purpose                                   |
-| ------------------ | ----------------------------------------- |
-| Context Diagram    | System overview from external perspective |
-| System Diagram     | Main components and relationships         |
-| Component Diagram  | Technical details and integration points  |
-| Deployment Diagram | Infrastructure configuration              |
-| Data Flow Diagram  | Data flow and transformation              |
-| Sequence Diagram   | Time-series interactions                  |
-
-### 6.5. Metadata
-
-Include title, description, last updated, author, and version in diagrams.
-
-### 6.6. One Concept Per Diagram
-
-- Avoid cramming multiple concepts into a single diagram
-- Split complex diagrams into focused, single-concept diagrams
-- Each diagram should communicate one clear message
-- Example: Instead of "Session + Window + Pane navigation" in one diagram,
-  create "Session/Window navigation" and "Pane navigation" separately
-
-### 6.7. Related Diagram Set Consistency
-
-For multiple diagrams within the same article or presentation:
-
-- YOU MUST: Use identical canvas width across all related diagrams
-- YOU MUST: Use the same color for the same concept across diagrams
-  (e.g., 'Session' always uses the same fillColor/strokeColor)
-- YOU MUST: Use the same font family and size across all related diagrams
-- YOU MUST: Use the same stroke width for the same type of border
-
-Work procedure:
-
-1. Define diagram set specification before creating any diagram
-2. Create each diagram following the specification
-3. After completion, display all diagrams side-by-side and verify consistency
+- YOU MUST: Use identical canvas width, colors, fonts, stroke width across related diagrams
+- Define diagram set specification before creating any diagram
+- Verify side-by-side after completion
 
 ## 7. Best Practices
 
-### 7.1. Background Color
+### 7.1. General
 
-- Remove `background="#ffffff"`
-- Transparent background adapts to various themes
+- Remove `background="#ffffff"` (transparent adapts to themes)
+- Font size: 1.5x standard (~18px) for readability
+- Japanese text: allow 30-40px per character width
+- Canvas size: 800px or less for Zenn articles, 1920x1080 for slides
+- Scale canvas proportionally when increasing font size
 
-### 7.2. Font Size
+### 7.2. Arrows
 
-- Use 1.5x standard font size (around 18px) for PDF readability
-
-### 7.3. Japanese Text Width
-
-- Allow 30-40px per character
-- Insufficient width causes unintended line breaks
-
-```xml
-<!-- For 10-character text, allow 300-400px -->
-<mxGeometry x="140" y="60" width="400" height="40" />
-```
-
-### 7.4. Arrow Placement
-
-For structural/connection arrows (e.g., flowcharts, ER diagrams):
-
-- Always place arrows at back (position in XML right after Title)
-- Position arrows to avoid overlapping with labels
+- Structural arrows (flowcharts, ER): place in XML right after Title (back layer)
+- Badge-associated arrows (navigation): place last in XML (top layer)
 - Keep arrow start/end at least 20px from label bottom edge
+- For text elements, use explicit `sourcePoint`/`targetPoint` (exitX/exitY don't work)
+- Edge label offset: `<mxPoint x="0" y="-40" as="offset"/>` (negative = above)
+- Bidirectional: set `startArrow=classic;endArrow=classic;startFill=1;endFill=1`
+- Minimum 80-100px spacing to avoid arrowhead overlap (`><` shape)
+- Standardize arrow lengths within a diagram
+- Edge labels: place `<mxCell>` at END of `<root>` with `labelBackgroundColor=#ffffff`
 
-```xml
-<!-- Title -->
-<mxCell id="title" value="..." .../>
+### 7.3. Containers and Spacing
 
-<!-- Arrows (back layer) -->
-<mxCell id="arrow1" style="edgeStyle=..." .../>
+- Internal elements: at least 30px margin from frame boundary
+- Parent container label clearance: first child Y >= `parent.y + spacingTop + fontSize + 10`
+  (for fontSize >= 24px, use fontSize \* 1.5)
+- Label padding: add `spacingLeft=8;spacingTop=8` to box styles
+- Maintain vertical symmetry in containers (top margin = bottom margin)
+- Align elements on container's horizontal centerline
 
-<!-- Other elements (front layer) -->
-<mxCell id="box1" .../>
-```
+### 7.4. Labels
 
-NOTE: For badge-associated arrows (navigation diagrams),
-see Section 7.14.3 for different z-order requirements.
-
-### 7.5. Arrow Connection to Text Labels
-
-For text elements, exitX/exitY don't work, so use explicit coordinates:
-
-```xml
-<!-- Good: Explicit coordinates with sourcePoint/targetPoint -->
-<mxCell id="arrow" style="..." edge="1" parent="1">
-  <mxGeometry relative="1" as="geometry">
-    <mxPoint x="1279" y="500" as="sourcePoint"/>
-    <mxPoint x="119" y="500" as="targetPoint"/>
-    <Array as="points">
-      <mxPoint x="1279" y="560"/>
-      <mxPoint x="119" y="560"/>
-    </Array>
-  </mxGeometry>
-</mxCell>
-```
-
-### 7.6. edgeLabel Offset Adjustment
-
-Adjust offset attribute to distance arrow labels from arrows:
-
-```xml
-<!-- Place above arrow (negative value to distance) -->
-<mxPoint x="0" y="-40" as="offset"/>
-
-<!-- Place below arrow (positive value to distance) -->
-<mxPoint x="0" y="40" as="offset"/>
-```
-
-### 7.7. Remove Unnecessary Elements
-
+- Service name only: 1 line; with supplementary info: 2 lines using `&lt;br&gt;`
+- Remove redundant notation (e.g., "ECR Container Registry" -> "ECR")
 - Remove decorative icons irrelevant to context
-- Example: If ECR exists, separate Docker icon is unnecessary
 
-### 7.8. Labels and Headings
+### 7.5. Z-Order (XML document order = render order)
 
-- Service name only: 1 line
-- Service name + supplementary info: 2 lines with line break
-- Redundant notation (e.g., ECR Container Registry): shorten to 1 line
-- Use `&lt;br&gt;` tag for line breaks
-
-### 7.9. Background Frame and Internal Element Placement
-
-When placing elements inside background frames (grouping boxes),
-ensure sufficient margin.
-
-- YOU MUST: Internal elements must have at least 30px margin from frame boundary
-- YOU MUST: Account for rounded corners (`rounded=1`) and stroke width
-- YOU MUST: Always visually verify PNG output for overflow
-
-Coordinate calculation verification:
-
-```text
-Background frame: y=20, height=400 -> range is y=20-420
-Internal element top: frame y + 30 or more (e.g., y=50)
-Internal element bottom: frame y + height - 30 or less (e.g., up to y=390)
-```
-
-Bad example (may overflow):
-
-```xml
-<!-- Background frame -->
-<mxCell id="bg" style="rounded=1;strokeWidth=3;...">
-  <mxGeometry x="500" y="20" width="560" height="400" />
-</mxCell>
-<!-- Text: y=30 is too close to frame top (y=20) -->
-<mxCell id="label" value="Title" style="text;...">
-  <mxGeometry x="510" y="30" width="540" height="35" />
-</mxCell>
-```
-
-Good example (sufficient margin):
-
-```xml
-<!-- Background frame -->
-<mxCell id="bg" style="rounded=1;strokeWidth=3;...">
-  <mxGeometry x="500" y="20" width="560" height="430" />
-</mxCell>
-<!-- Text: y=50 is 30px from frame top (y=20) -->
-<mxCell id="label" value="Title" style="text;...">
-  <mxGeometry x="510" y="50" width="540" height="35" />
-</mxCell>
-```
-
-### 7.10. Canvas Size and Target Display Width
-
-- YOU MUST: Consider the target display width before setting canvas size
-- For Zenn articles: body text width is approximately 700px
-  - Recommended canvas width: 800px or less
-  - Large canvas (3000px+) gets scaled down, making fonts unreadable
-- For presentation slides: use 1920x1080
-- Match canvas size to final display context to ensure readability
-
-### 7.11. Arrow Size and Element Spacing
-
-When using bidirectional arrows (`<-->`):
-
-- Short distance between elements causes arrowheads to overlap,
-  creating a star/diamond shape (`><`) instead of proper arrows
-- YOU MUST: Ensure element spacing is sufficient for arrow length
-  - Minimum 80-100px spacing recommended for badge-style elements
-  - Reduce arrowhead size (`endSize`, `startSize`) to 3-6 for structure diagrams
-  - Use `strokeWidth` 2-3 for auxiliary/structure diagram arrows
-- YOU MUST: Visually verify arrow appearance in PNG output
-
-### 7.12. Bidirectional Arrow Configuration
-
-To create proper `<-->` arrows (not `><`):
-
-- YOU MUST: Set both `startArrow=classic` and `endArrow=classic`
-- YOU MUST: Set both `startFill=1` and `endFill=1`
-- Verify arrow direction: arrows should point outward, not inward
-- Example:
-
-  ```xml
-  <mxCell style="startArrow=classic;endArrow=classic;html=1;strokeWidth=5;
-                 strokeColor=#FF6F00;startSize=6;endSize=6;
-                 startFill=1;endFill=1;" edge="1" parent="1">
-    <mxGeometry relative="1" as="geometry">
-      <mxPoint x="100" y="200" as="sourcePoint" />
-      <mxPoint x="300" y="200" as="targetPoint" />
-    </mxGeometry>
-  </mxCell>
-  ```
-
-### 7.13. Font Size and Canvas Scaling
-
-When increasing font size:
-
-- YOU MUST: Scale canvas and elements proportionally
-- Increasing only font size causes text overflow
-- Calculate proportional scaling:
-  - Font 16pt → 24pt (1.5x): scale canvas and elements by 1.5x
-  - Font 20pt → 30pt (1.5x): scale canvas and elements by 1.5x
-- Example: Canvas 800x600 with 16pt font → Canvas 1200x900 with 24pt font
-
-### 7.14. Symmetry, Arrow Consistency, and Z-Order
-
-#### 7.14.1. Symmetry Principle
-
-When placing badges or arrows with similar roles:
-
-- YOU MUST: Align positions and sizes symmetrically
-- Example: M-Up/M-Down badges should share the same X coordinate,
-  positioned vertically (M-Up above, M-Down below)
-- Example: S-Left/S-Right badges should share the same Y coordinates,
-  positioned horizontally
-- Symmetry enhances visual clarity and intuitive understanding
-
-Symmetry verification steps:
-
-1. Calculate centerline: `(element1.x + element1.width/2 + element2.x + element2.width/2) / 2`
-2. Dimension match: symmetric pairs must have identical width and height
-3. Verify distances: `|element1.center - centerline| == |element2.center - centerline|`
-4. For vertical symmetry, apply the same calculation to Y coordinates
-5. Record calculations if complex
-
-#### 7.14.2. Arrow Length Uniformity
-
-Within a single diagram:
-
-- YOU MUST: Standardize all arrow lengths to the same value
-- NEVER: Mix short and long arrows (e.g., one 15px, another 35px)
-- Example: If one arrow is 20px, all arrows should be 20px
-- Consistent arrow length improves diagram balance and professionalism
-
-#### 7.14.3. Z-Order Management
-
-For badge-associated directional arrows (e.g., navigation diagrams):
-
-Arrows should always be on the topmost layer:
-
-- YOU MUST: Place arrow mxCell elements after badges and structure elements in XML
-- This ensures arrows render on top and are not hidden behind other elements
-- In draw.io XML, rendering order follows document order (later = front)
-- NEVER: Place arrows before badges/boxes in XML structure
-
-Example XML ordering:
-
-```xml
-<!-- 1. Background/structure elements first -->
-<mxCell id="session" ...>
-<!-- 2. Badges second -->
-<mxCell id="badge_m_up" ...>
-<!-- 3. Arrows last (will render on top) -->
-<mxCell id="arrow_m_up" ...>
-```
-
-NOTE: For structural arrows (flowcharts, ER diagrams),
-see Section 7.4 for back-layer placement requirements.
-
-### 7.15. Parent Container Internal Symmetry
-
-When placing elements inside parent containers (e.g., badges inside session boxes):
-
-- YOU MUST: Maintain vertical symmetry (top margin = bottom margin)
-- YOU MUST: Align elements on the container's horizontal centerline
-- Example: For a container with x=150, w=400 (center x=350), place a 70px-wide badge at x=315 (350 - 35)
-- Calculation: Container height = 2M + (element heights) + (spacing between elements)
-  - M = top/bottom margin (should be equal for symmetry)
-  - Example: For 2 badges (30px each) with 20px spacing: height = 2M + 60 + 20 = 2M + 80
-- Symmetry applies to all internal elements within parent containers, not just badges
-
-### 7.16. Label Text Padding
-
-Label text should not be placed directly against box edges:
-
-- YOU MUST: Add `spacingLeft` and `spacingTop` attributes to box styles for padding (5-10px recommended)
-- Example: `style="...;spacingLeft=8;spacingTop=8;"`
-- Applies to all container boxes (sessions, windows, panes)
-- Improves readability and visual breathing room
-
-Usage-specific spacingTop recommendations:
-
-- Container with top-aligned label and child elements: 20px (allows label + child clearance, see 7.17)
-- Container with label only (no children): 8-10px (standard padding)
-- Compact UI elements (badges, buttons): 5-8px (minimal padding)
-
-### 7.17. Parent Container Label Clearance
-
-When parent containers display labels (align=left/right, verticalAlign=top):
-
-- YOU MUST: Calculate first child Y coordinate as:
-  `parent.y + spacingTop + fontSize + 10`
-- YOU MUST: Verify child elements do not overlap with parent label
-- YOU MUST: For nested containers, apply this rule recursively
-
-NOTE: For fontSize >= 24px, use fontSize \* 1.5 instead of fontSize
-to account for line-height rendering.
-
-NOTE: If fontSize is not specified in the style, assume default 12px.
-
-Examples:
-
-```xml
-<!-- Parent: spacingTop=20, fontSize=12 -->
-<mxCell id="container" value="Container Label" style="...;spacingTop=20;fontSize=12;..." ...>
-  <mxGeometry x="100" y="100" width="400" height="200" as="geometry"/>
-</mxCell>
-
-<!-- Child Y must be >= 100 + 20 + 12 + 10 = 142 -->
-<mxCell id="child" value="..." ...>
-  <mxGeometry x="110" y="150" width="100" height="50" as="geometry"/>
-</mxCell>
-```
-
-### 7.18. Edge Label Z-Order
-
-In draw.io XML, elements are rendered in document order (later = on top / front layer).
-Edge label cells placed BEFORE column/background boxes are hidden behind those boxes.
-
-- YOU MUST: Place all edge label `<mxCell>` elements at the END of `<root>`, after all
-  shape/box elements
-- YOU MUST: Add `labelBackgroundColor=#ffffff;labelBorderColor=none;` to every edge
-  label's style attribute (belt-and-suspenders — ensures readability even if coordinates overlap)
-
-WRONG (label hidden behind col-box):
-
-```xml
-<!-- WRONG: label placed before column boxes -->
-<mxCell id="label-zeromq" style="...fillColor=#ffffff;..." vertex="1" parent="1">...</mxCell>
-<mxCell id="col1-box" style="...fillColor=#d1d6d9;..." vertex="1" parent="1">...</mxCell>
-```
-
-CORRECT (label on top of everything):
-
-```xml
-<!-- column and background boxes first -->
-<mxCell id="col1-box" style="...fillColor=#d1d6d9;..." vertex="1" parent="1">...</mxCell>
-<!-- ... all other shapes ... -->
-<!-- edge labels LAST — rendered on top -->
-<mxCell id="label-zeromq" style="...fillColor=#ffffff;...labelBackgroundColor=#ffffff;labelBorderColor=none;" vertex="1" parent="1">...</mxCell>
-```
-
-Verification: `tail -40 diagram.drawio | grep -c 'id="label-'` — count should equal number of edge labels.
+| Element type      | Position in XML           | Reason         |
+| ----------------- | ------------------------- | -------------- |
+| Structural arrows | After title, before boxes | Back layer     |
+| Background/boxes  | Middle                    | Base layer     |
+| Badges            | After boxes               | Front layer    |
+| Badge arrows      | After badges              | Top layer      |
+| Edge labels       | END of `<root>`           | Always visible |
 
 ## 8. Reference
 
@@ -467,218 +132,84 @@ Verification: `tail -40 diagram.drawio | grep -c 'id="label-'` — count should 
 - [AWS Icons](references/aws-icons.md)
 - [AWS Icon Search Script](scripts/find_aws_icon.py)
 
-AWS icon search examples:
-
 ```sh
 python ~/.claude/skills/draw-io/scripts/find_aws_icon.py ec2
-python ~/.claude/skills/draw-io/scripts/find_aws_icon.py lambda
 ```
 
-## 9. Checklist
+## 9. Workflow and Checklist
 
 ### 9.1. Phase 0: Design
 
-- [ ] Diagram follows "one concept per diagram" principle
-- [ ] Reference images (if any) actually viewed and understood
-- [ ] For diagram sets: specification defined (canvas size, colors, fonts, stroke width)
+- [ ] One concept per diagram
+- [ ] Reference images viewed and understood
+- [ ] Diagram set spec defined (canvas size, colors, fonts, stroke width)
 
 ### 9.2. Phase 1: Layout Calculation
 
 - [ ] Parent container sizes calculated
-- [ ] Child element clearance calculated (see 7.17)
-- [ ] Symmetric placement coordinates calculated (see 7.14.1)
-- [ ] Arrow z-order determined (structural → 7.4, badge-associated → 7.14.3)
+- [ ] Child element clearance calculated (see 7.3)
+- [ ] Symmetric placement coordinates calculated
+- [ ] Arrow z-order determined (see 7.5)
 
 ### 9.3. Phase 2: Implementation
 
-- [ ] No background color set (page="0")
-- [ ] Font size appropriate (larger recommended)
-- [ ] Canvas size matches target display width (800px or less for Zenn)
-- [ ] Font size and canvas scaled proportionally
-- [ ] Arrows placed in correct z-order (verify in XML)
-- [ ] Label text padding set (spacingLeft/spacingTop, see 7.16)
-- [ ] AWS service names are official names/correct abbreviations
-- [ ] AWS icons are latest version (mxgraph.aws4.\*)
-- [ ] No unnecessary elements remaining
+- [ ] `page="0"` set (transparent background)
+- [ ] Font size appropriate; canvas scaled proportionally
+- [ ] Canvas matches target display width
+- [ ] Arrows in correct z-order
+- [ ] Label padding set (`spacingLeft`/`spacingTop`)
+- [ ] AWS icons latest version (`mxgraph.aws4.*`)
 
 ### 9.4. Phase 3: Verification (PNG Review)
 
-- [ ] Arrows not overlapping labels (verify in PNG)
-- [ ] Arrow start/end sufficiently distant from labels (at least 20px)
-- [ ] Bidirectional arrows configured correctly (startArrow, endArrow, startFill, endFill)
-- [ ] Arrows appear as `<-->` not `><` (verify in PNG)
-- [ ] Arrow size appropriate for element spacing (endSize/startSize 3-6 recommended)
-- [ ] Arrows not penetrating boxes or icons (verify in PNG)
-- [ ] All arrows have uniform length within a diagram (verify in PNG)
-- [ ] Badges/arrows with similar roles are positioned symmetrically (verify in PNG)
-- [ ] Internal elements not overflowing background frame (verify in PNG)
-- [ ] 30px+ margin between background frame and internal elements
-- [ ] Parent container internal symmetry (top margin = bottom margin)
-- [ ] Elements aligned on parent container's horizontal centerline
-- [ ] Text not truncated or cut off at edges (verify in PNG)
-- [ ] For diagram sets: consistent colors/fonts/stroke width across all diagrams (side-by-side verification)
-- [ ] Edge label `<mxCell>` elements placed at END of `<root>` (z-order on top of all shapes)
-- [ ] All edge labels have `labelBackgroundColor=#ffffff` in style
+Convert and visually verify with Read tool:
 
-## 10. Diagram Creation Workflow
-
-### 10.1. Phase 0: Design
-
-Before creating XML:
-
-1. Determine purpose and core message of each diagram
-2. Define diagram set specification (for related diagrams):
-   - Canvas size (see 7.10)
-   - Color palette mapping (see 6.7)
-   - Font family and size
-   - Badge/element dimensions
-3. Split complex concepts into separate diagrams (see 6.6)
-4. Rough sketch of element types and approximate placement
-
-### 10.2. Phase 1: Layout Calculation
-
-Before writing XML:
-
-1. Calculate parent container sizes
-2. Calculate child element clearance (see 7.17)
-3. Calculate symmetric placement coordinates (see 7.14.1)
-4. Determine arrow z-order (structural → 7.4, badge-associated → 7.14.3)
-5. Verify calculations against container boundaries
-
-### 10.3. Phase 2: Implementation
-
-1. Create XML following calculated coordinates
-2. Place elements in correct z-order
-3. Apply consistent styles from diagram set specification
-4. Move any edge label cells to the END of `<root>` (see 7.18 Edge Label Z-Order)
-
-### 10.4. Phase 3: Verification
-
-After creating or editing a `.drawio` file, run this review loop:
-
-1. Convert to PNG:
-
-   ```sh
-   drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
-   ```
-
-2. **CRITICAL**: Read the PNG with the Read tool (Claude can view images)
-   - NEVER claim "no overlaps" or "no issues" based solely on XML coordinate values
-   - XML geometry does not account for actual font rendering size
-   - ALWAYS verify visually using the Read tool before reporting completion
-
-3. Check against the checklist in section 9
-4. If issues found, fix the `.drawio` XML and repeat from step 1
-
-**When reference images exist:**
-
-- YOU MUST: Actually view reference images using Read tool or WebFetch
-- NEVER guess or infer design from descriptions alone
-- If unable to view reference: report honestly, do not pretend
-
-Key items to verify visually:
-
-- Elements not overflowing background frames
-- Arrows not penetrating boxes or overlapping labels
-- Arrows appearing as proper `<-->` (not star/diamond `><` shapes)
-- Text not truncated or line-breaking unexpectedly
-- Text fully visible (no cutoff characters at edges)
-- Color palette consistent with references/color-palette.md
-- Sufficient whitespace between elements
-- Related diagrams consistent in color and size (see 6.7)
-- Parent label and child elements not intersecting (see 7.17)
-
-## 11. Self-Update Protocol
-
-This skill maintains auto-updatable reference files that evolve
-as new `.drawio` files are created.
-
-### 11.1. Auto-Updatable Files
-
-| File                              | Content                | Stability  |
-| --------------------------------- | ---------------------- | ---------- |
-| `references/color-palette.md`     | Color table and rules  | Updatable  |
-| `references/layout-guidelines.md` | Pattern catalog (A-K+) | Updatable  |
-| `SKILL.md` section 7              | Best practices         | Appendable |
-| `SKILL.md` section 9              | Checklist              | Appendable |
-
-### 11.2. Triggers
-
-Execute self-update after:
-
-1. Creating a new `.drawio` file
-2. Significantly editing an existing `.drawio` file
-3. User explicitly requests skill update
-
-### 11.3. Update Procedure
-
-```text
-1. Read the created/edited .drawio file
-2. Extract style attributes from all mxCell elements
-3. Detect:
-   a. New colors (fillColor/strokeColor/fontColor not in color-palette.md)
-      → Add to references/color-palette.md with semantic role
-   b. New layout pattern (structure doesn't match known patterns A-K)
-      → Add to references/layout-guidelines.md with name and diagram
-   c. New best practice (fix applied during quality review)
-      → Append to SKILL.md section 7
-   d. New checklist item (repeated issue caught in review)
-      → Append to SKILL.md section 9
-4. Update "Last updated" and "Source files analyzed" metadata
-5. Report changes to user
+```sh
+drawio -x -f png -s 2 -t -o output.drawio.png input.drawio
 ```
 
-### 11.4. Detection Rules
+- NEVER claim "no issues" based solely on XML; ALWAYS verify PNG visually
+- If unable to view reference images, report honestly
 
-Color detection:
+Verify:
 
-```text
-1. Parse all style="..." attributes in .drawio XML
-2. Extract fillColor, strokeColor, fontColor values
-3. Compare against known colors in references/color-palette.md
-4. If unknown color found:
-   - Check if it belongs to Material Design family
-   - Assign semantic role based on context
-   - Add to palette table
-```
+- [ ] Elements not overflowing frames (30px+ margin)
+- [ ] Arrows not overlapping labels or penetrating boxes
+- [ ] Bidirectional arrows appear as `<-->` not `><`
+- [ ] Text not truncated or cut off
+- [ ] Uniform arrow lengths
+- [ ] Symmetric badge/arrow placement
+- [ ] Parent label and child elements not intersecting
+- [ ] Edge labels visible (at END of `<root>`)
+- [ ] Diagram set consistency (side-by-side)
 
-Pattern detection:
+If issues found, fix XML and repeat from conversion step.
 
-```text
-1. Count vertex elements (boxes) and edge elements (arrows)
-2. Analyze nesting (parent-child relationships)
-3. Check spatial arrangement (horizontal/vertical/radial)
-4. Compare against known patterns A-K in layout-guidelines.md
-5. If no match:
-   - Name the pattern based on structure
-   - Create ASCII diagram
-   - Add to appropriate category
-```
+## 10. Self-Update Protocol
 
-### 11.5. Metadata Format
+Auto-updatable files that evolve as new `.drawio` files are created:
 
-Each auto-updatable file ends with:
+| File                              | Stability  |
+| --------------------------------- | ---------- |
+| `references/color-palette.md`     | Updatable  |
+| `references/layout-guidelines.md` | Updatable  |
+| `SKILL.md` section 7              | Appendable |
+| `SKILL.md` section 9              | Appendable |
 
-```markdown
----
+Trigger after creating/editing `.drawio` files:
 
-Last updated: YYYY-MM-DD
-Source files analyzed:
+1. Parse style attributes from all mxCell elements
+2. Detect new colors -> add to color-palette.md with semantic role
+3. Detect new layout patterns -> add to layout-guidelines.md
+4. Detect new best practices or checklist items -> append to SKILL.md
+5. Update metadata (last updated, source files)
 
-- repo/path/to/\*.drawio
-```
+## 11. Image Display in reveal.js Slides
 
-## 12. Image Display in reveal.js Slides
-
-Add `auto-stretch: false` to YAML header:
+Add `auto-stretch: false` to YAML header for correct image display on mobile:
 
 ```yaml
----
-title: "Your Presentation"
 format:
   revealjs:
     auto-stretch: false
----
 ```
-
-This ensures correct image display on mobile devices.
