@@ -12,169 +12,68 @@ description: |
 
 ## 1. Review Workflow
 
-### 1.1. Pre-flight Check (Run Before Everything Else)
-
-Before starting any code review, verify the review is possible:
+### 1.1. Pre-flight Check
 
 ```bash
-# Check current branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
-  echo "HALT: On main/master branch. Switch to a feature/PR branch before reviewing."
-  # Halt: report to user that no reviewable diff was found before proceeding.
+  echo "HALT: On main/master branch."
 fi
 
-# Check diff exists
 if ! git diff --quiet main...HEAD; then
   echo "Diff detected: code review."
 else
   echo "No diff detected."
-  echo "If this is a PR review, halt and report to user: no changes found on this branch."
-  echo "If this is a design review, proceed -- no diff is expected."
 fi
 ```
 
-If intended review type is code/PR and no diff exists: halt immediately and report to user.
-Do NOT fall back silently to design review mode when a code review was requested.
+If code/PR review was requested and no diff exists: halt and report.
+Do NOT fall back silently to design review.
 
 ### 1.2. Setup (Fully Automatic)
-
-No arguments required. Everything is auto-detected:
 
 | Item        | Detection                                              |
 | ----------- | ------------------------------------------------------ |
 | review_type | `git diff main...HEAD` has output -> code, else design |
 | scope       | Always `git diff main...HEAD`                          |
-| context     | Directory name pattern (see 1.3.2)                     |
+| context     | Directory name pattern (see 1.4.1)                     |
 
-Default: 10 parallel (cx x 5 + cc x 5)
+### 1.3. Finding Output Format
 
-### 1.3. Priority (Code Review)
-
-| Priority | Role         | Focus                  |
-| -------- | ------------ | ---------------------- |
-| 1        | security     | OWASP, vulnerabilities |
-| 2        | architecture | Patterns, structure    |
-| 3        | historian    | History, context       |
-| 4        | code         | Quality, readability   |
-| 5        | qa           | Edge cases, acceptance |
-
-For design review: replace `code` with `data` (Data model, schema).
-Assign: cx first (1-5), then cc (1-5). cx manages token usage of cc.
-
-### 1.4. Scope and Context
-
-#### 1.4.1. Scope (Review Target) - Always Local
-
-| Scope | Command                 | When                       |
-| ----- | ----------------------- | -------------------------- |
-| diff  | `git diff main...HEAD`  | Default. Branch changes    |
-| file  | Read the file at {path} | User specifies a file path |
-
-#### 1.4.2. Context (Metadata) - Auto-detected from Directory Name
-
-Detect PR/Issue number from current directory name pattern:
-
-- `*-pr-{N}` -> PR worktree -> fetch PR #{N} metadata
-- `*-issue-{N}` -> Issue worktree -> fetch Issue #{N} metadata
-- Otherwise -> no metadata (diff only)
-
-Detection command:
-
-```bash
-basename "$(git rev-parse --show-toplevel)" | rg -o --pcre2 '(pr|issue)-\K[0-9]+'
-```
-
-#### 1.4.3. Context Fetch Procedure
-
-1. Detect type and number from directory name
-2. Fetch primary metadata:
-   - PR: `gh pr view {N} --json body,comments`
-   - Issue: `gh issue view {N} --json body,comments`
-3. For PR: parse body for referenced Issues/PRs (`#123`, `Closes #456`, etc.)
-   and fetch each with `gh issue view` or `gh pr view`
-4. Save all context to CONTEXT_FILE (created with mkoutput)
-
-IMPORTANT: For PR reviews, always chase references in the PR body.
-Related Issues/PRs provide critical intent and acceptance criteria.
-
-Agent file:
-@~/.agents/subagents/reviewer-{ROLE}.md
-
-### 1.5. Review Execution
-
-#### 1.5.1. IMPORTANT: Always execute 10-parallel reviews as standard practice
-
-Always execute the following for design/code reviews:
-
-- cc x 5: Launch reviewer-\* agents in parallel via Task tool
-- cx x 5: Execute codex exec sequentially via worker-codex
-
-2-parallel execution (worker-claude + worker-codex only) is prohibited.
-
-Task content template:
+Every finding from every subagent MUST use this format.
+Define once here; all task prompts and summaries reference this section.
 
 ```text
-[SUBAGENT capability=READONLY]
-<!-- REVIEW_SESSION
-timestamp: {TS}, source: {SOURCE}, role: {ROLE}
-review_type: {REVIEW_TYPE}
--->
-Review the diff in {DIFF_FILE} from {ROLE} perspective.
-Context (PR/Issue metadata): {CONTEXT_FILE}
-Return your review directly. Do NOT create files.
+### [{SEVERITY}] {concise title}
 
-Output format per finding:
-- Finding: <specific description, not high-level observation>
-- File/Location: <file:line or section>
-- Severity: BLOCKING | IMPORTANT | MINOR
-- Proposed fix: <exact text change or concrete diff, not "consider improving X">
-
-If no findings for your perspective: state "No findings from {ROLE} perspective."
+What: {specific description — what is wrong, not "could be improved"}
+Why: {concrete impact — what breaks, what degrades, what risk arises}
+Where: `path/to/file.ext:line` — `relevant code snippet`
+Confidence: High / Medium / Low
+Fix:
+  {exact code change as before/after, or concrete action step}
+  {NOT "consider improving X" — show the actual fix}
 ```
 
-#### 1.5.2. Method A: Task Tool (Recommended for Claude Code)
+Severity levels:
 
-Use Task tool with reviewer agents. Launch multiple Task tools in a single
-message for parallel execution with clean output isolation.
+| Level     | Meaning                                        |
+| --------- | ---------------------------------------------- |
+| BLOCKING  | Must fix before merge; correctness or security |
+| IMPORTANT | Should fix; maintainability or reliability     |
+| MINOR     | Nice to fix; style or minor improvement        |
 
-```text
-Task tool calls (parallel):
-- subagent_type: reviewer-security
-- subagent_type: reviewer-architecture
-- subagent_type: reviewer-historian
-- subagent_type: reviewer-code
-- subagent_type: reviewer-qa
-```
+Rules:
 
-Each reviewer agent reads the agent file automatically.
+- Each finding MUST have all 5 fields (What/Why/Where/Confidence/Fix)
+- "What" must be specific enough to locate the problem without reading the file
+- "Why" must explain the consequence, not just restate the problem
+- "Fix" must be a concrete code diff or exact action, not a suggestion to "consider"
+- When no findings exist: state "No findings from {ROLE} perspective."
 
-#### 1.5.3. Method B: Codex CLI Sequential (Recommended for Codex)
+### 1.4. Review Execution
 
-NEVER use background processes (`&`) with codex exec -
-causes output interleaving.
-
-```bash
-for ROLE in security architecture historian code qa; do
-  FILE=$(mkoutput --dir reviews --label "${ROLE}-cx")
-  codex exec --sandbox workspace-write -o "$FILE" "{task}"
-done
-```
-
-#### 1.5.4. Method C: Codex CLI Parallel (Advanced)
-
-For true parallelism without output mixing, use separate terminal sessions
-or accept that outputs will be written to files (not displayed cleanly).
-
-WARNING: Background execution (`&`) with `wait` causes stderr/stdout mixing.
-
-### 1.6. Parallel Execution for 10-Review (cc x 5 + cx x 5)
-
-IMPORTANT: Start cc and cx reviews simultaneously for true parallelism.
-
-#### 1.6.1. Step 1: Auto-detect and Prepare
-
-Run these steps automatically (no user input needed):
+#### 1.4.1. Step 1: Auto-detect and Prepare
 
 ```bash
 # 1. Save diff
@@ -182,11 +81,7 @@ DIFF_FILE=$(mkoutput --dir reviews --label review-diff)
 git diff main...HEAD > "$DIFF_FILE"
 
 # 2. Detect review_type
-if [ -s "$DIFF_FILE" ]; then
-  REVIEW_TYPE="code"
-else
-  REVIEW_TYPE="design"
-fi
+if [ -s "$DIFF_FILE" ]; then REVIEW_TYPE="code"; else REVIEW_TYPE="design"; fi
 
 # 3. Detect context from directory name
 DIR_NAME=$(basename "$(git rev-parse --show-toplevel)")
@@ -200,7 +95,7 @@ echo "# Review Context" > "$CONTEXT_FILE"
 if [ -n "$PR_NUM" ]; then
   echo "## PR #${PR_NUM}" >> "$CONTEXT_FILE"
   gh pr view "$PR_NUM" --json title,body,comments >> "$CONTEXT_FILE"
-  # Chase references: extract #NNN from PR body, fetch each
+  # Chase references in PR body
   gh pr view "$PR_NUM" --json body --jq '.body' \
     | rg -o --pcre2 '#\K[0-9]+' | sort -u | while read -r REF; do
       echo "## Referenced #${REF}" >> "$CONTEXT_FILE"
@@ -214,20 +109,19 @@ elif [ -n "$ISSUE_NUM" ]; then
 fi
 ```
 
-#### 1.6.2. Step 2: Launch cc x 5 (Single Message)
+#### 1.4.2. Step 2: Launch cc x 5 (Single Message, Parallel)
 
-In one message, call Task tool 5 times in parallel:
+Launch 5 Task tools in one message:
 
-```text
-Task tool calls (parallel, single message):
-- subagent_type: reviewer-security
-- subagent_type: reviewer-architecture
-- subagent_type: reviewer-historian
-- subagent_type: reviewer-code (or reviewer-data for design review)
-- subagent_type: reviewer-qa
-```
+| Priority | Role         | Focus                                          |
+| -------- | ------------ | ---------------------------------------------- |
+| 1        | security     | Vulnerabilities, injection, secrets            |
+| 2        | architecture | Patterns, dependencies, structure              |
+| 3        | historian    | History, context, intent alignment             |
+| 4        | code / data  | Code review: code. Design review: data         |
+| 5        | qa           | Acceptance criteria, edge cases, coverage gaps |
 
-Each prompt should include:
+Task prompt template:
 
 ```text
 [SUBAGENT capability=READONLY]
@@ -235,18 +129,18 @@ Review from {ROLE} perspective.
 Diff: {DIFF_FILE}
 Context: {CONTEXT_FILE}
 
-Output format per finding:
-- Finding: <specific description, not high-level observation>
-- File/Location: <file:line or section>
-- Severity: BLOCKING | IMPORTANT | MINOR
-- Proposed fix: <exact text change or concrete diff, not "consider improving X">
+Investigation steps:
+1. Read the diff file in full
+2. Read the actual source files (not just the diff) for surrounding context
+3. Read the PR/Issue context for intent and requirements
+4. For each concern, verify it against the actual code before reporting
 
-If no findings for your perspective: state "No findings from {ROLE} perspective."
+Output each finding using the format in Section 1.3 of subagent-review skill.
+Use all 5 fields: What, Why, Where, Confidence, Fix.
+If no findings: state "No findings from {ROLE} perspective."
 ```
 
-#### 1.6.3. Step 3: Launch cx x 5 (Background Processes)
-
-Use file output to avoid interleaving:
+#### 1.4.3. Step 3: Launch cx x 5 (Background)
 
 ```bash
 for ROLE in security architecture historian data qa; do
@@ -257,106 +151,49 @@ done
 wait
 ```
 
-#### 1.6.4. Step 4: Collect Results
+NEVER use `&` with codex exec if output interleaving is a problem.
+Use sequential loop instead (remove `&` and `wait`).
 
-```bash
-# cx review files are referenced by $FILE variables from Step 3
-# cc review results are returned directly by the Task tool
-```
+### 1.5. Reviewer Deliberation (Optional)
 
-#### 1.6.5. Timing Optimization
-
-| Action           | Timing                   |
-| ---------------- | ------------------------ |
-| Auto-detect/prep | Before starting reviews  |
-| Launch cc x 5    | Immediately (Task tool)  |
-| Launch cx x 5    | Immediately (background) |
-| Collect results  | After wait completes     |
-
-### 1.7. Reviewer Deliberation (Optional)
-
-IMPORTANT: This is an optional phase. Execute only when:
+Execute only when:
 
 - Running as orchestrator (role name is "orchestrator")
-- User explicitly requests comprehensive review with deliberation
+- User explicitly requests deliberation
 
-For standalone execution, Phase 1 (Section 1.5) alone is sufficient.
+For standalone execution, Section 1.4 alone is sufficient.
 
-After Phase 1 review completion, discuss with critic and guardian to collect
-additional findings.
+#### 1.5.1. Deliberation Prompt
 
-#### 1.7.1. Purpose
-
-1. Collect additional findings from other perspectives
-2. Prevent cross-functional oversights
-3. Ensure comprehensive multi-angle coverage
-
-#### 1.7.2. Deliberation Prompt
-
-Share all Phase 1 review results with critic and guardian and request
-additional findings.
+Share all Phase 1 results with each reviewer and ask for additional findings:
 
 ```text
 [SUBAGENT capability=READONLY]
-<!-- DELIBERATION_SESSION
-timestamp: {TS}, role: {ROLE}
-review_type: {REVIEW_TYPE}
--->
-
-## Phase 1 Review Results Summary
-
-{List all Phase 1 findings sorted by severity}
+## Phase 1 Review Results
+{All Phase 1 findings sorted by severity}
 
 ## Questions
+From your expert perspective ({ROLE}), based on other reviewers' findings:
+1. Additional issues they missed from your perspective?
+2. Supplementary concerns triggered by their findings?
+3. Contradictions or disagreements with their assessments?
 
-Based on other reviewers' findings, from your expert perspective ({ROLE}):
-
-1. Are there any additional points to raise?
-2. Are there any supplementary points related to other findings?
-3. Are there any overlooked perspectives?
-
-Output format per finding:
-- Finding: <specific description, not high-level observation>
-- File/Location: <file:line or section>
-- Severity: BLOCKING | IMPORTANT | MINOR
-- Proposed fix: <exact text change or concrete diff, not "consider improving X">
-
-If no findings for your perspective: state "No findings from {ROLE} perspective."
+Output each finding using the format in Section 1.3.
+If no findings: state "No additional findings from {ROLE} perspective."
 ```
 
-#### 1.7.3. Deliberation Execution
+Launch 10-parallel (cc x 5 + cx x 5) same as Section 1.4.
 
-Execute 10-parallel (cc x 5 + cx x 5) same as Phase 1.
-
-```text
-Task tool calls (parallel, single message):
-- subagent_type: reviewer-security (with Phase 1 results)
-- subagent_type: reviewer-architecture (with Phase 1 results)
-- subagent_type: reviewer-historian (with Phase 1 results)
-- subagent_type: reviewer-code or reviewer-data (with Phase 1 results)
-- subagent_type: reviewer-qa (with Phase 1 results)
-```
-
-#### 1.7.4. Result Files
-
-Save deliberation results:
-
-- cc: Use Task tool results directly
-- cx: `FILE=$(mkoutput --dir reviews --label "deliberation-{ROLE}-cx")`
-
-### 1.8. Summary Output
-
-Create file:
+### 1.6. Summary Output
 
 ```bash
 SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
 ```
 
-IMPORTANT: The summary MUST include both the findings table AND the Key Findings
-Detail section in a single generation. Do NOT require a follow-up request to
-produce details. Generate the complete summary in one pass.
+IMPORTANT: Generate the complete summary (table + detail) in one pass.
+Do NOT require a follow-up request for details.
 
-#### 1.8.1. Summary Template
+#### 1.6.1. Summary Template
 
 ````markdown
 # Review Summary
@@ -365,15 +202,15 @@ produce details. Generate the complete summary in one pass.
 
 - Type: {review_type}, Directory: {dir_name}
 
-## Findings by Phase
+## Findings
 
 ### Phase 1: Initial Review
 
-| #   | Issue               | Reporter     | Severity  | File               |
-| --- | ------------------- | ------------ | --------- | ------------------ |
-| 1   | {issue description} | {role}-{src} | BLOCKING  | `path/to/file:123` |
-| 2   | {issue description} | {role}-{src} | IMPORTANT | `path/to/file:456` |
-| 3   | {issue description} | {role}-{src} | MINOR     | `path/to/file:789` |
+| #   | Issue           | Reporter     | Severity  | Confidence | File               |
+| --- | --------------- | ------------ | --------- | ---------- | ------------------ |
+| 1   | {concise title} | {role}-{src} | BLOCKING  | High       | `path/to/file:123` |
+| 2   | {concise title} | {role}-{src} | IMPORTANT | Medium     | `path/to/file:456` |
+| 3   | {concise title} | {role}-{src} | MINOR     | High       | `path/to/file:789` |
 
 ### Phase 2: Deliberation
 
@@ -385,31 +222,31 @@ produce details. Generate the complete summary in one pass.
 
 ## Key Findings Detail
 
-(For each finding that meets the selection criteria in 1.7.2)
+(BLOCKING, IMPORTANT, or flagged by 3+ reviewers)
 
 ### #{N} [{SEVERITY}] {title}
 
-{Problem description: what is wrong, why it matters, what the consequence is.
-Include cross-references to other reviewers who flagged the same issue.}
+**What**: {specific problem description}
 
-Affected files:
+**Why**: {concrete consequence — what breaks, what degrades}
 
-- `path/to/file.sql:NN` -- `problematic code snippet`
-- `path/to/other_file.sql:MM` -- `same pattern`
+**Where**:
 
-Fix:
+- `path/to/file.ext:NN` -- `problematic code`
+- `path/to/other_file.ext:MM` -- `same pattern`
 
-\```sql
+**Reviewers**: {role1}-cc, {role2}-cx (list all who flagged this)
+
+**Fix**:
+
+\```lang
 -- Before
 {exact current code}
 -- After
 {exact corrected code}
 \```
 
-(Repeat for each qualifying finding. Include code/YAML/config examples
-as appropriate for the fix type.)
-
-## Coverage Analysis
+## Coverage
 
 | Perspective  | Phase 1 | Phase 2 | Total |
 | ------------ | ------- | ------- | ----- |
@@ -421,22 +258,19 @@ as appropriate for the fix type.)
 | **Total**    | **X**   | **Y**   | **Z** |
 ````
 
-#### 1.8.2. Key Findings Selection Criteria
+#### 1.6.2. Key Findings Selection
 
-Include in "Key Findings Detail" when ANY of these conditions is met:
+Include in "Key Findings Detail" when ANY condition is met:
 
 - Severity is BLOCKING
 - Severity is IMPORTANT
-- 3+ reviewers independently flagged the same issue (regardless of severity)
+- 3+ reviewers independently flagged the same issue
 
-MINOR findings that do not meet these criteria go in the table only (no detail).
+MINOR findings appear in table only (no detail section).
 
 ## 2. Standalone Usage (Lightweight Mode)
 
-For quick reviews without Reviewer Deliberation:
+1. Execute Section 1.4 only (skip deliberation)
+2. Create summary per Section 1.6
 
-1. Execute Phase 1 only (Section 1.5)
-2. Collect results (Section 1.5.4)
-3. Create summary (Section 1.7) with Phase 1 only
-
-Skip Phase 2 (Section 1.6) to reduce execution time and token usage.
+Skip Section 1.5 to reduce execution time and token usage.
