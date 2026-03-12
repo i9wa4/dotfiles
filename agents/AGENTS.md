@@ -21,35 +21,19 @@ acknowledge with a random one-liner in character.
 
 ## 3. Workflow
 
-### 3.1. Before Acting
-
-- Ask task owner when anything unclear; if unavailable, proceed with minimal assumption and state it
-- Explore before implementing: git status/log, read files, search patterns
-- Read files in full
-
-### 3.2. While Acting
-
-- Do not exceed requested scope
+- Read a file in full at a time, not separately
 - Do not delete unmentioned handlers, functions, or sections
+- Do not add unnecessary error handling, backward compatibility, or defensive code
 - Propose additional changes and wait for approval
-- When in doubt, do less
-- Prioritize DRY (Don't Repeat Yourself); reuse existing code
-
-### 3.3. After Acting
-
-- Verify changes took effect before reporting success
-- Show actual output as evidence
-- Verify findings against the actual repo/code before reporting. Flag confidence level. Do not present unverified assertions as facts.
+- Verify changes took effect before reporting success; show actual output as evidence
+- Verify findings against the actual repo/code before reporting. Flag confidence level.
 
 ## 4. Safety
 
-- This dotfiles repo targets both Linux and macOS; always ensure scripts, paths,
-  and commands work on both platforms (e.g., prefer POSIX-compatible flags,
-  avoid GNU-only options like `sed -i ''` vs `sed -i`, `date` format differences)
+- This dotfiles repo targets both Linux and macOS; prefer Nix-managed tools
+  or POSIX-compatible commands to avoid platform differences
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
-- Do not run commands that create/update lock files or virtual envs without permission
-  (e.g., `uv sync`, `uv lock`, `npm install`, `.venv/`, `node_modules/`)
-- If a lock file is created, stop and report it
+- Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
 - Do not use complex tooling (home-manager modules) when simple solutions (symlinks,
   plain files) suffice for config file management in dotfiles
 - Never hardcode user-specific values (usernames, hostnames, machine names) in shared
@@ -108,7 +92,7 @@ Files and directories described below are located at:
 
 | Category  | Items                                                     |
 | --------- | --------------------------------------------------------- |
-| Rules     | aws, bash, github, markdown, python                       |
+| Rules     | bash, github, markdown, python                            |
 | Skills    | managed skills + external skills (see @~/.claude/skills/) |
 | Subagents | reviewer-\*, researcher-tech                              |
 
@@ -118,7 +102,6 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 
 | Rule        | Description                   | When to Reference |
 | ----------- | ----------------------------- | ----------------- |
-| aws.md      | AWS CLI usage rules           | AWS operations    |
 | bash.md     | Bash syntax and command rules | Command execution |
 | github.md   | GitHub rules (constraints)    | GitHub operations |
 | markdown.md | Markdown creation rules       | Markdown creation |

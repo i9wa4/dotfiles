@@ -3,19 +3,8 @@
 ## 1. Universal Rules
 
 - NEVER: Do not use emojis
-- NEVER: Do not start numbered lists from 0 (tools auto-convert 0 to 1)
+- NEVER: Do not start numbered lists from 0
 - YOU MUST: Align table columns with spaces
-
-Good example:
-
-```markdown
-| Name   | Description | Value |
-| ------ | ----------- | ----- |
-| foo    | Foo item    | 100   |
-| barbaz | Bar baz     | 200   |
-```
-
-Bad example:
 
 ```markdown
 | Name   | Description | Value |
