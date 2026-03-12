@@ -20,6 +20,7 @@ let
       pr = "";
     };
     cleanupPeriodDays = 36000;
+    defaultMode = "auto";
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";
@@ -28,7 +29,7 @@ let
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
-      CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "25000";
+      CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "20000";
       CLAUDE_CODE_ENABLE_PROMPT_SUGGESTIONS = "false";
       ENABLE_TOOL_SEARCH = "auto:3";
       IS_DEMO = "true";
@@ -112,6 +113,7 @@ let
     mcpServers = builtins.mapAttrs (
       _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
     ) mcpServers;
+    outputStyle = "Explanatory";
     permissions = {
       deny = (map (cmd: "Bash(${cmd.claudeGlob})") prohibitedBash) ++ [
         "Read(**/*key*)"
@@ -122,6 +124,7 @@ let
         "Write(.env*)"
       ];
     };
+    skipAutoPermissionPrompt = "true";
     statusLine = {
       type = "command";
       command = "~/.claude/scripts/claude-statusline.sh";

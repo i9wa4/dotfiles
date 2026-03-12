@@ -234,7 +234,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.72 (2026-03-11)
+Last reviewed Claude Code version: v2.1.74 (2026-03-12)
 
 ### 11.1. Applied Optimizations
 
@@ -292,9 +292,22 @@ Last reviewed Claude Code version: v2.1.72 (2026-03-11)
   enabled
 - Effort level simplification (v2.1.72) - low/medium/high with `/effort auto`;
   no config needed
+- `autoMemoryDirectory` (v2.1.74) - auto-memory disabled via env; not applicable
+- `modelOverrides` (v2.1.73) - not using Bedrock/Vertex/Foundry custom IDs
+- `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` (v2.1.74) - no SessionEnd hooks
+  configured
 
 ### 11.4. Version Notes
 
+- v2.1.74: `autoMemoryDirectory` setting, `/context` actionable suggestions,
+  streaming API memory leak fix, managed policy `ask` rules bypass fix,
+  agent frontmatter `model:` now accepts full model IDs,
+  `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` env, RTL text rendering fix
+- v2.1.73: `modelOverrides` setting for custom provider model IDs,
+  `/output-style` deprecated (use `/config`), CPU freeze fix for complex
+  bash permission prompts, skill directory deadlock fix, Bash tool output
+  loss fix with concurrent sessions, default Opus on Bedrock/Vertex changed
+  to 4.6, SessionStart hooks double-fire on resume fix
 - v2.1.72: `/copy` write-to-file (`w` key), `/plan` description arg,
   `ExitWorktree` tool, `CLAUDE_CODE_DISABLE_CRON` env, bash auto-approval
   expanded (lsof, pgrep, tput, ss, fd, fdfind), `model` param on Agent tool
