@@ -82,7 +82,7 @@ Detect PR/Issue number from current directory name pattern:
 Detection command:
 
 ```bash
-basename "$(git rev-parse --show-toplevel)" | grep -oP '(pr|issue)-\K[0-9]+'
+basename "$(git rev-parse --show-toplevel)" | rg -o --pcre2 '(pr|issue)-\K[0-9]+'
 ```
 
 #### 1.3.3. Context Fetch Procedure
@@ -190,8 +190,8 @@ fi
 
 # 3. Detect context from directory name
 DIR_NAME=$(basename "$(git rev-parse --show-toplevel)")
-PR_NUM=$(echo "$DIR_NAME" | grep -oP 'pr-\K[0-9]+' || true)
-ISSUE_NUM=$(echo "$DIR_NAME" | grep -oP 'issue-\K[0-9]+' || true)
+PR_NUM=$(echo "$DIR_NAME" | rg -o --pcre2 'pr-\K[0-9]+' || true)
+ISSUE_NUM=$(echo "$DIR_NAME" | rg -o --pcre2 'issue-\K[0-9]+' || true)
 
 # 4. Fetch context metadata
 CONTEXT_FILE=$(mkoutput --dir reviews --label review-context)
@@ -202,7 +202,7 @@ if [ -n "$PR_NUM" ]; then
   gh pr view "$PR_NUM" --json title,body,comments >> "$CONTEXT_FILE"
   # Chase references: extract #NNN from PR body, fetch each
   gh pr view "$PR_NUM" --json body --jq '.body' \
-    | grep -oP '#\K[0-9]+' | sort -u | while read -r REF; do
+    | rg -o --pcre2 '#\K[0-9]+' | sort -u | while read -r REF; do
       echo "## Referenced #${REF}" >> "$CONTEXT_FILE"
       gh issue view "$REF" --json title,body,comments >> "$CONTEXT_FILE" 2>/dev/null \
         || gh pr view "$REF" --json title,body,comments >> "$CONTEXT_FILE" 2>/dev/null \
