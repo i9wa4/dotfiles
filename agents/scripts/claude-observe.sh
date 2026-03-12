@@ -70,7 +70,7 @@ fi
 # Source shared project detection helper
 # This sets: PROJECT_ID, PROJECT_NAME, PROJECT_ROOT, PROJECT_DIR
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-# shellcheck source=claude-detect-project.sh
+# shellcheck disable=SC1091 source=claude-detect-project.sh
 source "${SCRIPT_DIR}/claude-detect-project.sh"
 PYTHON_CMD="${CLV2_PYTHON_CMD:-$PYTHON_CMD}"
 

@@ -85,4 +85,4 @@ If hooks still do not fire after applying the fix:
 
 ## Reference
 
-Vault note: `i9wa4/internal` `notes/2026-03-06-claude-code-pretooluse-hooks-workspace-trust.md`
+See related vault note for background investigation details.
