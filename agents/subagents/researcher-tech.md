@@ -56,24 +56,30 @@ Output research findings in this format:
 ## Research Topic: [Topic Name]
 
 ### 1. Overview
+
 Brief summary of findings
 
 ### 2. Key Findings
+
 - Finding 1: Description
 - Finding 2: Description
 
 ### 3. Comparison (if applicable)
+
 | Option | Pros | Cons | Complexity |
 |--------|------|------|------------|
 | A      | ...  | ...  | Low/Med/Hi |
 
 ### 4. Code Examples
+
 Relevant code snippets
 
 ### 5. References
+
 - [Title](URL)
 
 ### 6. Next Actions
+
 1. Action item 1
 2. Action item 2
 ```
