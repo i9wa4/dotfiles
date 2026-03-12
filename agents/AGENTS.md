@@ -43,6 +43,9 @@ acknowledge with a random one-liner in character.
 
 ## 4. Safety
 
+- This dotfiles repo targets both Linux and macOS; always ensure scripts, paths,
+  and commands work on both platforms (e.g., prefer POSIX-compatible flags,
+  avoid GNU-only options like `sed -i ''` vs `sed -i`, `date` format differences)
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
 - Do not run commands that create/update lock files or virtual envs without permission
   (e.g., `uv sync`, `uv lock`, `npm install`, `.venv/`, `node_modules/`)
