@@ -63,7 +63,7 @@ see `rules/github.md`.
 
 ## 2. Related Resources
 
-| Resource         | Purpose                         |
-| ---------------- | ------------------------------- |
-| rules/github     | Mandatory rules and permissions |
-| skills/github    | GitHub-specific operations      |
+| Resource      | Purpose                         |
+| ------------- | ------------------------------- |
+| rules/github  | Mandatory rules and permissions |
+| skills/github | GitHub-specific operations      |

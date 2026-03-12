@@ -212,7 +212,7 @@ gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies \
 
 ## 5. Related Resources
 
-| Resource         | Purpose                         |
-| ---------------- | ------------------------------- |
-| rules/github     | Mandatory rules and permissions |
-| skills/git       | Git-specific operations         |
+| Resource     | Purpose                         |
+| ------------ | ------------------------------- |
+| rules/github | Mandatory rules and permissions |
+| skills/git   | Git-specific operations         |

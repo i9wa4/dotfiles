@@ -116,13 +116,13 @@ Files and directories described below are located at:
 
 Claude Code auto-loads these. Codex CLI should reference as needed.
 
-| Rule          | Description                        | When to Reference     |
-| ------------- | ---------------------------------- | --------------------- |
-| aws.md        | AWS CLI usage rules                | AWS operations        |
-| bash.md       | Bash syntax and command rules      | Command execution     |
-| github.md     | GitHub rules (constraints)         | GitHub operations     |
-| markdown.md   | Markdown creation rules            | Markdown creation     |
-| python.md     | Python shebang and venv rules      | Python execution      |
+| Rule        | Description                   | When to Reference |
+| ----------- | ----------------------------- | ----------------- |
+| aws.md      | AWS CLI usage rules           | AWS operations    |
+| bash.md     | Bash syntax and command rules | Command execution |
+| github.md   | GitHub rules (constraints)    | GitHub operations |
+| markdown.md | Markdown creation rules       | Markdown creation |
+| python.md   | Python shebang and venv rules | Python execution  |
 
 ### 9.2. `skills/`
 
