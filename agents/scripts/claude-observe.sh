@@ -70,6 +70,7 @@ fi
 # Source shared project detection helper
 # This sets: PROJECT_ID, PROJECT_NAME, PROJECT_ROOT, PROJECT_DIR
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=claude-detect-project.sh
 source "${SCRIPT_DIR}/claude-detect-project.sh"
 PYTHON_CMD="${CLV2_PYTHON_CMD:-$PYTHON_CMD}"
 
@@ -154,7 +155,7 @@ _SECRET_RE = re.compile(
 raw = sys.stdin.read()[:2000]
 raw = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", raw)
 print(json.dumps({"timestamp": os.environ["TIMESTAMP"], "event": "parse_error", "raw": raw}))
-' >> "$OBSERVATIONS_FILE"
+' >>"$OBSERVATIONS_FILE"
   exit 0
 fi
 
@@ -206,6 +207,6 @@ if parsed["output"] is not None:
     observation["output"] = scrub(parsed["output"])
 
 print(json.dumps(observation))
-' >> "$OBSERVATIONS_FILE"
+' >>"$OBSERVATIONS_FILE"
 
 exit 0

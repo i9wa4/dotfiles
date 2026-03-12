@@ -100,11 +100,11 @@ _clv2_detect_project() {
     project_id=$(printf '%s' "$hash_input" | sha256sum 2>/dev/null | cut -c1-12 || echo "fallback")
   fi
 
-  # Export results
-  PROJECT_ID="$project_id"
-  PROJECT_NAME="$project_name"
-  PROJECT_ROOT="$project_root"
-  PROJECT_DIR="${_CLV2_PROJECTS_DIR}/${project_id}"
+  # Export results (consumed by the sourcing script, e.g. claude-observe.sh)
+  export PROJECT_ID="$project_id"
+  export PROJECT_NAME="$project_name"
+  export PROJECT_ROOT="$project_root"
+  export PROJECT_DIR="${_CLV2_PROJECTS_DIR}/${project_id}"
 
   # Ensure project directory structure exists
   mkdir -p "${PROJECT_DIR}/instincts/personal"
@@ -132,12 +132,12 @@ _clv2_update_project_registry() {
   fi
 
   _CLV2_REG_PID="$pid" \
-  _CLV2_REG_PNAME="$pname" \
-  _CLV2_REG_PROOT="$proot" \
-  _CLV2_REG_PREMOTE="$premote" \
-  _CLV2_REG_PDIR="$pdir" \
-  _CLV2_REG_FILE="$_CLV2_REGISTRY_FILE" \
-  "$_CLV2_PYTHON_CMD" -c '
+    _CLV2_REG_PNAME="$pname" \
+    _CLV2_REG_PROOT="$proot" \
+    _CLV2_REG_PREMOTE="$premote" \
+    _CLV2_REG_PDIR="$pdir" \
+    _CLV2_REG_FILE="$_CLV2_REGISTRY_FILE" \
+    "$_CLV2_PYTHON_CMD" -c '
 import json, os, tempfile
 from datetime import datetime, timezone
 

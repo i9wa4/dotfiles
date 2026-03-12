@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2016
 set -e
 
 # 24時間前からの GitHub 活動を取得するスクリプト
@@ -114,6 +113,7 @@ query {
 }
 ')
   else
+    # shellcheck disable=SC2016
     RESPONSE=$(gh api graphql --hostname "$HOSTNAME" -f cursor="$CURSOR" -f query='
 query($cursor: String!) {
   viewer {
@@ -210,6 +210,7 @@ query {
 }
 ')
   else
+    # shellcheck disable=SC2016
     RESPONSE=$(gh api graphql --hostname "$HOSTNAME" -f cursor="$CURSOR" -f query='
 query($cursor: String!) {
   viewer {
