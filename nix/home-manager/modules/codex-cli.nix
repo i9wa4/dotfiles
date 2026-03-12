@@ -75,6 +75,12 @@ let
     };
 
     mcp_servers = mcpServers;
+
+    tui.status_line = [
+      "context-remaining"
+      "model-with-reasoning"
+      "codex-version"
+    ];
   };
 
   # Base config file in Nix store (used as template by activation script)

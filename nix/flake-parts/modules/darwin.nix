@@ -96,7 +96,6 @@ in
         "docker-desktop"
         "google-chrome"
         "obsidian"
-        "stats"
         "visual-studio-code"
         "wezterm"
         "zoom"

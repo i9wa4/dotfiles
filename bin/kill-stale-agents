@@ -14,9 +14,19 @@ if [ "${1}" = "--dry-run" ]; then
   dry_run=true
 fi
 
+# Process names to detect as agents
+kill_list=(
+  claude
+  .claude-wrapped
+  claude-chill
+  codex
+)
+
 active_pids=$(tmux list-panes -a -F '#{pane_pid}' 2>/dev/null)
 
-for pid in $(pgrep -u "$(id -u)" -x 'claude|\.claude-wrapped|claude-chill' 2>/dev/null; pgrep -u "$(id -u)" -x 'codex|\.codex-wrapped|codex-chill' 2>/dev/null); do
+pgrep_pattern=$(printf '%s|' "${kill_list[@]}")
+pgrep_pattern=${pgrep_pattern%|}
+for pid in $(pgrep -u "$(id -u)" -x "${pgrep_pattern}" 2>/dev/null); do
   orphaned=true
   current=${pid}
   while [ -n "${current}" ] && [ "${current}" != "1" ]; do
@@ -34,6 +44,11 @@ for pid in $(pgrep -u "$(id -u)" -x 'claude|\.claude-wrapped|claude-chill' 2>/de
     else
       echo "Killing stale: PID ${pid} (${comm})"
       kill "${pid}"
+      sleep 1
+      if kill -0 "${pid}" 2>/dev/null; then
+        echo "  SIGTERM ignored, sending SIGKILL: PID ${pid}"
+        kill -9 "${pid}"
+      fi
     fi
   fi
 done

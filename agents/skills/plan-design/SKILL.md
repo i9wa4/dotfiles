@@ -49,6 +49,34 @@ Before drafting, run the following and read the results:
 
 Do not proceed until the unique delta is explicit.
 
+## 3.1. Migration Gate (Mandatory for Migration Tasks)
+
+Activate this gate when the task description contains any of:
+`migrate`, `migration`, `move`, `port`, `transfer`, `subtree`.
+
+When activated, complete all of the following before writing the main plan:
+
+1. Identify source artifacts (required)
+   - Read existing files, workflows, and configs in the source repo/directory in full.
+   - Record exact source locations used as migration references.
+
+2. Define feature parity target (required)
+   - List exactly what must be replicated in the destination.
+   - Scope to parity only: no missing items, no extra additions.
+
+3. Separate concerns (required)
+   - `Required for migration`: minimal set needed to make the source behavior work in the new environment.
+   - `Improvements`: any enhancement beyond parity.
+   - Defer all `Improvements` to a later phase.
+
+4. Apply diff minimization constraint (required)
+   - Phase 1 scope must be the smallest possible delta from source.
+   - Prefer compatibility-preserving changes over ideal redesign.
+
+5. Log deferred items (required)
+   - Add all out-of-scope improvements to the Decision Log.
+   - Mark each as explicitly deferred and assign a target phase/gate owner where possible.
+
 ## 4. 5-Step Workflow
 
 NOTE: This workflow departs from orchestrator base behavior by dispatching workers (Step 2)
@@ -60,11 +88,8 @@ section 3.2 for plan-design tasks only. In all other contexts, follow the base o
 
 1. Create a research artifact for source digestion:
    mkoutput --dir research --label "plan-investigation"
-
-   # Note: add a suffix to disambiguate if multiple plans exist in the same session, e.g.
-
-   # mkoutput --dir research --label "plan-investigation-dbt-merge"
-
+   - Note: add a suffix to disambiguate if multiple plans exist in the same session.
+   - Example: `mkoutput --dir research --label "plan-investigation-dbt-merge"`
 2. Read all source artifacts in full.
 3. For large files, read in chunks (`offset/limit` or line ranges).
 4. Extract:
