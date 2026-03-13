@@ -716,11 +716,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1773289352,
-        "narHash": "sha256-/8jpswTEKtrv2lmqyLwQH4TAcSDIqeMuRSGsV0MZP+w=",
+        "lastModified": 1773377770,
+        "narHash": "sha256-qteTY8aI/zLlIwDDJNQs2vqX04w1Gbaz5t+mwRQfnQo=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "80baef39be4e3b80b14fd9b2098dd695d2e806ad",
+        "rev": "b8ff0bf09b91da4a7665f0d88348fb1a65bbdc79",
         "type": "github"
       },
       "original": {
