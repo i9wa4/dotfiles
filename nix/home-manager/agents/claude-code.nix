@@ -12,6 +12,11 @@ let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   prohibitedBash = import ./prohibited-bash-commands.nix;
 
+  # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
+  mcpServerConfigs = builtins.mapAttrs (
+    _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
+  ) mcpServers;
+
   jsonFormat = pkgs.formats.json { };
 
   claudeSettings = {
@@ -108,10 +113,6 @@ let
     };
     includeGitInstructions = false;
     language = "English";
-    # MCP servers moved here from --mcp-config CLI flag (externally managed binary)
-    mcpServers = builtins.mapAttrs (
-      _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
-    ) mcpServers;
     outputStyle = "Explanatory";
     permissions = {
       deny = (map (cmd: "Bash(${cmd.claudeGlob})") prohibitedBash) ++ [
@@ -132,18 +133,33 @@ let
   settingsFile = jsonFormat.generate "claude-settings.json" claudeSettings;
 in
 {
-  home.file = {
-    # CLAUDE.md (Nix store, rebuild required to update)
-    ".claude/CLAUDE.md".source = ../../../agents/CLAUDE.md;
-    # Nix store directory symlinks (rebuild required to update)
-    ".claude/rules".source = ../../../agents/rules;
-    ".claude/agents".source = ../../../agents/subagents;
-    ".claude/scripts".source = ../../../agents/scripts;
-  };
+  home = {
+    file = {
+      # CLAUDE.md (Nix store, rebuild required to update)
+      ".claude/CLAUDE.md".source = ../../../agents/CLAUDE.md;
+      # Nix store directory symlinks (rebuild required to update)
+      ".claude/rules".source = ../../../agents/rules;
+      ".claude/agents".source = ../../../agents/subagents;
+      ".claude/scripts".source = ../../../agents/scripts;
+    };
 
-  # Copy settings.json as a writable file (not symlink).
-  # Claude Code needs write access for MCP server runtime state.
-  home.activation.claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    install -Dm644 ${settingsFile} "$HOME/.claude/settings.json"
-  '';
+    activation = {
+      # Copy settings.json as a writable file (not symlink).
+      # Claude Code needs write access for MCP server runtime state.
+      claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        install -Dm644 ${settingsFile} "$HOME/.claude/settings.json"
+      '';
+
+      # Register MCP servers by writing directly to ~/.claude/.claude.json.
+      # Replaces .mcpServers with the Nix-managed set (SSOT); stale entries are removed.
+      claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        TARGET="$HOME/.claude/.claude.json"
+        SERVERS=${lib.escapeShellArg (builtins.toJSON mcpServerConfigs)}
+        if [ -f "$TARGET" ]; then
+          ${pkgs.jq}/bin/jq --argjson servers "$SERVERS" '.mcpServers = $servers' "$TARGET" > "$TARGET.tmp" \
+            && mv "$TARGET.tmp" "$TARGET"
+        fi
+      '';
+    };
+  };
 }
