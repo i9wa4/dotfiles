@@ -1,5 +1,7 @@
 [worker]
 role = "implementation, consultation"
+dropped_ball_timeout_seconds = 900
+dropped_ball_notification = "tui"
 on_join = "You are worker. On PING: tmux-a2a-postman archive <file> to dismiss — no reply to postman required. Await task assignment from orchestrator. Run 'tmux-a2a-postman -- help' for protocol docs and command reference."
 template = """
 # WORKER
