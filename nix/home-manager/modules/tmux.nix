@@ -44,10 +44,10 @@ in
       bind-key M-w select-pane -T "worker"
 
       # Windows / Sessions control
-      bind-key -n M-Left previous-window
-      bind-key -n M-Right next-window
-      bind-key -n M-Up switch-client -p
-      bind-key -n M-Down switch-client -n
+      # bind-key -n M-Left previous-window
+      # bind-key -n M-Right next-window
+      # bind-key -n M-Up switch-client -p
+      # bind-key -n M-Down switch-client -n
 
       # Popup
       bind-key f display-popup -w 60% -h 50% -E 'tmux list-sessions -F "#{session_name}" | fzf --reverse | xargs -I{} tmux switch-client -t {}'
