@@ -124,6 +124,7 @@ let
         "Write(.env*)"
       ];
     };
+    showThinkingSummaries = true;
     statusLine = {
       type = "command";
       command = "~/.claude/scripts/claude-statusline.sh";
