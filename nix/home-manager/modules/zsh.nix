@@ -1,5 +1,5 @@
 # Zsh configuration (managed by home-manager programs.zsh)
-# Replaces config/zsh/.zshenv, .zshrc, .zlogout
+# Replaces config/zsh/.zshenv, .zshrc
 # Modular source files remain in config/zsh/ (aws.zsh, prompt.zsh, zinit.zsh)
 {
   pkgs,
@@ -151,20 +151,6 @@ in
       # Local config (machine-specific, not version controlled)
       if [[ -f ~/.zshrc.local ]]; then
         source ~/.zshrc.local
-      fi
-    '';
-
-    # ========================================================================
-    # .zlogout (logoutExtra)
-    # ========================================================================
-    logoutExtra = ''
-      # EC2 auto-stop: schedule shutdown 30 minutes after last session logout
-      # Only on EC2 instances (not WSL2/desktop), and only when no other sessions remain
-      # NOTE: sys_vendor works on both Xen and Nitro-based instances
-      if [[ "$(cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null)" == "Amazon EC2" ]]; then
-        if ! who | grep -q .; then
-          sudo shutdown -h +30 "EC2 auto-stop: no active sessions" 2>/dev/null
-        fi
       fi
     '';
 
