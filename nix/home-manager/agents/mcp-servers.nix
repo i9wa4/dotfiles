@@ -20,11 +20,7 @@ let
       args = [ "awslabs.aws-documentation-mcp-server@latest" ];
     };
     drawio = {
-      command = "npx";
-      args = [
-        "-y"
-        "@drawio/mcp"
-      ];
+      command = "drawio-mcp";
     };
   };
 in
