@@ -15,7 +15,7 @@ see `rules/github.md`.
 ## 1. Commit Message Format (Conventional Commits)
 
 ```text
-<type>: <brief description> (#<Issue number>)
+<type>(<scope>): <brief description> (#<Issue number>)
 
 <detailed description>
 
