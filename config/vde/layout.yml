@@ -35,7 +35,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort high
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
           delay: 500
 
   messenger:
@@ -52,7 +52,6 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          # command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
           command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
           delay: 500
 
@@ -69,11 +68,11 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: worker
               title: worker
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: worker-alt
               title: worker-alt
@@ -84,7 +83,7 @@ presets:
           panes:
             - name: critic
               title: critic
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
               delay: 500
             - name: guardian
               title: guardian
@@ -92,5 +91,5 @@ presets:
               delay: 500
             - name: boss
               title: boss
-              command: claude-chill -- claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
