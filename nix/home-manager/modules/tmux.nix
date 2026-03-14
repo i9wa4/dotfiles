@@ -35,13 +35,13 @@ in
       bind-key -n S-Down select-pane -D
 
       # tmux-a2a-postman
-      bind-key M-e select-pane -T "agent"
-      bind-key M-b select-pane -T "boss"
-      bind-key M-c select-pane -T "critic"
-      bind-key M-g select-pane -T "guardian"
-      bind-key M-m select-pane -T "messenger"
-      bind-key M-o select-pane -T "orchestrator"
-      bind-key M-w select-pane -T "worker"
+      # bind-key M-e select-pane -T "agent"
+      # bind-key M-b select-pane -T "boss"
+      # bind-key M-c select-pane -T "critic"
+      # bind-key M-g select-pane -T "guardian"
+      # bind-key M-m select-pane -T "messenger"
+      # bind-key M-o select-pane -T "orchestrator"
+      # bind-key M-w select-pane -T "worker"
 
       # Windows / Sessions control
       # bind-key -n M-Left previous-window
