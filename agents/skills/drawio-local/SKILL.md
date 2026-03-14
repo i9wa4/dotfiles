@@ -8,6 +8,7 @@ description: draw.io diagram creation, editing, and review. Use for .drawio XML 
 ## 1. Basic Rules
 
 - Edit only `.drawio` files
+- Always commit source `.drawio`; generated exports are disposable
 - Do not directly edit generated `.drawio.png`, `.drawio.svg`, or `.drawio.pdf` files
 - Prefer native mxGraphModel XML over Mermaid or CSV conversions
 - Use descriptive lowercase filenames with hyphens (e.g., `login-flow.drawio`)
@@ -84,7 +85,22 @@ Auto-updatable reference files (see Section 12 for update protocol):
 - One concept per diagram; split complex systems into staged diagrams
 - Ensure color contrast; use patterns in addition to colors
 
-### 7.3. Related Diagram Set Consistency
+### 7.3. Diagram Types (Progressive Disclosure)
+
+Choose the right abstraction level before drawing:
+
+| Type       | Purpose                              | Typical audience     |
+| ---------- | ------------------------------------ | -------------------- |
+| Context    | System in its environment            | Stakeholders         |
+| System     | High-level building blocks           | Architects, leads    |
+| Component  | Internal structure of one block      | Developers           |
+| Deployment | Infrastructure and runtime placement | DevOps, SRE          |
+| Data Flow  | How data moves through the system    | Architects, security |
+| Sequence   | Time-ordered interactions            | Developers, QA       |
+
+Start at Context level; drill down only when the audience needs it.
+
+### 7.4. Related Diagram Set Consistency
 
 - YOU MUST: Use identical canvas width, colors, fonts, stroke width across related diagrams
 - Define diagram set specification before creating any diagram
@@ -195,33 +211,56 @@ Waypoint example:
 | Badge arrows      | After badges              | Top layer      |
 | Edge labels       | END of `<root>`           | Always visible |
 
-## 10. Reference
+## 10. SVG Linting
+
+After exporting SVG, run the bundled lint to catch overlap issues programmatically:
+
+```sh
+drawio -x -f svg -e -b 10 -o diagram.drawio.svg diagram.drawio
+node ~/.claude/skills/drawio-local/scripts/check-drawio-svg-overlaps.mjs diagram.drawio.svg
+```
+
+The lint checks:
+
+| Check                | What it catches                               |
+| -------------------- | --------------------------------------------- |
+| `edge-edge`          | Arrow crossings and collinear overlaps        |
+| `edge-rect-border`   | Arrows running along box borders              |
+| `edge-rect`          | Arrows penetrating boxes                      |
+| `text-overflow(w/h)` | Text too wide or tall for its box (heuristic) |
+
+- Input may be either `.drawio` or `.drawio.svg` (auto-resolves)
+- Text overflow reads the companion `.drawio` for cell dimensions
+- Lint passing does not replace visual verification
+
+## 11. Reference
 
 - [Color Palette](references/color-palette.md) - auto-updatable
 - [Layout Guidelines](references/layout-guidelines.md) - auto-updatable
 - [AWS Icons](references/aws-icons.md)
 - [AWS Icon Search Script](scripts/find_aws_icon.py)
+- [SVG Lint Script](scripts/check-drawio-svg-overlaps.mjs)
 
 ```sh
 python ~/.claude/skills/drawio-local/scripts/find_aws_icon.py ec2
 ```
 
-## 11. Workflow and Checklist
+## 12. Workflow and Checklist
 
-### 11.1. Phase 0: Design
+### 12.1. Phase 0: Design
 
 - [ ] One concept per diagram
 - [ ] Reference images viewed and understood
 - [ ] Diagram set spec defined (canvas size, colors, fonts, stroke width)
 
-### 11.2. Phase 1: Layout Calculation
+### 12.2. Phase 1: Layout Calculation
 
 - [ ] Parent container sizes calculated
 - [ ] Child element clearance calculated (see 9.4)
 - [ ] Symmetric placement coordinates calculated
 - [ ] Arrow z-order determined (see 9.6)
 
-### 11.3. Phase 2: Implementation
+### 12.3. Phase 2: Implementation
 
 - [ ] `page="0"` set (transparent background)
 - [ ] Edge cells contain `<mxGeometry relative="1" as="geometry"/>`
@@ -231,7 +270,7 @@ python ~/.claude/skills/drawio-local/scripts/find_aws_icon.py ec2
 - [ ] Label padding set (`spacingLeft`/`spacingTop`)
 - [ ] AWS icons latest version (`mxgraph.aws4.*`)
 
-### 11.4. Phase 3: Verification (PNG Review)
+### 12.4. Phase 3: Verification (PNG Review)
 
 Convert and visually verify with Read tool:
 
@@ -253,10 +292,11 @@ Verify:
 - [ ] Parent label and child elements not intersecting
 - [ ] Edge labels visible (at END of `<root>`)
 - [ ] Diagram set consistency (side-by-side)
+- [ ] SVG lint passes for routing-heavy diagrams (see Section 10)
 
 If issues found, fix XML and repeat from conversion step.
 
-## 12. Self-Update Protocol
+## 13. Self-Update Protocol
 
 Auto-updatable files that evolve as new `.drawio` files are created:
 
@@ -265,7 +305,7 @@ Auto-updatable files that evolve as new `.drawio` files are created:
 | `references/color-palette.md`     | Updatable  |
 | `references/layout-guidelines.md` | Updatable  |
 | `SKILL.md` section 9              | Appendable |
-| `SKILL.md` section 11             | Appendable |
+| `SKILL.md` section 12             | Appendable |
 
 Trigger after creating/editing `.drawio` files:
 
@@ -275,7 +315,7 @@ Trigger after creating/editing `.drawio` files:
 4. Detect new best practices or checklist items -> append to SKILL.md
 5. Update metadata (last updated, source files)
 
-## 13. Image Display in reveal.js Slides
+## 14. Image Display in reveal.js Slides
 
 Add `auto-stretch: false` to YAML header for correct image display on mobile:
 
