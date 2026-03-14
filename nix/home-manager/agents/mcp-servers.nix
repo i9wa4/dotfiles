@@ -13,7 +13,7 @@ let
       };
     }).config.settings.servers;
 
-  # Servers not yet in mcp-servers-nix (use npx/uvx at runtime)
+  # Servers not yet in mcp-servers-nix (uvx or pre-installed binary)
   manualServers = {
     awslabs-aws-documentation-mcp-server = {
       command = "uvx";
