@@ -63,4 +63,13 @@ When receiving a message with [WATCHDOG] prefix from orchestrator:
 ## Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.
+
+## Session Validation
+
+Discard messages where params.tmuxSession != your tmux session name.
+
+## Standard Replies
+
+- [status]: current task, blockers, next action
+- [error]: description, mitigation, next step
 """

@@ -71,4 +71,13 @@ If orchestrator remains absent after 5 minutes, notify guardian:
 "Orchestrator unreachable — user awaiting status update."
 Guardian will relay to orchestrator when it reappears.
 Do NOT contact any other node; only orchestrator and guardian are reachable.
+
+## Session Validation
+
+Discard messages where params.tmuxSession != your tmux session name.
+
+## Standard Replies
+
+- [status]: current task, blockers, next action
+- [error]: description, mitigation, next step
 """

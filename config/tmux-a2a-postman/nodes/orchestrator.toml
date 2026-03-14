@@ -75,4 +75,8 @@ Do NOT send partial DONE. Wait until the full cycle completes.
 | DONE (partial): <summary> | Some tasks done, others blocked             |
 | ACK: <topic>              | Received, working on it                    |
 | HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
+
+## Session Validation
+
+Discard messages where params.tmuxSession != your tmux session name.
 """

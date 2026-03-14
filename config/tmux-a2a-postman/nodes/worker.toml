@@ -44,4 +44,13 @@ BLOCKED: <operation> denied — <one-line reason>
 ## Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR
+
+## Session Validation
+
+Discard messages where params.tmuxSession != your tmux session name.
+
+## Standard Replies
+
+- [status]: current task, blockers, next action
+- [error]: description, mitigation, next step
 """

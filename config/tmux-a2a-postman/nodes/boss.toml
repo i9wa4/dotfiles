@@ -70,4 +70,13 @@ it matches the plan. Do NOT approve based on plan text alone.
 
 Reply with APPROVED: <summary> when approving, or REJECTED: <reason> when rejecting.
 Send your reply to orchestrator using the reply_command in the message header.
+
+## Session Validation
+
+Discard messages where params.tmuxSession != your tmux session name.
+
+## Standard Replies
+
+- [status]: current task, blockers, next action
+- [error]: description, mitigation, next step
 """
