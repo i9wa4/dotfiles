@@ -146,7 +146,8 @@ in
 
     activation = {
       # Copy settings.json as a writable file (not symlink).
-      # Claude Code needs write access for MCP server runtime state.
+      # Claude Code's /config editor writes user preferences back to settings.json;
+      # a Nix store symlink would be read-only.
       claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         install -Dm644 ${settingsFile} "$HOME/.claude/settings.json"
       '';
@@ -156,10 +157,9 @@ in
       claudeMcpServers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         TARGET="$HOME/.claude/.claude.json"
         SERVERS=${lib.escapeShellArg (builtins.toJSON mcpServerConfigs)}
-        if [ -f "$TARGET" ]; then
-          ${pkgs.jq}/bin/jq --argjson servers "$SERVERS" '.mcpServers = $servers' "$TARGET" > "$TARGET.tmp" \
-            && mv "$TARGET.tmp" "$TARGET"
-        fi
+        [ -f "$TARGET" ] || { mkdir -p "$(dirname "$TARGET")"; printf '{}' > "$TARGET"; }
+        ${pkgs.jq}/bin/jq --argjson servers "$SERVERS" '.mcpServers = $servers' "$TARGET" > "$TARGET.tmp" \
+          && mv "$TARGET.tmp" "$TARGET"
       '';
     };
   };
