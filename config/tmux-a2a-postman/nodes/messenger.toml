@@ -31,7 +31,7 @@ You are the interface, not the executor — this applies to skill invocations to
 
 If user says "status" or asks about progress:
 
-1. Check draft/ for stuck messages — push any found to post/
+1. Check draft/ for stuck messages — tmux-a2a-postman send <filename> if found
 2. Check all inbox/* directories for undelivered messages
 3. Check tmux panes for idle/dead agents (0% context, stuck prompts)
 4. Identify specific blockers: stuck drafts, dead agents, unresponsive reviewers

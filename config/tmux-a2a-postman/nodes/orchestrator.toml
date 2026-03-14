@@ -23,7 +23,7 @@ CRITICAL: No implementation
 ## Response Escalation (Minimal Wording Strategy)
 
 If a node does not reply after 2 messages:
-1. Check draft/ for stuck messages — move to post/ if found
+1. Check draft/ for stuck messages — tmux-a2a-postman send <filename> if found
 2. Re-send with a SHORT message (3 lines max):
    - One line: what to review (file path + section)
    - One line: "Reply APPROVED or NOT APPROVED with reasons"
@@ -79,4 +79,9 @@ Do NOT send partial DONE. Wait until the full cycle completes.
 ## Session Validation
 
 Discard messages where params.tmuxSession != your tmux session name.
+
+## Standard Replies
+
+- [status]: current task, delegated nodes, blockers, next action
+- [error]: description, affected node, mitigation, next step
 """
