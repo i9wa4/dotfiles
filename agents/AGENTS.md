@@ -119,7 +119,7 @@ Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
 | databricks-local                    | Queries API, VARIANT/JSON, Dashboard,        |
 |                                     | dbt integration, Jupyter kernel              |
 | dbt-local                           | Issue target setup, SQL dialect              |
-| draw-io                             | draw.io diagram creation/editing             |
+| drawio-local                        | draw.io diagram creation/editing             |
 | git                                 | Git operations guide                         |
 | github                              | GitHub and PR operations guide               |
 | mermaid                             | Mermaid diagram creation for revealjs slides |

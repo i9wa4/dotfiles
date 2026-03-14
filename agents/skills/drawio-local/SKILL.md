@@ -1,6 +1,6 @@
 ---
-name: draw-io
-description: draw.io diagram creation, editing, and review. Use for .drawio XML editing, PNG conversion, layout adjustment, and AWS icon usage.
+name: drawio-local
+description: draw.io diagram creation, editing, and review. Use for .drawio XML editing, PNG/SVG/PDF export, layout adjustment, and AWS icon usage.
 ---
 
 # draw.io Diagram Skill
@@ -8,10 +8,22 @@ description: draw.io diagram creation, editing, and review. Use for .drawio XML 
 ## 1. Basic Rules
 
 - Edit only `.drawio` files
-- Do not directly edit `.drawio.png` files
+- Do not directly edit generated `.drawio.png`, `.drawio.svg`, or `.drawio.pdf` files
+- Prefer native mxGraphModel XML over Mermaid or CSV conversions
+- Use descriptive lowercase filenames with hyphens (e.g., `login-flow.drawio`)
 - Use auto-generated `.drawio.png` by pre-commit hook in slides
 
-## 2. Font Settings
+## 2. Output Formats
+
+| Format        | Embedded XML | Recommended use                |
+| ------------- | ------------ | ------------------------------ |
+| `.drawio`     | n/a          | Editable source diagram        |
+| `.drawio.png` | Yes          | Docs, slides, chat attachments |
+| `.drawio.svg` | Yes          | Docs, scalable output          |
+| `.drawio.pdf` | Yes          | Review and print               |
+| `.drawio.jpg` | No           | Last-resort lossy export       |
+
+## 3. Font Settings
 
 For diagrams used in Quarto slides,
 specify `defaultFontFamily` in mxGraphModel tag:
@@ -26,7 +38,7 @@ Also explicitly specify `fontFamily` in each text element's style attribute:
 style="text;html=1;fontSize=27;fontFamily=Noto Sans JP;"
 ```
 
-## 3. Conversion Commands
+## 4. Conversion Commands
 
 See conversion script at [scripts/convert-drawio-to-png.sh](scripts/convert-drawio-to-png.sh).
 
@@ -38,49 +50,87 @@ mise exec -- pre-commit run --all-files
 mise exec -- pre-commit run convert-drawio-to-png --files assets/my-diagram.drawio
 
 # Run script directly (using skill's script)
-bash ~/.claude/skills/draw-io/scripts/convert-drawio-to-png.sh assets/diagram1.drawio
+bash ~/.claude/skills/drawio-local/scripts/convert-drawio-to-png.sh assets/diagram1.drawio
 ```
 
 NOTE: For draw.io CLI flags and export options, see the `drawio-skills` skill.
 
-## 4. Layout Adjustment
+## 5. Layout Adjustment
 
 - Open `.drawio` in text editor; find `mxCell` by `value` attribute
 - Adjust `mxGeometry`: `x` (left), `y` (top), `width`, `height`
 - Element center = `y + (height / 2)`; match centers to align elements
 
-## 5. Color Palette and Layout Patterns
+## 6. Color Palette and Layout Patterns
 
-Auto-updatable reference files (see Section 10 for update protocol):
+Auto-updatable reference files (see Section 12 for update protocol):
 
 - [Color Palette](references/color-palette.md) - Material Design colors and usage rules
 - [Layout Guidelines](references/layout-guidelines.md) - Pattern catalog (A-K) and AWS layout rules
 
-## 6. Design Principles
+## 7. Design Principles
 
-### 6.1. Slide Diagram Constraints (1920x1080)
+### 7.1. Slide Diagram Constraints (1920x1080)
 
 - YOU MUST: Set `page="0"` (transparent background)
 - YOU MUST: Use `fontFamily=Noto Sans JP` for all text
 - YOU MUST: Limit to 1-3 accent colors per diagram
 - YOU MUST: Include a takeaway bar at the bottom (Note or Primary color)
 
-### 6.2. Core Principles
+### 7.2. Core Principles
 
 - Clarity, consistency, accuracy
 - Label all elements; use arrows for direction (prefer unidirectional)
 - One concept per diagram; split complex systems into staged diagrams
 - Ensure color contrast; use patterns in addition to colors
 
-### 6.3. Related Diagram Set Consistency
+### 7.3. Related Diagram Set Consistency
 
 - YOU MUST: Use identical canvas width, colors, fonts, stroke width across related diagrams
 - Define diagram set specification before creating any diagram
 - Verify side-by-side after completion
 
-## 7. Best Practices
+## 8. XML Structure Rules
 
-### 7.1. General
+### 8.1. Required XML Structure
+
+Every diagram must use native mxGraphModel XML:
+
+```xml
+<mxGraphModel>
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+  </root>
+</mxGraphModel>
+```
+
+All normal cells live under `parent="1"` unless using container parents.
+
+### 8.2. Edge Geometry Is Mandatory
+
+Every edge cell must contain geometry:
+
+```xml
+<mxCell id="e1" edge="1" parent="1" source="a" target="b" style="edgeStyle=orthogonalEdgeStyle;">
+  <mxGeometry relative="1" as="geometry"/>
+</mxCell>
+```
+
+Never use self-closing edge cells.
+
+### 8.3. Containers and Groups
+
+Do not fake containment by placing boxes on top of bigger boxes.
+
+- Use `parent="containerId"` for child elements
+- Use `swimlane` when the container needs a visible title bar
+- Use `group;pointerEvents=0;` for invisible containers
+- Add `container=1;pointerEvents=0;` when using a custom shape as a container
+
+## 9. Best Practices
+
+### 9.1. General
 
 - Remove `background="#ffffff"` (transparent adapts to themes)
 - Font size: 1.5x standard (~18px) for readability
@@ -88,7 +138,27 @@ Auto-updatable reference files (see Section 10 for update protocol):
 - Canvas size: 800px or less for Zenn articles, 1920x1080 for slides
 - Scale canvas proportionally when increasing font size
 
-### 7.2. Arrows
+### 9.2. Spacing and Routing
+
+- Space nodes generously: ~200px horizontal and ~120px vertical gaps
+- Use `edgeStyle=orthogonalEdgeStyle` for most technical diagrams
+- Add explicit waypoints when auto-routing produces overlap or awkward bends
+- Align to a coarse grid when possible
+
+Waypoint example:
+
+```xml
+<mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;" edge="1" parent="1" source="a" target="b">
+  <mxGeometry relative="1" as="geometry">
+    <Array as="points">
+      <mxPoint x="300" y="150"/>
+      <mxPoint x="300" y="250"/>
+    </Array>
+  </mxGeometry>
+</mxCell>
+```
+
+### 9.3. Arrows
 
 - Structural arrows (flowcharts, ER): place in XML right after Title (back layer)
 - Badge-associated arrows (navigation): place last in XML (top layer)
@@ -100,7 +170,7 @@ Auto-updatable reference files (see Section 10 for update protocol):
 - Standardize arrow lengths within a diagram
 - Edge labels: place `<mxCell>` at END of `<root>` with `labelBackgroundColor=#ffffff`
 
-### 7.3. Containers and Spacing
+### 9.4. Container Spacing
 
 - Internal elements: at least 30px margin from frame boundary
 - Parent container label clearance: first child Y >= `parent.y + spacingTop + fontSize + 10`
@@ -109,13 +179,13 @@ Auto-updatable reference files (see Section 10 for update protocol):
 - Maintain vertical symmetry in containers (top margin = bottom margin)
 - Align elements on container's horizontal centerline
 
-### 7.4. Labels
+### 9.5. Labels
 
 - Service name only: 1 line; with supplementary info: 2 lines using `&lt;br&gt;`
 - Remove redundant notation (e.g., "ECR Container Registry" -> "ECR")
 - Remove decorative icons irrelevant to context
 
-### 7.5. Z-Order (XML document order = render order)
+### 9.6. Z-Order (XML document order = render order)
 
 | Element type      | Position in XML           | Reason         |
 | ----------------- | ------------------------- | -------------- |
@@ -125,7 +195,7 @@ Auto-updatable reference files (see Section 10 for update protocol):
 | Badge arrows      | After badges              | Top layer      |
 | Edge labels       | END of `<root>`           | Always visible |
 
-## 8. Reference
+## 10. Reference
 
 - [Color Palette](references/color-palette.md) - auto-updatable
 - [Layout Guidelines](references/layout-guidelines.md) - auto-updatable
@@ -133,34 +203,35 @@ Auto-updatable reference files (see Section 10 for update protocol):
 - [AWS Icon Search Script](scripts/find_aws_icon.py)
 
 ```sh
-python ~/.claude/skills/draw-io/scripts/find_aws_icon.py ec2
+python ~/.claude/skills/drawio-local/scripts/find_aws_icon.py ec2
 ```
 
-## 9. Workflow and Checklist
+## 11. Workflow and Checklist
 
-### 9.1. Phase 0: Design
+### 11.1. Phase 0: Design
 
 - [ ] One concept per diagram
 - [ ] Reference images viewed and understood
 - [ ] Diagram set spec defined (canvas size, colors, fonts, stroke width)
 
-### 9.2. Phase 1: Layout Calculation
+### 11.2. Phase 1: Layout Calculation
 
 - [ ] Parent container sizes calculated
-- [ ] Child element clearance calculated (see 7.3)
+- [ ] Child element clearance calculated (see 9.4)
 - [ ] Symmetric placement coordinates calculated
-- [ ] Arrow z-order determined (see 7.5)
+- [ ] Arrow z-order determined (see 9.6)
 
-### 9.3. Phase 2: Implementation
+### 11.3. Phase 2: Implementation
 
 - [ ] `page="0"` set (transparent background)
+- [ ] Edge cells contain `<mxGeometry relative="1" as="geometry"/>`
 - [ ] Font size appropriate; canvas scaled proportionally
 - [ ] Canvas matches target display width
 - [ ] Arrows in correct z-order
 - [ ] Label padding set (`spacingLeft`/`spacingTop`)
 - [ ] AWS icons latest version (`mxgraph.aws4.*`)
 
-### 9.4. Phase 3: Verification (PNG Review)
+### 11.4. Phase 3: Verification (PNG Review)
 
 Convert and visually verify with Read tool:
 
@@ -185,7 +256,7 @@ Verify:
 
 If issues found, fix XML and repeat from conversion step.
 
-## 10. Self-Update Protocol
+## 12. Self-Update Protocol
 
 Auto-updatable files that evolve as new `.drawio` files are created:
 
@@ -193,8 +264,8 @@ Auto-updatable files that evolve as new `.drawio` files are created:
 | --------------------------------- | ---------- |
 | `references/color-palette.md`     | Updatable  |
 | `references/layout-guidelines.md` | Updatable  |
-| `SKILL.md` section 7              | Appendable |
 | `SKILL.md` section 9              | Appendable |
+| `SKILL.md` section 11             | Appendable |
 
 Trigger after creating/editing `.drawio` files:
 
@@ -204,7 +275,7 @@ Trigger after creating/editing `.drawio` files:
 4. Detect new best practices or checklist items -> append to SKILL.md
 5. Update metadata (last updated, source files)
 
-## 11. Image Display in reveal.js Slides
+## 13. Image Display in reveal.js Slides
 
 Add `auto-stretch: false` to YAML header for correct image display on mobile:
 
