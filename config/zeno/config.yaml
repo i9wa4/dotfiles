@@ -116,6 +116,6 @@ snippets:
       vde-layout medium
 
   - name: (vde-layout) preset-b
-    keyword: va
+    keyword: vb
     snippet: vde-layout messenger &&
       vde-layout medium-b
