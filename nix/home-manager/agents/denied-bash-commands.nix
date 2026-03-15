@@ -128,15 +128,15 @@ let
     }
   ];
 
-  # Auto-derive hookRegex from argv:
-  #   1 token  → \btoken\b (word boundary to avoid partial matches like "farm" for "rm")
-  #   2+ tokens → tokens joined with .* (matches flags in any position)
+  # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
+  #   1 token  → ^token\b (must be the command, not an argument)
+  #   2+ tokens → ^token1.*token2 (first token anchored, rest flexible)
   mkHookRegex =
     cmd:
     if builtins.length cmd.argv == 1 then
-      "\\b${builtins.head cmd.argv}\\b"
+      "^${builtins.head cmd.argv}\\b"
     else
-      builtins.concatStringsSep ".*" cmd.argv;
+      "^" + builtins.concatStringsSep ".*" cmd.argv;
 
   # Auto-derive claudeGlob from argv (for entries with claudeSettingsJson = true):
   #   1 token  → "token *" (space before * to require an argument)
