@@ -70,7 +70,7 @@ in
       # cf. https://github.com/jgraph/drawio-mcp
       drawio-mcp = {
         path = inputs.drawio-mcp;
-        filter.nameRegex = "DISABLED"; # prevent auto-discovery; use skills.explicit
+        subdir = "skill-cli";
       };
       # freee MCP skills
       # cf. https://github.com/freee/freee-mcp
@@ -98,10 +98,6 @@ in
     skills = {
       enableAll = true;
       # Explicit skill definitions (for rename or custom config)
-      explicit.drawio-skills = {
-        from = "drawio-mcp";
-        path = "skill-cli/drawio";
-      };
       explicit.databricks-jobs-bundles = {
         from = "databricks-official";
         path = "databricks-jobs";
