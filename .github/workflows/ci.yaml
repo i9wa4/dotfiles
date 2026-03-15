@@ -1,4 +1,4 @@
-name: pre-commit
+name: ci
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pre-commit:
+  ci:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -48,7 +48,7 @@ jobs:
         with:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
 
-      - name: Run pre-commit checks
+      - name: Run nix flake check
         run: nix flake check --print-build-logs
 
       - name: Run gitleaks history scan
