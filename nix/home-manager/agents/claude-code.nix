@@ -12,13 +12,16 @@ let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
 
+  # Generated patterns file name (change here to relocate)
+  bashDenyPatternsName = "bash-deny-patterns.sh";
+
   # Merge repo scripts + generated patterns file into a single directory
   scriptsDir = pkgs.runCommand "claude-scripts" { } ''
     mkdir -p $out
     for f in ${../../../agents/scripts}/*; do
       ln -s "$f" "$out/$(basename "$f")"
     done
-    ln -s ${deniedBash.claudeCode.patternsFile} $out/bash-deny-patterns.sh
+    ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}
   '';
 
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
@@ -64,7 +67,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh $CLAUDE_CONFIG_DIR/scripts/bash-deny-patterns.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh $CLAUDE_CONFIG_DIR/scripts/${bashDenyPatternsName}";
             }
           ];
         }
