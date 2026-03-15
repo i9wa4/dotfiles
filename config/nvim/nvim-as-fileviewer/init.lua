@@ -1,6 +1,12 @@
-local path = vim.fn.stdpath("data") .. "/site/pack/plugins/start/oil.nvim"
-if not vim.uv.fs_stat(path) then
-  vim.fn.system({ "git", "clone", "https://github.com/stevearc/oil.nvim", path })
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath })
 end
-require("oil").setup()
-vim.keymap.set("n", "-", "<Cmd>Oil<CR>", { desc = "Open parent directory" })
+vim.opt.rtp:prepend(lazypath)
+require("lazy").setup({
+  {
+    "stevearc/oil.nvim",
+    opts = {},
+    keys = { { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" } },
+  },
+})
