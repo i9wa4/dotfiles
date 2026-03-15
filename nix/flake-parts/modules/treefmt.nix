@@ -3,6 +3,14 @@
 {
   perSystem =
     { pkgs, ... }:
+    let
+      rumdlConfig = pkgs.writeText "rumdl.toml" ''
+        [MD013]
+        code-blocks = false
+        headings = false
+        reflow = true
+      '';
+    in
     {
       treefmt = {
         projectRootFile = "flake.nix";
@@ -26,17 +34,6 @@
 
           # Lua
           stylua.enable = true;
-
-          # Markdown, YAML, JSON
-          prettier = {
-            enable = true;
-            includes = [
-              "*.md"
-              "*.json"
-              "*.yaml"
-              "*.yml"
-            ];
-          };
         };
 
         settings = {
@@ -49,10 +46,23 @@
               "--quote-style=AutoPreferDouble"
               "--call-parentheses=Always"
             ];
-            sqlfmt = {
-              command = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
-              includes = [ "*.sql" ];
+            # Markdown
+            rumdl = {
+              command = "${pkgs.rumdl}/bin/rumdl";
+              options = [
+                "fmt"
+                "--config"
+                "${rumdlConfig}"
+              ];
+              includes = [ "*.md" ];
             };
+            # JSON
+            jq = {
+              command = "${pkgs.jq}/bin/jq";
+              options = [ "." ];
+              includes = [ "*.json" ];
+            };
+
           };
           global.excludes = [
             ".direnv"

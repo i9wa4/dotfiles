@@ -41,14 +41,6 @@
             files = ghWorkflowFiles;
           };
 
-          # NOTE: ghatm not in stable nixpkgs, runs via nix run
-          # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
-          ghatm = {
-            enable = true;
-            entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || nix run nixpkgs#ghatm -- set -t 5 \"$@\"' --";
-            files = ghWorkflowFiles;
-          };
-
           pinact = {
             enable = true;
             entry = "${pkgs.pinact}/bin/pinact run";
