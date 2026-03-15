@@ -15,7 +15,7 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
 
-  prohibitedBash = import ./prohibited-bash-commands.nix;
+  deniedBash = import ./denied-bash-commands.nix;
 
   mkPrefixRule =
     cmd:
@@ -32,11 +32,11 @@ let
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
-    # Generated from nix/home-manager/agents/prohibited-bash-commands.nix
+    # Generated from nix/home-manager/agents/denied-bash-commands.nix
     # Equivalent of Claude Code permissions.deny (Bash entries only)
     # File access restrictions (Read/Write patterns) have no Codex equivalent.
 
-    ${builtins.concatStringsSep "\n" (map mkPrefixRule prohibitedBash)}
+    ${builtins.concatStringsSep "\n" (map mkPrefixRule deniedBash)}
   '';
 
   generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;

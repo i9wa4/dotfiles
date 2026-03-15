@@ -9,6 +9,9 @@ set -o posix
 # Validates Bash commands against deny patterns to prevent bypassing
 # permission rules via &&, ||, ;, | operators or variable expansion.
 #
+# Patterns and justification messages are generated from
+# denied-bash-commands.nix via home-manager (SSOT).
+#
 # Hook: PreToolUse
 # Matcher: Bash
 #
@@ -37,19 +40,18 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
 # Skip if no command
 [[ -z $COMMAND ]] && exit 0
 
-# Define deny patterns (from settings.json)
-# NOTE: These patterns check for command presence anywhere in the string
-DENY_PATTERNS=(
-  'git -C'
-  'git push'
-  'git rebase'
-  'git reset'
-  '\brm\b'   # Word boundary to avoid matching "farm", "chmod", etc.
-  '\bsudo\b' # Word boundary
-)
+# Load deny patterns from Nix-generated file (SSOT)
+PATTERNS_FILE="$HOME/.claude/bash-deny-patterns.sh"
+if [[ -f $PATTERNS_FILE ]]; then
+  # shellcheck source=/dev/null
+  source "$PATTERNS_FILE"
+else
+  # No patterns file — allow everything (home-manager switch not yet run)
+  exit 0
+fi
 
 # Split command by shell operators and check each fragment
-# NOTE: This is a basic split - won't catch all edge cases with quotes/escapes
+# NOTE: This is a basic split — won't catch all edge cases with quotes/escapes
 IFS=$';&|' read -ra FRAGMENTS <<<"$COMMAND"
 
 for fragment in "${FRAGMENTS[@]}"; do
@@ -57,9 +59,11 @@ for fragment in "${FRAGMENTS[@]}"; do
   fragment=$(echo "$fragment" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
   # Check against each deny pattern
-  for pattern in "${DENY_PATTERNS[@]}"; do
+  for i in "${!DENY_PATTERNS[@]}"; do
+    pattern="${DENY_PATTERNS[$i]}"
+    justification="${DENY_JUSTIFICATIONS[$i]}"
     if echo "$fragment" | grep -qE "$pattern"; then
-      REASON="🚫 Command contains prohibited pattern: $pattern"$'\n'"💡 Fragment: $fragment"$'\n'"💡 Full command: $COMMAND"
+      REASON="Command denied: $justification"$'\n'"Fragment: $fragment"$'\n'"Full command: $COMMAND"
       jq -n \
         --arg reason "$REASON" \
         '{

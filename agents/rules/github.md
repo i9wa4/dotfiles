@@ -2,8 +2,6 @@
 
 Mandatory rules for GitHub operations.
 
-Git command prohibitions are enforced by `prohibited-bash-commands.nix` (SSOT).
-
 ## 1. GitHub CLI Rules
 
 - YOU MUST: Use `gh` command for GitHub information retrieval
