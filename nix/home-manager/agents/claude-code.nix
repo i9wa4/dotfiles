@@ -12,8 +12,14 @@ let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
 
-  # Path where the generated deny patterns file is placed (relative to $HOME)
-  bashDenyPatternsRelPath = ".claude/bash-deny-patterns.sh";
+  # Merge repo scripts + generated patterns file into a single directory
+  scriptsDir = pkgs.runCommand "claude-scripts" { } ''
+    mkdir -p $out
+    for f in ${../../../agents/scripts}/*; do
+      ln -s "$f" "$out/$(basename "$f")"
+    done
+    ln -s ${deniedBash.claudeCode.patternsFile} $out/bash-deny-patterns.sh
+  '';
 
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
   mcpServerConfigs = builtins.mapAttrs (
@@ -58,7 +64,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-pretooluse-bash-deny.sh ~/${bashDenyPatternsRelPath}";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh $CLAUDE_CONFIG_DIR/scripts/bash-deny-patterns.sh";
             }
           ];
         }
@@ -67,7 +73,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-pretooluse-write-deny.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-write-deny.sh";
             }
           ];
         }
@@ -76,7 +82,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-observe.sh pre";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh pre";
             }
           ];
         }
@@ -87,7 +93,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-observe.sh post";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
             }
           ];
         }
@@ -98,7 +104,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-sessionstart-reload.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-sessionstart-reload.sh";
             }
           ];
         }
@@ -108,7 +114,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-precompact-save.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-precompact-save.sh";
             }
           ];
         }
@@ -130,7 +136,7 @@ let
     showThinkingSummaries = true;
     statusLine = {
       type = "command";
-      command = "~/.claude/scripts/claude-statusline.sh";
+      command = "$CLAUDE_CONFIG_DIR/scripts/claude-statusline.sh";
     };
   };
 
@@ -144,9 +150,7 @@ in
       # Nix store directory symlinks (rebuild required to update)
       ".claude/rules".source = ../../../agents/rules;
       ".claude/agents".source = ../../../agents/subagents;
-      ".claude/scripts".source = ../../../agents/scripts;
-      # Generated deny patterns (Nix store, source'd by the hook at runtime)
-      "${bashDenyPatternsRelPath}".source = deniedBash.claudeCode.patternsFile;
+      ".claude/scripts".source = scriptsDir;
     };
 
     activation = {
