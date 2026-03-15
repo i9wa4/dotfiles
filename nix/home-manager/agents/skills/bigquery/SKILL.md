@@ -403,8 +403,11 @@ bq query --use_legacy_sql=false \
 ## 10. Reference Links
 
 - Official docs: <https://cloud.google.com/bigquery/docs>
-- GoogleSQL reference: <https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax>
-- Function reference: <https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-all>
-- bq command reference: <https://cloud.google.com/bigquery/docs/bq-command-line-tool>
+- GoogleSQL reference:
+  <https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax>
+- Function reference:
+  <https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-all>
+- bq command reference:
+  <https://cloud.google.com/bigquery/docs/bq-command-line-tool>
 - BigQuery ML: <https://cloud.google.com/bigquery/docs/bqml-introduction>
 - Pricing: <https://cloud.google.com/bigquery/pricing>

@@ -91,7 +91,8 @@ Before creating the plan file:
    - What: the chosen approach
    - Why: rationale, constraints, trade-offs considered
 
-4. **Scope checkpoint**: Trim to minimum before dispatching. "When in doubt, do less."
+4. **Scope checkpoint**: Trim to minimum before dispatching. "When in doubt, do
+   less."
 
 5. **Self-containment check**: Verify the plan is self-contained.
    - Every domain term defined (no assumed knowledge)
@@ -200,11 +201,14 @@ Update plan during implementation:
 
 #### How to update
 
-- **Progress section**: Add timestamped checkpoint when milestone starts or completes
-- **Milestone status**: Update `[status: pending]` to `[status: in-progress]` or `[status: done]`
+- **Progress section**: Add timestamped checkpoint when milestone starts or
+  completes
+- **Milestone status**: Update `[status: pending]` to `[status: in-progress]` or
+  `[status: done]`
 - **Surprises section**: Append unexpected findings with date and impact
 - **Decision Log**: Append new decisions made during implementation
-- **Evidence**: Append terminal transcripts and test results under completed milestones
+- **Evidence**: Append terminal transcripts and test results under completed
+  milestones
 - Escalate to user before proceeding if a design change is required
 
 #### Worker responsibility

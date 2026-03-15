@@ -17,7 +17,8 @@ Data model expert. Traces data from source to sink.
 
 ## 2. Investigation Workflow
 
-1. Find schema source of truth: DDL files, migration scripts, ORM models, dbt models
+1. Find schema source of truth: DDL files, migration scripts, ORM models, dbt
+   models
 2. Map relationships: trace foreign keys, joins, and references
 3. Check normalization: look for actual redundancy, not theoretical risk
 4. Trace data flow: where is data written, transformed, and read?

@@ -9,7 +9,8 @@ description: draw.io diagram creation, editing, and review. Use for .drawio XML 
 
 - Edit only `.drawio` files
 - Always commit source `.drawio`; generated exports are disposable
-- Do not directly edit generated `.drawio.png`, `.drawio.svg`, or `.drawio.pdf` files
+- Do not directly edit generated `.drawio.png`, `.drawio.svg`, or `.drawio.pdf`
+  files
 - Prefer native mxGraphModel XML over Mermaid or CSV conversions
 - Use descriptive lowercase filenames with hyphens (e.g., `login-flow.drawio`)
 - Use auto-generated `.drawio.png` by pre-commit hook in slides
@@ -41,7 +42,8 @@ style="text;html=1;fontSize=27;fontFamily=Noto Sans JP;"
 
 ## 4. Conversion Commands
 
-See conversion script at [scripts/convert-drawio-to-png.sh](scripts/convert-drawio-to-png.sh).
+See conversion script at
+[scripts/convert-drawio-to-png.sh](scripts/convert-drawio-to-png.sh).
 
 ```sh
 # Convert all .drawio files
@@ -66,8 +68,10 @@ NOTE: For draw.io CLI flags and export options, see the `drawio-skills` skill.
 
 Auto-updatable reference files (see Section 12 for update protocol):
 
-- [Color Palette](references/color-palette.md) - Material Design colors and usage rules
-- [Layout Guidelines](references/layout-guidelines.md) - Pattern catalog (A-K) and AWS layout rules
+- [Color Palette](references/color-palette.md) - Material Design colors and
+  usage rules
+- [Layout Guidelines](references/layout-guidelines.md) - Pattern catalog (A-K)
+  and AWS layout rules
 
 ## 7. Design Principles
 
@@ -102,7 +106,8 @@ Start at Context level; drill down only when the audience needs it.
 
 ### 7.4. Related Diagram Set Consistency
 
-- YOU MUST: Use identical canvas width, colors, fonts, stroke width across related diagrams
+- YOU MUST: Use identical canvas width, colors, fonts, stroke width across
+  related diagrams
 - Define diagram set specification before creating any diagram
 - Verify side-by-side after completion
 
@@ -176,21 +181,25 @@ Waypoint example:
 
 ### 9.3. Arrows
 
-- Structural arrows (flowcharts, ER): place in XML right after Title (back layer)
+- Structural arrows (flowcharts, ER): place in XML right after Title (back
+  layer)
 - Badge-associated arrows (navigation): place last in XML (top layer)
 - Keep arrow start/end at least 20px from label bottom edge
-- For text elements, use explicit `sourcePoint`/`targetPoint` (exitX/exitY don't work)
+- For text elements, use explicit `sourcePoint`/`targetPoint` (exitX/exitY don't
+  work)
 - Edge label offset: `<mxPoint x="0" y="-40" as="offset"/>` (negative = above)
 - Bidirectional: set `startArrow=classic;endArrow=classic;startFill=1;endFill=1`
 - Minimum 80-100px spacing to avoid arrowhead overlap (`><` shape)
 - Standardize arrow lengths within a diagram
-- Edge labels: place `<mxCell>` at END of `<root>` with `labelBackgroundColor=#ffffff`
+- Edge labels: place `<mxCell>` at END of `<root>` with
+  `labelBackgroundColor=#ffffff`
 
 ### 9.4. Container Spacing
 
 - Internal elements: at least 30px margin from frame boundary
-- Parent container label clearance: first child Y >= `parent.y + spacingTop + fontSize + 10`
-  (for fontSize >= 24px, use fontSize \* 1.5)
+- Parent container label clearance: first child Y >=
+  `parent.y + spacingTop + fontSize + 10` (for fontSize >= 24px, use fontSize \*
+  1.5)
 - Label padding: add `spacingLeft=8;spacingTop=8` to box styles
 - Maintain vertical symmetry in containers (top margin = bottom margin)
 - Align elements on container's horizontal centerline
@@ -213,7 +222,8 @@ Waypoint example:
 
 ## 10. SVG Linting
 
-After exporting SVG, run the bundled lint to catch overlap issues programmatically:
+After exporting SVG, run the bundled lint to catch overlap issues
+programmatically:
 
 ```sh
 drawio -x -f svg -e -b 10 -o diagram.drawio.svg diagram.drawio

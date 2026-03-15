@@ -21,7 +21,8 @@ Architecture expert. Bird's-eye view of structure and design.
 2. Trace dependency flow: follow imports/references between modules
 3. Check boundaries: are responsibilities cleanly separated between modules?
 4. Assess consistency: does the change fit the existing patterns or diverge?
-5. Look for coupling: are modules entangled in ways that block independent change?
+5. Look for coupling: are modules entangled in ways that block independent
+   change?
 
 ## 3. Review Focus
 

@@ -5,7 +5,8 @@ description: Create high-quality, executable implementation plans for complex ta
 
 # Plan Design
 
-Extend (not replace) the base `orchestrator` workflow for high-rigor plan authoring.
+Extend (not replace) the base `orchestrator` workflow for high-rigor plan
+authoring.
 
 Use this skill when the output is a plan artifact requiring:
 
@@ -17,7 +18,8 @@ Use this skill when the output is a plan artifact requiring:
 ## 1. Relationship to Existing Skills
 
 - Base orchestration mechanics: use `orchestrator` skill.
-- Multi-perspective review mechanics: reuse `subagent-review` concepts selectively.
+- Multi-perspective review mechanics: reuse `subagent-review` concepts
+  selectively.
 - GitHub fetch/comment commands: use `github` skill where needed.
 - Do not duplicate those skills; add only plan-design specific workflow.
 
@@ -27,7 +29,8 @@ Use this skill when one or more apply:
 
 - User asks for a migration plan, rollout plan, or execution roadmap.
 - Input includes large docs, predecessor notes, or investigation artifacts.
-- User asks for beginner-friendly documentation or says they cannot understand the current plan.
+- User asks for beginner-friendly documentation or says they cannot understand
+  the current plan.
 - Plan must pass explicit approval gates (critic/guardian/boss or equivalents).
 
 ## 3. Pre-Step: Overlap Check (Mandatory)
@@ -57,7 +60,8 @@ Activate this gate when the task description contains any of:
 When activated, complete all of the following before writing the main plan:
 
 1. Identify source artifacts (required)
-   - Read existing files, workflows, and configs in the source repo/directory in full.
+   - Read existing files, workflows, and configs in the source repo/directory in
+     full.
    - Record exact source locations used as migration references.
 
 2. Define feature parity target (required)
@@ -65,7 +69,8 @@ When activated, complete all of the following before writing the main plan:
    - Scope to parity only: no missing items, no extra additions.
 
 3. Separate concerns (required)
-   - `Required for migration`: minimal set needed to make the source behavior work in the new environment.
+   - `Required for migration`: minimal set needed to make the source behavior
+     work in the new environment.
    - `Improvements`: any enhancement beyond parity.
    - Defer all `Improvements` to a later phase.
 
@@ -75,20 +80,23 @@ When activated, complete all of the following before writing the main plan:
 
 5. Log deferred items (required)
    - Add all out-of-scope improvements to the Decision Log.
-   - Mark each as explicitly deferred and assign a target phase/gate owner where possible.
+   - Mark each as explicitly deferred and assign a target phase/gate owner where
+     possible.
 
 ## 4. 5-Step Workflow
 
-NOTE: This workflow departs from orchestrator base behavior by dispatching workers (Step 2)
-BEFORE the annotation cycle (Step 3). This is intentional for plan authoring: workers provide
-raw investigation inputs that the annotation cycle then synthesizes. This overrides orchestrator
-section 3.2 for plan-design tasks only. In all other contexts, follow the base orchestrator order.
+NOTE: This workflow departs from orchestrator base behavior by dispatching
+workers (Step 2) BEFORE the annotation cycle (Step 3). This is intentional for
+plan authoring: workers provide raw investigation inputs that the annotation
+cycle then synthesizes. This overrides orchestrator section 3.2 for plan-design
+tasks only. In all other contexts, follow the base orchestrator order.
 
 ### 4.1. Step 1: Fetch Source and Build Ground Truth
 
 1. Create a research artifact for source digestion:
    mkoutput --dir research --label "plan-investigation"
-   - Note: add a suffix to disambiguate if multiple plans exist in the same session.
+   - Note: add a suffix to disambiguate if multiple plans exist in the same
+     session.
    - Example: `mkoutput --dir research --label "plan-investigation-dbt-merge"`
 2. Read all source artifacts in full.
 3. For large files, read in chunks (`offset/limit` or line ranges).
@@ -122,7 +130,8 @@ Required response format from each worker:
 
 1. Aggregate both worker outputs into one review package.
 2. Resolve contradictions between worker findings:
-   - If worker and worker-alt disagree, prefer the more conservative (safer) finding.
+   - If worker and worker-alt disagree, prefer the more conservative (safer)
+     finding.
    - Document the resolution in the Decision Log.
 3. Tighten the draft:
    - Remove ambiguity
@@ -136,28 +145,30 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 ### 4.4. Step 4: Review Gate Order (Strict)
 
 1. Send to critic and guardian in parallel.
-2. If either rejects: revise the plan artifact, resubmit to both. Repeat until both approve.
+2. If either rejects: revise the plan artifact, resubmit to both. Repeat until
+   both approve.
    - Maximum 3 revision rounds per gate pass.
-   - If consensus is not reached after 3 rounds:
-     a. Record the disagreement in the Decision Log.
-     b. Notify messenger: "BLOCKED: critic/guardian deadlock after 3 rounds -- human decision required."
-     c. Do not proceed to boss until messenger resolves the deadlock.
-3. Submit to boss only after critic AND guardian both approve the same artifact version.
-4. If boss rejects:
-   a. Record the rejection reason in the Decision Log.
-   b. Revise the plan artifact per boss feedback.
-   c. Return to step 1 of this gate (re-run critic + guardian before resubmitting to boss).
-   d. Maximum 2 boss rejection rounds.
-   e. If boss rejects a second time, notify messenger: "BLOCKED: plan rejected twice by boss -- escalate."
+   - If consensus is not reached after 3 rounds: a. Record the disagreement in
+     the Decision Log. b. Notify messenger: "BLOCKED: critic/guardian deadlock
+     after 3 rounds -- human decision required." c. Do not proceed to boss until
+     messenger resolves the deadlock.
+3. Submit to boss only after critic AND guardian both approve the same artifact
+   version.
+4. If boss rejects: a. Record the rejection reason in the Decision Log. b.
+   Revise the plan artifact per boss feedback. c. Return to step 1 of this gate
+   (re-run critic + guardian before resubmitting to boss). d. Maximum 2 boss
+   rejection rounds. e. If boss rejects a second time, notify messenger:
+   "BLOCKED: plan rejected twice by boss -- escalate."
 5. Do not finalize or send to messenger until boss approves.
 
 ### 4.5. Step 5: Beginner-Friendly Final Plan Packaging
 
-This step augments the base orchestrator plan template. The sections below are ADDITIONAL
-to the base template defined in the orchestrator skill. Sections already in the base template
-(Purpose, Source, Context, Investigation Summary, Acceptance Criteria, Decision Log, Risks,
-Test Strategy, Progress, Surprises) must still be present. The sections listed here must also
-be added for beginner-friendly plan outputs.
+This step augments the base orchestrator plan template. The sections below are
+ADDITIONAL to the base template defined in the orchestrator skill. Sections
+already in the base template (Purpose, Source, Context, Investigation Summary,
+Acceptance Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises)
+must still be present. The sections listed here must also be added for
+beginner-friendly plan outputs.
 
 Additional required sections:
 
@@ -188,14 +199,17 @@ If risk is high or ambiguity is high, run parallel and compare.
 
 ## 6. Ambiguity Escalation (Mandatory)
 
-If any worker encounters ambiguous or unclear points while rewriting content for a beginner audience:
+If any worker encounters ambiguous or unclear points while rewriting content for
+a beginner audience:
 
 1. Stop -- do NOT make assumptions and proceed.
 2. Flag the ambiguity explicitly in the DONE/BLOCKED report to orchestrator.
-3. Orchestrator runs the full critic + guardian + boss review cycle on the revised content.
+3. Orchestrator runs the full critic + guardian + boss review cycle on the
+   revised content.
 4. Notify messenger of the ambiguity and the review outcome before finalizing.
 
-This rule applies to all plan rewriting tasks, including glossary entries, command templates, and decision gate prose.
+This rule applies to all plan rewriting tasks, including glossary entries,
+command templates, and decision gate prose.
 
 ## 7. Quality Checklist Before Approval
 

@@ -6,7 +6,8 @@ model: sonnet
 
 # Researcher: Tech
 
-Technical research specialist. Verifies claims, compares options, provides evidence.
+Technical research specialist. Verifies claims, compares options, provides
+evidence.
 
 ## 1. Discipline
 
@@ -19,7 +20,8 @@ Technical research specialist. Verifies claims, compares options, provides evide
 
 1. Clarify scope: what exactly needs to be answered?
 2. Search official docs first (WebSearch + WebFetch)
-3. Check GitHub repos: issues, discussions, source code for implementation details
+3. Check GitHub repos: issues, discussions, source code for implementation
+   details
 
    ```sh
    # Clone to /tmp for analysis when needed

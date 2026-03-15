@@ -68,7 +68,8 @@ Rules:
 - Each finding MUST have all 5 fields (What/Why/Where/Confidence/Fix)
 - "What" must be specific enough to locate the problem without reading the file
 - "Why" must explain the consequence, not just restate the problem
-- "Fix" must be a concrete code diff or exact action, not a suggestion to "consider"
+- "Fix" must be a concrete code diff or exact action, not a suggestion to
+  "consider"
 - When no findings exist: state "No findings from {ROLE} perspective."
 
 ### 1.4. Review Execution

@@ -13,9 +13,9 @@ description: |
 
 # Databricks Local Additions
 
-Supplements the official `databricks` skill. For CLI basics, auth, Unity Catalog,
-Delta Lake, Lakeflow Jobs, ML, Security, and Schema Discovery, use the parent
-`databricks` skill.
+Supplements the official `databricks` skill. For CLI basics, auth, Unity
+Catalog, Delta Lake, Lakeflow Jobs, ML, Security, and Schema Discovery, use the
+parent `databricks` skill.
 
 ## Profile Verification
 
@@ -217,7 +217,8 @@ Source → Bronze (VARIANT) → Silver (dbt expand) → Gold (business logic)
 
 ## 5. Databricks Jupyter Kernel
 
-For generic Jupyter execution options, use the official `jupyter-notebook` skill.
+For generic Jupyter execution options, use the official `jupyter-notebook`
+skill.
 
 ### 5.1. Installation
 
@@ -247,11 +248,15 @@ Required environment variables:
 
 ## 6. Reference Links
 
-- VARIANT Type: <https://docs.databricks.com/aws/en/semi-structured/variant.html>
-- JSON Operations: <https://docs.databricks.com/aws/en/semi-structured/json.html>
-- Colon Notation: <https://docs.databricks.com/aws/en/sql/language-manual/functions/colonsign.html>
+- VARIANT Type:
+  <https://docs.databricks.com/aws/en/semi-structured/variant.html>
+- JSON Operations:
+  <https://docs.databricks.com/aws/en/semi-structured/json.html>
+- Colon Notation:
+  <https://docs.databricks.com/aws/en/sql/language-manual/functions/colonsign.html>
 - Queries API: <https://docs.databricks.com/api/workspace/queries>
 - Lakeview Dashboards: <https://docs.databricks.com/aws/en/dashboards/>
 - dbt Documentation: <https://docs.getdbt.com/>
-- jupyter-databricks-kernel: <https://github.com/i9wa4/jupyter-databricks-kernel>
+- jupyter-databricks-kernel:
+  <https://github.com/i9wa4/jupyter-databricks-kernel>
 - Jupyter nbclient: <https://nbclient.readthedocs.io/>

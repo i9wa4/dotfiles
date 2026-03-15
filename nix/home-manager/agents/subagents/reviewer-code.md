@@ -29,7 +29,8 @@ Code quality expert. Reads every line, misses nothing.
 - Dead code: unused variables, unreachable branches, commented-out blocks
 - Complexity: functions doing too many things, deep nesting that hides logic
 - Duplication: code that duplicates existing utility or pattern in the codebase
-- Error handling: missing where failure is likely, excessive where it cannot fail
+- Error handling: missing where failure is likely, excessive where it cannot
+  fail
 - Testability: tightly coupled code that blocks unit testing
 
 ## 4. Output Format

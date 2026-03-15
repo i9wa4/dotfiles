@@ -114,10 +114,12 @@ echo "use flake" > .envrc
 
 ### 3.1. Configure /etc/nix/nix.conf
 
-`/etc/nix/nix.conf` is a real file (not managed by Nix). Configure it manually with `sudo`.
+`/etc/nix/nix.conf` is a real file (not managed by Nix). Configure it manually
+with `sudo`.
 
-Add the current user to `trusted-users` so that binary caches (e.g., `cache.numtide.com`) work.
-Without this, caches are silently ignored and packages are compiled from source.
+Add the current user to `trusted-users` so that binary caches (e.g.,
+`cache.numtide.com`) work. Without this, caches are silently ignored and
+packages are compiled from source.
 
 ```sh
 cat /etc/nix/nix.conf
@@ -140,7 +142,8 @@ trusted-users = root userB
 trusted-users = root userA userB
 ```
 
-Also consider setting `max-jobs = auto` to use all available CPU cores for builds (default is 1):
+Also consider setting `max-jobs = auto` to use all available CPU cores for
+builds (default is 1):
 
 ```ini
 max-jobs = auto
@@ -254,7 +257,8 @@ gh auth login --with-token
 #### 5.4.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
-- Google English: `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
+- Google English:
+  `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
 #### 5.4.3. Extensions
 

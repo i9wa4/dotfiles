@@ -173,11 +173,12 @@ Last reviewed Codex CLI version: v0.113.0 (2026-03-11)
 - v0.111.0: Fast mode enabled by default, TUI shows Fast/Standard mode,
   `js_repl` can import local `.js`/`.mjs` files, plugins reported to model
   at session start, app-server v2 MCP elicitation as structured request/response
-- v0.110.0: Plugin system (skills/MCP/app connectors from config or marketplace),
-  persisted `/fast` toggle, multi-agent TUI flow with approval prompts,
-  workspace-scoped memory writes, Windows installer
+- v0.110.0: Plugin system (skills/MCP/app connectors from config or
+  marketplace), persisted `/fast` toggle, multi-agent TUI flow with approval
+  prompts, workspace-scoped memory writes, Windows installer
 - v0.107.0: Fork thread into sub-agents, realtime voice device selection,
-  multimodal custom tool output, memories configurable (`codex debug clear-memories`)
+  multimodal custom tool output, memories configurable
+  (`codex debug clear-memories`)
 - v0.104.0: `WS_PROXY`/`WSS_PROXY` env for websocket proxying,
   `ConfigChange` hook from app-server, command approval ID plumbing
 - v0.103.0: Commit co-author attribution via `command_attribution` config,

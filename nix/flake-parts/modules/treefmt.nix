@@ -5,7 +5,6 @@
     { pkgs, ... }:
     {
       treefmt = {
-        # Required: identifies project root
         projectRootFile = "flake.nix";
 
         programs = {
@@ -28,7 +27,7 @@
           # Lua
           stylua.enable = true;
 
-          # Markdown, YAML, JSON (prettier preserves numbered list format)
+          # Markdown, YAML, JSON
           prettier = {
             enable = true;
             includes = [
@@ -42,7 +41,6 @@
 
         settings = {
           formatter = {
-            # Stylua options (inlined to avoid .stylua.toml at repo root)
             stylua.options = [
               "--column-width=120"
               "--line-endings=Unix"
@@ -51,7 +49,6 @@
               "--quote-style=AutoPreferDouble"
               "--call-parentheses=Always"
             ];
-            # Custom formatters (not available as built-in programs)
             sqlfmt = {
               command = "${pkgs.python3Packages.sqlfmt}/bin/sqlfmt";
               includes = [ "*.sql" ];
@@ -61,7 +58,7 @@
             ".direnv"
             ".git"
             "*.lock"
-            "config/zsh/*" # zsh files have special formatting
+            "config/zsh/*"
           ];
         };
       };

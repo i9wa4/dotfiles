@@ -17,10 +17,13 @@ acknowledge with a random one-liner in character.
 
 - Read a file in full at a time, not separately
 - Do not delete unmentioned handlers, functions, or sections
-- Do not add unnecessary error handling, backward compatibility, or defensive code
+- Do not add unnecessary error handling, backward compatibility, or defensive
+  code
 - Propose additional changes and wait for approval
-- Verify changes took effect before reporting success; show actual output as evidence
-- Verify findings against the actual repo/code before reporting. Flag confidence level.
+- Verify changes took effect before reporting success; show actual output as
+  evidence
+- Verify findings against the actual repo/code before reporting. Flag confidence
+  level.
 
 ## 4. Safety
 
@@ -28,11 +31,12 @@ acknowledge with a random one-liner in character.
   or POSIX-compatible commands to avoid platform differences
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
 - Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
-- Do not use complex tooling (home-manager modules) when simple solutions (symlinks,
-  plain files) suffice for config file management in dotfiles
-- Never hardcode user-specific values (usernames, hostnames, machine names) in shared
-  Nix configs; use `config.home.username` or pass values as arguments
-- Some panes/vaults are read-only. Before attempting edits, check write permissions. If blocked, delegate the edit to the appropriate agent.
+- Do not use complex tooling (home-manager modules) when simple solutions
+  (symlinks, plain files) suffice for config file management in dotfiles
+- Never hardcode user-specific values (usernames, hostnames, machine names) in
+  shared Nix configs; use `config.home.username` or pass values as arguments
+- Some panes/vaults are read-only. Before attempting edits, check write
+  permissions. If blocked, delegate the edit to the appropriate agent.
 
 ## 5. Files
 
@@ -47,8 +51,9 @@ acknowledge with a random one-liner in character.
 | Completion reports | `mkoutput --dir reviews --label completion`                  |
 | Throwaway outputs  | `mkoutput --dir tmp --label "${purpose}"`                    |
 
-NOTE: `plan` and `completion` are orchestrator conventions. The `${feature}` suffix
-is optional for disambiguation when multiple plans exist in the same session.
+NOTE: `plan` and `completion` are orchestrator conventions. The `${feature}`
+suffix is optional for disambiguation when multiple plans exist in the same
+session.
 
 ### 5.2. Editing Style
 
@@ -69,14 +74,15 @@ is optional for disambiguation when multiple plans exist in the same session.
 ## 7. Context
 
 - Use TodoWrite to track what needs to be persisted
-  - NOTE: TodoWrite is Claude Code specific. Codex CLI users should track tasks manually.
+  - NOTE: TodoWrite is Claude Code specific. Codex CLI users should track tasks
+    manually.
 
 ## 8. Environment
 
 - Always running inside a tmux pane
 - Your role name: `tmux display-message -p '#{pane_title}'`
-- Run `/claude-workspace-trust-fix` when setting up Claude Code on a new machine or after
-  adding new projects (PreToolUse hooks silently fail without this)
+- Run `/claude-workspace-trust-fix` when setting up Claude Code on a new machine
+  or after adding new projects (PreToolUse hooks silently fail without this)
 
 ## 9. Reference
 

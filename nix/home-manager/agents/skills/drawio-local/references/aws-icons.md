@@ -666,7 +666,8 @@ shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.{group_name};
 
 ## 5. アイコン検索スクリプト
 
-[scripts/find_aws_icon.py](../scripts/find_aws_icon.py) を使用して効率的に検索可能。
+[scripts/find_aws_icon.py](../scripts/find_aws_icon.py)
+を使用して効率的に検索可能。
 
 ## 6. 参考リンク
 

@@ -9,5 +9,6 @@
 ## 2. Virtual Environment Usage
 
 - `uv.lock` exists: use `uv run <command>`
-- `poetry.lock` exists: create venv with `uv` per <https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html>
+- `poetry.lock` exists: create venv with `uv` per
+  <https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html>
 - Neither exists: `source .venv/bin/activate` then run commands

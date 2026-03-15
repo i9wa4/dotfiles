@@ -11,8 +11,9 @@ description: |
 
 ## 1. mmdc vs revealjs Rendering Difference
 
-`%%{init}%%` themeVariables work in mmdc PNG but are **overridden** by revealjs CSS at
-render time. Quarto revealjs injects CSS vars via `mermaid-init.js defaultCSS`:
+`%%{init}%%` themeVariables work in mmdc PNG but are **overridden** by revealjs
+CSS at render time. Quarto revealjs injects CSS vars via
+`mermaid-init.js defaultCSS`:
 
 | CSS variable               | Targets                | Default value    |
 | -------------------------- | ---------------------- | ---------------- |
@@ -62,8 +63,8 @@ Or use the webapp-testing skill (Playwright) to screenshot the rendered slide.
 
 ### 4.2. Slide Capacity
 
-~20 diagram content lines fit on a 1920x1080 revealjs slide with `scrollable: true`
-without overflow.
+~20 diagram content lines fit on a 1920x1080 revealjs slide with
+`scrollable: true` without overflow.
 
 ## 5. mmdc Command
 
@@ -79,14 +80,16 @@ Requires system Chrome:
 PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" , mmdc -i input.mmd -o output.png
 ```
 
-NOTE: Strip code fence markers — mmdc needs raw mermaid syntax (no ` ```{mermaid} ` wrapper).
+NOTE: Strip code fence markers — mmdc needs raw mermaid syntax (no
+` ```{mermaid}` wrapper).
 
 ## 6. revealjs Text Color Fix
 
-`%%{init}%%` themeVariables do NOT work in revealjs — revealjs applies its own CSS variables
-after SVG generation, overriding any inline settings.
+`%%{init}%%` themeVariables do NOT work in revealjs — revealjs applies its own
+CSS variables after SVG generation, overriding any inline settings.
 
-Working fix: override the CSS variables at `:root` level in YAML `include-in-header`:
+Working fix: override the CSS variables at `:root` level in YAML
+`include-in-header`:
 
 ```css
 :root {
@@ -96,11 +99,13 @@ Working fix: override the CSS variables at `:root` level in YAML `include-in-hea
 }
 ```
 
-Do NOT use `.mermaid text { fill: #000000 !important; }` — it is ineffective because
-revealjs renders mermaid client-side and CSS vars take precedence over static SVG fill.
+Do NOT use `.mermaid text { fill: #000000 !important; }` — it is ineffective
+because revealjs renders mermaid client-side and CSS vars take precedence over
+static SVG fill.
 
-Why `[alt/else labels]` appear black by default: they use `--mermaid-node-fg-color`
-which defaults to `#000` — while signal text and actor names use different vars.
+Why `[alt/else labels]` appear black by default: they use
+`--mermaid-node-fg-color` which defaults to `#000` — while signal text and actor
+names use different vars.
 
 ## 7. Coloring alt/loop/actor in sequenceDiagram (revealjs)
 
@@ -112,7 +117,7 @@ CSS class names (sourced from mermaid-init.js defaultCSS):
 | alt/loop section bg  | `.loopLine`  | `#fef3c7` (amber)       |
 | alt/loop label boxes | `.labelBox`  | `#e0e7ff` (pale indigo) |
 
-IMPORTANT limitation: `alt` and `loop` blocks share the same `.loopLine` CSS class.
-They cannot be styled with different colors without more invasive CSS.
+IMPORTANT limitation: `alt` and `loop` blocks share the same `.loopLine` CSS
+class. They cannot be styled with different colors without more invasive CSS.
 
 Apply via `include-in-header` `<style>` block with `!important`.

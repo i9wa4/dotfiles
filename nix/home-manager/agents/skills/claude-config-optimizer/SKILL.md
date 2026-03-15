@@ -16,7 +16,8 @@ Rules and tracking for Claude Code configuration optimization.
 
 ## 1. Config File Location
 
-Config is managed declaratively via Nix (`programs.claude-code` home-manager module).
+Config is managed declaratively via Nix (`programs.claude-code` home-manager
+module).
 
 Source of truth:
 
@@ -132,14 +133,16 @@ Task tool with subagent_type: claude-code-guide
 | Developer environment quirks (required env vars)     | File-by-file descriptions of the codebase          |
 | Common gotchas or non-obvious behaviors              | Self-evident practices like "write clean code"     |
 
-Test each line: "Would removing this cause Claude to make mistakes?" If not, cut it.
+Test each line: "Would removing this cause Claude to make mistakes?" If not, cut
+it.
 
 ### 6.2. @import Syntax
 
 CLAUDE.md can import additional files:
 
 ```markdown
-See @README.md for project overview and @package.json for available npm commands.
+See @README.md for project overview and @package.json for available npm
+commands.
 
 # Additional Instructions
 
@@ -178,7 +181,8 @@ Check the following when editing CLAUDE.md:
 - [ ] Have reference links been moved to skills?
 - [ ] Does each line pass the "remove this → Claude makes mistakes?" test?
 - [ ] Are @imports used for large doc sections instead of inline content?
-- [ ] Is the file short enough that Claude won't ignore rules buried in the middle?
+- [ ] Is the file short enough that Claude won't ignore rules buried in the
+      middle?
 
 ### 8.2. Permission System Review
 
@@ -252,9 +256,10 @@ Last reviewed Claude Code version: v2.1.74 (2026-03-12)
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
-- [x] `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` removed - enables Remote Control
-      and feature flag refresh (v2.1.51+)
-- [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context usage
+- [x] `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` removed - enables Remote
+      Control and feature flag refresh (v2.1.51+)
+- [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
+      usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
       custom `rules/git-github.md` is sole authority (v2.1.69)
 
@@ -326,8 +331,10 @@ Official Documentation:
 
 Community Resources:
 
-- Claude Code config: <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
-- CLAUDE.md minimization: <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
+- Claude Code config:
+  <https://blog.atusy.net/2025/12/15/claude-code-user-config/>
+- CLAUDE.md minimization:
+  <https://blog.atusy.net/2025/12/17/minimizing-claude-md/>
 - site2skill: <https://github.com/laiso/site2skill>
 
 ## 15. Permission System Reference
@@ -419,5 +426,6 @@ Based on usage analysis (55K messages, 4.7K sessions):
 
 - Hooks Reference: `https://code.claude.com/docs/en/hooks`
 - Permissions Reference: `https://code.claude.com/docs/en/permissions`
-- Skills Dynamic Context: `https://code.claude.com/docs/en/skills#inject-dynamic-context`
+- Skills Dynamic Context:
+  `https://code.claude.com/docs/en/skills#inject-dynamic-context`
 - Vercel AGENTS.md Guide: `https://vercel.com/blog/agents-md`

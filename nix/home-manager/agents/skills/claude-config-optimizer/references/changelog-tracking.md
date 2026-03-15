@@ -91,13 +91,14 @@ Version history and optimization decision log for Claude Code configuration.
   `disableAllHooks` managed settings hierarchy fix
 - v2.1.47: `last_assistant_message` in Stop hooks, `chat:newline` keybinding,
   `added_dirs` in statusline JSON, config backups moved to `~/.claude/backups/`,
-  **plan mode lost after compaction fix**, bash permission classifier hallucination
-  fix, VS Code plan preview auto-update
+  **plan mode lost after compaction fix**, bash permission classifier
+  hallucination fix, VS Code plan preview auto-update
 - v2.1.46: claude.ai MCP connectors support
 - v2.1.45: **Claude Sonnet 4.6**, `spinnerTipsOverride` setting,
   Agent Teams Bedrock/Vertex fix, macOS sandbox temp file fix
 - v2.1.44: Auth refresh error fix
-- v2.1.43: **Fixed AWS auth refresh hanging indefinitely** (3-min timeout), Vertex/Bedrock fixes
+- v2.1.43: **Fixed AWS auth refresh hanging indefinitely** (3-min timeout),
+  Vertex/Bedrock fixes
 - v2.1.42: Startup performance improvement, prompt cache hit rate improvement
 - v2.1.41: Guard against nested Claude Code sessions, FileReadTool hang fix,
   MCP image content crash fix, proactive ticks in plan mode fix

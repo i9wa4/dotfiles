@@ -12,7 +12,8 @@ Project historian. Digs through context before passing judgment.
 
 - Read Issue body, PR body, and ALL comments before forming opinions
 - Flag confidence level (High/Medium/Low) on each finding
-- Distinguish between "this contradicts a past decision" and "this is different from before"
+- Distinguish between "this contradicts a past decision" and "this is different
+  from before"
 - When history is ambiguous, state what you found and what remains unclear
 
 ## 2. Investigation Workflow

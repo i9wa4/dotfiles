@@ -4,25 +4,19 @@
   perSystem =
     { pkgs, ... }:
     let
-      # GitHub Actions workflow file pattern
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
-      # Inline linter configs (avoids repo-root config files)
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
-        [global]
-        disable = ["MD013"]
-
-        [MD007]
-        indent = 2
-      '';
-      statixConfig = pkgs.writeText "statix.toml" ''
-        nix_version = "2.4"
+        [MD013]
+        code-blocks = false
+        headings = false
+        reflow = true
       '';
     in
     {
       pre-commit = {
         check.enable = true;
         settings.hooks = {
-          # === General file checks (pre-commit-hooks package) ===
+          # === General file checks ===
           end-of-file-fixer.enable = true;
           trim-trailing-whitespace.enable = true;
           check-added-large-files.enable = true;
@@ -47,7 +41,7 @@
             files = ghWorkflowFiles;
           };
 
-          # NOTE: ghatm not in nixos-25.11 stable, runs via nix run
+          # NOTE: ghatm not in stable nixpkgs, runs via nix run
           # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
           ghatm = {
             enable = true;
@@ -67,38 +61,34 @@
             files = ghWorkflowFiles;
           };
 
+          # === Nix linter ===
+          statix = {
+            enable = true;
+            entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check \"$t\" || exit 1; done'";
+            pass_filenames = false;
+          };
+          # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
+
+          # === Markdown linter ===
+          rumdl-check = {
+            enable = true;
+            entry = "${pkgs.rumdl}/bin/rumdl check --config ${rumdlConfig}";
+            types = [ "markdown" ];
+          };
+
           # === Shell ===
           shellcheck.enable = true;
 
-          # === Unified formatter (runs first) ===
+          # === Unified formatter ===
+          # Skip in sandbox (treefmt-nix already runs treefmt-check separately)
           treefmt = {
             enable = true;
-            # Skip in nix build sandbox (NIX_BUILD_TOP is set during nix flake check)
-            # treefmt-nix already runs treefmt-check separately
             entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.nix}/bin/nix fmt'";
             pass_filenames = false;
             always_run = true;
           };
 
-          # === Linters (dotfiles-specific) ===
-          # Nix
-          # Run on explicit targets to avoid scanning .direnv/ (statix ignore paths
-          # resolve relative to config file, not CWD, so -i/.direnv doesn't work)
-          statix = {
-            enable = true;
-            entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check --config ${statixConfig} \"$t\" || exit 1; done'";
-            pass_filenames = false;
-          };
-          # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
-
-          # Markdown (lint only - formatting is handled by treefmt)
-          # Skip in nix build sandbox (NIX_BUILD_TOP set during nix flake check)
-          rumdl-check = {
-            enable = true;
-            entry = "${pkgs.bash}/bin/bash -c 'test -n \"$NIX_BUILD_TOP\" || ${pkgs.rumdl}/bin/rumdl --config ${rumdlConfig} check \"$@\"' --";
-            types = [ "markdown" ];
-          };
-
+          # === Language-specific linters (dotfiles) ===
           # Python (lint only - formatting is handled by treefmt)
           ruff-check = {
             enable = true;

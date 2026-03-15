@@ -81,7 +81,8 @@ If hooks still do not fire after applying the fix:
 1. Clear `/tmp/deny-debug.log` and attempt an Edit in interactive mode
 2. If the debug log remains empty, hooks are not being invoked at all
 3. Test with `-p` mode: `claude -p 'Edit README.md add <!-- test -->'`
-4. If `-p` fires hooks but interactive does not, re-check `hasTrustDialogAccepted`
+4. If `-p` fires hooks but interactive does not, re-check
+   `hasTrustDialogAccepted`
 
 ## Reference
 

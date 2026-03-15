@@ -15,20 +15,28 @@ source: https://github.com/affaan-m/everything-claude-code/tree/main/skills/cont
 
 # Continuous Learning v2.1 - Instinct-Based Architecture
 
-An advanced learning system that turns Claude Code sessions into reusable knowledge through atomic "instincts" -- small learned behaviors with confidence scoring.
+An advanced learning system that turns Claude Code sessions into reusable
+knowledge through atomic "instincts" -- small learned behaviors with confidence
+scoring.
 
-**v2.1** adds **project-scoped instincts** -- React patterns stay in your React project, Python conventions stay in your Python project, and universal patterns (like "always validate input") are shared globally.
+**v2.1** adds **project-scoped instincts** -- React patterns stay in your React
+project, Python conventions stay in your Python project, and universal patterns
+(like "always validate input") are shared globally.
 
 ## Architecture Overview
 
 ### Hook Layer (Nix-managed)
 
-Observation hooks are registered via `nix/home-manager/modules/claude-code.nix` and deployed by `home-manager switch`. The hook scripts live at:
+Observation hooks are registered via `nix/home-manager/modules/claude-code.nix`
+and deployed by `home-manager switch`. The hook scripts live at:
 
-- `nix/home-manager/agents/scripts/claude-observe.sh` -- PreToolUse/PostToolUse observer
-- `nix/home-manager/agents/scripts/claude-detect-project.sh` -- project detection helper (sourced by observer)
+- `nix/home-manager/agents/scripts/claude-observe.sh` -- PreToolUse/PostToolUse
+  observer
+- `nix/home-manager/agents/scripts/claude-detect-project.sh` -- project
+  detection helper (sourced by observer)
 
-These are NOT inside this skill directory because they are shared infrastructure managed by Nix.
+These are NOT inside this skill directory because they are shared infrastructure
+managed by Nix.
 
 ### CLI Layer (this skill)
 
@@ -38,7 +46,8 @@ The instinct CLI lives at:
 ${CLAUDE_CONFIG_DIR}/skills/continuous-learning-v2/scripts/instinct-cli.py
 ```
 
-Use `/instinct-status` and `/evolve` skills for the most common operations. For other commands, run the CLI directly:
+Use `/instinct-status` and `/evolve` skills for the most common operations. For
+other commands, run the CLI directly:
 
 ```bash
 python3 ${CLAUDE_CONFIG_DIR}/skills/continuous-learning-v2/scripts/instinct-cli.py <command>
@@ -129,11 +138,15 @@ Session Activity (in a git repo)
 The system automatically detects your current project:
 
 1. **`CLAUDE_PROJECT_DIR` env var** (highest priority)
-2. **`git remote get-url origin`** -- hashed to create a portable project ID (same repo on different machines gets the same ID)
-3. **`git rev-parse --show-toplevel`** -- fallback using repo path (machine-specific)
-4. **Global fallback** -- if no project is detected, instincts go to global scope
+2. **`git remote get-url origin`** -- hashed to create a portable project ID
+   (same repo on different machines gets the same ID)
+3. **`git rev-parse --show-toplevel`** -- fallback using repo path
+   (machine-specific)
+4. **Global fallback** -- if no project is detected, instincts go to global
+   scope
 
-Each project gets a 12-character hash ID (e.g., `a1b2c3d4e5f6`). A registry file at `projects.json` maps IDs to human-readable names.
+Each project gets a 12-character hash ID (e.g., `a1b2c3d4e5f6`). A registry file
+at `projects.json` maps IDs to human-readable names.
 
 ## CLI Commands
 
@@ -221,7 +234,8 @@ $XDG_STATE_HOME/claude/homunculus/    # override with CLV2_HOMUNCULUS_DIR env va
 
 ## Instinct Promotion (Project -> Global)
 
-When the same instinct appears in multiple projects with high confidence, it's a candidate for promotion to global scope.
+When the same instinct appears in multiple projects with high confidence, it's a
+candidate for promotion to global scope.
 
 **Auto-promotion criteria:**
 
@@ -264,7 +278,8 @@ The `/evolve` skill also suggests promotion candidates.
 
 ## Why Hooks vs Skills for Observation?
 
-Hooks fire **100% of the time**, deterministically. Skills are probabilistic (~50-80%). This means:
+Hooks fire **100% of the time**, deterministically. Skills are probabilistic
+(~50-80%). This means:
 
 - Every tool call is observed
 - No patterns are missed
@@ -280,6 +295,9 @@ Hooks fire **100% of the time**, deterministically. Skills are probabilistic (~5
 
 ## Related
 
-- [Skill Creator](https://skill-creator.app) - Generate instincts from repo history
-- Homunculus - Community project that inspired the v2 instinct-based architecture
-- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) - Continuous learning section
+- [Skill Creator](https://skill-creator.app) - Generate instincts from repo
+  history
+- Homunculus - Community project that inspired the v2 instinct-based
+  architecture
+- [The Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) -
+  Continuous learning section

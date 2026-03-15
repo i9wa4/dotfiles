@@ -18,8 +18,8 @@ description: |
   nix build .#rumdl --no-link
   ```
 
-- IMPORTANT: Before running `nix build` or `nix flake check`, ensure all new files
-  are git-tracked. Nix flakes only see files committed or staged in git.
+- IMPORTANT: Before running `nix build` or `nix flake check`, ensure all new
+  files are git-tracked. Nix flakes only see files committed or staged in git.
 
   ```sh
   git add <new-files>
@@ -40,7 +40,8 @@ description: |
 
 - YOU MUST: See CONTRIBUTING.md section 1.4.2 for adding new custom packages
 - IMPORTANT: Hash acquisition flow
-  1. Get `hash` using nurl: `nix run 'nixpkgs#nurl' -- https://github.com/<owner>/<repo> <tag>`
+  1. Get `hash` using nurl:
+     `nix run 'nixpkgs#nurl' -- https://github.com/<owner>/<repo> <tag>`
   2. Get `vendorHash`/`cargoHash` via build error (`got:` line)
 - IMPORTANT: Add `doCheck = false;` if tests fail
 
