@@ -15,6 +15,14 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
+  nvimApps = builtins.readDir ../../config/nvim;
+  nvimConfigFiles = lib.mapAttrs' (name: _: {
+    inherit name;
+    value = {
+      source = ../../config/nvim/${name};
+      recursive = true;
+    };
+  }) (lib.filterAttrs (_: v: v == "directory") nvimApps);
 in
 {
   imports = [
@@ -114,13 +122,12 @@ in
     # symlink
     "vde".source = symlink "${dotfilesDir}/config/vde";
     # Nix store
-    "nvim".source = ../../config/nvim/nvim;
-    "nvim-as-fileviewer".source = ../../config/nvim/nvim-as-fileviewer;
     "tmux-a2a-postman".source = ../../config/tmux-a2a-postman;
     "vim".source = ../../config/vim;
     "wezterm".source = ../../config/wezterm;
     "zeno".source = ../../config/zeno;
-  };
+  }
+  // nvimConfigFiles;
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
   # nix.package is required by HM when writing nix.conf
