@@ -30,7 +30,7 @@
 #
 # argv (required)
 #   - Token array used by Codex CLI prefix_rule AND auto-derived hookRegex
-#   - hookRegex derivation: 1 token → \btoken\b, 2+ → joined with spaces
+#   - hookRegex derivation: 1 token → \btoken\b, 2+ → joined with .*
 #
 # justification (required)
 #   - Human-readable denial message (shared by Claude Code hook + Codex CLI)
@@ -129,13 +129,13 @@ let
 
   # Auto-derive hookRegex from argv:
   #   1 token  → \btoken\b (word boundary to avoid partial matches like "farm" for "rm")
-  #   2+ tokens → tokens joined with spaces (literal match per shell fragment)
+  #   2+ tokens → tokens joined with .* (matches flags in any position)
   mkHookRegex =
     cmd:
     if builtins.length cmd.argv == 1 then
       "\\b${builtins.head cmd.argv}\\b"
     else
-      builtins.concatStringsSep " " cmd.argv;
+      builtins.concatStringsSep ".*" cmd.argv;
 
   mkPrefixRule =
     cmd:
