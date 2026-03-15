@@ -17,7 +17,7 @@
 #   entries (below)
 #   │
 #   ├── claudeCode.denyPermissions ─► settings.json permissions.deny
-#   │   (only entries with claudeGlob)  Format: Bash(<glob>)
+#   │   (only entries with deny = true)  Format: Bash(<glob>)
 #   │
 #   ├── claudeCode.patternsFile ────► ~/.claude/bash-deny-patterns.sh
 #   │   (all entries, hookRegex auto-derived from argv)
@@ -35,15 +35,15 @@
 # justification (required)
 #   - Human-readable denial message (shared by Claude Code hook + Codex CLI)
 #
-# claudeGlob (optional)
-#   - Omit for hook-only enforcement (most commands)
-#   - Set for truly dangerous commands that need proactive blocking
-#   - Adds to permissions.deny so Claude won't even attempt the command
+# deny (optional, default: false)
+#   - Set to true for truly dangerous commands that need proactive blocking
+#   - Auto-derives claudeGlob from argv and adds to permissions.deny
+#   - claudeGlob derivation: 1 token → "token *", 2+ → joined with space + *
 #
 # ── Adding a new entry ─────────────────────────────────────────────────
 #
 #   1. Add { argv = [...]; justification = "..."; } below
-#      (add claudeGlob only for truly dangerous commands)
+#      (add deny = true for truly dangerous commands)
 #   2. Run: home-manager switch
 #   3. Both Claude Code and Codex CLI pick up the change automatically
 #
@@ -116,14 +116,14 @@ let
       justification = "branch force-deletion is denied";
     }
     {
-      claudeGlob = "rm *";
       argv = [ "rm" ];
       justification = "rm is denied; use mv /tmp/ instead";
+      deny = true;
     }
     {
-      claudeGlob = "sudo *";
       argv = [ "sudo" ];
       justification = "sudo is denied";
+      deny = true;
     }
   ];
 
@@ -136,6 +136,16 @@ let
       "\\b${builtins.head cmd.argv}\\b"
     else
       builtins.concatStringsSep ".*" cmd.argv;
+
+  # Auto-derive claudeGlob from argv (for entries with deny = true):
+  #   1 token  → "token *" (space before * to require an argument)
+  #   2+ tokens → "token1 token2*" (no space, matches with or without trailing args)
+  mkClaudeGlob =
+    cmd:
+    if builtins.length cmd.argv == 1 then
+      "${builtins.head cmd.argv} *"
+    else
+      builtins.concatStringsSep " " cmd.argv + "*";
 
   mkPrefixRule =
     cmd:
@@ -154,9 +164,9 @@ in
   inherit entries;
 
   claudeCode = {
-    # permissions.deny entries (only commands with claudeGlob)
-    denyPermissions = map (cmd: "Bash(${cmd.claudeGlob})") (
-      builtins.filter (cmd: cmd ? claudeGlob) entries
+    # permissions.deny entries (only commands with deny = true)
+    denyPermissions = map (cmd: "Bash(${mkClaudeGlob cmd})") (
+      builtins.filter (cmd: cmd.deny or false) entries
     );
 
     # Generated patterns file for the PreToolUse hook (all entries)
