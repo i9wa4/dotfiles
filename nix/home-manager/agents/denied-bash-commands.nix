@@ -16,8 +16,9 @@
 #
 #   entries (below)
 #   │
-#   ├── claudeCode.denyPermissions ─► settings.json permissions.deny
-#   │   (only entries with deny = true)  Format: Bash(<glob>)
+#   ├── claudeCode.denyPermissions ─► ~/.claude/settings.json permissions.deny
+#   │   (only entries with claudeSettingsJson = true)
+#   │   Format: Bash(<glob>), glob auto-derived from argv
 #   │
 #   ├── claudeCode.patternsFile ────► ~/.claude/bash-deny-patterns.sh
 #   │   (all entries, hookRegex auto-derived from argv)
@@ -35,15 +36,15 @@
 # justification (required)
 #   - Human-readable denial message (shared by Claude Code hook + Codex CLI)
 #
-# deny (optional, default: false)
-#   - Set to true for truly dangerous commands that need proactive blocking
-#   - Auto-derives claudeGlob from argv and adds to permissions.deny
-#   - claudeGlob derivation: 1 token → "token *", 2+ → joined with space + *
+# claudeSettingsJson (optional, default: false)
+#   - true → also add to ~/.claude/settings.json permissions.deny
+#   - Auto-derives glob from argv: 1 token → "token *", 2+ → joined + *
+#   - Use for truly dangerous commands (Claude won't even attempt them)
 #
 # ── Adding a new entry ─────────────────────────────────────────────────
 #
 #   1. Add { argv = [...]; justification = "..."; } below
-#      (add deny = true for truly dangerous commands)
+#      (add claudeSettingsJson = true for truly dangerous commands)
 #   2. Run: home-manager switch
 #   3. Both Claude Code and Codex CLI pick up the change automatically
 #
@@ -118,12 +119,12 @@ let
     {
       argv = [ "rm" ];
       justification = "rm is denied; use mv /tmp/ instead";
-      deny = true;
+      claudeSettingsJson = true;
     }
     {
       argv = [ "sudo" ];
       justification = "sudo is denied";
-      deny = true;
+      claudeSettingsJson = true;
     }
   ];
 
@@ -137,7 +138,7 @@ let
     else
       builtins.concatStringsSep ".*" cmd.argv;
 
-  # Auto-derive claudeGlob from argv (for entries with deny = true):
+  # Auto-derive claudeGlob from argv (for entries with claudeSettingsJson = true):
   #   1 token  → "token *" (space before * to require an argument)
   #   2+ tokens → "token1 token2*" (no space, matches with or without trailing args)
   mkClaudeGlob =
@@ -164,9 +165,9 @@ in
   inherit entries;
 
   claudeCode = {
-    # permissions.deny entries (only commands with deny = true)
+    # permissions.deny entries (only commands with claudeSettingsJson = true)
     denyPermissions = map (cmd: "Bash(${mkClaudeGlob cmd})") (
-      builtins.filter (cmd: cmd.deny or false) entries
+      builtins.filter (cmd: cmd.claudeSettingsJson or false) entries
     );
 
     # Generated patterns file for the PreToolUse hook (all entries)
