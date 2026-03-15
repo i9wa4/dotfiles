@@ -82,7 +82,7 @@ is optional for disambiguation when multiple plans exist in the same session.
 
 Files and directories described below are located at:
 
-- @~/ghq/github.com/i9wa4/dotfiles/agents/
+- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
 
 | Category  | Items                                                     |
 | --------- | --------------------------------------------------------- |

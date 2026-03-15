@@ -25,8 +25,8 @@ An advanced learning system that turns Claude Code sessions into reusable knowle
 
 Observation hooks are registered via `nix/home-manager/modules/claude-code.nix` and deployed by `home-manager switch`. The hook scripts live at:
 
-- `agents/scripts/claude-observe.sh` -- PreToolUse/PostToolUse observer
-- `agents/scripts/claude-detect-project.sh` -- project detection helper (sourced by observer)
+- `nix/home-manager/agents/scripts/claude-observe.sh` -- PreToolUse/PostToolUse observer
+- `nix/home-manager/agents/scripts/claude-detect-project.sh` -- project detection helper (sourced by observer)
 
 These are NOT inside this skill directory because they are shared infrastructure managed by Nix.
 

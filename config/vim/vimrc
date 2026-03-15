@@ -18,7 +18,7 @@ let g:netrw_liststyle = 0
 let g:vim_indent = #{line_continuation: 0}
 
 let g:mnh_header_level_shift = 7
-let g:my_aa_path = '~/ghq/github.com/i9wa4/dotfiles/agents/AGENTS.md'->expand()
+let g:my_aa_path = '~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/AGENTS.md'->expand()
 let g:my_i0_path = getenv('SUBDIR') .. '/index/00.md'->expand()
 let g:my_i1_path = getenv('SUBDIR') .. '/index/05.md'->expand()
 let g:my_i2_path = getenv('SUBDIR') .. '/index/07.md'->expand()

@@ -166,7 +166,7 @@ curl -s "$ATLASSIAN_SITE/rest/api/3/issue/<ISSUE-KEY>" \
 
 ```sh
 uvx --with requests --with beautifulsoup4 --with html2text \
-    python ~/ghq/github.com/i9wa4/dotfiles/agents/skills/atlassian/scripts/confluence-to-md.py <confluence_url>
+    python ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/atlassian/scripts/confluence-to-md.py <confluence_url>
 ```
 
 Output: `~/Downloads/{timestamp}-confluence-{title}.md`

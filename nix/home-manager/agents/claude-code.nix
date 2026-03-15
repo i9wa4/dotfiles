@@ -18,7 +18,7 @@ let
   # Merge repo scripts + generated patterns file into a single directory
   scriptsDir = pkgs.runCommand "claude-scripts" { } ''
     mkdir -p $out
-    for f in ${../../../agents/scripts}/*; do
+    for f in ${./scripts}/*; do
       ln -s "$f" "$out/$(basename "$f")"
     done
     ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}
@@ -149,10 +149,10 @@ in
   home = {
     file = {
       # CLAUDE.md (Nix store, rebuild required to update)
-      ".claude/CLAUDE.md".source = ../../../agents/CLAUDE.md;
+      ".claude/CLAUDE.md".source = ./CLAUDE.md;
       # Nix store directory symlinks (rebuild required to update)
-      ".claude/rules".source = ../../../agents/rules;
-      ".claude/agents".source = ../../../agents/subagents;
+      ".claude/rules".source = ./rules;
+      ".claude/agents".source = ./subagents;
       ".claude/scripts".source = scriptsDir;
     };
 

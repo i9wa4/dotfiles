@@ -73,7 +73,7 @@ in
 {
   home.file = {
     # AGENTS.md (Nix store, rebuild required to update)
-    ".codex/AGENTS.md".source = ../../../agents/AGENTS.md;
+    ".codex/AGENTS.md".source = ./AGENTS.md;
     # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
     # NOTE: Codex CLI may also read agents/rules/*.md via AGENTS.md references
     ".codex/rules".source = codexRulesDir;

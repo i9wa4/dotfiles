@@ -21,7 +21,7 @@ in
       # Local skills from this dotfiles repository
       local = {
         path = inputs.self;
-        subdir = "agents/skills";
+        subdir = "nix/home-manager/agents/skills";
       };
       # tmux-a2a-postman skills
       tmux-a2a-postman = {
