@@ -67,7 +67,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh $CLAUDE_CONFIG_DIR/scripts/${bashDenyPatternsName}";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh";
             }
           ];
         }
