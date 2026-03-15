@@ -4,75 +4,35 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# pretooluse-bash-deny.sh - Bash command validator
+# claude-pretooluse-bash-deny.sh - Bash command deny hook
 #
-# Validates Bash commands against deny patterns to prevent bypassing
-# permission rules via &&, ||, ;, | operators or variable expansion.
+# Deny patterns and justification messages are loaded from a Nix-generated
+# file (SSOT: denied-bash-commands.nix).
 #
-# Patterns and justification messages are generated from
-# denied-bash-commands.nix via home-manager (SSOT).
+# Usage: claude-pretooluse-bash-deny.sh <patterns-file>
 #
 # Hook: PreToolUse
 # Matcher: Bash
-#
-# Input (stdin JSON):
-#   {
-#     "hook_event_name": "PreToolUse",
-#     "tool_name": "Bash",
-#     "tool_input": { "command": "..." }
-#   }
-#
-# Output:
-#   JSON with hookSpecificOutput containing permissionDecision and reason
 
-# Read JSON from stdin
-INPUT=$(cat)
+PATTERNS_FILE="${1:-}"
+[[ -z $PATTERNS_FILE || ! -f $PATTERNS_FILE ]] && exit 0
 
-# Extract tool_name
-TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
+# shellcheck source=/dev/null
+source "$PATTERNS_FILE"
 
-# Only check Bash commands
-[[ $TOOL != "Bash" ]] && exit 0
-
-# Extract command
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null)
-
-# Skip if no command
+COMMAND=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null)
 [[ -z $COMMAND ]] && exit 0
 
-# Load deny patterns from Nix-generated file (SSOT)
-PATTERNS_FILE="$HOME/.claude/bash-deny-patterns.sh"
-if [[ -f $PATTERNS_FILE ]]; then
-  # shellcheck source=/dev/null
-  source "$PATTERNS_FILE"
-else
-  # No patterns file — allow everything (home-manager switch not yet run)
-  exit 0
-fi
-
-# Split command by shell operators and check each fragment
-# NOTE: This is a basic split — won't catch all edge cases with quotes/escapes
 IFS=$';&|' read -ra FRAGMENTS <<<"$COMMAND"
 
 for fragment in "${FRAGMENTS[@]}"; do
-  # Trim leading/trailing whitespace
-  fragment=$(echo "$fragment" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  fragment="${fragment#"${fragment%%[![:space:]]*}"}"
+  fragment="${fragment%"${fragment##*[![:space:]]}"}"
 
-  # Check against each deny pattern
   for i in "${!DENY_PATTERNS[@]}"; do
-    pattern="${DENY_PATTERNS[$i]}"
-    justification="${DENY_JUSTIFICATIONS[$i]}"
-    if echo "$fragment" | grep -qE "$pattern"; then
-      REASON="Command denied: $justification"$'\n'"Fragment: $fragment"$'\n'"Full command: $COMMAND"
-      jq -n \
-        --arg reason "$REASON" \
-        '{
-          hookSpecificOutput: {
-            hookEventName: "PreToolUse",
-            permissionDecision: "deny",
-            permissionDecisionReason: $reason
-          }
-        }'
+    if echo "$fragment" | grep -qE "${DENY_PATTERNS[$i]}"; then
+      jq -n --arg reason "Command denied: ${DENY_JUSTIFICATIONS[$i]}"$'\n'"Fragment: $fragment" \
+        '{ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason } }'
       exit 0
     fi
   done

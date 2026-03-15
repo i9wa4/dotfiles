@@ -12,6 +12,9 @@ let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
 
+  # Path where the generated deny patterns file is placed (relative to $HOME)
+  bashDenyPatternsRelPath = ".claude/bash-deny-patterns.sh";
+
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
   mcpServerConfigs = builtins.mapAttrs (
     _: srv: { type = "stdio"; } // (lib.filterAttrs (_: v: v != null && v != [ ] && v != { }) srv)
@@ -55,7 +58,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "~/.claude/scripts/claude-pretooluse-bash-deny.sh";
+              command = "~/.claude/scripts/claude-pretooluse-bash-deny.sh ~/${bashDenyPatternsRelPath}";
             }
           ];
         }
@@ -143,7 +146,7 @@ in
       ".claude/agents".source = ../../../agents/subagents;
       ".claude/scripts".source = ../../../agents/scripts;
       # Generated deny patterns (Nix store, source'd by the hook at runtime)
-      ".claude/bash-deny-patterns.sh".source = deniedBash.claudeCode.patternsFile;
+      "${bashDenyPatternsRelPath}".source = deniedBash.claudeCode.patternsFile;
     };
 
     activation = {
