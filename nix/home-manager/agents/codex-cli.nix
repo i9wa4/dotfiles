@@ -14,29 +14,14 @@ let
   ghqRoot = "${homeDir}/ghq";
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
-
-  deniedBash = import ./denied-bash-commands.nix;
-
-  mkPrefixRule =
-    cmd:
-    let
-      patternItems = builtins.concatStringsSep ", " (map (s: "\"${s}\"") cmd.argv);
-    in
-    ''
-      prefix_rule(
-          pattern = [${patternItems}],
-          decision = "forbidden",
-          justification = "${cmd.justification}",
-      )
-    '';
+  deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
     # Generated from nix/home-manager/agents/denied-bash-commands.nix
-    # Equivalent of Claude Code permissions.deny (Bash entries only)
     # File access restrictions (Read/Write patterns) have no Codex equivalent.
 
-    ${builtins.concatStringsSep "\n" (map mkPrefixRule deniedBash)}
+    ${deniedBash.codexCli.rulesContent}
   '';
 
   generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;

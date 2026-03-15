@@ -1,57 +1,48 @@
 # Single source of truth (SSOT) for denied Bash commands.
-# Both Claude Code and Codex CLI consume this file via their respective
-# Nix modules, each reading the fields relevant to their enforcement engine.
+# Both Claude Code and Codex CLI consume this module's pre-computed outputs.
+#
+# ── Usage ──────────────────────────────────────────────────────────────
+#
+#   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+#
+#   # Claude Code
+#   permissions.deny = deniedBash.claudeCode.denyPermissions ++ [ ... ];
+#   home.file."...".source = deniedBash.claudeCode.patternsFile;
+#
+#   # Codex CLI
+#   rulesContent = deniedBash.codexCli.rulesContent;
 #
 # ── Data Flow ──────────────────────────────────────────────────────────
 #
-#   denied-bash-commands.nix (this file)
+#   entries (below)
 #   │
-#   ├── claudeGlob  ─► claude-code.nix ─► settings.json permissions.deny
-#   │   (optional)     Format: Bash(<glob>)
-#   │                   Engine: glob match against full command string
-#   │                   Role: proactive (tells Claude not to attempt)
+#   ├── claudeCode.denyPermissions ─► settings.json permissions.deny
+#   │   (only entries with claudeGlob)  Format: Bash(<glob>)
 #   │
-#   ├── argv ───────► claude-code.nix ─► ~/.claude/bash-deny-patterns.sh
-#   │   (auto)         Auto-derived hookRegex: 1 token → \btoken\b, 2+ → joined
-#   │                   Source'd by claude-pretooluse-bash-deny.sh at runtime.
-#   │                   Engine: grep -E per shell fragment (split on ;&|)
-#   │                   Role: reactive (blocks with justification message)
+#   ├── claudeCode.patternsFile ────► ~/.claude/bash-deny-patterns.sh
+#   │   (all entries, hookRegex auto-derived from argv)
+#   │   Source'd by claude-pretooluse-bash-deny.sh at runtime.
 #   │
-#   ├── argv ───────► codex-cli.nix ──► ~/.codex/rules/default.rules
-#   │                   Format: prefix_rule(pattern=[...], decision="forbidden")
-#   │                   Engine: argv prefix match (parsed tokens, not raw string)
-#   │
-#   └── justification ─► claude-code.nix ─► bash-deny-patterns.sh (denial message)
-#                       ─► codex-cli.nix  ─► default.rules (denial message)
+#   └── codexCli.rulesContent ──────► ~/.codex/rules/default.rules
+#       (all entries)                  Format: prefix_rule(...)
 #
-# ── Field Reference ────────────────────────────────────────────────────
+# ── Entry Fields ───────────────────────────────────────────────────────
 #
-# claudeGlob (Claude Code · permissions.deny) — optional
-#   - Omit for hook-only enforcement (justification shown on deny)
-#   - Set for truly dangerous commands (proactive block + hook)
-#   - Glob pattern matched against the full command string
-#   - * is a single-level wildcard; space before * matters:
-#       "rm *"       → blocks `rm file` (requires arg after rm)
-#   - Claude Code is aware of shell operators (&&, |, ;), so deny rules
-#     are NOT bypassed by compound commands like `ls && rm foo`
-#   - Evaluation order: deny → ask → allow (first match wins)
+# argv (required)
+#   - Token array used by Codex CLI prefix_rule AND auto-derived hookRegex
+#   - hookRegex derivation: 1 token → \btoken\b, 2+ → joined with spaces
 #
-# argv (Codex CLI · prefix_rule + Claude Code hook)
-#   - Array of argv tokens for prefix matching
-#   - Codex CLI parses the command into argv BEFORE matching,
-#     so compound commands are handled natively
-#   - Also used to auto-derive hookRegex for the Claude Code hook:
-#       1 token  → \btoken\b (word boundary to avoid partial matches)
-#       2+ tokens → tokens joined with spaces (literal match)
-#   - Only decision="forbidden" is confirmed; "allow"/"ask" unverified
+# justification (required)
+#   - Human-readable denial message (shared by Claude Code hook + Codex CLI)
 #
-# justification (Claude Code hook + Codex CLI)
-#   - Human-readable reason shown when a command is denied
-#   - Used by both tools: hook's denial message and Codex CLI's rules
+# claudeGlob (optional)
+#   - Omit for hook-only enforcement (most commands)
+#   - Set for truly dangerous commands that need proactive blocking
+#   - Adds to permissions.deny so Claude won't even attempt the command
 #
 # ── Adding a new entry ─────────────────────────────────────────────────
 #
-#   1. Add an entry below with argv and justification
+#   1. Add { argv = [...]; justification = "..."; } below
 #      (add claudeGlob only for truly dangerous commands)
 #   2. Run: home-manager switch
 #   3. Both Claude Code and Codex CLI pick up the change automatically
@@ -62,74 +53,127 @@
 # File access restrictions (Read/Write deny patterns) are defined
 # directly in claude-code.nix. Codex CLI has no file access deny
 # equivalent (noted in codex-cli.nix).
-[
-  {
-    argv = [
-      "git"
-      "-C"
-    ];
-    justification = "cross-directory git operations are denied";
-  }
-  {
-    argv = [
-      "git"
-      "push"
-    ];
-    justification = "pushing is denied";
-  }
-  {
-    argv = [
-      "git"
-      "rebase"
-    ];
-    justification = "rebase is denied";
-  }
-  {
-    argv = [
-      "git"
-      "reset"
-    ];
-    justification = "reset is denied";
-  }
-  {
-    argv = [
-      "git"
-      "commit"
-      "--amend"
-    ];
-    justification = "amend is denied (causes force push requirement)";
-  }
-  {
-    argv = [
-      "git"
-      "merge"
-    ];
-    justification = "merge is denied";
-  }
-  {
-    argv = [
-      "git"
-      "branch"
-      "-d"
-    ];
-    justification = "branch deletion is denied";
-  }
-  {
-    argv = [
-      "git"
-      "branch"
-      "-D"
-    ];
-    justification = "branch force-deletion is denied";
-  }
-  {
-    claudeGlob = "rm *";
-    argv = [ "rm" ];
-    justification = "rm is denied; use mv /tmp/ instead";
-  }
-  {
-    claudeGlob = "sudo *";
-    argv = [ "sudo" ];
-    justification = "sudo is denied";
-  }
-]
+{ pkgs }:
+let
+  entries = [
+    {
+      argv = [
+        "git"
+        "-C"
+      ];
+      justification = "cross-directory git operations are denied";
+    }
+    {
+      argv = [
+        "git"
+        "push"
+      ];
+      justification = "pushing is denied";
+    }
+    {
+      argv = [
+        "git"
+        "rebase"
+      ];
+      justification = "rebase is denied";
+    }
+    {
+      argv = [
+        "git"
+        "reset"
+      ];
+      justification = "reset is denied";
+    }
+    {
+      argv = [
+        "git"
+        "commit"
+        "--amend"
+      ];
+      justification = "amend is denied (causes force push requirement)";
+    }
+    {
+      argv = [
+        "git"
+        "merge"
+      ];
+      justification = "merge is denied";
+    }
+    {
+      argv = [
+        "git"
+        "branch"
+        "-d"
+      ];
+      justification = "branch deletion is denied";
+    }
+    {
+      argv = [
+        "git"
+        "branch"
+        "-D"
+      ];
+      justification = "branch force-deletion is denied";
+    }
+    {
+      claudeGlob = "rm *";
+      argv = [ "rm" ];
+      justification = "rm is denied; use mv /tmp/ instead";
+    }
+    {
+      claudeGlob = "sudo *";
+      argv = [ "sudo" ];
+      justification = "sudo is denied";
+    }
+  ];
+
+  # Auto-derive hookRegex from argv:
+  #   1 token  → \btoken\b (word boundary to avoid partial matches like "farm" for "rm")
+  #   2+ tokens → tokens joined with spaces (literal match per shell fragment)
+  mkHookRegex =
+    cmd:
+    if builtins.length cmd.argv == 1 then
+      "\\b${builtins.head cmd.argv}\\b"
+    else
+      builtins.concatStringsSep " " cmd.argv;
+
+  mkPrefixRule =
+    cmd:
+    let
+      patternItems = builtins.concatStringsSep ", " (map (s: "\"${s}\"") cmd.argv);
+    in
+    ''
+      prefix_rule(
+          pattern = [${patternItems}],
+          decision = "forbidden",
+          justification = "${cmd.justification}",
+      )
+    '';
+in
+{
+  inherit entries;
+
+  claudeCode = {
+    # permissions.deny entries (only commands with claudeGlob)
+    denyPermissions = map (cmd: "Bash(${cmd.claudeGlob})") (
+      builtins.filter (cmd: cmd ? claudeGlob) entries
+    );
+
+    # Generated patterns file for the PreToolUse hook (all entries)
+    patternsFile = pkgs.writeText "bash-deny-patterns.sh" ''
+      # Auto-generated by home-manager from denied-bash-commands.nix
+      # Do not edit manually — run: home-manager switch
+      DENY_PATTERNS=(
+      ${builtins.concatStringsSep "\n" (map (cmd: "  '${mkHookRegex cmd}'") entries)}
+      )
+      DENY_JUSTIFICATIONS=(
+      ${builtins.concatStringsSep "\n" (map (cmd: "  '${cmd.justification}'") entries)}
+      )
+    '';
+  };
+
+  codexCli = {
+    # prefix_rule content for default.rules (all entries)
+    rulesContent = builtins.concatStringsSep "\n" (map mkPrefixRule entries);
+  };
+}
