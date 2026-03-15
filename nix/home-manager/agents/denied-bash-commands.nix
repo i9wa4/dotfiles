@@ -42,8 +42,8 @@
 #   - Use for truly dangerous commands (Claude won't even attempt them)
 #
 # anchored (optional, default: true)
-#   - false → removes ^ prefix from hookRegex so wrapper prefixes
-#     (bash -c, env, exec) cannot bypass the pattern
+#   - false → removes ^ anchor so the pattern matches anywhere in the fragment
+#     (use for commands that must be caught even when wrapped in bash -c, env, exec)
 #   - Use for high-consequence operations (push, reset, rebase, etc.)
 #
 # hookRegex (optional)
@@ -135,11 +135,13 @@ let
     }
     {
       argv = [ "rm" ];
+      anchored = false;
       justification = "rm is denied; use mv /tmp/ instead";
       claudeSettingsJson = true;
     }
     {
       argv = [ "sudo" ];
+      anchored = false;
       justification = "sudo is denied";
       claudeSettingsJson = true;
     }
