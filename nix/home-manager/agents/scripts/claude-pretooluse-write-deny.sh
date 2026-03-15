@@ -35,9 +35,6 @@ else
   ROLE_NAME=""
 fi
 
-# DEBUG: Output environment info to file
-echo "DEBUG deny.sh: $(date +%Y%m%d-%H%M%S) ROLE_NAME=${ROLE_NAME:-UNSET} TOOL=${TOOL:-UNSET}" >>/tmp/deny-debug.log
-
 # Extract file_path from tool_input
 get_file_path() {
   echo "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null

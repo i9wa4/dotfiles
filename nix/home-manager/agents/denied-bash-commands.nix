@@ -20,7 +20,7 @@
 #   │   (only entries with claudeSettingsJson = true)
 #   │   Format: Bash(<glob>), glob auto-derived from argv
 #   │
-#   ├── claudeCode.patternsFile ────► ~/.claude/bash-deny-patterns.sh
+#   ├── claudeCode.patternsFile ────► ~/.claude/scripts/bash-deny-patterns.sh
 #   │   (all entries, hookRegex auto-derived from argv)
 #   │   Source'd by claude-pretooluse-bash-deny.sh at runtime.
 #   │
@@ -62,6 +62,7 @@ let
         "git"
         "-C"
       ];
+      hookRegex = "^git\\s+-C\\s";
       justification = "cross-directory git operations are denied";
     }
     {
@@ -69,6 +70,7 @@ let
         "git"
         "push"
       ];
+      anchored = false;
       justification = "pushing is denied";
     }
     {
@@ -76,6 +78,7 @@ let
         "git"
         "rebase"
       ];
+      anchored = false;
       justification = "rebase is denied";
     }
     {
@@ -83,6 +86,7 @@ let
         "git"
         "reset"
       ];
+      anchored = false;
       justification = "reset is denied";
     }
     {
@@ -91,6 +95,7 @@ let
         "commit"
         "--amend"
       ];
+      anchored = false;
       justification = "amend is denied (causes force push requirement)";
     }
     {
@@ -131,12 +136,20 @@ let
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
   #   1 token  → ^token\b (must be the command, not an argument)
   #   2+ tokens → ^token1.*token2 (first token anchored, rest flexible)
+  #   anchored = false → remove ^ so wrapper prefixes (bash -c, env, exec) are caught
+  #   hookRegex override → use verbatim (ignores anchored field)
   mkHookRegex =
     cmd:
-    if builtins.length cmd.argv == 1 then
-      "^${builtins.head cmd.argv}\\b"
-    else
-      "^" + builtins.concatStringsSep ".*" cmd.argv;
+    cmd.hookRegex or (
+      let
+        anchored = cmd.anchored or true;
+        prefix = if anchored then "^" else "";
+      in
+      if builtins.length cmd.argv == 1 then
+        "${prefix}${builtins.head cmd.argv}\\b"
+      else
+        prefix + builtins.concatStringsSep ".*" cmd.argv
+    );
 
   # Auto-derive claudeGlob from argv (for entries with claudeSettingsJson = true):
   #   1 token  → "token *" (space before * to require an argument)
@@ -178,7 +191,9 @@ in
       ${builtins.concatStringsSep "\n" (map (cmd: "  '${mkHookRegex cmd}'") entries)}
       )
       DENY_JUSTIFICATIONS=(
-      ${builtins.concatStringsSep "\n" (map (cmd: "  '${cmd.justification}'") entries)}
+      ${builtins.concatStringsSep "\n" (
+        map (cmd: "  '${builtins.replaceStrings [ "'" ] [ "'\\''" ] cmd.justification}'") entries
+      )}
       )
     '';
   };

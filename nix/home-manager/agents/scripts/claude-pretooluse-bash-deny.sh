@@ -20,10 +20,16 @@ PATTERNS_FILE="$SCRIPT_DIR/bash-deny-patterns.sh"
 # shellcheck source=/dev/null
 source "$PATTERNS_FILE"
 
-COMMAND=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null)
-[[ -z $COMMAND ]] && exit 0
+COMMAND=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null) || true
+if [[ -z $COMMAND ]]; then
+  echo "claude-pretooluse-bash-deny.sh: failed to parse input or empty command, skipping" >&2
+  exit 0
+fi
 
-IFS=$';&|' read -ra FRAGMENTS <<<"$COMMAND"
+FRAGMENTS=()
+while IFS=$';&|' read -ra line_fragments; do
+  FRAGMENTS+=("${line_fragments[@]}")
+done <<<"$COMMAND"
 
 for fragment in "${FRAGMENTS[@]}"; do
   fragment="${fragment#"${fragment%%[![:space:]]*}"}"

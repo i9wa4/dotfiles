@@ -93,3 +93,42 @@ presets:
               title: boss
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
+
+  medium-b:
+    name: workers
+    description: workers
+    windowMode: new-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1, 1]
+          panes:
+            - name: orchestrator
+              title: orchestrator
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              delay: 500
+            - name: worker
+              title: worker
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              delay: 500
+            - name: worker-alt
+              title: worker-alt
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.3-codex-spark --config model_reasoning_effort=medium
+              delay: 500
+        - type: vertical
+          ratio: [1, 1, 1]
+          panes:
+            - name: critic
+              title: critic
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              delay: 500
+            - name: guardian
+              title: guardian
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=high
+              delay: 500
+            - name: boss
+              title: boss
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              delay: 500
