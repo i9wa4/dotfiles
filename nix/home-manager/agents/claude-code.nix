@@ -13,7 +13,7 @@ let
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
-  bashDenyPatternsName = "bash-deny-patterns.sh";
+  bashDenyPatternsName = "deny-bash-patterns.sh";
 
   # Merge repo scripts + generated patterns file into a single directory
   scriptsDir = pkgs.runCommand "claude-scripts" { } ''
@@ -67,7 +67,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-bash-deny.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-deny-bash.sh";
             }
           ];
         }
@@ -76,7 +76,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-write-deny.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-deny-write.sh";
             }
           ];
         }

@@ -16,6 +16,10 @@
 #   4. "global" (no project context detected)
 #
 # Source: https://github.com/affaan-m/everything-claude-code/tree/main/skills/continuous-learning-v2
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 _CLV2_HOMUNCULUS_DIR="${CLV2_HOMUNCULUS_DIR:-${XDG_STATE_HOME:-${HOME}/.local/state}/claude/homunculus}"
 _CLV2_PROJECTS_DIR="${_CLV2_HOMUNCULUS_DIR}/projects"

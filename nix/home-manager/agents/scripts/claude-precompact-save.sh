@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-set -o posix
-
 # precompact-save.sh - Context snapshot saver
 #
 # Saves context snapshot before auto-compact triggers.
@@ -17,6 +12,10 @@ set -o posix
 #
 # Output:
 #   File saved via mkoutput
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 # Create output file
 FILE=$(mkoutput --dir tmp --label compact-save)

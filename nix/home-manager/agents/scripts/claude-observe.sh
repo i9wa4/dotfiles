@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-
 # claude-observe.sh - Continuous Learning v2 observation hook
 #
 # Captures tool use events for pattern analysis.
@@ -15,6 +11,10 @@ set -o pipefail
 # Override with: CLV2_HOMUNCULUS_DIR env var
 #
 # Source: https://github.com/affaan-m/everything-claude-code/tree/main/skills/continuous-learning-v2
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 # Hook phase from CLI argument: "pre" (PreToolUse) or "post" (PostToolUse)
 HOOK_PHASE="${1:-post}"

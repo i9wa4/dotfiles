@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-set -o posix
-
 # sessionstart-reload.sh - CLAUDE.md context reloader
 #
 # Force Claude to reload CLAUDE.md after compaction/resume.
@@ -17,6 +12,10 @@ set -o posix
 #
 # Output:
 #   JSON with hookSpecificOutput containing additionalContext
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 CLAUDE_MD="${CLAUDE_CONFIG_DIR}/CLAUDE.md"
 

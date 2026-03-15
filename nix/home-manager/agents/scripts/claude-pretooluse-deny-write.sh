@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
-set -o errexit
-set -o nounset
-set -o pipefail
-set -o posix
-
-# pretooluse-write-deny.sh - Role-based write deny using tmux pane title (role name)
+# claude-pretooluse-deny-write.sh - Role-based write deny using tmux pane title (role name)
 #
 # Blocks Edit/Write/NotebookEdit for non-worker agents.
 # Pattern-based deny is handled by settings.json deny list.
@@ -21,6 +16,10 @@ set -o posix
 #
 # Output:
 #   JSON with hookSpecificOutput containing permissionDecision and reason
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 # Read JSON from stdin
 INPUT=$(cat)
