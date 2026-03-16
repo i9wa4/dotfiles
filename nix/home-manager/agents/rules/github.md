@@ -1,75 +1,72 @@
 # GitHub Rules
 
-Mandatory rules for GitHub operations.
+## 1. gh CLI
 
-## 1. GitHub CLI Rules
+- YOU MUST: Use `gh` for GitHub info retrieval
+- YOU MUST: Always fetch all comments (body + comments) for Issues/PRs
+- YOU MUST: Cite Issue/PR numbers with `#` prefix (e.g., `#240`)
 
-- YOU MUST: Use `gh` command for GitHub information retrieval
-- YOU MUST: Always fetch all comments when getting Issues or PRs
-- YOU MUST: Get Issue/PR body and all comments using `gh` command
-- YOU MUST: When citing Issue/PR numbers, use `#` prefix (e.g., `#240`)
+## 2. Issue Creation
 
-## 2. Issue Creation Rules
+- YOU MUST: Check `.github/ISSUE_TEMPLATE/` and follow if exists
 
-- YOU MUST: Check `.github/ISSUE_TEMPLATE/` before creating an Issue
-- YOU MUST: Follow the template format if it exists
+## 3. External Repo References (Mention Prevention)
 
-## 3. External Repository Reference Rules (Mention Prevention)
+Applies to: Issues, PRs, commit messages, all GitHub-posted text.
 
-Applies to: Issues, PRs, commit messages, and all GitHub-posted text.
+Check org membership:
+`gh api user/memberships/orgs --jq '.[].organization.login'`
 
-Before posting issue/PR/discussion URLs, check org membership:
+- Same org: bare URLs and `org/repo#123` OK
+- Cross-org/external: escape with backticks or plain text
+- Non-GitHub URLs and blob/tree URLs: always safe
 
-```sh
-gh api user/memberships/orgs --jq '.[].organization.login'
-```
+## 4. Commit Messages
 
-- Same org (user is member): bare URLs and `org/repo#123` are OK
-- Cross-org or external: must escape with backticks or describe in plain text
-- Non-GitHub URLs and GitHub blob/tree URLs: always safe, no escaping needed
+- YOU MUST: Match language of recent commits (English or Japanese)
+- YOU MUST: Use Conventional Commits:
+  `<type>(<scope>): <description> (#<Issue>)`
+- Types: feat, fix, docs, style, refactor, test, chore
+- Body sections as needed: Summary, Background, Changes, Technical Details,
+  Verification, Related URLs
+- IMPORTANT: Granularity for work resumption; include "why"
+- NEVER: Co-Authored-By, AI tool notices
+- NEVER: `.i9wa4/` files, `/tmp/` files, local file paths
 
-## 4. Commit Message Rules
+## 5. Sub-issues
 
-- YOU MUST: Check recent commits and match language (English or Japanese)
-- IMPORTANT: Commits should help resume work easily (granularity for resumption)
-- IMPORTANT: Include changes, problem resolution, technical details
+- YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
 
-### 4.1. Prohibited Content (Commits, PRs, Issues)
+## 6. PR Inline Comments
 
-- NEVER: Include Co-Authored-By or AI tool notices
-- NEVER: Mention `.i9wa4/` files, `/tmp/` files, or local file paths
+- `gh pr comment` = PR-wide only; inline requires `gh api`
+- `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
+- Post: `gh api repos/OWNER/REPO/pulls/NUMBER/comments` with `body`,
+  `commit_id`, `path`, `line`(absolute), `side`(RIGHT/LEFT)
+- Reply: `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
 
-## 5. TodoWrite Integration (Claude Code)
-
-Mark permission-required operations in TodoWrite tasks:
+## 7. TodoWrite (Claude Code)
 
 ```text
 - [ ] Commit changes (requires permission)
 - [ ] Push to remote (requires permission)
 ```
 
-## 6. PR Review Comment Rules
+## 8. PR Review Comments
 
-### 6.1. Tag Format
+Tags (required at start of every comment):
 
-Every review comment MUST start with a severity tag:
+| Tag      | Meaning                       | Action   |
+| -------- | ----------------------------- | -------- |
+| [must]   | Must fix before merge         | Fix      |
+| [want]   | Strongly prefer, not blocking | Respond  |
+| [imo]    | Take it or leave it           | Optional |
+| [nits]   | Style/readability nitpick     | Optional |
+| [ask]    | Needs clarification           | Respond  |
+| [fyi]    | Informational                 | None     |
+| [praise] | Positive feedback             | None     |
 
-| Tag      | Meaning                         | Action   |
-| -------- | ------------------------------- | -------- |
-| [must]   | Must fix before merge           | Fix      |
-| [want]   | Strongly prefer, not blocking   | Respond  |
-| [imo]    | Suggestion, take it or leave it | Optional |
-| [nits]   | Minor style/readability nitpick | Optional |
-| [ask]    | Question, needs clarification   | Respond  |
-| [fyi]    | Informational, no action needed | None     |
-| [praise] | Good code, positive feedback    | None     |
-
-### 6.2. Comment Style
-
-- Write in Japanese
-- Be concise: describe the problem, not the fix
-- Do not include Before/After code blocks
-- One concern per comment
-- Tone reference: match writing style from
-  @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and
-  @~/ghq/github.com/i9wa4/i9wa4.github.io/zenn/
+- Style: Japanese, concise (problem not fix), no Before/After blocks, one
+  concern
+per comment.
+- Tone: match @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and zenn/

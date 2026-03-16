@@ -238,7 +238,7 @@ When adding/removing files in rules/, skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.74 (2026-03-12)
+Last reviewed Claude Code version: v2.1.76 (2026-03-17)
 
 ### 11.1. Applied Optimizations
 
@@ -275,6 +275,10 @@ Last reviewed Claude Code version: v2.1.74 (2026-03-12)
 - [ ] ConfigChange hook - security auditing of settings changes (v2.1.49)
 - [ ] `isolation: worktree` in agent defs - isolated git worktree per agent
       (v2.1.49, v2.1.50)
+- [ ] PostCompact hook - archive/analyze compaction summaries; has
+      `compact_summary` field (v2.1.76)
+- [ ] Elicitation/ElicitationResult hooks - intercept MCP server structured
+      input requests (v2.1.76)
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Changelog Tracking](references/changelog-tracking.md).

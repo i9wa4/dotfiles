@@ -1,5 +1,5 @@
 ---
-name: mermaid
+name: mermaid-local
 description: |
   Mermaid diagram creation and debugging for Quarto revealjs slides.
   Use when creating or editing mermaid diagrams (sequenceDiagram, flowchart, pie,
