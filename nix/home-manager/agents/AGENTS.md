@@ -110,32 +110,25 @@ Claude Code auto-loads these. Codex CLI should reference as needed.
 ### 9.2. `skills/`
 
 NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
-Example: `skills/orchestrator/SKILL.md`, not `orchestrator.md`
+Example: `skills/git/SKILL.md`, not `git.md`
 
 #### 9.2.1. Managed Skills
 
-| Skill                               | Description                                  |
-| ----------------------------------- | -------------------------------------------- |
-| atlassian                           | Jira (acli) and Confluence (REST)            |
-| bigquery                            | BigQuery development guide                   |
-| claude-config-optimizer             | Claude Code config and changelog             |
-| claude-workspace-trust-fix          | Fix for PreToolUse hooks silently skipped    |
-| codex-config-optimizer              | Codex CLI config and changelog               |
-| daily-report                        | Daily work report generation                 |
-| databricks-local                    | Queries API, VARIANT/JSON, Dashboard,        |
-|                                     | dbt integration, Jupyter kernel              |
-| dbt-local                           | Issue target setup, SQL dialect              |
-| drawio-local                        | draw.io diagram creation/editing             |
-| git                                 | Git operations guide                         |
-| github                              | GitHub and PR operations guide               |
-| mermaid                             | Mermaid diagram creation for revealjs slides |
-| nix                                 | Nix commands and package management          |
-| orchestrator                        | Main agent orchestration                     |
-| plan-design                         | High-rigor plan authoring with review gates  |
-| restricted-bigquery-dbt-environment | Restricted BigQuery dbt environment          |
-| slack                               | Slack thread fetch and search                |
-| subagent-review                     | 10-parallel code/design review               |
-| tmux                                | tmux pane operations for debugging           |
+| Skill                  | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| bigquery               | BigQuery development guide                   |
+| claude-config-optimizer | Claude Code config and changelog            |
+| claude-workspace-trust-fix | Fix for PreToolUse hooks silently skipped |
+| codex-config-optimizer | Codex CLI config and changelog               |
+| databricks-local       | Queries API, VARIANT/JSON, Dashboard,        |
+|                        | dbt integration, Jupyter kernel              |
+| dbt-local              | Issue target setup, SQL dialect              |
+| drawio-local           | draw.io diagram creation/editing             |
+| mermaid                | Mermaid diagram creation for revealjs slides |
+| nix                    | Nix commands and package management          |
+| plan-design            | High-rigor plan authoring with review gates  |
+| subagent-review        | 10-parallel code/design review               |
+| tmux                   | tmux pane operations for debugging           |
 
 #### 9.2.2. External Skills (Nix Store)
 

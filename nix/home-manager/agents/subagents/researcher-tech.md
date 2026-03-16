@@ -44,17 +44,21 @@ evidence.
 ## Research: [Topic]
 
 ### Key Findings
+
 - Finding (confidence: High/Medium/Low): Description
   - Source: [URL or file path]
 
 ### Comparison (if applicable)
+
 | Option | Pros       | Cons       |
 | ------ | ---------- | ---------- |
 | A      | ...        | ...        |
 
 ### Code Examples
+
 Relevant verified snippets
 
 ### Next Actions
+
 1. Recommended action
 ```
