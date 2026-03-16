@@ -93,7 +93,7 @@ for issue_number in "$@"; do
     if command -v claude &>/dev/null; then
       prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
 - Maximum 5 words
-- Lowercase and hyphens only
+- Lowercase alphabet, number and hyphens only
 - Remove special characters
 - Start with a verb if possible
 

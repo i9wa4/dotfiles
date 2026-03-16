@@ -6,5 +6,11 @@
   "table": {
     "prefix": "table",
     "body": ["| $0 | |", "| --- | --- |", "| | |"]
+  },
+  "ai-create-review-comment": {
+    "prefix": "ai-create-review-comment",
+    "body": [
+      "私はこの Pull Request のレビュアーになりました。まず /subagent-review で指摘を抽出してください。その後、指摘内容のうち IMPORTANT なものに対応する日本語によるレビュー指摘コメント下書き Markdown を作成してください。コメント内容の妥当性についてはレビュー指摘コメント下書き Markdown の内容を /subagent-review でレビューして全員が了承するまでコメント内容を調整すること。"
+    ]
   }
 }
