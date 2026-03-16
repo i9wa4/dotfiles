@@ -26,7 +26,7 @@ If a node does not reply after 2 messages:
 1. Check draft/ for stuck messages — tmux-a2a-postman send <filename> if found
 2. Re-send with a SHORT message (3 lines max):
    - One line: what to review (file path + section)
-   - One line: "Reply APPROVED or NOT APPROVED with reasons"
+   - One line: "Do you APPROVE or NOT APPROVE? Reply with verdict and reasons."
    - One line: exact reply command
 3. If still no response after 1 more message:
    notify messenger "BLOCKED: waiting for {node}"
@@ -47,7 +47,7 @@ BLOCKED: <operation> denied — <one-line reason>
 ## Guardian Watchdog Protocol
 
 If guardian does not reply within 3 consecutive message cycles:
-1. Re-send the review request with "[WATCHDOG] Please respond with APPROVED or NOT APPROVED"
+1. Re-send the review request with "[WATCHDOG] Do you APPROVE or NOT APPROVE? Reply immediately."
 2. If still no reply after 1 more attempt: notify messenger "BLOCKED: guardian unresponsive"
 3. Do NOT bypass guardian review — escalate, never skip
 
