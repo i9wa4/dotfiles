@@ -1,4 +1,4 @@
-" ~/.config/nvim/nvim/init.vim
+" ~/ghq/github.com/i9wa4/dotfiles/config/nvim/nvim/init.vim
 set encoding=utf-8
 
 filetype off
@@ -22,6 +22,7 @@ let g:my_aa_path = '~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/AGEN
 let g:my_i0_path = getenv('SUBDIR') .. '/index/00.md'->expand()
 let g:my_i1_path = getenv('SUBDIR') .. '/index/05.md'->expand()
 let g:my_i2_path = getenv('SUBDIR') .. '/index/07.md'->expand()
+let g:my_vr_path = '~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc'->expand()
 let g:python3_host_prog = exepath('python3')
 let g:denops#debug = 1
 
@@ -90,7 +91,7 @@ nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
 nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
 nnoremap <Plug>(my-Filer)o  <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
 nnoremap <Plug>(my-Filer)t  <Cmd>execute 'edit' g:my_tp_path<CR>
-nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' $MYVIMRC<CR>
+nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' g:my_vr_path<CR>
 
 " Register
 nnoremap <Plug>(my-Register) <Nop>
