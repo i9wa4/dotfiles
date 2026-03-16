@@ -29,26 +29,6 @@ in
       bind-key k select-pane -U
       bind-key l select-pane -R
 
-      bind-key -n S-Left select-pane -L
-      bind-key -n S-Right select-pane -R
-      bind-key -n S-Up select-pane -U
-      bind-key -n S-Down select-pane -D
-
-      # tmux-a2a-postman
-      # bind-key M-e select-pane -T "agent"
-      # bind-key M-b select-pane -T "boss"
-      # bind-key M-c select-pane -T "critic"
-      # bind-key M-g select-pane -T "guardian"
-      # bind-key M-m select-pane -T "messenger"
-      # bind-key M-o select-pane -T "orchestrator"
-      # bind-key M-w select-pane -T "worker"
-
-      # Windows / Sessions control
-      # bind-key -n M-Left previous-window
-      # bind-key -n M-Right next-window
-      # bind-key -n M-Up switch-client -p
-      # bind-key -n M-Down switch-client -n
-
       # Popup
       bind-key f display-popup -w 60% -h 50% -E 'tmux list-sessions -F "#{session_name}" | fzf --reverse | xargs -I{} tmux switch-client -t {}'
       bind-key g display-popup -d '#{pane_current_path}' -w 90% -h 90% -E 'lazygit'
