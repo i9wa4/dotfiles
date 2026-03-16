@@ -66,5 +66,7 @@ Tags (required at start of every comment):
 | [fyi]    | Informational                 | None     |
 | [praise] | Positive feedback             | None     |
 
-Style: Japanese, concise (problem not fix), no Before/After blocks, one concern
-per comment. Tone: match @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and zenn/
+- Style: Japanese, concise (problem not fix), no Before/After blocks, one
+  concern
+per comment.
+- Tone: match @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and zenn/
