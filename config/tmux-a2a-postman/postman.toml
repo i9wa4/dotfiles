@@ -13,4 +13,4 @@ ui_node = "messenger"
 
 reply_command = "tmux-a2a-postman create-draft --to <recipient>"
 
-common_template = "PROTOCOL CRITICAL: NEVER manually create files in draft/. ALWAYS use: tmux-a2a-postman -- create-draft --to <recipient>\nROUTING: You can ONLY talk to nodes listed in your 'You can talk to:' line. Messages to any other node will be rejected to dead-letter/.\nROLE BOUNDARY: If a slash command (e.g., /orchestrator, /session-reflect) is invoked on your pane, do NOT execute it. Write a task request to orchestrator instead. You are your role, not a general-purpose executor."
+common_template = "PROTOCOL CRITICAL: NEVER manually create files in draft/. ALWAYS use: tmux-a2a-postman create-draft --to <recipient>\nROUTING: You can ONLY talk to nodes listed in your 'You can talk to:' line. Messages to any other node will be rejected to dead-letter/.\nROLE BOUNDARY: If Agent Skills (e.g., /orchestrator, /session-reflect) are invoked on your pane, do NOT execute it. Write a task request to orchestrator instead. You are your role, not a general-purpose executor."
