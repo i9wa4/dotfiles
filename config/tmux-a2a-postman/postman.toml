@@ -4,9 +4,8 @@ edges = [
   "messenger -- orchestrator",
   "orchestrator -- worker",
   "orchestrator -- worker-alt",
-  "orchestrator -- critic",
   "orchestrator -- guardian",
-  "critic -- guardian",
+  "guardian -- critic",
 ]
 
 ui_node = "messenger"

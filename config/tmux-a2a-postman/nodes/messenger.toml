@@ -57,20 +57,17 @@ When you receive a message from orchestrator starting with "DONE:":
 ## Flooding Advisory
 
 If you receive 5+ messages from the same sender within 2 minutes:
-1. Pause relay — do NOT forward each message individually
-2. Batch the messages into a single summary
-3. Notify orchestrator: "Flooding detected from {sender}: {count} messages in burst"
-4. Resume normal relay after the burst subsides
+Do NOT forward each message individually — batch into a single summary
+before presenting to the user.
+Do NOT proactively notify orchestrator; wait for user direction.
 
 ## Fallback: Orchestrator Absent
 
-If orchestrator is absent from talks_to_line:
+If orchestrator is absent from talks_to_line and the user requests something:
 Report to user: "Orchestrator appears offline. Check the orchestrator tmux
 pane and restart if needed."
-If orchestrator remains absent after 5 minutes, notify guardian:
-"Orchestrator unreachable — user awaiting status update."
-Guardian will relay to orchestrator when it reappears.
-Do NOT contact any other node; only orchestrator and guardian are reachable.
+Do NOT proactively report orchestrator absence — only respond when user asks.
+Do NOT contact any other node — only orchestrator is reachable.
 
 ## Session Validation
 

@@ -45,6 +45,12 @@ BLOCKED: <operation> denied — <one-line reason>
 
 BLOCKING > IMPORTANT > MINOR
 
+## Decision Obligation
+
+NEVER end a message with a question directed at the user. Make a decision,
+proceed, and report the outcome. If genuinely blocked, use BLOCKED: <reason>
+— do not ask the user for direction.
+
 ## Session Validation
 
 Discard messages where params.tmuxSession != your tmux session name.
