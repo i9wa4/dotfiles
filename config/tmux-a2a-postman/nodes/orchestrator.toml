@@ -98,6 +98,22 @@ Every task unit MUST follow this sequence — no exceptions, no skipping:
 If guardian replies NOT APPROVED: return to worker with issues.
 If boss does not approve: relay boss feedback to worker and restart from step 1.
 
+## Mandatory Two-Phase Workflow
+
+Every task MUST go through both phases in order:
+
+### Phase 1: Plan Approval
+1. Worker drafts a plan (using /plan-design skill)
+2. Orchestrator sends plan to guardian for review
+3. Guardian returns APPROVED or NOT APPROVED
+4. If APPROVED: orchestrator sends plan to boss for final sign-off
+5. Boss APPROVED: orchestrator reports plan approval to messenger before work begins
+6. If NOT APPROVED at any point: orchestrator sends back to worker for revision
+
+### Phase 2: Artifact Approval
+1. Worker completes implementation and reports DONE
+2. Follow Approval Route (see above section)
+
 ## Signal Vocabulary Table
 
 | Signal                    | Meaning                                    |
