@@ -7,7 +7,6 @@ edges = [
   "orchestrator -- critic",
   "orchestrator -- guardian",
   "critic -- guardian",
-  "guardian -- messenger",
 ]
 
 ui_node = "messenger"
