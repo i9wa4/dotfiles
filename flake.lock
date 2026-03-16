@@ -120,11 +120,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1773688433,
-        "narHash": "sha256-cdS8Bs2KvWyNZ57CsgW5/zcTUmg/7iOcbIbdJNxpvC4=",
+        "lastModified": 1773694408,
+        "narHash": "sha256-tCDTgb7GSBebyM1tLyyq61hNaJUbv+WLrEssClAWU7g=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "1a00b360d4245f83fd2b182f269655fed2a41e71",
+        "rev": "75abeed99b401189c53e9463737bc7cc0946e8da",
         "type": "github"
       },
       "original": {
