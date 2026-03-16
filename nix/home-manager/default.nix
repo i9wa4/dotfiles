@@ -115,11 +115,11 @@ in
 
   xdg.configFile = {
     # symlink
+    "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     # Nix store
     "nvim".source = ../../config/nvim/nvim;
     "nvim-as-fileviewer".source = ../../config/nvim/nvim-as-fileviewer;
-    "tmux-a2a-postman".source = ../../config/tmux-a2a-postman;
     "vim".source = ../../config/vim;
     "wezterm".source = ../../config/wezterm;
     "zeno".source = ../../config/zeno;
