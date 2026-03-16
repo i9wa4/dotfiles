@@ -128,7 +128,7 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 8. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.113.0 (2026-03-11)
+Last reviewed Codex CLI version: v0.114.0 (2026-03-17)
 
 ### 8.1. Applied Optimizations
 
@@ -143,16 +143,17 @@ Last reviewed Codex CLI version: v0.113.0 (2026-03-11)
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
 - [ ] Evaluate MCP server integration (AWS docs MCP etc.)
-- [ ] Review `tui.notifications_method` config option (added in v0.93.0)
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
-- [ ] Review smart approvals default behavior (enabled in v0.93.0)
-- [ ] `personality` setting - now stable (default: "friendly"); consider
-      setting explicitly or using `personality = "pragmatic"` (v0.94.0)
-- [ ] `AfterToolUse` hook - new hook event for post-tool automation (v0.99.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
       (v0.103.0)
-- [ ] `approval_policy: on-failure` - deprecated; review if used (v0.102.0)
-- [ ] `log_dir` config - redirect logs to custom directory (v0.97.0)
+- [ ] Hooks engine (`SessionStart`/`Stop`) - experimental; evaluate for
+      session automation when stabilized (v0.114.0)
+- [ ] `code_mode` experimental feature - isolated coding workflow; watch
+      for stabilization (v0.114.0)
+- [ ] Disable bundled system skills config switch - useful if custom skills
+      suffice for leaner sessions (v0.114.0)
+- [ ] Permission profile config language - split filesystem/network sandbox
+      policies for finer control in config.toml (v0.113.0)
 
 ### 8.3. Not Adopting
 
@@ -160,9 +161,19 @@ Last reviewed Codex CLI version: v0.113.0 (2026-03-11)
 - `log_dir` config - default log location is fine
 - `tui.notifications_method` - keep default
 - `CLAUDE_CODE_DISABLE_CRON` env - N/A for Codex CLI
+- `approval_policy: on-failure` - deprecated (v0.102.0); not used in config
+- `AfterToolUse` hook - superseded by hooks engine (v0.114.0); revisit when
+  hooks engine stabilizes
+- `smart_approvals` - keep default behavior (v0.93.0)
 
 ### 8.4. Version Notes
 
+- v0.114.0: Experimental code mode (isolated coding), hooks engine
+  (`SessionStart`/`Stop`), health endpoints (`/readyz`/`/healthz`) for
+  app-server WebSocket, config to disable bundled system skills, handoff
+  transcript context for turn continuity, `$` mention picker with
+  category labels, Linux tmux segfault fix, approval persistence across
+  turns, Python SDK v2 schema foundation
 - v0.113.0: `request_permissions` tool (runtime permission requests), plugin
   marketplace + curated discovery + uninstall, app-server streaming exec with
   TTY/PTY, web search full tool config, permission profile config language,
