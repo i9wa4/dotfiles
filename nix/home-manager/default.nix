@@ -15,14 +15,6 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-  nvimApps = builtins.readDir ../../config/nvim;
-  nvimConfigFiles = lib.mapAttrs' (name: _: {
-    inherit name;
-    value = {
-      source = ../../config/nvim/${name};
-      recursive = true;
-    };
-  }) (lib.filterAttrs (_: v: v == "directory") nvimApps);
 in
 {
   imports = [
@@ -43,6 +35,9 @@ in
     ./agents/claude-code.nix
     ./agents/codex-cli.nix
   ];
+  # Use ~/.config/ instead of ~/Library/Application Support/ on macOS
+  xdg.enable = true;
+
   home = {
     # User info (username is passed from flake.nix via extraSpecialArgs)
     inherit username;
@@ -121,13 +116,14 @@ in
   xdg.configFile = {
     # symlink
     "vde".source = symlink "${dotfilesDir}/config/vde";
+    "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
+    "nvim-as-fileviewer".source = symlink "${dotfilesDir}/config/nvim/nvim-as-fileviewer";
     # Nix store
     "tmux-a2a-postman".source = ../../config/tmux-a2a-postman;
     "vim".source = ../../config/vim;
     "wezterm".source = ../../config/wezterm;
     "zeno".source = ../../config/zeno;
-  }
-  // nvimConfigFiles;
+  };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
   # nix.package is required by HM when writing nix.conf

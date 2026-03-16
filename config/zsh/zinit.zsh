@@ -35,6 +35,10 @@ zinit light zdharma-continuum/null
 # zinit ice wait'0b' lucid depth"1" blockf
 zinit ice lucid depth"1" blockf \
   atload'
+    # zinit autoload substitution prevents zeno-init from resolving during
+    # plugin source; call it here where autoload is restored.
+    zeno-init
+
     if [[ -n "${ZENO_LOADED}" ]]; then
       bindkey " "  zeno-auto-snippet
       bindkey "^m" zeno-auto-snippet-and-accept-line
