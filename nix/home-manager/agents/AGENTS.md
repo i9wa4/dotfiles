@@ -116,7 +116,7 @@ Example: `skills/git/SKILL.md`, not `git.md`
 
 | Skill                  | Description                                  |
 | ---------------------- | -------------------------------------------- |
-| bigquery               | BigQuery development guide                   |
+| bigquery-local         | BigQuery development guide                   |
 | claude-config-optimizer | Claude Code config and changelog            |
 | claude-workspace-trust-fix | Fix for PreToolUse hooks silently skipped |
 | codex-config-optimizer | Codex CLI config and changelog               |
@@ -124,7 +124,7 @@ Example: `skills/git/SKILL.md`, not `git.md`
 |                        | dbt integration, Jupyter kernel              |
 | dbt-local              | Issue target setup, SQL dialect              |
 | drawio-local           | draw.io diagram creation/editing             |
-| mermaid                | Mermaid diagram creation for revealjs slides |
+| mermaid-local          | Mermaid diagram creation for revealjs slides |
 | nix                    | Nix commands and package management          |
 | plan-design            | High-rigor plan authoring with review gates  |
 | subagent-review        | 10-parallel code/design review               |

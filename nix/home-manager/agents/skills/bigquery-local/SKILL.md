@@ -1,5 +1,5 @@
 ---
-name: bigquery
+name: bigquery-local
 description: |
   BigQuery Expert Engineer Skill - Comprehensive guide for GoogleSQL queries, data management, performance optimization, and cost management
   Use when:
