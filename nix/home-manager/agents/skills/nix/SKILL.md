@@ -3,49 +3,12 @@ name: nix
 description: |
   Nix commands and package management guide.
   Use when:
-  - Running nix build, nix run
-  - Adding custom packages
   - Using nurl for hash acquisition
 ---
 
 # Nix Skill
 
-## 1. nix build
-
-- YOU MUST: Always use `--no-link` option with `nix build`
-
-  ```sh
-  nix build .#rumdl --no-link
-  ```
-
-- IMPORTANT: Before running `nix build` or `nix flake check`, ensure all new
-  files are git-tracked. Nix flakes only see files committed or staged in git.
-
-  ```sh
-  git add <new-files>
-  nix build .#target --no-link
-  ```
-
-- IMPORTANT: Without `--no-link`, a `./result` symlink is created
-
-## 2. nix run
-
-- IMPORTANT: Packages registered in packages can be run with `nix run`
-
-  ```sh
-  nix run .#pike -- scan -d ./terraform
-  ```
-
-## 3. Adding Custom Packages
-
-- YOU MUST: See CONTRIBUTING.md section 1.4.2 for adding new custom packages
-- IMPORTANT: Hash acquisition flow
-  1. Get `hash` using nurl:
-     `nix run 'nixpkgs#nurl' -- https://github.com/<owner>/<repo> <tag>`
-  2. Get `vendorHash`/`cargoHash` via build error (`got:` line)
-- IMPORTANT: Add `doCheck = false;` if tests fail
-
-## 4. nurl
+## 1. nurl
 
 - IMPORTANT: nurl generates Nix fetcher calls from repository URLs
 
