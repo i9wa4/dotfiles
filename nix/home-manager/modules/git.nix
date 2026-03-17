@@ -79,12 +79,8 @@ in
   # Write repo-local .git/info/exclude for dotfiles repo
   # (global gitignore cannot target a specific file in a specific repo)
   home.activation.dotfilesGitExclude = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    excludeFile="${dotfilesDir}/.git/info/exclude"
     if [ -d "${dotfilesDir}/.git" ]; then
-      mkdir -p "$(dirname "$excludeFile")"
-      if ! grep -qF '.pre-commit-config.yaml' "$excludeFile" 2>/dev/null; then
-        echo '.pre-commit-config.yaml' >> "$excludeFile"
-      fi
+      echo '.pre-commit-config.yaml' > "${dotfilesDir}/.git/info/exclude"
     fi
   '';
 }
