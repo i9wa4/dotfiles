@@ -91,11 +91,18 @@ for pr_number in "$@"; do
     # Create worktree
     if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
       echo "-> Creating worktree..."
-      git worktree add "$worktree_path" "origin/${pr_branch}"
-      cd "$worktree_path"
-      git checkout -b "${pr_branch}" "origin/${pr_branch}"
+      if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
+        # Local branch already exists: reuse it
+        git worktree add "$worktree_path" "${pr_branch}"
+      else
+        git worktree add "$worktree_path" "origin/${pr_branch}"
+        cd "$worktree_path"
+        git checkout -b "${pr_branch}" "origin/${pr_branch}"
+        cd - >/dev/null
+      fi
       echo "* Created worktree: ${worktree_path}"
-
+      cd "$worktree_path"
+      git pull origin "${pr_branch}"
       cd - >/dev/null
 
       # Run repo-setup if available

@@ -133,6 +133,14 @@ ${issue_comments}
     if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
       git worktree add "$worktree_path" "$branch_name"
       echo "* Created worktree: ${worktree_path}"
+      cd "$worktree_path"
+      git pull origin "${branch_name}"
+      cd - >/dev/null
+    elif git show-ref --verify --quiet "refs/heads/${branch_name}"; then
+      # Local branch exists but no remote: reuse it
+      git worktree add "$worktree_path" "$branch_name"
+      echo "* Created worktree: ${worktree_path}"
+      echo "* Using existing local branch: ${branch_name}"
     else
       git worktree add -b "$branch_name" "$worktree_path" main
       echo "* Created worktree: ${worktree_path}"
