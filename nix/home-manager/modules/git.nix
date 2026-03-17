@@ -1,4 +1,12 @@
-_: {
+{
+  config,
+  lib,
+  ...
+}:
+let
+  dotfilesDir = "${config.home.homeDirectory}/ghq/github.com/i9wa4/dotfiles";
+in
+{
   # Git configuration (replaces Makefile git-config target)
   # Note: user.name, user.email are PC-specific, set via `git config --global`
   # They will be written to ~/.gitconfig which takes precedence
@@ -67,4 +75,16 @@ _: {
       user.signingkey = "~/.ssh/github.pub";
     };
   };
+
+  # Write repo-local .git/info/exclude for dotfiles repo
+  # (global gitignore cannot target a specific file in a specific repo)
+  home.activation.dotfilesGitExclude = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    excludeFile="${dotfilesDir}/.git/info/exclude"
+    if [ -d "${dotfilesDir}/.git" ]; then
+      mkdir -p "$(dirname "$excludeFile")"
+      if ! grep -qF '.pre-commit-config.yaml' "$excludeFile" 2>/dev/null; then
+        echo '.pre-commit-config.yaml' >> "$excludeFile"
+      fi
+    fi
+  '';
 }
