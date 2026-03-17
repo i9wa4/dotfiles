@@ -267,8 +267,8 @@ gh auth login --with-token
 
 ## 6. Daily Usage
 
-| Command              | Description                          |
-| -------------------- | ------------------------------------ |
-| `nix run .#switch`   | Rebuild and activate configuration   |
-| `nix run .#update`   | Update flake inputs                  |
-| `nix run .#check`    | Check flake configuration            |
+| Command                | Description                        |
+| ---------------------- | ---------------------------------- |
+| `nix run '.#switch'`   | Rebuild and activate configuration |
+| `nix run '.#update'`   | Update flake inputs                |
+| `nix run '.#check'`    | Check flake configuration          |

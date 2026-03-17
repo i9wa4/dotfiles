@@ -1,11 +1,11 @@
 # Flake apps (task runner, replaces Makefile nix-* targets)
 # This module is imported by flake.nix via flake-parts
 #
-# Usage:
-#   nix run .#switch       -- rebuild and activate configuration
-#   nix run .#update       -- update flake inputs
-#   nix run .#check        -- check flake configuration
-#   nix run .#apt-upgrade  -- apt-get update && upgrade (Linux only)
+# Usage (quote .#name for zsh):
+#   nix run '.#switch'       -- rebuild and activate configuration
+#   nix run '.#update'       -- update flake inputs
+#   nix run '.#check'        -- check flake configuration
+#   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
 {
   perSystem =
