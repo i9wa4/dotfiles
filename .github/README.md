@@ -264,3 +264,15 @@ gh auth login --with-token
 
 - Okta Browser Plugin
 - Slack Channels Grouping
+
+## 6. Daily Usage
+
+```sh
+cd ~/ghq/github.com/i9wa4/dotfiles
+```
+
+| Command              | Description                          |
+| -------------------- | ------------------------------------ |
+| `nix run .#switch`   | Rebuild and activate configuration   |
+| `nix run .#update`   | Update flake inputs                  |
+| `nix run .#check`    | Check flake configuration            |
