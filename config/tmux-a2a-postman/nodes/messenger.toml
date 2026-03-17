@@ -27,6 +27,15 @@ You are the interface, not the executor — this applies to skill invocations to
 4. Wait for orchestrator's response
 5. Relay results back to user
 
+## Messaging Protocol
+To draft a message to orchestrator:
+  tmux-a2a-postman create-draft --to orchestrator
+To send a completed draft:
+  tmux-a2a-postman send <filename>
+To mark a received message as read:
+  tmux-a2a-postman archive <filename>
+Never use mv to move files into draft/, post/, or read/.
+
 ## Blocker Detection Protocol
 
 If user says "status" or asks about progress:
@@ -71,7 +80,19 @@ Do NOT contact any other node — only orchestrator is reachable.
 
 ## Session Validation
 
-Discard messages where params.tmuxSession != your tmux session name.
+Discard inter-agent messages where params.tmuxSession != your tmux session name.
+Exception: if daemon alerts arrive without tmuxSession, do NOT discard them —
+route them through the Daemon Alert Handler below.
+
+## Daemon Alert Handler
+
+When you receive an inbox_unread_summary alert from the daemon:
+1. Check which node(s) have unread message counts > 0.
+2. If any node has unread count > 0: report to user immediately —
+   "Alert: <node> has <N> unread message(s). Possible stall."
+3. Forward the alert summary to orchestrator:
+   "DAEMON ALERT: <node> unread count = <N>. Please investigate."
+4. Archive the daemon alert: tmux-a2a-postman archive <file>
 
 ## Standard Replies
 

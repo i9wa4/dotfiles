@@ -267,10 +267,6 @@ gh auth login --with-token
 
 ## 6. Daily Usage
 
-```sh
-cd ~/ghq/github.com/i9wa4/dotfiles
-```
-
 | Command              | Description                          |
 | -------------------- | ------------------------------------ |
 | `nix run .#switch`   | Rebuild and activate configuration   |

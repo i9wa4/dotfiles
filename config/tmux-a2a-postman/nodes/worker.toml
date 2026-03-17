@@ -41,6 +41,18 @@ If any operation is blocked by a shell hook, permission denial, or tool restrict
 DO NOT retry silently. Send immediately to orchestrator:
 BLOCKED: <operation> denied — <one-line reason>
 
+## Production Safety
+
+NEVER execute any operation that writes to, modifies, or deletes production data
+without explicit human user approval at the time of execution:
+- dbt run without schema='test'
+- DROP / TRUNCATE / DELETE on production tables
+- git push to main/production branches
+- Any schema migration in production
+
+If a task requires such an operation: STOP, report BLOCKED to orchestrator,
+and wait for explicit human user approval.
+
 ## Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR
