@@ -150,14 +150,15 @@ let
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
   #   1 token  → ^token\b (must be the command, not an argument)
   #   2+ tokens → ^token1.*token2 (first token anchored, rest flexible)
-  #   anchored = false → remove ^ so wrapper prefixes (bash -c, env, exec) are caught
+  #   anchored = false → use \b instead of ^ so wrapper prefixes (bash -c, env, exec)
+  #     are caught while preventing substring matches (e.g. "terraform" matching rm\b)
   #   hookRegex override → use verbatim (ignores anchored field)
   mkHookRegex =
     cmd:
     cmd.hookRegex or (
       let
         anchored = cmd.anchored or true;
-        prefix = if anchored then "^" else "";
+        prefix = if anchored then "^" else "\\b";
       in
       if builtins.length cmd.argv == 1 then
         "${prefix}${builtins.head cmd.argv}\\b"
