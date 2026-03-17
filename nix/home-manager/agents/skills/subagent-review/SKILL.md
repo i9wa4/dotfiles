@@ -10,6 +10,11 @@ description: |
 
 # Subagent Review Skill
 
+HARD CONSTRAINT: Every review MUST launch exactly 10 subagents in parallel
+(cc x 5 + cx x 5). No exceptions. No lightweight mode. No partial execution.
+If either engine (cc or cx) is unavailable, halt and report — do NOT silently
+degrade to 5-parallel.
+
 ## 1. Review Workflow
 
 ### 1.1. Pre-flight Check
@@ -110,9 +115,12 @@ elif [ -n "$ISSUE_NUM" ]; then
 fi
 ```
 
-#### 1.4.2. Step 2: Launch cc x 5 (Single Message, Parallel)
+#### 1.4.2. Step 2: Launch 10-parallel (cc x 5 + cx x 5)
 
-Launch 5 Task tools in one message:
+YOU MUST launch all 10 subagents. Both cc and cx legs are mandatory.
+NEVER skip the cx leg. NEVER skip the cc leg.
+
+**Roles** (each role runs on BOTH cc and cx = 10 total):
 
 | Priority | Role         | Focus                                          |
 | -------- | ------------ | ---------------------------------------------- |
@@ -121,6 +129,8 @@ Launch 5 Task tools in one message:
 | 3        | historian    | History, context, intent alignment             |
 | 4        | code / data  | Code review: code. Design review: data         |
 | 5        | qa           | Acceptance criteria, edge cases, coverage gaps |
+
+**cc leg (5 Task/Agent tools in a single message, parallel)**:
 
 Task prompt template:
 
@@ -141,7 +151,8 @@ Use all 5 fields: What, Why, Where, Confidence, Fix.
 If no findings: state "No findings from {ROLE} perspective."
 ```
 
-#### 1.4.3. Step 3: Launch cx x 5 (Background)
+**cx leg (5 codex exec in background, launched in the SAME message as the cc
+leg)**:
 
 ```bash
 for ROLE in security architecture historian data qa; do
@@ -154,6 +165,17 @@ wait
 
 NEVER use `&` with codex exec if output interleaving is a problem.
 Use sequential loop instead (remove `&` and `wait`).
+
+#### 1.4.3. Step 3: Collect and Verify 10 Results
+
+Before proceeding to summary, verify ALL 10 results have been collected:
+
+- cc results: 5 Task/Agent tool responses (security, architecture, historian,
+  code/data, qa)
+- cx results: 5 output files (review-{ROLE}-cx)
+
+If any result is missing, retry that specific subagent. Do NOT proceed to
+summary with fewer than 10 results.
 
 ### 1.5. Reviewer Deliberation (Optional)
 
@@ -269,9 +291,13 @@ Include in "Key Findings Detail" when ANY condition is met:
 
 MINOR findings appear in table only (no detail section).
 
-## 2. Standalone Usage (Lightweight Mode)
+## 2. Standalone Usage
 
-1. Execute Section 1.4 only (skip deliberation)
-2. Create summary per Section 1.6
+Even without orchestrator context, the full 10-parallel review is mandatory:
 
-Skip Section 1.5 to reduce execution time and token usage.
+1. Execute Section 1.4 (all 10 subagents — cc x 5 + cx x 5)
+2. Skip Section 1.5 (deliberation) — only needed for orchestrator or explicit
+   request
+3. Create summary per Section 1.6
+
+There is no lightweight mode. Every invocation launches 10 subagents.
