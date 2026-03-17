@@ -136,6 +136,9 @@ let
     {
       argv = [ "rm" ];
       anchored = false;
+      # Override: \b is not POSIX ERE; causes false positives on paths like "dataplatform".
+      # Require rm to be preceded by start-of-fragment or whitespace instead.
+      hookRegex = "(^|[[:space:]])rm([[:space:]]|$|-)";
       justification = "rm is denied; use mv /tmp/ instead";
       claudeSettingsJson = true;
     }
