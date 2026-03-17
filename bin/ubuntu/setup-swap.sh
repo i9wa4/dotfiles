@@ -33,12 +33,12 @@ echo ""
 # Determine what actions are needed
 actions=()
 
-if [[ ! -f "$SWAPFILE" ]]; then
+if [[ ! -f $SWAPFILE ]]; then
   actions+=("Create swapfile (${SWAP_SIZE_GB}GB) at ${SWAPFILE}")
 else
   actual_size=$(stat -c%s "$SWAPFILE")
-  if [[ "$actual_size" -ne "$SWAP_SIZE_BYTES" ]]; then
-    actual_gb=$(( actual_size / 1024 / 1024 / 1024 ))
+  if [[ $actual_size -ne $SWAP_SIZE_BYTES ]]; then
+    actual_gb=$((actual_size / 1024 / 1024 / 1024))
     actions+=("Recreate swapfile (current: ${actual_gb}GB -> target: ${SWAP_SIZE_GB}GB)")
   fi
 fi
@@ -73,24 +73,24 @@ done
 echo ""
 read -r -p "Proceed? [y/N] " answer
 case "$answer" in
-  [yY] | [yY][eE][sS]) ;;
-  *)
-    echo "Aborted."
-    exit 0
-    ;;
+[yY] | [yY][eE][sS]) ;;
+*)
+  echo "Aborted."
+  exit 0
+  ;;
 esac
 echo ""
 
 # Execute actions
 
 # Swapfile creation / recreation
-if [[ ! -f "$SWAPFILE" ]]; then
+if [[ ! -f $SWAPFILE ]]; then
   echo "* Creating swapfile (${SWAP_SIZE_GB}GB)..."
   fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
   echo "* Swapfile created"
 else
   actual_size=$(stat -c%s "$SWAPFILE")
-  if [[ "$actual_size" -ne "$SWAP_SIZE_BYTES" ]]; then
+  if [[ $actual_size -ne $SWAP_SIZE_BYTES ]]; then
     echo "* Recreating swapfile..."
     swapoff "$SWAPFILE" 2>/dev/null || true
     fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
@@ -116,7 +116,7 @@ fi
 
 # Add to /etc/fstab
 if ! grep -q "$SWAPFILE" /etc/fstab; then
-  echo "${SWAPFILE} none swap sw 0 0" >> /etc/fstab
+  echo "${SWAPFILE} none swap sw 0 0" >>/etc/fstab
   echo "* Added to /etc/fstab"
 fi
 

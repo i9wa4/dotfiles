@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-set -euo pipefail
-
 # Copy config files for Windows (WSL only)
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
 
 GITHUB_DIR="$(ghq root)/github.com"
 WIN_UTIL_DIR="/mnt/c/work/util"
