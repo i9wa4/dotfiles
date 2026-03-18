@@ -128,7 +128,7 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 8. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.114.0 (2026-03-17)
+Last reviewed Codex CLI version: v0.115.0 (2026-03-18)
 
 ### 8.1. Applied Optimizations
 
@@ -154,6 +154,11 @@ Last reviewed Codex CLI version: v0.114.0 (2026-03-17)
       suffice for leaner sessions (v0.114.0)
 - [ ] Permission profile config language - split filesystem/network sandbox
       policies for finer control in config.toml (v0.113.0)
+- [ ] Subagent support - multi-agent feature stabilized (v0.115.0); configure
+      subagents in AGENTS.md for Codex CLI parity with Claude Code
+- [ ] `openai_base_url` config override - custom API endpoint (v0.115.0)
+- [ ] Smart Approvals guardian - route review requests through guardian
+      subagent for reduced approval friction (v0.115.0)
 
 ### 8.3. Not Adopting
 
@@ -168,6 +173,13 @@ Last reviewed Codex CLI version: v0.114.0 (2026-03-17)
 
 ### 8.4. Version Notes
 
+- v0.115.0: Full-resolution image inspection via `view_image`, `js_repl`
+  gains `codex.cwd`/`codex.homeDir` with cross-cell persistence, realtime
+  WebSocket transcription mode + v2 handoff, v2 app-server filesystem RPCs
+  with Python SDK, Smart Approvals guardian subagent for review routing,
+  tool-search via Responses API with fallback, multi-agent feature stabilized,
+  `wait_agent` tool rename, bubblewrap default Linux sandbox, `openai_base_url`
+  config override
 - v0.114.0: Experimental code mode (isolated coding), hooks engine
   (`SessionStart`/`Stop`), health endpoints (`/readyz`/`/healthz`) for
   app-server WebSocket, config to disable bundled system skills, handoff
