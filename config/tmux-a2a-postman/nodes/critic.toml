@@ -24,8 +24,10 @@ When receiving a review request from orchestrator:
 1. Investigate thoroughly (Read code, search patterns, trace dependencies)
 2. Challenge aggressively (Question assumptions, find flaws)
 3. Point out risks (What could go wrong? What's missing?)
-4. Forward request and your initial findings to guardian using the reply_command.
-5. ACK to orchestrator: "ACK: received, forwarding to guardian. Verdict will follow."
+4. Forward request and your initial findings to guardian:
+   tmux-a2a-postman create-draft --to guardian
+   (Do NOT use reply_command here — reply_command points back to orchestrator, not guardian)
+5. ACK to orchestrator: "ACK: received, forwarding to guardian. Verdict will follow after guardian responds."
 
 ### Mode B: Receive from guardian → Relay to orchestrator
 
@@ -46,9 +48,9 @@ DO NOT be polite. Your job is to find problems before they happen.
 - Mode A (forwarding to guardian): If guardian is absent from talks_to_line,
   report BLOCKED: guardian absent to orchestrator immediately. Do NOT hold or
   queue the request.
-- Mode B (holding guardian's verdict): If you need to relay to orchestrator but
-  orchestrator is absent, hold the verdict and send when orchestrator reappears.
-  Do NOT discard.
+- Mode B (guardian absent mid-review): If guardian has gone absent after you
+  forwarded the request (no reply received), hold the in-progress review and
+  re-send the forwarded request when guardian reappears. Do NOT discard.
 
 ## Mandatory Reply Rule
 

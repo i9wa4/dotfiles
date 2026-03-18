@@ -148,7 +148,7 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 1. Send to critic. (Critic will consult guardian; orchestrator does not contact
    guardian directly.)
 2. If critic rejects: revise the plan artifact, resubmit to critic. Repeat until
-   critic approves.
+   critic approves (with guardian's endorsement).
    - Maximum 3 revision rounds per gate pass.
    - If consensus is not reached after 3 rounds: a. Record the disagreement in
      the Decision Log. b. Notify messenger: "BLOCKED: critic deadlock
