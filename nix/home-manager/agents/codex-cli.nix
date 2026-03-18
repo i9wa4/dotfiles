@@ -32,6 +32,21 @@ let
     cp ${generatedDefaultRules} $out/default.rules
   '';
 
+  # Convert Claude Code subagent .md files (YAML frontmatter + Markdown body)
+  # into Codex CLI .toml agent files (name, description, developer_instructions).
+  # The model field is dropped so agents inherit from the parent session.
+  codexAgentsDir = pkgs.runCommand "codex-agents" { } ''
+    mkdir -p $out
+    for md in ${./subagents}/*.md; do
+      basename="$(basename "$md" .md)"
+      agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
+      description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
+      body="$(${pkgs.gawk}/bin/awk 'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' "$md")"
+      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n%s\n"""\n' \
+        "$agent_name" "$description" "$body" > "$out/$basename.toml"
+    done
+  '';
+
   tomlFormat = pkgs.formats.toml { };
 
   # All gpt-5.x models share this context window size
@@ -77,6 +92,8 @@ in
     # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
     # NOTE: Codex CLI may also read agents/rules/*.md via AGENTS.md references
     ".codex/rules".source = codexRulesDir;
+    # Subagent definitions (auto-generated .toml from subagents/*.md)
+    ".codex/agents".source = codexAgentsDir;
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
