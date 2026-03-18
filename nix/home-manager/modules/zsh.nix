@@ -125,6 +125,10 @@ in
 
       # Disable Ctrl-D to exit
       setopt IGNORE_EOF
+      # Disable Ctrl-S/Ctrl-Q flow control (frees Ctrl-S for other keybinds)
+      setopt NO_FLOW_CONTROL
+      # Allow comments in interactive shell (useful for pasting commands with #)
+      setopt INTERACTIVE_COMMENTS
 
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
@@ -152,6 +156,7 @@ in
     history = {
       append = true;
       extended = true;
+      expireDuplicatesFirst = true;
       ignoreAllDups = true;
       ignoreDups = true;
       ignoreSpace = true;
