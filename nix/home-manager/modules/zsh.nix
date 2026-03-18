@@ -150,14 +150,15 @@ in
     # History
     # ========================================================================
     history = {
-      path = "$HOME/.zsh_history";
-      size = 1000000;
-      save = 1000000;
       append = true;
       extended = true;
+      ignoreAllDups = true;
       ignoreDups = true;
       ignoreSpace = true;
+      path = "$HOME/.zsh_history";
+      save = 1000000;
       share = true;
+      size = 1000000;
     };
   };
 }
