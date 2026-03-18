@@ -49,8 +49,10 @@ DO NOT be polite. Your job is to find problems before they happen.
   report BLOCKED: guardian absent to orchestrator immediately. Do NOT hold or
   queue the request.
 - Mode B (guardian absent mid-review): If guardian has gone absent after you
-  forwarded the request (no reply received), hold the in-progress review and
-  re-send the forwarded request when guardian reappears. Do NOT discard.
+  forwarded the request (no reply received), report BLOCKED to orchestrator immediately:
+  tmux-a2a-postman create-draft --to orchestrator
+  BLOCKED: guardian absent — review in progress, cannot complete
+  Do NOT hold silently.
 
 ## Mandatory Reply Rule
 

@@ -40,8 +40,10 @@ DO NOT compromise on quality. Your job is to maintain standards.
 
 ## Fallback: Critic Absent
 
-If critic is absent from talks_to_line, hold your APPROVED/NOT APPROVED verdict
-and send when critic reappears. Do NOT discard the verdict.
+If critic is absent from talks_to_line, send BLOCKED immediately:
+  tmux-a2a-postman create-draft --to critic
+  BLOCKED: critic absent — verdict ready, awaiting delivery
+Include your APPROVED/NOT APPROVED verdict in the message body. Do NOT hold silently.
 
 ## Mandatory Reply Rule
 
