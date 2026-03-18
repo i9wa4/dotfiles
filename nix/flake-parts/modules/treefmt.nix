@@ -1,9 +1,18 @@
 # Treefmt configuration (dotfiles-specific formatters)
 # Run: nix fmt
 {
+  mkPkgsUnstable,
+  ...
+}:
+{
   perSystem =
-    { pkgs, ... }:
+    {
+      pkgs,
+      system,
+      ...
+    }:
     let
+      pkgs-unstable = mkPkgsUnstable system;
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
         [MD013]
         code-blocks = false
@@ -48,7 +57,7 @@
             ];
             # Markdown
             rumdl = {
-              command = "${pkgs.rumdl}/bin/rumdl";
+              command = "${pkgs-unstable.rumdl}/bin/rumdl";
               options = [
                 "fmt"
                 "--config"

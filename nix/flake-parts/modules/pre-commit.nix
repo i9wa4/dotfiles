@@ -1,9 +1,18 @@
 # Pre-commit hooks configuration (dotfiles-specific)
 # Run: nix flake check (or automatically on git commit in devShell)
 {
+  mkPkgsUnstable,
+  ...
+}:
+{
   perSystem =
-    { pkgs, ... }:
+    {
+      pkgs,
+      system,
+      ...
+    }:
     let
+      pkgs-unstable = mkPkgsUnstable system;
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
         [MD013]
@@ -64,7 +73,7 @@
           # === Markdown linter ===
           rumdl-check = {
             enable = true;
-            entry = "${pkgs.rumdl}/bin/rumdl check --config ${rumdlConfig}";
+            entry = "${pkgs-unstable.rumdl}/bin/rumdl check --config ${rumdlConfig}";
             types = [ "markdown" ];
           };
 
