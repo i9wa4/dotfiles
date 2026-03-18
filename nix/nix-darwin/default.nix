@@ -430,6 +430,13 @@
           $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "^~,"
 
         # ------------------------------------------
+        # Dictation: 🌐 (Globe) キーを2回押して音声入力開始
+        # Note: dict-add で key 164 のみ更新 (他のショートカットを上書きしない)
+        # ------------------------------------------
+        defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "164" \
+          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>65535</integer><integer>0</integer></array><key>type</key><string>standard</string></dict></dict>'"'"'
+
+        # ------------------------------------------
         # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
         # Note: -currentHost required for per-machine settings
         # ------------------------------------------
