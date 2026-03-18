@@ -70,6 +70,8 @@ in
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs-unstable.acli
       pkgs-unstable.obsidian
+      pkgs-unstable.rumdl
+      pkgs.actionlint
       pkgs.awscli2
       pkgs.databricks-cli
       pkgs.deno
@@ -78,16 +80,27 @@ in
       pkgs.fd
       pkgs.fzf
       pkgs.gh
+      pkgs.ghalint
       pkgs.ghq
+      pkgs.gitleaks
       pkgs.google-cloud-sdk
+      pkgs.jq
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
+      pkgs.nixfmt-rfc-style
       pkgs.nodejs
+      pkgs.pinact
       pkgs.ripgrep
+      pkgs.ruff
+      pkgs.shellcheck
+      pkgs.shfmt
+      pkgs.statix
+      pkgs.stylua
       pkgs.uv
       pkgs.vim
       pkgs.yq
+      pkgs.zizmor
       # llm-agents
       inputs.llm-agents.packages.${pkgs.system}.claude-code
       inputs.llm-agents.packages.${pkgs.system}.codex
