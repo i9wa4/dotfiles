@@ -114,21 +114,21 @@ Example: `skills/git/SKILL.md`, not `git.md`
 
 #### 9.2.1. Managed Skills
 
-| Skill                  | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| bigquery-local         | BigQuery development guide                   |
-| claude-config-optimizer | Claude Code config and changelog            |
-| claude-workspace-trust-fix | Fix for PreToolUse hooks silently skipped |
-| codex-config-optimizer | Codex CLI config and changelog               |
-| databricks-local       | Queries API, VARIANT/JSON, Dashboard,        |
-|                        | dbt integration, Jupyter kernel              |
-| dbt-local              | Issue target setup, SQL dialect              |
-| drawio-local           | draw.io diagram creation/editing             |
-| mermaid-local          | Mermaid diagram creation for revealjs slides |
-| nix                    | Nix commands and package management          |
-| plan-design            | High-rigor plan authoring with review gates  |
-| subagent-review        | 10-parallel code/design review               |
-| tmux                   | tmux pane operations for debugging           |
+| Skill                      | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| bigquery-local             | BigQuery development guide                   |
+| claude-config-optimizer    | Claude Code config and changelog             |
+| claude-workspace-trust-fix | Fix for PreToolUse hooks silently skipped    |
+| codex-config-optimizer     | Codex CLI config and changelog               |
+| databricks-local           | Queries API, VARIANT/JSON, Dashboard,        |
+|                            | dbt integration, Jupyter kernel              |
+| dbt-local                  | Issue target setup, SQL dialect              |
+| drawio-local               | draw.io diagram creation/editing             |
+| mermaid-local              | Mermaid diagram creation for revealjs slides |
+| nix                        | Nix commands and package management          |
+| plan-design                | High-rigor plan authoring with review gates  |
+| subagent-review            | 10-parallel code/design review               |
+| tmux                       | tmux pane operations for debugging           |
 
 #### 9.2.2. External Skills (Nix Store)
 
