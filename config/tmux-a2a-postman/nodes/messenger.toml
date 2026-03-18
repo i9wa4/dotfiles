@@ -41,7 +41,7 @@ Never use mv to move files into draft/, post/, or read/.
 If user says "status" or asks about progress:
 
 1. Check draft/ for stuck messages — tmux-a2a-postman send <filename> if found
-2. Check all inbox/* directories for undelivered messages
+2. Check unread inbox messages: tmux-a2a-postman read (lists filenames); use tmux-a2a-postman show-inbox-message <filename> to inspect
 3. Check tmux panes for idle/dead agents (0% context, stuck prompts)
 4. Identify specific blockers: stuck drafts, dead agents, unresponsive reviewers
 5. Take immediate action to resolve each blocker
