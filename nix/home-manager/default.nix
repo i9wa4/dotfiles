@@ -110,8 +110,6 @@ in
       # GitHub
       inputs.claude-chill.packages.${pkgs.system}.default
       inputs.tmux-a2a-postman.packages.${pkgs.system}.default
-      # Custom
-      (pkgs.callPackage ./pkgs/gogcli.nix { })
     ];
 
     # ==========================================================================
