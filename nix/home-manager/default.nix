@@ -69,11 +69,11 @@ in
       # Tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs-unstable.acli
+      pkgs-unstable.azure-cli
       pkgs-unstable.gws
       pkgs-unstable.obsidian
       pkgs-unstable.rumdl
       pkgs.awscli2
-      pkgs.azure-cli
       pkgs.databricks-cli
       pkgs.deno
       pkgs.drawio
