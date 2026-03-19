@@ -20,9 +20,9 @@ in
     extraConfig = ''
       # Panes control
       bind-key -r H resize-pane -L 1
-      bind-key -r J resize-pane -D 1
+      bind-key -r J resize-pane -D 2
       bind-key -r K resize-pane -U 1
-      bind-key -r L resize-pane -R 1
+      bind-key -r L resize-pane -R 2
 
       bind-key h select-pane -L
       bind-key j select-pane -D
@@ -30,7 +30,7 @@ in
       bind-key l select-pane -R
 
       # Popup
-      bind-key f display-popup -w 80% -h 60% -E 'tmux list-sessions -F "#{session_name}#{?session_attached, *,}" | fzf --reverse --preview="tmux list-windows -t {1}" --preview-window=down:5 | cut -d" " -f1 | xargs -I{} tmux switch-client -t {}'
+      bind-key f display-popup -w 60% -h 50% -E 'tmux list-sessions -F "#{session_name}" | fzf --reverse | xargs -I{} tmux switch-client -t {}'
       bind-key g display-popup -d '#{pane_current_path}' -w 90% -h 90% -E 'lazygit'
       bind-key u display-popup -d '#{pane_current_path}' -w 90% -h 90% -E
 
