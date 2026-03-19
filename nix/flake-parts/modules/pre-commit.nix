@@ -35,7 +35,9 @@
         pname = "actrun";
         version = "0.18.0";
         src = pkgs.fetchurl actrunPlatforms.${system};
-        nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+        nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          pkgs.autoPatchelfHook
+        ];
         dontUnpack = true;
         dontBuild = true;
         installPhase = ''
