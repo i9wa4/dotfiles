@@ -54,20 +54,9 @@ in
       set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
-      # Session switching (Alt+1..9)
-      bind-key -n M-1 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 1'
-      bind-key -n M-2 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 2'
-      bind-key -n M-3 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 3'
-      bind-key -n M-4 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 4'
-      bind-key -n M-5 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 5'
-      bind-key -n M-6 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 6'
-      bind-key -n M-7 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 7'
-      bind-key -n M-8 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 8'
-      bind-key -n M-9 run-shell '${dotfilesDir}/bin/tmux-list-sessions switch 9'
-
       set-option -g status-interval 1
-      set-option -g status-left "#(${dotfilesDir}/bin/tmux-list-sessions)"
-      set-option -g status-left-length 120
+      set-option -g status-left " #{=50:session_name} "
+      set-option -g status-left-length 52
       set-option -g status-position top
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
       set-option -g status-right-length 200
