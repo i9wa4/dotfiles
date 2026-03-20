@@ -48,6 +48,24 @@ let
   '';
 
   tomlFormat = pkgs.formats.toml { };
+  jsonFormat = pkgs.formats.json { };
+
+  codexHooks = {
+    hooks = {
+      UserPromptSubmit = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = "date +%Y-%m-%dT%H:%M:%S%z";
+            }
+          ];
+        }
+      ];
+    };
+  };
+
+  hooksFile = jsonFormat.generate "codex-hooks.json" codexHooks;
 
   # All gpt-5.x models share this context window size
   codexContextWindow = 272000;
@@ -69,6 +87,7 @@ let
     feedback.enabled = false;
 
     features = {
+      codex_hooks = true;
       multi_agent = true;
       skills = true;
     };
@@ -94,6 +113,8 @@ in
     ".codex/rules".source = codexRulesDir;
     # Subagent definitions (auto-generated .toml from subagents/*.md)
     ".codex/agents".source = codexAgentsDir;
+    # Hooks config (Nix store, rebuild required to update)
+    ".codex/hooks.json".source = hooksFile;
   };
 
   # Generate config.toml from Nix base config + dynamic trusted projects
