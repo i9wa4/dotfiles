@@ -48,7 +48,7 @@
       hasBetterleaks = betterleaksPlatforms ? ${system};
       betterleaks = pkgs.stdenv.mkDerivation {
         pname = "betterleaks";
-        version = "1.1.1";
+        version = "0.21.3";
         src = pkgs.fetchurl betterleaksPlatforms.${system};
         nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
           pkgs.autoPatchelfHook

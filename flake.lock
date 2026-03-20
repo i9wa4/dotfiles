@@ -10,11 +10,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1772640663,
-        "narHash": "sha256-apWnei/2LGgJ247h4WpPQsGooWot4I3CX2PzPsXGx3A=",
+        "lastModified": 1774004248,
+        "narHash": "sha256-jEzVAVGiT+MFeFFtriwhqBkHTlNxJuD/HCGpYDXvC1Y=",
         "owner": "Kyure-A",
         "repo": "agent-skills-nix",
-        "rev": "0e74b9e4b998807c21ab7ac49d00074aee5df96c",
+        "rev": "3eb00a4bbd39cd75d45174eebf032174928bb3ad",
         "type": "github"
       },
       "original": {
@@ -168,11 +168,11 @@
     "drawio-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1773220687,
-        "narHash": "sha256-+kAM6Rh0S/DaDih8sujsBg2/S48dI6Lsjq9GcOjZ6VM=",
+        "lastModified": 1774006631,
+        "narHash": "sha256-wxxo0xsMLk67AkMxp9BkAmUhzpBhBXz2NTBM+Ga3JT8=",
         "owner": "jgraph",
         "repo": "drawio-mcp",
-        "rev": "3ffaf3f33430277651e39970a6503d347fa2db13",
+        "rev": "4e9dfc6631c457860764c812646753ad12149906",
         "type": "github"
       },
       "original": {
@@ -716,11 +716,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1773880899,
-        "narHash": "sha256-uEHCGleo9Q/SE0qB9xFErwo0XR987JSAm12IlDPXS4U=",
+        "lastModified": 1773980565,
+        "narHash": "sha256-dJ/Xb4fxlaAMGoHv3zGD+yJm87CbFbdbtYPsVUvf5ZI=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "23dfc1e5ded5f6fb7aac90120d437c43ff5feff3",
+        "rev": "ee12a16bb5a315fb35df8149c265c2abb3d21519",
         "type": "github"
       },
       "original": {
