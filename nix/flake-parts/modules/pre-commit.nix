@@ -33,7 +33,7 @@
       hasActrun = actrunPlatforms ? ${system};
       actrun = pkgs.stdenv.mkDerivation {
         pname = "actrun";
-        version = "0.18.0";
+        version = "0.19.0";
         src = pkgs.fetchurl actrunPlatforms.${system};
         nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
           pkgs.autoPatchelfHook
