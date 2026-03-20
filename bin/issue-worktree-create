@@ -109,7 +109,13 @@ Issue comments:
 ${issue_comments}
 ---"
 
-      branch_slug=$(claude --print "$prompt" 2>/dev/null | tr -d '\n') || true
+      branch_slug=$(claude --print \
+        --append-system-prompt "Output ONLY the raw slug. No decorations, insights, or explanations." \
+        "$prompt" 2>/dev/null \
+        | tr -d '\n' \
+        | tr '[:upper:]' '[:lower:]' \
+        | tr -cd 'a-z0-9-' \
+        | sed 's/--*/-/g; s/^-//; s/-$//') || true
     fi
 
     # Fallback: use issue number only
