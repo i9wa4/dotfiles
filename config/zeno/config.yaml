@@ -102,4 +102,12 @@ snippets:
 
   - name: (vde-layout) preset-a
     keyword: va
-    snippet: vde-layout messenger && vde-layout medium
+    snippet: vde-layout messenger && vde-layout preset-a
+
+  - name: (vde-layout) preset-b
+    keyword: vb
+    snippet: vde-layout messenger && vde-layout preset-b
+
+  - name: (vde-layout) preset-c
+    keyword: vc
+    snippet: vde-layout messenger && vde-layout preset-c
