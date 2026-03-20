@@ -31,6 +31,35 @@
         };
       };
       hasActrun = actrunPlatforms ? ${system};
+      betterleaksPlatforms = {
+        x86_64-linux = {
+          url = "https://github.com/betterleaks/betterleaks/releases/download/v1.1.1/betterleaks_1.1.1_linux_x64.tar.gz";
+          hash = "sha256-1ZDV8FHkn2dpxh3IzrvOlHsgpAQuKRXuI0dg+BoByMQ=";
+        };
+        aarch64-linux = {
+          url = "https://github.com/betterleaks/betterleaks/releases/download/v1.1.1/betterleaks_1.1.1_linux_arm64.tar.gz";
+          hash = "sha256-l7d0NnYwhGpfIpj38+P4CW8FZ9P8AnWxtjwOHhb4VvE=";
+        };
+        aarch64-darwin = {
+          url = "https://github.com/betterleaks/betterleaks/releases/download/v1.1.1/betterleaks_1.1.1_darwin_arm64.tar.gz";
+          hash = "sha256-get4qDKPkVlCGFXygqA61Aws/qp8enn0xCMI1wW+McQ=";
+        };
+      };
+      hasBetterleaks = betterleaksPlatforms ? ${system};
+      betterleaks = pkgs.stdenv.mkDerivation {
+        pname = "betterleaks";
+        version = "1.1.1";
+        src = pkgs.fetchurl betterleaksPlatforms.${system};
+        nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+          pkgs.autoPatchelfHook
+        ];
+        dontUnpack = true;
+        dontBuild = true;
+        installPhase = ''
+          tar xzf $src
+          install -Dm755 betterleaks $out/bin/betterleaks
+        '';
+      };
       actrun = pkgs.stdenv.mkDerivation {
         pname = "actrun";
         version = "0.19.0";
@@ -63,6 +92,16 @@
           gitleaks = {
             enable = true;
             entry = "${pkgs.gitleaks}/bin/gitleaks protect --verbose --redact --staged";
+            pass_filenames = false;
+          };
+
+          betterleaks = {
+            enable = hasBetterleaks;
+            entry =
+              if hasBetterleaks then
+                "${betterleaks}/bin/betterleaks git --pre-commit --verbose --redact --staged"
+              else
+                "";
             pass_filenames = false;
           };
 

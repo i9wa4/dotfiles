@@ -15,6 +15,7 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
+
 in
 {
   imports = [
