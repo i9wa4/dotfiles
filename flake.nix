@@ -133,6 +133,9 @@
             ci = pkgs.mkShell {
               packages = [
                 pkgs.gitleaks
+              ]
+              ++ pkgs.lib.optionals (config.packages ? betterleaks) [
+                config.packages.betterleaks
               ];
             };
           };

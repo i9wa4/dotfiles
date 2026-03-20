@@ -76,6 +76,8 @@
       };
     in
     {
+      packages = if hasBetterleaks then { inherit betterleaks; } else { };
+
       pre-commit = {
         check.enable = true;
         settings.hooks = {

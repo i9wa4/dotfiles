@@ -53,3 +53,6 @@ jobs:
 
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
+
+      - name: Run betterleaks history scan
+        run: nix develop .#ci --command betterleaks git --verbose --redact
