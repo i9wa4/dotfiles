@@ -30,8 +30,9 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-# Get repository name
-repo_name=$(basename "$(git rev-parse --show-toplevel)")
+# Get repository root and name
+repo_root=$(git rev-parse --show-toplevel)
+repo_name=$(basename "$repo_root")
 
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
@@ -104,6 +105,12 @@ for pr_number in "$@"; do
       cd "$worktree_path"
       git pull origin "${pr_branch}"
       cd - >/dev/null
+
+      # Copy .envrc if it exists
+      if [[ -f "${repo_root}/.envrc" ]]; then
+        cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
+        echo "* Copied .envrc to worktree"
+      fi
 
       # Run repo-setup if available
       if command -v repo-setup &>/dev/null; then
