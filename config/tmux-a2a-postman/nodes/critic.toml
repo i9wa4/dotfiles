@@ -54,6 +54,18 @@ DO NOT be polite. Your job is to find problems before they happen.
   BLOCKED: guardian absent — review in progress, cannot complete
   Do NOT hold silently.
 
+## Guardian Absence Timer
+
+If guardian has not replied within 5 minutes of forwarding in Mode A:
+1. Check waiting/ for the forwarded message:
+   ls ~/.local/state/tmux-a2a-postman/<context-id>/tmux-a2a-postman/waiting/
+2. If the file is present (delivery stuck): guardian is absent. Do NOT wait longer.
+3. Issue an independent verdict based on your own analysis.
+4. Report to orchestrator:
+   BLOCKED: guardian absent — independent verdict follows.
+   <your verdict and findings>
+Do NOT wait indefinitely. 5 minutes is the hard cutoff.
+
 ## Mandatory Reply Rule
 
 You MUST reply to every message you receive, no exceptions.

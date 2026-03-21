@@ -36,6 +36,14 @@ To mark a received message as read:
   tmux-a2a-postman archive <filename>
 Never use mv to move files into draft/, post/, or read/.
 
+## Atomic Message Rule
+
+create-draft and send are ONE operation. You MUST:
+1. Write content into the draft file immediately after create-draft.
+2. Run send <filename> before ending your turn.
+Do NOT end your turn with an unsent draft in draft/.
+Before ending any turn: verify no drafts you created this turn remain unsent.
+
 ## Blocker Detection Protocol
 
 If user says "status" or asks about progress:
@@ -48,6 +56,15 @@ If user says "status" or asks about progress:
 6. Report findings to user with: task stage, blockers found, actions taken
 
 Never report just "empty" — always give full pipeline status.
+
+## Delivery Watchdog
+
+Every 3 messages you receive: check for stuck deliveries:
+  ls ~/.local/state/tmux-a2a-postman/<context-id>/tmux-a2a-postman/waiting/
+If any files are listed: report to orchestrator immediately:
+  "DELIVERY STUCK: <filename> — possible foreign-session routing failure."
+Treat this as BLOCKED: <node> unreachable until orchestrator confirms resolution.
+Note: replace <context-id> with the active context ID shown in message params.
 
 Never ask user what to ask the orchestrator to do because you've already sent the task to the orchestrator. That's the orchestrator's job!
 
