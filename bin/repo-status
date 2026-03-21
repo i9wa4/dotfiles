@@ -7,14 +7,14 @@
 #   repo-status
 #
 # Output format:
-#   🌿branch 📍hash ❓N 📦N 📝N 🟢N 🔴N 🚀N
+#   🌿branch 📍hash ❓N 📦N 📝N 📈N 📉N 🚀N
 #     🌿 = Branch name (with action state if any)
 #     📍 = Commit hash (8 chars)
 #     ❓ = Untracked files count
 #     📦 = Staged files count
 #     📝 = Unstaged files count
-#     🟢 = Insertions count
-#     🔴 = Deletions count
+#     📈 = Insertions count
+#     📉 = Deletions count
 #     🚀 = Unpushed commits count
 
 # Exit if not in a git repository
@@ -91,10 +91,10 @@ if [ "${unstaged}" -gt 0 ]; then
   output="${output} 📝${unstaged}"
 fi
 if [ "${insertions}" -gt 0 ]; then
-  output="${output} 🟢${insertions}"
+  output="${output} 📈${insertions}"
 fi
 if [ "${deletions}" -gt 0 ]; then
-  output="${output} 🔴${deletions}"
+  output="${output} 📉${deletions}"
 fi
 if [ "${unpushed}" -gt 0 ]; then
   output="${output} 🚀${unpushed}"
