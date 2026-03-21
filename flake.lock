@@ -168,11 +168,11 @@
     "drawio-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1774090847,
-        "narHash": "sha256-XWQYEG5NxIKqQwkJorwl/CZYoFc3x4wm3x09Hqp/WF8=",
+        "lastModified": 1774118436,
+        "narHash": "sha256-bJy/r5mxhjlUn3Q9WiT/l1A3RkmViEGaPKpTbmHJfl0=",
         "owner": "jgraph",
         "repo": "drawio-mcp",
-        "rev": "53265729af0a3365c7db93b9dbdde630361fa02c",
+        "rev": "7b98336178108a480aa0134cfb5c77dd3a2432f7",
         "type": "github"
       },
       "original": {
@@ -716,11 +716,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1774092232,
-        "narHash": "sha256-aCXbogmIvX0ka70nzn2K2AKpNoh6E0T9d9lpkLeh/EU=",
+        "lastModified": 1774120229,
+        "narHash": "sha256-0t4vsVqqV7FD62IfhL0IWRkuQR91Cws+8IgO6CkQWhs=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "1791dfc4a8e8648d614127b7ca7786064140bdb1",
+        "rev": "727479d61ef0d19b7266117bf232379461ebfef1",
         "type": "github"
       },
       "original": {
