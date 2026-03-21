@@ -23,5 +23,5 @@ if [[ -n ${PANE_TTY:-} ]]; then
   fi
 fi
 
-printf '{"additionalContext":"Current time: %s | Your role: %s | You were launched with: %s"}' \
-  "$CURRENT_TIME" "$ROLE" "${LAUNCH_CMD:-unknown}"
+jq -n --arg ctx "Current time: $CURRENT_TIME | Your role: $ROLE | You were launched with: ${LAUNCH_CMD:-unknown}" \
+  '{"additionalContext": $ctx}'
