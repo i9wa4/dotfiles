@@ -8,10 +8,10 @@ let
 in
 {
   # Git configuration (replaces Makefile git-config target)
-  # Note: user.name, user.email are PC-specific, set via `git config --global`
-  # They will be written to ~/.gitconfig which takes precedence
   programs.git = {
     enable = true;
+    userName = "uma-chan";
+    userEmail = "127664533+i9wa4@users.noreply.github.com";
     ignores = [
       ".DS_Store"
       ".direnv/"
