@@ -10,8 +10,6 @@ in
   # Git configuration (replaces Makefile git-config target)
   programs.git = {
     enable = true;
-    userName = "uma-chan";
-    userEmail = "127664533+i9wa4@users.noreply.github.com";
     ignores = [
       ".DS_Store"
       ".direnv/"
@@ -72,7 +70,11 @@ in
       push.default = "current";
       submodule.recurse = true;
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
-      user.signingkey = "~/.ssh/github.pub";
+      user = {
+        email = "127664533+i9wa4@users.noreply.github.com";
+        name = "uma-chan";
+        signingkey = "~/.ssh/github.pub";
+      };
     };
   };
 
