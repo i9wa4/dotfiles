@@ -29,7 +29,7 @@ function _get_aws_profile_indicator() {
 
 function _get_context_line() {
   local remote=""
-  [[ "${_IS_LOCAL}" -eq 0 ]] && remote="🔴"
+  [[ "${_IS_LOCAL}" -eq 0 ]] && remote="🌐"
   local devshell="$(_get_devshell_indicator)"
   local aws="$(_get_aws_profile_indicator)"
   print -n "${remote}${devshell}${aws}"
@@ -37,5 +37,5 @@ function _get_context_line() {
 
 precmd() {
   local context="$(_get_context_line)"
-  PROMPT=$'\n'"${context}[%D{%Y-%m-%d %H:%M:%S}] %F{green}[\$(_get_simplified_path)]%f \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
+  PROMPT=$'\n'"${context}[%D{%Y-%m-%d %H:%M:%S}] %S[\$(_get_simplified_path)]%s \$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"$'\n$ '
 }
