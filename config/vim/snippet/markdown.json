@@ -7,10 +7,11 @@
     "prefix": "table",
     "body": ["| $0 | |", "| --- | --- |", "| | |"]
   },
-  "ai-implement-issue": {
-    "prefix": "ai-implement-issue",
+  "ai-issue-implementation": {
+    "prefix": "ai-issue-implementation",
     "body": [
-      "この worktree の Issue を実装してください。ブランチ名から Issue 番号を特定し、/orchestrator /plan-design で進めてください。"
+      "dekegate to orchestrator",
+      "この worktree の Issue を実装してください。ブランチ名から Issue 番号を特定して進めてください。"
     ]
   },
   "ai-create-review-comment": {

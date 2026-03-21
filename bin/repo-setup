@@ -64,6 +64,12 @@ if [[ -f "mise.toml" ]]; then
   echo "* Trusted mise.toml"
 fi
 
+# Allow direnv if .envrc exists
+if [[ -f ".envrc" ]]; then
+  direnv allow
+  echo "* Allowed .envrc"
+fi
+
 # Repository-specific setup
 case "${project_dir}" in
   # Example: frontend project
