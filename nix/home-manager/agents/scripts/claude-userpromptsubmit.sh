@@ -2,13 +2,16 @@
 # claude-userpromptsubmit.sh - Inject session context into each prompt
 #
 # Outputs current time, tmux pane role, and the command that launched
-# this session (claude or codex) as JSON additionalContext.
+# this session (claude or codex) as plain text additionalContext.
 #
 # Hook: UserPromptSubmit
 set -o errexit
 set -o nounset
 set -o pipefail
 set -o posix
+
+# Consume stdin (Claude Code sends prompt JSON)
+cat >/dev/null
 
 CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%S%z)
 ROLE=$(tmux display-message -p '#{pane_title}' 2>/dev/null || echo unknown)
@@ -23,5 +26,4 @@ if [[ -n ${PANE_TTY:-} ]]; then
   fi
 fi
 
-jq -n --arg ctx "Current time: $CURRENT_TIME | Your role: $ROLE | You were launched with: ${LAUNCH_CMD:-unknown}" \
-  '{"additionalContext": $ctx}'
+echo "Current time: $CURRENT_TIME | Your role: $ROLE | You were launched with: ${LAUNCH_CMD:-unknown}"

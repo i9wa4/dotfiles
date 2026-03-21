@@ -10,6 +10,9 @@ set -o nounset
 set -o pipefail
 set -o posix
 
+# Consume stdin (prompt JSON)
+cat >/dev/null
+
 CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%S%z)
 ROLE=$(tmux display-message -p '#{pane_title}' 2>/dev/null || echo unknown)
 
