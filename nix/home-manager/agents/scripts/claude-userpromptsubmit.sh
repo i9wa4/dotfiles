@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # claude-userpromptsubmit.sh - Inject session context into each prompt
 #
-# Outputs current time, tmux pane role, and the command that launched
-# this session (claude or codex) as plain text additionalContext.
+# Outputs current time, tmux pane role, working directory, git context,
+# and the command that launched this session as plain text additionalContext.
 #
 # Hook: UserPromptSubmit
 set -o errexit
@@ -26,4 +26,7 @@ if [[ -n ${PANE_TTY:-} ]]; then
   fi
 fi
 
-echo "Current time: $CURRENT_TIME | Your role: $ROLE | You were launched with: ${LAUNCH_CMD:-unknown}"
+# Git context via repo-status (branch, hash, staged/unstaged/unpushed counts)
+GIT_INFO=$(repo-status 2>/dev/null | tr -s ' ') || true
+
+echo "Current time: $CURRENT_TIME | Your role: $ROLE | CWD: $PWD | Git: ${GIT_INFO:-n/a} | You were launched with: ${LAUNCH_CMD:-unknown}"

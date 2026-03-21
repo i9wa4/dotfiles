@@ -7,15 +7,15 @@
 #   repo-status
 #
 # Output format:
-#   🌱branch 📍hash 🤷N ✅N 📝N 📈N 📉N 🔼N
-#     🌱 = Branch name (with action state if any)
+#   🌿branch 📍hash ❓N 📦N 📝N 🟢N 🔴N 🚀N
+#     🌿 = Branch name (with action state if any)
 #     📍 = Commit hash (8 chars)
-#     🤷 = Untracked files count
-#     ✅ = Staged files count
+#     ❓ = Untracked files count
+#     📦 = Staged files count
 #     📝 = Unstaged files count
-#     📈 = Insertions count
-#     📉 = Deletions count
-#     🔼 = Unpushed commits count
+#     🟢 = Insertions count
+#     🔴 = Deletions count
+#     🚀 = Unpushed commits count
 
 # Exit if not in a git repository
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
@@ -79,25 +79,25 @@ unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' '
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="🌱${branch} 📍${commit_hash}"
+output="🌿${branch} 📍${commit_hash}"
 
 if [ "${untracked}" -gt 0 ]; then
-  output="${output} 🤷${untracked}"
+  output="${output} ❓${untracked}"
 fi
 if [ "${staged}" -gt 0 ]; then
-  output="${output} ✅${staged}"
+  output="${output} 📦${staged}"
 fi
 if [ "${unstaged}" -gt 0 ]; then
   output="${output} 📝${unstaged}"
 fi
 if [ "${insertions}" -gt 0 ]; then
-  output="${output} 📈${insertions}"
+  output="${output} 🟢${insertions}"
 fi
 if [ "${deletions}" -gt 0 ]; then
-  output="${output} 📉${deletions}"
+  output="${output} 🔴${deletions}"
 fi
 if [ "${unpushed}" -gt 0 ]; then
-  output="${output} 🔼${unpushed}"
+  output="${output} 🚀${unpushed}"
 fi
 
 echo "${output} "
