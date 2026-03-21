@@ -56,7 +56,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "printf '{\"additionalContext\":\"Current time: %s\"}' \"$(date +%Y-%m-%dT%H:%M:%S%z)\"";
+              command = "printf '{\"additionalContext\":\"Current time: %s | Your role: %s\"}' \"$(date +%Y-%m-%dT%H:%M:%S%z)\" \"$(tmux display-message -p '#{pane_title}' 2>/dev/null || echo unknown)\"";
             }
           ];
         }
