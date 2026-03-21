@@ -7,6 +7,12 @@
     "prefix": "table",
     "body": ["| $0 | |", "| --- | --- |", "| | |"]
   },
+  "ai-implement-issue": {
+    "prefix": "ai-implement-issue",
+    "body": [
+      "この worktree の Issue を実装してください。ブランチ名から Issue 番号を特定し、/orchestrator /plan-design で進めてください。"
+    ]
+  },
   "ai-create-review-comment": {
     "prefix": "ai-create-review-comment",
     "body": [

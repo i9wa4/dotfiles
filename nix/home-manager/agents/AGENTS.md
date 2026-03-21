@@ -126,6 +126,7 @@ Example: `skills/git/SKILL.md`, not `git.md`
 | drawio-local               | draw.io diagram creation/editing             |
 | mermaid-local              | Mermaid diagram creation for revealjs slides |
 | nix                        | Nix commands and package management          |
+| orchestrator               | Orchestration workflow for orchestrator role  |
 | plan-design                | High-rigor plan authoring with review gates  |
 | subagent-review            | 10-parallel code/design review               |
 | tmux                       | tmux pane operations for debugging           |
