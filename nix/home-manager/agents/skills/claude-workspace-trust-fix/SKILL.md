@@ -83,7 +83,3 @@ If hooks still do not fire after applying the fix:
 3. Test with `-p` mode: `claude -p 'Edit README.md add <!-- test -->'`
 4. If `-p` fires hooks but interactive does not, re-check
    `hasTrustDialogAccepted`
-
-## Reference
-
-See related vault note for background investigation details.

@@ -35,7 +35,7 @@ acknowledge with a random one-liner in character.
   (symlinks, plain files) suffice for config file management in dotfiles
 - Never hardcode user-specific values (usernames, hostnames, machine names) in
   shared Nix configs; use `config.home.username` or pass values as arguments
-- Some panes/vaults are read-only. Before attempting edits, check write
+- Some panes are read-only. Before attempting edits, check write
   permissions. If blocked, delegate the edit to the appropriate agent.
 
 ## 5. Files
