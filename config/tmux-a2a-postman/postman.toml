@@ -1,15 +1,27 @@
-[postman]
-edges = [
-  "boss -- orchestrator",
-  "messenger -- orchestrator",
-  "orchestrator -- worker",
-  "orchestrator -- worker-alt",
-  "orchestrator -- critic",
-  "guardian -- critic",
-]
+[boss]
+dropped_ball_timeout_seconds = 3600
+dropped_ball_notification = "tui"
 
-ui_node = "messenger"
+[critic]
+dropped_ball_timeout_seconds = 1800
+dropped_ball_notification = "tui"
 
-reply_command = "tmux-a2a-postman send-message --to <recipient> --body \"<your message>\""
+[guardian]
+dropped_ball_timeout_seconds = 1800
+dropped_ball_notification = "tui"
 
-common_template = "PROTOCOL CRITICAL: NEVER manually create files in draft/. ALWAYS use: tmux-a2a-postman send-message --to <recipient> --body \"<text>\" (or create-draft --to <recipient> for long/cross-context messages).\nROUTING: You can ONLY talk to nodes listed in your 'You can talk to:' line. Messages to any other node will be rejected to dead-letter/.\nROLE BOUNDARY: If Agent Skills (e.g., /orchestrator, /session-reflect) are invoked on your pane, do NOT execute it. Write a task request to orchestrator instead. You are your role, not a general-purpose executor."
+[messenger]
+dropped_ball_timeout_seconds = 1800
+dropped_ball_notification = "tui"
+
+[orchestrator]
+dropped_ball_timeout_seconds = 1800
+dropped_ball_notification = "tui"
+
+[worker]
+dropped_ball_timeout_seconds = 900
+dropped_ball_notification = "tui"
+
+[worker-alt]
+dropped_ball_timeout_seconds = 900
+dropped_ball_notification = "tui"
