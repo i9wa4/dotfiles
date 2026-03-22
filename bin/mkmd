@@ -4,25 +4,31 @@ set -o nounset
 set -o pipefail
 set -o posix
 
+BASE_DIR="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
+
 print_usage() {
-  cat <<'EOF'
+  cat <<EOF
 Usage:
   mkmd --dir DIR --label LABEL
 
 mktemp wrapper that creates a markdown working file.
 
 Creates:
-  $XDG_STATE_HOME/mkmd/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<XXXXXX>.md
-  Works in git repos (uses owner/repo from ghq path) and outside git (uses "local"/dirname).
+  \$MKMD_BASE_DIR/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<XXXXXX>.md
+
+  Base directory: ${BASE_DIR}
+  Works in git repos (uses owner/repo from remote URL) and outside git (uses "local"/dirname).
+
+Environment:
+  MKMD_BASE_DIR  Override base directory (default: \$XDG_STATE_HOME/mkmd)
 
 Options:
-  --dir DIR    Directory name under the daily session
-  --label LABEL File label included in the filename
-  -h, --help   Show this help and exit
+  --dir DIR      Directory name under the daily session
+  --label LABEL  File label included in the filename
+  -h, --help     Show this help and exit
 EOF
 }
 
-# Defaults
 LABEL=""
 DIR=""
 
@@ -59,51 +65,29 @@ if [[ -z $DIR || -z $LABEL ]]; then
   exit 1
 fi
 
-# Resolve project identity and branch
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 
 if [[ -n $repo_root ]]; then
-  # Inside a git repository
-  ghq_root=""
-  if command -v ghq &>/dev/null; then
-    ghq_root="$(ghq root 2>/dev/null || true)"
-  fi
-  if [[ -z $ghq_root ]]; then
-    ghq_root="$HOME/ghq"
-  fi
-
-  ghq_prefix="${ghq_root}/github.com/"
-
-  # Resolve main repo root (handles git worktrees)
-  git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null || true)"
-  if [[ -n $git_common_dir && $git_common_dir != ".git" && $git_common_dir != ".git/" ]]; then
-    # Linked worktree: git_common_dir is absolute path to main repo's .git
-    main_repo_root="${git_common_dir%/.git}"
-  else
-    main_repo_root="$repo_root"
-  fi
-
-  if [[ $main_repo_root == "${ghq_prefix}"* ]]; then
-    ghq_rel="${main_repo_root#"${ghq_prefix}"}"
-    project_owner="${ghq_rel%%/*}"
-    project_name="${ghq_rel#*/}"
-    project_name="${project_name%%/*}"
+  remote_url="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ -n $remote_url ]]; then
+    # Extract owner/repo from remote URL (handles both SSH and HTTPS)
+    remote_url="${remote_url%.git}"
+    project_name="${remote_url##*/}"
+    remote_url="${remote_url%/*}"
+    project_owner="${remote_url##*[:/]}"
   else
     project_owner="local"
-    project_name="$(basename "$main_repo_root")"
+    project_name="$(basename "$repo_root")"
   fi
-
   branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
   branch_name="${branch_name//\//-}"
 else
-  # Outside a git repository: use current directory name
   project_owner="local"
   project_name="$(basename "$(pwd -P)")"
   branch_name="local"
 fi
 date_dir="$(date +%Y-%m-%d)-${branch_name}"
-state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
-TARGET_DIR="${state_home}/mkmd/${project_owner}-${project_name}/${date_dir}/${DIR}"
+TARGET_DIR="${BASE_DIR}/${project_owner}-${project_name}/${date_dir}/${DIR}"
 
 mkdir -p "$TARGET_DIR"
 FILE_PATH=$(mktemp "${TARGET_DIR}/${LABEL}-XXXXXX.md")
