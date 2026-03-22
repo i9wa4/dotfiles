@@ -59,6 +59,9 @@
     };
 
     # No follows
+    actrun = {
+      url = "github:mizchi/actrun";
+    };
     claude-chill = {
       url = "github:davidbeesley/claude-chill";
     };

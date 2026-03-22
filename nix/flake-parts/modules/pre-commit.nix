@@ -1,6 +1,7 @@
 # Pre-commit hooks configuration (dotfiles-specific)
 # Run: nix flake check (or automatically on git commit in devShell)
 {
+  inputs,
   mkPkgsUnstable,
   ...
 }:
@@ -20,17 +21,7 @@
         headings = false
         reflow = true
       '';
-      actrunPlatforms = {
-        x86_64-linux = {
-          url = "https://github.com/mizchi/actrun/releases/download/v0.18.0/actrun-linux-x64.tar.gz";
-          hash = "sha256-I+PEaot0teJXCTWcsqgJ1F5yFCpP04wIFfKjEOnHuOg=";
-        };
-        aarch64-darwin = {
-          url = "https://github.com/mizchi/actrun/releases/download/v0.18.0/actrun-macos-arm64.tar.gz";
-          hash = "sha256-rOmq0/+J9JnXTK7j+un8LTUNuAddOvfUarWeqzF15cQ=";
-        };
-      };
-      hasActrun = actrunPlatforms ? ${system};
+      hasActrun = inputs.actrun.packages ? ${system};
       betterleaksPlatforms = {
         x86_64-linux = {
           url = "https://github.com/betterleaks/betterleaks/releases/download/v1.1.1/betterleaks_1.1.1_linux_x64.tar.gz";
@@ -60,20 +51,7 @@
           install -Dm755 betterleaks $out/bin/betterleaks
         '';
       };
-      actrun = pkgs.stdenv.mkDerivation {
-        pname = "actrun";
-        version = "0.19.0";
-        src = pkgs.fetchurl actrunPlatforms.${system};
-        nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
-          pkgs.autoPatchelfHook
-        ];
-        dontUnpack = true;
-        dontBuild = true;
-        installPhase = ''
-          tar xzf $src
-          install -Dm755 actrun $out/bin/actrun
-        '';
-      };
+      actrun = inputs.actrun.packages.${system}.default;
     in
     {
       packages = if hasBetterleaks then { inherit betterleaks; } else { };
