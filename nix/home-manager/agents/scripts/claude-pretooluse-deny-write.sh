@@ -52,8 +52,8 @@ if [[ -n $ROLE_NAME ]] && case "$ROLE_NAME" in worker* | agent) false ;; *) true
 
     if [[ -n $FILE_PATH && $FILE_PATH == "$HOME/.local/state/tmux-a2a-postman/"* ]]; then
       : # Allow writes to postman state directory
-    elif [[ -n $FILE_PATH && $FILE_PATH == "$HOME/.local/state/mkoutput/"* ]]; then
-      : # Allow writes to mkoutput state directory
+    elif [[ -n $FILE_PATH && $FILE_PATH == "$HOME/.local/state/mkmd/"* ]]; then
+      : # Allow writes to mkmd state directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow writes to /tmp/ directory
     elif [[ -n $FILE_PATH && -n ${SUBDIR:-} && $FILE_PATH == "${SUBDIR}/"* ]]; then

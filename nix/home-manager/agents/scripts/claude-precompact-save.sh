@@ -11,14 +11,14 @@
 #   { "hook_event_name": "PreCompact", "trigger": "manual|auto", ... }
 #
 # Output:
-#   File saved via mkoutput
+#   File saved via mkmd
 set -o errexit
 set -o nounset
 set -o pipefail
 set -o posix
 
 # Create output file
-FILE=$(mkoutput --dir tmp --label compact-save)
+FILE=$(mkmd --dir tmp --label compact-save)
 
 {
   echo "# Pre-Compact Context Save"

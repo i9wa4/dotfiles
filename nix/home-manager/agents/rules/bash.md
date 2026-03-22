@@ -10,5 +10,5 @@
 Example (brace group with pipe):
 
 ```sh
-FILE=$(mkoutput --dir tmp --label output) && { git branch -r | grep issue; } > "$FILE" 2>&1
+FILE=$(mkmd --dir tmp --label output) && { git branch -r | grep issue; } > "$FILE" 2>&1
 ```

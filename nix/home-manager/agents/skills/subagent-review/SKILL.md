@@ -79,7 +79,7 @@ DIR_NAME=$(basename "$(git rev-parse --show-toplevel)")
 PR_NUM=$(echo "$DIR_NAME" | rg -o --pcre2 'pr-\K[0-9]+' || true)
 ISSUE_NUM=$(echo "$DIR_NAME" | rg -o --pcre2 'issue-\K[0-9]+' || true)
 
-CONTEXT_FILE=$(mkoutput --dir reviews --label review-context)
+CONTEXT_FILE=$(mkmd --dir reviews --label review-context)
 echo "# Review Context" > "$CONTEXT_FILE"
 
 if [ -n "$PR_NUM" ]; then
@@ -135,8 +135,8 @@ subagents in parallel in a single message/turn using the prompt template above.
 
 ```bash
 for ROLE in security architecture historian data qa; do
-  PROMPT_FILE=$(mkoutput --dir reviews --label "prompt-${ROLE}-${EXT_LABEL}")
-  OUTPUT_FILE=$(mkoutput --dir reviews --label "review-${ROLE}-${EXT_LABEL}")
+  PROMPT_FILE=$(mkmd --dir reviews --label "prompt-${ROLE}-${EXT_LABEL}")
+  OUTPUT_FILE=$(mkmd --dir reviews --label "review-${ROLE}-${EXT_LABEL}")
   cat << EOF > "$PROMPT_FILE"
 reviewer-${ROLE}
 git diff ${BASE}...HEAD
@@ -179,7 +179,7 @@ Launch 10 subagents (self x 5 + external x 5) same as Section 1.3.2.
 ### 1.5. Summary Output
 
 ```bash
-SUMMARY_FILE=$(mkoutput --dir reviews --label summary)
+SUMMARY_FILE=$(mkmd --dir reviews --label summary)
 ```
 
 Generate the complete summary in one pass. Do NOT require a follow-up.

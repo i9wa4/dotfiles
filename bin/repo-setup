@@ -13,7 +13,7 @@ set -o posix
 #
 # Created files:
 #   - local.vim: Vim local configuration
-#   - memo file created via mkoutput
+#   - memo file created via mkmd
 
 # Get current worktree root
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
@@ -31,8 +31,8 @@ EOF
 fi
 echo "* Created local.vim"
 
-# Create memo file via mkoutput
-memo_path="$(mkoutput --dir memo --label memo)"
+# Create memo file via mkmd
+memo_path="$(mkmd --dir memo --label memo)"
 cat >"$memo_path" <<'EOF'
 # temp
 EOF

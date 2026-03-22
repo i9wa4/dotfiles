@@ -51,7 +51,7 @@ Do NOT report features or changes from versions newer than the local install.
 ### 2.2. Fetch from GitHub
 
 ```sh
-FILE=$(mkoutput --dir tmp --label claude-code-changelog)
+FILE=$(mkmd --dir tmp --label claude-code-changelog)
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
   --jq '.content' | base64 -d > "$FILE"
 ```

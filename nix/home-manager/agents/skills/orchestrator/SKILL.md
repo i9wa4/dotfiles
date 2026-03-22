@@ -39,12 +39,12 @@ Subagents are READONLY only. Skip mood status updates.
 {task content}
 ```
 
-Return results directly. Use mkoutput if file output needed.
+Return results directly. Use mkmd if file output needed.
 
 ### 2.2. Codex CLI
 
 ```bash
-FILE=$(mkoutput --dir reviews --label "${ROLE}-cx") && \
+FILE=$(mkmd --dir reviews --label "${ROLE}-cx") && \
 codex exec --sandbox workspace-write \
   -o "$FILE" \
   "[Your capability=READONLY] {task content}" &
@@ -76,7 +76,7 @@ Before creating the plan file:
 1. **Research phase**: Create a research artifact first.
 
    ```bash
-   mkoutput --dir research --label "${feature}-investigation"
+   mkmd --dir research --label "${feature}-investigation"
    ```
 
    Document: files examined, patterns found, design decisions, recommendations.
@@ -112,7 +112,7 @@ Before creating the plan file:
 Create file:
 
 ```bash
-mkoutput --dir plans --label plan
+mkmd --dir plans --label plan
 ```
 
 ```markdown
@@ -243,7 +243,7 @@ Parallel: Send to multiple Workers simultaneously
 Create file:
 
 ```bash
-mkoutput --dir reviews --label completion
+mkmd --dir reviews --label completion
 ```
 
 ```markdown
@@ -251,7 +251,7 @@ mkoutput --dir reviews --label completion
 
 ## Plan Reference
 
-- File: {mkoutput-generated plan file path}
+- File: {mkmd-generated plan file path}
 
 ## Changes Made
 

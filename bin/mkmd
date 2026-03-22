@@ -7,10 +7,12 @@ set -o posix
 print_usage() {
   cat <<'EOF'
 Usage:
-  mkoutput --dir DIR --label LABEL
+  mkmd --dir DIR --label LABEL
+
+mktemp wrapper that creates a markdown working file.
 
 Creates:
-  $XDG_STATE_HOME/mkoutput/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<ID>.md
+  $XDG_STATE_HOME/mkmd/<owner>-<repo>/YYYY-MM-DD-<branch>/<DIR>/<LABEL>-<XXXXXX>.md
   Works in git repos (uses owner/repo from ghq path) and outside git (uses "local"/dirname).
 
 Options:
@@ -27,26 +29,26 @@ DIR=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -h | --help)
-      print_usage
-      exit 0
-      ;;
-    --dir)
-      DIR="$2"
-      shift 2
-      ;;
-    --label)
-      LABEL="$2"
-      shift 2
-      ;;
-    -*)
-      echo "Unknown option: $1" >&2
-      exit 1
-      ;;
-    *)
-      echo "Error: Unknown argument: $1" >&2
-      exit 1
-      ;;
+  -h | --help)
+    print_usage
+    exit 0
+    ;;
+  --dir)
+    DIR="$2"
+    shift 2
+    ;;
+  --label)
+    LABEL="$2"
+    shift 2
+    ;;
+  -*)
+    echo "Unknown option: $1" >&2
+    exit 1
+    ;;
+  *)
+    echo "Error: Unknown argument: $1" >&2
+    exit 1
+    ;;
   esac
 done
 
@@ -101,17 +103,9 @@ else
 fi
 date_dir="$(date +%Y-%m-%d)-${branch_name}"
 state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
-TARGET_DIR="${state_home}/mkoutput/${project_owner}-${project_name}/${date_dir}/${DIR}"
+TARGET_DIR="${state_home}/mkmd/${project_owner}-${project_name}/${date_dir}/${DIR}"
 
-# Generate filename
-ID=$(printf '%04x' $RANDOM)
-FILE_NAME="${LABEL}-${ID}.md"
-FILE_PATH="$TARGET_DIR/$FILE_NAME"
-
-# Create directory and file
 mkdir -p "$TARGET_DIR"
-touch "$FILE_PATH"
-
-# Output the created file path
+FILE_PATH=$(mktemp "${TARGET_DIR}/${LABEL}-XXXXXX.md")
 echo "$FILE_PATH"
 echo "Created: $FILE_PATH" >&2

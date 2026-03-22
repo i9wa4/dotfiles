@@ -95,10 +95,10 @@ tasks only. In all other contexts, follow the base orchestrator order.
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
 1. Create a research artifact for source digestion:
-   mkoutput --dir research --label "plan-investigation"
+   mkmd --dir research --label "plan-investigation"
    - Note: add a suffix to disambiguate if multiple plans exist in the same
      session.
-   - Example: `mkoutput --dir research --label "plan-investigation-dbt-merge"`
+   - Example: `mkmd --dir research --label "plan-investigation-dbt-merge"`
 2. Read all source artifacts in full.
 3. For large files, read in chunks (`offset/limit` or line ranges).
 4. Extract:
@@ -225,7 +225,7 @@ A plan is ready for boss review only if all are true:
 ## 9. Deliverables
 
 - Plan file created via:
-  - `mkoutput --dir plans --label plan`
+  - `mkmd --dir plans --label plan`
 - Progress updates and status changes recorded in the plan.
 - Final handoff summary including:
   - Key decisions

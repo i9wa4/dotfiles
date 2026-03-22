@@ -42,18 +42,15 @@ acknowledge with a random one-liner in character.
 
 ### 5.1. Working Files
 
-- Create with `mkoutput` command (not tracked by git)
+- Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
+- Common dir/label combinations:
 
-| Purpose            | Command                                                      |
-| ------------------ | ------------------------------------------------------------ |
-| Research artifacts | `mkoutput --dir research --label "${feature}-investigation"` |
-| Plan artifacts     | `mkoutput --dir plans --label plan`                          |
-| Completion reports | `mkoutput --dir reviews --label completion`                  |
-| Throwaway outputs  | `mkoutput --dir tmp --label "${purpose}"`                    |
-
-NOTE: `plan` and `completion` are orchestrator conventions. The `${feature}`
-suffix is optional for disambiguation when multiple plans exist in the same
-session.
+| --dir     | --label                          |
+| --------- | -------------------------------- |
+| research  | `${feature}-investigation`       |
+| plans     | plan                             |
+| reviews   | completion                       |
+| tmp       | `${purpose}`                     |
 
 ### 5.2. Editing Style
 
