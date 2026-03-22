@@ -47,6 +47,7 @@ acknowledge with a random one-liner in character.
 
 | --dir     | --label                          |
 | --------- | -------------------------------- |
+| draft     | `${topic}`                       |
 | research  | `${feature}-investigation`       |
 | plans     | plan                             |
 | reviews   | completion                       |
