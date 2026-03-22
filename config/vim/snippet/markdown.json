@@ -19,5 +19,11 @@
     "body": [
       "私はこの Pull Request のレビュアーになりました。まず /subagent-review で指摘を抽出してください。その後、指摘内容のうち IMPORTANT なものに対応する日本語によるレビュー指摘コメント下書き Markdown を作成してください。コメント内容の妥当性についてはレビュー指摘コメント下書き Markdown の内容を /subagent-review でレビューして全員が了承するまでコメント内容を調整すること。最後にレビュー指摘コメント下書き Markdownの内容を私に見えるように出力してください。最終的な項目の取捨選択を私が行います。"
     ]
+  },
+  "ai-orchestrator-status": {
+    "prefix": "ai-orchestrator-status",
+    "body": [
+      "orchestrator のステータスをメッセージ送信で確認してください。 orchestrator は作業終了待機中のノードに対しても必ずステータス確認メッセージを送信すること。取り急ぎ直ちにステータスを返信したノードの状態を messenger へ報告すること。遅れて返信したノードの状態も messenger へ報告しつつ自律的にタスク完了まで導くこと。"
+    ]
   }
 }
