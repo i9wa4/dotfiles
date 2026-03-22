@@ -124,7 +124,23 @@ echo "use flake" > .envrc
 
 ## 3. Ubuntu
 
-### 3.1. Configure /etc/nix/nix.conf
+### 3.1. Create a User with sudo Privileges
+
+```sh
+sudo adduser <username>
+```
+
+```sh
+sudo usermod -aG sudo <username>
+```
+
+To delete a user and their home directory:
+
+```sh
+sudo deluser --remove-home <username>
+```
+
+### 3.2. Configure /etc/nix/nix.conf
 
 `/etc/nix/nix.conf` is a real file (not managed by Nix). Configure it manually
 with `sudo`.
@@ -167,13 +183,13 @@ Restart nix-daemon to apply:
 sudo systemctl restart nix-daemon
 ```
 
-### 3.2. Initial home-manager switch
+### 3.3. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 3.3. Set zsh as default shell (optional)
+### 3.4. Set zsh as default shell (optional)
 
 `~/.bashrc` auto-switches to zsh, but setting the login shell
 is useful for regular SSH connections:
