@@ -45,13 +45,13 @@ acknowledge with a random one-liner in character.
 - Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
 - Common dir/label combinations:
 
-| --dir     | --label                          |
-| --------- | -------------------------------- |
-| draft     | `${topic}`                       |
-| research  | `${feature}-investigation`       |
-| plans     | plan                             |
-| reviews   | completion                       |
-| tmp       | `${purpose}`                     |
+    | --dir     | --label                          |
+    | --------- | -------------------------------- |
+    | draft     | `${topic}`                       |
+    | research  | `${feature}-investigation`       |
+    | plans     | plan                             |
+    | reviews   | completion                       |
+    | tmp       | `${purpose}`                     |
 
 ### 5.2. Editing Style
 
