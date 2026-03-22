@@ -29,4 +29,8 @@ fi
 # Git context via repo-status (branch, hash, staged/unstaged/unpushed counts)
 GIT_INFO=$(repo-status 2>/dev/null | tr -s ' ') || true
 
-echo "Current time: $CURRENT_TIME | Your role: $ROLE | CWD: $PWD | Git: ${GIT_INFO:-n/a} | You were launched with: ${LAUNCH_CMD:-unknown}"
+# Read usage snapshot persisted by claude-statusline.sh
+USAGE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/claude/usage.txt"
+USAGE_INFO=$(cat "$USAGE_FILE" 2>/dev/null) || true
+
+echo "Current time: $CURRENT_TIME | Your role: $ROLE | CWD: $PWD | Git: ${GIT_INFO:-n/a} | Usage: ${USAGE_INFO:-n/a} | You were launched with: ${LAUNCH_CMD:-unknown}"
