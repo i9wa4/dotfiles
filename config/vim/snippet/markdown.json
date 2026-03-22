@@ -23,6 +23,7 @@
   "ai-orchestrator-status": {
     "prefix": "ai-orchestrator-status",
     "body": [
+      "余計なことは何もせずに以下のメッセージの送信だけ実施してください：",
       "orchestrator のステータスをメッセージ送信で確認してください。 orchestrator は作業終了待機中のノードに対しても必ずステータス確認メッセージを送信すること。取り急ぎ直ちにステータスを返信したノードの状態を messenger へ報告すること。遅れて返信したノードの状態も messenger へ報告しつつ自律的にタスク完了まで導くこと。"
     ]
   }
