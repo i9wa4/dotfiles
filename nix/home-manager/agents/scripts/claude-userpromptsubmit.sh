@@ -14,11 +14,11 @@ set -o posix
 cat >/dev/null
 
 CURRENT_TIME=$(date +%Y-%m-%dT%H:%M:%S%z)
-ROLE=$(tmux display-message -p '#{pane_title}' 2>/dev/null || echo unknown)
+ROLE=$(tmux display-message -t "${TMUX_PANE:-}" -p '#{pane_title}' 2>/dev/null || echo unknown)
 
 # Detect launch command on this tmux pane's TTY
 LAUNCH_CMD=""
-PANE_TTY=$(tmux display-message -p '#{pane_tty}' 2>/dev/null | sed 's#^/dev/##') || true
+PANE_TTY=$(tmux display-message -t "${TMUX_PANE:-}" -p '#{pane_tty}' 2>/dev/null | sed 's#^/dev/##') || true
 if [[ -n ${PANE_TTY:-} ]]; then
   LAUNCH_PID=$(pgrep -f -t "$PANE_TTY" '^(claude|codex) ' 2>/dev/null | head -1) || true
   if [[ -n ${LAUNCH_PID:-} ]]; then
