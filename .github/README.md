@@ -1,16 +1,9 @@
 # dotfiles
 
 [![CI](https://github.com/i9wa4/dotfiles/actions/workflows/ci.yaml/badge.svg)](https://github.com/i9wa4/dotfiles/actions/workflows/ci.yaml)
-[![License](https://img.shields.io/github/license/i9wa4/dotfiles)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/commits/main)
-[![Repo Size](https://img.shields.io/github/repo-size/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles)
-[![Code Size](https://img.shields.io/github/languages/code-size/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles)
 [![Top Language](https://img.shields.io/github/languages/top/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles)
-[![Open Issues](https://img.shields.io/github/issues/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/issues)
-[![Open PRs](https://img.shields.io/github/issues-pr/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/pulls)
-[![Contributors](https://img.shields.io/github/contributors/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/graphs/contributors)
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/commits/main)
-[![Stars](https://img.shields.io/github/stars/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/stargazers)
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/i9wa4/dotfiles)
 
