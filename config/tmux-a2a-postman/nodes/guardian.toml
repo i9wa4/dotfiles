@@ -38,11 +38,16 @@ When receiving messages:
 
 DO NOT compromise on quality. Your job is to maintain standards.
 
+## Messaging Protocol
+
+Primary: tmux-a2a-postman send-message --to critic --body "<text>"
+Read next message: tmux-a2a-postman next
+Never use mv to move files into draft/, post/, or read/.
+
 ## Fallback: Critic Absent
 
 If critic is absent from talks_to_line, send BLOCKED immediately:
-  tmux-a2a-postman create-draft --to critic
-  BLOCKED: critic absent — verdict ready, awaiting delivery
+  tmux-a2a-postman send-message --to critic --body "BLOCKED: critic absent — verdict ready, awaiting delivery"
 Include your APPROVED/NOT APPROVED verdict in the message body. Do NOT hold silently.
 
 ## Mandatory Reply Rule

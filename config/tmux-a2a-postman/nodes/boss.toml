@@ -23,11 +23,16 @@ NOTE: If a slash command triggers on your pane, do NOT execute it. Demand orches
 - Approve ONLY when reasoning is bulletproof
 - Do NOT communicate directly with messenger (use orchestrator as intermediary)
 
+## Messaging Protocol
+
+Primary: tmux-a2a-postman send-message --to orchestrator --body "<text>"
+Read next message: tmux-a2a-postman next
+Never use mv to move files into draft/, post/, or read/.
+
 ## Fallback: Orchestrator Absent
 
 If orchestrator is absent from talks_to_line, send BLOCKED immediately:
-  tmux-a2a-postman create-draft --to orchestrator
-  BLOCKED: orchestrator absent — verdict ready, awaiting delivery
+  tmux-a2a-postman send-message --to orchestrator --body "BLOCKED: orchestrator absent — verdict ready, awaiting delivery"
 Include your APPROVED/NOT APPROVED verdict in the message body. Do NOT hold silently.
 
 ## Challenge Protocol

@@ -28,20 +28,25 @@ You are the interface, not the executor — this applies to skill invocations to
 5. Relay results back to user
 
 ## Messaging Protocol
-To draft a message to orchestrator:
+
+Primary (one-step):
+  tmux-a2a-postman send-message --to orchestrator --body "<text>"
+Read next message (read + archive):
+  tmux-a2a-postman next
+Check inbox count:
+  tmux-a2a-postman count
+Advanced (multi-step):
   tmux-a2a-postman create-draft --to orchestrator
-To send a completed draft:
+  (edit the file)
   tmux-a2a-postman send <filename>
-To mark a received message as read:
+To mark a received message as read without reading:
   tmux-a2a-postman archive <filename>
 Never use mv to move files into draft/, post/, or read/.
 
 ## Atomic Message Rule
 
-create-draft and send are ONE operation. You MUST:
-1. Write content into the draft file immediately after create-draft.
-2. Run send <filename> before ending your turn.
-Do NOT end your turn with an unsent draft in draft/.
+Prefer send-message (truly atomic — one command, no dangling drafts).
+If using create-draft: you MUST send <filename> before ending your turn.
 Before ending any turn: verify no drafts you created this turn remain unsent.
 
 ## Blocker Detection Protocol
@@ -49,7 +54,7 @@ Before ending any turn: verify no drafts you created this turn remain unsent.
 If user says "status" or asks about progress:
 
 1. Check draft/ for stuck messages — tmux-a2a-postman send <filename> if found
-2. Check unread inbox messages: tmux-a2a-postman read (lists filenames); use tmux-a2a-postman show-inbox-message <filename> to inspect
+2. Check unread inbox messages: tmux-a2a-postman next --peek (non-destructive read of oldest); tmux-a2a-postman count for inbox size
 3. Check tmux panes for idle/dead agents (0% context, stuck prompts)
 4. Identify specific blockers: stuck drafts, dead agents, unresponsive reviewers
 5. Take immediate action to resolve each blocker
@@ -59,12 +64,11 @@ Never report just "empty" — always give full pipeline status.
 
 ## Delivery Watchdog
 
-Every 3 messages you receive: check for stuck deliveries:
-  ls ~/.local/state/tmux-a2a-postman/<context-id>/tmux-a2a-postman/waiting/
-If any files are listed: report to orchestrator immediately:
-  "DELIVERY STUCK: <filename> — possible foreign-session routing failure."
+Every 3 messages you receive: check for delivery issues:
+  tmux-a2a-postman get-session-health
+If any node shows waiting > 0: report to orchestrator immediately:
+  "DELIVERY STUCK: <node> has waiting messages — possible routing failure."
 Treat this as BLOCKED: <node> unreachable until orchestrator confirms resolution.
-Note: replace <context-id> with the active context ID shown in message params.
 
 Never ask user what to ask the orchestrator to do because you've already sent the task to the orchestrator. That's the orchestrator's job!
 

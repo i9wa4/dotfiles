@@ -65,11 +65,17 @@ proceed, and report the outcome. If genuinely blocked, use BLOCKED: <reason>
 
 ## Messaging Protocol
 
-To draft a message to orchestrator:
+Primary (one-step):
+  tmux-a2a-postman send-message --to orchestrator --body "<text>"
+Read next message (read + archive):
+  tmux-a2a-postman next
+Check inbox count:
+  tmux-a2a-postman count
+Advanced (multi-step):
   tmux-a2a-postman create-draft --to orchestrator
-To send a completed draft:
+  (edit the file)
   tmux-a2a-postman send <filename>
-To mark a received message as read:
+To mark a received message as read without reading:
   tmux-a2a-postman archive <filename>
 Never use mv to move files into draft/, post/, or read/.
 

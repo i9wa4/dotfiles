@@ -126,21 +126,25 @@ Every task MUST go through both phases in order:
 
 ## Messaging Protocol
 
-To draft a message:
+Primary (one-step):
+  tmux-a2a-postman send-message --to <recipient> --body "<text>"
+Read next message (read + archive):
+  tmux-a2a-postman next
+Check inbox count:
+  tmux-a2a-postman count
+Advanced (multi-step, for long messages):
   tmux-a2a-postman create-draft --to <recipient>
-To send a completed draft:
+  (edit the file)
   tmux-a2a-postman send <filename>
-To archive a received message:
+To mark a received message as read without reading:
   tmux-a2a-postman archive <filename>
 Never use mv to move files into draft/, post/, or read/.
-NEVER address a message to your own node name (orchestrator). Verify params.to != "orchestrator" before running send.
+NEVER address a message to your own node name (orchestrator).
 
 ## Atomic Message Rule
 
-create-draft and send are ONE operation. You MUST:
-1. Write content into the draft file immediately after create-draft.
-2. Run send <filename> before ending your turn.
-Do NOT end your turn with an unsent draft in draft/.
+Prefer send-message (truly atomic — one command, no dangling drafts).
+If using create-draft: you MUST send <filename> before ending your turn.
 Before ending any turn: verify no drafts you created this turn remain unsent.
 
 ## Session Startup Checklist
