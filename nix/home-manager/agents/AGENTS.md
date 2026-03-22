@@ -84,56 +84,7 @@ acknowledge with a random one-liner in character.
 
 ## 9. Reference
 
-Files and directories described below are located at:
-
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
-
-| Category  | Items                                                     |
-| --------- | --------------------------------------------------------- |
-| Rules     | bash, github, markdown, python                            |
-| Skills    | managed skills + external skills (see @~/.claude/skills/) |
-| Subagents | reviewer-\*, researcher-tech                              |
-
-### 9.1. `rules/`
-
-Claude Code auto-loads these. Codex CLI should reference as needed.
-
-| Rule        | Description                   | When to Reference |
-| ----------- | ----------------------------- | ----------------- |
-| bash.md     | Bash syntax and command rules | Command execution |
-| github.md   | GitHub rules (constraints)    | GitHub operations |
-| markdown.md | Markdown creation rules       | Markdown creation |
-| python.md   | Python shebang and venv rules | Python execution  |
-
-### 9.2. `skills/`
-
-NOTE: Each skill directory contains a `SKILL.md` file (not `{skill-name}.md`).
-Example: `skills/git/SKILL.md`, not `git.md`
-
-#### 9.2.1. Managed Skills
-
-| Skill                      | Description                                  |
-| -------------------------- | -------------------------------------------- |
-| bigquery-local             | BigQuery development guide                   |
-| claude-config-optimizer    | Claude Code config and changelog             |
-| claude-workspace-trust-fix | Fix for PreToolUse hooks silently skipped    |
-| codex-config-optimizer     | Codex CLI config and changelog               |
-| databricks-local           | Queries API, VARIANT/JSON, Dashboard,        |
-|                            | dbt integration, Jupyter kernel              |
-| dbt-local                  | Issue target setup, SQL dialect              |
-| drawio-local               | draw.io diagram creation/editing             |
-| mermaid-local              | Mermaid diagram creation for revealjs slides |
-| nix                        | Nix commands and package management          |
-| orchestrator               | Orchestration workflow for orchestrator role  |
-| plan-design                | High-rigor plan authoring with review gates  |
-| subagent-review            | 10-parallel code/design review               |
-| tmux                       | tmux pane operations for debugging           |
-
-#### 9.2.2. External Skills (Nix Store)
-
-External skills are auto-loaded from Nix Store and frequently updated.
-
-### 9.3. `subagents/`
+### 9.1. Subagents
 
 Specialized investigators - use anytime for expert perspectives.
 
