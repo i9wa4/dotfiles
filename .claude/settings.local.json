@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(shellcheck:*)",
-      "Bash(shfmt:*)",
-      "Bash(mktemp --version)"
-    ]
-  }
-}
