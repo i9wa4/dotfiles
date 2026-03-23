@@ -1,27 +1,20 @@
 [boss]
 dropped_ball_timeout_seconds = 3600
-dropped_ball_notification = "tui"
 
 [critic]
 dropped_ball_timeout_seconds = 1800
-dropped_ball_notification = "tui"
 
 [guardian]
 dropped_ball_timeout_seconds = 1800
-dropped_ball_notification = "tui"
 
 [messenger]
 dropped_ball_timeout_seconds = 1800
-dropped_ball_notification = "tui"
 
 [orchestrator]
 dropped_ball_timeout_seconds = 1800
-dropped_ball_notification = "tui"
 
 [worker]
 dropped_ball_timeout_seconds = 900
-dropped_ball_notification = "tui"
 
 [worker-alt]
 dropped_ball_timeout_seconds = 900
-dropped_ball_notification = "tui"
