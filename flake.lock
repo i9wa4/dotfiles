@@ -138,11 +138,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1774280275,
-        "narHash": "sha256-RzKWEMmo4z/nh8Tqpyu5aRFxueLDFMXC3ltck9OYi40=",
+        "lastModified": 1774285914,
+        "narHash": "sha256-h0Zj5FA9/P2o9Vr9iI5UgtNQxWe0HrR00x7GIA+xnZQ=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "f81aa75c80c08ddfebdbc8956779cc0a8ba05d26",
+        "rev": "4e37ead1a7cca70c0ed7f9a79b8472d54df36b85",
         "type": "github"
       },
       "original": {
@@ -471,11 +471,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1774276314,
-        "narHash": "sha256-kg/oCN6tQqwtSrSukEbOP6TXrp/8M94Ae09nCB1WDG8=",
+        "lastModified": 1774286543,
+        "narHash": "sha256-p/uG7RgY9JfE7YUgDHZ1FlHONpoPuPIb+PwOEdcPBRE=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "8e9b62ab9321c944ace5d9bdcd970003a7ee1e45",
+        "rev": "94da705b8baa5c78d39e8c092bccfbe3a015b8de",
         "type": "github"
       },
       "original": {
