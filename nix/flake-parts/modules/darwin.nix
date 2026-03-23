@@ -95,6 +95,7 @@ in
   flake.darwinConfigurations =
     let
       commonCasks = [
+        "arto"
         "docker-desktop"
         "google-chrome"
         "maccy"
