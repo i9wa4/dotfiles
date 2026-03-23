@@ -22,7 +22,6 @@ in
     # programs.*
     ./modules/bash.nix
     ./modules/git.nix
-    ./modules/kitty.nix
     ./modules/lazygit.nix
     ./modules/zsh.nix
     # xdg.configFile
