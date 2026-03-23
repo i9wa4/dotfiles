@@ -97,6 +97,7 @@ in
       commonCasks = [
         "docker-desktop"
         "google-chrome"
+        "kitty"
         "maccy"
         "monitorcontrol"
         "visual-studio-code"

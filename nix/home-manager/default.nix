@@ -124,6 +124,7 @@ in
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
+    "kitty".source = symlink "${dotfilesDir}/config/kitty";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
     "wezterm".source = ../../config/wezterm;
