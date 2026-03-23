@@ -518,3 +518,8 @@ and wait for explicit human user approval.
 ### 9.9. [worker-alt] Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR
+
+## 10. `message_footer`
+
+Action required: Always finish by sending a reply.
+  tmux-a2a-postman send-message --to {sender} --body "<your message>"
