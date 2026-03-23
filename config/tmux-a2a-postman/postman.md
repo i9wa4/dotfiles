@@ -52,7 +52,8 @@ Discard messages where params.tmuxSession != your tmux session name.
 
 ## 3. `message_footer`
 
-Action required: Always finish by sending a reply.
+Reply if you have action items, questions, or deliverables.
+No reply needed for: DONE, ACK, HEARTBEAT_OK, or status-only messages.
   tmux-a2a-postman send-message --to {sender} --body "<your message>"
 
 ## 4. `boss`
