@@ -138,11 +138,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1774285914,
-        "narHash": "sha256-h0Zj5FA9/P2o9Vr9iI5UgtNQxWe0HrR00x7GIA+xnZQ=",
+        "lastModified": 1774291086,
+        "narHash": "sha256-r9/kNMbzD/qhD75KyLmVbdytEySzf/4jt1QF/MJlV9c=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "4e37ead1a7cca70c0ed7f9a79b8472d54df36b85",
+        "rev": "357d85f5e788320e63407f1796be4ec3d6ff9ab4",
         "type": "github"
       },
       "original": {
@@ -186,11 +186,11 @@
     "drawio-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1774276230,
-        "narHash": "sha256-2hdD2q/0aAj9J8l27bgkJcKXxFubax5LaiR8BMYNfRo=",
+        "lastModified": 1774303244,
+        "narHash": "sha256-otnMZlooM7XyzK7MK1DOvzt1nMSmVZv+CVmGe5aeeE0=",
         "owner": "jgraph",
         "repo": "drawio-mcp",
-        "rev": "24a749eed208b2c84cd60b0e892c3af8ef96a6cb",
+        "rev": "786dedf6495990eecf88a523483d73843d7e304e",
         "type": "github"
       },
       "original": {
@@ -309,11 +309,11 @@
     "freee-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1774111824,
-        "narHash": "sha256-YFHLnbtY7Z7NHn9bRIy3xFDpS5F03OLxaDH4T8cdzYo=",
+        "lastModified": 1774332416,
+        "narHash": "sha256-FvWv4DrYpepsKrWnUTOZpvcibgdcuZeQt3B7B5Hi45E=",
         "owner": "freee",
         "repo": "freee-mcp",
-        "rev": "ea4707dc3044b33787091e87970411d71eaeab95",
+        "rev": "894923af1d6b15cc59838183e2d4ae7bb5a15bed",
         "type": "github"
       },
       "original": {
@@ -433,11 +433,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774274572,
-        "narHash": "sha256-YtpNRYSv0CQn+MjhHHqFcIR5L0Urex2tTwS42kP6nuc=",
+        "lastModified": 1774293042,
+        "narHash": "sha256-OEBV+Y5I4Ldu98k0KvGXRfJYh+jjE8ocCSL/dxTGs1s=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "90913f831383a599c556cba59eac8cae9b5195a9",
+        "rev": "bc357c75e3142a31b849ba49c5299fb52c61cf59",
         "type": "github"
       },
       "original": {
@@ -471,11 +471,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1774286543,
-        "narHash": "sha256-p/uG7RgY9JfE7YUgDHZ1FlHONpoPuPIb+PwOEdcPBRE=",
+        "lastModified": 1774333104,
+        "narHash": "sha256-acWWrX21golBLxEQ+RxEow2MZ7KxFi8iCH1LUXUL4eg=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "94da705b8baa5c78d39e8c092bccfbe3a015b8de",
+        "rev": "2935ee5defa6159e56cc31ee122f8caa3772c174",
         "type": "github"
       },
       "original": {
@@ -491,11 +491,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774270213,
-        "narHash": "sha256-rY+4HBblbqfzYakeFvNabHIBHly+9a5WlH1c/yWHD0w=",
+        "lastModified": 1774335578,
+        "narHash": "sha256-SQr8Sn33FQY20ChlFJP+GDSC+VLq2T9lRlmkAKdYPsQ=",
         "owner": "natsukium",
         "repo": "mcp-servers-nix",
-        "rev": "551896cdef07eb3c4175175dbc4cebdd2daf5c5b",
+        "rev": "52db71b8cb8b39bce3e12f1ba3ed009aaf97c15a",
         "type": "github"
       },
       "original": {
@@ -593,11 +593,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1774243609,
-        "narHash": "sha256-6sB2IYqXYwoQS11Ev0u3b0lpAleTpvNv5iv4iqiCCR8=",
+        "lastModified": 1774273680,
+        "narHash": "sha256-a++tZ1RQsDb1I0NHrFwdGuRlR5TORvCEUksM459wKUA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4724d5647207377bede08da3212f809cbd94a648",
+        "rev": "fdc7b8f7b30fdbedec91b71ed82f36e1637483ed",
         "type": "github"
       },
       "original": {
@@ -751,11 +751,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1774281748,
-        "narHash": "sha256-ESh1HiMbaIFwsl/987qUH7L9kosPoKICzbXsm4VyYS8=",
+        "lastModified": 1774312243,
+        "narHash": "sha256-Ck4s5WQBj2VlnArRzKcLI1zngDMKk+NRa1/EN8xwZvg=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "cbda6c2adf075073d6552c701954e8f27877eddc",
+        "rev": "96e4d7fb68a149ddf0998890d3dee99125ddb1bc",
         "type": "github"
       },
       "original": {
