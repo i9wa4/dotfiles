@@ -90,6 +90,11 @@ date_dir="$(date +%Y-%m-%d)-${branch_name}"
 TARGET_DIR="${BASE_DIR}/${project_owner}-${project_name}/${date_dir}/${DIR}"
 
 mkdir -p "$TARGET_DIR"
-FILE_PATH=$(mktemp "${TARGET_DIR}/${LABEL}-XXXXXX.md")
+# BSD mktemp requires XXXXXX at the end of the template (no suffix allowed)
+TEMP_PATH=$(mktemp "${TARGET_DIR}/${LABEL}-XXXXXX")
+trap 'rm -f "$TEMP_PATH"' EXIT
+FILE_PATH="${TEMP_PATH}.md"
+mv "$TEMP_PATH" "$FILE_PATH"
+trap - EXIT
 echo "$FILE_PATH"
 echo "Created: $FILE_PATH" >&2
