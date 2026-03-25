@@ -132,3 +132,42 @@ presets:
               title: boss
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
+
+  preset-c:
+    name: preset-c
+    description: codex extreme teaming
+    windowMode: new-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1, 1]
+          panes:
+            - name: orchestrator
+              title: orchestrator
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+            - name: worker
+              title: worker
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+            - name: worker-alt
+              title: worker-alt
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+        - type: vertical
+          ratio: [1, 1, 1]
+          panes:
+            - name: critic
+              title: critic
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+            - name: guardian
+              title: guardian
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+            - name: boss
+              title: boss
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
