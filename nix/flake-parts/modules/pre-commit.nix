@@ -16,6 +16,8 @@
       pkgs-unstable = mkPkgsUnstable system;
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
+        disable = ["MD041"]
+
         [MD013]
         code-blocks = false
         headings = false

@@ -3,10 +3,13 @@
 {
   inputs,
   config,
+  pkgs,
   ...
 }:
 let
   homeDir = config.home.homeDirectory;
+  # Generate SKILL.md files from shared SSOT fragments in refs/
+  generatedSkills = import ./skill-gen.nix { inherit pkgs; };
 in
 {
   imports = [
@@ -77,6 +80,22 @@ in
       freee = {
         path = inputs.freee-mcp;
         subdir = "skills";
+      };
+      # Generated review skills (SSOT fragments in refs/ → skill-gen.nix)
+      # Each derivation root contains one real skill directory with a real SKILL.md.
+      # NOTE: symlinkJoin was avoided: it creates file-level symlinks that cause
+      # discoverSource's builtins.readDir to misidentify SKILL.md as a directory.
+      generated-cc = {
+        path = generatedSkills.skillCcDir;
+      };
+      generated-cc-deep = {
+        path = generatedSkills.skillCcDeepDir;
+      };
+      generated-cx = {
+        path = generatedSkills.skillCxDir;
+      };
+      generated-cx-deep = {
+        path = generatedSkills.skillCxDeepDir;
       };
       # HashiCorp agent skills (split by plugin)
       # cf. https://github.com/hashicorp/agent-skills
