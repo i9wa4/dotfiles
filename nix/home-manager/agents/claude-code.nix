@@ -11,7 +11,7 @@
 let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  reviewerGen = import ./reviewer-gen.nix { inherit pkgs; };
+  reviewGen = import ./review/gen.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";
@@ -36,12 +36,12 @@ let
       esac
       ln -s "$f" "$out/$(basename "$f")"
     done
-    # CC reviewer variants (6 files: reviewer-{role}-cc.md)
-    for f in ${reviewerGen.reviewerCcDir}/*.md; do
+    # CC reviewer variants (6 files: reviewer-{role}.md)
+    for f in ${reviewGen.agentFiles.ccDir}/*.md; do
       ln -s "$f" "$out/$(basename "$f")"
     done
-    # CC Tier 1 deep variants (6 files: reviewer-{role}-cc-deep.md)
-    for f in ${reviewerGen.reviewerCcDeepDir}/*.md; do
+    # CC Tier 1 deep variants (6 files: reviewer-{role}-deep.md)
+    for f in ${reviewGen.agentFiles.ccDeepDir}/*.md; do
       ln -s "$f" "$out/$(basename "$f")"
     done
   '';

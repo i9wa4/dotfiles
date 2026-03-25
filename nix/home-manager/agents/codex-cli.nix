@@ -15,7 +15,7 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  reviewerGen = import ./reviewer-gen.nix { inherit pkgs; };
+  reviewGen = import ./review/gen.nix { inherit pkgs; };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
@@ -57,7 +57,7 @@ let
       rm "$out/_body_tmp"
     done
     # CX reviewer variants (6 files: reviewer-{role}.md -> reviewer-{role}.toml)
-    for md in ${reviewerGen.reviewerCxDir}/*.md; do
+    for md in ${reviewGen.agentFiles.cxDir}/*.md; do
       basename_="$(basename "$md" .md)"
       agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
       description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
@@ -72,7 +72,7 @@ let
     done
     # CX Tier 1 deep variants (6 files: reviewer-{role}-deep.md -> reviewer-{role}-deep.toml)
     # NOTE: model field dropped -- Tier 1 model specified at codex exec call time
-    for md in ${reviewerGen.reviewerCxDeepDir}/*.md; do
+    for md in ${reviewGen.agentFiles.cxDeepDir}/*.md; do
       basename_="$(basename "$md" .md)"
       agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
       description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
