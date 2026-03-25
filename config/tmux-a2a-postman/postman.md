@@ -361,17 +361,11 @@ NOT APPROVED at any point: back to worker for revision.
 
 | Signal                    | Meaning                                    |
 | ------------------------- | ------------------------------------------ |
-| DONE: (summary)           | All tasks complete, critic approved         |
-| BLOCKED: (reason)         | Cannot proceed, needs intervention          |
-| DONE (partial): (summary) | Some tasks done, others blocked             |
+| DONE: (summary)           | All tasks complete, critic approved        |
+| BLOCKED: (reason)         | Cannot proceed, needs intervention         |
+| DONE (partial): (summary) | Some tasks done, others blocked            |
 | ACK: <topic>              | Received, working on it                    |
 | HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
-
-### 7.14. [orchestrator] Session Startup Checklist
-
-First task: run tmux-a2a-postman --version and check against
-git -C ~/ghq/github.com/i9wa4/tmux-a2a-postman rev-parse --short HEAD.
-Mismatch: report "BLOCKED: daemon binary stale" to messenger. Do NOT proceed.
 
 ## 8. `worker`
 
