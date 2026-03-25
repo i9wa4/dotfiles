@@ -87,7 +87,7 @@ presets:
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=high
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
             - name: boss
               title: boss
