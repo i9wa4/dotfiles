@@ -1,16 +1,22 @@
 # Nix generation for reviewer subagent .md files.
 # Input: refs/reviewer-{role}.md (6 files, no model field)
 # Output:
-#   reviewerCcDir -- 6 cc .md files (model: sonnet, filename: reviewer-{role}-cc.md)
-#   reviewerCxDir -- 6 cx .md files (model: gpt-5.4, filename: reviewer-{role}.md)
+#   reviewerCcDir    -- 6 cc .md files (model: sonnet, filename: reviewer-{role}-cc.md)
+#   reviewerCxDir    -- 6 cx .md files (model: gpt-5.4, filename: reviewer-{role}.md)
+#   reviewerCxDeepDir -- 6 cx-deep .md files (model: gpt-5.4, filename: reviewer-{role}-deep.md)
 #
-# CX filename has NO suffix so codexAgentsDir generates reviewer-{role}.toml,
-# matching what subagent-codex-review/SKILL.md passes to "codex exec reviewer-{ROLE}".
-# CC name field stays reviewer-{role} (no suffix); Claude Code reads the name field.
+# NOTE: name field suffix convention:
+#   CC:       no suffix (reviewer-{role}) -- Claude Code resolves by name field
+#   CX Tier2: no suffix (reviewer-{role}) -- codex exec uses bare role name
+#   CX Tier1: -deep suffix (reviewer-{role}-deep) -- codex exec uses -deep name
 { pkgs }:
 let
   genReviewers =
-    { model, suffix }:
+    {
+      model,
+      suffix,
+      nameSuffix ? "",
+    }:
     pkgs.runCommand "reviewer-${suffix}" { } ''
       mkdir -p $out
       for ref in ${./refs}/reviewer-*.md; do
@@ -23,11 +29,9 @@ let
           'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' \
           "$ref" > "$out/_body_tmp"
         outfile="reviewer-''${role}${suffix}.md"
-        # NOTE: name field intentionally has no suffix (reviewer-{role})
-        # so codex exec can find the agent by bare role name.
         {
-          printf -- '---\nname: %s\ndescription: %s\nmodel: %s\n---\n\n' \
-            "$name" "$desc" "${model}"
+          printf -- '---\nname: %s%s\ndescription: %s\nmodel: %s\n---\n\n' \
+            "$name" "${nameSuffix}" "$desc" "${model}"
           cat "$out/_body_tmp"
         } > "$out/$outfile"
         rm "$out/_body_tmp"
@@ -42,5 +46,10 @@ in
   reviewerCxDir = genReviewers {
     model = "gpt-5.4";
     suffix = "";
+  };
+  reviewerCxDeepDir = genReviewers {
+    model = "gpt-5.4";
+    suffix = "-deep";
+    nameSuffix = "-deep";
   };
 }
