@@ -26,7 +26,7 @@ let
   '';
 
   # Combine non-reviewer subagents with cc reviewer variants.
-  # reviewer-* files in ./subagents are skipped; cc variants from reviewerGen used instead.
+  # reviewer-* files in ./subagents are skipped; cc variants from reviewGen used instead.
   claudeAgentsDir = pkgs.runCommand "claude-agents" { } ''
     mkdir -p $out
     # Non-reviewer subagents from ./subagents (researcher-tech, super-codex-reviewer)

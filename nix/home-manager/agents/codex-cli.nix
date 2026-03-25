@@ -36,7 +36,7 @@ let
   # Convert Claude Code subagent .md files (YAML frontmatter + Markdown body)
   # into Codex CLI .toml agent files (name, description, developer_instructions).
   # The model field is dropped so agents inherit from the parent session.
-  # reviewer-* files are skipped here; cx variants from reviewerGen are used instead.
+  # reviewer-* files are skipped here; cx variants from reviewGen are used instead.
   codexAgentsDir = pkgs.runCommand "codex-agents" { } ''
     mkdir -p $out
     # Non-reviewer subagents from ./subagents (researcher-tech, super-codex-reviewer)
