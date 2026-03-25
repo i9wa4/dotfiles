@@ -1,7 +1,6 @@
 ---
 name: reviewer-historian
 description: Project historian. Context-focused archaeologist.
-model: sonnet
 ---
 
 # Reviewer: Historian
