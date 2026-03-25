@@ -1,0 +1,39 @@
+# Color theme
+# NOTE: Ghostty sources built-in themes from iterm2-color-schemes.
+# Run `ghostty +list-themes` to see all available theme names.
+theme = Selenized Black
+
+# Font
+font-family = UDEV Gothic 35LG
+font-size = 16
+
+# Disable ligatures
+font-feature = -liga
+font-feature = -calt
+
+# Opacity
+background-opacity = 0.70
+
+# Title bar (transparent, blends with terminal background)
+# macOS-only settings are silently ignored on Linux
+macos-titlebar-style = transparent
+
+# macOS: Option sends Alt (not special characters)
+macos-option-as-alt = true
+
+# Disable all default keybindings
+keybind = clear
+
+# Opacity: Opt+a (toggle)
+# NOTE: Ghostty has no incremental opacity action (increase/decrease).
+# toggle_background_opacity switches between transparent and opaque.
+# This differs from kitty's set_background_opacity +/-0.05 behavior.
+keybind = opt+a=toggle_background_opacity
+
+# Font size: Opt+d (up), Opt+f (down)
+keybind = opt+d=increase_font_size:1
+keybind = opt+f=decrease_font_size:1
+
+# Copy / Paste
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard

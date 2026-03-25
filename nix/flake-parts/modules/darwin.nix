@@ -96,6 +96,7 @@ in
     let
       commonCasks = [
         "docker-desktop"
+        "ghostty"
         "google-chrome"
         "kitty"
         "maccy"
