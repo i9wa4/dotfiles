@@ -15,6 +15,7 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  reviewerGen = import ./reviewer-gen.nix { inherit pkgs; };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
@@ -35,15 +36,39 @@ let
   # Convert Claude Code subagent .md files (YAML frontmatter + Markdown body)
   # into Codex CLI .toml agent files (name, description, developer_instructions).
   # The model field is dropped so agents inherit from the parent session.
+  # reviewer-* files are skipped here; cx variants from reviewerGen are used instead.
   codexAgentsDir = pkgs.runCommand "codex-agents" { } ''
     mkdir -p $out
+    # Non-reviewer subagents from ./subagents (researcher-tech, super-codex-reviewer)
     for md in ${./subagents}/*.md; do
-      basename="$(basename "$md" .md)"
+      case "$(basename "$md")" in
+        reviewer-*) continue ;;  # NOTE: skip reviewers; cx variants used instead
+      esac
+      basename_="$(basename "$md" .md)"
       agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
       description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
-      body="$(${pkgs.gawk}/bin/awk 'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' "$md")"
-      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n%s\n"""\n' \
-        "$agent_name" "$description" "$body" > "$out/$basename.toml"
+      ${pkgs.gawk}/bin/awk \
+        'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' \
+        "$md" > "$out/_body_tmp"
+      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n' \
+        "$agent_name" "$description" > "$out/$basename_.toml"
+      cat "$out/_body_tmp" >> "$out/$basename_.toml"
+      printf '"""\n' >> "$out/$basename_.toml"
+      rm "$out/_body_tmp"
+    done
+    # CX reviewer variants (6 files: reviewer-{role}.md -> reviewer-{role}.toml)
+    for md in ${reviewerGen.reviewerCxDir}/*.md; do
+      basename_="$(basename "$md" .md)"
+      agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
+      description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
+      ${pkgs.gawk}/bin/awk \
+        'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' \
+        "$md" > "$out/_body_tmp"
+      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n' \
+        "$agent_name" "$description" > "$out/$basename_.toml"
+      cat "$out/_body_tmp" >> "$out/$basename_.toml"
+      printf '"""\n' >> "$out/$basename_.toml"
+      rm "$out/_body_tmp"
     done
   '';
 

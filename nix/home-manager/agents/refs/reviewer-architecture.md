@@ -1,7 +1,6 @@
 ---
 name: reviewer-architecture
 description: Architecture expert. Veteran with bird's-eye view.
-model: sonnet
 ---
 
 # Reviewer: Architecture

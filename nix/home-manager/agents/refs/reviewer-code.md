@@ -1,7 +1,6 @@
 ---
 name: reviewer-code
 description: Code quality expert. Perfectionist.
-model: sonnet
 ---
 
 # Reviewer: Code

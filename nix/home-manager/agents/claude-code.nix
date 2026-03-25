@@ -11,6 +11,7 @@
 let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  reviewerGen = import ./reviewer-gen.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";
@@ -22,6 +23,23 @@ let
       ln -s "$f" "$out/$(basename "$f")"
     done
     ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}
+  '';
+
+  # Combine non-reviewer subagents with cc reviewer variants.
+  # reviewer-* files in ./subagents are skipped; cc variants from reviewerGen used instead.
+  claudeAgentsDir = pkgs.runCommand "claude-agents" { } ''
+    mkdir -p $out
+    # Non-reviewer subagents from ./subagents (researcher-tech, super-codex-reviewer)
+    for f in ${./subagents}/*.md; do
+      case "$(basename "$f")" in
+        reviewer-*) continue ;;  # NOTE: skip reviewers; cc variants used instead
+      esac
+      ln -s "$f" "$out/$(basename "$f")"
+    done
+    # CC reviewer variants (6 files: reviewer-{role}-cc.md)
+    for f in ${reviewerGen.reviewerCcDir}/*.md; do
+      ln -s "$f" "$out/$(basename "$f")"
+    done
   '';
 
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
@@ -152,7 +170,7 @@ in
       ".claude/CLAUDE.md".source = ./CLAUDE.md;
       # Nix store directory symlinks (rebuild required to update)
       ".claude/rules".source = ./rules;
-      ".claude/agents".source = ./subagents;
+      ".claude/agents".source = claudeAgentsDir;
       ".claude/scripts".source = scriptsDir;
     };
 
