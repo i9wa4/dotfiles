@@ -1,5 +1,5 @@
 ---
-name: subagent-review
+name: subagent-review-all
 description: |
   10-parallel code/design review using reviewer subagents.
   Use when:
@@ -8,15 +8,15 @@ description: |
   - Need multi-perspective review (security, architecture, code, QA, historian)
 ---
 
-# Subagent Review Skill
+# Subagent Review All Skill
 
-WRAPPER: Delegates to /subagent-claude-review (5 Claude reviewers) and
-/subagent-codex-review (5 Codex reviewers). Collects 10 total output files and
+WRAPPER: Delegates to /subagent-review-cc (5 Claude reviewers) and
+/subagent-review-cx (5 Codex reviewers). Collects 10 total output files and
 produces a merged summary.
 
 NOTE: Callers not using deliberation (§1.4) are unaffected by this change.
-Callers requiring the deliberation pass MUST invoke /subagent-claude-review and
-/subagent-codex-review directly and perform deliberation themselves.
+Callers requiring the deliberation pass MUST invoke /subagent-review-cc and
+/subagent-review-cx directly and perform deliberation themselves.
 
 HARD CONSTRAINT: Both sub-skills MUST complete before proceeding to merge.
 Do NOT produce a merged summary with fewer than 10 result files.
@@ -46,7 +46,7 @@ BEFORE_CX=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx.md 2>/dev/null | wc -
 
 Invoke the Claude-only review skill as a native Skill call:
 
-/subagent-claude-review
+/subagent-review-cc
 
 Wait for completion. Verify 5 review-{role}-cc files exist before proceeding.
 
@@ -54,7 +54,7 @@ Wait for completion. Verify 5 review-{role}-cc files exist before proceeding.
 
 Invoke the Codex-only review skill as a native Skill call:
 
-/subagent-codex-review
+/subagent-review-cx
 
 Wait for completion. Verify 5 review-{role}-cx files exist before proceeding.
 
@@ -135,6 +135,6 @@ Re-rank by severity after deduplication.
 ## 3. Reviewer Deliberation (Out of Scope)
 
 The deliberation pass (second-round cross-examination) is NOT performed by
-this wrapper. Callers requiring deliberation must invoke /subagent-claude-review
-and /subagent-codex-review directly, collect Phase 1 results from both, and
+this wrapper. Callers requiring deliberation must invoke /subagent-review-cc
+and /subagent-review-cx directly, collect Phase 1 results from both, and
 perform deliberation themselves.
