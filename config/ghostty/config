@@ -12,7 +12,7 @@ font-feature = -liga
 font-feature = -calt
 
 # Opacity
-background-opacity = 0.70
+background-opacity = 0.7
 
 # Title bar (transparent, blends with terminal background)
 # macOS-only settings are silently ignored on Linux
