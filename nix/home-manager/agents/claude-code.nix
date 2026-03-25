@@ -40,6 +40,10 @@ let
     for f in ${reviewerGen.reviewerCcDir}/*.md; do
       ln -s "$f" "$out/$(basename "$f")"
     done
+    # CC Tier 1 deep variants (6 files: reviewer-{role}-cc-deep.md)
+    for f in ${reviewerGen.reviewerCcDeepDir}/*.md; do
+      ln -s "$f" "$out/$(basename "$f")"
+    done
   '';
 
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)

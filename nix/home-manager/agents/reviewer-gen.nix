@@ -1,12 +1,15 @@
 # Nix generation for reviewer subagent .md files.
 # Input: refs/reviewer-{role}.md (6 files, no model field)
 # Output:
-#   reviewerCcDir    -- 6 cc .md files (model: sonnet, filename: reviewer-{role}-cc.md)
-#   reviewerCxDir    -- 6 cx .md files (model: gpt-5.4, filename: reviewer-{role}.md)
+#   reviewerCcDir     -- 6 cc .md files (model: sonnet, filename: reviewer-{role}-cc.md)
+#   reviewerCcDeepDir -- 6 cc-deep .md files (model: claude-opus-4-6,
+#                        filename: reviewer-{role}-cc-deep.md)
+#   reviewerCxDir     -- 6 cx .md files (model: gpt-5.4, filename: reviewer-{role}.md)
 #   reviewerCxDeepDir -- 6 cx-deep .md files (model: gpt-5.4, filename: reviewer-{role}-deep.md)
 #
 # NOTE: name field suffix convention:
-#   CC:       no suffix (reviewer-{role}) -- Claude Code resolves by name field
+#   CC Tier2: no suffix (reviewer-{role}) -- Claude Code resolves by name field
+#   CC Tier1: -cc-deep suffix (reviewer-{role}-cc-deep) -- Claude Code resolves by name field
 #   CX Tier2: no suffix (reviewer-{role}) -- codex exec uses bare role name
 #   CX Tier1: -deep suffix (reviewer-{role}-deep) -- codex exec uses -deep name
 { pkgs }:
@@ -51,5 +54,10 @@ in
     model = "gpt-5.4";
     suffix = "-deep";
     nameSuffix = "-deep";
+  };
+  reviewerCcDeepDir = genReviewers {
+    model = "claude-opus-4-6";
+    suffix = "-cc-deep";
+    nameSuffix = "-cc-deep";
   };
 }
