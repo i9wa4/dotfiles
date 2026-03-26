@@ -1,3 +1,6 @@
+[postman]
+allow_shell_templates = true
+
 [boss]
 dropped_ball_timeout_seconds = 3600
 
