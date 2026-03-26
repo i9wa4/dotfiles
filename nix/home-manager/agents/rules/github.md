@@ -30,6 +30,8 @@ Check org membership:
 - Body sections as needed: Summary, Background, Changes, Technical Details,
   Verification, Related URLs
 - IMPORTANT: Granularity for work resumption; include "why"
+- IMPORTANT: When structural and behavioral changes are both needed, prefer
+  separate commits; if not possible, call out the split explicitly
 - NEVER: Co-Authored-By, AI tool notices
 - NEVER: `.i9wa4/` files, `/tmp/` files, local file paths
 
