@@ -11,7 +11,7 @@
 let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  reviewGen = import ./review/gen.nix { inherit pkgs; };
+  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";

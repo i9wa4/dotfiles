@@ -9,7 +9,7 @@
 let
   homeDir = config.home.homeDirectory;
   # Generate review agent + skill files from shared SSOT fragments in review/refs/
-  reviewGen = import ./review/gen.nix { inherit pkgs; };
+  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
 in
 {
   imports = [
@@ -81,7 +81,7 @@ in
         path = inputs.freee-mcp;
         subdir = "skills";
       };
-      # Generated review skills (SSOT fragments in review/refs/ → review/gen.nix)
+      # Generated review skills (SSOT fragments in review/refs/ → review/review-artifacts-gen.nix)
       # Each derivation root contains one real skill directory with a real SKILL.md.
       # NOTE: symlinkJoin was avoided: it creates file-level symlinks that cause
       # discoverSource's builtins.readDir to misidentify SKILL.md as a directory.

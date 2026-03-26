@@ -15,7 +15,7 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  reviewGen = import ./review/gen.nix { inherit pkgs; };
+  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
