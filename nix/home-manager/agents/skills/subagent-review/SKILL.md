@@ -15,9 +15,9 @@ description: |
 # Subagent Review Skill
 
 WRAPPER: Dispatches to sub-skills based on caller-supplied labels. Each label
-maps to one sub-skill (5 reviewers). Sub-skills are invoked sequentially; each
-must complete before the next begins. Results are collected and merged at the
-end.
+maps to one sub-skill (5 reviewers). Requested sub-skills are launched first so
+independent labels can run simultaneously. Results are collected and merged
+after all invoked sub-skills complete.
 
 Default labels (no argument): cc cx
 
@@ -63,18 +63,21 @@ BEFORE_CX_DEEP=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx-deep.md 2>/dev/n
 
 Capture ALL baselines before any sub-skill invocation.
 
-### Step 1: Invoke Sub-skills Sequentially
+### Step 1: Launch Requested Sub-skills
 
-For each label in the parsed list, invoke the corresponding sub-skill and wait
-for completion before invoking the next:
+For each label in the parsed list, invoke the corresponding sub-skill:
 
 - If label is **cc**: invoke /subagent-review-cc
 - If label is **cc-deep**: invoke /subagent-review-cc-deep
 - If label is **cx**: invoke /subagent-review-cx
 - If label is **cx-deep**: invoke /subagent-review-cx-deep
 
-After each sub-skill completes, verify that 5 new review files appeared for
-that label before proceeding to the next sub-skill.
+Launch all requested sub-skills before waiting on any one of them. For example,
+the default `cc cx` run should start both sub-skills in the same turn so the
+Claude-side and Codex-side reviews can proceed simultaneously.
+
+After all requested sub-skills have been launched, wait for every invoked
+sub-skill to complete before proceeding to Step 2.
 
 ### Step 2: Collect and Verify Results
 
