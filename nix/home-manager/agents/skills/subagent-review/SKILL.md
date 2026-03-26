@@ -100,6 +100,9 @@ SUMMARY_FILE=$(mkmd --dir reviews --label summary)
 ```
 
 Generate the merged summary in one pass. Do NOT require a follow-up.
+Carry forward the current objective, blockers, active paths, next action, and
+latest verification status from the planner/worker inputs. If a field is not
+available, say `Not provided` rather than omitting it.
 
 ````markdown
 # Review Summary
@@ -109,6 +112,15 @@ Generate the merged summary in one pass. Do NOT require a follow-up.
 - Directory: {dir_name}
 - Labels run: {labels}
 - Sources: {label}-side summaries
+
+## Resumable Handoff
+
+- Objective: {current objective or `Not provided`}
+- Blockers: {current blockers or `None recorded`}
+- Active paths:
+  - `{path/to/active-artifact-or-file}`
+- Next action: {next action after accepting or retrying this review}
+- Latest verification status: {worker verification outcome or `Not provided`}
 
 ## Findings
 
@@ -155,7 +167,32 @@ Re-rank by severity after deduplication.
 (Omit columns for labels not invoked in this run.)
 ````
 
-## 3. Reviewer Deliberation (Out of Scope)
+## 3. Planner -> Worker -> Evaluator Contract
+
+When reused as part of a long-running workflow, this wrapper is the evaluator
+stage for the planner->worker->evaluator contract defined in `plan-design`.
+
+- Planner input expected:
+  - objective
+  - acceptance criteria
+  - active artifact paths
+  - latest worker verification outcome
+- Worker input expected:
+  - implementation or investigation artifact
+  - changed paths
+  - residual blockers
+  - concrete next action if the evaluator rejects
+- Evaluator guarantees from this wrapper:
+  - do not promote incomplete review runs
+  - verify every requested reviewer batch completed before merging
+  - return merged findings tied to concrete files/paths
+  - reject with specific retry work when evidence or coverage is incomplete
+
+The evaluator output should preserve the current objective, blockers, active
+paths, and next action so a later session can resume from the merged summary
+without reopening the full transcript.
+
+## 4. Reviewer Deliberation (Out of Scope)
 
 The deliberation pass (second-round cross-examination) is NOT performed by
 this wrapper. Callers requiring deliberation must invoke sub-skills directly,

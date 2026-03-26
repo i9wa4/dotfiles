@@ -190,7 +190,43 @@ Additional required sections:
 7. Rollback per phase
    - trigger + steps + verification
 
-## 6. Worker Routing Strategy (Default)
+## 6. Reusable Planner -> Worker -> Evaluator Contract
+
+Use this contract whenever work may span multiple turns, compactions, or agent
+handoffs. The goal is to keep one compact artifact that any later session can
+resume without replaying the whole transcript.
+
+### Planner responsibilities
+
+- Define the objective in one concrete sentence.
+- Name the success/acceptance criteria.
+- Record the next action that should happen first on resume.
+- Record known blockers or open decisions.
+- List the active plan/artifact paths that later stages must reopen.
+- Define the verification the worker must return.
+
+### Worker responsibilities
+
+- Execute only the scoped slice from the planner artifact.
+- Update the artifact with the latest verification outcome.
+- Update active file/artifact paths when implementation shifts.
+- Replace stale blockers with current blockers or explicitly clear them.
+- Leave a concrete next action for the next worker or resumed session.
+
+### Evaluator responsibilities
+
+- Validate the worker result against the planner objective and acceptance
+  criteria.
+- Check that verification evidence exists and matches the claimed outcome.
+- Either accept the artifact for promotion or return a retry contract with
+  concrete gaps.
+- Preserve the current objective, blockers, active paths, and next action so a
+  later session can resume from the evaluator output directly.
+
+`subagent-review` is the default evaluator pattern when the output needs a
+formal review gate or merged multi-reviewer judgment.
+
+## 7. Worker Routing Strategy (Default)
 
 - Investigation tasks: dispatch to `worker` + `worker-alt` in parallel.
 - Execution (complex reasoning/design): `worker`.
@@ -198,7 +234,7 @@ Additional required sections:
 
 If risk is high or ambiguity is high, run parallel and compare.
 
-## 7. Ambiguity Escalation (Mandatory)
+## 8. Ambiguity Escalation (Mandatory)
 
 If any worker encounters ambiguous or unclear points while rewriting content for
 a beginner audience:
@@ -212,7 +248,7 @@ a beginner audience:
 This rule applies to all plan rewriting tasks, including glossary entries,
 command templates, and decision gate prose.
 
-## 8. Quality Checklist Before Approval
+## 9. Quality Checklist Before Approval
 
 A plan is ready for boss review only if all are true:
 
@@ -222,7 +258,7 @@ A plan is ready for boss review only if all are true:
 - Placeholder decisions are resolved or converted into named decision gates.
 - Critic approved (with guardian's endorsement).
 
-## 9. Deliverables
+## 10. Deliverables
 
 - Plan file created via:
   - `mkmd --dir plans --label plan`
