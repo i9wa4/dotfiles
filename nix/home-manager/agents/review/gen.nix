@@ -1,5 +1,14 @@
-# Nix generation for review infrastructure: reviewer agents + review skill SKILL.md files.
+# Nix generation for the review stack used by the installed review skills.
+# This file is the SSOT for two kinds of generated artifacts:
+#   1. reviewer agent markdown files with engine/model-specific frontmatter
+#   2. generated review skill directories whose SKILL.md files are assembled from
+#      shared and per-engine fragments
 # All build-time inputs live in refs/ (not deployed directly).
+#
+# Installation path: agent-skills.nix imports this file as `reviewGen`, then
+# wires `reviewGen.skillFiles.*` into generated skill sources. On a rebuild,
+# those derivations are exposed under ~/.claude/skills and ~/.codex/skills via
+# the agent-skills symlink-tree targets.
 #
 # Reviewer agent inputs: refs/reviewer-{role}.md (6 files, no model field)
 # Skill fragment inputs:
@@ -100,6 +109,8 @@ in
   };
 
   skillFiles = {
+    # These derivations are the installed subagent-review-* skill directories
+    # consumed by agent-skills.nix.
     ccDir = genSkill {
       skillName = "subagent-review-cc";
       label = "cc";
