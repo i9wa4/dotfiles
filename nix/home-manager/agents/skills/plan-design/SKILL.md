@@ -43,7 +43,7 @@ Before drafting, run the following and read the results:
 
 2. Read at minimum:
    - ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/orchestrator/SKILL.md
-   - ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/subagent-review/SKILL.md
+   - ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/review/skills/subagent-review/SKILL.md
 
 3. Read any skill whose name suggests planning, review, or session workflow.
 

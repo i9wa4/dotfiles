@@ -26,6 +26,10 @@ in
         path = inputs.self;
         subdir = "nix/home-manager/agents/skills";
       };
+      review-local = {
+        path = inputs.self;
+        subdir = "nix/home-manager/agents/review/skills";
+      };
       # tmux-a2a-postman skills
       tmux-a2a-postman = {
         path = inputs.tmux-a2a-postman;
