@@ -34,6 +34,14 @@ it matches the plan. Do NOT approve based on plan text alone.
 - [status]: current task, delegated nodes, blockers, next action
 - [error]: description, affected node, mitigation, next step
 
+### 2.4. [common_template] Footer Authority
+
+Treat the footer lines (`You can talk to:`, `Reply:`, `No reply needed for:`)
+as routing hints, not the source of truth for recipient reachability. If a
+footer conflicts with the `edges` graph or with successful live delivery in the
+same context, trust the graph and the actual delivery result. Do NOT declare a
+node absent based on footer text alone.
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -114,6 +122,9 @@ Two modes depending on sender:
 2. Forward request + initial findings to guardian:
    tmux-a2a-postman send-message --to guardian --body "<findings>"
    (Do NOT use reply_command — it points to orchestrator, not guardian)
+   If the inbound footer omits guardian but the `edges` graph includes
+   `guardian --- critic`, still send to guardian. Treat that mismatch as a
+   footer/rendering issue unless the send actually fails.
 3. ACK to orchestrator: "ACK: received, forwarding to guardian."
 
 #### 4.4.2. [critic] Mode B: guardian -> orchestrator
@@ -134,8 +145,11 @@ DO NOT be polite. Find problems before they happen.
 
 ### 4.6. [critic] Fallback: Guardian Absent
 
-- Mode A: If guardian absent from talks_to_line, report BLOCKED to orchestrator.
-- Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator.
+- Mode A: If guardian is missing from live session health, or a direct send to
+  guardian fails, report BLOCKED to orchestrator. Footer mismatch alone is NOT
+  sufficient.
+- Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
+  after a real send/reply failure, not from footer text alone.
 - 5-minute hard cutoff: check tmux-a2a-postman get-session-health. If guardian
   shows waiting > 0, issue independent verdict and report BLOCKED: guardian
   absent to orchestrator.
@@ -185,8 +199,9 @@ Send APPROVED/NOT APPROVED to critic only — critic relays to orchestrator.
 
 ### 5.6. [guardian] Fallback: Critic Absent
 
-If critic is absent from talks_to_line, send BLOCKED immediately with your
-verdict in the message body. Do NOT hold silently.
+If critic is missing from live session health, or a direct send to critic
+fails, send BLOCKED immediately with your verdict in the message body. Footer
+mismatch alone is NOT sufficient. Do NOT hold silently.
 
 ### 5.7. [guardian] Plan Section Verification
 
