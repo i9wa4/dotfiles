@@ -103,6 +103,7 @@ let
     for f in ${./scripts}/codex-*; do
       ln -s "$f" "$out/$(basename "$f")"
     done
+    ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
 
   tomlFormat = pkgs.formats.toml { };
@@ -110,12 +111,48 @@ let
 
   codexHooks = {
     hooks = {
+      SessionStart = [
+        {
+          matcher = "startup|resume";
+          hooks = [
+            {
+              type = "command";
+              command = "$HOME/.codex/scripts/codex-sessionstart-reload.sh";
+              statusMessage = "Loading Codex handoff";
+            }
+          ];
+        }
+      ];
+      PreToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "$HOME/.codex/scripts/codex-pretooluse-deny-bash.sh";
+              statusMessage = "Checking Bash policy";
+            }
+          ];
+        }
+      ];
       UserPromptSubmit = [
         {
           hooks = [
             {
               type = "command";
               command = "$HOME/.codex/scripts/codex-userpromptsubmit.sh";
+            }
+          ];
+        }
+      ];
+      Stop = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = "$HOME/.codex/scripts/codex-stop-save.sh";
+              statusMessage = "Saving Codex handoff";
+              timeout = 10;
             }
           ];
         }

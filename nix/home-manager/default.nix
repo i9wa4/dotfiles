@@ -22,6 +22,7 @@ in
     # programs.*
     ./modules/bash.nix
     ./modules/git.nix
+    ./modules/gh.nix
     ./modules/lazygit.nix
     ./modules/zsh.nix
     # xdg.configFile
@@ -82,7 +83,6 @@ in
       pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf
-      pkgs.gh
       pkgs.ghq
       pkgs.google-cloud-sdk
       pkgs.jq
