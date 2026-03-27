@@ -75,6 +75,7 @@ in
       pkgs-unstable.obsidian
       pkgs-unstable.rumdl
       pkgs.awscli2
+      pkgs-unstable.aws-sam-cli
       pkgs.databricks-cli
       pkgs.deno
       pkgs.drawio
