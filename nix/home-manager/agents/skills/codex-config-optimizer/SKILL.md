@@ -129,7 +129,11 @@ Ignore any release entries for versions newer than `codex --version`.
   `nix/home-manager/agents/scripts/codex-*`
 - YOU MUST: Reuse `denied-bash-commands.nix` as the SSOT for Bash deny policy
   instead of hand-maintaining separate Codex-only command lists
+- YOU MUST: Keep shared Bash deny justifications repair-oriented so the
+  rejection tells the agent what to do next, not just what was blocked
 - YOU MUST: Treat Codex `PreToolUse` and `PostToolUse` as Bash-only today
+- YOU MUST: Keep `PostToolUse` Bash hooks feedback-only; the command already
+  ran, so use them for concise remediation rather than fake enforcement
 - NEVER: Claim Codex currently intercepts `Write|Edit|NotebookEdit`; those
   matcher examples are valid regex but do not match current Codex runtime
 - NEVER: Rely on unsupported `permissionDecision: "ask"` / `"allow"`,
@@ -156,7 +160,10 @@ Check the following when editing AGENTS.md or config.toml:
 - [ ] Are basic rules truly needed at all times?
 - [ ] Can detailed explanations be moved to skills/?
 - [ ] Is config.toml using appropriate approval_mode?
+- [ ] Are shared Bash deny messages phrased as safe next steps, not only
+      denials?
 - [ ] Are Codex hook limitations documented honestly (Bash-only pre/post tool)?
+- [ ] Is `PostToolUse` scoped to deterministic Bash feedback, not enforcement?
 - [ ] Is hook state split correctly between `hooks.json` and `scripts/codex-*`?
 
 ## 9. Optimization Tracking
@@ -169,8 +176,11 @@ Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
 - [x] Home-level Codex hooks enabled for `UserPromptSubmit`, `SessionStart`,
-      `PreToolUse` (`Bash` only), and `Stop`
+      `PreToolUse` (`Bash` only), `PostToolUse` (`Bash` only), and `Stop`
 - [x] Shared deny-bash patterns reused by both Claude Code and Codex CLI hooks
+- [x] Shared deny-bash justifications upgraded from bare denials to repair
+      guidance for both Claude Code and Codex CLI
+- [x] Codex `UserPromptSubmit` now carries time, role, cwd, and git context
 - [x] Lightweight Codex handoff persistence via `Stop` + `SessionStart`
 - [x] `model_auto_compact_token_limit =
       builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
@@ -184,8 +194,8 @@ Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
       (v0.103.0)
-- [ ] PostToolUse Bash validator - evaluate deterministic feedback hook use
-      after the current SessionStart/PreToolUse/Stop baseline settles
+- [ ] PostToolUse Bash feedback heuristics - keep scope narrow and deterministic
+      as new repo failure patterns repeat
 - [ ] `code_mode` experimental feature - isolated coding workflow; watch
       for stabilization (v0.114.0)
 - [ ] Disable bundled system skills config switch - useful if custom skills
@@ -209,6 +219,8 @@ Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
   Codex runtime only emits `Bash`, so these configs are misleading today
 - `permissionDecision: "ask"` / `"allow"` and `updatedInput` in `PreToolUse` -
   current runtime parses them but does not enforce them
+- PostToolUse decision/block semantics for Bash repair hooks - keep these
+  feedback-only so Codex still sees the raw command result
 - `AfterToolUse` hook - superseded by documented hooks engine
 - `smart_approvals` - keep default behavior (v0.93.0)
 

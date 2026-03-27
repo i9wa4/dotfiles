@@ -135,6 +135,18 @@ let
           ];
         }
       ];
+      PostToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "$HOME/.codex/scripts/codex-posttooluse-review.sh";
+              statusMessage = "Reviewing Bash feedback";
+            }
+          ];
+        }
+      ];
       UserPromptSubmit = [
         {
           hooks = [
