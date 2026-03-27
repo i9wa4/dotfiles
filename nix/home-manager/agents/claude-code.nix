@@ -11,7 +11,18 @@
 let
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
   reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
+  instructionFiles = instructionArtifacts {
+    sharedCore = ./AGENTS.md;
+    claudeOnly = ./CLAUDE.md;
+    rulePaths = [
+      ./rules/bash.md
+      ./rules/github.md
+      ./rules/markdown.md
+      ./rules/python.md
+    ];
+  };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";
@@ -102,26 +113,6 @@ let
             }
           ];
         }
-        {
-          matcher = "*";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh pre";
-            }
-          ];
-        }
-      ];
-      PostToolUse = [
-        {
-          matcher = "*";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
-            }
-          ];
-        }
       ];
       SessionStart = [
         {
@@ -170,8 +161,8 @@ in
 {
   home = {
     file = {
-      # CLAUDE.md (Nix store, rebuild required to update)
-      ".claude/CLAUDE.md".source = ./CLAUDE.md;
+      # Composite CLAUDE.md generated from AGENTS.md + Claude-only fragment
+      ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
       # Nix store directory symlinks (rebuild required to update)
       ".claude/rules".source = ./rules;
       ".claude/agents".source = claudeAgentsDir;
@@ -194,6 +185,16 @@ in
         [ -f "$TARGET" ] || { mkdir -p "$(dirname "$TARGET")"; printf '{}' > "$TARGET"; }
         ${pkgs.jq}/bin/jq --argjson servers "$SERVERS" '.mcpServers = $servers' "$TARGET" > "$TARGET.tmp" \
           && mv "$TARGET.tmp" "$TARGET"
+      '';
+
+      claudeObservationPermissions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        STATE_ROOT="''${XDG_STATE_HOME:-$HOME/.local/state}/claude"
+        if [ -d "$STATE_ROOT" ]; then
+          find "$STATE_ROOT" \
+            \( -name 'observations*.jsonl' -o -name 'project.json' -o -name 'projects.json' \) \
+            -type f -exec chmod 600 {} \;
+          find "$STATE_ROOT" -type d -exec chmod 700 {} \;
+        fi
       '';
     };
   };

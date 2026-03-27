@@ -15,6 +15,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o posix
+umask 0077
 
 # Hook phase from CLI argument: "pre" (PreToolUse) or "post" (PostToolUse)
 HOOK_PHASE="${1:-post}"
