@@ -15,7 +15,18 @@ let
 
   mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
   reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
+  instructionFiles = instructionArtifacts {
+    sharedCore = ./AGENTS.md;
+    claudeOnly = ./CLAUDE.md;
+    rulePaths = [
+      ./rules/bash.md
+      ./rules/github.md
+      ./rules/markdown.md
+      ./rules/python.md
+    ];
+  };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
@@ -153,10 +164,10 @@ let
 in
 {
   home.file = {
-    # AGENTS.md (Nix store, rebuild required to update)
-    ".codex/AGENTS.md".source = ./AGENTS.md;
+    # Generated AGENTS.md (shared core + inlined rules)
+    ".codex/AGENTS.md".source = instructionFiles.codexAgentsMd;
     # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
-    # NOTE: Codex CLI may also read agents/rules/*.md via AGENTS.md references
+    # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;
     # Subagent definitions (auto-generated .toml from subagents/*.md)
     ".codex/agents".source = codexAgentsDir;

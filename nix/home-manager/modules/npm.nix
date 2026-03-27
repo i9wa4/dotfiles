@@ -38,7 +38,6 @@ in
     installNpmPackages = lib.hm.dag.entryAfter [ "setupSafeChain" ] ''
       export PATH="${npmPrefix}/bin:${pkgs.nodejs}/bin:$PATH"
       NPM_PACKAGES=(
-        "@drawio/mcp"
         "vde-layout"
         "vde-monitor"
         "vde-tmux-manager"

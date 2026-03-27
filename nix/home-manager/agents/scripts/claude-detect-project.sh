@@ -20,6 +20,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 set -o posix
+umask 0077
 
 _CLV2_HOMUNCULUS_DIR="${CLV2_HOMUNCULUS_DIR:-${XDG_STATE_HOME:-${HOME}/.local/state}/claude/homunculus}"
 _CLV2_PROJECTS_DIR="${_CLV2_HOMUNCULUS_DIR}/projects"

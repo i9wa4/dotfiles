@@ -10,9 +10,11 @@ CTX=$(echo "$input" | jq -r '.context_window.used_percentage // 0 | floor')
 MODEL=$(echo "$input" | jq -r '.model.display_name // .model.id // "?"')
 VERSION=$(echo "$input" | jq -r '.version // "?"')
 RATE_5H_PCT=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // 0 | floor')
-RATE_5H_AT=$(date -d "@$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at')" +%H:%M)
+RATE_5H_TS=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // 0 | floor')
+RATE_5H_AT=$(jq -nr --argjson ts "$RATE_5H_TS" '$ts | localtime | strftime("%H:%M")')
 RATE_7D_PCT=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // 0 | floor')
-RATE_7D_AT=$(date -d "@$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at')" +%m-%dT%H:%M)
+RATE_7D_TS=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // 0 | floor')
+RATE_7D_AT=$(jq -nr --argjson ts "$RATE_7D_TS" '$ts | localtime | strftime("%m-%dT%H:%M")')
 
 # Persist usage snapshot for UserPromptSubmit hook to inject into context
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/claude"

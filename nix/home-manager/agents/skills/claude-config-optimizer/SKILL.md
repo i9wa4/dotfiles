@@ -21,18 +21,18 @@ module).
 
 Source of truth:
 
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/modules/claude-code.nix
+- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/claude-code.nix
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
 
-| Destination               | Source                                     | Managed by       |
-| ------------------------- | ------------------------------------------ | ---------------- |
-| `~/.claude/settings.json` | Generated from Nix attributes              | claude-code.nix  |
-| `~/.claude/CLAUDE.md`     | `nix/home-manager/agents/CLAUDE.md`        | claude-code.nix  |
-| `~/.claude/rules/`        | `nix/home-manager/agents/rules/`           | claude-code.nix  |
-| `~/.claude/agents/`       | `nix/home-manager/agents/subagents/`       | claude-code.nix  |
-| `~/.claude/scripts/`      | `nix/home-manager/agents/scripts/`         | claude-code.nix  |
-| `~/.claude/skills/`       | Multiple flake inputs + local              | agent-skills.nix |
-| MCP servers               | `nix/home-manager/modules/mcp-servers.nix` | claude-code.nix  |
+| Destination               | Source                                                       | Managed by                 |
+| ------------------------- | ------------------------------------------------------------ | -------------------------- |
+| `~/.claude/settings.json` | Generated from Nix attributes                                | `claude-code.nix`          |
+| `~/.claude/CLAUDE.md`     | Generated from `AGENTS.md` + `CLAUDE.md` fragment            | `instruction-artifacts.nix` |
+| `~/.claude/rules/`        | `nix/home-manager/agents/rules/`                             | `claude-code.nix`          |
+| `~/.claude/agents/`       | `nix/home-manager/agents/subagents/`                         | `claude-code.nix`          |
+| `~/.claude/scripts/`      | `nix/home-manager/agents/scripts/`                           | `claude-code.nix`          |
+| `~/.claude/skills/`       | Multiple flake inputs + local                                | `agent-skills.nix`         |
+| MCP servers               | `nix/home-manager/agents/mcp-servers.nix`                    | `claude-code.nix`          |
 
 ## 2. Fetch CHANGELOG
 
@@ -261,7 +261,7 @@ Last reviewed Claude Code version: v2.1.76 (2026-03-17)
 - [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
       usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
-      custom `rules/git-github.md` is sole authority (v2.1.69)
+      custom `rules/github.md` is sole authority (v2.1.69)
 
 ### 11.2. Pending Considerations
 
