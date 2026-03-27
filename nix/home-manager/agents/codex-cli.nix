@@ -178,6 +178,12 @@ in
       sort |
       while read -r gitdir; do
         repo=$(dirname "$gitdir")
+        case "$repo" in
+          *'"'*|*'\'*)
+            echo "WARNING: skipping repo path unsafe for TOML quoted keys: $repo" >&2
+            continue
+            ;;
+        esac
         echo ""
         echo "[projects.\"$repo/\"]"
         echo "trust_level = \"trusted\""
