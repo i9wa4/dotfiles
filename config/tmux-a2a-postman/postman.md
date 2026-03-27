@@ -42,6 +42,27 @@ footer conflicts with the `edges` graph or with successful live delivery in the
 same context, trust the graph and the actual delivery result. Do NOT declare a
 node absent based on footer text alone.
 
+### 2.5. [common_template] Status Traffic Semantics
+
+Treat `status request` and `status update` as different message classes:
+
+- `status request`: body asks the recipient for current state or action. Reply
+  is required even if a generic footer says no reply is needed for
+  status-oriented traffic.
+- `status update`: informational relay of current state. No reply is needed
+  unless the body explicitly asks for one.
+
+If body instructions and generic footer text disagree, follow the explicit body
+instruction for reply behavior.
+
+### 2.6. [common_template] Historical Route Notes
+
+Some older dead letters still show legacy routes such as `postman` as a live
+recipient or direct `orchestrator -> guardian` traffic. Treat those as
+historical signatures, not as the current routing contract. Under the current
+`edges` graph, the live review path is `orchestrator -> critic -> guardian ->
+critic -> orchestrator`.
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -92,8 +113,8 @@ verdict in the message body. Do NOT hold silently.
 ### 3.8. [boss] Completion Signal
 
 Reply with `APPROVED: (summary)` when approving, or `NOT APPROVED: (reason)`
-when rejecting. Send your reply to orchestrator using the reply_command in the
-message header.
+when rejecting. Send your reply to orchestrator using the `Reply:` footer line
+in the message.
 
 ## 4. `critic`
 
@@ -121,7 +142,8 @@ Two modes depending on sender:
 1. Investigate (read code, trace dependencies, find flaws)
 2. Forward request + initial findings to guardian:
    tmux-a2a-postman send-message --to guardian --body "<findings>"
-   (Do NOT use reply_command — it points to orchestrator, not guardian)
+   (Do NOT follow the inbound `Reply:` footer there — it routes back to
+   orchestrator, not guardian)
    If the inbound footer omits guardian but the `edges` graph includes
    `guardian --- critic`, still send to guardian. Treat that mismatch as a
    footer/rendering issue unless the send actually fails.
@@ -130,10 +152,12 @@ Two modes depending on sender:
 #### 4.4.2. [critic] Mode B: guardian -> orchestrator
 
 1. Review guardian's verdict; apply own critical analysis
-2. Debate with guardian if needed (via reply_command until consensus)
+2. Debate with guardian if needed (via the current `Reply:` footer path until
+   consensus)
 3. Relay combined findings + final verdict to orchestrator:
    tmux-a2a-postman send-message --to orchestrator --body "<verdict>"
-   (Do NOT use reply_command — it points to guardian, not orchestrator)
+   (Do NOT follow the inbound `Reply:` footer there — it routes back to
+   guardian, not orchestrator)
 
 DO NOT be polite. Find problems before they happen.
 
@@ -150,9 +174,10 @@ DO NOT be polite. Find problems before they happen.
   sufficient.
 - Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
   after a real send/reply failure, not from footer text alone.
-- 5-minute hard cutoff: check tmux-a2a-postman get-session-health. If guardian
-  shows waiting > 0, issue independent verdict and report BLOCKED: guardian
-  absent to orchestrator.
+- 5-minute hard cutoff: check tmux-a2a-postman get-session-health and inspect
+  guardian wait files. Treat verified stale/orphaned waits or real
+  send/reply failures as absence. Do NOT treat `composing` or `user_input`
+  waits alone as proof that guardian is absent.
 
 ### 4.7. [critic] Plan Completeness Check
 
@@ -195,7 +220,7 @@ Send APPROVED/NOT APPROVED to critic only — critic relays to orchestrator.
 3. Check quality (style, naming, structure, best practices)
 4. Demand perfection — do NOT accept "good enough"
 5. Report findings (BLOCKING > IMPORTANT > MINOR)
-6. Send review result to critic using reply_command
+6. Send review result to critic using the current `Reply:` footer line
 
 ### 5.6. [guardian] Fallback: Critic Absent
 
@@ -257,9 +282,19 @@ pipeline status. Never report just "empty."
 ### 6.7. [messenger] Delivery Watchdog
 
 Every 3 messages: tmux-a2a-postman get-session-health. If any node shows
-waiting > 0: report "DELIVERY STUCK: <node>" to orchestrator. Treat as BLOCKED
-until confirmed resolved. Never ask user what to tell orchestrator — that's
-orchestrator's job. You are the interface, not the executor.
+waiting > 0, inspect the actual wait files before escalating. Classify each
+case as one of:
+
+- `expected/live`: active `composing` or `user_input` wait consistent with the
+  current workflow
+- `stale/orphaned`: wait persists without matching live ownership or progress
+- `actionable/stuck`: real send/reply failure, or a verified stale wait that is
+  blocking delivery
+
+Report `DELIVERY STUCK: <node>` to orchestrator only for `actionable/stuck`.
+Do NOT treat `composing` or `user_input` waits alone as blocked delivery.
+Never ask user what to tell orchestrator — that's orchestrator's job. You are
+the interface, not the executor.
 
 ### 6.8. [messenger] DONE Signal Handler
 
@@ -268,8 +303,11 @@ include commits/issues/blockers. Do NOT re-queue. Wait for next user request.
 
 ### 6.9. [messenger] Flooding Advisory
 
-5+ messages from same sender in 2 minutes: batch into single summary. Do NOT
-proactively notify orchestrator; wait for user direction.
+5+ messages from same sender, or repeated health/status updates with no
+material state change, in 2 minutes: batch into single summary. Reuse the
+current status summary instead of emitting a fresh full explanation cycle. Do
+NOT proactively notify orchestrator beyond the batched summary; wait for user
+direction.
 
 ### 6.10. [messenger] Fallback: Orchestrator Absent
 
@@ -323,12 +361,14 @@ Do NOT research, read code, or investigate. Delegate to worker.
 - When blocked waiting for any node after 2 messages:
   notify messenger "BLOCKED: waiting for {node}"
 - Obtain critic APPROVED verdict before sending to boss
+- On repeated status checks with no material state change, send a concise delta
+  summary instead of re-expanding the full prior status explanation
 
 ### 7.6. [orchestrator] Response Escalation
 
 No reply after 2 messages: check draft/ for stuck messages, re-send SHORT
-(3 lines: file path, "APPROVE or NOT APPROVE?", reply command). Still no reply
-after 1 more: notify messenger "BLOCKED: waiting for {node}".
+(3 lines: file path, "APPROVE or NOT APPROVE?", `Reply:` footer command).
+Still no reply after 1 more: notify messenger "BLOCKED: waiting for {node}".
 
 ### 7.7. [orchestrator] Messenger Fallback Timer
 
@@ -398,8 +438,8 @@ promptly.
 
 - Execute tasks from orchestrator
 - Report blockers immediately
-- Send DONE or BLOCKED to orchestrator using the reply_command in the message
-  header
+- Send DONE or BLOCKED to orchestrator using the `Reply:` footer line in the
+  message
 
 ### 8.4. [worker] Completion Signal
 
@@ -463,8 +503,8 @@ same standards.
 
 - Execute tasks from orchestrator
 - Report blockers immediately
-- Send DONE or BLOCKED to orchestrator using the reply_command in the message
-  header
+- Send DONE or BLOCKED to orchestrator using the `Reply:` footer line in the
+  message
 
 ### 9.4. [worker-alt] Completion Signal
 
