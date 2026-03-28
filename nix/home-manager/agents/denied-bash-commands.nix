@@ -148,6 +148,16 @@ let
       justification = "sudo is denied; stay within user permissions or report the exact manual step that requires elevation";
       claudeSettingsJson = true;
     }
+    {
+      argv = [
+        "tmux"
+        "select-pane"
+        "-T"
+      ];
+      anchored = false;
+      justification = "tmux pane-title renames are denied because role identity depends on pane_title; keep the current pane title and report the needed role change instead";
+      claudeSettingsJson = true;
+    }
   ];
 
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
