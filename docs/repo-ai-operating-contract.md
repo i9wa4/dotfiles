@@ -1,0 +1,263 @@
+# Repo AI Operating Contract
+
+This is the standalone operating contract for AI work in this repo.
+
+It is broader than `tmux-a2a-postman` alone. The scope here is the whole
+repo-local AI runtime under `nix/home-manager/agents`, plus the routing and
+approval contract carried by `tmux-a2a-postman`.
+
+For the broader repository philosophy, read
+`docs/dotfiles-operating-concepts.md`.
+
+## Scope
+
+Use this document when the question is "how should an AI agent operate inside
+this repo right now?"
+
+That includes:
+
+- shared operating instructions
+- installed Claude and Codex configuration under Home Manager
+- hooks and resumable handoff behavior
+- skill and review installation
+- tmux role identity
+- `tmux-a2a-postman` routing and approval rules
+
+## Repo-local AI stack
+
+The repo-local AI stack is assembled from a few core sources.
+
+### Shared instruction core
+
+`nix/home-manager/agents/AGENTS.md` is the shared operating baseline for both
+engines. It defines persona, workflow, safety, file handling, and repo-local
+expectations.
+
+On the Claude side, `CLAUDE.md` is appended as a small Claude-specific suffix.
+
+On the Codex side, `instruction-artifacts.nix` takes the shared core plus the
+repo-local rule files and emits the installed `.codex/AGENTS.md`.
+
+### Declarative installation
+
+`claude-code.nix`, `codex-cli.nix`, and `agent-skills.nix` declaratively
+materialize the runtime under:
+
+- `~/.claude/`
+- `~/.codex/`
+- `~/.claude/skills`
+- `~/.codex/skills`
+
+The point is that the installed runtime should come from this repo, not from
+manual edits in home directories.
+
+### tmux role identity
+
+Inside this repo, role identity is tied to the tmux pane title. That means
+role, routing, and prompt context are linked to the pane you are currently in,
+not just to abstract agent labels.
+
+## Shared operating rules
+
+These rules come from the shared agent core and are expected regardless of
+engine:
+
+- read files in full
+- verify against the actual repo before reporting
+- prefer small verifiable steps
+- use Nix-managed or POSIX-safe tooling where possible
+- avoid destructive git operations unless explicitly instructed
+- treat pane-title identity as important runtime state
+
+For worker-style nodes inside the postman graph, two more rules matter:
+
+- non-user-facing nodes do not end by asking the human user a question
+- success and failure are reported as `DONE:` or `BLOCKED:`
+
+## Hook contract
+
+Hooks are not optional conveniences in this repo. They are part of the local
+operating contract.
+
+### Shared intent across engines
+
+Both engines are expected to support these behaviors as closely as their hook
+surfaces allow:
+
+- inject live repo context into prompts
+- deny dangerous Bash actions before execution
+- preserve resumable handoff state
+- reload handoff context on resume
+- tighten cheap repair loops after deterministic failures
+
+### Claude runtime hooks
+
+The Claude runtime currently carries:
+
+- `UserPromptSubmit` for role, cwd, git, and usage context
+- `PreToolUse` for observation plus Bash and write denials
+- `PostToolUse` and `PostToolUseFailure` for observation
+- `SessionStart` for reloading `CLAUDE.md` and saved handoff state
+- `PreCompact` for saving a structured handoff snapshot
+
+### Codex runtime hooks
+
+The Codex runtime currently carries:
+
+- `UserPromptSubmit` for role, cwd, and git context
+- `PreToolUse` for Bash denials
+- `PostToolUse` for deterministic Bash remediation feedback
+- `SessionStart` for saved handoff reload
+- `Stop` for lightweight handoff persistence
+
+The surface is not identical, but the repo is aiming for equivalent operating
+discipline.
+
+## Shared policy sources
+
+Two repo files matter especially because they are single sources of truth
+consumed by both engines.
+
+### `denied-bash-commands.nix`
+
+This file defines the dangerous Bash patterns once and then emits:
+
+- Claude deny permissions
+- the generated Bash deny patterns file used by Claude hooks
+- the Codex `prefix_rule(...)` content used in `.codex/rules/default.rules`
+
+If the repo changes a Bash safety policy, this is where it should happen.
+
+### `review/review-artifacts-gen.nix`
+
+This file generates the installed review stack from shared fragments:
+
+- reviewer agent definitions for Claude and Codex
+- generated `subagent-review-*` skills for the engine and depth variants
+
+That is how the repo keeps the review contract synchronized across engines.
+
+## Claude/Codex parity contract
+
+The repo expects parity of quality bar, not literal product sameness.
+
+In practice that means:
+
+- both engines should inherit the same repo-local operating core
+- both engines should see the same review topology
+- both engines should obey the same Bash deny policy
+- both engines should have resumable handoff support
+- both engines should be able to participate in the same repo-local review and
+  routing model
+
+When an engine cannot match the other feature-for-feature, the fallback should
+still preserve the same intent: safe execution, explicit handoff, and
+verifiable reporting.
+
+## `tmux-a2a-postman` routing contract
+
+The repo-local postman graph has seven logical nodes:
+
+- `messenger`
+- `orchestrator`
+- `worker`
+- `worker-alt`
+- `critic`
+- `guardian`
+- `boss`
+
+Reachability is strict:
+
+- `messenger` talks only to `orchestrator`
+- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `critic`, and
+  `boss`
+- `critic` talks to `orchestrator` and `guardian`
+- `guardian` talks only to `critic`
+- `worker` and `worker-alt` report to `orchestrator`
+- `boss` gives final approval to `orchestrator`
+
+If footer prose conflicts with the live graph or with successful delivery in
+the same context, trust the graph and actual delivery.
+
+## Approval route
+
+Artifact work is not complete until this exact route succeeds:
+
+`worker DONE -> orchestrator -> critic -> guardian -> critic ->
+orchestrator -> boss -> orchestrator -> messenger`
+
+`worker-alt` follows the same route when it is the executor.
+
+Do not collapse or bypass the `critic -> guardian -> critic` hop.
+
+## Status and routing rules
+
+### `status request` is not `status update`
+
+- `status request`: reply required
+- `status update`: informational unless the body explicitly asks for a reply
+
+If explicit body instructions and generic footer text disagree, follow the body
+instruction.
+
+### Keep recurring status compact
+
+Use only the smallest useful delta:
+
+- current task
+- blockers
+- waiting_on
+- next action
+- the minimum evidence needed to justify a changed state
+
+Do not re-expand the full situation when nothing material changed.
+
+### Footer lines are hints, not authority
+
+`You can talk to:`, `Reply:`, and `No reply needed for:` are useful routing
+hints, but they do not override the checked-in graph or a known live delivery
+result.
+
+## Delivery-health rules
+
+Do not treat raw `waiting_count > 0` as proof of stuck delivery.
+
+Before escalating:
+
+1. start with `tmux-a2a-postman get-session-health`
+2. classify the state using live session health plus direct send/reply evidence
+3. escalate only if it is genuinely blocking
+
+Normal `composing` and `user_input` waits are not enough on their own to claim
+delivery failure. The repo's current rule is: Do NOT inspect raw wait files.
+
+## Historical-drift rules
+
+Older retained mail may still show:
+
+- `postman` as if it were a current live recipient
+- direct `orchestrator -> guardian` traffic
+- wording based on `reply_command`
+
+Treat those as historical signatures rather than the current contract.
+
+## Failure reporting
+
+Use concise terminal states:
+
+- `DONE: <summary>`
+- `BLOCKED: <reason>`
+
+If a hook, permission rule, or tool restriction blocks the requested action, do
+not retry silently. Report the block immediately.
+
+## Recommended reading order
+
+When context is thin, read in this order:
+
+1. `nix/home-manager/agents/AGENTS.md`
+2. `nix/home-manager/agents/claude-code.nix`
+3. `nix/home-manager/agents/codex-cli.nix`
+4. `nix/home-manager/agents/agent-skills.nix`
+5. `config/tmux-a2a-postman/postman.md`
+6. this file
