@@ -6,8 +6,12 @@ Use this prompt template for each:
 ```text
 reviewer-{ROLE}-cc-deep
 git diff {BASE}...HEAD
-Context: {CONTEXT_FILE}
+Review context follows:
+{contents of CONTEXT_FILE}
 ```
+
+Inline the contents of `{CONTEXT_FILE}` into the child prompt. Do NOT pass only
+the mkmd path.
 
 Roles (in order):
 

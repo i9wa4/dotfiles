@@ -14,26 +14,26 @@ description: |
 
 # Subagent Review Skill
 
-WRAPPER: Dispatches to sub-skills based on caller-supplied labels. Each label
-maps to one sub-skill (5 reviewers). Requested sub-skills are launched first so
-independent labels can run simultaneously. Results are collected and merged
-after all invoked sub-skills complete.
+WRAPPER: Dispatches to child skills based on caller-supplied labels. Each
+label maps to one child skill (5 reviewers). Requested child skills are
+launched first so independent labels can run simultaneously. Results are
+collected and merged after all invoked child skills complete.
 
 Default labels (no argument): cc cx
 
-Label-to-sub-skill dispatch table:
+Label-to-child-skill dispatch table:
 
-| Label   | Sub-skill                | Reviewers                |
-| ------- | ------------------------ | ------------------------ |
-| cc      | /subagent-review-cc      | 5 Claude Tier 2 (sonnet) |
-| cc-deep | /subagent-review-cc-deep | 5 Claude Tier 1 (opus)   |
-| cx      | /subagent-review-cx      | 5 Codex Tier 2           |
-| cx-deep | /subagent-review-cx-deep | 5 Codex Tier 1 (xhigh)   |
+| Label   | Child Skill               | Reviewers                |
+| ------- | ------------------------- | ------------------------ |
+| cc      | `subagent-review-cc`      | 5 Claude Tier 2 (sonnet) |
+| cc-deep | `subagent-review-cc-deep` | 5 Claude Tier 1 (opus)   |
+| cx      | `subagent-review-cx`      | 5 Codex Tier 2           |
+| cx-deep | `subagent-review-cx-deep` | 5 Codex Tier 1 (xhigh)   |
 
-NOTE: Callers requiring the deliberation pass MUST invoke sub-skills directly
-and perform deliberation themselves.
+NOTE: Callers requiring the deliberation pass MUST invoke the child
+skills directly and perform deliberation themselves.
 
-HARD CONSTRAINT: All invoked sub-skills MUST complete before proceeding to
+HARD CONSTRAINT: All invoked child skills MUST complete before proceeding to
 the merged summary. Do NOT produce a merged summary with missing result files.
 
 ## 1. Pre-flight Check
@@ -61,7 +61,7 @@ BEFORE_CX=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx.md 2>/dev/null | wc -
 BEFORE_CX_DEEP=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx-deep.md 2>/dev/null | wc -l)
 ```
 
-Capture ALL baselines before any sub-skill invocation.
+Capture ALL baselines before any child-skill invocation.
 
 ### Step 0.5: Run Cheap Local Verification First
 
@@ -85,25 +85,33 @@ Repair loop:
 Do NOT burn reviewer budget on a trivially failing worktree when a cheap
 verifier already names the next edit.
 
-### Step 1: Launch Requested Sub-skills
+### Step 1: Launch Requested Child Skills
 
-For each label in the parsed list, invoke the corresponding sub-skill:
+For each label in the parsed list, invoke the corresponding child skill:
 
-- If label is **cc**: invoke /subagent-review-cc
-- If label is **cc-deep**: invoke /subagent-review-cc-deep
-- If label is **cx**: invoke /subagent-review-cx
-- If label is **cx-deep**: invoke /subagent-review-cx-deep
+- If label is **cc**: use skill `subagent-review-cc`
+- If label is **cc-deep**: use skill `subagent-review-cc-deep`
+- If label is **cx**: use skill `subagent-review-cx`
+- If label is **cx-deep**: use skill `subagent-review-cx-deep`
 
-Launch all requested sub-skills before waiting on any one of them. For example,
-the default `cc cx` run should start both sub-skills in the same turn so the
-Claude-side and Codex-side reviews can proceed simultaneously.
+Launch all requested child skills before waiting on any one of them. For
+example, the default `cc cx` run should start both child skills in the same
+turn so the Claude-side and Codex-side reviews can proceed simultaneously.
 
-After all requested sub-skills have been launched, wait for every invoked
-sub-skill to complete before proceeding to Step 2.
+For Codex labels, keep the child prompt self-contained. Do NOT pass only an
+mkmd context file path from `~/.local/state/mkmd/...`; `codex exec --sandbox
+workspace-write` child sessions cannot read that path.
+
+On Linux, treat a `sandbox-preflight-{label}` artifact from a Codex child skill
+as a verified host/runtime blocker. Do NOT relaunch Codex reviewer fan-out
+until that blocker is resolved.
+
+After all requested child skills have been launched, wait for every invoked
+child skill to complete before proceeding to Step 2.
 
 ### Step 2: Collect and Verify Results
 
-After all sub-skills complete, verify new output file counts:
+After all child skills complete, verify new output file counts:
 
 ```bash
 AFTER_CC=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cc.md 2>/dev/null | wc -l)
@@ -112,8 +120,18 @@ AFTER_CX=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx.md 2>/dev/null | wc -l
 AFTER_CX_DEEP=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx-deep.md 2>/dev/null | wc -l)
 ```
 
-For each invoked label: delta must equal 5. If any delta is less than 5: do NOT
-proceed. Re-invoke the relevant sub-skill.
+For each invoked label: delta must equal 5.
+
+If any Claude label delta is less than 5: do NOT proceed. Re-invoke the
+relevant child skill.
+
+If a Codex label delta is less than 5 because the child skill halted with a
+`sandbox-preflight-{label}` artifact: do NOT retry. Surface BLOCKED with that
+artifact path and recommend the matching Claude fallback (`cc` or `cc-deep`)
+for this host.
+
+Otherwise, if a Codex label delta is less than 5 for some other reason: do NOT
+proceed. Re-invoke the relevant child skill.
 
 ### Step 3: Merged Summary
 
@@ -217,5 +235,5 @@ without reopening the full transcript.
 ## 4. Reviewer Deliberation (Out of Scope)
 
 The deliberation pass (second-round cross-examination) is NOT performed by
-this wrapper. Callers requiring deliberation must invoke sub-skills directly,
-collect Phase 1 results, and perform deliberation themselves.
+this wrapper. Callers requiring deliberation must invoke the child skills
+directly, collect Phase 1 results, and perform deliberation themselves.

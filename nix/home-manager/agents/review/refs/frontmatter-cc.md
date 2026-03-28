@@ -6,7 +6,7 @@ description: |
   Use when:
   - Running code or design reviews using Claude reviewers only
   - Calling engine is Codex but you want Claude-side review results
-  - Running half of a full dual-engine review (pair with /subagent-review-cx)
+  - Running half of a full dual-engine review (pair with `subagent-review-cx`)
 ---
 
 # Subagent Review CC Skill

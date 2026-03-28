@@ -20,6 +20,15 @@ Generate summary in one pass:
 - Directory: {dir_name}
 - Label: LABEL_PLACEHOLDER
 
+## Resumable Handoff
+
+- Objective: {current objective or `Not provided`}
+- Blockers: {current blockers or `None recorded`}
+- Active paths:
+  - `{path/to/active-artifact-or-file}`
+- Next action: {next action after accepting or retrying this review}
+- Latest verification status: {worker verification outcome or `Not provided`}
+
 ## Findings
 
 | #   | Issue           | Reporter     | Severity  | Confidence | File               |

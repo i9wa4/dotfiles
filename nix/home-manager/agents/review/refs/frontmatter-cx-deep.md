@@ -6,7 +6,7 @@ description: |
   Use when:
   - Running thorough pre-merge reviews requiring maximum depth
   - Calling engine is Claude but you want Codex-side Tier 1 review results
-  - Running half of a full dual-engine deep review (pair with /subagent-review-cc-deep)
+  - Running half of a full dual-engine deep review (pair with `subagent-review-cc-deep`)
 ---
 
 # Subagent Review CX Deep Skill (Tier 1)

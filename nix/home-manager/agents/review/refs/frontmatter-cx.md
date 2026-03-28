@@ -6,8 +6,8 @@ description: |
   Use when:
   - Running code or design reviews using Codex reviewers only
   - Calling engine is Claude but you want Codex-side review results
-  - Running half of a full dual-engine review (pair with /subagent-review-cc)
-  For Tier 1 (gpt-5.4, xhigh effort): use /subagent-review-cx-deep
+  - Running half of a full dual-engine review (pair with `subagent-review-cc`)
+  For Tier 1 (gpt-5.4, xhigh effort): use `subagent-review-cx-deep`
 ---
 
 # Subagent Review CX Skill

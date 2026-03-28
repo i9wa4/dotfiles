@@ -9,8 +9,8 @@ description: |
   - Running thorough pre-merge reviews requiring maximum Claude depth
   - Calling engine is Codex but you want Claude Tier 1 review results
   - Running half of a full dual-engine deep review (pair with
-    /subagent-review-cx-deep)
-  For Tier 2 (sonnet, default): use /subagent-review-cc
+    `subagent-review-cx-deep`)
+  For Tier 2 (sonnet, default): use `subagent-review-cc`
 ---
 
 # Subagent Review CC Deep Skill (Tier 1)
