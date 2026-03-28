@@ -33,9 +33,7 @@ in
     # home.activation
     ./modules/npm.nix
     # AI agent tools
-    ./agents/agent-skills.nix
-    ./agents/claude-code.nix
-    ./agents/codex-cli.nix
+    ./agents
   ];
   # Use ~/.config/ instead of ~/Library/Application Support/ on macOS
   xdg.enable = true;
@@ -92,14 +90,6 @@ in
       pkgs.shellcheck
       pkgs.uv
       pkgs.vim
-      # llm-agents
-      inputs.llm-agents.packages.${pkgs.system}.claude-code
-      inputs.llm-agents.packages.${pkgs.system}.codex
-      inputs.llm-agents.packages.${pkgs.system}.ccusage
-      inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
-      # GitHub
-      inputs.claude-chill.packages.${pkgs.system}.default
-      inputs.tmux-a2a-postman.packages.${pkgs.system}.default
     ];
 
     # ==========================================================================
