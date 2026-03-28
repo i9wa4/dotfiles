@@ -64,6 +64,10 @@ let
     drawio = {
       command = "${drawioMcp}/bin/drawio-mcp";
     };
+    freee-mcp = {
+      command = "npx";
+      args = [ "freee-mcp" ];
+    };
   };
 in
 nixServers // manualServers

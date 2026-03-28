@@ -73,13 +73,11 @@ in
       pkgs-unstable.acli
       pkgs-unstable.azure-cli
       pkgs-unstable.gws
-      pkgs-unstable.obsidian
       pkgs-unstable.rumdl
       pkgs.awscli2
       pkgs-unstable.aws-sam-cli
       pkgs.databricks-cli
       pkgs.deno
-      pkgs.drawio
       pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf

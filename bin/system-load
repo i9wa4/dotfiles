@@ -6,7 +6,7 @@
 #   system-load
 #
 # Output format:
-#   TEMP:XXC CPU:XX% RAM:XX%
+#   TEMP:XXC CPU:XX% RAM:XX% DISK:XX%
 #
 # Supported platforms:
 #   - macOS (Darwin)
@@ -100,9 +100,24 @@ get_cpu_temp() {
   esac
 }
 
+# Get disk usage percentage for root filesystem
+get_disk_usage() {
+  case "${os_type}" in
+    Darwin)
+      # APFS: /System/Volumes/Data is the actual user data volume
+      # (df / only shows the read-only system snapshot, misleadingly low)
+      df -P /System/Volumes/Data | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      ;;
+    *)
+      df -P / | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      ;;
+  esac
+}
+
 # Main
 temp=$(get_cpu_temp)
 total_cpu=$(get_total_cpu_usage)
 ram=$(get_ram_usage)
+disk=$(get_disk_usage)
 
-printf "TEMP:%2sC CPU:%2s%% RAM:%2s%%\n" "${temp}" "${total_cpu}" "${ram}"
+printf "TEMP:%2sC CPU:%2s%% RAM:%2s%% DISK:%2s%%\n" "${temp}" "${total_cpu}" "${ram}" "${disk}"

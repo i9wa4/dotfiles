@@ -28,7 +28,7 @@
     #       and scheduled optimise can cause syspolicyd high CPU
     # cf. `https://github.com/nix-darwin/nix-darwin/issues/1252`
     optimise.automatic = false;
-    # Garbage collection (daily at noon, delete older than 1 day)
+    # Garbage collection (daily at noon, delete older than 3 days)
     # cf. https://mynixos.com/nix-darwin/option/nix.gc.interval
     gc = {
       automatic = true;
@@ -36,7 +36,7 @@
         Hour = 12;
         Minute = 0;
       };
-      options = "--delete-older-than 14d";
+      options = "--delete-older-than 3d";
     };
   };
 
@@ -87,6 +87,9 @@
       # Upgrade outdated formulae/casks
       upgrade = true;
     };
+    # Force upgrade casks marked as auto_updates (e.g., google-chrome)
+    # Required because disableGoogleUpdater blocks Chrome's self-updater
+    greedyCasks = true;
   };
 
   # Power management
