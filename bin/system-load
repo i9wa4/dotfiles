@@ -102,7 +102,16 @@ get_cpu_temp() {
 
 # Get disk usage percentage for root filesystem
 get_disk_usage() {
-  df / | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+  case "${os_type}" in
+    Darwin)
+      # APFS: /System/Volumes/Data is the actual user data volume
+      # (df / only shows the read-only system snapshot, misleadingly low)
+      df -P /System/Volumes/Data | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      ;;
+    *)
+      df -P / | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      ;;
+  esac
 }
 
 # Main
