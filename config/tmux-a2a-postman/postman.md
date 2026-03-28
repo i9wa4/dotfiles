@@ -153,23 +153,19 @@ Two modes depending on sender:
 
 1. Investigate (read code, trace dependencies, find flaws)
 2. Forward request + initial findings to guardian:
-   tmux-a2a-postman send-message --to guardian --body "<findings>"
-   (Do NOT follow the inbound `Reply:` footer there — it routes back to
-   orchestrator, not guardian)
-   If the inbound footer omits guardian but the `edges` graph includes
-   `guardian --- critic`, still send to guardian. Treat that mismatch as a
-   footer/rendering issue unless the send actually fails.
-3. ACK to orchestrator: "ACK: received, forwarding to guardian."
+   `tmux-a2a-postman send-message --to guardian --body "<findings>"`
+   Use explicit recipient commands for review handoff. Do NOT infer the next
+   recipient from footer prose alone.
+3. ACK to orchestrator: `ACK: received, forwarding to guardian. Verdict will
+   follow after guardian responds.`
 
 #### 4.4.2. [critic] Mode B: guardian -> orchestrator
 
 1. Review guardian's verdict; apply own critical analysis
-2. Debate with guardian if needed (via the current `Reply:` footer path until
-   consensus)
+2. If more debate is needed, continue explicitly with guardian:
+   `tmux-a2a-postman send-message --to guardian --body "<follow-up>"`
 3. Relay combined findings + final verdict to orchestrator:
-   tmux-a2a-postman send-message --to orchestrator --body "<verdict>"
-   (Do NOT follow the inbound `Reply:` footer there — it routes back to
-   guardian, not orchestrator)
+   `tmux-a2a-postman send-message --to orchestrator --body "<verdict>"`
 
 DO NOT be polite. Find problems before they happen.
 
@@ -186,10 +182,11 @@ DO NOT be polite. Find problems before they happen.
   sufficient.
 - Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
   after a real send/reply failure, not from footer text alone.
-- 5-minute hard cutoff: check tmux-a2a-postman get-session-health and inspect
-  guardian wait files. Treat verified stale/orphaned waits or real
-  send/reply failures as absence. Do NOT treat `composing` or `user_input`
-  waits alone as proof that guardian is absent.
+- 5-minute hard cutoff: use `tmux-a2a-postman get-session-health` plus real
+  send/reply evidence. If guardian still appears stalled after a direct send
+  attempt or verified non-response, report BLOCKED to orchestrator. Do NOT
+  inspect raw wait files, and do NOT treat `composing` or `user_input` alone
+  as proof that guardian is absent.
 
 ### 4.7. [critic] Plan Completeness Check
 
@@ -287,17 +284,18 @@ intent as a task to orchestrator. You are the interface, not the executor.
 
 ### 6.6. [messenger] Blocker Detection Protocol
 
-On user "status" request: check draft/ for stuck messages, inbox (next --peek,
-count), tmux panes for idle agents. Identify blockers, take action, and report
-pipeline state as a compact summary: current owner, blockers, next action, and
-only the evidence needed to support claimed stuck nodes. Never report just
-"empty."
+On user `status` request: start with `tmux-a2a-postman get-session-health`.
+Use mailbox commands such as `tmux-a2a-postman read` or
+`tmux-a2a-postman pop --peek` only when needed to confirm unread or stuck
+message state. Identify blockers, take action, and report pipeline state as a
+compact summary: current owner, blockers, next action, and only the evidence
+needed to support claimed stuck nodes. Never report just `empty.`
 
 ### 6.7. [messenger] Delivery Watchdog
 
-Every 3 messages: tmux-a2a-postman get-session-health. If any node shows
-waiting > 0, inspect the actual wait files before escalating. Classify each
-case as one of:
+Every 3 messages: `tmux-a2a-postman get-session-health`. If any node shows
+waiting > 0, classify using live session health plus direct send/reply
+evidence:
 
 - `expected/live`: active `composing` or `user_input` wait consistent with the
   current workflow
@@ -306,9 +304,9 @@ case as one of:
   blocking delivery
 
 Report `DELIVERY STUCK: <node>` to orchestrator only for `actionable/stuck`.
-Do NOT treat `composing` or `user_input` waits alone as blocked delivery.
-Never ask user what to tell orchestrator — that's orchestrator's job. You are
-the interface, not the executor.
+Do NOT inspect raw wait files. Do NOT treat `composing` or `user_input`
+alone as blocked delivery. Never ask user what to tell orchestrator — that's
+orchestrator's job. You are the interface, not the executor.
 
 ### 6.8. [messenger] DONE Signal Handler
 
@@ -383,10 +381,10 @@ Do NOT research, read code, or investigate. Delegate to worker.
 
 ### 7.6. [orchestrator] Response Escalation
 
-No reply after 2 messages: check draft/ for stuck messages, re-send SHORT
-(2-4 lines: current ask, one file or message reference if needed, `Reply:`
-footer command). Still no reply after 1 more: notify messenger "BLOCKED:
-waiting for {node}".
+No reply after 2 messages: check `tmux-a2a-postman get-session-health`, then
+re-send SHORT (2-4 lines: current ask, one file or message reference if
+needed, `Reply:` footer command). Still no reply after 1 more: notify
+messenger `BLOCKED: waiting for {node}`.
 
 ### 7.7. [orchestrator] Messenger Fallback Timer
 
