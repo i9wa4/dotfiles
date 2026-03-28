@@ -9,7 +9,7 @@ approval contract carried by `tmux-a2a-postman`.
 For the broader repository philosophy, read
 `docs/dotfiles-operating-concepts.md`.
 
-## Scope
+## 1. Scope
 
 Use this document when the question is "how should an AI agent operate inside
 this repo right now?"
@@ -23,11 +23,11 @@ That includes:
 - tmux role identity
 - `tmux-a2a-postman` routing and approval rules
 
-## Repo-local AI stack
+## 2. Repo-local AI stack
 
 The repo-local AI stack is assembled from a few core sources.
 
-### Shared instruction core
+### 2.1. Shared instruction core
 
 `nix/home-manager/agents/AGENTS.md` is the shared operating baseline for both
 engines. It defines persona, workflow, safety, file handling, and repo-local
@@ -38,7 +38,7 @@ On the Claude side, `CLAUDE.md` is appended as a small Claude-specific suffix.
 On the Codex side, `instruction-artifacts.nix` takes the shared core plus the
 repo-local rule files and emits the installed `.codex/AGENTS.md`.
 
-### Declarative installation
+### 2.2. Declarative installation
 
 `claude-code.nix`, `codex-cli.nix`, and `agent-skills.nix` declaratively
 materialize the runtime under:
@@ -51,13 +51,13 @@ materialize the runtime under:
 The point is that the installed runtime should come from this repo, not from
 manual edits in home directories.
 
-### tmux role identity
+### 2.3. tmux role identity
 
 Inside this repo, role identity is tied to the tmux pane title. That means
 role, routing, and prompt context are linked to the pane you are currently in,
 not just to abstract agent labels.
 
-## Shared operating rules
+## 3. Shared operating rules
 
 These rules come from the shared agent core and are expected regardless of
 engine:
@@ -74,12 +74,12 @@ For worker-style nodes inside the postman graph, two more rules matter:
 - non-user-facing nodes do not end by asking the human user a question
 - success and failure are reported as `DONE:` or `BLOCKED:`
 
-## Hook contract
+## 4. Hook contract
 
 Hooks are not optional conveniences in this repo. They are part of the local
 operating contract.
 
-### Shared intent across engines
+### 4.1. Shared intent across engines
 
 Both engines are expected to support these behaviors as closely as their hook
 surfaces allow:
@@ -90,7 +90,7 @@ surfaces allow:
 - reload handoff context on resume
 - tighten cheap repair loops after deterministic failures
 
-### Claude runtime hooks
+### 4.2. Claude runtime hooks
 
 The Claude runtime currently carries:
 
@@ -100,7 +100,7 @@ The Claude runtime currently carries:
 - `SessionStart` for reloading `CLAUDE.md` and saved handoff state
 - `PreCompact` for saving a structured handoff snapshot
 
-### Codex runtime hooks
+### 4.3. Codex runtime hooks
 
 The Codex runtime currently carries:
 
@@ -113,12 +113,12 @@ The Codex runtime currently carries:
 The surface is not identical, but the repo is aiming for equivalent operating
 discipline.
 
-## Shared policy sources
+## 5. Shared policy sources
 
 Two repo files matter especially because they are single sources of truth
 consumed by both engines.
 
-### `denied-bash-commands.nix`
+### 5.1. `denied-bash-commands.nix`
 
 This file defines the dangerous Bash patterns once and then emits:
 
@@ -128,7 +128,7 @@ This file defines the dangerous Bash patterns once and then emits:
 
 If the repo changes a Bash safety policy, this is where it should happen.
 
-### `review/review-artifacts-gen.nix`
+### 5.2. `review/review-artifacts-gen.nix`
 
 This file generates the installed review stack from shared fragments:
 
@@ -137,7 +137,7 @@ This file generates the installed review stack from shared fragments:
 
 That is how the repo keeps the review contract synchronized across engines.
 
-## Claude/Codex parity contract
+## 6. Claude/Codex parity contract
 
 The repo expects parity of quality bar, not literal product sameness.
 
@@ -154,7 +154,7 @@ When an engine cannot match the other feature-for-feature, the fallback should
 still preserve the same intent: safe execution, explicit handoff, and
 verifiable reporting.
 
-## `tmux-a2a-postman` routing contract
+## 7. `tmux-a2a-postman` routing contract
 
 The repo-local postman graph has seven logical nodes:
 
@@ -179,7 +179,7 @@ Reachability is strict:
 If footer prose conflicts with the live graph or with successful delivery in
 the same context, trust the graph and actual delivery.
 
-## Approval route
+## 8. Approval route
 
 Artifact work is not complete until this exact route succeeds:
 
@@ -190,9 +190,9 @@ orchestrator -> boss -> orchestrator -> messenger`
 
 Do not collapse or bypass the `critic -> guardian -> critic` hop.
 
-## Status and routing rules
+## 9. Status and routing rules
 
-### `status request` is not `status update`
+### 9.1. `status request` is not `status update`
 
 - `status request`: reply required
 - `status update`: informational unless the body explicitly asks for a reply
@@ -200,7 +200,7 @@ Do not collapse or bypass the `critic -> guardian -> critic` hop.
 If explicit body instructions and generic footer text disagree, follow the body
 instruction.
 
-### Keep recurring status compact
+### 9.2. Keep recurring status compact
 
 Use only the smallest useful delta:
 
@@ -212,13 +212,13 @@ Use only the smallest useful delta:
 
 Do not re-expand the full situation when nothing material changed.
 
-### Footer lines are hints, not authority
+### 9.3. Footer lines are hints, not authority
 
 `You can talk to:`, `Reply:`, and `No reply needed for:` are useful routing
 hints, but they do not override the checked-in graph or a known live delivery
 result.
 
-## Delivery-health rules
+## 10. Delivery-health rules
 
 Do not treat raw `waiting_count > 0` as proof of stuck delivery.
 
@@ -231,7 +231,7 @@ Before escalating:
 Normal `composing` and `user_input` waits are not enough on their own to claim
 delivery failure. The repo's current rule is: Do NOT inspect raw wait files.
 
-## Historical-drift rules
+## 11. Historical-drift rules
 
 Older retained mail may still show:
 
@@ -241,7 +241,7 @@ Older retained mail may still show:
 
 Treat those as historical signatures rather than the current contract.
 
-## Failure reporting
+## 12. Failure reporting
 
 Use concise terminal states:
 
@@ -251,7 +251,7 @@ Use concise terminal states:
 If a hook, permission rule, or tool restriction blocks the requested action, do
 not retry silently. Report the block immediately.
 
-## Recommended reading order
+## 13. Recommended reading order
 
 When context is thin, read in this order:
 

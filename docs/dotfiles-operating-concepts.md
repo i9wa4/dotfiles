@@ -1,4 +1,4 @@
-# Dotfiles Operating Concepts
+# dotfiles Operating Concepts
 
 This document explains the operating concept behind this dotfiles repo, not
 just one tool inside it.
@@ -18,7 +18,7 @@ That is why the repo keeps:
 AI-specific operating rules live separately in
 `docs/repo-ai-operating-contract.md`.
 
-## Why this repo is organized this way
+## 1. Why this repo is organized this way
 
 The repo is trying to prevent local AI operation from becoming snowflake state.
 
@@ -33,9 +33,9 @@ Without a shared harness, each machine would drift:
 The repo answers that by treating configuration as code and by making Nix the
 alignment mechanism across machines and engines.
 
-## The four operating layers
+## 2. The four operating layers
 
-### 1. Nix is the alignment layer
+### 2.1. Nix is the alignment layer
 
 `flake.nix` pins the major inputs, and `nix/home-manager/default.nix` imports
 the tmux and AI-agent modules into one Home Manager graph. The repo uses that
@@ -53,7 +53,7 @@ Two different delivery patterns are used on purpose:
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.
 
-### 2. tmux is the visible runtime shell
+### 2.2. tmux is the visible runtime shell
 
 The tmux module is not cosmetic here. It is the live shell around the harness.
 
@@ -70,7 +70,7 @@ Three details matter:
 So the repo is not treating agent orchestration as a hidden sidecar. It is a
 first-class part of the tmux workspace.
 
-### 3. `tmux-a2a-postman` is the persistent control plane
+### 2.3. `tmux-a2a-postman` is the persistent control plane
 
 In this repo, `tmux-a2a-postman` is not just a messaging utility. It is the
 control plane that connects role identity, routing, approval flow, and health
@@ -89,7 +89,7 @@ Because the config is live and the status line shows session state
 continuously, the control plane is persistent in day-to-day operation rather
 than only being consulted during failure analysis.
 
-### 4. `nix/home-manager/agents` is the harness-engineering layer
+### 2.4. `nix/home-manager/agents` is the harness-engineering layer
 
 The agent tree is where repo policy becomes executable behavior.
 
@@ -110,11 +110,11 @@ the harness from several smaller sources:
 That is the repo's harness-engineering philosophy: keep policy declarative,
 shared, inspectable, and generated from a small number of sources of truth.
 
-## Hooks are part of the product, not optional glue
+## 3. Hooks are part of the product, not optional glue
 
 The repo treats hooks as part of the operating model.
 
-### Shared intent
+### 3.1. Shared intent
 
 Across Claude and Codex, hooks are used to do five jobs:
 
@@ -124,7 +124,7 @@ Across Claude and Codex, hooks are used to do five jobs:
 - reload saved context when a session restarts or resumes
 - add cheap deterministic feedback after verifier failures
 
-### Claude shape
+### 3.2. Claude shape
 
 The Claude side has the richer hook surface, so it carries more of the
 instrumentation:
@@ -137,7 +137,7 @@ instrumentation:
   compaction
 - `claude-sessionstart-reload.sh` reloads `CLAUDE.md` plus saved handoff state
 
-### Codex shape
+### 3.3. Codex shape
 
 The Codex side uses the hooks it has to approximate the same contract:
 
@@ -151,7 +151,7 @@ The Codex side uses the hooks it has to approximate the same contract:
 The hook surfaces are not identical, but the repo is clearly pushing both
 engines toward the same local quality bar.
 
-## Claude/Codex quality parity is a design goal
+## 4. Claude/Codex quality parity is a design goal
 
 The repo does not assume "Claude rules live over here and Codex rules live over
 there." It keeps the engines different only where the products are genuinely
@@ -169,7 +169,7 @@ The result is parity of intent rather than byte-for-byte sameness. The repo is
 trying to make a worker on Claude and a worker on Codex behave comparably under
 the same local expectations.
 
-## The review stack is part of the operating concept
+## 5. The review stack is part of the operating concept
 
 This repo treats review as a built artifact, not ad hoc human ceremony.
 
@@ -184,7 +184,7 @@ in sync from a shared source. Review is therefore another example of the same
 repo philosophy: one concept, declaratively materialized into multiple runtime
 targets.
 
-## Why `tmux-a2a-postman` remains central
+## 6. Why `tmux-a2a-postman` remains central
 
 Even with the broader harness in place, `tmux-a2a-postman` remains central
 because it carries the workflow state between roles.
@@ -201,13 +201,13 @@ The repo-local operating model is:
 The persistent control-plane role of `tmux-a2a-postman` matters because the
 rest of the harness assumes this graph exists and is visible from inside tmux.
 
-## Philosophy in one sentence
+## 7. Philosophy in one sentence
 
 This repo is using Nix, tmux, hooks, and `tmux-a2a-postman` to turn local AI
 operation into a reproducible engineering harness instead of a pile of per-tool
 preferences.
 
-## Recommended reading order
+## 8. Recommended reading order
 
 When you need to understand the operating concept, read these in order:
 
@@ -220,7 +220,7 @@ When you need to understand the operating concept, read these in order:
 7. `config/tmux-a2a-postman/postman.md`
 8. `docs/repo-ai-operating-contract.md`
 
-## Related files
+## 9. Related files
 
 - `docs/repo-ai-operating-contract.md`
 - `nix/home-manager/agents/instruction-artifacts.nix`
