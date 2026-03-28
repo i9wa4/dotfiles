@@ -61,12 +61,14 @@ in
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
       set-option -g status-right-length 200
       set-option -g status-style bg=default
+      # Bell: passthrough to terminal, tmux stays silent
+      set-option -g monitor-bell off
       set-option -g visual-bell off
       set-option -g window-status-bell-style 'none'
       set-option -g window-status-current-format '#[reverse]  #{window_index}#{?window_zoomed_flag,🔎,  }#[default]'
       set-option -g window-status-format '  #{window_index}#{?window_zoomed_flag,🔎,  }'
 
-      # Clipboard (OSC 52)
+      # Passthrough (OSC 52 clipboard, bell, etc.)
       set-option -g set-clipboard on
       set-option -g allow-passthrough on
       bind-key Y run-shell 'tmux save-buffer - | tmux load-buffer -w -'
