@@ -87,6 +87,9 @@
       # Upgrade outdated formulae/casks
       upgrade = true;
     };
+    # Force upgrade casks marked as auto_updates (e.g., google-chrome)
+    # Required because disableGoogleUpdater blocks Chrome's self-updater
+    greedyCasks = true;
   };
 
   # Power management
