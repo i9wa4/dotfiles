@@ -63,6 +63,18 @@ historical signatures, not as the current routing contract. Under the current
 `edges` graph, the live review path is `orchestrator -> critic -> guardian ->
 critic -> orchestrator`.
 
+### 2.7. [common_template] Compact Status Payloads
+
+For recurring control-plane traffic (`[status]`, `[WATCHDOG]`, heartbeat,
+delivery-health follow-up), keep the body to the smallest useful delta:
+
+- include only current task, blockers, waiting_on, next action, and the
+  minimum evidence needed to justify a blocker or state change
+- if no material state changed, reply with a short delta against the last
+  active status thread instead of restating the whole situation
+- include file paths, message IDs, or commands only when they changed or are
+  needed for the next immediate action
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -237,8 +249,8 @@ Flag issues as BLOCKING.
 
 ### 5.8. [guardian] Watchdog Response
 
-On [WATCHDOG] from critic: reply immediately with status. If pending review,
-send verdict in this cycle. Never ignore — silence triggers escalation.
+On [WATCHDOG] from critic: reply immediately with compact status. If pending
+review, send verdict in this cycle. Never ignore — silence triggers escalation.
 
 ### 5.9. [guardian] Completion Signal
 
@@ -276,8 +288,10 @@ intent as a task to orchestrator. You are the interface, not the executor.
 ### 6.6. [messenger] Blocker Detection Protocol
 
 On user "status" request: check draft/ for stuck messages, inbox (next --peek,
-count), tmux panes for idle agents. Identify blockers, take action, report full
-pipeline status. Never report just "empty."
+count), tmux panes for idle agents. Identify blockers, take action, and report
+pipeline state as a compact summary: current owner, blockers, next action, and
+only the evidence needed to support claimed stuck nodes. Never report just
+"empty."
 
 ### 6.7. [messenger] Delivery Watchdog
 
@@ -305,9 +319,10 @@ include commits/issues/blockers. Do NOT re-queue. Wait for next user request.
 
 5+ messages from same sender, or repeated health/status updates with no
 material state change, in 2 minutes: batch into single summary. Reuse the
-current status summary instead of emitting a fresh full explanation cycle. Do
-NOT proactively notify orchestrator beyond the batched summary; wait for user
-direction.
+current status thread and send only the material delta plus the minimum
+supporting evidence for changed blockers. Do NOT emit a fresh full explanation
+cycle. Do NOT proactively notify orchestrator beyond the batched summary; wait
+for user direction.
 
 ### 6.10. [messenger] Fallback: Orchestrator Absent
 
@@ -361,14 +376,17 @@ Do NOT research, read code, or investigate. Delegate to worker.
 - When blocked waiting for any node after 2 messages:
   notify messenger "BLOCKED: waiting for {node}"
 - Obtain critic APPROVED verdict before sending to boss
+- Keep recurring status traffic compact: current task, blockers, waiting_on,
+  next action, and only changed evidence
 - On repeated status checks with no material state change, send a concise delta
   summary instead of re-expanding the full prior status explanation
 
 ### 7.6. [orchestrator] Response Escalation
 
 No reply after 2 messages: check draft/ for stuck messages, re-send SHORT
-(3 lines: file path, "APPROVE or NOT APPROVE?", `Reply:` footer command).
-Still no reply after 1 more: notify messenger "BLOCKED: waiting for {node}".
+(2-4 lines: current ask, one file or message reference if needed, `Reply:`
+footer command). Still no reply after 1 more: notify messenger "BLOCKED:
+waiting for {node}".
 
 ### 7.7. [orchestrator] Messenger Fallback Timer
 
