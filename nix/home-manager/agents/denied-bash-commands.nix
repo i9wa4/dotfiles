@@ -34,7 +34,7 @@
 #   - hookRegex derivation: 1 token → ^token\b, 2+ tokens → ^token1.*token2
 #
 # justification (required)
-#   - Human-readable denial message (shared by Claude Code hook + Codex CLI)
+#   - Human-readable denial + repair hint (shared by Claude Code hook + Codex CLI)
 #
 # claudeSettingsJson (optional, default: false)
 #   - true → also add to ~/.claude/settings.json permissions.deny
@@ -72,7 +72,7 @@ let
         "-C"
       ];
       hookRegex = "^git\\s+-C\\s";
-      justification = "cross-directory git operations are denied";
+      justification = "cross-directory git operations are denied; cd into the target repo and run git there instead";
     }
     {
       argv = [
@@ -80,7 +80,7 @@ let
         "push"
       ];
       anchored = false;
-      justification = "pushing is denied";
+      justification = "pushing is denied; stop after local verification and report the branch and commit instead";
     }
     {
       argv = [
@@ -88,7 +88,7 @@ let
         "rebase"
       ];
       anchored = false;
-      justification = "rebase is denied";
+      justification = "rebase is denied; make a new commit or request an explicit rollback or rewrite task instead";
     }
     {
       argv = [
@@ -96,7 +96,7 @@ let
         "reset"
       ];
       anchored = false;
-      justification = "reset is denied";
+      justification = "reset is denied; inspect with git status or git diff and use apply_patch or an explicit rollback task instead";
     }
     {
       argv = [
@@ -105,7 +105,7 @@ let
         "--amend"
       ];
       anchored = false;
-      justification = "amend is denied (causes force push requirement)";
+      justification = "amend is denied because it creates a force-push requirement; make a new commit and report the new hash instead";
     }
     {
       argv = [
@@ -113,7 +113,7 @@ let
         "merge"
       ];
       anchored = false;
-      justification = "merge is denied";
+      justification = "merge is denied; keep the branch linear and use a new commit or ask for explicit integration instructions";
     }
     {
       argv = [
@@ -122,7 +122,7 @@ let
         "-d"
       ];
       anchored = false;
-      justification = "branch deletion is denied";
+      justification = "branch deletion is denied; leave branch cleanup to the user and report the stale branch instead";
     }
     {
       argv = [
@@ -131,7 +131,7 @@ let
         "-D"
       ];
       anchored = false;
-      justification = "branch force-deletion is denied";
+      justification = "branch force-deletion is denied; leave branch cleanup to the user and report the stale branch instead";
     }
     {
       argv = [ "rm" ];
@@ -139,13 +139,23 @@ let
       # Override: \b is not POSIX ERE; causes false positives on paths like "dataplatform".
       # Require rm to be preceded by start-of-fragment or whitespace instead.
       hookRegex = "(^|[[:space:]])rm([[:space:]]|$|-)";
-      justification = "rm is denied; use mv /tmp/ instead";
+      justification = "rm is denied; move the target to /tmp/ or edit it surgically with apply_patch instead";
       claudeSettingsJson = true;
     }
     {
       argv = [ "sudo" ];
       anchored = false;
-      justification = "sudo is denied";
+      justification = "sudo is denied; stay within user permissions or report the exact manual step that requires elevation";
+      claudeSettingsJson = true;
+    }
+    {
+      argv = [
+        "tmux"
+        "select-pane"
+        "-T"
+      ];
+      anchored = false;
+      justification = "tmux pane-title renames are denied because role identity depends on pane_title; keep the current pane title and report the needed role change instead";
       claudeSettingsJson = true;
     }
   ];

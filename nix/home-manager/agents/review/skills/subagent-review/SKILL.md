@@ -63,6 +63,28 @@ BEFORE_CX_DEEP=$(ls ~/.local/state/mkmd/*/*/reviews/review-*-cx-deep.md 2>/dev/n
 
 Capture ALL baselines before any sub-skill invocation.
 
+### Step 0.5: Run Cheap Local Verification First
+
+If the target is code or config changes, run one cheap local verifier before
+any reviewer fan-out. Deep variants (`cc-deep`, `cx-deep`) MUST NOT be launched
+against an unverified worktree.
+
+Verifier selection order:
+
+- Use the task or plan's stated verifier if one exists
+- Otherwise use the narrowest obvious repo verifier for the touched files
+- If no repo-specific verifier is clear, at minimum run `git diff --check`
+
+Repair loop:
+
+- If the verifier fails with a concrete fix, make one focused repair and rerun
+  the same verifier once
+- If the second pass still fails, stop the cheap loop and carry that failure
+  into the review request and merged summary instead of hiding it
+
+Do NOT burn reviewer budget on a trivially failing worktree when a cheap
+verifier already names the next edit.
+
 ### Step 1: Launch Requested Sub-skills
 
 For each label in the parsed list, invoke the corresponding sub-skill:

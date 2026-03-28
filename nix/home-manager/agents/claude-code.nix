@@ -96,6 +96,15 @@ let
       ];
       PreToolUse = [
         {
+          matcher = "*";
+          hooks = [
+            {
+              type = "command";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh pre";
+            }
+          ];
+        }
+        {
           matcher = "Bash";
           hooks = [
             {
@@ -110,6 +119,28 @@ let
             {
               type = "command";
               command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-deny-write.sh";
+            }
+          ];
+        }
+      ];
+      PostToolUse = [
+        {
+          matcher = "*";
+          hooks = [
+            {
+              type = "command";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
+            }
+          ];
+        }
+      ];
+      PostToolUseFailure = [
+        {
+          matcher = "*";
+          hooks = [
+            {
+              type = "command";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
             }
           ];
         }
