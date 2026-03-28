@@ -299,14 +299,18 @@ evidence:
 
 - `expected/live`: active `composing` or `user_input` wait consistent with the
   current workflow
+- `review-waiting`: ownership currently sits with `critic`, `guardian`, or
+  `boss` in the known approval route; report it as `waiting_on`, not as a
+  delivery failure
 - `stale/orphaned`: wait persists without matching live ownership or progress
 - `actionable/stuck`: real send/reply failure, or a verified stale wait that is
   blocking delivery
 
 Report `DELIVERY STUCK: <node>` to orchestrator only for `actionable/stuck`.
-Do NOT inspect raw wait files. Do NOT treat `composing` or `user_input`
-alone as blocked delivery. Never ask user what to tell orchestrator — that's
-orchestrator's job. You are the interface, not the executor.
+Do NOT inspect raw wait files. Do NOT treat `composing`, `user_input`, or an
+active approval-route handoff alone as blocked delivery. Never ask user what to
+tell orchestrator — that's orchestrator's job. You are the interface, not the
+executor.
 
 ### 6.8. [messenger] DONE Signal Handler
 
