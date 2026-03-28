@@ -117,8 +117,8 @@ Do not treat raw `waiting_count > 0` as proof of stuck delivery.
 
 Before escalating:
 
-1. inspect the actual waiting file or files
-2. classify the state
+1. start with `tmux-a2a-postman get-session-health`
+2. classify the state using live session health plus direct send/reply evidence
 3. escalate only if it is genuinely blocking
 
 Useful categories in this repo:

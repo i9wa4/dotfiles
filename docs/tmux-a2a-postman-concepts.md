@@ -178,7 +178,8 @@ aggregate counter.
 
 Local rule of thumb:
 
-- inspect the actual waiting files before claiming delivery is stuck
+- start from `tmux-a2a-postman get-session-health`
+- use direct send/reply evidence before claiming delivery is stuck
 - escalate only on verified stale/orphaned waits or real send/reply failure
 
 ### 2. Footer wording and older prose can drift
