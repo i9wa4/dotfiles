@@ -27,9 +27,65 @@ Version history and optimization decision log for Claude Code configuration.
 - `modelOverrides` (v2.1.73) - not using Bedrock/Vertex/Foundry custom IDs
 - `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` (v2.1.74) - no SessionEnd hooks
   configured
+- `sandbox.failIfUnavailable` (v2.1.83) - runs with
+  --dangerously-skip-permissions
+- `CwdChanged`/`FileChanged` hooks (v2.1.83) - no direnv workflow needed
+- `TaskCreated` hook (v2.1.84) - no workflow automation consumer
+- `initialPrompt` agent frontmatter (v2.1.83) - not needed for current agents
+- `CLAUDE_STREAM_IDLE_TIMEOUT_MS` (v2.1.84) - default 90s is adequate
+- `allowedChannelPlugins` managed setting (v2.1.84) - not using channels
+- `managed-settings.d/` drop-in directory (v2.1.83) - solo user, not enterprise
+- `disableDeepLinkRegistration` (v2.1.83) - deep links are useful, keep enabled
+- `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` (v2.1.83) - fallback is useful
+- `allowRead` sandbox setting (v2.1.77) - not configuring sandbox read
+  restrictions
 
 ## 2. Version Notes
 
+- v2.1.87: Fixed Cowork Dispatch message delivery
+- v2.1.86: `.jj`/`.sl` VCS exclusion, Read tool compact line-number format and
+  deduplication, `@` file mention token reduction (no JSON escaping), prompt
+  cache hit rate improvement for Bedrock/Vertex/Foundry, skill descriptions
+  capped at 250 chars, `/skills` alphabetical sort, multiple resume/streaming
+  fixes
+- v2.1.85: Conditional `if` field for hooks (permission rule syntax), MCP
+  `CLAUDE_CODE_MCP_SERVER_NAME`/`CLAUDE_CODE_MCP_SERVER_URL` env for
+  headersHelper, PreToolUse hooks can satisfy `AskUserQuestion` via
+  `updatedInput`, `/compact` context-exceeded fix, many plugin/MCP fixes
+- v2.1.84: PowerShell tool (Windows opt-in), `TaskCreated` hook,
+  `rules`/`skills` `paths:` YAML list of globs, MCP tool descriptions capped at
+  2KB, `CLAUDE_STREAM_IDLE_TIMEOUT_MS` env, `allowedChannelPlugins` managed
+  setting, idle-return prompt after 75+ min, WorktreeCreate HTTP hook support,
+  `ANTHROPIC_CUSTOM_MODEL_OPTION` env
+- v2.1.83: `managed-settings.d/` drop-in directory, `CwdChanged`/`FileChanged`
+  hooks, `sandbox.failIfUnavailable`, `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1`,
+  transcript search (`/` in Ctrl+O), `Ctrl+X Ctrl+E` external editor alias,
+  `initialPrompt` agent frontmatter, `chat:killAgents`/`chat:fastMode`
+  rebindable, `TaskOutput` deprecated (use Read), Ctrl+B moved to Ctrl+X
+  Ctrl+K, WebFetch `Claude-User` identification, many memory/perf fixes
+- v2.1.81: `--bare` flag for scripted `-p` calls, `--channels` permission relay,
+  worktree resume on session resume, MCP OAuth CIMD support
+- v2.1.80: `rate_limits` in statusline scripts, `effort` frontmatter for
+  skills/commands, `source: 'settings'` plugin marketplace source,
+  `--channels` research preview, `--resume` parallel tool results fix
+- v2.1.79: `--console` flag for `claude auth login`, `/config` show turn
+  duration toggle, `CLAUDE_CODE_DISABLE_TERMINAL_TITLE` startup fix,
+  `SessionEnd` hooks not firing on `/resume` fix
+- v2.1.78: `StopFailure` hook event, `${CLAUDE_PLUGIN_DATA}` variable,
+  `effort`/`maxTurns`/`disallowedTools` agent frontmatter, line-by-line response
+  streaming, `includeGitInstructions` fully suppresses git status fix,
+  `deny: ["mcp__servername"]` tool removal fix, sandbox `allowWrite` absolute
+  path fix, security fix (silent sandbox disable warning)
+- v2.1.77: 64k default / 128k max output tokens for Opus 4.6 / Sonnet 4.6,
+  `allowRead` sandbox setting, `/copy N` index arg, "Always Allow" compound
+  bash fix, PreToolUse `allow` bypassing deny rules security fix,
+  `--resume` transcript truncation race fix, Write tool CRLF conversion fix,
+  memory growth fix (progress messages surviving compaction), Agent `resume`
+  parameter removed (use `SendMessage`)
+- v2.1.75: 1M context for Opus 4.6 (Max/Team/Enterprise), `/color` command,
+  session name on prompt bar, memory file timestamps, hook source display in
+  permission prompts, token estimation over-counting fix, Windows managed
+  settings fallback removed (breaking change)
 - v2.1.74: `autoMemoryDirectory` setting, `/context` actionable suggestions,
   streaming API memory leak fix, managed policy `ask` rules bypass fix,
   agent frontmatter `model:` now accepts full model IDs,
@@ -140,4 +196,4 @@ Version history and optimization decision log for Claude Code configuration.
 
 ---
 
-Last updated: 2026-03-13
+Last updated: 2026-03-30
