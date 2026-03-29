@@ -33,7 +33,7 @@ in
     # home.activation
     ./modules/npm.nix
     # AI agent tools
-    ./agents
+    inputs.agents.homeManagerModules.default
   ];
   # Use ~/.config/ instead of ~/Library/Application Support/ on macOS
   xdg.enable = true;
