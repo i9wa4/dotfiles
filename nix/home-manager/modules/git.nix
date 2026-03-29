@@ -20,6 +20,7 @@ in
       "node_modules/"
       # dotfiles
       ".i9wa4/"
+      ".tmux-a2a-postman/"
       ".worktrees/"
       "local.vim"
       # Nix
