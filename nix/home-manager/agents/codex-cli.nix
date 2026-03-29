@@ -201,11 +201,15 @@ let
 
     mcp_servers = mcpServers;
 
-    tui.status_line = [
-      "context-remaining"
-      "model-with-reasoning"
-      "codex-version"
-    ];
+    tui = {
+      status_line = [
+        "context-remaining"
+        "model-with-reasoning"
+        "codex-version"
+      ];
+      # Keep tmux pane_title reserved for role identity, not Codex TUI chrome.
+      terminal_title = [ ];
+    };
   };
 
   # Base config file in Nix store (used as template by activation script)

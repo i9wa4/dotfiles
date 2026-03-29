@@ -168,7 +168,7 @@ Check the following when editing AGENTS.md or config.toml:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
+Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
 
 ### 9.1. Applied Optimizations
 
@@ -185,6 +185,8 @@ Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
 - [x] `model_auto_compact_token_limit =
       builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
       tokens for gpt-5.x 272k window)
+- [x] `tui.terminal_title = []` disables Codex terminal-title writes so tmux
+      `pane_title` stays reserved for role identity (v0.117.0)
 
 ### 9.2. Pending Considerations
 
@@ -226,6 +228,10 @@ Last reviewed Codex CLI version: v0.116.0 (2026-03-28)
 
 ### 9.4. Version Notes
 
+- v0.117.0: `/title` terminal-title picker now works in both classic and
+  app-server TUI, plugins become a first-class workflow, app-server TUI is now
+  enabled by default, and legacy `artifact`, `read_file`, and `grep_files`
+  handlers were removed
 - v0.116.0: Local installed version at review time; official hooks docs still
   mark hooks as experimental and document current event support/limits at
   <https://developers.openai.com/codex/hooks>
