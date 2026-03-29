@@ -4,6 +4,7 @@
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
 #   nix run '.#update'       -- update flake inputs
+#   nix run '.#llm-agents-update' -- update only the llm-agents input
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
@@ -42,6 +43,15 @@
             set -euo pipefail
             nix flake update --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token)
           ''}/bin/update";
+        };
+
+        llm-agents-update = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "llm-agents-update" ''
+            set -euo pipefail
+            nix flake lock --update-input llm-agents \
+              --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token)
+          ''}/bin/llm-agents-update";
         };
 
         check = {

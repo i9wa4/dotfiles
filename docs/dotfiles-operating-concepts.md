@@ -201,13 +201,53 @@ The repo-local operating model is:
 The persistent control-plane role of `tmux-a2a-postman` matters because the
 rest of the harness assumes this graph exists and is visible from inside tmux.
 
-## 7. Philosophy in one sentence
+## 7. Current adoption direction
+
+The next harness changes are intentionally narrow. This repo already has the
+core harness shape it wants, so the goal is to reduce drift and sharpen
+verification rather than redesign the whole system.
+
+### 7.1. Add a narrow `llm-agents` update path
+
+The repo should expose one explicit root-level maintenance surface for
+`llm-agents` only. That keeps the update path visible without bringing back a
+public nested agents sub-flake boundary.
+
+### 7.2. Make the Claude/Codex parity boundary explicit
+
+The repo should document what must stay aligned across Claude and Codex and
+which differences are intentional. That reduces false drift reports and keeps
+parity focused on operating quality rather than byte-for-byte sameness.
+
+### 7.3. Prefer cheap verifier first
+
+The repo should keep pushing verification earlier. The intended direction is:
+run the first cheap deterministic verifier before expensive review or approval,
+then escalate only when that cheaper gate is clean.
+
+### 7.4. Add behavior evaluation only when a real workflow needs it
+
+Behavior-level verification is useful, but the repo should add it as a small
+reusable pattern only when there is a concrete app or UI workflow to verify.
+This is meant to stay a narrow pilot, not a platform rewrite.
+
+### 7.5. What this repo should not adopt next
+
+The repo should explicitly avoid:
+
+- reintroducing `nix/home-manager/agents/flake.nix` as a public update
+  boundary
+- building a heavy App-Server-style protocol layer next
+- expanding top-level instructions into one giant encyclopedia
+- removing human checkpoints in favor of fully autonomous loops
+
+## 8. Philosophy in one sentence
 
 This repo is using Nix, tmux, hooks, and `tmux-a2a-postman` to turn local AI
 operation into a reproducible engineering harness instead of a pile of per-tool
 preferences.
 
-## 8. Recommended reading order
+## 9. Recommended reading order
 
 When you need to understand the operating concept, read these in order:
 
@@ -220,7 +260,7 @@ When you need to understand the operating concept, read these in order:
 7. `config/tmux-a2a-postman/postman.md`
 8. `docs/repo-ai-operating-contract.md`
 
-## 9. Related files
+## 10. Related files
 
 - `docs/repo-ai-operating-contract.md`
 - `nix/home-manager/agents/instruction-artifacts.nix`

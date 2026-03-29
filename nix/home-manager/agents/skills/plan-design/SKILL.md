@@ -267,3 +267,18 @@ A plan is ready for boss review only if all are true:
   - Key decisions
   - Unresolved gates
   - Evidence of verification outputs
+
+## Cheap Verifier First (Mandatory)
+
+For implementation work, every plan milestone must name the first cheap
+deterministic verifier before expensive review or approval.
+
+That verifier should be:
+
+- the narrowest command that can fail fast for the files being changed
+- explicit in the milestone command block
+- paired with an expected output or success condition
+
+Run that verifier before escalating to subagent review, critic, guardian, boss,
+or other expensive approval paths, unless the lane is documentation-only and
+`git diff --check` is the cheapest useful verifier.

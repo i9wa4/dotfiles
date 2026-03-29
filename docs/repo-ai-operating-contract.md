@@ -154,6 +154,25 @@ When an engine cannot match the other feature-for-feature, the fallback should
 still preserve the same intent: safe execution, explicit handoff, and
 verifiable reporting.
 
+## Intentional Claude/Codex Asymmetries
+
+Shared policy that must stay aligned across Claude and Codex
+
+The shared policy line above is the part that must not drift. Both engines are
+still expected to inherit the same repo-local operating core, deny policy,
+review topology, resumable handoff discipline, and launch-command visibility in
+`UserPromptSubmit`.
+
+Within that shared policy, the repo currently treats these differences as
+intentional:
+
+- Claude heavier reload/hook path
+- Codex denser installed rules artifact
+- launch-command parity now restored on both sides
+
+These differences are acceptable only so long as they keep the same local
+intent: safe execution, explicit handoff, and verifiable reporting.
+
 ## 7. `tmux-a2a-postman` routing contract
 
 The repo-local postman graph has seven logical nodes:
