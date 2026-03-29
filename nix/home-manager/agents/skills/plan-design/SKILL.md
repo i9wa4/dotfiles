@@ -270,8 +270,8 @@ A plan is ready for boss review only if all are true:
 
 ## Cheap Verifier First (Mandatory)
 
-For implementation work, every plan milestone must name the first cheap
-deterministic verifier before expensive review or approval.
+<!-- markdownlint-disable-next-line MD013 -->
+For implementation work, every plan milestone must name the first cheap deterministic verifier before expensive review or approval.
 
 That verifier should be:
 
