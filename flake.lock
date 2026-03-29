@@ -41,17 +41,6 @@
         "type": "github"
       }
     },
-    "agents": {
-      "locked": {
-        "path": "./nix/home-manager/agents",
-        "type": "path"
-      },
-      "original": {
-        "path": "./nix/home-manager/agents",
-        "type": "path"
-      },
-      "parent": []
-    },
     "anthropic-skills": {
       "flake": false,
       "locked": {
@@ -768,7 +757,6 @@
       "inputs": {
         "actrun": "actrun",
         "agent-skills": "agent-skills",
-        "agents": "agents",
         "anthropic-skills": "anthropic-skills",
         "claude-chill": "claude-chill",
         "databricks-agent-skills": "databricks-agent-skills",

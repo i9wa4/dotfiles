@@ -17,7 +17,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    agents.url = "path:./nix/home-manager/agents";
 
     # Follows nixpkgs
     git-hooks = {

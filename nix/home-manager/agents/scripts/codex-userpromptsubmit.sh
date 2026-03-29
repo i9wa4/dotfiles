@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # codex-userpromptsubmit.sh - Inject session context into each prompt
 #
-# Outputs current time, tmux pane role, working directory, and git context as
-# plain text.
+# Outputs current time, tmux pane role, working directory, git context, and
+# the command that launched this session as plain text.
 #
 # Hook: UserPromptSubmit
 set -o errexit
@@ -27,7 +27,17 @@ case "$CWD_DISPLAY" in
   ;;
 esac
 
+# Detect launch command on this tmux pane's TTY
+LAUNCH_CMD=""
+PANE_TTY=$(tmux display-message -t "${TMUX_PANE:-}" -p '#{pane_tty}' 2>/dev/null | sed 's#^/dev/##') || true
+if [[ -n ${PANE_TTY:-} ]]; then
+  LAUNCH_PID=$(pgrep -f -t "$PANE_TTY" '^(claude|codex) ' 2>/dev/null | head -1) || true
+  if [[ -n ${LAUNCH_PID:-} ]]; then
+    LAUNCH_CMD=$(ps -o command= -p "$LAUNCH_PID" 2>/dev/null) || true
+  fi
+fi
+
 GIT_INFO=$(repo-status 2>/dev/null | tr -s ' ') || true
 
-printf 'Current time: %s | Your role: %s | CWD: %s | Git: %s' \
-  "$CURRENT_TIME" "$ROLE" "$CWD_DISPLAY" "${GIT_INFO:-n/a}"
+printf 'Current time: %s | Your role: %s | CWD: %s | Git: %s | You were launched with: %s' \
+  "$CURRENT_TIME" "$ROLE" "$CWD_DISPLAY" "${GIT_INFO:-n/a}" "${LAUNCH_CMD:-unknown}"

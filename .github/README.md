@@ -235,14 +235,7 @@ Open a new terminal after completion.
 
 ## 5. Post Installation
 
-### 5.1. Git
-
-```sh
-git config --file ~/.gitconfig user.name "Your Name"
-git config --file ~/.gitconfig user.email "your@email.com"
-```
-
-### 5.2. gh (GitHub CLI)
+### 5.1. gh (GitHub CLI)
 
 ```sh
 gh auth login
@@ -261,27 +254,27 @@ gh auth status --show-token
 gh auth login --with-token
 ```
 
-### 5.3. AWS CLI
+### 5.2. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 5.4. Web Browser
+### 5.3. Web Browser
 
-#### 5.4.1. Setting Synchronization
+#### 5.3.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 5.4.2. Search Engine
+#### 5.3.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English:
   `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 5.4.3. Extensions
+#### 5.3.3. Extensions
 
 - Okta Browser Plugin
 - Slack Channels Grouping
