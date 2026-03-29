@@ -69,11 +69,11 @@ in
       # Tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       pkgs-unstable.acli
+      pkgs-unstable.aws-sam-cli
       pkgs-unstable.azure-cli
       pkgs-unstable.gws
       pkgs-unstable.rumdl
       pkgs.awscli2
-      pkgs-unstable.aws-sam-cli
       pkgs.databricks-cli
       pkgs.deno
       pkgs.efm-langserver
@@ -112,10 +112,10 @@ in
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
-    "ghostty".source = symlink "${dotfilesDir}/config/ghostty";
-    "kitty".source = symlink "${dotfilesDir}/config/kitty";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
+    "ghostty".source = ../../config/ghostty;
+    "kitty".source = ../../config/kitty;
     "wezterm".source = ../../config/wezterm;
   };
 

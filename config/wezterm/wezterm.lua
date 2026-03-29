@@ -15,7 +15,7 @@ config.font_size = 16
 config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Opacity
-local opacity_default = 0.70
+local opacity_default = 0.60
 local bar_bg = "rgba(0, 0, 0, 0.30)"
 
 -- Integrated titlebar (fancy tab bar for titlebar transparency control)
