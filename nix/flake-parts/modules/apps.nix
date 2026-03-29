@@ -4,7 +4,6 @@
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
 #   nix run '.#update'       -- update flake inputs
-#   nix run '.#agents-update' -- update agent tooling inputs
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
@@ -43,37 +42,6 @@
             set -euo pipefail
             nix flake update --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token)
           ''}/bin/update";
-        };
-
-        agents-update = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "agents-update" ''
-            set -euo pipefail
-
-            agent_inputs=(
-              agent-skills
-              llm-agents
-              claude-chill
-              tmux-a2a-postman
-              nixpkgs-unstable
-              mcp-servers-nix
-              anthropic-skills
-              dbt-agent-skills
-              streamlit-skills
-              databricks-agent-skills
-              databricks-official-skills
-              drawio-mcp
-              freee-mcp
-              hashicorp-agent-skills
-            )
-
-            cmd=(nix flake lock --access-tokens "github.com=$(${lib.getExe pkgs.gh} auth token)")
-            for input in "''${agent_inputs[@]}"; do
-              cmd+=(--update-input "$input")
-            done
-
-            "''${cmd[@]}"
-          ''}/bin/agents-update";
         };
 
         check = {
