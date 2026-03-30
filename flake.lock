@@ -140,11 +140,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1774721289,
-        "narHash": "sha256-BgcX1EdbYVOEEhaCnW6+37ej/quN9q302mZhOiL6CrQ=",
+        "lastModified": 1774879800,
+        "narHash": "sha256-RDVvtiI+nsqD9aHFODAdddxV9QC4LZ2fQdUs4svMnY8=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "28b54ee38d0138e5ea26fc60cf49e0cba05b9675",
+        "rev": "ed00166c962d204387a1777166f0054b58508185",
         "type": "github"
       },
       "original": {
@@ -517,11 +517,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774870460,
-        "narHash": "sha256-DHeILNrZRmOQ8dj0MGHpjnGN+RfEoo5pHDwF+xekIl0=",
+        "lastModified": 1774875815,
+        "narHash": "sha256-PzqwM4njoB3aznqwPZUawD4uOcJeu7N6GBTJKg81EQ4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "293490e1c1bf3bc46d7a1f2763052f0230d12e0c",
+        "rev": "9340f51314713c83360bf72d75c8b404778ab5b1",
         "type": "github"
       },
       "original": {
@@ -888,11 +888,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1774870567,
-        "narHash": "sha256-shJQ7hvNNKplP4RNHJW2VslRsLBFYZyUFn/dbw/1H7A=",
+        "lastModified": 1774880814,
+        "narHash": "sha256-6UoxDLg9bB556IOyEW7vMjEAHyg4Z84a39b6Q/OyA5s=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "07c1a4e87bd40d2f3a51e1d830f7714eae451473",
+        "rev": "a84d16ab76a046bd0e88dc931a0b0a347908886c",
         "type": "github"
       },
       "original": {
