@@ -107,7 +107,10 @@ launch result from the child skill. Do NOT add a separate `codex sandbox linux`
 preflight in the wrapper; that probes a different path and can fail on hosts
 where the real reviewer launch still works.
 The child skill must persist launch evidence as `launch-failures-${label}` plus
-per-role `launch-${role}-${label}` logs whenever an actual Codex launch fails.
+per-role `launch-${role}-${label}` logs whenever an actual Codex launch fails,
+move `launch-failures-${label}` into `reviews/` only on failure, and only move
+the counted `review-${role}-${label}` file into `reviews/` after a successful
+Codex exit.
 
 After all requested child skills have been launched, wait for every invoked
 child skill to complete before proceeding to Step 2.
