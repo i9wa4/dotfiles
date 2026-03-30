@@ -31,7 +31,9 @@
 #
 # argv (required)
 #   - Token array used by Codex CLI prefix_rule AND auto-derived hookRegex
-#   - hookRegex derivation: 1 token → ^token\b, 2+ tokens → ^token1.*token2
+#   - hookRegex derivation:
+#       1 token  → ^token([[:space:]]|$)
+#       2+ tokens → ^token1.*token2
 #
 # justification (required)
 #   - Human-readable denial + repair hint (shared by Claude Code hook + Codex CLI)
@@ -42,8 +44,8 @@
 #   - Use for truly dangerous commands (Claude won't even attempt them)
 #
 # anchored (optional, default: true)
-#   - false → removes ^ anchor so the pattern matches anywhere in the fragment
-#     (use for commands that must be caught even when wrapped in bash -c, env, exec)
+#   - false → uses (^|[[:space:]]) instead of ^ so the pattern can match after
+#     wrapper prefixes inside the fragment (bash -c, env, exec, etc.)
 #   - Use for high-consequence operations (push, reset, rebase, etc.)
 #
 # hookRegex (optional)
@@ -161,20 +163,20 @@ let
   ];
 
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
-  #   1 token  → ^token\b (must be the command, not an argument)
+  #   1 token  → ^token([[:space:]]|$) (must be the command, not an argument)
   #   2+ tokens → ^token1.*token2 (first token anchored, rest flexible)
-  #   anchored = false → use \b instead of ^ so wrapper prefixes (bash -c, env, exec)
-  #     are caught while preventing substring matches (e.g. "terraform" matching rm\b)
+  #   anchored = false → use (^|[[:space:]]) instead of ^ so wrapper prefixes
+  #     (bash -c, env, exec) are caught without relying on non-POSIX \b
   #   hookRegex override → use verbatim (ignores anchored field)
   mkHookRegex =
     cmd:
     cmd.hookRegex or (
       let
         anchored = cmd.anchored or true;
-        prefix = if anchored then "^" else "\\b";
+        prefix = if anchored then "^" else "(^|[[:space:]])";
       in
       if builtins.length cmd.argv == 1 then
-        "${prefix}${builtins.head cmd.argv}\\b"
+        "${prefix}${builtins.head cmd.argv}([[:space:]]|$)"
       else
         prefix + builtins.concatStringsSep ".*" cmd.argv
     );
