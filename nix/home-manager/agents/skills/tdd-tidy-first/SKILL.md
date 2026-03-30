@@ -46,6 +46,8 @@ Use this skill to keep code changes small, verifiable, and easy to review.
 - Start with a failing API-level test when one is easy to add
 - If the failure is hard to isolate, add the smallest reproducer that exposes
   the defect clearly
+- If the bug is not yet understood, use `systematic-debugging` first to gather
+  evidence and narrow the root cause before changing code
 - Fix the bug only after the reproducer fails for the expected reason
 
 ## 5. Repo Fit

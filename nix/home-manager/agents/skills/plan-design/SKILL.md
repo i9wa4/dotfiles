@@ -33,6 +33,8 @@ Use this skill when one or more apply:
   the current plan.
 - Plan must pass explicit approval gates (critic/boss or equivalents; critic
   consults guardian internally).
+- If the request is still ambiguous or has multiple viable approaches, use
+  `brainstorming` first and return here once the work is plan-ready.
 
 ## 3. Pre-Step: Overlap Check (Mandatory)
 
