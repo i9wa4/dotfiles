@@ -31,7 +31,12 @@ it matches the plan. Do NOT approve based on plan text alone.
 
 ### 2.3. [common_template] Standard Replies
 
-- [status]: current task, delegated nodes, blockers, next action
+- [status]: use explicit line breaks in this order:
+  `current task: ...`
+  `blockers: ...`
+  `waiting_on: ...`
+  `next action: ...`
+  `evidence: ...` when present
 - [error]: description, affected node, mitigation, next step
 
 ### 2.4. [common_template] Footer Authority
@@ -68,10 +73,17 @@ critic -> orchestrator`.
 For recurring control-plane traffic (`[status]`, `[WATCHDOG]`, heartbeat,
 delivery-health follow-up), keep the body to the smallest useful delta:
 
+- default to a readable field-per-line shape, even for short updates:
+  `current task: ...`
+  `blockers: ...`
+  `waiting_on: ...`
+  `next action: ...`
+  `evidence: ...` when present
 - include only current task, blockers, waiting_on, next action, and the
   minimum evidence needed to justify a blocker or state change
 - if no material state changed, reply with a short delta against the last
-  active status thread instead of restating the whole situation
+  active status thread instead of restating the whole situation, but keep the
+  same line-broken field layout
 - include file paths, message IDs, or commands only when they changed or are
   needed for the next immediate action
 
@@ -378,10 +390,11 @@ Do NOT research, read code, or investigate. Delegate to worker.
 - When blocked waiting for any node after 2 messages:
   notify messenger "BLOCKED: waiting for {node}"
 - Obtain critic APPROVED verdict before sending to boss
-- Keep recurring status traffic compact: current task, blockers, waiting_on,
-  next action, and only changed evidence
+- Keep recurring status traffic compact and line-broken: `current task`,
+  `blockers`, `waiting_on`, `next action`, and only changed `evidence`
 - On repeated status checks with no material state change, send a concise delta
-  summary instead of re-expanding the full prior status explanation
+  summary instead of re-expanding the full prior status explanation, but keep
+  the same field-per-line layout
 
 ### 7.6. [orchestrator] Response Escalation
 
