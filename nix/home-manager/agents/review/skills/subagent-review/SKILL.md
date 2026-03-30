@@ -102,9 +102,12 @@ For Codex labels, keep the child prompt self-contained. Do NOT pass only an
 mkmd context file path from `~/.local/state/mkmd/...`; `codex exec --sandbox
 workspace-write` child sessions cannot read that path.
 
-On Linux, treat a `sandbox-preflight-{label}` artifact from a Codex child skill
-as a verified host/runtime blocker. Do NOT relaunch Codex reviewer fan-out
-until that blocker is resolved.
+For Codex labels, rely on the actual `codex exec --sandbox workspace-write`
+launch result from the child skill. Do NOT add a separate `codex sandbox linux`
+preflight in the wrapper; that probes a different path and can fail on hosts
+where the real reviewer launch still works.
+The child skill must persist launch evidence as `launch-failures-${label}` plus
+per-role `launch-${role}-${label}` logs whenever an actual Codex launch fails.
 
 After all requested child skills have been launched, wait for every invoked
 child skill to complete before proceeding to Step 2.
@@ -125,10 +128,11 @@ For each invoked label: delta must equal 5.
 If any Claude label delta is less than 5: do NOT proceed. Re-invoke the
 relevant child skill.
 
-If a Codex label delta is less than 5 because the child skill halted with a
-`sandbox-preflight-{label}` artifact: do NOT retry. Surface BLOCKED with that
-artifact path and recommend the matching Claude fallback (`cc` or `cc-deep`)
-for this host.
+If a Codex label delta is less than 5 because the child skill produced
+`launch-failures-${label}` with concrete `codex exec --sandbox workspace-write`
+launch evidence: do NOT retry. Surface BLOCKED with that artifact path and the
+matching per-role `launch-${role}-${label}` log paths, then recommend the
+matching Claude fallback (`cc` or `cc-deep`) for this host.
 
 Otherwise, if a Codex label delta is less than 5 for some other reason: do NOT
 proceed. Re-invoke the relevant child skill.
