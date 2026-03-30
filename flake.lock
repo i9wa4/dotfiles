@@ -124,11 +124,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1770502636,
-        "narHash": "sha256-VfFEYyAyQYr4tkkTkn+wmOK/6rPY75POuJua+Q98IH8=",
+        "lastModified": 1774829144,
+        "narHash": "sha256-ipQ5Lenxyq98t9rgXrHkaWUiw84Mw+pEATyb/0m4eoQ=",
         "owner": "davidbeesley",
         "repo": "claude-chill",
-        "rev": "2595cf7f89e33381453cb4fba2b8bf8eb26921df",
+        "rev": "66cc2ea0b8920d54c403d6bc1f8ada58e7ca7ae9",
         "type": "github"
       },
       "original": {
