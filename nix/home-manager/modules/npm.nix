@@ -40,6 +40,10 @@ in
     # 2. Install/update npm packages (after safe-chain, so they get scanned)
     installNpmPackages = lib.hm.dag.entryAfter [ "setupSafeChain" ] ''
       export PATH="${npmPrefix}/bin:${nodejs}/bin:$PATH"
+      # safe-chain setup wires shell aliases for interactive shells, but this
+      # activation script calls package-manager commands directly. Use the
+      # explicit wrapper binary so the guarded path is active in practice.
+      guardedNpm="${npmPrefix}/bin/aikido-npm"
       NPM_PACKAGES=(
         "vde-layout"
         "vde-monitor"
@@ -49,24 +53,24 @@ in
 
       # Install missing packages
       for pkg in "''${NPM_PACKAGES[@]}"; do
-        if ! ${npm} --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+        if ! "$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
           echo "Installing $pkg..."
-          ${npm} --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g "$pkg"
+          "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g "$pkg"
         fi
       done
 
       # Update outdated packages in one batch
-      outdated=$(${npm} --prefix ${npmPrefix} outdated -g --parseable --depth=0 2>/dev/null | cut -d: -f4 || true)
+      outdated=$("$guardedNpm" --prefix ${npmPrefix} outdated -g --parseable --depth=0 2>/dev/null | cut -d: -f4 || true)
       if [ -n "$outdated" ]; then
         echo "Updating outdated packages: $outdated"
-        echo "$outdated" | xargs ${npm} --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
+        echo "$outdated" | xargs "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
       fi
 
       # Remove unlisted packages (keep npm, corepack, safe-chain)
       # --parseable gives paths like .../node_modules/pkg or .../node_modules/@scope/pkg
       # Extract package name by stripping the node_modules prefix
       node_modules="${npmPrefix}/lib/node_modules"
-      installed=$(${npm} --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 || true)
+      installed=$("$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 || true)
       for pkg_path in $installed; do
         pkg="''${pkg_path#"$node_modules"/}"
         case "$pkg" in
@@ -78,7 +82,7 @@ in
         done
         if [ "$found" = "0" ]; then
           echo "Removing unlisted package: $pkg"
-          ${npm} --prefix ${npmPrefix} uninstall -g "$pkg"
+          "$guardedNpm" --prefix ${npmPrefix} uninstall -g "$pkg"
         fi
       done
     '';
