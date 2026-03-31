@@ -6,10 +6,17 @@
   pkgs,
   inputs,
   lib,
+  nodejsPackage,
   ...
 }:
 let
-  mcpServers = import ./mcp-servers.nix { inherit pkgs inputs; };
+  mcpServers = import ./mcp-servers.nix {
+    inherit
+      pkgs
+      inputs
+      nodejsPackage
+      ;
+  };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
   instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
   reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };

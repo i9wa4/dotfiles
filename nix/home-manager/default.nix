@@ -15,9 +15,14 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
+  nodejsPackage = pkgs.nodejs_24;
 
 in
 {
+  _module.args = {
+    inherit nodejsPackage;
+  };
+
   imports = [
     # programs.*
     ./modules/bash.nix
@@ -85,7 +90,7 @@ in
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
-      pkgs.nodejs
+      nodejsPackage
       pkgs.ripgrep
       pkgs.shellcheck
       pkgs.uv

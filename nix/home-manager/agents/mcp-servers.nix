@@ -3,6 +3,7 @@
 {
   pkgs,
   inputs,
+  nodejsPackage,
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) system;
@@ -50,7 +51,7 @@ let
       runHook preInstall
       mkdir -p "$out/lib/node_modules/@drawio/mcp" "$out/bin"
       cp -r . "$out/lib/node_modules/@drawio/mcp"
-      makeWrapper ${pkgs.nodejs}/bin/node "$out/bin/drawio-mcp" \
+      makeWrapper ${nodejsPackage}/bin/node "$out/bin/drawio-mcp" \
         --add-flags "$out/lib/node_modules/@drawio/mcp/src/index.js"
       runHook postInstall
     '';

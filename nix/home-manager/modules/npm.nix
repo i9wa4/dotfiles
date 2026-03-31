@@ -4,11 +4,12 @@
   pkgs,
   lib,
   username,
+  nodejsPackage,
   ...
 }:
 let
   homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
-  nodejs = pkgs.nodejs_24;
+  nodejs = nodejsPackage;
   npm = "${nodejs}/bin/npm";
   npmMinReleaseAgeDays = 3;
   npmPrefix = "${homeDir}/.local";
