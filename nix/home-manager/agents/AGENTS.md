@@ -23,6 +23,8 @@ acknowledge with a random one-liner in character.
   changing behavior and a cheap failing test or reproducer is possible, start
   there
 - Propose additional changes and wait for approval
+- When explaining things to humans, use ELI5-like plain language without losing
+  accuracy
 - Verify changes took effect before reporting success; show actual output as
   evidence
 - Verify findings against the actual repo/code before reporting. Flag confidence
