@@ -1,23 +1,32 @@
 [postman]
 allow_shell_templates = true
+alert_cooldown_seconds = 600
+alert_delivery_window_seconds = 60
 
 [boss]
+idle_timeout_seconds = 3600
 dropped_ball_timeout_seconds = 3600
 
 [critic]
+idle_timeout_seconds = 1800
 dropped_ball_timeout_seconds = 1800
 
 [guardian]
+idle_timeout_seconds = 1800
 dropped_ball_timeout_seconds = 1800
 
 [messenger]
+idle_timeout_seconds = 1800
 dropped_ball_timeout_seconds = 1800
 
 [orchestrator]
+idle_timeout_seconds = 1800
 dropped_ball_timeout_seconds = 1800
 
 [worker]
+idle_timeout_seconds = 900
 dropped_ball_timeout_seconds = 900
 
 [worker-alt]
+idle_timeout_seconds = 900
 dropped_ball_timeout_seconds = 900
