@@ -60,10 +60,30 @@ in
       done
 
       # Update outdated packages in one batch
-      outdated=$("$guardedNpm" --prefix ${npmPrefix} outdated -g --parseable --depth=0 2>/dev/null | cut -d: -f4 || true)
+      outdatedJson=$("$guardedNpm" --prefix ${npmPrefix} outdated -g --json --depth=0 2>/dev/null |
+        ${pkgs.gawk}/bin/awk '
+          /^[[:space:]]*{/ && !capturing {
+            capturing = 1
+          }
+          capturing {
+            print
+            line = $0
+            opens = gsub(/\{/, "{", line)
+            closes = gsub(/\}/, "}", line)
+            depth += opens - closes
+            if (depth == 0) {
+              exit
+            }
+          }
+        ' || true)
+      outdated=""
+      if [ -n "$outdatedJson" ]; then
+        outdated=$(printf '%s\n' "$outdatedJson" | ${pkgs.jq}/bin/jq -r 'keys[]?' || true)
+      fi
       if [ -n "$outdated" ]; then
-        echo "Updating outdated packages: $outdated"
-        echo "$outdated" | xargs "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
+        echo "Updating outdated packages:"
+        printf '%s\n' "$outdated"
+        printf '%s\n' "$outdated" | xargs "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
       fi
 
       # Remove unlisted packages (keep npm, corepack, safe-chain)
