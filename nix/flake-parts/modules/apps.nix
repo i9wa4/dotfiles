@@ -4,7 +4,9 @@
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
 #   nix run '.#update'       -- update flake inputs
+#   nix run '.#update-safe' -- update flake inputs with a minimum-age gate (default: 7 days)
 #   nix run '.#llm-agents-update' -- update only the llm-agents input
+#   nix run '.#llm-agents-update-safe' -- update only llm-agents with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
@@ -15,6 +17,139 @@
     let
       isDarwin = lib.hasSuffix "darwin" system;
       isLinux = lib.hasSuffix "linux" system;
+      gh = lib.getExe pkgs.gh;
+      python = lib.getExe pkgs.python3;
+      mkSafeUpdateApp =
+        {
+          name,
+          scopeLabel,
+          updateCommand,
+        }:
+        {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin name ''
+                        set -euo pipefail
+
+                        if [ "''${1:-}" = "--help" ] || [ "''${1:-}" = "-h" ]; then
+                          cat <<'EOF'
+            Usage: nix run '.#${name}' -- [MIN_AGE_DAYS]
+
+            Updates ${scopeLabel} and keeps the new flake.lock only if every changed
+            input has locked.lastModified at least MIN_AGE_DAYS old.
+
+            Default: 7
+            EOF
+                          exit 0
+                        fi
+
+                        min_age_days="''${1:-7}"
+                        case "$min_age_days" in
+                          ""|*[!0-9]*)
+                            echo "MIN_AGE_DAYS must be a non-negative integer" >&2
+                            exit 2
+                            ;;
+                        esac
+                        min_age_seconds=$((min_age_days * 24 * 60 * 60))
+                        backup_lock=$(mktemp)
+                        report_file=$(mktemp)
+
+                        cleanup() {
+                          rm -f "$backup_lock" "$report_file"
+                        }
+                        trap cleanup EXIT
+
+                        cp flake.lock "$backup_lock"
+
+                        if ! ${updateCommand}
+                        then
+                          cp "$backup_lock" flake.lock
+                          echo "Update command failed; restored flake.lock" >&2
+                          exit 1
+                        fi
+
+                        set +e
+                        ${python} - "$backup_lock" flake.lock "$min_age_seconds" "$min_age_days" > "$report_file" <<'PY'
+            import datetime
+            import json
+            import sys
+            import time
+
+            before_path, after_path, min_age_seconds, min_age_days = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+
+            with open(before_path, "r", encoding="utf-8") as fh:
+                before = json.load(fh)
+            with open(after_path, "r", encoding="utf-8") as fh:
+                after = json.load(fh)
+
+            before_nodes = before["nodes"]
+            after_nodes = after["nodes"]
+            now = int(time.time())
+            changed = []
+
+            for name, new_node in after_nodes.items():
+                old_node = before_nodes.get(name, {})
+                new_locked = new_node.get("locked") or {}
+                old_locked = old_node.get("locked") or {}
+                if new_locked == old_locked:
+                    continue
+                if not new_locked:
+                    continue
+                last_modified = new_locked.get("lastModified")
+                age_seconds = None if last_modified is None else max(0, now - int(last_modified))
+                changed.append(
+                    {
+                        "name": name,
+                        "owner": new_locked.get("owner"),
+                        "repo": new_locked.get("repo"),
+                        "type": new_locked.get("type"),
+                        "rev": new_locked.get("rev") or new_locked.get("narHash") or new_locked.get("ref") or "unknown",
+                        "last_modified": last_modified,
+                        "age_seconds": age_seconds,
+                    }
+                )
+
+            if not changed:
+                print("No input version changes detected.")
+                sys.exit(0)
+
+            print(f"Changed inputs after update ({len(changed)}):")
+            blocked = []
+            for item in changed:
+                target = item["name"]
+                if item["owner"] and item["repo"]:
+                    target = f"{target} ({item['owner']}/{item['repo']})"
+                if item["last_modified"] is None:
+                    print(f"UNKNOWN: {target} -> {item['rev']} (missing locked.lastModified)")
+                    blocked.append(item)
+                    continue
+                age_days = item["age_seconds"] / 86400
+                last_modified = datetime.datetime.fromtimestamp(item["last_modified"], tz=datetime.timezone.utc).strftime("%Y-%m-%d")
+                status = "OK"
+                if item["age_seconds"] < min_age_seconds:
+                    status = "TOO_FRESH"
+                    blocked.append(item)
+                print(f"{status}: {target} -> {item['rev']} (age {age_days:.1f}d, lastModified {last_modified} UTC)")
+
+            if blocked:
+                print("")
+                print(f"Blocked because one or more updated inputs are newer than {min_age_days} days.")
+                sys.exit(1)
+
+            print("")
+            print(f"All changed inputs satisfy the minimum age window ({min_age_days} days).")
+            PY
+                        status=$?
+                        set -e
+
+                        cat "$report_file"
+
+                        if [ "$status" -ne 0 ]; then
+                          cp "$backup_lock" flake.lock
+                          echo "Restored flake.lock because one or more updated inputs were newer than $min_age_days days." >&2
+                          exit "$status"
+                        fi
+          ''}/bin/${name}";
+        };
     in
     {
       apps = {
@@ -41,8 +176,16 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "update" ''
             set -euo pipefail
-            nix flake update --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token)
+            nix flake update --access-tokens github.com=$(${gh} auth token)
           ''}/bin/update";
+        };
+
+        update-safe = mkSafeUpdateApp {
+          name = "update-safe";
+          scopeLabel = "all flake inputs";
+          updateCommand = ''
+            nix flake update --access-tokens github.com=$(${gh} auth token)
+          '';
         };
 
         llm-agents-update = {
@@ -50,8 +193,17 @@
           program = "${pkgs.writeShellScriptBin "llm-agents-update" ''
             set -euo pipefail
             nix flake lock --update-input llm-agents \
-              --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token)
+              --access-tokens github.com=$(${gh} auth token)
           ''}/bin/llm-agents-update";
+        };
+
+        llm-agents-update-safe = mkSafeUpdateApp {
+          name = "llm-agents-update-safe";
+          scopeLabel = "the llm-agents input";
+          updateCommand = ''
+            nix flake lock --update-input llm-agents \
+              --access-tokens github.com=$(${gh} auth token)
+          '';
         };
 
         check = {
