@@ -49,7 +49,7 @@ in
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
       set-option -g status-interval 1
-      set-option -g status-left " {session_id} #{=50:session_name} "
+      set-option -g status-left " #{session_id} #{=50:session_name} "
       set-option -g status-left-length 52
       set-option -g status-position top
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
