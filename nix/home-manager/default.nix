@@ -112,8 +112,6 @@ in
 
   xdg.configFile = {
     # symlink
-    "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
-    "nvim-as-fileviewer".source = symlink "${dotfilesDir}/config/nvim/nvim-as-fileviewer";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
@@ -121,6 +119,8 @@ in
     # Nix store
     "ghostty".source = ../../config/ghostty;
     "kitty".source = ../../config/kitty;
+    "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
+    "nvim-as-fileviewer".source = symlink "${dotfilesDir}/config/nvim/nvim-as-fileviewer";
     "wezterm".source = ../../config/wezterm;
   };
 
