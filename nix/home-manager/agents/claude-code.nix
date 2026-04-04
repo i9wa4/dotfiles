@@ -10,6 +10,7 @@
   ...
 }:
 let
+  families = import ./families/default.nix { inherit pkgs; };
   mcpServers = import ./mcp-servers.nix {
     inherit
       pkgs
@@ -43,15 +44,12 @@ let
     ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}
   '';
 
-  # Combine non-reviewer subagents with cc reviewer variants.
-  # reviewer-* files in ./subagents are skipped; cc variants from reviewGen used instead.
+  # Combine plain subagents from the family layer with cc reviewer variants.
+  # Review stays on the existing generator path for now.
   claudeAgentsDir = pkgs.runCommand "claude-agents" { } ''
     mkdir -p $out
-    # Non-reviewer subagents from ./subagents (researcher-tech, super-codex-reviewer)
-    for f in ${./subagents}/*.md; do
-      case "$(basename "$f")" in
-        reviewer-*) continue ;;  # NOTE: skip reviewers; cc variants used instead
-      esac
+    # Plain subagents from the family layer (researcher-tech, super-codex-reviewer)
+    for f in ${families.subagents.claudeAgentsDir}/*.md; do
       ln -s "$f" "$out/$(basename "$f")"
     done
     # CC reviewer variants (6 files: reviewer-{role}.md)
