@@ -41,8 +41,8 @@ in
         "set-option -g prefix C-b; unbind C-a; bind-key C-b send-prefix"
 
       # Default pane title (override hostname)
-      set-hook -g after-new-window 'select-pane -T "pane"'
       set-hook -g after-new-session 'select-pane -T "pane"'
+      set-hook -g after-new-window 'select-pane -T "pane"'
       set-hook -g after-split-window 'select-pane -T "pane"'
       set-option -g pane-active-border-style 'fg=red'
       set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
@@ -55,12 +55,13 @@ in
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
       set-option -g status-right-length 200
       set-option -g status-style bg=default
-      # Bell: passthrough to terminal, tmux stays silent
-      set-option -g monitor-bell off
-      set-option -g visual-bell off
       set-option -g window-status-bell-style 'none'
       set-option -g window-status-current-format '#[reverse]  #{window_index}#{?window_zoomed_flag,🔎,  }#[default]'
       set-option -g window-status-format '  #{window_index}#{?window_zoomed_flag,🔎,  }'
+
+      # Bell: passthrough to terminal, tmux stays silent
+      set-option -g monitor-bell off
+      set-option -g visual-bell off
 
       # Passthrough (OSC 52 clipboard, bell, etc.)
       set-option -g set-clipboard on
