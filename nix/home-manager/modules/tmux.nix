@@ -19,11 +19,6 @@ in
     focusEvents = true;
     extraConfig = ''
       # Panes control
-      bind-key -r H resize-pane -L 1
-      bind-key -r J resize-pane -D 2
-      bind-key -r K resize-pane -U 1
-      bind-key -r L resize-pane -R 2
-
       bind-key h select-pane -L
       bind-key j select-pane -D
       bind-key k select-pane -U
@@ -32,7 +27,6 @@ in
       # Popup
       bind-key f display-popup -w 60% -h 50% -E 'tmux list-sessions -F "#{session_name}" | fzf --reverse | xargs -I{} tmux switch-client -t {}'
       bind-key g display-popup -d '#{pane_current_path}' -w 90% -h 90% -E 'lazygit'
-      bind-key u display-popup -d '#{pane_current_path}' -w 90% -h 90% -E
 
       # Inherit current path
       bind-key % split-window -h -c "#{pane_current_path}"
@@ -47,15 +41,15 @@ in
         "set-option -g prefix C-b; unbind C-a; bind-key C-b send-prefix"
 
       # Default pane title (override hostname)
-      set-hook -g after-new-window 'select-pane -T "anonymous"'
-      set-hook -g after-new-session 'select-pane -T "anonymous"'
-      set-hook -g after-split-window 'select-pane -T "anonymous"'
+      set-hook -g after-new-window 'select-pane -T "pane"'
+      set-hook -g after-new-session 'select-pane -T "pane"'
+      set-hook -g after-split-window 'select-pane -T "pane"'
       set-option -g pane-active-border-style 'fg=red'
       set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
       set-option -g status-interval 1
-      set-option -g status-left " #{=50:session_name} "
+      set-option -g status-left " {session_id} #{=50:session_name} "
       set-option -g status-left-length 52
       set-option -g status-position top
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-session-status-oneline) #(${dotfilesDir}/bin/system-load)"
