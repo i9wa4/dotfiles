@@ -21,7 +21,8 @@ truth for the approved target.
 - Move actual worktree creation and lookup under repo-root `.worktrees/`.
 - Use shared backend logic so issue and PR flows stop duplicating creation,
   bootstrap, and lookup behavior.
-- Add `worktree-enter` as the explicit re-entry command for existing worktrees.
+- Add a dedicated zoxide-backed re-entry command such as `zw` or `zwt` for
+  one-step worktree entry.
 - Treat sibling-directory layouts such as `../dotfiles-issue-123` and
   `../dotfiles-pr-456` as legacy behavior. Do not extend that pattern in new
   tooling.
@@ -44,23 +45,32 @@ truth for the approved target.
 1. Run `pr-worktree-create <pr_number>` from the repository.
 2. Check out the PR head branch in a managed worktree under `.worktrees/`.
 3. Apply the same `.envrc` copy and `repo-setup` bootstrap as issue work.
-4. Re-enter the review worktree with `worktree-enter` once that command lands,
-   or use `vde-worktree path`, `vde-worktree cd`, or `vde-worktree switch` as
-   supporting tools during the migration.
+4. Re-enter the review worktree with the dedicated zoxide-backed jump command
+   once that command lands, or use `vde-worktree path`, `vde-worktree cd`, or
+   `vde-worktree switch` as supporting tools during the migration.
 
 ### 3.3. Re-entry from outside the repo
 
-1. Select the repository first.
-2. Then select the target worktree inside that repository.
-3. Do not treat a branch name alone as enough context when multiple
-   repositories may contain similarly named branches.
+1. Keep `ghq + fzf` as the explicit repo browser when the user wants deliberate
+   repository selection first.
+2. For one-step worktree re-entry, use a dedicated jump command such as `zw`
+   or `zwt` instead of raw `vde-worktree` from an arbitrary directory.
+3. When that command runs, refresh `zoxide` from `vde-worktree list --json`
+   across `ghq` repositories, then jump to the selected worktree.
+4. Open the selected path with `vtm project switch "$path"` inside tmux and
+   `cd "$path"` outside tmux.
+5. Do not scan `.worktrees/` or `.git/wt` directly. Keep `vde-worktree` as
+   the worktree source of truth.
 
 ## 4. How `vde-worktree` fits
 
-- `vde-worktree` is the shared backend and the generic inspection tool.
+- `vde-worktree` is the shared backend, the generic inspection tool, and the
+  canonical read model for managed worktree paths.
 - In this repository, it supports `list`, `status`, `path`, `cd`, and
   `switch`.
 - Do not use `vde-worktree` as the primary issue or PR entrypoint here.
+- Do not use `vde-worktree` alone as the outermost global selector from an
+  arbitrary directory.
 - Do not teach `extract`, `absorb`, `unabsorb`, `adopt`, or `gone` as normal
   flow commands for this repository.
 
