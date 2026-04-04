@@ -137,6 +137,142 @@ This file generates the installed review stack from shared fragments:
 
 That is how the repo keeps the review contract synchronized across engines.
 
+### 5.3. Review-system specification
+
+This section is the canonical repo-side specification for the review system.
+`review/review-artifacts-gen.nix` remains the runtime generation SSOT, but
+questions about public entrypoints, internal labels, normalization, aggregation,
+and installed tree shape should be answered from this document.
+
+#### 5.3.1. Canonical components
+
+- `nix/home-manager/agents/review/review-artifacts-gen.nix`
+- `nix/home-manager/agents/review/skills/subagent-review/SKILL.md`
+- `nix/home-manager/agents/agent-skills.nix`
+- `nix/home-manager/agents/claude-code.nix`
+- `nix/home-manager/agents/codex-cli.nix`
+
+#### 5.3.2. Current public state
+
+Today the public review skill surface is five entrypoints in both
+`~/.claude/skills` and `~/.codex/skills`:
+
+- `subagent-review`
+- `subagent-review-cc`
+- `subagent-review-cc-deep`
+- `subagent-review-cx`
+- `subagent-review-cx-deep`
+
+The wrapper currently accepts the same four internal labels directly:
+
+- `cc`
+- `cc-deep`
+- `cx`
+- `cx-deep`
+
+With no arguments, `subagent-review` defaults to `cc cx`.
+
+#### 5.3.3. Proposed public state
+
+The approved simplification target is a smaller public surface, not a different
+review topology. The target public entrypoints are:
+
+- `subagent-review`
+- `subagent-review-cc`
+- `subagent-review-cx`
+
+This is a visibility change only. The internal canonical labels remain:
+
+- `cc`
+- `cc-deep`
+- `cx`
+- `cx-deep`
+
+Do not make bare `cc` and bare `cx` imply different default depths. Depth stays
+explicit in the public syntax whenever it changes from the standard tier.
+
+#### 5.3.4. Normalization rules
+
+Public syntax may get shorter, but it must normalize to the same internal
+labels before dispatch, counting, aggregation, or artifact naming happens.
+
+| Public Syntax | Canonical Internal Label |
+| ------------- | ------------------------ |
+| `cc`          | `cc`                     |
+| `cc deep`     | `cc-deep`                |
+| `cx`          | `cx`                     |
+| `cx deep`     | `cx-deep`                |
+
+`subagent-review` with no arguments still normalizes to the pair `cc cx`.
+
+#### 5.3.5. Aggregation contract
+
+The aggregation layer stays keyed to the canonical labels, even if the public
+skill surface shrinks.
+
+- Baseline capture and result verification stay keyed to `cc`, `cc-deep`, `cx`,
+  and `cx-deep`
+- Review artifact filenames stay label-stable, such as `review-*-cc.md` and
+  `review-*-cx-deep.md`
+- Coverage tables, reporter labels, and merged-summary deduplication stay keyed
+  to the canonical labels
+- Public wrapper simplification must be a parsing layer over the canonical
+  labels, not a rename of the aggregation contract
+
+#### 5.3.6. `nix switch` materialization
+
+Current materialization:
+
+```text
+~/.claude/skills/
+  subagent-review/
+  subagent-review-cc/
+  subagent-review-cc-deep/
+  subagent-review-cx/
+  subagent-review-cx-deep/
+~/.codex/skills/
+  subagent-review/
+  subagent-review-cc/
+  subagent-review-cc-deep/
+  subagent-review-cx/
+  subagent-review-cx-deep/
+~/.claude/agents/
+  reviewer-{role}.md
+  reviewer-{role}-deep.md
+  ... 12 reviewer markdown files total
+~/.codex/agents/
+  reviewer-{role}.toml
+  reviewer-{role}-deep.toml
+  ... 12 reviewer TOML files total
+```
+
+Target materialization after the public-surface simplification:
+
+```text
+~/.claude/skills/
+  subagent-review/
+  subagent-review-cc/
+  subagent-review-cx/
+~/.codex/skills/
+  subagent-review/
+  subagent-review-cc/
+  subagent-review-cx/
+~/.claude/agents/
+  reviewer-{role}.md
+  reviewer-{role}-deep.md
+  ... full reviewer runtime retained
+~/.codex/agents/
+  reviewer-{role}.toml
+  reviewer-{role}-deep.toml
+  ... full reviewer runtime retained
+```
+
+`agent-skills.nix` owns the skill-tree materialization into both engines.
+`claude-code.nix` owns the installed Claude reviewer runtime under
+`~/.claude/agents`. `codex-cli.nix` owns the installed Codex reviewer runtime
+under `~/.codex/agents`, converting the generated reviewer markdown into TOML
+agent definitions while keeping the same role and tier shape.
+
 ## 6. Claude/Codex parity contract
 
 The repo expects parity of quality bar, not literal product sameness.
