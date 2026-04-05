@@ -104,8 +104,6 @@ in
         "obsidian"
         "visual-studio-code"
         "zoom"
-        # "ghostty"
-        # "wezterm"
       ];
     in
     {
