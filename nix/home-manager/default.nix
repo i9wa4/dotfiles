@@ -116,11 +116,9 @@ in
     "vim".source = symlink "${dotfilesDir}/config/vim";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
-    "ghostty".source = ../../config/ghostty;
     "kitty".source = ../../config/kitty;
     "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
     "nvim-as-fileviewer".source = symlink "${dotfilesDir}/config/nvim/nvim-as-fileviewer";
-    "wezterm".source = ../../config/wezterm;
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
