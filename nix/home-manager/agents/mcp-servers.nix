@@ -3,16 +3,13 @@
 {
   pkgs,
   inputs,
+  homeDir,
   nodejsPackage,
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) system;
   unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${system};
   unstablePython = unstablePkgs.python3Packages;
-  bunPkgs = import inputs.nixpkgs {
-    inherit system;
-    overlays = [ inputs.llm-agents.inputs.bun2nix.overlays.default ];
-  };
 
   # Servers managed by mcp-servers-nix (pinned Nix packages)
   nixServers =
@@ -61,37 +58,6 @@ let
     '';
   };
 
-  freeeMcp = bunPkgs.stdenv.mkDerivation {
-    pname = "freee-mcp";
-    version = "0.17.0";
-    src = inputs.freee-mcp;
-
-    nativeBuildInputs = [
-      bunPkgs.bun2nix.hook
-      bunPkgs.makeWrapper
-    ];
-
-    bunDeps = bunPkgs.bun2nix.fetchBunDeps {
-      bunNix = ./freee-mcp-bun.nix;
-    };
-
-    buildPhase = ''
-      runHook preBuild
-      bun run build
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      mkdir -p "$out/lib/freee-mcp" "$out/bin"
-      cp package.json "$out/lib/freee-mcp/package.json"
-      cp -r bin dist node_modules "$out/lib/freee-mcp"
-      makeWrapper ${nodejsPackage}/bin/node "$out/bin/freee-mcp" \
-        --add-flags "$out/lib/freee-mcp/bin/freee-mcp.js"
-      runHook postInstall
-    '';
-  };
-
   # Servers not yet provided by mcp-servers-nix, packaged here as pinned store executables
   manualServers = {
     awslabs-aws-documentation-mcp-server = {
@@ -101,7 +67,7 @@ let
       command = "${drawioMcp}/bin/drawio-mcp";
     };
     freee-mcp = {
-      command = "${freeeMcp}/bin/freee-mcp";
+      command = "${homeDir}/.local/bin/freee-mcp";
     };
   };
 in

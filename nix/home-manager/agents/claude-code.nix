@@ -3,6 +3,7 @@
 # ~/.claude/skills is managed by agent-skills.nix (symlink-tree)
 # Runtime files (projects/, todos/, etc.) live directly in ~/.claude/
 {
+  config,
   pkgs,
   inputs,
   lib,
@@ -10,9 +11,11 @@
   ...
 }:
 let
+  homeDir = config.home.homeDirectory;
   families = import ./families/default.nix { inherit pkgs; };
   mcpServers = import ./mcp-servers.nix {
     inherit
+      homeDir
       pkgs
       inputs
       nodejsPackage

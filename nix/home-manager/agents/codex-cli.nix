@@ -17,6 +17,7 @@ let
 
   mcpServers = import ./mcp-servers.nix {
     inherit
+      homeDir
       pkgs
       inputs
       nodejsPackage
