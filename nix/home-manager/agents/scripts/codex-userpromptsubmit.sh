@@ -31,7 +31,7 @@ esac
 LAUNCH_CMD=""
 PANE_TTY=$(tmux display-message -t "${TMUX_PANE:-}" -p '#{pane_tty}' 2>/dev/null | sed 's#^/dev/##') || true
 if [[ -n ${PANE_TTY:-} ]]; then
-  LAUNCH_PID=$(pgrep -f -t "$PANE_TTY" '^(claude|codex) ' 2>/dev/null | head -1) || true
+  LAUNCH_PID=$(pgrep -f -t "$PANE_TTY" '(^|/)(claude|codex)( |$)' 2>/dev/null | head -1) || true
   if [[ -n ${LAUNCH_PID:-} ]]; then
     LAUNCH_CMD=$(ps -o command= -p "$LAUNCH_PID" 2>/dev/null) || true
   fi
