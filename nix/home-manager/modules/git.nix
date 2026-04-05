@@ -83,7 +83,18 @@ in
   # (global gitignore cannot target a specific file in a specific repo)
   home.activation.dotfilesGitExclude = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ -d "${dotfilesDir}/.git" ]; then
-      echo '.pre-commit-config.yaml' > "${dotfilesDir}/.git/info/exclude"
+      exclude_file="${dotfilesDir}/.git/info/exclude"
+      touch "$exclude_file"
+
+      for pattern in \
+        '.pre-commit-config.yaml' \
+        '.vde/' \
+        '.worktrees/'
+      do
+        if ! grep -Fxq "$pattern" "$exclude_file"; then
+          printf '%s\n' "$pattern" >> "$exclude_file"
+        fi
+      done
     fi
   '';
 }

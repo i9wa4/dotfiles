@@ -133,6 +133,25 @@ in
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
 
+      # zwt (zoxide-backed worktree entrypoint)
+      zwt() {
+        case "''${1-}" in
+          add | remove | refresh | list | path | -h | --help)
+            "${dotfilesDir}/bin/zwt" "$@"
+            return $?
+            ;;
+        esac
+
+        local worktree_path
+        worktree_path="$("${dotfilesDir}/bin/zwt" path "$@")" || return $?
+
+        if [[ -n "$TMUX" ]]; then
+          vtm project switch "$worktree_path"
+        else
+          cd "$worktree_path" || return $?
+        fi
+      }
+
       # Source modular configs
       source "${zshDir}/aws.zsh"
       source "${zshDir}/keybind.zsh"

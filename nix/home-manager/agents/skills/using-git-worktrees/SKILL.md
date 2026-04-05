@@ -64,12 +64,19 @@ wrapper flow already covers the task.
   - `vde-worktree status [branch] --json`
 - Resolve a branch to its absolute path:
   - `vde-worktree path <branch> [--json]`
-- Pick a worktree interactively and `cd` into it:
+- Inspect the same keyword matches that `zwt path` can resolve, with related
+  ghq repo roots shown above each managed worktree path:
+  - `zwt list [keywords...]`
+- Re-enter a linked worktree through the dedicated zoxide-backed wrapper:
+  - `zwt [keywords...]`
+- Pick a worktree path directly from the generic backend when needed:
   - `cd "$(vde-worktree cd)"`
 - Reuse or create a branch worktree as a generic fallback:
   - `vde-worktree switch <branch>`
 
 Do not use `vde-worktree` as the primary issue or PR entrypoint in this repo.
+Do not use raw `zoxide` alone as the outermost worktree selector here; use the
+repo wrapper `zwt`.
 
 ## 4. Baseline Verification
 

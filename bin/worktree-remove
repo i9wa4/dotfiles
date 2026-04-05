@@ -24,6 +24,9 @@ if ! command -v git &>/dev/null; then
   exit 1
 fi
 
+script_dir=$(cd "$(dirname "$0")" && pwd)
+zwt_bin="${script_dir}/zwt"
+
 # Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <path> [path2 ...]" >&2
@@ -82,6 +85,13 @@ for repo in "$@"; do
 
     # Run git worktree remove from main repository
     cd "${main_repo}" && git worktree remove --force "${repo_path}"
+    if command -v zoxide &>/dev/null && [[ -x "${zwt_bin}" ]]; then
+      if "${zwt_bin}" remove "${repo_path}" >/dev/null 2>&1; then
+        echo "  * Removed from zwt database"
+      else
+        echo "  * No zwt database entry to remove"
+      fi
+    fi
     echo "  * Removed: ${repo_path}"
   else
     echo "  Warning: Not a worktree (regular repository): ${repo_path}" >&2
