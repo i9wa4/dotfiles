@@ -4,9 +4,8 @@
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
 #   nix run '.#update'       -- update flake inputs
-#   nix run '.#update-safe' -- update flake inputs with a minimum-age gate (default: 7 days)
-#   nix run '.#llm-agents-update' -- update only the llm-agents input
-#   nix run '.#llm-agents-update-safe' -- update only llm-agents with a minimum-age gate
+#   nix run '.#update' -- --min-age-days 7
+#                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
@@ -19,36 +18,72 @@
       isLinux = lib.hasSuffix "linux" system;
       gh = lib.getExe pkgs.gh;
       python = lib.getExe pkgs.python3;
-      mkSafeUpdateApp =
-        {
-          name,
-          scopeLabel,
-          updateCommand,
-        }:
-        {
+    in
+    {
+      apps = {
+        switch = {
           type = "app";
-          program = "${pkgs.writeShellScriptBin name ''
+          program = "${pkgs.writeShellScriptBin "switch" ''
+            set -euo pipefail
+            ${
+              if isDarwin then
+                ''
+                  profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
+                  sudo darwin-rebuild switch --impure --flake ".#$profile"
+                ''
+              else
+                ''
+                  nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
+                    home-manager -- switch -b backup --flake '.#ubuntu' --impure
+                ''
+            }
+          ''}/bin/switch";
+        };
+
+        update = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "update" ''
                         set -euo pipefail
 
                         if [ "''${1:-}" = "--help" ] || [ "''${1:-}" = "-h" ]; then
                           cat <<'EOF'
-            Usage: nix run '.#${name}' -- [MIN_AGE_DAYS]
+            Usage: nix run '.#update' -- [--min-age-days DAYS]
 
-            Updates ${scopeLabel} and keeps the new flake.lock only if every changed
-            input has locked.lastModified at least MIN_AGE_DAYS old.
+            Updates all flake inputs from the repo root.
 
-            Default: 7
+            Without flags, this runs a normal root-level update.
+            With --min-age-days DAYS, the new flake.lock is kept only if every changed
+            input has locked.lastModified at least DAYS old.
             EOF
                           exit 0
                         fi
 
-                        min_age_days="''${1:-7}"
-                        case "$min_age_days" in
-                          ""|*[!0-9]*)
-                            echo "MIN_AGE_DAYS must be a non-negative integer" >&2
-                            exit 2
-                            ;;
-                        esac
+                        min_age_days=""
+                        while [ "$#" -gt 0 ]; do
+                          case "$1" in
+                            --min-age-days)
+                              shift
+                              min_age_days="''${1:-}"
+                              case "$min_age_days" in
+                                ""|*[!0-9]*)
+                                  echo "--min-age-days requires a non-negative integer" >&2
+                                  exit 2
+                                  ;;
+                              esac
+                              ;;
+                            *)
+                              echo "Unknown argument: $1" >&2
+                              exit 2
+                              ;;
+                          esac
+                          shift
+                        done
+
+                        if [ -z "$min_age_days" ]; then
+                          nix flake update --access-tokens github.com=$(${gh} auth token)
+                          exit 0
+                        fi
+
                         min_age_seconds=$((min_age_days * 24 * 60 * 60))
                         backup_lock=$(mktemp)
                         report_file=$(mktemp)
@@ -60,7 +95,7 @@
 
                         cp flake.lock "$backup_lock"
 
-                        if ! ${updateCommand}
+                        if ! nix flake update --access-tokens github.com=$(${gh} auth token)
                         then
                           cp "$backup_lock" flake.lock
                           echo "Update command failed; restored flake.lock" >&2
@@ -148,62 +183,7 @@
                           echo "Restored flake.lock because one or more updated inputs were newer than $min_age_days days." >&2
                           exit "$status"
                         fi
-          ''}/bin/${name}";
-        };
-    in
-    {
-      apps = {
-        switch = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "switch" ''
-            set -euo pipefail
-            ${
-              if isDarwin then
-                ''
-                  profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
-                  sudo darwin-rebuild switch --impure --flake ".#$profile"
-                ''
-              else
-                ''
-                  nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
-                    home-manager -- switch -b backup --flake '.#ubuntu' --impure
-                ''
-            }
-          ''}/bin/switch";
-        };
-
-        update = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "update" ''
-            set -euo pipefail
-            nix flake update --access-tokens github.com=$(${gh} auth token)
           ''}/bin/update";
-        };
-
-        update-safe = mkSafeUpdateApp {
-          name = "update-safe";
-          scopeLabel = "all flake inputs";
-          updateCommand = ''
-            nix flake update --access-tokens github.com=$(${gh} auth token)
-          '';
-        };
-
-        llm-agents-update = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "llm-agents-update" ''
-            set -euo pipefail
-            nix flake lock --update-input llm-agents \
-              --access-tokens github.com=$(${gh} auth token)
-          ''}/bin/llm-agents-update";
-        };
-
-        llm-agents-update-safe = mkSafeUpdateApp {
-          name = "llm-agents-update-safe";
-          scopeLabel = "the llm-agents input";
-          updateCommand = ''
-            nix flake lock --update-input llm-agents \
-              --access-tokens github.com=$(${gh} auth token)
-          '';
         };
 
         check = {

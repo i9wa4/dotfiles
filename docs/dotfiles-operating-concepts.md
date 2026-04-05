@@ -207,11 +207,14 @@ The next harness changes are intentionally narrow. This repo already has the
 core harness shape it wants, so the goal is to reduce drift and sharpen
 verification rather than redesign the whole system.
 
-### 7.1. Add a narrow `llm-agents` update path
+### 7.1. Keep one root-level update surface
 
-The repo should expose one explicit root-level maintenance surface for
-`llm-agents` only. That keeps the update path visible without bringing back a
-public nested agents sub-flake boundary.
+The repo should keep one explicit root-level maintenance surface for flake
+updates. A dedicated `llm-agents`-only update path is not needed, because the
+input still stays pinned in `flake.lock` and the normal root-level update flow
+already covers it without adding another public maintenance command. If a
+minimum-age guard is needed, it should stay as an option on that same root
+`update` command instead of becoming a second public update app.
 
 ### 7.2. Make the Claude/Codex parity boundary explicit
 
