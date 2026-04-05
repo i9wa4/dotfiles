@@ -98,7 +98,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-userpromptsubmit.sh";
+              command = "$CLAUDE_CONFIG_DIR/scripts/common-userpromptsubmit.sh claude";
             }
           ];
         }

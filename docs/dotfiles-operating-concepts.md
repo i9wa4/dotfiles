@@ -129,7 +129,8 @@ Across Claude and Codex, hooks are used to do five jobs:
 The Claude side has the richer hook surface, so it carries more of the
 instrumentation:
 
-- `claude-userpromptsubmit.sh` injects time, role, cwd, git, and usage context
+- `common-userpromptsubmit.sh claude` injects time, role, cwd, git, add-dir,
+  and usage context
 - `claude-pretooluse-deny-bash.sh` and
   `claude-pretooluse-deny-write.sh` enforce preflight policy
 - `claude-observe.sh` records pre/post tool observations
@@ -141,7 +142,8 @@ instrumentation:
 
 The Codex side uses the hooks it has to approximate the same contract:
 
-- `codex-userpromptsubmit.sh` injects time, role, cwd, and git context
+- `common-userpromptsubmit.sh codex` injects time, role, cwd, git, and
+  add-dir context
 - `codex-pretooluse-deny-bash.sh` enforces the shared deny policy
 - `codex-posttooluse-review.sh` adds repair-oriented feedback after failed
   deterministic commands

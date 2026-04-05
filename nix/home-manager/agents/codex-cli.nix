@@ -97,6 +97,7 @@ let
     for f in ${./scripts}/codex-*; do
       ln -s "$f" "$out/$(basename "$f")"
     done
+    ln -s ${./scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
     ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
 
@@ -146,7 +147,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$HOME/.codex/scripts/codex-userpromptsubmit.sh";
+              command = "$HOME/.codex/scripts/common-userpromptsubmit.sh codex";
             }
           ];
         }
