@@ -54,6 +54,7 @@
         '';
       };
       actrun = inputs.actrun.packages.${system}.default;
+      opensslLib = pkgs.lib.getLib pkgs.openssl;
     in
     {
       packages = if hasBetterleaks then { inherit betterleaks; } else { };
@@ -110,7 +111,11 @@
 
           actrun-lint = {
             enable = hasActrun;
-            entry = if hasActrun then "${actrun}/bin/actrun lint" else "";
+            entry =
+              if hasActrun then
+                "${pkgs.bash}/bin/bash -c 'LD_LIBRARY_PATH=${opensslLib}/lib exec ${actrun}/bin/actrun lint \"$@\"' --"
+              else
+                "";
             files = ghWorkflowFiles;
           };
 
