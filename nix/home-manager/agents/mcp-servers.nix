@@ -66,9 +66,6 @@ let
     drawio = {
       command = "${drawioMcp}/bin/drawio-mcp";
     };
-    freee-mcp = {
-      command = "${homeDir}/.local/bin/freee-mcp";
-    };
   };
 in
 nixServers // manualServers
