@@ -23,7 +23,6 @@ let
   };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
   instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
-  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
   instructionFiles = instructionArtifacts {
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
@@ -45,24 +44,6 @@ let
       ln -s "$f" "$out/$(basename "$f")"
     done
     ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}
-  '';
-
-  # Combine plain subagents from the family layer with cc reviewer variants.
-  # Review stays on the existing generator path for now.
-  claudeAgentsDir = pkgs.runCommand "claude-agents" { } ''
-    mkdir -p $out
-    # Plain subagents from the family layer (researcher-tech, super-codex-reviewer)
-    for f in ${families.subagents.claudeAgentsDir}/*.md; do
-      ln -s "$f" "$out/$(basename "$f")"
-    done
-    # CC reviewer variants (6 files: reviewer-{role}.md)
-    for f in ${reviewGen.agentFiles.ccDir}/*.md; do
-      ln -s "$f" "$out/$(basename "$f")"
-    done
-    # CC Tier 1 deep variants (6 files: reviewer-{role}-deep.md)
-    for f in ${reviewGen.agentFiles.ccDeepDir}/*.md; do
-      ln -s "$f" "$out/$(basename "$f")"
-    done
   '';
 
   # Transform MCP servers for claude mcp add-json (add type, filter empty attrs)
@@ -205,7 +186,7 @@ in
       ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
       # Nix store directory symlinks (rebuild required to update)
       ".claude/rules".source = ./rules;
-      ".claude/agents".source = claudeAgentsDir;
+      ".claude/agents".source = families.claudeAgentsDir;
       ".claude/scripts".source = scriptsDir;
     };
 

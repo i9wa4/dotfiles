@@ -8,8 +8,7 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  # Generate review agent + skill files from shared SSOT fragments in review/refs/
-  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
+  families = import ./families/default.nix { inherit pkgs; };
 in
 {
   imports = [
@@ -25,10 +24,6 @@ in
       local = {
         path = inputs.self;
         subdir = "nix/home-manager/agents/skills";
-      };
-      review-local = {
-        path = inputs.self;
-        subdir = "nix/home-manager/agents/review/skills";
       };
       # tmux-a2a-postman skills
       tmux-a2a-postman = {
@@ -85,22 +80,6 @@ in
         path = inputs.freee-mcp;
         subdir = "skills";
       };
-      # Generated review skills (SSOT fragments in review/refs/ → review/review-artifacts-gen.nix)
-      # Each derivation root contains one real skill directory with a real SKILL.md.
-      # NOTE: symlinkJoin was avoided: it creates file-level symlinks that cause
-      # discoverSource's builtins.readDir to misidentify SKILL.md as a directory.
-      generated-cc = {
-        path = reviewGen.skillFiles.ccDir;
-      };
-      generated-cc-deep = {
-        path = reviewGen.skillFiles.ccDeepDir;
-      };
-      generated-cx = {
-        path = reviewGen.skillFiles.cxDir;
-      };
-      generated-cx-deep = {
-        path = reviewGen.skillFiles.cxDeepDir;
-      };
       # HashiCorp agent skills (split by plugin)
       # cf. https://github.com/hashicorp/agent-skills
       hashicorp-terraform-codegen = {
@@ -115,7 +94,8 @@ in
         path = inputs.hashicorp-agent-skills;
         subdir = "terraform/provider-development/skills";
       };
-    };
+    }
+    // families.skillSources;
 
     # Enable all skills from all sources
     skills = {

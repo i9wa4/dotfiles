@@ -25,7 +25,6 @@ let
   };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
   instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
-  reviewGen = import ./review/review-artifacts-gen.nix { inherit pkgs; };
   instructionFiles = instructionArtifacts {
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
@@ -51,45 +50,6 @@ let
   codexRulesDir = pkgs.runCommand "codex-rules" { } ''
     mkdir -p $out
     cp ${generatedDefaultRules} $out/default.rules
-  '';
-
-  # Combine plain subagents from the family layer with cx reviewer variants.
-  # Review stays on the existing generator path for now.
-  codexAgentsDir = pkgs.runCommand "codex-agents" { } ''
-    mkdir -p $out
-    # Plain subagents from the family layer (researcher-tech, super-codex-reviewer)
-    for toml in ${families.subagents.codexAgentsDir}/*.toml; do
-      ln -s "$toml" "$out/$(basename "$toml")"
-    done
-    # CX reviewer variants (6 files: reviewer-{role}.md -> reviewer-{role}.toml)
-    for md in ${reviewGen.agentFiles.cxDir}/*.md; do
-      basename_="$(basename "$md" .md)"
-      agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
-      description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
-      ${pkgs.gawk}/bin/awk \
-        'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' \
-        "$md" > "$out/_body_tmp"
-      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n' \
-        "$agent_name" "$description" > "$out/$basename_.toml"
-      cat "$out/_body_tmp" >> "$out/$basename_.toml"
-      printf '"""\n' >> "$out/$basename_.toml"
-      rm "$out/_body_tmp"
-    done
-    # CX Tier 1 deep variants (6 files: reviewer-{role}-deep.md -> reviewer-{role}-deep.toml)
-    # NOTE: model field dropped -- Tier 1 model specified at codex exec call time
-    for md in ${reviewGen.agentFiles.cxDeepDir}/*.md; do
-      basename_="$(basename "$md" .md)"
-      agent_name="$(${pkgs.gnused}/bin/sed -n 's/^name: //p' "$md")"
-      description="$(${pkgs.gnused}/bin/sed -n 's/^description: //p' "$md")"
-      ${pkgs.gawk}/bin/awk \
-        'BEGIN{n=0} /^---$/{n++; next} n>=2{print}' \
-        "$md" > "$out/_body_tmp"
-      printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n' \
-        "$agent_name" "$description" > "$out/$basename_.toml"
-      cat "$out/_body_tmp" >> "$out/$basename_.toml"
-      printf '"""\n' >> "$out/$basename_.toml"
-      rm "$out/_body_tmp"
-    done
   '';
 
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
@@ -217,8 +177,8 @@ in
     # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
     # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;
-    # Subagent definitions (auto-generated .toml from subagents/*.md)
-    ".codex/agents".source = codexAgentsDir;
+    # Subagent definitions (family-managed .toml/markdown generation)
+    ".codex/agents".source = families.codexAgentsDir;
     # Hook scripts (Nix store, rebuild required to update)
     ".codex/scripts".source = codexScriptsDir;
     # Hooks config (Nix store, rebuild required to update)
