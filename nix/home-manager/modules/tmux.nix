@@ -49,8 +49,8 @@ in
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
       set-option -g status-interval 1
-      set-option -g status-left " [#(tmux list-sessions -F '##{session_created} ##{session_id}' | awk '{ print $1, substr($2, 2), $2 }' | sort -k1,1n -k2,2n | awk -v current='#{session_id}' '$3 == current { print NR - 1; exit }')] #{=50:session_name} "
-      set-option -g status-left-length 55
+      set-option -g status-left "[#(tmux list-sessions -F '##{session_created} ##{session_id}' | awk '{ print $1, substr($2, 2), $2 }' | sort -k1,1n -k2,2n | awk -v current='#{session_id}' '$3 == current { print NR - 1; exit }')] #{=50:session_name} "
+      set-option -g status-left-length 54
       set-option -g status-position top
       set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-health-oneline) #(${dotfilesDir}/bin/system-load)"
       set-option -g status-right-length 200
