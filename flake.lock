@@ -346,11 +346,11 @@
     "freee-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1775470239,
-        "narHash": "sha256-8mMzT40WhMMbeMYVeu3Ndu2sxkWiW/FYLbmLzp5x/g0=",
+        "lastModified": 1775483371,
+        "narHash": "sha256-9lr08yZBro1SKPI8u2/FIanuJ5s8+q+nD6ISrQdX2h4=",
         "owner": "freee",
         "repo": "freee-mcp",
-        "rev": "b0404253a8171bbf06d2f9a3b9d56fe2cdcde38d",
+        "rev": "4b1306e93409d402762c4743862c13a26730559a",
         "type": "github"
       },
       "original": {
