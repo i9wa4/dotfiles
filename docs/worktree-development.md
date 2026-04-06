@@ -61,12 +61,16 @@ and the code disagree, fix the page to match the code.
 3. For each PR, it reads `headRefName` with
    `gh pr view --json headRefName --jq '.headRefName'`.
 4. It requires `origin/<headRefName>` to exist before creating the worktree.
-5. It checks for an existing managed worktree path with `vde-worktree path`.
-6. If no managed path exists yet, it creates or reuses the review worktree with
-   `vde-worktree get "origin/<headRefName>"`.
-7. On a newly created worktree, it copies `.envrc` when present and runs
+5. It derives a local review branch name as
+   `pr-<number>-<headRefName with slashes replaced by dashes>`.
+6. It checks for an existing managed worktree path with
+   `vde-worktree path "<derived-local-branch>"`.
+7. If the local review branch does not exist yet, it creates it to track
+   `origin/<headRefName>`, then resolves the review worktree with
+   `vde-worktree switch "<derived-local-branch>"`.
+8. On a newly created worktree, it copies `.envrc` when present and runs
    `repo-setup` when available.
-8. It adds the final worktree path to the `zoxide` database when `zoxide`
+9. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
 
 ## 5. Current re-entry flow
