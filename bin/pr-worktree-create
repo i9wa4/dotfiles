@@ -12,10 +12,11 @@ set -o posix
 #
 # Dependencies:
 #   - gh (GitHub CLI)
+#   - vde-worktree
 #   - repo-setup (optional)
 
 # Check required dependencies
-for cmd in gh git; do
+for cmd in gh git vde-worktree; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "Error: $cmd command not found. Please install it." >&2
     exit 1
@@ -30,9 +31,8 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-# Get repository root and name
+# Get repository root
 repo_root=$(git rev-parse --show-toplevel)
-repo_name=$(basename "$repo_root")
 
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
@@ -69,66 +69,46 @@ for pr_number in "$@"; do
 
   echo "* PR #${pr_number} branch: ${pr_branch}"
 
-  worktree_path="$(dirname "$(pwd)")/${repo_name}-pr-${pr_number}"
-
-  # Check for existing worktree
-  if [[ -d $worktree_path ]]; then
-    echo "* Worktree already exists: ${worktree_path}"
-    cd "$worktree_path"
-    current_branch=$(git branch --show-current)
-    if [[ -z $current_branch ]]; then
-      # detached HEAD: checkout the branch
-      echo "* Detached HEAD detected, checking out branch: ${pr_branch}"
-      if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
-        git checkout "${pr_branch}"
-      else
-        git checkout -b "${pr_branch}" "origin/${pr_branch}"
-      fi
-      current_branch=$(git branch --show-current)
-    fi
-    echo "* Branch: ${current_branch}"
-    cd - >/dev/null
+  existing_worktree_path=""
+  if existing_worktree_path=$(vde-worktree path "${pr_branch}" 2>/dev/null); then
+    :
   else
-    # Create worktree
-    if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
-      echo "-> Creating worktree..."
-      if git show-ref --verify --quiet "refs/heads/${pr_branch}"; then
-        # Local branch already exists: reuse it
-        git worktree add "$worktree_path" "${pr_branch}"
-      else
-        git worktree add "$worktree_path" "origin/${pr_branch}"
-        cd "$worktree_path"
-        git checkout -b "${pr_branch}" "origin/${pr_branch}"
-        cd - >/dev/null
-      fi
-      echo "* Created worktree: ${worktree_path}"
+    existing_worktree_path=""
+  fi
+
+  if ! git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
+    echo "Error: Remote branch 'origin/${pr_branch}' not found." >&2
+    echo ""
+    continue
+  fi
+
+  worktree_path=$(vde-worktree get "origin/${pr_branch}")
+
+  if [[ -n $existing_worktree_path ]]; then
+    echo "* Worktree already exists: ${worktree_path}"
+    echo "* Branch: ${pr_branch}"
+  else
+    echo "* Created worktree: ${worktree_path}"
+    echo "* Using remote branch: ${pr_branch}"
+
+    # Copy .envrc if it exists
+    if [[ -f "${repo_root}/.envrc" ]]; then
+      cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
+      echo "* Copied .envrc to worktree"
+    fi
+
+    # Run repo-setup if available
+    if command -v repo-setup &>/dev/null; then
+      echo "-> Running repo-setup..."
       cd "$worktree_path"
-      git pull origin "${pr_branch}"
+      repo-setup
       cd - >/dev/null
-
-      # Copy .envrc if it exists
-      if [[ -f "${repo_root}/.envrc" ]]; then
-        cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
-        echo "* Copied .envrc to worktree"
-      fi
-
-      # Run repo-setup if available
-      if command -v repo-setup &>/dev/null; then
-        echo "-> Running repo-setup..."
-        cd "$worktree_path"
-        repo-setup
-        cd - >/dev/null
-      fi
-    else
-      echo "Error: Remote branch 'origin/${pr_branch}' not found." >&2
-      echo ""
-      continue
     fi
   fi
 
-  if command -v zoxide &>/dev/null && command -v zwt &>/dev/null; then
-    zwt add "$worktree_path"
-    echo "* Added worktree to zwt database"
+  if command -v zoxide &>/dev/null; then
+    zoxide add "$worktree_path"
+    echo "* Added worktree to zoxide database"
   fi
 
   echo ""

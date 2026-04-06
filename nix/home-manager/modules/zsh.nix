@@ -133,23 +133,96 @@ in
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
 
-      # zwt (zoxide-backed worktree entrypoint)
-      zwt() {
-        case "''${1-}" in
-          add | remove | refresh | list | path | -h | --help)
-            "${dotfilesDir}/bin/zwt" "$@"
-            return $?
-            ;;
-        esac
+      # zoxide-backed jump commands
+      if command -v zoxide &>/dev/null; then
+        eval "$(zoxide init zsh --no-cmd)"
+      fi
 
-        local worktree_path
-        worktree_path="$("${dotfilesDir}/bin/zwt" path "$@")" || return $?
+      __jump_to_path() {
+        local target_path="$1"
 
         if [[ -n "$TMUX" ]]; then
-          vtm project switch "$worktree_path"
+          vtm project switch "$target_path"
         else
-          cd "$worktree_path" || return $?
+          cd "$target_path" || return $?
         fi
+      }
+
+      __vde_worktree_query_paths() {
+        command -v ghq &>/dev/null || return 0
+        command -v jq &>/dev/null || return 0
+        command -v vde-worktree &>/dev/null || return 0
+
+        ghq list -p | while IFS= read -r repo_path; do
+          [[ -n "$repo_path" ]] || continue
+          [[ -f "$repo_path/config/vde/worktree/config.yml" ]] || continue
+
+          local repo_json
+          repo_json="$(
+            cd "$repo_path" &&
+              vde-worktree list --json 2>/dev/null
+          )" || continue
+
+          printf '%s\n' "$repo_json" | jq -r --arg repo_path "$repo_path" '
+            .worktrees[]
+            | select(.path != $repo_path)
+            | .path // empty
+          '
+        done
+      }
+
+      __z_query_paths() {
+        {
+          zoxide query --list 2>/dev/null || true
+          ghq list -p 2>/dev/null || true
+          __vde_worktree_query_paths
+        } | awk '!seen[$0]++ { print; fflush() }'
+      }
+
+      zi() {
+        local selected_path
+        selected_path="$(
+          __z_query_paths |
+            fzf --layout=reverse --no-sort --height='~15' --query="$*"
+        )" || return $?
+
+        [[ -n "$selected_path" ]] || return 1
+        __jump_to_path "$selected_path"
+      }
+
+      z() {
+        if [[ "$#" -eq 0 ]]; then
+          zi
+          return $?
+        fi
+
+        if [[ "$#" -eq 1 ]]; then
+          if [[ "$1" == "-" ]]; then
+            cd - || return $?
+            return $?
+          fi
+
+          if [[ -d "$1" ]]; then
+            __jump_to_path "$1"
+            return $?
+          fi
+
+          local target_path
+          target_path="$(zoxide query --exclude "$PWD" -- "$1" 2>/dev/null)" || {
+            zi "$1"
+            return $?
+          }
+
+          [[ -n "$target_path" ]] || {
+            zi "$1"
+            return $?
+          }
+
+          __jump_to_path "$target_path"
+          return $?
+        fi
+
+        zi "$@"
       }
 
       # Source modular configs

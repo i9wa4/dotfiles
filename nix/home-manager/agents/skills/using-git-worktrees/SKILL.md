@@ -1,6 +1,6 @@
 ---
 name: using-git-worktrees
-description: Repo-local workflow for isolated workspaces in this dotfiles repo. Prefer `issue-worktree-create` for issue execution, `pr-worktree-create` for PR review, `worktree-remove` for cleanup, and use `vde-worktree` only as supporting generic tooling (`list`, `status`, `path`, `cd`, `switch`). Use when work needs an isolated worktree, a clean review workspace, worktree status/path inspection, or safe cleanup.
+description: Repo-local workflow for isolated workspaces in this dotfiles repo. Prefer `issue-worktree-create` for issue execution, `pr-worktree-create` for PR review, `worktree-remove` for cleanup, and use `z` or `zi` as the human-facing re-entry commands with `vde-worktree` as supporting generic tooling (`list`, `status`, `path`, `cd`, `switch`). Use when work needs an isolated worktree, a clean review workspace, worktree status/path inspection, or safe cleanup.
 ---
 
 # Using Git Worktrees
@@ -64,11 +64,9 @@ wrapper flow already covers the task.
   - `vde-worktree status [branch] --json`
 - Resolve a branch to its absolute path:
   - `vde-worktree path <branch> [--json]`
-- Inspect the same keyword matches that `zwt path` can resolve, with related
-  ghq repo roots shown above each managed worktree path:
-  - `zwt list [keywords...]`
-- Re-enter a linked worktree through the dedicated zoxide-backed wrapper:
-  - `zwt [keywords...]`
+- Re-enter a linked worktree or repo through the merged zoxide flow:
+  - `z <keyword>`
+  - `zi [keywords...]`
 - Pick a worktree path directly from the generic backend when needed:
   - `cd "$(vde-worktree cd)"`
 - Reuse or create a branch worktree as a generic fallback:
@@ -76,7 +74,7 @@ wrapper flow already covers the task.
 
 Do not use `vde-worktree` as the primary issue or PR entrypoint in this repo.
 Do not use raw `zoxide` alone as the outermost worktree selector here; use the
-repo wrapper `zwt`.
+repo `z` or `zi` wrapper functions.
 
 ## 4. Baseline Verification
 

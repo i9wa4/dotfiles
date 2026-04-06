@@ -9,25 +9,21 @@ truth for the approved target.
 
 - Use `issue-worktree-create <issue_number>` to start issue work.
 - Use `pr-worktree-create <pr_number>` to start PR review.
-- Use `zwt [keywords...]` to re-enter linked worktrees through the dedicated
-  worktree zoxide database.
-- Use `zwt list [keywords...]` to inspect the same keyword matches that
-  `zwt path` and `zwt [keywords...]` can resolve, with related ghq repo roots
-  shown above each managed worktree path.
+- Use `z <keyword>` for the normal jump flow.
+- Use `zi [keywords...]` for explicit interactive selection.
+- Treat `z` and `zi` as the human-facing repo/worktree entrypoints in zsh.
 - Use `worktree-remove <path>` to remove linked worktrees safely.
 - Keep issue numbers and PR numbers as the primary human input. Do not replace
   them with free-form naming schemes.
 
 ## 2. Migration direction
 
-- Today, `issue-worktree-create` and `pr-worktree-create` still create sibling
-  worktrees outside the repo.
 - Keep the wrapper commands above as the user-facing entrypoints.
-- Move actual worktree creation and lookup under repo-root `.worktrees/`.
+- Keep actual worktree creation and lookup under repo-root `.worktrees/`.
 - Use shared backend logic so issue and PR flows stop duplicating creation,
   bootstrap, and lookup behavior.
-- Keep the dedicated zoxide-backed re-entry command `zwt` aligned with
-  `vde-worktree` so entry and re-entry stay in sync during the migration.
+- Keep `z` and `zi` aligned with `vde-worktree` so entry and re-entry stay in
+  sync during the migration.
 - Treat sibling-directory layouts such as `../dotfiles-issue-123` and
   `../dotfiles-pr-456` as legacy behavior. Do not extend that pattern in new
   tooling.
@@ -44,33 +40,36 @@ truth for the approved target.
 4. Create the worktree under `.worktrees/`.
 5. Copy `.envrc` into the new worktree when the repo has one.
 6. Run `repo-setup` in the new worktree when available.
-7. Register or refresh the created path in the dedicated `zwt` zoxide database.
+7. Add the created worktree path to the normal `zoxide` database.
+8. Re-enter the worktree with `z issue-123` or `zi issue-123`.
 
 ### 3.2. PR review
 
 1. Run `pr-worktree-create <pr_number>` from the repository.
 2. Check out the PR head branch in a managed worktree under `.worktrees/`.
 3. Apply the same `.envrc` copy and `repo-setup` bootstrap as issue work.
-4. Register or refresh the created path in the dedicated `zwt` zoxide database.
-5. Re-enter the review worktree with `zwt`, or use `vde-worktree path`,
-   `vde-worktree cd`, or `vde-worktree switch` as supporting tools during the
-   migration.
+4. Add the created worktree path to the normal `zoxide` database.
+5. Re-enter the review worktree with `z <branch-or-keyword>` or
+   `zi <branch-or-keyword>`.
+6. Use `vde-worktree path`, `vde-worktree cd`, or `vde-worktree switch` as
+   supporting tools during the migration.
 
 ### 3.3. Re-entry from outside the repo
 
 1. Keep `ghq + fzf` as the explicit repo browser when the user wants deliberate
    repository selection first.
-2. For one-step worktree re-entry, use `zwt` instead of raw `vde-worktree`
-   from an arbitrary directory.
-3. `zwt list [keywords...]` prints the same keyword matches that
-   `zwt path [keywords...]` can resolve, with the related ghq repo root shown
-   above each managed worktree path for quick inspection.
-4. `zwt` and `zwt path` refresh a dedicated worktree-only zoxide database from
-   `vde-worktree list --json` across `ghq` repositories before selection.
-5. Inside tmux, `zwt` opens the selected path with
+2. For one-step repo or worktree entry, use `z` or `zi` instead of raw
+   `vde-worktree` from an arbitrary directory.
+3. `zi [keywords...]` merges three candidate sources:
+   - learned `zoxide` entries
+   - `ghq list -p` repository roots
+   - managed worktree paths from `vde-worktree list --json`
+4. `z <keyword>` first tries the normal `zoxide` match for that keyword and
+   falls back to `zi <keyword>` when no direct match exists.
+5. Inside tmux, `z` and `zi` open the selected path with
    `vtm project switch "$path"`.
-6. Outside tmux, `zwt` changes directory to the selected path through the zsh
-   wrapper function.
+6. Outside tmux, `z` and `zi` change directory to the selected path through the
+   zsh wrapper functions.
 7. Do not scan `.worktrees/` or `.git/wt` directly. Keep `vde-worktree` as
    the worktree source of truth.
 
@@ -78,10 +77,9 @@ truth for the approved target.
 
 - `vde-worktree` is the shared backend, the generic inspection tool, and the
   canonical read model for managed worktree paths.
-- `zwt` is the dedicated re-entry wrapper that refreshes a worktree-only
-  zoxide database from that read model, and its `list` subcommand shows the
-  same zoxide-backed matches as `zwt path` with related ghq repo roots above
-  the managed worktree paths.
+- `z` and `zi` are the human-facing re-entry layer in zsh.
+- Their merged candidate set is built from the current `zoxide` database,
+  `ghq list -p`, and managed worktree paths from `vde-worktree list --json`.
 - In this repository, it supports `list`, `status`, `path`, `cd`, and
   `switch`.
 - Do not use `vde-worktree` as the primary issue or PR entrypoint here.
@@ -107,7 +105,7 @@ truth for the approved target.
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `bin/zwt`
+- `nix/home-manager/modules/zsh.nix`
 - `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
 - `docs/dotfiles-operating-concepts.md`

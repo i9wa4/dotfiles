@@ -11,9 +11,9 @@ set -o posix
 #   worktree-remove <path> [path2 ...]
 #
 # Path formats:
-#   - ghq path: github.com/org/project-issue-123 (requires ghq)
-#   - Absolute path: /home/user/projects/repo-issue-123
-#   - Relative path: ../repo-issue-123
+#   - ghq path: github.com/org/project/.worktrees/issue-123-fix-thing (requires ghq)
+#   - Absolute path: /home/user/projects/project/.worktrees/issue-123-fix-thing
+#   - Relative path: .worktrees/issue-123-fix-thing
 #
 # Dependencies:
 #   - ghq (optional, for ghq-style paths)
@@ -24,17 +24,14 @@ if ! command -v git &>/dev/null; then
   exit 1
 fi
 
-script_dir=$(cd "$(dirname "$0")" && pwd)
-zwt_bin="${script_dir}/zwt"
-
 # Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <path> [path2 ...]" >&2
   echo "" >&2
   echo "Path formats:" >&2
-  echo "  ghq path:      github.com/org/project-issue-123" >&2
-  echo "  Absolute path: /home/user/projects/repo-issue-123" >&2
-  echo "  Relative path: ../repo-issue-123" >&2
+  echo "  ghq path:      github.com/org/project/.worktrees/issue-123-fix-thing" >&2
+  echo "  Absolute path: /home/user/projects/project/.worktrees/issue-123-fix-thing" >&2
+  echo "  Relative path: .worktrees/issue-123-fix-thing" >&2
   exit 1
 fi
 
@@ -85,11 +82,11 @@ for repo in "$@"; do
 
     # Run git worktree remove from main repository
     cd "${main_repo}" && git worktree remove --force "${repo_path}"
-    if command -v zoxide &>/dev/null && [[ -x "${zwt_bin}" ]]; then
-      if "${zwt_bin}" remove "${repo_path}" >/dev/null 2>&1; then
-        echo "  * Removed from zwt database"
+    if command -v zoxide &>/dev/null; then
+      if zoxide remove "${repo_path}" >/dev/null 2>&1; then
+        echo "  * Removed from zoxide database"
       else
-        echo "  * No zwt database entry to remove"
+        echo "  * No zoxide database entry to remove"
       fi
     fi
     echo "  * Removed: ${repo_path}"

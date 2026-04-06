@@ -15,10 +15,11 @@ set -o posix
 #   - gh (GitHub CLI)
 #   - jq
 #   - claude (Anthropic CLI, optional)
+#   - vde-worktree
 #   - repo-setup (optional)
 
 # Check required dependencies
-for cmd in gh jq git; do
+for cmd in gh jq git vde-worktree; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "Error: $cmd command not found. Please install it." >&2
     exit 1
@@ -33,9 +34,8 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-# Get repository root and name
+# Get repository root
 repo_root=$(git rev-parse --show-toplevel)
-repo_name=$(basename "$repo_root")
 
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
@@ -130,30 +130,41 @@ ${issue_comments}
   fi
   echo "* Branch name: ${branch_name}"
 
-  worktree_path="$(dirname "$(pwd)")/${repo_name}-issue-${issue_number}"
+  existing_worktree_path=""
+  if existing_worktree_path=$(vde-worktree path "${branch_name}" 2>/dev/null); then
+    :
+  else
+    existing_worktree_path=""
+  fi
 
-  # Check for existing worktree
-  if [[ -d $worktree_path ]]; then
+  if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
+    worktree_path=$(vde-worktree get "origin/${branch_name}")
+    branch_origin="remote"
+  elif git show-ref --verify --quiet "refs/heads/${branch_name}"; then
+    worktree_path=$(vde-worktree switch "${branch_name}")
+    branch_origin="local"
+  else
+    worktree_path=$(vde-worktree switch "${branch_name}")
+    branch_origin="new"
+  fi
+
+  if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
     echo "* Branch: ${branch_name}"
   else
-    # Create worktree
-    if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
-      git worktree add "$worktree_path" "$branch_name"
-      echo "* Created worktree: ${worktree_path}"
-      cd "$worktree_path"
-      git pull origin "${branch_name}"
-      cd - >/dev/null
-    elif git show-ref --verify --quiet "refs/heads/${branch_name}"; then
-      # Local branch exists but no remote: reuse it
-      git worktree add "$worktree_path" "$branch_name"
-      echo "* Created worktree: ${worktree_path}"
-      echo "* Using existing local branch: ${branch_name}"
-    else
-      git worktree add -b "$branch_name" "$worktree_path" main
-      echo "* Created worktree: ${worktree_path}"
-      echo "* Created local branch: ${branch_name} (from main)"
-    fi
+    echo "* Created worktree: ${worktree_path}"
+
+    case "${branch_origin}" in
+      remote)
+        echo "* Using remote branch: ${branch_name}"
+        ;;
+      local)
+        echo "* Using existing local branch: ${branch_name}"
+        ;;
+      new)
+        echo "* Created local branch: ${branch_name} (from main)"
+        ;;
+    esac
 
     # Copy .envrc if it exists
     if [[ -f "${repo_root}/.envrc" ]]; then
@@ -170,9 +181,9 @@ ${issue_comments}
     fi
   fi
 
-  if command -v zoxide &>/dev/null && command -v zwt &>/dev/null; then
-    zwt add "$worktree_path"
-    echo "* Added worktree to zwt database"
+  if command -v zoxide &>/dev/null; then
+    zoxide add "$worktree_path"
+    echo "* Added worktree to zoxide database"
   fi
 
   echo ""
