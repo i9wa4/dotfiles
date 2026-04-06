@@ -68,9 +68,10 @@ for pr_number in "$@"; do
   fi
 
   echo "* PR #${pr_number} branch: ${pr_branch}"
+  pr_local_branch="pr-${pr_number}-${pr_branch//\//-}"
 
   existing_worktree_path=""
-  if existing_worktree_path=$(vde-worktree path "${pr_branch}" 2>/dev/null); then
+  if existing_worktree_path=$(vde-worktree path "${pr_local_branch}" 2>/dev/null); then
     :
   else
     existing_worktree_path=""
@@ -82,14 +83,17 @@ for pr_number in "$@"; do
     continue
   fi
 
-  worktree_path=$(vde-worktree get "origin/${pr_branch}")
+  if ! git show-ref --verify --quiet "refs/heads/${pr_local_branch}"; then
+    git branch --track "${pr_local_branch}" "origin/${pr_branch}"
+  fi
+  worktree_path=$(vde-worktree switch "${pr_local_branch}")
 
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
-    echo "* Branch: ${pr_branch}"
+    echo "* Branch: ${pr_local_branch} -> ${pr_branch}"
   else
     echo "* Created worktree: ${worktree_path}"
-    echo "* Using remote branch: ${pr_branch}"
+    echo "* Using remote branch: ${pr_branch} (local: ${pr_local_branch})"
 
     # Copy .envrc if it exists
     if [[ -f "${repo_root}/.envrc" ]]; then
