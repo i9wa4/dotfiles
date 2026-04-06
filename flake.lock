@@ -921,11 +921,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1775446403,
-        "narHash": "sha256-ybLXVr2GNnWDViuCFPUscZl7o0QLO1SYZ3EUj2HitM8=",
+        "lastModified": 1775476549,
+        "narHash": "sha256-zgdilNx9PZ477S8oAAE79HASGJSZjZSoTzz1RnyOSP0=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "b44a437091dc71fd0fa2a88c21997a98641a5e75",
+        "rev": "d8b618ef6a8a55aa49941a49cc6f9eba4b92d7c8",
         "type": "github"
       },
       "original": {
