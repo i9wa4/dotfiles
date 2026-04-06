@@ -159,8 +159,7 @@ in
 
           local repo_json
           repo_json="$(
-            cd "$repo_path" &&
-              vde-worktree list --json 2>/dev/null
+            command zsh -fc 'cd "$1" && vde-worktree list --json 2>/dev/null' zsh "$repo_path"
           )" || continue
 
           printf '%s\n' "$repo_json" | jq -r --arg repo_path "$repo_path" '
