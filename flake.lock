@@ -367,11 +367,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1774233120,
-        "narHash": "sha256-ecvzAGMQZ8OTXjCmWqYeeGVOCyohClwSYEoUNE2QWsY=",
+        "lastModified": 1775467374,
+        "narHash": "sha256-QTEqIEZmbyJOYqM/v2s8WsroJEcktNWa3uSMAN92Jvg=",
         "owner": "kawarimidoll",
         "repo": "gh-prism",
-        "rev": "305ef6e85f38e2598a161a9d78e3281e67beaef6",
+        "rev": "e280626af660d54b72aa09d4c200fea97fb3b51b",
         "type": "github"
       },
       "original": {
@@ -810,11 +810,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1775286898,
-        "narHash": "sha256-w9ij48PxqWzLa6wfo9eWGAvIl0gEPCsW/FEwzKZ0hfI=",
+        "lastModified": 1775434435,
+        "narHash": "sha256-+UNFRVjyjxDAWiOZmTrpChbsLpklQc2tGbBVB690EhU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9b8e6819224551756919099c1fce6e347f5a3803",
+        "rev": "8c2f602c603385f119989d329b591fe0b8652cb0",
         "type": "github"
       },
       "original": {
@@ -921,11 +921,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1775476549,
-        "narHash": "sha256-zgdilNx9PZ477S8oAAE79HASGJSZjZSoTzz1RnyOSP0=",
+        "lastModified": 1775478803,
+        "narHash": "sha256-1hHfmq+HmHS2Q6+SUfei08pw5G5NKslHfuyP2nFPqq0=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "d8b618ef6a8a55aa49941a49cc6f9eba4b92d7c8",
+        "rev": "32d349c9d540e036ad1db32df3a0d5f9ffe480aa",
         "type": "github"
       },
       "original": {
