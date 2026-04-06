@@ -61,18 +61,9 @@ zinit ice lucid depth"1" blockf \
           local repository_session=${repository//./-}
           local worktree_path=${dir#*/.worktrees/}
           local worktree_dir=${worktree_path%%/*}
-          local worktree_shortname=${worktree_dir}
-
-          if [[ $worktree_shortname == issue-* ]]; then
-            worktree_shortname=${worktree_shortname#issue-}
-          fi
-
-          local issue_number=${worktree_shortname%%[^0-9]*}
-          if [[ -n $issue_number ]]; then
-            session="${repository_session}#${issue_number}"
-          else
-            session="${repository_session}#${worktree_shortname//./-}"
-          fi
+          local worktree_session=${worktree_dir//./-}
+          local worktree_short=${worktree_session[1,14]}
+          session="${repository_session}-${worktree_short}"
         else
           local repository=${dir:t}
           session=${repository//./-}
