@@ -343,22 +343,6 @@
         "type": "github"
       }
     },
-    "freee-mcp": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1775483371,
-        "narHash": "sha256-9lr08yZBro1SKPI8u2/FIanuJ5s8+q+nD6ISrQdX2h4=",
-        "owner": "freee",
-        "repo": "freee-mcp",
-        "rev": "4b1306e93409d402762c4743862c13a26730559a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "freee",
-        "repo": "freee-mcp",
-        "type": "github"
-      }
-    },
     "gh-prism": {
       "inputs": {
         "git-hooks": "git-hooks",
@@ -851,7 +835,6 @@
         "dbt-agent-skills": "dbt-agent-skills",
         "drawio-mcp": "drawio-mcp",
         "flake-parts": "flake-parts_2",
-        "freee-mcp": "freee-mcp",
         "gh-prism": "gh-prism",
         "git-hooks": "git-hooks_2",
         "hashicorp-agent-skills": "hashicorp-agent-skills",

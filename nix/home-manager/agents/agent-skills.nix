@@ -74,12 +74,6 @@ in
         path = inputs.drawio-mcp;
         subdir = "skill-cli";
       };
-      # freee MCP skills
-      # cf. https://github.com/freee/freee-mcp
-      freee = {
-        path = inputs.freee-mcp;
-        subdir = "skills";
-      };
       # HashiCorp agent skills (split by plugin)
       # cf. https://github.com/hashicorp/agent-skills
       hashicorp-terraform-codegen = {

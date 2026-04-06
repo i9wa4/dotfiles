@@ -98,10 +98,6 @@
       url = "github:jgraph/drawio-mcp";
       flake = false;
     };
-    freee-mcp = {
-      url = "github:freee/freee-mcp";
-      flake = false;
-    };
     hashicorp-agent-skills = {
       url = "github:hashicorp/agent-skills";
       flake = false;
