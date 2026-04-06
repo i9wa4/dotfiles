@@ -64,7 +64,10 @@ zinit ice lucid depth"1" blockf \
           local worktree_session=${worktree_dir//./-}
           local worktree_short=${worktree_session[1,14]}
           if (( ${#worktree_session} > 14 )); then
-            worktree_short="${worktree_short}-${worktree_session[-4,-1]}"
+            local worktree_checksum
+            worktree_checksum=$(printf '%s\n' "$worktree_session" | cksum)
+            worktree_checksum=${worktree_checksum%% *}
+            worktree_short="${worktree_short}-${worktree_checksum[1,6]}"
           fi
           session="${repository_session}-${worktree_short}"
         else
