@@ -1,111 +1,154 @@
 # Worktree Development
 
-This document describes the approved developer workflow direction for linked
-worktrees in this repository. During the current migration, treat the current
-scripts as the source of truth for live behavior and this page as the source of
-truth for the approved target.
+This document describes the current worktree workflow in this repository.
+Recent commits and the checked-in scripts are the source of truth. If this page
+and the code disagree, fix the page to match the code.
 
 ## 1. Stable entrypoints
 
-- Use `issue-worktree-create <issue_number>` to start issue work.
-- Use `pr-worktree-create <pr_number>` to start PR review.
+- Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
+  issue work.
+- Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
 - Use `z <keyword>` for the normal jump flow.
 - Use `zi [keywords...]` for explicit interactive selection.
 - Treat `z` and `zi` as the human-facing repo/worktree entrypoints in zsh.
+- In current code, `z` and `zi` are custom wrappers from
+  `config/zsh/jump.zsh`, not the default `zoxide` commands.
 - Use `worktree-remove <path>` to remove linked worktrees safely.
 - Keep issue numbers and PR numbers as the primary human input. Do not replace
   them with free-form naming schemes.
 
-## 2. Migration direction
+## 2. Current layout and backend
 
-- Keep the wrapper commands above as the user-facing entrypoints.
-- Keep actual worktree creation and lookup under repo-root `.worktrees/`.
-- Use shared backend logic so issue and PR flows stop duplicating creation,
-  bootstrap, and lookup behavior.
-- Keep `z` and `zi` aligned with `vde-worktree` so entry and re-entry stay in
-  sync during the migration.
-- Treat sibling-directory layouts such as `../dotfiles-issue-123` and
-  `../dotfiles-pr-456` as legacy behavior. Do not extend that pattern in new
-  tooling.
+- Managed worktrees live under repo-local `.worktrees/`. This comes from
+  `config/vde/worktree/config.yml`, which sets `worktreeRoot: .worktrees`.
+- `vde-worktree` is the shared backend. Current scripts rely on
+  `vde-worktree path`, `vde-worktree get`, `vde-worktree switch`, and
+  `vde-worktree list --json`.
+- `.vde/` is intentional runtime state for `vde-worktree`.
+- Treat sibling layouts such as `../dotfiles-issue-123` as legacy behavior.
+  Current tooling is aligned around repo-root `.worktrees/`.
 
-## 3. Approved target flow after Phase 1 migration
+## 3. Current issue workflow
 
-### 3.1. Issue execution
+1. `issue-worktree-create` fetches `origin` first.
+2. If the current branch is `main`, it runs `git pull --ff-only origin main`.
+   Otherwise it refreshes the local `main` branch with
+   `git fetch origin main:main`.
+3. It can process multiple issue numbers in one run.
+4. For each issue, it fetches `title`, `body`, and `comments` with
+   `gh issue view --json title,body,comments`.
+5. If a remote branch matching `origin/issue-<number>-*` already exists, it
+   reuses that branch name.
+6. Otherwise it tries to generate a short kebab-case slug with `claude`.
+   If Claude is unavailable or returns nothing usable, it falls back to
+   `issue-<number>`.
+7. It resolves the worktree through `vde-worktree`:
+   - existing managed path via `vde-worktree path`
+   - remote branch via `vde-worktree get`
+   - existing local branch or new local branch via `vde-worktree switch`
+8. On a newly created worktree, it copies `.envrc` when present and runs
+   `repo-setup` when available.
+9. It adds the final worktree path to the `zoxide` database when `zoxide`
+   exists.
 
-1. Run `issue-worktree-create <issue_number>` from the repository.
-2. Reuse an existing issue branch when one already exists.
-3. Otherwise create a branch that keeps the issue number. An AI-generated
-   English kebab-case slug may be appended when available, but the number
-   remains the anchor.
-4. Create the worktree under `.worktrees/`.
-5. Copy `.envrc` into the new worktree when the repo has one.
-6. Run `repo-setup` in the new worktree when available.
-7. Add the created worktree path to the normal `zoxide` database.
-8. Re-enter the worktree with `z issue-123` or `zi issue-123`.
+## 4. Current PR review workflow
 
-### 3.2. PR review
+1. `pr-worktree-create` fetches `origin` first and updates the local `main`
+   branch with the same `pull --ff-only` / `fetch origin main:main` split used
+   by issue creation.
+2. It can process multiple PR numbers in one run.
+3. For each PR, it reads `headRefName` with
+   `gh pr view --json headRefName --jq '.headRefName'`.
+4. It requires `origin/<headRefName>` to exist before creating the worktree.
+5. It checks for an existing managed worktree path with `vde-worktree path`.
+6. If no managed path exists yet, it creates or reuses the review worktree with
+   `vde-worktree get "origin/<headRefName>"`.
+7. On a newly created worktree, it copies `.envrc` when present and runs
+   `repo-setup` when available.
+8. It adds the final worktree path to the `zoxide` database when `zoxide`
+   exists.
 
-1. Run `pr-worktree-create <pr_number>` from the repository.
-2. Check out the PR head branch in a managed worktree under `.worktrees/`.
-3. Apply the same `.envrc` copy and `repo-setup` bootstrap as issue work.
-4. Add the created worktree path to the normal `zoxide` database.
-5. Re-enter the review worktree with `z <branch-or-keyword>` or
-   `zi <branch-or-keyword>`.
-6. Use `vde-worktree path`, `vde-worktree cd`, or `vde-worktree switch` as
-   supporting tools during the migration.
+## 5. Current re-entry flow
 
-### 3.3. Re-entry from outside the repo
-
-1. Keep `ghq + fzf` as the explicit repo browser when the user wants deliberate
-   repository selection first.
-2. For one-step repo or worktree entry, use `z` or `zi` instead of raw
-   `vde-worktree` from an arbitrary directory.
+1. `ghq + fzf` is still the explicit repository browser when the user wants to
+   choose a repository first.
+2. For one-step repo or worktree entry, use `z` or `zi`.
 3. `zi [keywords...]` merges three candidate sources:
-   - learned `zoxide` entries
-   - `ghq list -p` repository roots
+   - `zoxide query --list --score`
+   - `ghq list -p`
    - managed worktree paths from `vde-worktree list --json`
-4. `z <keyword>` first tries the normal `zoxide` match for that keyword and
-   falls back to `zi <keyword>` when no direct match exists.
-5. Inside tmux, `z` and `zi` open the selected path with
-   `vtm project switch "$path"`.
-6. Outside tmux, `z` and `zi` change directory to the selected path through the
-   zsh wrapper functions.
-7. Do not scan `.worktrees/` or `.git/wt` directly. Keep `vde-worktree` as
-   the worktree source of truth.
+4. Worktree discovery is repo-aware. The zsh helper asks each `ghq` repository
+   that has `config/vde/worktree/config.yml` for `vde-worktree list --json`
+   instead of scanning `.worktrees/` directly.
+5. `zi` shows `score`, `source`, and `path` columns in `fzf`, keeps first-seen
+   path order, and preserves `zoxide` scores when available.
+6. `z` with no arguments opens `zi`.
+7. `z -` still means `cd -`.
+8. `z <directory>` jumps directly to that directory.
+9. `z <keyword>` first tries `zoxide query --exclude "$PWD" -- "$keyword"`.
+   When that direct lookup fails, it falls back to `zi <keyword>`.
+10. Inside tmux, `z` and `zi` open the selected path with
+    `vtm project switch "$path"`.
+11. Outside tmux, `z` and `zi` change directory through the wrapper functions.
+12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
+    renames sessions from the selected path. For worktree paths under
+    `/.worktrees/`, the session name uses the repository name plus a shortened
+    worktree segment with dots replaced by dashes, and long names keep a short
+    tail segment so similarly prefixed worktrees do not collide.
 
-## 4. How `vde-worktree` fits
+## 6. How `vde-worktree` fits
 
 - `vde-worktree` is the shared backend, the generic inspection tool, and the
   canonical read model for managed worktree paths.
 - `z` and `zi` are the human-facing re-entry layer in zsh.
 - Their merged candidate set is built from the current `zoxide` database,
   `ghq list -p`, and managed worktree paths from `vde-worktree list --json`.
-- In this repository, it supports `list`, `status`, `path`, `cd`, and
-  `switch`.
+- In this repository, current scripts actively use `list --json`, `path`,
+  `get`, and `switch`.
 - Do not use `vde-worktree` as the primary issue or PR entrypoint here.
 - Do not use `vde-worktree` alone as the outermost global selector from an
   arbitrary directory.
 - Do not teach `extract`, `absorb`, `unabsorb`, `adopt`, or `gone` as normal
   flow commands for this repository.
 
-## 5. Repository hygiene
+## 7. Removal and repository hygiene
 
 - Keep linked worktrees and tool state under repo-local paths such as
   `.worktrees/` and `.vde/`.
 - Treat `.vde/` as intentional `vde-worktree` runtime state, not as a tracked
   repository file tree.
-- Keep those paths out of normal Git noise with repo-local ignore or exclude
-  rules during the migration.
+- `worktree-remove` accepts ghq-style paths, absolute paths, and relative
+  paths.
+- `worktree-remove` only removes linked worktrees (`.git` is a file), not
+  regular repositories.
+- It runs `git worktree remove --force` from the main repository and removes
+  the path from `zoxide` when possible.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
-  backend.
+  backend or jump layer.
 - Notification or daemon behavior is outside this document. That belongs to
   `tmux-a2a-postman`.
 
-## 6. Related files
+## 8. Recent changes reflected here
+
+- Managed worktrees now live under repo-root `.worktrees/` through
+  `config/vde/worktree/config.yml`.
+- The zsh jump commands now live in `config/zsh/jump.zsh` and are sourced from
+  `nix/home-manager/modules/zsh.nix`.
+- `zi` now shows merged `zoxide` / `ghq` / `worktree` rows with score and
+  source metadata.
+- tmux worktree session naming now uses a shortened worktree segment with an
+  extra tail fragment to avoid collisions between similarly prefixed names.
+- The old “approved target after migration” framing was removed from this page
+  because the current code and recent commits are the source of truth.
+
+## 9. Related files
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `nix/home-manager/modules/zsh.nix`
+- `config/zsh/jump.zsh`
+- `config/zsh/zinit.zsh`
 - `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
+- `nix/home-manager/modules/zsh.nix`
 - `docs/dotfiles-operating-concepts.md`
