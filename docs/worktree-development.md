@@ -99,9 +99,8 @@ and the code disagree, fix the page to match the code.
 11. Outside tmux, `z` and `zi` change directory through the wrapper functions.
 12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
     renames sessions from the selected path. For worktree paths under
-    `/.worktrees/`, the session name uses the repository name plus a shortened
-    worktree segment with dots replaced by dashes. In current code, that
-    shortened worktree segment is a plain visible prefix of the worktree name.
+    `/.worktrees/`, the session name uses the repository name plus the full
+    worktree directory name with dots replaced by dashes.
 
 ## 6. How `vde-worktree` fits
 
@@ -143,8 +142,8 @@ and the code disagree, fix the page to match the code.
   `nix/home-manager/modules/zsh.nix`.
 - `zi` now shows merged `zoxide` / `ghq` / `worktree` rows with score and
   source metadata.
-- tmux worktree session naming now uses a shortened visible worktree prefix
-  with dots normalized to dashes.
+- tmux worktree session naming now uses the full worktree directory name with
+  dots normalized to dashes.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
