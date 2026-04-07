@@ -19,6 +19,10 @@ in
     focusEvents = true;
     extraConfig = ''
       # Panes control
+      bind-key -r H resize-pane -L 1
+      bind-key -r J resize-pane -D 2
+      bind-key -r K resize-pane -U 1
+      bind-key -r L resize-pane -R 2
       bind-key h select-pane -L
       bind-key j select-pane -D
       bind-key k select-pane -U
