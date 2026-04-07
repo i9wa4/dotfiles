@@ -59,7 +59,9 @@ in
       set-option -g status-left "[#(tmux list-sessions -F '##{session_created} ##{session_id}' | awk '{ print $1, substr($2, 2), $2 }' | sort -k1,1n -k2,2n | awk -v current='#{session_id}' '$3 == current { print NR - 1; exit }')] #{=50:session_name} "
       set-option -g status-left-length 54
       set-option -g status-position top
-      set-option -g status-right "#(cd \"#{pane_current_path}\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-health-oneline) #(${dotfilesDir}/bin/system-load)"
+      if-shell '[ -n "$SSH_TTY" ]' \
+        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\"; set-option -g status-format[1] '#[align=left]#(tmux-a2a-postman get-health-oneline 2>/dev/null)'" \
+        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-health-oneline) #(${dotfilesDir}/bin/system-load)\""
       set-option -g status-right-length 200
       set-option -g status-style bg=default
       set-option -g window-status-bell-style 'none'
