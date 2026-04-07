@@ -15,6 +15,54 @@ let
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
   nodejsPackage = pkgs.nodejs_24;
+  vdeTmuxManager = pkgs.stdenv.mkDerivation (finalAttrs: {
+    pname = "vde-tmux-manager";
+    version = "0.0.24";
+    src = pkgs.fetchFromGitHub {
+      owner = "yuki-yano";
+      repo = "vde-tmux-manager";
+      tag = "v${finalAttrs.version}";
+      hash = "sha256-A1LV/1TAOOsw+xPy/WC7ik1PVI6NMR7ipnr5qxh7W3k=";
+    };
+
+    pnpmDeps = pkgs.fetchPnpmDeps {
+      inherit (finalAttrs) pname version src;
+      pnpm = pkgs.pnpm_10;
+      fetcherVersion = 3;
+      hash = "sha256-NJiKxgOAuzqO8cNpp78a3Nz+okJ4BnQ4UKcX00ZfHVo=";
+    };
+
+    nativeBuildInputs = [
+      nodejsPackage
+      pkgs.pnpmConfigHook
+      pkgs.pnpm_10
+    ];
+
+    buildPhase = ''
+      runHook preBuild
+      pnpm run build
+      pnpm prune --prod
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/libexec/vde-tmux-manager $out/bin
+      cp -r bin dist node_modules package.json README.md LICENSE $out/libexec/vde-tmux-manager/
+      patchShebangs $out/libexec/vde-tmux-manager/bin
+      ln -s $out/libexec/vde-tmux-manager/bin/vde-tmux-manager $out/bin/vde-tmux-manager
+      ln -s $out/libexec/vde-tmux-manager/bin/vtm $out/bin/vtm
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "tmux utility CLI for session management and statusline helpers";
+      homepage = "https://github.com/yuki-yano/vde-tmux-manager";
+      license = lib.licenses.mit;
+      mainProgram = "vtm";
+      platforms = lib.platforms.unix;
+    };
+  });
 
 in
 {
@@ -94,6 +142,7 @@ in
       pkgs.shellcheck
       pkgs.uv
       pkgs.vim
+      vdeTmuxManager
       pkgs.zoxide
     ];
 
