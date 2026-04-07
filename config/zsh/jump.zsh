@@ -12,7 +12,9 @@ __jump_to_path() {
   if [[ -n "$TMUX" ]]; then
     vtm project switch "$target_path"
     local switch_status=$?
-    tmux rename-session "$(__tmux_session_name_for_path "$target_path")" 2>/dev/null || true
+    if [[ $switch_status -eq 0 ]]; then
+      tmux rename-session "$(__tmux_session_name_for_path "$target_path")" 2>/dev/null || true
+    fi
     return $switch_status
   else
     cd "$target_path" || return $?
