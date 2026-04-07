@@ -10,10 +10,22 @@ __jump_to_path() {
   local target_path="$1"
 
   if [[ -n "$TMUX" ]]; then
-    vtm project switch "$target_path"
+    local session_path
+    session_path="$(git -C "$target_path" rev-parse --show-toplevel 2>/dev/null)" || session_path="$target_path"
+
+    local session_name
+    session_name="$(__tmux_session_name_for_path "$session_path")"
+
+    if ! tmux has-session -t "$session_name" 2>/dev/null; then
+      tmux new-session -d -s "$session_name" -c "$target_path"
+    fi
     local switch_status=$?
     if [[ $switch_status -eq 0 ]]; then
-      tmux rename-session "$(__tmux_session_name_for_path "$target_path")" 2>/dev/null || true
+      tmux switch-client -t "$session_name"
+      switch_status=$?
+    fi
+    if [[ $switch_status -eq 0 ]]; then
+      tmux rename-session "$session_name" 2>/dev/null || true
     fi
     return $switch_status
   else
