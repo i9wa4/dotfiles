@@ -94,8 +94,10 @@ and the code disagree, fix the page to match the code.
 8. `z <directory>` jumps directly to that directory.
 9. `z <keyword>` first tries `zoxide query --exclude "$PWD" -- "$keyword"`.
    When that direct lookup fails, it falls back to `zi <keyword>`.
-10. Inside tmux, `z` and `zi` open the selected path with
-    `vtm project switch "$path"`.
+10. Inside tmux, `z` and `zi` resolve the selected path's git root when
+    available, fall back to the selected path otherwise, derive a session name
+    from that resolved path, create the session when missing, and switch the
+    tmux client to it.
 11. Outside tmux, `z` and `zi` change directory through the wrapper functions.
 12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
     renames sessions from the selected path. For worktree paths under
@@ -107,6 +109,8 @@ and the code disagree, fix the page to match the code.
 - `vde-worktree` is the shared backend, the generic inspection tool, and the
   canonical read model for managed worktree paths.
 - `z` and `zi` are the human-facing re-entry layer in zsh.
+- Inside tmux, `z` and `zi` use plain tmux session lookup/create/switch logic
+  from `config/zsh/jump.zsh`.
 - Their merged candidate set is built from the current `zoxide` database,
   `ghq list -p`, and managed worktree paths from `vde-worktree list --json`.
 - In this repository, current scripts actively use `list --json`, `path`,
@@ -151,7 +155,7 @@ and the code disagree, fix the page to match the code.
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `config/zsh/jump.zsh`
+- `config/zsh/jump.zsh` for the zsh jump flow and tmux session switching
 - `config/zsh/zinit.zsh`
 - `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
