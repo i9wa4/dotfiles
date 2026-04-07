@@ -62,8 +62,7 @@ zinit ice lucid depth"1" blockf \
           local worktree_path=${dir#*/.worktrees/}
           local worktree_dir=${worktree_path%%/*}
           local worktree_session=${worktree_dir//./-}
-          local worktree_short=${worktree_session[1,10]}
-          session="${repository_session}-${worktree_short}"
+          session="${repository_session}-${worktree_session}"
         else
           local repository=${dir:t}
           session=${repository//./-}

@@ -32,7 +32,7 @@ __tmux_session_name_for_path() {
     local wt_path=${dir#*/.worktrees/}
     local wt_dir=${wt_path%%/*}
     local wt_session=${wt_dir//./-}
-    session="${repo_session}-${wt_session[1,10]}"
+    session="${repo_session}-${wt_session}"
   else
     local repo=${dir:t}
     session=${repo//./-}
