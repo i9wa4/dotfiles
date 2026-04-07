@@ -11,9 +11,32 @@ __jump_to_path() {
 
   if [[ -n "$TMUX" ]]; then
     vtm project switch "$target_path"
+    local switch_status=$?
+    tmux rename-session "$(__tmux_session_name_for_path "$target_path")" 2>/dev/null || true
+    return $switch_status
   else
     cd "$target_path" || return $?
   fi
+}
+
+__tmux_session_name_for_path() {
+  local dir="$1"
+  local session
+
+  if [[ $dir == *"/.worktrees/"* ]]; then
+    local repo=${dir%%/.worktrees/*}
+    repo=${repo:t}
+    local repo_session=${repo//./-}
+    local wt_path=${dir#*/.worktrees/}
+    local wt_dir=${wt_path%%/*}
+    local wt_session=${wt_dir//./-}
+    session="${repo_session}-${wt_session[1,14]}"
+  else
+    local repo=${dir:t}
+    session=${repo//./-}
+  fi
+
+  printf '%s\n' "$session"
 }
 
 __vde_worktree_query_paths() {
