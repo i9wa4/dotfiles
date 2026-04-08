@@ -116,6 +116,7 @@ in
     # For project-specific tools, use devShell or mise instead
     packages = [
       # System
+      pkgs.gnumake
       pkgs.tailscale
       pkgs.wget
       # Tools
