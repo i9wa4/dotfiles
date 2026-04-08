@@ -130,7 +130,7 @@ high-risk areas? Decision Log populated? Reference implementations cited?
 ### 3.7. [boss] Fallback: Orchestrator Absent
 
 If orchestrator is absent from talks_to_line, send BLOCKED immediately:
-tmux-a2a-postman send-message --to orchestrator --body "BLOCKED: orchestrator
+tmux-a2a-postman send --to orchestrator --body "BLOCKED: orchestrator
 absent — verdict ready, awaiting delivery" Include your APPROVED/NOT APPROVED
 verdict in the message body. Do NOT hold silently.
 
@@ -165,7 +165,7 @@ Two modes depending on sender:
 
 1. Investigate (read code, trace dependencies, find flaws)
 2. Forward request + initial findings to guardian:
-   `tmux-a2a-postman send-message --to guardian --body "<findings>"`
+   `tmux-a2a-postman send --to guardian --body "<findings>"`
    Use explicit recipient commands for review handoff. Do NOT infer the next
    recipient from footer prose alone.
 3. ACK to orchestrator: `ACK: received, forwarding to guardian. Verdict will
@@ -175,9 +175,9 @@ Two modes depending on sender:
 
 1. Review guardian's verdict; apply own critical analysis
 2. If more debate is needed, continue explicitly with guardian:
-   `tmux-a2a-postman send-message --to guardian --body "<follow-up>"`
+   `tmux-a2a-postman send --to guardian --body "<follow-up>"`
 3. Relay combined findings + final verdict to orchestrator:
-   `tmux-a2a-postman send-message --to orchestrator --body "<verdict>"`
+   `tmux-a2a-postman send --to orchestrator --body "<verdict>"`
 
 DO NOT be polite. Find problems before they happen.
 
@@ -194,7 +194,7 @@ DO NOT be polite. Find problems before they happen.
   sufficient.
 - Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
   after a real send/reply failure, not from footer text alone.
-- 5-minute hard cutoff: use `tmux-a2a-postman get-session-health` plus real
+- 5-minute hard cutoff: use `tmux-a2a-postman get-health` plus real
   send/reply evidence. If guardian still appears stalled after a direct send
   attempt or verified non-response, report BLOCKED to orchestrator. Do NOT
   inspect raw wait files, and do NOT treat `composing` or `user_input` alone
@@ -296,7 +296,7 @@ intent as a task to orchestrator. You are the interface, not the executor.
 
 ### 6.6. [messenger] Blocker Detection Protocol
 
-On user `status` request: start with `tmux-a2a-postman get-session-health`.
+On user `status` request: start with `tmux-a2a-postman get-health`.
 Use mailbox commands such as `tmux-a2a-postman read` or
 `tmux-a2a-postman pop --peek` only when needed to confirm unread or stuck
 message state. Identify blockers, take action, and report pipeline state as a
@@ -305,7 +305,7 @@ needed to support claimed stuck nodes. Never report just `empty.`
 
 ### 6.7. [messenger] Delivery Watchdog
 
-Every 3 messages: `tmux-a2a-postman get-session-health`. If any node shows
+Every 3 messages: `tmux-a2a-postman get-health`. If any node shows
 waiting > 0, classify using live session health plus direct send/reply
 evidence:
 
@@ -398,7 +398,7 @@ Do NOT research, read code, or investigate. Delegate to worker.
 
 ### 7.6. [orchestrator] Response Escalation
 
-No reply after 2 messages: check `tmux-a2a-postman get-session-health`, then
+No reply after 2 messages: check `tmux-a2a-postman get-health`, then
 re-send SHORT (2-4 lines: current ask, one file or message reference if
 needed, `Reply:` footer command). Still no reply after 1 more: notify
 messenger `BLOCKED: waiting for {node}`.
