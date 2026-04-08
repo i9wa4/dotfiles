@@ -100,6 +100,7 @@ in
         "google-chrome"
         "kitty"
         "maccy"
+        "macskk"
         "monitorcontrol"
         "obsidian"
         "visual-studio-code"
