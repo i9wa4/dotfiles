@@ -182,7 +182,7 @@ Check the following when editing CLAUDE.md:
 - [ ] Does each line pass the "remove this → Claude makes mistakes?" test?
 - [ ] Are @imports used for large doc sections instead of inline content?
 - [ ] Is the file short enough that Claude won't ignore rules buried in the
-      middle?
+  middle?
 
 ### 8.2. Permission System Review
 
@@ -257,32 +257,32 @@ Last reviewed Claude Code version: v2.1.87 (2026-03-30)
 - [x] Automatic memory - enabled by default (v2.1.32)
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
 - [x] `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` removed - enables Remote
-      Control and feature flag refresh (v2.1.51+)
+  Control and feature flag refresh (v2.1.51+)
 - [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
-      usage
+  usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
-      custom `rules/github.md` is sole authority (v2.1.69)
+  custom `rules/github.md` is sole authority (v2.1.69)
 - [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1"` - strips credentials from
-      subprocesses (v2.1.83)
+  subprocesses (v2.1.83)
 
 ### 11.2. Pending Considerations
 
 - [x] SQL schema validation - moved to databricks skill (Section 8)
 - [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
 - [ ] Agent memory frontmatter - `memory: user|project|local` for stateful
-      agents
+  agents
 - [ ] Task(agent_type) restrictions - enhanced security for subagent spawning
 - [ ] WorktreeCreate/WorktreeRemove hooks - custom VCS setup/teardown for
-      worktree isolation (v2.1.50)
+  worktree isolation (v2.1.50)
 - [ ] ConfigChange hook - security auditing of settings changes (v2.1.49)
 - [ ] `isolation: worktree` in agent defs - isolated git worktree per agent
-      (v2.1.49, v2.1.50)
+  (v2.1.49, v2.1.50)
 - [ ] PostCompact hook - archive/analyze compaction summaries; has
-      `compact_summary` field (v2.1.76)
+  `compact_summary` field (v2.1.76)
 - [ ] Elicitation/ElicitationResult hooks - intercept MCP server structured
-      input requests (v2.1.76)
+  input requests (v2.1.76)
 - [ ] Conditional `if` field for hooks - reduce process spawning overhead
-      with permission rule syntax filtering (v2.1.85)
+  with permission rule syntax filtering (v2.1.85)
 - [ ] StopFailure hook - log API errors (rate limit, auth failure) (v2.1.78)
 
 For decision log ("Not Adopting") and per-version changelog,

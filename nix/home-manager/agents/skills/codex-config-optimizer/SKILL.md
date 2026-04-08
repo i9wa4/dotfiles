@@ -161,7 +161,7 @@ Check the following when editing AGENTS.md or config.toml:
 - [ ] Can detailed explanations be moved to skills/?
 - [ ] Is config.toml using appropriate approval_mode?
 - [ ] Are shared Bash deny messages phrased as safe next steps, not only
-      denials?
+  denials?
 - [ ] Are Codex hook limitations documented honestly (Bash-only pre/post tool)?
 - [ ] Is `PostToolUse` scoped to deterministic Bash feedback, not enforcement?
 - [ ] Is hook state split correctly between `hooks.json` and `scripts/codex-*`?
@@ -176,17 +176,17 @@ Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
 - [x] Home-level Codex hooks enabled for `UserPromptSubmit`, `SessionStart`,
-      `PreToolUse` (`Bash` only), `PostToolUse` (`Bash` only), and `Stop`
+  `PreToolUse` (`Bash` only), `PostToolUse` (`Bash` only), and `Stop`
 - [x] Shared deny-bash patterns reused by both Claude Code and Codex CLI hooks
 - [x] Shared deny-bash justifications upgraded from bare denials to repair
-      guidance for both Claude Code and Codex CLI
+  guidance for both Claude Code and Codex CLI
 - [x] Codex `UserPromptSubmit` now carries time, role, cwd, and git context
 - [x] Lightweight Codex handoff persistence via `Stop` + `SessionStart`
 - [x] `model_auto_compact_token_limit =
-      builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
-      tokens for gpt-5.x 272k window)
+  builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
+  tokens for gpt-5.x 272k window)
 - [x] `tui.terminal_title = []` disables Codex terminal-title writes so tmux
-      `pane_title` stays reserved for role identity (v0.117.0)
+  `pane_title` stays reserved for role identity (v0.117.0)
 
 ### 9.2. Pending Considerations
 
@@ -195,20 +195,20 @@ Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
 - [ ] Evaluate MCP server integration (AWS docs MCP etc.)
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
-      (v0.103.0)
+  (v0.103.0)
 - [ ] PostToolUse Bash feedback heuristics - keep scope narrow and deterministic
-      as new repo failure patterns repeat
+  as new repo failure patterns repeat
 - [ ] `code_mode` experimental feature - isolated coding workflow; watch
-      for stabilization (v0.114.0)
+  for stabilization (v0.114.0)
 - [ ] Disable bundled system skills config switch - useful if custom skills
-      suffice for leaner sessions (v0.114.0)
+  suffice for leaner sessions (v0.114.0)
 - [ ] Permission profile config language - split filesystem/network sandbox
-      policies for finer control in config.toml (v0.113.0)
+  policies for finer control in config.toml (v0.113.0)
 - [x] Subagent support - multi-agent feature stabilized (v0.115.0); .toml agents
-      auto-generated from subagents/*.md at Nix build time (codex-cli.nix)
+  auto-generated from subagents/*.md at Nix build time (codex-cli.nix)
 - [ ] `openai_base_url` config override - custom API endpoint (v0.115.0)
 - [ ] Smart Approvals guardian - route review requests through guardian
-      subagent for reduced approval friction (v0.115.0)
+  subagent for reduced approval friction (v0.115.0)
 
 ### 9.3. Not Adopting
 
