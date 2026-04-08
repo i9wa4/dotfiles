@@ -39,9 +39,101 @@ Version history and optimization decision log for Claude Code configuration.
 - `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` (v2.1.83) - fallback is useful
 - `allowRead` sandbox setting (v2.1.77) - not configuring sandbox read
   restrictions
+- `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` - keep unset (adaptive thinking
+  stays ON). Decision (2026-04-08) based on HN discussion of Feb 2026 Claude
+  Code updates (<https://news.ycombinator.com/item?id=47664442>). Boris
+  (bcherny, Anthropic Claude Code team) confirmed Opus 4.6 ships with
+  adaptive thinking where the model self-allocates reasoning budget per
+  task, with medium as the default effort ceiling for non-Enterprise users.
+  Some HN commenters reported that setting `=1` improved "lazy" behavior on
+  complex engineering tasks by forcing a fixed high budget via
+  `MAX_THINKING_TOKENS`. However, this setup already boosts effort to
+  `high` at session startup, which raises adaptive's ceiling to match the
+  Team/Enterprise default that Anthropic formalized in v2.1.94 (default
+  effort changed from medium to high for API-key/Bedrock/Vertex/Foundry/
+  Team/Enterprise users). Adaptive ON + high effort preserves cost
+  efficiency on trivial ops (rg, file edits) while still reaching high
+  depth on complex tasks like nix debugging or multi-step investigations.
+  Revisit if shallow or fabricated answers are observed on complex tasks;
+  fall back to setting `=1` plus `MAX_THINKING_TOKENS` as escalation path.
+- `CLAUDE_CODE_USE_MANTLE` (v2.1.94) - not using Amazon Bedrock via Mantle
+- Default effort change to high (v2.1.94) - applies only to API-key/
+  Bedrock/Vertex/Foundry/Team/Enterprise; solo Pro/Max user not
+  auto-affected, but this validates the adaptive-thinking decision above
+  (Anthropic shipped high as the default for heavy users, aligning with
+  the startup `/effort high` pattern already in use)
+- `hookSpecificOutput.sessionTitle` for UserPromptSubmit (v2.1.94) -
+  potential future use for dynamic tmux pane titles; not currently needed
+- `keep-coding-instructions` plugin output style frontmatter (v2.1.94) -
+  no plugin output styles in use
+- `forceRemoteSettingsRefresh` (v2.1.92) - enterprise managed settings;
+  solo user
+- Bedrock interactive setup wizard (v2.1.92) - not using Bedrock
+- `_meta["anthropic/maxResultSizeChars"]` MCP result override (v2.1.91) -
+  no large-result MCP needs currently
+- `disableSkillShellExecution` (v2.1.91) - many installed skills rely on
+  inline shell execution (site2skill, running-dbt-commands, etc.);
+  disabling would break them
+- Plugin `bin/` executables (v2.1.91) - no plugins used
+- `/powerup` interactive lessons (v2.1.90) - user-invokable, no config
+- `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` (v2.1.90) - no plugins
+- `"defer"` PreToolUse hook decision (v2.1.89) - no headless `-p --resume`
+  workflow currently
+- `PermissionDenied` hook (v2.1.89) - auto mode classifier not in use
+  (strict deny list handles permissions deterministically)
+- `CLAUDE_CODE_NO_FLICKER=1` (v2.1.89) - consider later if rendering
+  glitches observed; see pending considerations in SKILL.md section 11.2
+- `MCP_CONNECTION_NONBLOCKING=true` (v2.1.89) - not running `-p` mode
 
 ## 2. Version Notes
 
+- v2.1.94: **Default effort level changed from medium to high** for
+  API-key/Bedrock/Vertex/Foundry/Team/Enterprise users (control via
+  `/effort`), `CLAUDE_CODE_USE_MANTLE=1` for Amazon Bedrock via Mantle,
+  `hookSpecificOutput.sessionTitle` for UserPromptSubmit hooks,
+  `keep-coding-instructions` plugin output style frontmatter, plugin skill
+  `name` override (stable across install methods), rate-limit long
+  Retry-After surface fix, Console login keychain-locked surface fix, many
+  bugfixes (Slack MCP header, plugin hooks, scrollback duplicates, SDK
+  interrupted resume, CJK multibyte in stream-json). Related: HN
+  discussion <https://news.ycombinator.com/item?id=47664442>
+- v2.1.92: `forceRemoteSettingsRefresh` policy (fail-closed remote
+  settings fetch), interactive Bedrock setup wizard, per-model `/cost`
+  breakdown, interactive `/release-notes`, Remote Control hostname
+  session prefix, prompt-cache-expired footer hint, **removed `/tag` and
+  `/vim` commands** (vim toggle moved to `/config` → Editor mode), Linux
+  sandbox ships `apply-seccomp` in both npm and native builds, Write tool
+  60% faster on files with tabs/`&`/`$`, subagent "Could not determine
+  pane count" fix
+- v2.1.91: MCP `_meta["anthropic/maxResultSizeChars"]` up to 500K,
+  `disableSkillShellExecution` setting, multi-line prompts in
+  `claude-cli://open?q=` deep links, plugin `bin/` executables,
+  `/claude-api` skill improved, Edit tool shorter `old_string` anchors,
+  transcript chain-break on `--resume` fix, `permissions.defaultMode:
+  "auto"` schema validation, Bun `stripAnsi` perf
+- v2.1.90: **`/powerup` interactive lessons**,
+  `CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE` env, `.husky`
+  protected dir, **`--resume` prompt-cache miss fix** (regression since
+  v2.1.69), auto mode respects explicit user boundaries, SSE transport
+  O(n) from O(n^2), PowerShell tool hardening (trailing `&` bypass,
+  `-ErrorAction Break` hang, archive TOCTOU, parse-fail deny-rule
+  degradation), removed `Get-DnsClientCache`/`ipconfig /displaydns` from
+  auto-allow
+- v2.1.89: **`"defer"` PreToolUse hook decision**,
+  `CLAUDE_CODE_NO_FLICKER=1` env, **`PermissionDenied` hook event**
+  (fires after auto mode classifier denials), named subagents in `@`
+  mention typeahead, `MCP_CONNECTION_NONBLOCKING=true` for `-p` mode,
+  auto-mode denied notifications in `/permissions` Recent tab,
+  **symlink resolution for Edit/Read allow rules** (security),
+  StructuredOutput schema cache 50% failure fix, **autocompact thrash
+  loop detection**, **nested CLAUDE.md re-injection fix** (prompt cache),
+  prompt-cache tool-schema byte-drift fix, `cleanupPeriodDays: 0` now
+  rejected with validation error, hook output >50K saved to disk with
+  file path + preview, **`showThinkingSummaries` must now be set
+  explicitly** (thinking summaries no longer generated by default in
+  interactive sessions), `TaskCreated` hook documented, Devanagari
+  combining marks rendering, Shift+Enter on Windows Terminal Preview
+  1.25, `/buddy` April 1st egg
 - v2.1.87: Fixed Cowork Dispatch message delivery
 - v2.1.86: `.jj`/`.sl` VCS exclusion, Read tool compact line-number format and
   deduplication, `@` file mention token reduction (no JSON escaping), prompt
@@ -196,4 +288,4 @@ Version history and optimization decision log for Claude Code configuration.
 
 ---
 
-Last updated: 2026-03-30
+Last updated: 2026-04-09
