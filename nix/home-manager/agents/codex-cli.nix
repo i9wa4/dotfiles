@@ -193,7 +193,12 @@ in
     cp -f "${baseConfigFile}" "$_output"
     chmod 644 "$_output"
 
-    ${pkgs.fd}/bin/fd --type d --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 4 2>/dev/null |
+    # Match both .git directories (main repos) and .git files (worktrees, submodules).
+    # max-depth 7 covers ~/ghq/<host>/<org>/<repo>/.worktrees/<branch>/.git (depth 6) with margin.
+    # NOTE: Codex CLI's project_trust_key() normalizes via Rust PathBuf.to_string_lossy(),
+    # which strips trailing slashes. The TOML key must match exactly (no trailing slash)
+    # or else HashMap<String, ProjectConfig> lookup misses and the trust prompt re-appears.
+    ${pkgs.fd}/bin/fd --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 7 2>/dev/null |
       sort |
       while read -r gitdir; do
         repo=$(dirname "$gitdir")
@@ -204,7 +209,7 @@ in
             ;;
         esac
         echo ""
-        echo "[projects.\"$repo/\"]"
+        echo "[projects.\"$repo\"]"
         echo "trust_level = \"trusted\""
       done >> "$_output"
 

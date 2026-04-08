@@ -10,6 +10,18 @@
     # Allow unfree packages (e.g., terraform with BSL license)
     config.allowUnfree = true;
     hostPlatform = "aarch64-darwin";
+    overlays = [
+      # TODO: Revert once nixpkgs-25.11-darwin ships a working direnv build.
+      # WORKAROUND: direnv-2.37.1 checkPhase hangs at `fish ./test/direnv-test.fish`
+      # in the Nix sandbox on aarch64-darwin, blocking darwin-rebuild switch.
+      # Reproduced on multiple MacBooks. Runtime binary is fine; only the
+      # upstream post-build test suite is broken, so skipping doCheck is safe.
+      (_: prev: {
+        direnv = prev.direnv.overrideAttrs (_: {
+          doCheck = false;
+        });
+      })
+    ];
   };
 
   # Nix settings
@@ -77,18 +89,15 @@
   ];
 
   # Homebrew
+  # No auto-update/upgrade: frequent `nix run '.#switch'` is the cadence, and
+  # cask apps (Chrome, VSCode, Zoom, Docker Desktop, ...) have their own
+  # self-updaters. Run `brew upgrade` manually when a forced bump is needed.
   homebrew = {
     enable = true;
     onActivation = {
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
-      # Update Homebrew before installing
-      autoUpdate = true;
-      # Upgrade outdated formulae/casks
-      upgrade = true;
     };
-    # Force upgrade casks marked as auto_updates (e.g., google-chrome)
-    greedyCasks = true;
   };
 
   # Power management
