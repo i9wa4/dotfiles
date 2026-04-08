@@ -89,18 +89,15 @@
   ];
 
   # Homebrew
+  # No auto-update/upgrade: frequent `nix run '.#switch'` is the cadence, and
+  # cask apps (Chrome, VSCode, Zoom, Docker Desktop, ...) have their own
+  # self-updaters. Run `brew upgrade` manually when a forced bump is needed.
   homebrew = {
     enable = true;
     onActivation = {
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
-      # Update Homebrew before installing
-      autoUpdate = true;
-      # Upgrade outdated formulae/casks
-      upgrade = true;
     };
-    # Force upgrade casks marked as auto_updates (e.g., google-chrome)
-    greedyCasks = true;
   };
 
   # Power management
