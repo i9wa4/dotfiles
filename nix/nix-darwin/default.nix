@@ -10,6 +10,18 @@
     # Allow unfree packages (e.g., terraform with BSL license)
     config.allowUnfree = true;
     hostPlatform = "aarch64-darwin";
+    overlays = [
+      # TODO: Revert once nixpkgs-25.11-darwin ships a working direnv build.
+      # WORKAROUND: direnv-2.37.1 checkPhase hangs at `fish ./test/direnv-test.fish`
+      # in the Nix sandbox on aarch64-darwin, blocking darwin-rebuild switch.
+      # Reproduced on multiple MacBooks. Runtime binary is fine; only the
+      # upstream post-build test suite is broken, so skipping doCheck is safe.
+      (_: prev: {
+        direnv = prev.direnv.overrideAttrs (_: {
+          doCheck = false;
+        });
+      })
+    ];
   };
 
   # Nix settings
