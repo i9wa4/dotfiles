@@ -9,6 +9,24 @@
 let
   homeDir = config.home.homeDirectory;
   families = import ./families/default.nix { inherit pkgs; };
+
+  # Patch upstream anthropic/skills: prepend YAML frontmatter to
+  # skills/claude-api/SKILL.md. Upstream ships this file without frontmatter,
+  # which Codex CLI rejects at startup ("missing YAML frontmatter delimited
+  # by ---"). Claude Code tolerates the missing header, but we patch once so
+  # both runtimes load the skill cleanly.
+  anthropic-skills-patched = pkgs.runCommand "anthropic-skills-patched" { } ''
+    cp -r ${inputs.anthropic-skills} $out
+    chmod -R u+w $out
+    {
+      printf '%s\n' '---'
+      printf '%s\n' 'name: claude-api'
+      printf '%s\n' 'description: Build Claude API / Anthropic SDK apps. Use when code imports `anthropic`/`@anthropic-ai/sdk`, when adding Claude features (prompt caching, streaming, tools), or when integrating the Anthropic SDK in any supported language.'
+      printf '%s\n' '---'
+      echo
+      cat ${inputs.anthropic-skills}/skills/claude-api/SKILL.md
+    } > $out/skills/claude-api/SKILL.md
+  '';
 in
 {
   imports = [
@@ -39,9 +57,10 @@ in
         path = inputs.dbt-agent-skills;
         subdir = "skills/dbt-migration/skills";
       };
-      # Anthropic official agent skills
+      # Anthropic official agent skills (claude-api/SKILL.md patched in-place
+      # to add missing YAML frontmatter required by Codex CLI)
       anthropic = {
-        path = inputs.anthropic-skills;
+        path = anthropic-skills-patched;
         subdir = "skills";
       };
       # Streamlit official agent skills
