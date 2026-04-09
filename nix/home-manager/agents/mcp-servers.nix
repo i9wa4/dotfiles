@@ -50,6 +50,12 @@ let
 
     installPhase = ''
       runHook preInstall
+      # Mimic the upstream `prepack` npm script: copy shared/xml-reference.md
+      # into src/ so src/index.js can read it at runtime. prepack is skipped
+      # because `dontNpmBuild = true`, and the monorepo fallback path
+      # (../../shared/xml-reference.md relative to src/) does not exist in
+      # the installed layout.
+      cp ../shared/xml-reference.md src/xml-reference.md
       mkdir -p "$out/lib/node_modules/@drawio/mcp" "$out/bin"
       cp -r . "$out/lib/node_modules/@drawio/mcp"
       makeWrapper ${nodejsPackage}/bin/node "$out/bin/drawio-mcp" \
