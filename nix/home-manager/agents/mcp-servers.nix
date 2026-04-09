@@ -63,6 +63,13 @@ let
     awslabs-aws-documentation-mcp-server = {
       command = "${awsDocumentationMcp}/bin/awslabs.aws-documentation-mcp-server";
     };
+    dbt = {
+      command = "${pkgs.uv}/bin/uvx";
+      args = [ "dbt-mcp" ];
+      env = {
+        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ];
+      };
+    };
     drawio = {
       command = "${drawioMcp}/bin/drawio-mcp";
     };
