@@ -99,23 +99,6 @@ item_priority() {
   fi
 }
 
-item_severity() {
-  bytes="$1"
-  host_level="$2"
-
-  if [[ $host_level == critical && $bytes -ge 1073741824 ]]; then
-    echo critical
-  elif [[ $bytes -ge 2147483648 ]]; then
-    echo high
-  elif [[ $host_level == high && $bytes -ge 1073741824 ]]; then
-    echo high
-  elif [[ $bytes -ge 524288000 ]]; then
-    echo warn
-  else
-    echo info
-  fi
-}
-
 category_cleanup_mode() {
   category="$1"
 
@@ -126,17 +109,23 @@ category_cleanup_mode() {
   esac
 }
 
-category_note() {
-  category="$1"
+display_action_path() {
+  user_name="$1"
+  home_dir="$2"
+  path="$3"
 
-  case "$category" in
-  agent_state) echo "Session and agent history state. Review retention before cleanup." ;;
-  build_cache) echo "Large rebuildable cache. Cleanup candidate." ;;
-  tool_installs) echo "Installed runtimes and tool data. Review unused toolchains." ;;
-  repos) echo "Repository storage is large. Review stale clones and worktrees." ;;
-  user_local_data) echo "User application data. Preserve unless you know it is disposable." ;;
-  other_large_targets) echo "Unexpected large path. Review before cleanup." ;;
-  *) echo "Review before cleanup." ;;
+  case "$path" in
+  "$home_dir"/*)
+    relative_path="${path#"$home_dir"/}"
+    if [[ $MODE == self ]]; then
+      printf '%s/%s' "~" "$relative_path"
+    else
+      printf '~%s/%s' "$user_name" "$relative_path"
+    fi
+    ;;
+  *)
+    basename "$path"
+    ;;
   esac
 }
 
@@ -145,7 +134,7 @@ append_action() {
   user_name="$2"
   category="$3"
   path="$4"
-  host_level="$5"
+  home_dir="$5"
   user_total="$6"
   actions_file="$7"
 
@@ -158,23 +147,14 @@ append_action() {
     return
   fi
 
-  severity="$(item_severity "$bytes" "$host_level")"
-  priority="$(item_priority "$bytes" "$host_level")"
   cleanup_mode="$(category_cleanup_mode "$category")"
-  note="$(category_note "$category")"
+  display_path="$(display_action_path "$user_name" "$home_dir" "$path")"
 
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-    "$(severity_rank "$severity")" \
-    "$(cleanup_rank "$cleanup_mode")" \
+  printf '%s\t%s\t%s\t%s\n' \
     "$bytes" \
-    "$severity" \
-    "$priority" \
-    "$user_name" \
-    "$category" \
     "$(human_size "$bytes")" \
-    "$path" \
-    "$cleanup_mode" \
-    "$note" >>"$actions_file"
+    "$display_path" \
+    "$cleanup_mode" >>"$actions_file"
 }
 
 known_top_level() {
@@ -228,14 +208,10 @@ tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
 users_file="${tmp_dir}/users.tsv"
-categories_file="${tmp_dir}/categories.tsv"
 actions_file="${tmp_dir}/actions.tsv"
-user_details_file="${tmp_dir}/user-details.txt"
 
 : >"$users_file"
-: >"$categories_file"
 : >"$actions_file"
-: >"$user_details_file"
 
 if command -v getent >/dev/null 2>&1; then
   passwd_source="$(getent passwd)"
@@ -304,28 +280,18 @@ while IFS=$'\t' read -r user_name home_dir; do
     printf '%s\t%s\t%s\n' "$entry_bytes" "$entry_name" "$entry_path" >>"$top_level_sizes_file"
   done <"$top_level_paths_file"
 
-  agent_state_bytes=0
-  build_cache_bytes=0
-  tool_installs_bytes=0
-  repos_bytes=0
-  user_local_data_bytes=0
-  other_large_targets_bytes=0
-
   codex_bytes="$(size_bytes "$home_dir/.codex")"
   claude_bytes="$(size_bytes "$home_dir/.claude")"
   postman_state_bytes="$(size_bytes "$home_dir/.local/state/tmux-a2a-postman")"
   vde_monitor_bytes="$(size_bytes "$home_dir/.vde-monitor")"
-  agent_state_bytes=$((codex_bytes + claude_bytes + postman_state_bytes + vde_monitor_bytes))
 
   cache_bytes="$(size_bytes "$home_dir/.cache")"
   npm_bytes="$(size_bytes "$home_dir/.npm")"
   go_pkg_bytes="$(size_bytes "$home_dir/go/pkg")"
-  build_cache_bytes=$((cache_bytes + npm_bytes + go_pkg_bytes))
 
   mise_bytes="$(size_bytes "$home_dir/.local/share/mise")"
   local_lib_bytes="$(size_bytes "$home_dir/.local/lib")"
   dot_net_bytes="$(size_bytes "$home_dir/.net")"
-  tool_installs_bytes=$((mise_bytes + local_lib_bytes + dot_net_bytes))
 
   repos_bytes="$(size_bytes "$home_dir/ghq")"
 
@@ -339,89 +305,25 @@ while IFS=$'\t' read -r user_name home_dir; do
     if known_top_level "$entry_name"; then
       continue
     fi
-    other_large_targets_bytes=$((other_large_targets_bytes + entry_bytes))
-    append_action "$entry_bytes" "$user_name" "other_large_targets" "$entry_path" "$host_level" "$user_total_bytes" "$actions_file"
+    append_action "$entry_bytes" "$user_name" "other_large_targets" "$entry_path" "$home_dir" "$user_total_bytes" "$actions_file"
   done <"$top_level_sizes_file"
 
-  {
-    printf '%s\tagent_state\t%s\t%s\n' "$user_name" "$agent_state_bytes" "$(category_cleanup_mode agent_state)"
-    printf '%s\tbuild_cache\t%s\t%s\n' "$user_name" "$build_cache_bytes" "$(category_cleanup_mode build_cache)"
-    printf '%s\ttool_installs\t%s\t%s\n' "$user_name" "$tool_installs_bytes" "$(category_cleanup_mode tool_installs)"
-    printf '%s\trepos\t%s\t%s\n' "$user_name" "$repos_bytes" "$(category_cleanup_mode repos)"
-    printf '%s\tuser_local_data\t%s\t%s\n' "$user_name" "$user_local_data_bytes" "$(category_cleanup_mode user_local_data)"
-    printf '%s\tother_large_targets\t%s\t%s\n' "$user_name" "$other_large_targets_bytes" "$(category_cleanup_mode other_large_targets)"
-  } >>"$categories_file"
-
-  append_action "$cache_bytes" "$user_name" "build_cache" "$home_dir/.cache" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$npm_bytes" "$user_name" "build_cache" "$home_dir/.npm" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$go_pkg_bytes" "$user_name" "build_cache" "$home_dir/go/pkg" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$codex_bytes" "$user_name" "agent_state" "$home_dir/.codex" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$claude_bytes" "$user_name" "agent_state" "$home_dir/.claude" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$postman_state_bytes" "$user_name" "agent_state" "$home_dir/.local/state/tmux-a2a-postman" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$vde_monitor_bytes" "$user_name" "agent_state" "$home_dir/.vde-monitor" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$mise_bytes" "$user_name" "tool_installs" "$home_dir/.local/share/mise" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$local_lib_bytes" "$user_name" "tool_installs" "$home_dir/.local/lib" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$dot_net_bytes" "$user_name" "tool_installs" "$home_dir/.net" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$repos_bytes" "$user_name" "repos" "$home_dir/ghq" "$host_level" "$user_total_bytes" "$actions_file"
-  append_action "$user_local_data_bytes" "$user_name" "user_local_data" "$home_dir/.local" "$host_level" "$user_total_bytes" "$actions_file"
-
-  top_level_summary="$(
-    sort -nr "$top_level_sizes_file" | head -n 5 | awk '
-      BEGIN { first = 1 }
-      {
-        cmd = "numfmt --to=iec-i --suffix=B " $1
-        cmd | getline human
-        close(cmd)
-        if (!first) {
-          printf ", "
-        }
-        printf "%s(%s)", $2, human
-        first = 0
-      }
-    '
-  )"
-
-  unexpected_summary="$(
-    sort -nr "$top_level_sizes_file" | awk '
-      $2 != ".cache" &&
-      $2 != ".claude" &&
-      $2 != ".codex" &&
-      $2 != ".local" &&
-      $2 != ".net" &&
-      $2 != ".npm" &&
-      $2 != ".vde-monitor" &&
-      $2 != "ghq" &&
-      $2 != "go" &&
-      ++count <= 3 {
-        cmd = "numfmt --to=iec-i --suffix=B " $1
-        cmd | getline human
-        close(cmd)
-        if (count > 1) {
-          printf ", "
-        }
-        printf "%s(%s)", $2, human
-      }
-    '
-  )"
-
-  if [[ -z $top_level_summary ]]; then
-    top_level_summary="none"
-  fi
-
-  if [[ -z $unexpected_summary ]]; then
-    unexpected_summary="none"
-  fi
-
-  {
-    printf 'user=%s top_level=%s\n' "$user_name" "$top_level_summary"
-    printf 'user=%s unexpected=%s\n' "$user_name" "$unexpected_summary"
-  } >>"$user_details_file"
+  append_action "$cache_bytes" "$user_name" "build_cache" "$home_dir/.cache" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$npm_bytes" "$user_name" "build_cache" "$home_dir/.npm" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$go_pkg_bytes" "$user_name" "build_cache" "$home_dir/go/pkg" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$codex_bytes" "$user_name" "agent_state" "$home_dir/.codex" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$claude_bytes" "$user_name" "agent_state" "$home_dir/.claude" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$postman_state_bytes" "$user_name" "agent_state" "$home_dir/.local/state/tmux-a2a-postman" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$vde_monitor_bytes" "$user_name" "agent_state" "$home_dir/.vde-monitor" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$mise_bytes" "$user_name" "tool_installs" "$home_dir/.local/share/mise" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$local_lib_bytes" "$user_name" "tool_installs" "$home_dir/.local/lib" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$dot_net_bytes" "$user_name" "tool_installs" "$home_dir/.net" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$repos_bytes" "$user_name" "repos" "$home_dir/ghq" "$home_dir" "$user_total_bytes" "$actions_file"
+  append_action "$user_local_data_bytes" "$user_name" "user_local_data" "$home_dir/.local" "$home_dir" "$user_total_bytes" "$actions_file"
 done <"$users_file"
 
 echo "SUMMARY"
-echo "mode=${MODE}"
-echo "host_severity=${host_level}"
-echo "root_fs total=$(human_size "$root_size_bytes") used=$(human_size "$root_used_bytes") available=$(human_size "$root_avail_bytes") used_percent=${root_used_percent}%"
+echo "mode=${MODE} host_severity=${host_level} root_total=$(human_size "$root_size_bytes") root_used=$(human_size "$root_used_bytes") root_available=$(human_size "$root_avail_bytes") root_used_percent=${root_used_percent}%"
 echo "home_total=$(human_size "$total_home_bytes") scanned_users=${scanned_users} skipped_users=${skipped_users} unreadable_users=${unreadable_users}"
 echo ""
 
@@ -429,34 +331,54 @@ echo "USERS"
 while IFS=$'\t' read -r state user_name home_dir reason_or_dash user_total_bytes; do
   if [[ $state == SCANNED ]]; then
     share_percent="$(percent_of "$user_total_bytes" "$total_home_bytes")"
-    echo "${state} user=${user_name} size=$(human_size "$user_total_bytes") home=${home_dir} share=${share_percent}%"
+    top_level_sizes_file="${tmp_dir}/${user_name}.top-level-sizes.tsv"
+    top_level_sorted_file="${tmp_dir}/${user_name}.top-level-sorted.tsv"
+    max_name_width="$(awk -F '\t' 'BEGIN { width = 0 } { if (length($2) > width) width = length($2) } END { print width + 0 }' "$top_level_sizes_file")"
+    max_size_width="$(awk -F '\t' '
+      BEGIN { width = 0 }
+      {
+        cmd = "numfmt --to=iec-i --suffix=B " $1
+        cmd | getline human
+        close(cmd)
+        if (length(human) > width) {
+          width = length(human)
+        }
+      }
+      END { print width + 0 }
+    ' "$top_level_sizes_file")"
+    sort -t $'\t' -k2,2 "$top_level_sizes_file" >"$top_level_sorted_file"
+    printf '  %s  %s  %s\n' "$user_name" "$(human_size "$user_total_bytes")" "${share_percent}%"
+    while IFS=$'\t' read -r entry_bytes entry_name entry_path; do
+      printf '    %-*s  %*s\n' "$max_name_width" "$entry_name" "$max_size_width" "$(human_size "$entry_bytes")"
+    done <"$top_level_sorted_file"
   else
-    echo "${state} user=${user_name} home=${home_dir} reason=${reason_or_dash}"
+    printf '  %s  %s  %s\n' "$user_name" "$state" "$reason_or_dash"
   fi
 done <"$scanned_users_file"
-cat "$user_details_file"
-echo ""
-
-echo "CATEGORIES"
-while IFS=$'\t' read -r user_name category bytes cleanup_mode; do
-  echo "user=${user_name} size=$(human_size "$bytes") category=${category} cleanup_mode=${cleanup_mode} note=$(category_note "$category")"
-done <"$categories_file"
 echo ""
 
 echo "TOP ACTIONS"
 if [[ -s $actions_file ]]; then
+  actions_output_file="${tmp_dir}/actions-output.tsv"
   if [[ $DETAIL == full ]]; then
-    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | awk -F '\t' '{ printf "%s %s user=%s size=%s category=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $8, $7, $9, $10, $11 }'
+    sort -t $'\t' -k1,1nr -k3,3 "$actions_file" >"$actions_output_file"
   else
-    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | head -n 5 | awk -F '\t' '{ printf "%s %s user=%s size=%s category=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $8, $7, $9, $10, $11 }'
+    sort -t $'\t' -k1,1nr -k3,3 "$actions_file" | head -n 5 >"$actions_output_file"
   fi
+
+  max_path_width="$(awk -F '\t' 'BEGIN { width = 0 } { if (length($3) > width) width = length($3) } END { print width + 0 }' "$actions_output_file")"
+  max_size_width="$(awk -F '\t' 'BEGIN { width = 0 } { if (length($2) > width) width = length($2) } END { print width + 0 }' "$actions_output_file")"
+
+  while IFS=$'\t' read -r _action_bytes action_size action_path cleanup_mode; do
+    printf '  %*s  %-*s  %s\n' "$max_size_width" "$action_size" "$max_path_width" "$action_path" "$cleanup_mode"
+  done <"$actions_output_file"
 else
   echo "none"
 fi
 echo ""
 
 echo "NOTES"
-echo "safe_cache=Large rebuildable cache. Cleanup candidate."
-echo "review_first=Review before cleanup."
-echo "preserve=Keep unless you know the data is disposable."
-echo "skipped_or_unreadable_homes_are_reported_explicitly=yes"
+printf '  %-29s = %s\n' "safe_cache" "Large rebuildable cache. Cleanup candidate."
+printf '  %-29s = %s\n' "review_first" "Review before cleanup."
+printf '  %-29s = %s\n' "preserve" "Keep unless you know the data is disposable."
+printf '  %-29s = %s\n' "skipped_or_unreadable_homes" "reported explicitly"
