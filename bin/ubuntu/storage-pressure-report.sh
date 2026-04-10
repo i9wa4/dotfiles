@@ -429,7 +429,7 @@ echo "USERS"
 while IFS=$'\t' read -r state user_name home_dir reason_or_dash user_total_bytes; do
   if [[ $state == SCANNED ]]; then
     share_percent="$(percent_of "$user_total_bytes" "$total_home_bytes")"
-    echo "${state} user=${user_name} home=${home_dir} size=$(human_size "$user_total_bytes") share=${share_percent}%"
+    echo "${state} user=${user_name} size=$(human_size "$user_total_bytes") home=${home_dir} share=${share_percent}%"
   else
     echo "${state} user=${user_name} home=${home_dir} reason=${reason_or_dash}"
   fi
@@ -439,16 +439,16 @@ echo ""
 
 echo "CATEGORIES"
 while IFS=$'\t' read -r user_name category bytes cleanup_mode; do
-  echo "user=${user_name} category=${category} size=$(human_size "$bytes") cleanup_mode=${cleanup_mode} note=$(category_note "$category")"
+  echo "user=${user_name} size=$(human_size "$bytes") category=${category} cleanup_mode=${cleanup_mode} note=$(category_note "$category")"
 done <"$categories_file"
 echo ""
 
 echo "TOP ACTIONS"
 if [[ -s $actions_file ]]; then
   if [[ $DETAIL == full ]]; then
-    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | awk -F '\t' '{ printf "%s %s user=%s category=%s size=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $7, $8, $9, $10, $11 }'
+    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | awk -F '\t' '{ printf "%s %s user=%s size=%s category=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $8, $7, $9, $10, $11 }'
   else
-    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | head -n 5 | awk -F '\t' '{ printf "%s %s user=%s category=%s size=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $7, $8, $9, $10, $11 }'
+    sort -t $'\t' -k1,1nr -k2,2n -k3,3nr "$actions_file" | head -n 5 | awk -F '\t' '{ printf "%s %s user=%s size=%s category=%s path=%s cleanup_mode=%s note=%s\n", $4, $5, $6, $8, $7, $9, $10, $11 }'
   fi
 else
   echo "none"
