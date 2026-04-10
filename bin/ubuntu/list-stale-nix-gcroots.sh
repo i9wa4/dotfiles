@@ -15,6 +15,7 @@ EOF
 }
 
 MODE="dry-run"
+REAL_USER="${SUDO_USER:-$(id -un)}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -53,12 +54,22 @@ output_file="${tmp_dir}/output.tsv"
 : >"$roots_file"
 : >"$output_file"
 
-git worktree list --porcelain | awk '
-  /^worktree / { print substr($0, 10) }
-' >>"$active_paths_file"
+if [[ $REAL_USER != root ]]; then
+  runuser -u "$REAL_USER" -- git worktree list --porcelain | awk '
+    /^worktree / { print substr($0, 10) }
+  ' >>"$active_paths_file"
+else
+  git worktree list --porcelain | awk '
+    /^worktree / { print substr($0, 10) }
+  ' >>"$active_paths_file"
+fi
 
 if command -v vde-worktree >/dev/null 2>&1; then
-  vde-worktree list --json 2>/dev/null | jq -r '.worktrees[]?.path // empty' >>"$active_paths_file" || true
+  if [[ $REAL_USER != root ]]; then
+    runuser -u "$REAL_USER" -- vde-worktree list --json 2>/dev/null | jq -r '.worktrees[]?.path // empty' >>"$active_paths_file" || true
+  else
+    vde-worktree list --json 2>/dev/null | jq -r '.worktrees[]?.path // empty' >>"$active_paths_file" || true
+  fi
 fi
 
 sort -u "$active_paths_file" -o "$active_paths_file"
@@ -176,6 +187,6 @@ fi
 
 if [[ $MODE == delete ]]; then
   echo "GC start deleted_roots=${delete_count}"
-  nix-collect-garbage
+  /nix/var/nix/profiles/default/bin/nix-collect-garbage
   echo "GC done deleted_roots=${delete_count}"
 fi
