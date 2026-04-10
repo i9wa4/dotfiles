@@ -103,3 +103,20 @@ Home Manager and profile generation links stay `KEEP`.
 2. Review every `CANDIDATE`
 3. Confirm the path is absent from the active worktree inventories
 4. Run `--delete` only when the review is complete
+
+## 3. Swap Consolidation
+
+The host has two swap devices: `/swapfile` (16G) and `/swap.img` (8G). Only
+one is needed. `setup-swap.sh` refuses to run when more than one swap device is
+active.
+
+Manual consolidation steps (all require root):
+
+1. Confirm active swap devices: `cat /proc/swaps`
+2. Choose the device to keep (prefer `/swapfile` at `16G`)
+3. Disable the unwanted device with `swapoff`
+4. Remove the unwanted device entry from `/etc/fstab`
+5. Delete the unwanted swapfile
+6. Verify: `cat /proc/swaps` should show exactly one device
+
+After consolidation, `setup-swap.sh` can run normally.

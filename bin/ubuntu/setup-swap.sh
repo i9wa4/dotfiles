@@ -20,6 +20,16 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+# Guard: refuse to proceed if multiple swap devices are already active.
+# Two coexisting swapfiles waste disk space and must be resolved manually
+# before this script mutates swap configuration.
+active_swap_count=$(awk 'NR>1 {count++} END {print count+0}' /proc/swaps)
+if [[ $active_swap_count -gt 1 ]]; then
+  echo "ERROR: $active_swap_count swap devices active. Resolve duplicates before running setup-swap.sh." >&2
+  awk 'NR>1 {print "  " $1 " size=" $3 "kB priority=" $5}' /proc/swaps >&2
+  exit 1
+fi
+
 # Show current state
 echo "=== Current swap status ==="
 swapon --show || echo "(no active swap)"
