@@ -20,6 +20,8 @@
       gh = lib.getExe pkgs.gh;
       nix = lib.getExe pkgs.nix;
       python = lib.getExe pkgs.python3;
+      gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
+      storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
     in
     {
       apps = {
@@ -103,7 +105,7 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "gc-roots-review" ''
             set -euo pipefail
-            exec "$PWD/bin/ubuntu/list-stale-nix-gcroots.sh" "$@"
+            exec ${pkgs.bash}/bin/bash ${gcRootsReviewScript} "$@"
           ''}/bin/gc-roots-review";
         };
 
@@ -111,7 +113,7 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "storage-report" ''
             set -euo pipefail
-            exec "$PWD/bin/ubuntu/storage-pressure-report.sh" "$@"
+            exec ${pkgs.bash}/bin/bash ${storagePressureReportScript} "$@"
           ''}/bin/storage-report";
         };
 

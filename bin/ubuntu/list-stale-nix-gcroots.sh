@@ -92,6 +92,10 @@ classify_root() {
   fi
 
   case "$link_path" in
+  */.local/state/home-manager/gcroots/current-home)
+    printf 'BLOCKED\tprotected-current-home-path'
+    return
+    ;;
   */.direnv/*)
     printf 'BLOCKED\tprotected-direnv-path'
     return
