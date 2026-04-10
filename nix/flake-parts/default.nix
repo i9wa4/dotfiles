@@ -28,5 +28,6 @@ in
     ./modules/darwin.nix
     ./modules/ubuntu.nix
     ./modules/llm-agents.nix
+    ./modules/ai-runtime-generation.nix
   ];
 }
