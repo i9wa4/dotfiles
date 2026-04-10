@@ -91,11 +91,14 @@ checks at execution time, deletes only current `CANDIDATE` roots, and then runs
 
 These roots stay `BLOCKED` in issue `#123`:
 
+- Home Manager `current-home` gcroots under
+  `~/.local/state/home-manager/gcroots/current-home`
 - `.direnv`
 - `result`
 - `/tmp`
 
-Home Manager and profile generation links stay `KEEP`.
+Home Manager generation links such as `home-manager-*` and profile generation
+links such as `profile-*` stay `KEEP`.
 
 ### 2.4. Operator Workflow
 
