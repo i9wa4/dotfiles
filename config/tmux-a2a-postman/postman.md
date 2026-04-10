@@ -208,11 +208,15 @@ DO NOT be polite. Find problems before they happen.
   sufficient.
 - Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
   after a real send/reply failure, not from footer text alone.
-- 5-minute hard cutoff: use `tmux-a2a-postman get-health` plus real
-  send/reply evidence. If guardian still appears stalled after a direct send
-  attempt or verified non-response, report BLOCKED to orchestrator. Do NOT
-  inspect raw wait files, and do NOT treat `composing` or `user_input` alone
-  as proof that guardian is absent.
+- Use the shared review-node threshold: guardian is only treated as likely
+  unresponsive after 1800s / 30m, or after a direct send failure.
+- Below 1800s / 30m, treat pending guardian review as slow-but-alive unless
+  direct send/reply evidence proves otherwise.
+- At or beyond 1800s / 30m with no reply, run `tmux-a2a-postman get-health`
+  and send one compact watchdog follow-up to guardian. If that watchdog is
+  also unanswered, report BLOCKED to orchestrator. Do NOT inspect raw wait
+  files, and do NOT treat `composing` or `user_input` alone as proof that
+  guardian is absent.
 
 ### 4.7. [critic] Plan Completeness Check
 
@@ -459,9 +463,15 @@ BLOCKED: (operation) denied — (reason)
 
 ### 7.9. [orchestrator] Critic Watchdog Protocol
 
-Critic silent for 3 message cycles: re-send with "[WATCHDOG] APPROVE or NOT
-APPROVE? Reply immediately." Still no reply: notify messenger "BLOCKED: critic
-unresponsive." Never bypass critic — escalate, never skip.
+Use the shared review-node threshold: critic is only treated as likely
+unresponsive after 1800s / 30m, or after direct send failure evidence.
+
+Below 1800s / 30m, a pending critic review is waiting, not blocked.
+
+At or beyond 1800s / 30m with no critic reply, send one watchdog message:
+"[WATCHDOG] APPROVE or NOT APPROVE? Reply immediately." If that watchdog is
+also unanswered, notify messenger "BLOCKED: critic unresponsive." Never bypass
+critic — escalate, never skip.
 
 ### 7.10. [orchestrator] DONE Completion Signal
 
