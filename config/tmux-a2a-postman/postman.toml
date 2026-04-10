@@ -3,6 +3,10 @@ allow_shell_templates = true
 alert_cooldown_seconds = 600
 alert_delivery_window_seconds = 60
 
+# Unresponsive-node boundary by role:
+# worker / worker-alt = 900s / 15m
+# critic / guardian / messenger / orchestrator = 1800s / 30m
+# boss = 3600s / 60m
 [boss]
 idle_timeout_seconds = 3600
 dropped_ball_timeout_seconds = 3600

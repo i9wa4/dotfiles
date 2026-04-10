@@ -87,6 +87,20 @@ delivery-health follow-up), keep the body to the smallest useful delta:
 - include file paths, message IDs, or commands only when they changed or are
   needed for the next immediate action
 
+### 2.8. [common_template] Timeout Thresholds
+
+Treat the configured timeout windows as the boundary between "slow but alive"
+and "likely unresponsive":
+
+- `worker` and `worker-alt`: 900s / 15m for both `idle_timeout_seconds` and
+  `dropped_ball_timeout_seconds`
+- `critic`, `guardian`, `messenger`, and `orchestrator`: 1800s / 30m
+- `boss`: 3600s / 60m
+
+A long-running task, including a delayed worker-alt pass like today's pass 29,
+is NOT by itself an unresponsive-node incident until the relevant threshold is
+crossed or there is direct send/reply failure evidence.
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -290,6 +304,10 @@ intent as a task to orchestrator. You are the interface, not the executor.
 
 1. Listen to user's request
 2. Ask clarifying questions if needed
+   Ask at most one clarifying question per turn. Include a
+   recommended/default answer. Use only already-permitted messenger-side
+   context. If investigation is required, relay to orchestrator instead of
+   doing it yourself.
 3. Send clear task description to orchestrator
 4. Wait for orchestrator's response
 5. Relay results back to user
@@ -302,6 +320,14 @@ Use mailbox commands such as `tmux-a2a-postman read` or
 message state. Identify blockers, take action, and report pipeline state as a
 compact summary: current owner, blockers, next action, and only the evidence
 needed to support claimed stuck nodes. Never report just `empty.`
+
+### 6.6.1. [messenger] Dead-Letter Resend Ordering Warning
+
+When recovering mail with
+`tmux-a2a-postman read --dead-letters --resend-oldest`, remember the resend
+order is FIFO across the eligible dead-letter queue. The oldest dead letter is
+resent first, which can surface a different message before the one you meant to
+recover. Inspect queue order first when a specific message matters.
 
 ### 6.7. [messenger] Delivery Watchdog
 
@@ -398,10 +424,28 @@ Do NOT research, read code, or investigate. Delegate to worker.
 
 ### 7.6. [orchestrator] Response Escalation
 
-No reply after 2 messages: check `tmux-a2a-postman get-health`, then
-re-send SHORT (2-4 lines: current ask, one file or message reference if
-needed, `Reply:` footer command). Still no reply after 1 more: notify
-messenger `BLOCKED: waiting for {node}`.
+Treat silence against the configured timeout window first:
+
+- `worker` and `worker-alt`: 900s / 15m
+- `critic`, `guardian`, `messenger`, and `orchestrator`: 1800s / 30m
+- `boss`: 3600s / 60m
+
+Below the relevant threshold, a node may be slow but still alive. A delay that
+looks like today's worker-alt pass 29 is NOT, by itself, an unresponsive-node
+incident.
+
+Escalation cadence for an actually unresponsive node:
+
+1. After 2 unanswered orchestrator messages to the same node, run
+   `tmux-a2a-postman get-health`.
+2. If health plus workflow context still indicate missing reply, send exactly
+   one SHORT resend: 2-4 lines with the current ask, at most one file or
+   message reference, and the `Reply:` footer command.
+3. If that resend is also unanswered, treat it as the third miss and notify
+   messenger `BLOCKED: waiting for {node}`.
+
+Do NOT keep re-pinging beyond this cadence. Use live session health plus direct
+send/reply evidence; footer mismatch alone is not enough.
 
 ### 7.7. [orchestrator] Messenger Fallback Timer
 
