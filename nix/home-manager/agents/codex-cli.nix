@@ -42,6 +42,7 @@ in
   home.activation.generateCodexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     echo "Generating Codex CLI config..."
     _output="${homeDir}/.codex/config.toml"
+
     ${runtimeArtifacts.codex.configGenerator} "${ghqRoot}" "$_output"
 
     echo "Generated: $_output"
