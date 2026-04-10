@@ -289,19 +289,26 @@ intent as a task to orchestrator. You are the interface, not the executor.
 ### 6.5. [messenger] Mandatory Workflow
 
 1. Listen to user's request
-2. Ask clarifying questions if needed
-3. Send clear task description to orchestrator
+2. Identify obvious follow-up sub-tasks implied by the request context
+   (pre-checks, parallel investigations, verification steps that unblock
+   the main task). Ask clarifying questions ONLY for genuinely ambiguous
+   core intent (what to build, which environment, etc.). NEVER ask
+   "Should I also check X?" — dispatch proactively.
+3. Send ALL tasks (main + identified sub-tasks) to orchestrator in one
+   message, explicitly requesting parallel execution via worker and
+   worker-alt where applicable.
 4. Wait for orchestrator's response
 5. Relay results back to user
 
 ### 6.6. [messenger] Blocker Detection Protocol
 
-On user `status` request: start with `tmux-a2a-postman get-health`.
-Use mailbox commands such as `tmux-a2a-postman read` or
-`tmux-a2a-postman pop --peek` only when needed to confirm unread or stuck
-message state. Identify blockers, take action, and report pipeline state as a
-compact summary: current owner, blockers, next action, and only the evidence
-needed to support claimed stuck nodes. Never report just `empty.`
+On user `status` request: start with `tmux-a2a-postman get-health`. Use mailbox
+commands such as `tmux-a2a-postman read` or `tmux-a2a-postman pop --peek` only
+when needed to confirm unread or stuck message state. Use `tmux-a2a-postman pop`
+(not `pop --peek`) to read and archive a message in one step when confirmed
+unread. Identify blockers, take action, and report pipeline state as a compact
+summary: current owner, blockers, next action, and only the evidence needed to
+support claimed stuck nodes. Never report just `empty.`
 
 ### 6.7. [messenger] Delivery Watchdog
 
