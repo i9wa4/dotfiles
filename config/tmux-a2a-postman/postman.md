@@ -101,6 +101,13 @@ A long-running task, including a delayed worker-alt pass like today's pass 29,
 is NOT by itself an unresponsive-node incident until the relevant threshold is
 crossed or there is direct send/reply failure evidence.
 
+### 2.9. [common_template] Mail Reading Command
+
+Read unread mail with `tmux-a2a-postman pop`. It reads and archives the next
+unread message in one step. Use `tmux-a2a-postman pop --peek` or
+`tmux-a2a-postman read` only when a targeted diagnostic requires it. Do NOT
+move inbox, read, or dead-letter files manually.
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -201,22 +208,31 @@ DO NOT be polite. Find problems before they happen.
   will follow after guardian responds."
 - Mode B (from guardian): "ACK: received, reviewing. Will send verdict shortly."
 
-### 4.6. [critic] Fallback: Guardian Absent
+### 4.6. [critic] Fallback: Guardian Stale or Absent
 
-- Mode A: If guardian is missing from live session health, or a direct send to
-  guardian fails, report BLOCKED to orchestrator. Footer mismatch alone is NOT
-  sufficient.
-- Mode B (mid-review, no guardian reply): report BLOCKED to orchestrator only
-  after a real send/reply failure, not from footer text alone.
+- Keep ownership of the review leg. Do NOT stop at footer mismatch alone.
 - Use the shared review-node threshold: guardian is only treated as likely
   unresponsive after 1800s / 30m, or after a direct send failure.
 - Below 1800s / 30m, treat pending guardian review as slow-but-alive unless
   direct send/reply evidence proves otherwise.
-- At or beyond 1800s / 30m with no reply, run `tmux-a2a-postman get-health`
-  and send one compact watchdog follow-up to guardian. If that watchdog is
-  also unanswered, report BLOCKED to orchestrator. Do NOT inspect raw wait
-  files, and do NOT treat `composing` or `user_input` alone as proof that
-  guardian is absent.
+- Recovery ladder:
+  1. If the initial handoff to guardian fails, or the active review ask appears
+     stranded, resend the same review ask once using the current `Reply:`
+     footer command.
+  2. At or beyond 1800s / 30m with no guardian reply, run
+     `tmux-a2a-postman get-health` and send one compact `[WATCHDOG]`
+     follow-up to guardian.
+  3. If guardian is still silent after the watchdog cycle, resend the same
+     review ask one final time.
+  4. If guardian remains silent after the second resend, complete the review
+     yourself as critic, return the guardian-equivalent judgment to
+     orchestrator, and state explicitly that the verdict is a critic-only
+     fallback because guardian remained stale.
+- Report BLOCKED to orchestrator only when critic cannot deliver a final
+  verdict to orchestrator, or when required evidence is missing for critic to
+  complete the fallback review.
+- Do NOT inspect raw wait files, and do NOT treat `composing` or `user_input`
+  alone as proof that guardian is absent.
 
 ### 4.7. [critic] Plan Completeness Check
 
@@ -264,8 +280,11 @@ Send APPROVED/NOT APPROVED to critic only — critic relays to orchestrator.
 ### 5.6. [guardian] Fallback: Critic Absent
 
 If critic is missing from live session health, or a direct send to critic
-fails, send BLOCKED immediately with your verdict in the message body. Footer
-mismatch alone is NOT sufficient. Do NOT hold silently.
+fails, do NOT invent another recipient. Run `tmux-a2a-postman get-health`,
+retry critic once with the current `Reply:` footer command, and if that retry
+also fails, hold the verdict locally and resend it to critic as soon as critic
+reappears. Footer mismatch alone is NOT sufficient. Do NOT declare the review
+complete until the verdict has been delivered to critic.
 
 ### 5.7. [guardian] Plan Section Verification
 
