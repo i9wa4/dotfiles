@@ -57,3 +57,49 @@ silently.
 
 The report is Linux-only by design. It targets `/home` usage and the current
 Ubuntu or WSL2 host.
+
+## 2. Guarded GC-Root Review
+
+Use this review before deleting stale auto GC roots.
+
+### 2.1. Dry Run
+
+```sh
+nix run '.#gc-roots-review' -- --dry-run
+```
+
+This mode classifies roots as:
+
+- `KEEP`
+- `CANDIDATE`
+- `BLOCKED`
+
+Each line includes a reason, the auto-root path, the original linked path, and
+the resolved target.
+
+### 2.2. Delete Mode
+
+```sh
+sudo nix run '.#gc-roots-review' -- --delete
+```
+
+Delete mode is explicit and never scheduled. It re-runs the same classification
+checks at execution time, deletes only current `CANDIDATE` roots, and then runs
+`nix-collect-garbage`.
+
+### 2.3. Protected Root Classes
+
+These roots stay `BLOCKED` in issue `#123`:
+
+- `.direnv`
+- `result`
+- `/tmp`
+
+Home Manager and profile generation links stay `KEEP`.
+
+### 2.4. Operator Workflow
+
+1. Run `--dry-run`
+2. Review every `CANDIDATE`
+3. Confirm the path is absent from the active worktree inventories
+4. Run `--delete` only when the review is complete

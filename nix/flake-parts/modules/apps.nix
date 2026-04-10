@@ -99,6 +99,14 @@
         };
       }
       // lib.optionalAttrs isLinux {
+        gc-roots-review = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "gc-roots-review" ''
+            set -euo pipefail
+            exec "$PWD/bin/ubuntu/list-stale-nix-gcroots.sh" "$@"
+          ''}/bin/gc-roots-review";
+        };
+
         storage-report = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "storage-report" ''
