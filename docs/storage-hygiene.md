@@ -111,15 +111,17 @@ links such as `profile-*` stay `KEEP`.
 
 The host has two swap devices: `/swapfile` (16G) and `/swap.img` (8G). Only
 one is needed. `setup-swap.sh` refuses to run when more than one swap device is
-active.
+active. It does not disable duplicate swap devices, rewrite `/etc/fstab`, or
+delete `/swap.img` automatically.
 
 Manual consolidation steps (all require root):
 
 1. Confirm active swap devices: `cat /proc/swaps`
 2. Choose the device to keep (prefer `/swapfile` at `16G`)
-3. Disable the unwanted device with `swapoff`
-4. Remove the unwanted device entry from `/etc/fstab`
-5. Delete the unwanted swapfile
+3. Disable `/swap.img` with `swapoff /swap.img`
+4. Remove the `/swap.img` entry from `/etc/fstab`
+5. Delete `/swap.img`
 6. Verify: `cat /proc/swaps` should show exactly one device
+7. Re-run `setup-swap.sh`
 
 After consolidation, `setup-swap.sh` can run normally.

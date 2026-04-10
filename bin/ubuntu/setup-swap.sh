@@ -20,12 +20,15 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# Detect swap devices other than SWAPFILE that are currently active.
-# These will be disabled and removed after SWAPFILE is confirmed active.
-other_swaps=()
-while IFS= read -r dev; do
-  other_swaps+=("$dev")
-done < <(awk -v target="$SWAPFILE" 'NR>1 && $1 != target {print $1}' /proc/swaps)
+# Guard: refuse to proceed if multiple swap devices are already active.
+# Two coexisting swapfiles waste disk space and must be resolved manually
+# before this script mutates swap configuration.
+active_swap_count=$(awk 'NR>1 {count++} END {print count+0}' /proc/swaps)
+if [[ $active_swap_count -gt 1 ]]; then
+  echo "ERROR: $active_swap_count swap devices active. Resolve duplicates before running setup-swap.sh." >&2
+  awk 'NR>1 {print "  " $1 " size=" $3 "kB priority=" $5}' /proc/swaps >&2
+  exit 1
+fi
 
 # Show current state
 echo "=== Current swap status ==="
@@ -65,10 +68,6 @@ fi
 if [[ "$(sysctl -n vm.swappiness)" -ne $SWAPPINESS_TARGET ]]; then
   actions+=("Set vm.swappiness=${SWAPPINESS_TARGET}")
 fi
-
-for dev in "${other_swaps[@]}"; do
-  actions+=("Disable and remove $dev (non-target swap)")
-done
 
 # If nothing to do, exit early
 if [[ ${#actions[@]} -eq 0 ]]; then
@@ -123,21 +122,6 @@ fi
 if ! swapon --show | grep -q "$SWAPFILE"; then
   swapon "$SWAPFILE"
   echo "* Swap enabled"
-fi
-
-# Remove other swap devices now that SWAPFILE is confirmed active
-if [[ ${#other_swaps[@]} -gt 0 ]] && swapon --show | grep -q "$SWAPFILE"; then
-  for dev in "${other_swaps[@]}"; do
-    echo "* Disabling $dev..."
-    swapoff "$dev"
-    sed -i "\|^${dev}[[:space:]]|d" /etc/fstab
-    if [[ -f $dev ]]; then
-      unlink "$dev"
-      echo "* Removed $dev"
-    else
-      echo "* $dev disabled (not a regular file, skipped deletion)"
-    fi
-  done
 fi
 
 # Add to /etc/fstab
