@@ -8,6 +8,7 @@
 #                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
+#   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
 {
@@ -98,6 +99,14 @@
         };
       }
       // lib.optionalAttrs isLinux {
+        storage-report = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "storage-report" ''
+            set -euo pipefail
+            exec "$PWD/bin/ubuntu/storage-pressure-report.sh" "$@"
+          ''}/bin/storage-report";
+        };
+
         apt-upgrade = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "apt-upgrade" ''

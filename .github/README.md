@@ -286,3 +286,4 @@ gh auth login --with-token
 | `nix run '.#switch'`   | Rebuild and activate configuration |
 | `nix run '.#update'`   | Update flake inputs                |
 | `nix run '.#check'`    | Check flake configuration          |
+| `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage |
