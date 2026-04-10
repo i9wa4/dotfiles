@@ -193,6 +193,10 @@ known_top_level() {
 MODE="self"
 DETAIL="summary"
 
+if [[ $# -eq 0 ]]; then
+  set -- --self --summary
+fi
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
   --self)

@@ -170,6 +170,10 @@ sort -t $'\t' -k1,1 -k2,2 -k3,3 "$output_file" | awk -F '\t' '
 
 echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count} mode=${MODE}"
 
+if [[ $MODE == dry-run ]]; then
+  echo "HINT to delete CANDIDATEs run as root: nix run '.#gc-roots-review' -- --delete"
+fi
+
 if [[ $MODE == delete ]]; then
   echo "GC start deleted_roots=${delete_count}"
   nix-collect-garbage
