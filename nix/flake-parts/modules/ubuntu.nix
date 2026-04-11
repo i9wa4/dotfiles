@@ -51,6 +51,14 @@ in
             lib,
             ...
           }:
+          let
+            storageReportScript = pkgs.writeShellScriptBin "storage-report-daily" ''
+              report_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/storage-report"
+              umask 077
+              mkdir -p "$report_dir"
+              exec ${pkgs.bash}/bin/bash ${./../../../bin/ubuntu/storage-pressure-report.sh} --self --summary >"$report_dir/latest.log"
+            '';
+          in
           {
             nix = {
               # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
@@ -58,7 +66,7 @@ in
               gc = {
                 automatic = true;
                 dates = "12:00";
-                options = "--delete-older-than 14d";
+                options = "--delete-older-than 1d";
               };
               settings = commonNixSettings // {
                 # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
@@ -82,6 +90,24 @@ in
                   eval $(${pkgs.openssh}/bin/ssh-agent)
                 fi
               '';
+            };
+            # Daily storage-pressure-report for the current user
+            # cf. nix.gc above (auto GC also runs daily via home-manager)
+            systemd.user.services."storage-report" = {
+              Unit.Description = "Linux home-directory storage pressure report";
+              Service = {
+                Type = "oneshot";
+                ExecStart = "${storageReportScript}/bin/storage-report-daily";
+                StandardError = "journal";
+              };
+            };
+            systemd.user.timers."storage-report" = {
+              Unit.Description = "Daily Linux home storage pressure report";
+              Timer = {
+                OnCalendar = "daily";
+                Persistent = true;
+              };
+              Install.WantedBy = [ "timers.target" ];
             };
           }
         )

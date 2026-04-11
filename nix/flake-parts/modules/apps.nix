@@ -3,11 +3,16 @@
 #
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
+#                               (Linux expires Home Manager generations older than 1 day;
+#                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
 #   nix run '.#update' -- --min-age-days 7
 #                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
+#   nix run '.#gc-roots-delete'
+#                             -- attempt Linux auto GC-root cleanup through the dedicated command
+#   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
 {
@@ -19,9 +24,14 @@
       gh = lib.getExe pkgs.gh;
       nix = lib.getExe pkgs.nix;
       python = lib.getExe pkgs.python3;
+      gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
+      storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
     in
     {
       apps = {
+        # What: Rebuild and activate the current machine configuration, then expire old generations without post-switch store GC.
+        # When: Run after changing dotfiles, Home Manager modules, or nix-darwin modules.
+        # Example: nix run '.#switch'
         switch = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "switch" ''
@@ -31,11 +41,15 @@
                 ''
                   profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
                   sudo darwin-rebuild switch --impure --flake ".#$profile"
+                  sudo ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
                 ''
               else
                 ''
-                  nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
+                  access_token=$(${lib.getExe pkgs.gh} auth token)
+                  nix run --access-tokens "github.com=$access_token" \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
+                  nix run --access-tokens "github.com=$access_token" \
+                    home-manager -- expire-generations '-1 days'
                 ''
             }
           ''}/bin/switch";
@@ -86,6 +100,15 @@
 
             remove_dir "$cache_root/pre-commit"
             remove_dir "$cache_root/ruff"
+            ${
+              if isLinux then
+                ''
+                  remove_dir "$cache_root/go-build"
+                  remove_dir "$cache_root/nix"
+                ''
+              else
+                ""
+            }
             remove_dir "$HOME/.npm"
 
             if [ -d "$HOME/Library/Caches" ]; then
@@ -98,6 +121,28 @@
         };
       }
       // lib.optionalAttrs isLinux {
+        # What: Keep Linux stale GC-root cleanup on one explicit command separate from switch.
+        # When: Run it directly to attempt guarded stale-root deletion as the current user.
+        # Example: nix run '.#gc-roots-delete'
+        gc-roots-delete = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "gc-roots-delete" ''
+            set -euo pipefail
+            exec ${pkgs.bash}/bin/bash ${gcRootsReviewScript} "$@"
+          ''}/bin/gc-roots-delete";
+        };
+
+        # What: Summarize Linux home-directory storage pressure for the current user or all users.
+        # When: Run before cleanup so you know which homes and paths are using the most space.
+        # Example: nix run '.#storage-report' -- --self --summary
+        storage-report = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "storage-report" ''
+            set -euo pipefail
+            exec ${pkgs.bash}/bin/bash ${storagePressureReportScript} "$@"
+          ''}/bin/storage-report";
+        };
+
         apt-upgrade = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "apt-upgrade" ''
