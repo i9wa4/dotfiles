@@ -283,7 +283,7 @@ gh auth login --with-token
 
 | Command                | Description                        |
 | ---------------------- | ---------------------------------- |
-| `nix run '.#switch'`   | Rebuild and activate configuration. On Linux it also prunes Nix generations older than 1 day after a successful switch |
+| `nix run '.#switch'`   | Rebuild and activate configuration. On Linux and macOS it also prunes Nix generations older than 1 day after a successful switch |
 | `nix run '.#update'`   | Update flake inputs                |
 | `nix run '.#check'`    | Check flake configuration          |
 | `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage |

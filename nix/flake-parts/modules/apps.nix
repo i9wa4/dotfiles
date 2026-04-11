@@ -3,7 +3,7 @@
 #
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
-#                               (Linux also prunes generations older than 1 day)
+#                               (Linux and macOS also prune generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
 #   nix run '.#update' -- --min-age-days 7
 #                             -- update flake inputs with a minimum-age gate
@@ -40,6 +40,7 @@
                 ''
                   profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
                   sudo darwin-rebuild switch --impure --flake ".#$profile"
+                  sudo ${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 1d
                 ''
               else
                 ''
@@ -96,8 +97,15 @@
 
             remove_dir "$cache_root/pre-commit"
             remove_dir "$cache_root/ruff"
-            remove_dir "$cache_root/go-build"
-            remove_dir "$cache_root/nix"
+            ${
+              if isLinux then
+                ''
+                  remove_dir "$cache_root/go-build"
+                  remove_dir "$cache_root/nix"
+                ''
+              else
+                ""
+            }
             remove_dir "$HOME/.npm"
 
             if [ -d "$HOME/Library/Caches" ]; then
