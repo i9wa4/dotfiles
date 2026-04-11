@@ -4,6 +4,10 @@ set -o nounset
 set -o pipefail
 set -o posix
 
+# What: summarize Linux home-directory storage pressure for the current user or all users.
+# When: run before cleanup to see which homes and paths are driving disk usage.
+# Example: nix run '.#storage-report' -- --self --summary
+
 usage() {
   cat <<'EOF'
 Usage: storage-pressure-report.sh [--self|--all-users] [--summary|--full]
@@ -15,6 +19,10 @@ Modes:
 Output:
   --summary    Print the concise operator view (default)
   --full       Print all collected action rows instead of the top 5
+
+Examples:
+  nix run '.#storage-report' -- --self --summary
+  sudo nix run '.#storage-report' -- --all-users --summary
 EOF
 }
 

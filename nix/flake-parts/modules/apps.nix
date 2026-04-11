@@ -26,6 +26,9 @@
     in
     {
       apps = {
+        # What: Rebuild and activate the current machine configuration.
+        # When: Run after changing dotfiles, Home Manager modules, or nix-darwin modules.
+        # Example: nix run '.#switch'
         switch = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "switch" ''
@@ -103,6 +106,9 @@
         };
       }
       // lib.optionalAttrs isLinux {
+        # What: Review auto-generated Nix GC roots and classify them before deletion.
+        # When: Run before manual Nix store cleanup when /nix/var/nix/gcroots/auto keeps growing.
+        # Example: nix run '.#gc-roots-review' -- --dry-run
         gc-roots-review = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "gc-roots-review" ''
@@ -111,6 +117,9 @@
           ''}/bin/gc-roots-review";
         };
 
+        # What: Summarize Linux home-directory storage pressure for the current user or all users.
+        # When: Run before cleanup so you know which homes and paths are using the most space.
+        # Example: nix run '.#storage-report' -- --self --summary
         storage-report = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "storage-report" ''

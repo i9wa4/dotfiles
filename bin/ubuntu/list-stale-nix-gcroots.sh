@@ -4,6 +4,10 @@ set -o nounset
 set -o pipefail
 set -o posix
 
+# What: classify auto-generated Nix GC roots and optionally delete current CANDIDATE roots.
+# When: run before manual Nix store cleanup to separate safe candidates from protected roots.
+# Example: nix run '.#gc-roots-review' -- --dry-run
+
 usage() {
   cat <<'EOF'
 Usage: list-stale-nix-gcroots.sh [--dry-run|--delete]
@@ -11,6 +15,10 @@ Usage: list-stale-nix-gcroots.sh [--dry-run|--delete]
 Modes:
   --dry-run  Classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
   --delete   Delete only current CANDIDATE roots, then run nix-collect-garbage
+
+Examples:
+  nix run '.#gc-roots-review' -- --dry-run
+  sudo nix run '.#gc-roots-review' -- --delete
 EOF
 }
 
