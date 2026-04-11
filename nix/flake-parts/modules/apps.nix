@@ -39,6 +39,7 @@
                 ''
                   nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
+                  ${pkgs.nix}/bin/nix-collect-garbage -d
                 ''
             }
           ''}/bin/switch";
