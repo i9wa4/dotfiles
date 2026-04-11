@@ -1,3 +1,11 @@
+---
+name: aws-auth
+description: |
+  AWS authentication handoff rules for this repo. Use when AWS CLI access depends
+  on a user-authenticated tmux pane and the agent must execute AWS commands via
+  `tmux send-keys` instead of handling `aws sso login` itself.
+---
+
 # AWS Auth Skill
 
 ## Core Pattern

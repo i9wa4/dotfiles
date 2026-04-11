@@ -9,23 +9,35 @@
 let
   homeDir = config.home.homeDirectory;
   families = import ./families/default.nix { inherit pkgs; };
+  validateSkillSource =
+    name: src:
+    pkgs.runCommand name { } ''
+      cp -r ${src} $out
+      chmod -R u+w $out
+      ${pkgs.bash}/bin/bash ${./scripts/validate-skill-frontmatter.sh} "$out"
+    '';
+  local-skills-validated = validateSkillSource "local-skills-validated" ./skills;
 
-  # Patch upstream anthropic/skills: prepend YAML frontmatter to
-  # skills/claude-api/SKILL.md. Upstream ships this file without frontmatter,
-  # which Codex CLI rejects at startup ("missing YAML frontmatter delimited
-  # by ---"). Claude Code tolerates the missing header, but we patch once so
-  # both runtimes load the skill cleanly.
+  # Patch upstream anthropic/skills only when claude-api/SKILL.md is missing
+  # frontmatter. Upstream has changed before, so keep this transform idempotent
+  # and validate the assembled tree before exposing it to agent-skills.
   anthropic-skills-patched = pkgs.runCommand "anthropic-skills-patched" { } ''
     cp -r ${inputs.anthropic-skills} $out
     chmod -R u+w $out
-    {
-      printf '%s\n' '---'
-      printf '%s\n' 'name: claude-api'
-      printf '%s\n' 'description: Build Claude API / Anthropic SDK apps. Use when code imports `anthropic`/`@anthropic-ai/sdk`, when adding Claude features (prompt caching, streaming, tools), or when integrating the Anthropic SDK in any supported language.'
-      printf '%s\n' '---'
-      echo
-      cat ${inputs.anthropic-skills}/skills/claude-api/SKILL.md
-    } > $out/skills/claude-api/SKILL.md
+    target=$out/skills/claude-api/SKILL.md
+    if [ "$(${pkgs.coreutils}/bin/head -n 1 "$target")" != '---' ]; then
+      tmp=$(${pkgs.coreutils}/bin/mktemp)
+      {
+        printf '%s\n' '---'
+        printf '%s\n' 'name: claude-api'
+        printf '%s\n' 'description: Build Claude API / Anthropic SDK apps. Use when code imports `anthropic`/`@anthropic-ai/sdk`, when adding Claude features (prompt caching, streaming, tools), or when integrating the Anthropic SDK in any supported language.'
+        printf '%s\n' '---'
+        echo
+        cat "$target"
+      } > "$tmp"
+      mv "$tmp" "$target"
+    fi
+    ${pkgs.bash}/bin/bash ${./scripts/validate-skill-frontmatter.sh} "$out/skills"
   '';
 in
 {
@@ -40,8 +52,7 @@ in
     sources = {
       # Local skills from this dotfiles repository
       local = {
-        path = inputs.self;
-        subdir = "nix/home-manager/agents/skills";
+        path = local-skills-validated;
       };
       # tmux-a2a-postman skills
       tmux-a2a-postman = {
@@ -57,8 +68,8 @@ in
         path = inputs.dbt-agent-skills;
         subdir = "skills/dbt-migration/skills";
       };
-      # Anthropic official agent skills (claude-api/SKILL.md patched in-place
-      # to add missing YAML frontmatter required by Codex CLI)
+      # Anthropic official agent skills (claude-api/SKILL.md normalized only
+      # when frontmatter is missing, then validated before installation)
       anthropic = {
         path = anthropic-skills-patched;
         subdir = "skills";
