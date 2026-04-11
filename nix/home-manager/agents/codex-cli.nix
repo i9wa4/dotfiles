@@ -20,7 +20,6 @@ let
       homeDir
       pkgs
       inputs
-      nodejsPackage
       ;
   };
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };

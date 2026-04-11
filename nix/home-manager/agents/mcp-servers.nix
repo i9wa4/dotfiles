@@ -4,7 +4,6 @@
   pkgs,
   inputs,
   homeDir,
-  nodejsPackage,
 }:
 let
   inherit (pkgs.stdenv.hostPlatform) system;
@@ -39,31 +38,6 @@ let
     pythonImportsCheck = [ "awslabs.aws_documentation_mcp_server" ];
   };
 
-  drawioMcp = pkgs.buildNpmPackage {
-    pname = "drawio-mcp";
-    version = "1.1.8";
-    src = inputs.drawio-mcp;
-    sourceRoot = "source/mcp-tool-server";
-    npmDepsHash = "sha256-ufgxe7zCTUU06IROtrTd5+lrqXHaNNqip8Oe/ZQsZ6Q=";
-    dontNpmBuild = true;
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-
-    installPhase = ''
-      runHook preInstall
-      # Mimic the upstream `prepack` npm script: copy shared/xml-reference.md
-      # into src/ so src/index.js can read it at runtime. prepack is skipped
-      # because `dontNpmBuild = true`, and the monorepo fallback path
-      # (../../shared/xml-reference.md relative to src/) does not exist in
-      # the installed layout.
-      cp ../shared/xml-reference.md src/xml-reference.md
-      mkdir -p "$out/lib/node_modules/@drawio/mcp" "$out/bin"
-      cp -r . "$out/lib/node_modules/@drawio/mcp"
-      makeWrapper ${nodejsPackage}/bin/node "$out/bin/drawio-mcp" \
-        --add-flags "$out/lib/node_modules/@drawio/mcp/src/index.js"
-      runHook postInstall
-    '';
-  };
-
   # Servers not yet provided by mcp-servers-nix, packaged here as pinned store executables
   manualServers = {
     awslabs-aws-documentation-mcp-server = {
@@ -77,7 +51,7 @@ let
       };
     };
     drawio = {
-      command = "${drawioMcp}/bin/drawio-mcp";
+      command = "${homeDir}/.local/bin/drawio-mcp";
     };
   };
 in
