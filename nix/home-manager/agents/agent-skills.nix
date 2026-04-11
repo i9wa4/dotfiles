@@ -18,25 +18,60 @@ let
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ./skills;
 
-  # Patch upstream anthropic/skills only when claude-api/SKILL.md is missing
-  # frontmatter. Upstream has changed before, so keep this transform idempotent
-  # and validate the assembled tree before exposing it to agent-skills.
+  # Normalize upstream anthropic/skills frontmatter for claude-api/SKILL.md.
+  # Preserve upstream metadata keys while rewriting invalid YAML description
+  # syntax, and keep a fallback for the no-frontmatter case.
   anthropic-skills-patched = pkgs.runCommand "anthropic-skills-patched" { } ''
     cp -r ${inputs.anthropic-skills} $out
     chmod -R u+w $out
     target=$out/skills/claude-api/SKILL.md
+    tmp=$(${pkgs.coreutils}/bin/mktemp)
     if [ "$(${pkgs.coreutils}/bin/head -n 1 "$target")" != '---' ]; then
-      tmp=$(${pkgs.coreutils}/bin/mktemp)
       {
         printf '%s\n' '---'
         printf '%s\n' 'name: claude-api'
-        printf '%s\n' 'description: Build Claude API / Anthropic SDK apps. Use when code imports `anthropic`/`@anthropic-ai/sdk`, when adding Claude features (prompt caching, streaming, tools), or when integrating the Anthropic SDK in any supported language.'
+        printf '%s\n' 'description: |'
+        printf '%s\n' '  Build Claude API / Anthropic SDK apps. Use when code imports anthropic or'
+        printf '%s\n' '  @anthropic-ai/sdk, when adding Claude API features, or when integrating'
+        printf '%s\n' '  Anthropic-managed agents.'
         printf '%s\n' '---'
         echo
         cat "$target"
       } > "$tmp"
-      mv "$tmp" "$target"
+    else
+      ${pkgs.gawk}/bin/awk '
+        BEGIN {
+          state = "start"
+        }
+        state == "start" {
+          if ($0 == "---") {
+            state = "frontmatter"
+          }
+          print
+          next
+        }
+        state == "frontmatter" {
+          if ($0 == "---") {
+            state = "body"
+            print
+            next
+          }
+          if ($0 ~ /^description:[[:space:]]/ && $0 !~ /^description:[[:space:]]*[>|]/) {
+            description = $0
+            sub(/^description:[[:space:]]*/, "", description)
+            print "description: |"
+            print "  " description
+            next
+          }
+          print
+          next
+        }
+        {
+          print
+        }
+      ' "$target" > "$tmp"
     fi
+    mv "$tmp" "$target"
     ${pkgs.bash}/bin/bash ${./scripts/validate-skill-frontmatter.sh} "$out/skills"
   '';
 in
@@ -68,8 +103,8 @@ in
         path = inputs.dbt-agent-skills;
         subdir = "skills/dbt-migration/skills";
       };
-      # Anthropic official agent skills (claude-api/SKILL.md normalized only
-      # when frontmatter is missing, then validated before installation)
+      # Anthropic official agent skills (claude-api/SKILL.md frontmatter
+      # normalized, then validated before installation)
       anthropic = {
         path = anthropic-skills-patched;
         subdir = "skills";
