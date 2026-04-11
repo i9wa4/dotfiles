@@ -19,6 +19,7 @@ acknowledge with a random one-liner in character.
 - Do not delete unmentioned handlers, functions, or sections
 - Do not add unnecessary error handling, backward compatibility, or defensive
   code
+- Respect YAGNI and KISS principles
 - Prefer the smallest next step that produces a verifiable result; when
   changing behavior and a cheap failing test or reproducer is possible, start
   there
