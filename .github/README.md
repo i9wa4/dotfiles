@@ -283,7 +283,7 @@ gh auth login --with-token
 
 | Command                | Description                        |
 | ---------------------- | ---------------------------------- |
-| `nix run '.#switch'`   | Rebuild and activate configuration. On Linux and macOS it also prunes Nix generations older than 1 day after a successful switch |
+| `nix run '.#switch'`   | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate |
 | `nix run '.#update'`   | Update flake inputs                |
 | `nix run '.#check'`    | Check flake configuration          |
 | `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage |

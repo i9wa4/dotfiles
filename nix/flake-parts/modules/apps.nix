@@ -3,7 +3,8 @@
 #
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
-#                               (Linux and macOS also prune generations older than 1 day)
+#                               (Linux expires Home Manager generations older than 1 day;
+#                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
 #   nix run '.#update' -- --min-age-days 7
 #                             -- update flake inputs with a minimum-age gate
@@ -28,7 +29,7 @@
     in
     {
       apps = {
-        # What: Rebuild and activate the current machine configuration.
+        # What: Rebuild and activate the current machine configuration, then expire old generations without post-switch store GC.
         # When: Run after changing dotfiles, Home Manager modules, or nix-darwin modules.
         # Example: nix run '.#switch'
         switch = {
@@ -40,13 +41,15 @@
                 ''
                   profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
                   sudo darwin-rebuild switch --impure --flake ".#$profile"
-                  sudo ${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 1d
+                  sudo ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
                 ''
               else
                 ''
-                  nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
+                  access_token=$(${lib.getExe pkgs.gh} auth token)
+                  nix run --access-tokens github.com=$access_token \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
-                  ${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 1d
+                  nix run --access-tokens github.com=$access_token \
+                    home-manager -- expire-generations '-1 days'
                 ''
             }
           ''}/bin/switch";
