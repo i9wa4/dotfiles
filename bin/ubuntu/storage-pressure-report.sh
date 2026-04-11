@@ -30,6 +30,16 @@ human_size() {
   numfmt --to=iec-i --suffix=B "$1"
 }
 
+safe_text() {
+  value="$1"
+
+  if [[ -z $value ]]; then
+    return
+  fi
+
+  printf '%q' "$value"
+}
+
 size_bytes() {
   target="$1"
 
@@ -160,6 +170,7 @@ append_action() {
   if [[ $category == user_local_data ]]; then
     display_path="${display_path} (other)"
   fi
+  display_path="$(safe_text "$display_path")"
 
   printf '%s\t%s\t%s\t%s\n' \
     "$bytes" \
@@ -286,8 +297,9 @@ while IFS=$'\t' read -r user_name home_dir; do
   find "$home_dir" -mindepth 1 -maxdepth 1 -print0 2>/dev/null >"$top_level_paths_file"
   while IFS= read -r -d '' entry_path; do
     entry_name="$(basename "$entry_path")"
+    entry_label="$(safe_text "$entry_name")"
     entry_bytes="$(size_bytes "$entry_path")"
-    printf '%s\t%s\t%s\n' "$entry_bytes" "$entry_name" "$entry_path" >>"$top_level_sizes_file"
+    printf '%s\t%s\t%s\n' "$entry_bytes" "$entry_label" "$entry_path" >>"$top_level_sizes_file"
   done <"$top_level_paths_file"
 
   codex_bytes="$(size_bytes "$home_dir/.codex")"
@@ -351,12 +363,13 @@ EOF
 host_level="$(host_severity "$summary_fs_used_percent")"
 
 echo "SUMMARY"
-echo "mode=${MODE} host_severity=${host_level} fs_path=${summary_fs_path} fs_total=$(human_size "$summary_fs_size_bytes") fs_used=$(human_size "$summary_fs_used_bytes") fs_available=$(human_size "$summary_fs_avail_bytes") fs_used_percent=${summary_fs_used_percent}%"
+echo "mode=${MODE} host_severity=${host_level} fs_path=$(safe_text "$summary_fs_path") fs_total=$(human_size "$summary_fs_size_bytes") fs_used=$(human_size "$summary_fs_used_bytes") fs_available=$(human_size "$summary_fs_avail_bytes") fs_used_percent=${summary_fs_used_percent}%"
 echo "home_total=$(human_size "$total_home_bytes") scanned_users=${scanned_users} skipped_users=${skipped_users} unreadable_users=${unreadable_users}"
 echo ""
 
 echo "USERS"
 while IFS=$'\t' read -r state user_name home_dir reason_or_dash user_total_bytes; do
+  user_label="$(safe_text "$user_name")"
   if [[ $state == SCANNED ]]; then
     share_percent="$(percent_of "$user_total_bytes" "$total_home_bytes")"
     top_level_sizes_file="${tmp_dir}/${user_name}.top-level-sizes.tsv"
@@ -375,12 +388,12 @@ while IFS=$'\t' read -r state user_name home_dir reason_or_dash user_total_bytes
       END { print width + 0 }
     ' "$top_level_sizes_file")"
     sort -t $'\t' -k2,2 "$top_level_sizes_file" >"$top_level_sorted_file"
-    printf '  %s  %s  %s\n' "$user_name" "$(human_size "$user_total_bytes")" "${share_percent}%"
+    printf '  %s  %s  %s\n' "$user_label" "$(human_size "$user_total_bytes")" "${share_percent}%"
     while IFS=$'\t' read -r entry_bytes entry_name entry_path; do
       printf '    %-*s  %*s\n' "$max_name_width" "$entry_name" "$max_size_width" "$(human_size "$entry_bytes")"
     done <"$top_level_sorted_file"
   else
-    printf '  %s  %s  %s\n' "$user_name" "$state" "$reason_or_dash"
+    printf '  %s  %s  %s\n' "$user_label" "$state" "$(safe_text "$reason_or_dash")"
   fi
 done <"$scanned_users_file"
 echo ""

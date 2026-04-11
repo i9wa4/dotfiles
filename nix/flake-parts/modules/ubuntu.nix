@@ -95,6 +95,8 @@ in
               Service = {
                 Type = "oneshot";
                 ExecStart = "${storageReportScript}/bin/storage-report-daily";
+                StandardOutput = "null";
+                StandardError = "journal";
               };
             };
             systemd.user.timers."storage-report" = {

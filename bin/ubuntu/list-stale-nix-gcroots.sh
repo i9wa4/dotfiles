@@ -25,6 +25,16 @@ EOF
 MODE="dry-run"
 REAL_USER="${SUDO_USER:-$(id -un)}"
 
+safe_text() {
+  value="$1"
+
+  if [[ -z $value ]]; then
+    return
+  fi
+
+  printf '%q' "$value"
+}
+
 run_as_real_user() {
   if [[ $EUID -eq 0 && $REAL_USER != root ]]; then
     runuser -u "$REAL_USER" -- "$@"
@@ -65,10 +75,12 @@ trap 'rm -rf "$tmp_dir"' EXIT
 active_paths_file="${tmp_dir}/active-paths.txt"
 roots_file="${tmp_dir}/roots.txt"
 output_file="${tmp_dir}/output.tsv"
+sorted_output_file="${tmp_dir}/sorted-output.tsv"
 
 : >"$active_paths_file"
 : >"$roots_file"
 : >"$output_file"
+: >"$sorted_output_file"
 
 find /nix/var/nix/gcroots/auto -maxdepth 1 -type l | sort >"$roots_file"
 
@@ -219,17 +231,21 @@ EOF
   printf '%s\t%s\t%s\t%s\t%s\n' "$state" "$reason" "$root_path" "$link_path" "$target_path" >>"$output_file"
 
   if [[ $MODE == delete && $state == CANDIDATE ]]; then
-    echo "DELETE root=${root_path} link=${link_path} reason=${reason}"
+    echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
     rm -f "$root_path"
     delete_count=$((delete_count + 1))
   fi
 done <"$roots_file"
 
-sort -t $'\t' -k1,1 -k2,2 -k3,3 "$output_file" | awk -F '\t' '
-  {
-    printf "%s reason=%s root=%s link=%s target=%s\n", $1, $2, $3, $4, $5
-  }
-'
+sort -t $'\t' -k1,1 -k2,2 -k3,3 "$output_file" >"$sorted_output_file"
+while IFS=$'\t' read -r state reason root_path link_path target_path; do
+  printf '%s reason=%s root=%s link=%s target=%s\n' \
+    "$state" \
+    "$(safe_text "$reason")" \
+    "$(safe_text "$root_path")" \
+    "$(safe_text "$link_path")" \
+    "$(safe_text "$target_path")"
+done <"$sorted_output_file"
 
 echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count} mode=${MODE}"
 
