@@ -10,7 +10,7 @@
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
-#                             -- explicitly delete Linux auto GC roots through the dedicated cleanup command
+#                             -- attempt Linux auto GC-root cleanup through the dedicated command
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
@@ -109,7 +109,7 @@
       }
       // lib.optionalAttrs isLinux {
         # What: Keep Linux stale GC-root cleanup on one explicit command separate from switch.
-        # When: Run it directly when you want guarded stale-root deletion.
+        # When: Run it directly to attempt guarded stale-root deletion as the current user.
         # Example: nix run '.#gc-roots-delete'
         gc-roots-delete = {
           type = "app";

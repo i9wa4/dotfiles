@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# What: classify auto-generated Nix GC roots and directly unlink current CANDIDATE roots.
+# What: classify auto-generated Nix GC roots and try direct current-user unlink for CANDIDATE roots.
 # When: run through gc-roots-delete before manual Nix store cleanup to remove only guarded stale candidates.
 # Example: nix run '.#gc-roots-delete'
 
@@ -14,13 +14,12 @@ Usage: list-stale-nix-gcroots.sh
 
 Behavior:
   Re-classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
-  Re-exec directly under sudo when deletion is needed
-  Unlink only current CANDIDATE symlink roots
+  Attempt current-user unlink of current CANDIDATE symlink roots
+  Warn and continue when a specific CANDIDATE root cannot be deleted
   Run nix-collect-garbage after candidate deletion
 
 Examples:
   nix run '.#gc-roots-delete'
-  sudo ./bin/ubuntu/list-stale-nix-gcroots.sh
 EOF
 }
 
@@ -58,11 +57,6 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
-
-if [[ $EUID -ne 0 ]]; then
-  echo "INFO: gc-roots-delete re-executes this script via sudo so root-context Nix features are not required." >&2
-  exec sudo -- "$BASH" "$0" "$@"
-fi
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
@@ -227,8 +221,11 @@ EOF
 
   if [[ $state == CANDIDATE ]]; then
     echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
-    unlink "$root_path"
-    delete_count=$((delete_count + 1))
+    if unlink "$root_path" 2>/dev/null; then
+      delete_count=$((delete_count + 1))
+    else
+      echo "WARNING root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=unlink-failed"
+    fi
   fi
 done <"$roots_file"
 
