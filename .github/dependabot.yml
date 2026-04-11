@@ -12,3 +12,11 @@ updates:
           - "*"
     commit-message:
       prefix: "chore(deps)"
+  - package-ecosystem: "nix"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore(deps)"
