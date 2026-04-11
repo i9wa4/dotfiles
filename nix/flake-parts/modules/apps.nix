@@ -3,6 +3,7 @@
 #
 # Usage (quote .#name for zsh):
 #   nix run '.#switch'       -- rebuild and activate configuration
+#                               (Linux also prunes generations older than 14 days)
 #   nix run '.#update'       -- update flake inputs
 #   nix run '.#update' -- --min-age-days 7
 #                             -- update flake inputs with a minimum-age gate
@@ -39,7 +40,7 @@
                 ''
                   nix run --access-tokens github.com=$(${lib.getExe pkgs.gh} auth token) \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
-                  ${pkgs.nix}/bin/nix-collect-garbage -d
+                  ${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 14d
                 ''
             }
           ''}/bin/switch";
