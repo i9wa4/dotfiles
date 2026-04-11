@@ -14,7 +14,9 @@ nix run '.#storage-report' -- --self --summary
 ```
 
 This mode is safe for regular daily visibility. It inspects only the current
-user home directory.
+user home directory. On the Ubuntu target, the daily `storage-report` timer
+rewrites the latest scheduled self report at
+`${XDG_STATE_HOME:-~/.local/state}/storage-report/latest.log`.
 
 ### 1.2. All Linux Home Users
 

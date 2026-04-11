@@ -53,7 +53,10 @@ in
           }:
           let
             storageReportScript = pkgs.writeShellScriptBin "storage-report-daily" ''
-              exec ${pkgs.bash}/bin/bash ${./../../../bin/ubuntu/storage-pressure-report.sh} --self --summary
+              report_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/storage-report"
+              umask 077
+              mkdir -p "$report_dir"
+              exec ${pkgs.bash}/bin/bash ${./../../../bin/ubuntu/storage-pressure-report.sh} --self --summary >"$report_dir/latest.log"
             '';
           in
           {
@@ -95,7 +98,6 @@ in
               Service = {
                 Type = "oneshot";
                 ExecStart = "${storageReportScript}/bin/storage-report-daily";
-                StandardOutput = "null";
                 StandardError = "journal";
               };
             };
