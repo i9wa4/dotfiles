@@ -58,7 +58,7 @@ in
               gc = {
                 automatic = true;
                 dates = "12:00";
-                options = "--delete-older-than 14d";
+                options = "--delete-older-than 1d";
               };
               settings = commonNixSettings // {
                 # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
