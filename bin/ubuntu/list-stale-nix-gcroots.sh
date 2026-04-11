@@ -4,25 +4,24 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# What: classify auto-generated Nix GC roots and optionally delete current CANDIDATE roots.
-# When: run before manual Nix store cleanup to separate safe candidates from protected roots.
-# Example: nix run '.#gc-roots-delete' -- --dry-run
+# What: classify auto-generated Nix GC roots and delete current CANDIDATE roots.
+# When: run as root before manual Nix store cleanup to remove only guarded stale candidates.
+# Example: /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
 
 usage() {
   cat <<'EOF'
-Usage: list-stale-nix-gcroots.sh [--dry-run|--delete]
+Usage: list-stale-nix-gcroots.sh
 
-Modes:
-  --dry-run  Classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
-  --delete   Delete only current CANDIDATE roots, then run nix-collect-garbage
+Behavior:
+  Re-classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
+  Delete only current CANDIDATE roots
+  Run nix-collect-garbage after candidate deletion
 
 Examples:
-  nix run '.#gc-roots-delete' -- --dry-run
-  sudo nix run '.#gc-roots-delete' -- --delete
+  sudo /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
 EOF
 }
 
-MODE="dry-run"
 REAL_USER="${SUDO_USER:-$(id -un)}"
 
 safe_text() {
@@ -45,12 +44,6 @@ run_as_real_user() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  --dry-run)
-    MODE="dry-run"
-    ;;
-  --delete)
-    MODE="delete"
-    ;;
   -h | --help)
     usage
     exit 0
@@ -64,8 +57,9 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ $MODE == delete && $EUID -ne 0 ]]; then
-  echo "ERROR: --delete requires root so only current CANDIDATE roots can be removed safely." >&2
+if [[ $EUID -ne 0 ]]; then
+  echo "ERROR: gc-roots-delete requires root so only current CANDIDATE roots can be removed safely." >&2
+  echo "HINT run as root: /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'" >&2
   exit 1
 fi
 
@@ -230,7 +224,7 @@ EOF
 
   printf '%s\t%s\t%s\t%s\t%s\n' "$state" "$reason" "$root_path" "$link_path" "$target_path" >>"$output_file"
 
-  if [[ $MODE == delete && $state == CANDIDATE ]]; then
+  if [[ $state == CANDIDATE ]]; then
     echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
     rm -f "$root_path"
     delete_count=$((delete_count + 1))
@@ -247,14 +241,7 @@ while IFS=$'\t' read -r state reason root_path link_path target_path; do
     "$(safe_text "$target_path")"
 done <"$sorted_output_file"
 
-echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count} mode=${MODE}"
-
-if [[ $MODE == dry-run ]]; then
-  echo "HINT to delete CANDIDATEs run as root: nix run '.#gc-roots-delete' -- --delete"
-fi
-
-if [[ $MODE == delete ]]; then
-  echo "GC start deleted_roots=${delete_count}"
-  /nix/var/nix/profiles/default/bin/nix-collect-garbage
-  echo "GC done deleted_roots=${delete_count}"
-fi
+echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count}"
+echo "GC start deleted_roots=${delete_count}"
+/nix/var/nix/profiles/default/bin/nix-collect-garbage
+echo "GC done deleted_roots=${delete_count}"

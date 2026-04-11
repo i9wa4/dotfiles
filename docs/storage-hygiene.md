@@ -62,35 +62,25 @@ filesystem backing the scanned homes.
 
 ## 2. Guarded GC-Root Delete
 
-Use the single delete-focused command surface to review stale auto GC roots
-before deleting them.
+Use the single delete-focused command surface to remove stale auto GC roots.
 
-### 2.1. Dry Run
+### 2.1. Command
 
 ```sh
-nix run '.#gc-roots-delete' -- --dry-run
+sudo /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
 ```
 
-This mode classifies roots as:
+The interface has no flags. Every invocation re-classifies roots as:
 
 - `KEEP`
 - `CANDIDATE`
 - `BLOCKED`
 
 Each line includes a reason, the auto-root path, the original linked path, and
-the resolved target.
+the resolved target. The command deletes only current `CANDIDATE` roots and
+then runs `nix-collect-garbage`.
 
-### 2.2. Delete Mode
-
-```sh
-sudo nix run '.#gc-roots-delete' -- --delete
-```
-
-Delete mode is explicit and never scheduled. It re-runs the same classification
-checks at execution time, deletes only current `CANDIDATE` roots, and then runs
-`nix-collect-garbage`.
-
-### 2.3. Protected Root Classes
+### 2.2. Protected Root Classes
 
 These roots stay `BLOCKED` in issue `#123`:
 
@@ -103,12 +93,11 @@ These roots stay `BLOCKED` in issue `#123`:
 Home Manager generation links such as `home-manager-*` and profile generation
 links such as `profile-*` stay `KEEP`.
 
-### 2.4. Operator Workflow
+### 2.3. Operator Notes
 
-1. Run `--dry-run`
-2. Review every `CANDIDATE`
-3. Confirm the path is absent from the active worktree inventories
-4. Run `--delete` only when the review is complete
+- This delete surface is explicit and never scheduled.
+- It re-runs the classification and active-worktree checks at execution time.
+- It has no preview mode and no flag-based delete switch.
 
 ## 3. Swap Consolidation
 
