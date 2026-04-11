@@ -46,9 +46,9 @@
               else
                 ''
                   access_token=$(${lib.getExe pkgs.gh} auth token)
-                  nix run --access-tokens github.com=$access_token \
+                  nix run --access-tokens "github.com=$access_token" \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
-                  nix run --access-tokens github.com=$access_token \
+                  nix run --access-tokens "github.com=$access_token" \
                     home-manager -- expire-generations '-1 days'
                 ''
             }
