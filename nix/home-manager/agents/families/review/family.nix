@@ -5,6 +5,13 @@
 let
   reviewGen = import ../../review/review-artifacts-gen.nix { inherit pkgs; };
   staticSkillsDir = ../../review/skills;
+  validateSkillSource =
+    name: src:
+    pkgs.runCommand name { } ''
+      cp -r ${src} $out
+      chmod -R u+w $out
+      ${pkgs.bash}/bin/bash ${../../scripts/validate-skill-frontmatter.sh} "$out"
+    '';
 
   claudeAgentsDir = pkgs.runCommand "review-claude-agents" { } ''
     mkdir -p $out
@@ -36,19 +43,19 @@ in
 
   skillSources = {
     review-local = {
-      path = staticSkillsDir;
+      path = validateSkillSource "review-local-skills-validated" staticSkillsDir;
     };
     generated-cc = {
-      path = reviewGen.skillFiles.ccDir;
+      path = validateSkillSource "review-generated-cc-validated" reviewGen.skillFiles.ccDir;
     };
     generated-cc-deep = {
-      path = reviewGen.skillFiles.ccDeepDir;
+      path = validateSkillSource "review-generated-cc-deep-validated" reviewGen.skillFiles.ccDeepDir;
     };
     generated-cx = {
-      path = reviewGen.skillFiles.cxDir;
+      path = validateSkillSource "review-generated-cx-validated" reviewGen.skillFiles.cxDir;
     };
     generated-cx-deep = {
-      path = reviewGen.skillFiles.cxDeepDir;
+      path = validateSkillSource "review-generated-cx-deep-validated" reviewGen.skillFiles.cxDeepDir;
     };
   };
 }
