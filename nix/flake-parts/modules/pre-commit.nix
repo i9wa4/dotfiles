@@ -125,6 +125,16 @@
             entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check \"$t\" || exit 1; done'";
             pass_filenames = false;
           };
+          skill-frontmatter-check = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-frontmatter-check" ''
+              #!${pkgs.bash}/bin/bash
+              exec ${pkgs.bash}/bin/bash ${../../home-manager/agents/scripts/validate-skill-frontmatter.sh} --staged
+            ''}";
+            files = "(^|/)SKILL\\.md$";
+            types = [ "file" ];
+            pass_filenames = false;
+          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===
