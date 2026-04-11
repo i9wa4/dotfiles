@@ -96,6 +96,8 @@
 
             remove_dir "$cache_root/pre-commit"
             remove_dir "$cache_root/ruff"
+            remove_dir "$cache_root/go-build"
+            remove_dir "$cache_root/nix"
             remove_dir "$HOME/.npm"
 
             if [ -d "$HOME/Library/Caches" ]; then

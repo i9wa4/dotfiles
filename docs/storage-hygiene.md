@@ -60,6 +60,25 @@ The report is Linux-only by design. It targets `/home` usage and the current
 Ubuntu or WSL2 host. The `SUMMARY` line reports filesystem pressure for the
 filesystem backing the scanned homes.
 
+### 1.6. Low-Risk Cache Cleanup
+
+Use the cleanup app for rebuildable user caches that do not need manual review.
+
+```sh
+nix run '.#cleanup'
+```
+
+The cleanup app currently prunes:
+
+- the uv cache
+- `~/.cache/pre-commit`
+- `~/.cache/ruff`
+- `~/.cache/go-build`
+- `~/.cache/nix`
+- `~/.npm`
+
+This is the safest immediate reclaim path for user-owned cache pressure.
+
 ## 2. Guarded GC-Root Delete
 
 Use the single delete-focused command surface to remove stale auto GC roots.
