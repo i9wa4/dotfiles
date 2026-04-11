@@ -4,9 +4,9 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# What: classify auto-generated Nix GC roots and delete current CANDIDATE roots.
-# When: run as root before manual Nix store cleanup to remove only guarded stale candidates.
-# Example: /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
+# What: classify auto-generated Nix GC roots and directly unlink current CANDIDATE roots.
+# When: run through gc-roots-delete before manual Nix store cleanup to remove only guarded stale candidates.
+# Example: nix run '.#gc-roots-delete'
 
 usage() {
   cat <<'EOF'
@@ -14,11 +14,13 @@ Usage: list-stale-nix-gcroots.sh
 
 Behavior:
   Re-classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
-  Delete only current CANDIDATE roots
+  Re-exec directly under sudo when deletion is needed
+  Unlink only current CANDIDATE symlink roots
   Run nix-collect-garbage after candidate deletion
 
 Examples:
-  sudo /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
+  nix run '.#gc-roots-delete'
+  sudo ./bin/ubuntu/list-stale-nix-gcroots.sh
 EOF
 }
 
@@ -58,9 +60,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $EUID -ne 0 ]]; then
-  echo "ERROR: gc-roots-delete requires root so only current CANDIDATE roots can be removed safely." >&2
-  echo "HINT run as root: /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'" >&2
-  exit 1
+  echo "INFO: gc-roots-delete re-executes this script via sudo so root-context Nix features are not required." >&2
+  exec sudo -- "$BASH" "$0" "$@"
 fi
 
 tmp_dir="$(mktemp -d)"
@@ -226,7 +227,7 @@ EOF
 
   if [[ $state == CANDIDATE ]]; then
     echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
-    rm -f "$root_path"
+    unlink "$root_path"
     delete_count=$((delete_count + 1))
   fi
 done <"$roots_file"

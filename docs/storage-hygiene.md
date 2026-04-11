@@ -67,18 +67,20 @@ Use the single delete-focused command surface to remove stale auto GC roots.
 ### 2.1. Command
 
 ```sh
-sudo /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete'
 ```
 
-The interface has no flags. Every invocation re-classifies roots as:
+The interface has no flags. It re-executes the delete script under `sudo`, so
+the destructive step does not depend on running `nix run` as root. Every
+invocation re-classifies roots as:
 
 - `KEEP`
 - `CANDIDATE`
 - `BLOCKED`
 
 Each line includes a reason, the auto-root path, the original linked path, and
-the resolved target. The command deletes only current `CANDIDATE` roots and
-then runs `nix-collect-garbage`.
+the resolved target. The command unlinks only current `CANDIDATE` auto-root
+symlinks and then runs `nix-collect-garbage`.
 
 ### 2.2. Protected Root Classes
 
@@ -98,6 +100,8 @@ links such as `profile-*` stay `KEEP`.
 - This delete surface is explicit and never scheduled.
 - It re-runs the classification and active-worktree checks at execution time.
 - It has no preview mode and no flag-based delete switch.
+- The destructive step re-executes the script directly under `sudo`, not under
+  a root `nix run`.
 
 ## 3. Swap Consolidation
 

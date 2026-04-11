@@ -9,8 +9,8 @@
 #                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
-#   sudo /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
-#                             -- delete Linux auto GC roots after guarded reclassification
+#   nix run '.#gc-roots-delete'
+#                             -- explicitly delete Linux auto GC roots through the dedicated cleanup command
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
@@ -108,9 +108,9 @@
         };
       }
       // lib.optionalAttrs isLinux {
-        # What: Delete stale auto-generated Nix GC roots through one delete-focused entrypoint.
-        # When: Run as root to re-classify auto roots and delete only current CANDIDATE roots.
-        # Example: /nix/var/nix/profiles/default/bin/nix run '.#gc-roots-delete'
+        # What: Keep Linux stale GC-root cleanup on one explicit command separate from switch.
+        # When: Run it directly when you want guarded stale-root deletion.
+        # Example: nix run '.#gc-roots-delete'
         gc-roots-delete = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "gc-roots-delete" ''
