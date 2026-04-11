@@ -6,7 +6,7 @@ set -o posix
 
 # What: classify auto-generated Nix GC roots and optionally delete current CANDIDATE roots.
 # When: run before manual Nix store cleanup to separate safe candidates from protected roots.
-# Example: nix run '.#gc-roots-review' -- --dry-run
+# Example: nix run '.#gc-roots-delete' -- --dry-run
 
 usage() {
   cat <<'EOF'
@@ -17,8 +17,8 @@ Modes:
   --delete   Delete only current CANDIDATE roots, then run nix-collect-garbage
 
 Examples:
-  nix run '.#gc-roots-review' -- --dry-run
-  sudo nix run '.#gc-roots-review' -- --delete
+  nix run '.#gc-roots-delete' -- --dry-run
+  sudo nix run '.#gc-roots-delete' -- --delete
 EOF
 }
 
@@ -250,7 +250,7 @@ done <"$sorted_output_file"
 echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count} mode=${MODE}"
 
 if [[ $MODE == dry-run ]]; then
-  echo "HINT to delete CANDIDATEs run as root: nix run '.#gc-roots-review' -- --delete"
+  echo "HINT to delete CANDIDATEs run as root: nix run '.#gc-roots-delete' -- --delete"
 fi
 
 if [[ $MODE == delete ]]; then

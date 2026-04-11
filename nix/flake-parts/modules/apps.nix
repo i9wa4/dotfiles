@@ -9,6 +9,8 @@
 #                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
+#   nix run '.#gc-roots-delete' -- --dry-run
+#                             -- classify Linux auto GC roots before deletion
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
@@ -106,15 +108,15 @@
         };
       }
       // lib.optionalAttrs isLinux {
-        # What: Review auto-generated Nix GC roots and classify them before deletion.
-        # When: Run before manual Nix store cleanup when /nix/var/nix/gcroots/auto keeps growing.
-        # Example: nix run '.#gc-roots-review' -- --dry-run
-        gc-roots-review = {
+        # What: Review and delete stale auto-generated Nix GC roots through one delete-focused entrypoint.
+        # When: Run --dry-run first, then run --delete as root after the candidate list is reviewed.
+        # Example: nix run '.#gc-roots-delete' -- --dry-run
+        gc-roots-delete = {
           type = "app";
-          program = "${pkgs.writeShellScriptBin "gc-roots-review" ''
+          program = "${pkgs.writeShellScriptBin "gc-roots-delete" ''
             set -euo pipefail
             exec ${pkgs.bash}/bin/bash ${gcRootsReviewScript} "$@"
-          ''}/bin/gc-roots-review";
+          ''}/bin/gc-roots-delete";
         };
 
         # What: Summarize Linux home-directory storage pressure for the current user or all users.

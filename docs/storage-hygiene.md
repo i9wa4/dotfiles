@@ -60,14 +60,15 @@ The report is Linux-only by design. It targets `/home` usage and the current
 Ubuntu or WSL2 host. The `SUMMARY` line reports filesystem pressure for the
 filesystem backing the scanned homes.
 
-## 2. Guarded GC-Root Review
+## 2. Guarded GC-Root Delete
 
-Use this review before deleting stale auto GC roots.
+Use the single delete-focused command surface to review stale auto GC roots
+before deleting them.
 
 ### 2.1. Dry Run
 
 ```sh
-nix run '.#gc-roots-review' -- --dry-run
+nix run '.#gc-roots-delete' -- --dry-run
 ```
 
 This mode classifies roots as:
@@ -82,7 +83,7 @@ the resolved target.
 ### 2.2. Delete Mode
 
 ```sh
-sudo nix run '.#gc-roots-review' -- --delete
+sudo nix run '.#gc-roots-delete' -- --delete
 ```
 
 Delete mode is explicit and never scheduled. It re-runs the same classification
