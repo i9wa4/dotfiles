@@ -25,6 +25,14 @@ EOF
 MODE="dry-run"
 REAL_USER="${SUDO_USER:-$(id -un)}"
 
+run_as_real_user() {
+  if [[ $EUID -eq 0 && $REAL_USER != root ]]; then
+    runuser -u "$REAL_USER" -- "$@"
+  else
+    "$@"
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
   --dry-run)
@@ -62,26 +70,62 @@ output_file="${tmp_dir}/output.tsv"
 : >"$roots_file"
 : >"$output_file"
 
-if [[ $REAL_USER != root ]]; then
-  runuser -u "$REAL_USER" -- git worktree list --porcelain | awk '
-    /^worktree / { print substr($0, 10) }
-  ' >>"$active_paths_file"
-else
-  git worktree list --porcelain | awk '
-    /^worktree / { print substr($0, 10) }
-  ' >>"$active_paths_file"
-fi
+find /nix/var/nix/gcroots/auto -maxdepth 1 -type l | sort >"$roots_file"
 
-if command -v vde-worktree >/dev/null 2>&1; then
-  if [[ $REAL_USER != root ]]; then
-    runuser -u "$REAL_USER" -- vde-worktree list --json 2>/dev/null | jq -r '.worktrees[]?.path // empty' >>"$active_paths_file" || true
+discover_repo_root() {
+  candidate_repo=""
+
+  candidate_repo="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [[ -n $candidate_repo && -f $candidate_repo/config/vde/worktree/config.yml ]]; then
+    printf '%s\n' "$candidate_repo"
+    return 0
+  fi
+
+  while IFS= read -r root_path; do
+    candidate_link="$(readlink "$root_path" 2>/dev/null || true)"
+
+    case "$candidate_link" in
+    *"/.worktrees/"*)
+      candidate_repo="${candidate_link%%/.worktrees/*}"
+      if [[ -f $candidate_repo/config/vde/worktree/config.yml ]]; then
+        printf '%s\n' "$candidate_repo"
+        return 0
+      fi
+      ;;
+    esac
+  done <"$roots_file"
+
+  return 1
+}
+
+run_repo_vde_worktree_list() {
+  if [[ -z ${REPO_ROOT:-} ]]; then
+    return 1
+  fi
+
+  if [[ $EUID -eq 0 && $REAL_USER != root ]]; then
+    # shellcheck disable=SC2016
+    runuser -u "$REAL_USER" -- sh -c 'cd "$1" && vde-worktree list --json' sh "$REPO_ROOT"
   else
-    vde-worktree list --json 2>/dev/null | jq -r '.worktrees[]?.path // empty' >>"$active_paths_file" || true
+    { cd "$REPO_ROOT" && vde-worktree list --json; }
+  fi
+}
+
+REPO_ROOT="$(discover_repo_root || true)"
+
+if [[ -n $REPO_ROOT ]]; then
+  {
+    run_as_real_user git -C "$REPO_ROOT" worktree list --porcelain | awk '
+      /^worktree / { print substr($0, 10) }
+    '
+  } >>"$active_paths_file"
+
+  if command -v vde-worktree >/dev/null 2>&1; then
+    { run_repo_vde_worktree_list 2>/dev/null | jq -r '.worktrees[]?.path // empty'; } >>"$active_paths_file" || true
   fi
 fi
 
 sort -u "$active_paths_file" -o "$active_paths_file"
-find /nix/var/nix/gcroots/auto -maxdepth 1 -type l | sort >"$roots_file"
 
 is_active_worktree_path() {
   candidate_path="$1"

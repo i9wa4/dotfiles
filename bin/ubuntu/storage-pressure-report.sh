@@ -38,7 +38,7 @@ size_bytes() {
     return
   fi
 
-  du -sb --apparent-size "$target" 2>/dev/null | awk '{print $1}'
+  du -s -B1 "$target" 2>/dev/null | awk '{print $1}'
 }
 
 percent_of() {
@@ -157,6 +157,9 @@ append_action() {
 
   cleanup_mode="$(category_cleanup_mode "$category")"
   display_path="$(display_action_path "$user_name" "$home_dir" "$path")"
+  if [[ $category == user_local_data ]]; then
+    display_path="${display_path} (other)"
+  fi
 
   printf '%s\t%s\t%s\t%s\n' \
     "$bytes" \
@@ -235,15 +238,11 @@ else
   printf '%s\n' "$passwd_source" | awk -F: '$6 ~ "^/home/" { print $1 "\t" $6 }' >>"$users_file"
 fi
 
-read -r root_size_bytes root_used_bytes root_avail_bytes root_used_percent <<EOF
-$(df -B1 --output=size,used,avail,pcent / | awk 'NR == 2 { gsub(/%/, "", $4); print $1, $2, $3, $4 }')
-EOF
-
-host_level="$(host_severity "$root_used_percent")"
 total_home_bytes=0
 scanned_users=0
 skipped_users=0
 unreadable_users=0
+summary_fs_path=""
 
 scanned_users_file="${tmp_dir}/scanned-users.tsv"
 : >"$scanned_users_file"
@@ -274,6 +273,9 @@ while IFS=$'\t' read -r user_name home_dir; do
   user_total_bytes="$(size_bytes "$home_dir")"
   total_home_bytes=$((total_home_bytes + user_total_bytes))
   scanned_users=$((scanned_users + 1))
+  if [[ -z $summary_fs_path ]]; then
+    summary_fs_path="$home_dir"
+  fi
   printf 'SCANNED\t%s\t%s\t-\t%s\n' "$user_name" "$home_dir" "$user_total_bytes" >>"$scanned_users_file"
 
   top_level_paths_file="${tmp_dir}/${user_name}.top-level-paths"
@@ -330,8 +332,26 @@ while IFS=$'\t' read -r user_name home_dir; do
   append_action "$user_local_data_bytes" "$user_name" "user_local_data" "$home_dir/.local" "$home_dir" "$user_total_bytes" "$actions_file"
 done <"$users_file"
 
+if [[ -z $summary_fs_path ]]; then
+  if [[ $MODE == self ]]; then
+    summary_fs_path="${HOME:-/home/$(id -un)}"
+  else
+    summary_fs_path="/home"
+  fi
+fi
+
+if [[ ! -e $summary_fs_path ]]; then
+  summary_fs_path="/"
+fi
+
+read -r summary_fs_size_bytes summary_fs_used_bytes summary_fs_avail_bytes summary_fs_used_percent <<EOF
+$(df -B1 --output=size,used,avail,pcent "$summary_fs_path" | awk 'NR == 2 { gsub(/%/, "", $4); print $1, $2, $3, $4 }')
+EOF
+
+host_level="$(host_severity "$summary_fs_used_percent")"
+
 echo "SUMMARY"
-echo "mode=${MODE} host_severity=${host_level} root_total=$(human_size "$root_size_bytes") root_used=$(human_size "$root_used_bytes") root_available=$(human_size "$root_avail_bytes") root_used_percent=${root_used_percent}%"
+echo "mode=${MODE} host_severity=${host_level} fs_path=${summary_fs_path} fs_total=$(human_size "$summary_fs_size_bytes") fs_used=$(human_size "$summary_fs_used_bytes") fs_available=$(human_size "$summary_fs_avail_bytes") fs_used_percent=${summary_fs_used_percent}%"
 echo "home_total=$(human_size "$total_home_bytes") scanned_users=${scanned_users} skipped_users=${skipped_users} unreadable_users=${unreadable_users}"
 echo ""
 

@@ -31,7 +31,6 @@ The report prints these sections:
 
 - `SUMMARY`
 - `USERS`
-- `CATEGORIES`
 - `TOP ACTIONS`
 - `NOTES`
 
@@ -56,7 +55,8 @@ silently.
   Meaning: do not remove by default
 
 The report is Linux-only by design. It targets `/home` usage and the current
-Ubuntu or WSL2 host.
+Ubuntu or WSL2 host. The `SUMMARY` line reports filesystem pressure for the
+filesystem backing the scanned homes.
 
 ## 2. Guarded GC-Root Review
 
