@@ -12,21 +12,14 @@
           system
           ;
       };
-      codex = import ../../lib/pinned-codex.nix {
-        inherit
-          pkgs
-          inputs
-          system
-          ;
-      };
     in
     {
       packages = {
         inherit
           claude-code
-          codex
           ;
         inherit (inputs.llm-agents.packages.${system})
+          codex
           ccusage
           ccusage-codex
           ;

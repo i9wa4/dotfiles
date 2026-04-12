@@ -13,13 +13,6 @@ let
       system
       ;
   };
-  codex = import ../../lib/pinned-codex.nix {
-    inherit
-      pkgs
-      inputs
-      system
-      ;
-  };
 in
 {
   imports = [
@@ -30,7 +23,7 @@ in
 
   home.packages = [
     claude-code
-    codex
+    inputs.llm-agents.packages.${pkgs.system}.codex
     inputs.llm-agents.packages.${pkgs.system}.ccusage
     inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
     inputs.claude-chill.packages.${pkgs.system}.default
