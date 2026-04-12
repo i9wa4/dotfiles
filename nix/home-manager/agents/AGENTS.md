@@ -49,6 +49,11 @@ acknowledge with a random one-liner in character.
 ### 5.1. Working Files
 
 - Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
+- For `tmux-a2a-postman` multi-agent work, create or update `mkmd` artifacts
+  for review handoffs, development handoffs that need more than a short status
+  line, and small durable decision records. Treat
+  `docs/repo-ai-operating-contract.md` section 3.1 as the canonical rule for
+  when that is required.
 - Common dir/label combinations:
 
     | --dir     | --label                          |

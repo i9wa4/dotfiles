@@ -74,6 +74,33 @@ For worker-style nodes inside the postman graph, two more rules matter:
 - non-user-facing nodes do not end by asking the human user a question
 - success and failure are reported as `DONE:` or `BLOCKED:`
 
+### 3.1. Durable `mkmd` handoff artifacts
+
+`mkmd` is the default way to keep cross-agent context durable in this repo.
+Do not rely on chat history or short status traffic alone when later readers
+will need to recover why work moved, what changed, or what still needs
+verification.
+
+Create or update a durable `mkmd` artifact when any of these are true:
+
+- review findings, rework notes, or approval-defect lists need to move between
+  nodes
+- a development handoff needs more than `current task`, `blockers`,
+  `waiting_on`, and `next action` for the next node to continue safely
+- a small decision, rejection, or investigation result is likely to be reused
+  by a later pass
+
+A short status update is enough only when the next node needs no context beyond
+the current control-plane state.
+
+Use the standard `mkmd` directories by artifact type:
+
+- `draft` for temporary working notes and handoff drafts
+- `research` for investigation findings and decision support
+- `reviews` for completion or review artifacts
+- `plans` for execution plans
+- `tmp` for disposable scratch output
+
 ## 4. Hook contract
 
 Hooks are not optional conveniences in this repo. They are part of the local
