@@ -59,7 +59,7 @@ in
         fi
       done
 
-      # Update outdated packages in one batch
+      # Update only repo-managed packages; the shared prefix may contain user-managed globals too.
       outdatedJson=$("$guardedNpm" --prefix ${npmPrefix} outdated -g --json --depth=0 2>/dev/null |
         ${pkgs.gawk}/bin/awk '
           /^[[:space:]]*{/ && !capturing {
@@ -80,31 +80,22 @@ in
       if [ -n "$outdatedJson" ]; then
         outdated=$(printf '%s\n' "$outdatedJson" | ${pkgs.jq}/bin/jq -r 'keys[]?' || true)
       fi
-      if [ -n "$outdated" ]; then
-        echo "Updating outdated packages:"
-        printf '%s\n' "$outdated"
-        printf '%s\n' "$outdated" | xargs "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
-      fi
-
-      # Remove unlisted packages (keep npm, corepack, safe-chain)
-      # --parseable gives paths like .../node_modules/pkg or .../node_modules/@scope/pkg
-      # Extract package name by stripping the node_modules prefix
-      node_modules="${npmPrefix}/lib/node_modules"
-      installed=$("$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 --parseable 2>/dev/null | tail -n +2 || true)
-      for pkg_path in $installed; do
-        pkg="''${pkg_path#"$node_modules"/}"
-        case "$pkg" in
-          npm|corepack|@aikidosec/*) continue ;;
-        esac
-        found=0
+      managedOutdatedPackages=()
+      for pkg in $outdated; do
         for want in "''${NPM_PACKAGES[@]}"; do
-          if [ "$pkg" = "$want" ]; then found=1; break; fi
+          if [ "$pkg" = "$want" ]; then
+            managedOutdatedPackages+=("$pkg")
+            break
+          fi
         done
-        if [ "$found" = "0" ]; then
-          echo "Removing unlisted package: $pkg"
-          "$guardedNpm" --prefix ${npmPrefix} uninstall -g "$pkg"
-        fi
       done
+      if [ "''${#managedOutdatedPackages[@]}" -gt 0 ]; then
+        echo "Updating outdated packages:"
+        printf '%s\n' "''${managedOutdatedPackages[@]}"
+        printf '%s\n' "''${managedOutdatedPackages[@]}" | xargs "$guardedNpm" --prefix ${npmPrefix} --min-release-age=${toString npmMinReleaseAgeDays} install -g
+      else
+        echo "No managed npm package updates needed."
+      fi
     '';
   };
 }

@@ -23,10 +23,27 @@ Environment:
   MKMD_BASE_DIR  Override base directory (default: \$XDG_STATE_HOME/mkmd)
 
 Options:
-  --dir DIR      Directory name under the daily session
+  --dir DIR      Single directory name under the daily session
   --label LABEL  File label included in the filename
   -h, --help     Show this help and exit
 EOF
+}
+
+validate_component() {
+  name="$1"
+  value="$2"
+
+  if ! [[ $value =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+    echo "Error: invalid --${name}: use a single path component with letters, numbers, dots, underscores, or hyphens" >&2
+    exit 1
+  fi
+
+  case "$value" in
+    *".."*)
+      echo "Error: invalid --${name}: '..' is not allowed" >&2
+      exit 1
+      ;;
+  esac
 }
 
 LABEL=""
@@ -64,6 +81,9 @@ if [[ -z $DIR || -z $LABEL ]]; then
   print_usage >&2
   exit 1
 fi
+
+validate_component "dir" "$DIR"
+validate_component "label" "$LABEL"
 
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 

@@ -212,8 +212,11 @@ in
         if [ -d "$STATE_ROOT" ]; then
           find "$STATE_ROOT" \
             \( -name 'observations*.jsonl' -o -name 'project.json' -o -name 'projects.json' \) \
-            -type f -exec chmod 600 {} \;
-          find "$STATE_ROOT" -type d -exec chmod 700 {} \;
+            -type f |
+            while IFS= read -r file; do
+              chmod 600 "$file"
+              chmod 700 "$(dirname "$file")"
+            done
         fi
       '';
     };
