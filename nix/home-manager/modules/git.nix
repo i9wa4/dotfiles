@@ -1,4 +1,5 @@
 {
+  ghqRoot,
   lib,
   dotfilesDir,
   ...
@@ -52,7 +53,7 @@
         vimdiff.path = "vim";
       };
       fetch.prune = true;
-      ghq.root = "~/ghq";
+      ghq.root = ghqRoot;
       gpg.format = "ssh";
       grep.lineNumber = true;
       http.sslVerify = false;
