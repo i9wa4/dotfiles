@@ -532,8 +532,9 @@ Do NOT send partial DONE.
 ### 7.11. [orchestrator] Approval Route
 
 Sequence (no exceptions): worker DONE -> orchestrator sends to critic -> critic
-replies (consults guardian internally) -> if APPROVED: send to boss -> boss
-approves: send DONE to messenger.
+consults guardian -> guardian replies to critic -> critic relays final verdict
+to orchestrator -> if APPROVED: send to boss -> boss approves -> orchestrator
+sends DONE to messenger.
 
 `NOT APPROVED:` from critic or boss must be defect-specific and counts as one
 approval attempt for that artifact.
