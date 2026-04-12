@@ -5,7 +5,7 @@ set -o pipefail
 set -o posix
 
 # Set up repository environment for development.
-# Creates local.vim and trusts mise.toml.
+# Creates local.vim and prints explicit manual trust steps when needed.
 # Also runs repository-specific setup based on repo name.
 #
 # Usage:
@@ -58,16 +58,16 @@ else
   printf '%s\n' "$tp_line" >>local.vim
 fi
 
-# Trust mise.toml if exists
+# Keep repository trust changes opt-in only.
 if [[ -f "mise.toml" ]]; then
-  mise trust mise.toml
-  echo "* Trusted mise.toml"
+  echo "* Skipped trusting repository tools by default"
+  printf "* Optional: run '%s %s %s' to trust repository tools\n" "mise" "trust" "mise.toml"
 fi
 
-# Allow direnv if .envrc exists
+# Keep .envrc allow changes opt-in only.
 if [[ -f ".envrc" ]]; then
-  direnv allow
-  echo "* Allowed .envrc"
+  echo "* Skipped allowing .envrc by default"
+  printf "* Optional: run '%s %s' to allow .envrc\n" "direnv" "allow"
 fi
 
 # Repository-specific setup
