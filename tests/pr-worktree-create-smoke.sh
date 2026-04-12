@@ -21,7 +21,7 @@ trap 'rm -rf "${tmp_dir}"' EXIT
 
 mkdir -p "${mock_bin}" "${mock_repo_root}" "${mock_refs_dir}" "${mock_worktree_root}"
 
-cat <<'EOF' > "${mock_bin}/gh"
+cat <<'EOF' >"${mock_bin}/gh"
 #!/usr/bin/env bash
 set -o errexit
 set -o nounset
@@ -42,7 +42,7 @@ print(
 PY
 EOF
 
-cat <<'EOF' > "${mock_bin}/git"
+cat <<'EOF' >"${mock_bin}/git"
 #!/usr/bin/env bash
 set -o errexit
 set -o nounset
@@ -86,7 +86,7 @@ echo "unexpected git command: $*" >&2
 exit 1
 EOF
 
-cat <<'EOF' > "${mock_bin}/vde-worktree"
+cat <<'EOF' >"${mock_bin}/vde-worktree"
 #!/usr/bin/env bash
 set -o errexit
 set -o nounset
@@ -107,7 +107,7 @@ echo "unexpected vde-worktree command: $*" >&2
 exit 1
 EOF
 
-cat <<'EOF' > "${mock_bin}/repo-setup"
+cat <<'EOF' >"${mock_bin}/repo-setup"
 #!/usr/bin/env bash
 set -o errexit
 set -o nounset
@@ -115,7 +115,7 @@ set -o pipefail
 printf '%s\n' "MOCK_REPO_SETUP"
 EOF
 
-cat <<'EOF' > "${mock_bin}/zoxide"
+cat <<'EOF' >"${mock_bin}/zoxide"
 #!/usr/bin/env bash
 set -o errexit
 set -o nounset
@@ -145,7 +145,7 @@ if ! PATH="${mock_bin}:${PATH}" \
   PR_WORKTREE_SMOKE_REPO_ROOT="${mock_repo_root}" \
   PR_WORKTREE_SMOKE_REFS_DIR="${mock_refs_dir}" \
   PR_WORKTREE_SMOKE_WORKTREE_ROOT="${mock_worktree_root}" \
-  "${repo_root}/bin/pr-worktree-create" 123 > "${output_file}" 2>&1; then
+  "${repo_root}/bin/pr-worktree-create" 123 >"${output_file}" 2>&1; then
   cat "${output_file}" >&2
   exit 1
 fi
@@ -157,7 +157,7 @@ if ! grep -F "Fetch target:" "${output_file}" >/dev/null; then
   exit 1
 fi
 
-if [[ "${is_cross_repo}" == "true" ]]; then
+if [[ ${is_cross_repo} == "true" ]]; then
   if grep -F "${expected_same_repo_target}" "${output_file}" >/dev/null; then
     echo "Fork PR output still assumes ${expected_same_repo_target}" >&2
     exit 1
