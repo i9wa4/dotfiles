@@ -52,7 +52,7 @@ in
       set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
-      set-option -g status-interval 1
+      set-option -g status-interval 5
       if-shell '[ -n "$SSH_TTY" ]' \
         "set-option -g status 2" \
         "set-option -g status on"

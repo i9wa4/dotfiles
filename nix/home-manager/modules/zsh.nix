@@ -17,7 +17,8 @@ in
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
-    completionInit = "autoload -U compinit && compinit -u";
+    # compinit is owned by config/zsh/zinit.zsh to avoid double initialization.
+    completionInit = "";
 
     # ========================================================================
     # .zshenv (envExtra)
