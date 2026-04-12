@@ -3,12 +3,11 @@
 {
   pkgs,
   lib,
-  username,
+  homeDir,
   nodejsPackage,
   ...
 }:
 let
-  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
   nodejs = nodejsPackage;
   npm = "${nodejs}/bin/npm";
   npmMinReleaseAgeDays = 3;

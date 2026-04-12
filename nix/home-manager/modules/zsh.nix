@@ -5,12 +5,10 @@
   pkgs,
   lib,
   config,
-  username,
+  dotfilesDir,
   ...
 }:
 let
-  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
-  dotfilesDir = "${homeDir}/ghq/github.com/i9wa4/dotfiles";
   zshDir = "${dotfilesDir}/config/zsh";
 in
 {

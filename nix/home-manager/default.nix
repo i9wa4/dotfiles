@@ -67,7 +67,12 @@ let
 in
 {
   _module.args = {
-    inherit nodejsPackage;
+    inherit
+      dotfilesDir
+      ghqRoot
+      homeDir
+      nodejsPackage
+      ;
   };
 
   imports = [

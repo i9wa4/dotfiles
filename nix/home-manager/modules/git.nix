@@ -1,11 +1,8 @@
 {
-  config,
   lib,
+  dotfilesDir,
   ...
 }:
-let
-  dotfilesDir = "${config.home.homeDirectory}/ghq/github.com/i9wa4/dotfiles";
-in
 {
   # Git configuration (replaces Makefile git-config target)
   programs.git = {
