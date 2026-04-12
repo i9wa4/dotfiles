@@ -20,6 +20,7 @@ let
       inputs
       ;
   };
+  # Shared Bash deny surface includes aws sso login; see denied-bash-commands.nix.
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
   instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
   instructionFiles = instructionArtifacts {

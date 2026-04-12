@@ -152,6 +152,16 @@ let
     }
     {
       argv = [
+        "aws"
+        "sso"
+        "login"
+      ];
+      anchored = false;
+      justification = "aws sso login is denied; ask the user to run the login in their own tmux pane and continue only after credentials already exist";
+      claudeSettingsJson = true;
+    }
+    {
+      argv = [
         "tmux"
         "select-pane"
         "-T"
