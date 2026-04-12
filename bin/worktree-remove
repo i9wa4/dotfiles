@@ -6,6 +6,7 @@ set -o posix
 
 # Remove git worktree(s) by path.
 # Safely removes only worktrees (not regular repositories).
+# Dirty worktrees are refused by default; this command does not force removal.
 #
 # Usage:
 #   worktree-remove <path> [path2 ...]
@@ -27,6 +28,9 @@ fi
 # Check arguments
 if [[ $# -eq 0 ]]; then
   echo "Usage: $0 <path> [path2 ...]" >&2
+  echo "" >&2
+  echo "Default behavior:" >&2
+  echo "  Dirty worktrees are refused by Git; this command does not force removal." >&2
   echo "" >&2
   echo "Path formats:" >&2
   echo "  ghq path:      github.com/org/project/.worktrees/issue-123-fix-thing" >&2
@@ -81,7 +85,7 @@ for repo in "$@"; do
     main_repo=$(grep "gitdir:" "${repo_path}/.git" | sed 's/gitdir: //' | sed 's|/.git/worktrees/.*||')
 
     # Run git worktree remove from main repository
-    cd "${main_repo}" && git worktree remove --force "${repo_path}"
+    cd "${main_repo}" && git worktree remove "${repo_path}"
     if command -v zoxide &>/dev/null; then
       if zoxide remove "${repo_path}" >/dev/null 2>&1; then
         echo "  * Removed from zoxide database"
