@@ -4,6 +4,9 @@ This document describes the current worktree workflow in this repository.
 Recent commits and the checked-in scripts are the source of truth. If this page
 and the code disagree, fix the page to match the code.
 
+For the adoption decision behind the current tool stack, see
+`docs/worktree-tool-evaluation.md`.
+
 ## 1. Stable entrypoints
 
 - Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
@@ -33,8 +36,8 @@ and the code disagree, fix the page to match the code.
 
 1. `issue-worktree-create` fetches `origin` first.
 2. If the current branch is `main`, it runs `git pull --ff-only origin main`.
-   Otherwise it refreshes the local `main` branch with
-   `git fetch origin main:main`.
+   Otherwise it keeps local `main` unchanged while another branch is checked
+   out.
 3. It can process multiple issue numbers in one run.
 4. For each issue, it fetches `title`, `body`, and `comments` with
    `gh issue view --json title,body,comments`.
@@ -54,22 +57,24 @@ and the code disagree, fix the page to match the code.
 
 ## 4. Current PR review workflow
 
-1. `pr-worktree-create` fetches `origin` first and updates the local `main`
-   branch with the same `pull --ff-only` / `fetch origin main:main` split used
-   by issue creation.
+1. `pr-worktree-create` fetches `origin` first. If the current branch is
+   `main`, it runs `git pull --ff-only origin main`. Otherwise it keeps local
+   `main` unchanged while another branch is checked out.
 2. It can process multiple PR numbers in one run.
-3. For each PR, it reads `headRefName` with
-   `gh pr view --json headRefName --jq '.headRefName'`.
-4. It requires `origin/<headRefName>` to exist before the PR can continue
-   through the review worktree flow.
+3. For each PR, it reads `headRefName`, `headRepositoryOwner`,
+   `headRepository`, and `isCrossRepository` with `gh pr view`.
+4. If the PR comes from another repository, it fetches that head branch
+   directly from `https://github.com/<owner>/<repo>.git`. Otherwise it fetches
+   the head branch from `origin`.
 5. It derives a local review branch name as
    `pr-<number>-<headRefName with slashes replaced by dashes>`.
 6. It checks for an existing managed worktree path with
    `vde-worktree path "<derived-local-branch>"`.
-7. If the local review branch does not exist yet, it creates it to track
-   `origin/<headRefName>`.
-8. It resolves the review worktree with
-   `vde-worktree switch "<derived-local-branch>"`.
+7. When no managed worktree exists yet, it fetches the PR head directly into
+   that local review branch and reports whether the local review branch was
+   created or refreshed.
+8. It resolves the review worktree with `vde-worktree switch
+   "<derived-local-branch>"`.
 9. On a newly created worktree, it copies `.envrc` when present and runs
    `repo-setup` when available.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
@@ -131,8 +136,9 @@ and the code disagree, fix the page to match the code.
   paths.
 - `worktree-remove` only removes linked worktrees (`.git` is a file), not
   regular repositories.
-- It runs `git worktree remove --force` from the main repository and removes
-  the path from `zoxide` when possible.
+- It runs `git worktree remove` from the main repository and lets Git refuse
+  dirty worktrees by default.
+- When possible, it also removes the path from `zoxide`.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
   backend or jump layer.
 - Notification or daemon behavior is outside this document. That belongs to
@@ -148,6 +154,12 @@ and the code disagree, fix the page to match the code.
   source metadata.
 - tmux worktree session naming now uses the full worktree directory name with
   dots normalized to dashes.
+- Off-main issue and PR flows now keep local `main` unchanged instead of
+  rewriting it in place.
+- PR review now supports cross-repository heads by fetching from the PR source
+  repository directly.
+- `worktree-remove` now relies on Git's safe default refusal for dirty
+  worktrees instead of forcing deletion.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
@@ -161,3 +173,4 @@ and the code disagree, fix the page to match the code.
 - `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/zsh.nix`
 - `docs/dotfiles-operating-concepts.md`
+- `docs/worktree-tool-evaluation.md`
