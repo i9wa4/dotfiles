@@ -41,7 +41,7 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 if [[ $current_branch == "main" ]]; then
   git pull --ff-only origin main
 else
-  git fetch origin main:main
+  echo "* Keeping local main unchanged while ${current_branch} is checked out"
 fi
 echo ""
 
@@ -58,17 +58,33 @@ for pr_number in "$@"; do
 
   # Fetch PR branch name
   echo "-> Fetching PR #${pr_number} info..."
-  pr_branch=$(gh pr view "${pr_number}" --json headRefName --jq '.headRefName' 2>/dev/null)
+  pr_info=$(gh pr view "${pr_number}" --json headRefName,headRepositoryOwner,headRepository,isCrossRepository --jq '[.headRefName, .headRepositoryOwner.login, .headRepository.name, .isCrossRepository] | @tsv' 2>/dev/null)
 
-  if [[ -z $pr_branch ]]; then
-    echo "Error: Could not get branch name for PR #${pr_number}." >&2
+  if [[ -z $pr_info ]]; then
+    echo "Error: Could not get branch details for PR #${pr_number}." >&2
     echo "Please verify the PR exists and you have access." >&2
+    echo ""
+    continue
+  fi
+
+  IFS=$'\t' read -r pr_branch pr_owner pr_repo pr_is_cross_repo <<<"$pr_info"
+
+  if [[ -z $pr_branch || -z $pr_owner || -z $pr_repo || -z $pr_is_cross_repo ]]; then
+    echo "Error: Could not parse branch details for PR #${pr_number}." >&2
     echo ""
     continue
   fi
 
   echo "* PR #${pr_number} branch: ${pr_branch}"
   pr_local_branch="pr-${pr_number}-${pr_branch//\//-}"
+
+  if [[ $pr_is_cross_repo == "true" ]]; then
+    pr_fetch_source="https://github.com/${pr_owner}/${pr_repo}.git"
+    pr_fetch_target="${pr_owner}/${pr_repo}:${pr_branch}"
+  else
+    pr_fetch_source="origin"
+    pr_fetch_target="origin/${pr_branch}"
+  fi
 
   existing_worktree_path=""
   if existing_worktree_path=$(vde-worktree path "${pr_local_branch}" 2>/dev/null); then
@@ -77,15 +93,26 @@ for pr_number in "$@"; do
     existing_worktree_path=""
   fi
 
-  if ! git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
-    echo "Error: Remote branch 'origin/${pr_branch}' not found." >&2
-    echo ""
-    continue
+  local_branch_existed="false"
+  if git show-ref --verify --quiet "refs/heads/${pr_local_branch}"; then
+    local_branch_existed="true"
   fi
 
-  if ! git show-ref --verify --quiet "refs/heads/${pr_local_branch}"; then
-    git branch --track "${pr_local_branch}" "origin/${pr_branch}"
+  if [[ -z $existing_worktree_path ]]; then
+    echo "* Fetch target: ${pr_fetch_target}"
+    if ! git fetch "${pr_fetch_source}" "+refs/heads/${pr_branch}:${pr_local_branch}"; then
+      echo "Error: Could not fetch '${pr_fetch_target}' into '${pr_local_branch}'." >&2
+      echo ""
+      continue
+    fi
+
+    if [[ $local_branch_existed == "true" ]]; then
+      echo "* Refreshed local review branch: ${pr_local_branch}"
+    else
+      echo "* Created local review branch: ${pr_local_branch}"
+    fi
   fi
+
   worktree_path=$(vde-worktree switch "${pr_local_branch}")
 
   if [[ -n $existing_worktree_path ]]; then
@@ -93,7 +120,7 @@ for pr_number in "$@"; do
     echo "* Branch: ${pr_local_branch} -> ${pr_branch}"
   else
     echo "* Created worktree: ${worktree_path}"
-    echo "* Using remote branch: ${pr_branch} (local: ${pr_local_branch})"
+    echo "* Using review branch: ${pr_fetch_target} (local: ${pr_local_branch})"
 
     # Copy .envrc if it exists
     if [[ -f "${repo_root}/.envrc" ]]; then

@@ -44,7 +44,7 @@ current_branch=$(git rev-parse --abbrev-ref HEAD)
 if [[ "$current_branch" == "main" ]]; then
   git pull --ff-only origin main
 else
-  git fetch origin main:main
+  echo "* Keeping local main unchanged while ${current_branch} is checked out"
 fi
 echo ""
 
@@ -137,7 +137,7 @@ ${issue_comments}
     existing_worktree_path=""
   fi
 
-  if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
+  if git ls-remote --exit-code --heads origin "${branch_name}" >/dev/null 2>&1; then
     worktree_path=$(vde-worktree get "origin/${branch_name}")
     branch_origin="remote"
   elif git show-ref --verify --quiet "refs/heads/${branch_name}"; then
