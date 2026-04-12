@@ -3,12 +3,30 @@
 { inputs, ... }:
 {
   perSystem =
-    { system, ... }:
+    { system, pkgs, ... }:
+    let
+      claude-code = import ../../lib/pinned-claude-code.nix {
+        inherit
+          pkgs
+          inputs
+          system
+          ;
+      };
+      codex = import ../../lib/pinned-codex.nix {
+        inherit
+          pkgs
+          inputs
+          system
+          ;
+      };
+    in
     {
       packages = {
-        inherit (inputs.llm-agents.packages.${system})
+        inherit
           claude-code
           codex
+          ;
+        inherit (inputs.llm-agents.packages.${system})
           ccusage
           ccusage-codex
           ;
