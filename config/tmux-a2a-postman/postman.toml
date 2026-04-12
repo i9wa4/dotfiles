@@ -3,6 +3,18 @@ allow_shell_templates = true
 alert_cooldown_seconds = 600
 alert_delivery_window_seconds = 60
 
+# Bounded approval-lane contract:
+# Approval route = worker DONE -> orchestrator -> critic -> guardian -> critic
+#   -> orchestrator -> boss -> orchestrator -> messenger
+# approval pass = no remaining BLOCKING defects and the artifact matches the
+#   plan and intended file set
+# defect-specific rejection = NOT APPROVED or boss rejection must list the
+#   blocking defects for the next worker attempt
+# hard iteration cap = 3 approval attempts per artifact (initial + 2 rework
+#   attempts)
+# watchdog fallback = guardian may end in critic-only fallback after the
+#   existing watchdog ladder; never bypass critic or boss
+#
 # Unresponsive-node boundary by role:
 # worker / worker-alt = 900s / 15m
 # critic / guardian / messenger / orchestrator = 1800s / 30m

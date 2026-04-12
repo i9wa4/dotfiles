@@ -108,6 +108,25 @@ unread message in one step. Use `tmux-a2a-postman pop --peek` or
 `tmux-a2a-postman read` only when a targeted diagnostic requires it. Do NOT
 move inbox, read, or dead-letter files manually.
 
+### 2.10. [common_template] Bounded Approval Lane
+
+The canonical approval policy lives in
+`docs/repo-ai-operating-contract.md` section 8.
+
+- Approval route:
+  `worker DONE -> orchestrator -> critic -> guardian -> critic ->
+  orchestrator -> boss -> orchestrator -> messenger`
+- pass criteria: `APPROVED:` means no remaining BLOCKING defects and a
+  plan-matching artifact
+- defect-specific rejection: `NOT APPROVED:` and boss rejections must name the
+  blocking defects that the next worker attempt must address
+- hard iteration cap: 3 approval attempts per artifact (initial + 2 rework
+  attempts). A third failed attempt becomes `BLOCKED:` instead of a silent
+  restart
+- watchdog and fallback behavior: guardian may end in critic-only fallback
+  after the existing watchdog ladder; never bypass critic or boss; node timeout
+  assumptions come from `postman.toml`
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -157,9 +176,9 @@ verdict in the message body. Do NOT hold silently.
 
 ### 3.8. [boss] Completion Signal
 
-Reply with `APPROVED: (summary)` when approving, or `NOT APPROVED: (reason)`
-when rejecting. Send your reply to orchestrator using the `Reply:` footer line
-in the message.
+Reply with `APPROVED: (summary)` when approving, or
+`NOT APPROVED: (defect-specific reason)` when rejecting. Send your reply to
+orchestrator using the `Reply:` footer line in the message.
 
 ## 4. `critic`
 
@@ -514,17 +533,29 @@ Do NOT send partial DONE.
 
 Sequence (no exceptions): worker DONE -> orchestrator sends to critic -> critic
 replies (consults guardian internally) -> if APPROVED: send to boss -> boss
-approves: send DONE to messenger. NOT APPROVED from critic: return to worker.
-Boss rejects: return to worker, restart.
+approves: send DONE to messenger.
 
-### 7.12. [orchestrator] Two-Phase Workflow
+`NOT APPROVED:` from critic or boss must be defect-specific and counts as one
+approval attempt for that artifact.
+
+### 7.12. [orchestrator] Approval Iteration Cap
+
+Hard cap: 3 approval attempts per artifact (initial review + 2 rework
+attempts).
+
+- while attempts remain under the cap, return the defect list to worker
+- on the third failed attempt, stop the loop and notify messenger
+  `BLOCKED:` with the blocking defects instead of restarting again
+
+### 7.13. [orchestrator] Two-Phase Workflow
 
 Phase 1 (Plan): worker drafts plan (/plan-design) -> critic review -> boss
 sign-off -> report plan approval to messenger.
 Phase 2 (Artifact): worker implements -> Approval Route above.
-NOT APPROVED at any point: back to worker for revision.
+`NOT APPROVED:` at any point: back to worker for revision only while approval
+attempts remain under the cap.
 
-### 7.13. [orchestrator] Signal Vocabulary Table
+### 7.14. [orchestrator] Signal Vocabulary Table
 
 | Signal                    | Meaning                                    |
 | ------------------------- | ------------------------------------------ |

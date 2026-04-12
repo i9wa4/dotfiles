@@ -81,6 +81,13 @@ acknowledge with a random one-liner in character.
   - NOTE: TodoWrite is Claude Code specific. Codex CLI users should track tasks
     manually.
 
+### 7.1. Approval-Lane Contract
+
+- For `tmux-a2a-postman` approval work, treat
+  `docs/repo-ai-operating-contract.md` section 8 as the canonical Approval
+  route, defect-specific rejection, watchdog, and timeout contract.
+- Do not restate that policy from memory in prompts or handoffs.
+
 ## 8. Environment
 
 - Always running inside a tmux pane

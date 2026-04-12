@@ -334,9 +334,17 @@ Reachability is strict:
 If footer prose conflicts with the live graph or with successful delivery in
 the same context, trust the graph and actual delivery.
 
-## 8. Approval route
+## 8. Bounded approval-lane contract
 
-Artifact work is not complete until this exact route succeeds:
+This section is the canonical approval-lane policy for this repo.
+`nix/home-manager/agents/AGENTS.md`,
+`config/tmux-a2a-postman/postman.md`, and
+`config/tmux-a2a-postman/postman.toml` should point here or restate this
+section faithfully instead of drifting into separate policy variants.
+
+### 8.1. Approval route
+
+Artifact work is not complete until this exact Approval route succeeds:
 
 `worker DONE -> orchestrator -> critic -> guardian -> critic ->
 orchestrator -> boss -> orchestrator -> messenger`
@@ -344,6 +352,53 @@ orchestrator -> boss -> orchestrator -> messenger`
 `worker-alt` follows the same route when it is the executor.
 
 Do not collapse or bypass the `critic -> guardian -> critic` hop.
+
+### 8.2. Pass criteria
+
+An approval-lane pass means all of the following are true:
+
+- the worker reports `DONE:` with the artifact verified against the plan and
+  intended file set
+- critic returns `APPROVED:` with no remaining BLOCKING defects
+- boss approves after critic approval
+- orchestrator has no pending review cycle before sending `DONE:` onward
+
+### 8.3. Defect-specific rejection
+
+Approval failure must stay defect-specific.
+
+- `NOT APPROVED:` from critic or boss must name the concrete blocking defects
+- orchestrator returns that exact defect list to the worker instead of vague
+  "try again" wording
+- a reopened attempt must address the cited defects or explicitly explain why
+  they no longer apply
+
+### 8.4. Hard iteration cap
+
+The approval loop is bounded.
+
+- each artifact gets at most 3 approval attempts: the initial review plus 2
+  rework attempts
+- any critic `NOT APPROVED:` or boss rejection consumes one attempt
+- if the third attempt still fails, stop the loop and report `BLOCKED:` with
+  the blocking defect list instead of restarting again
+
+### 8.5. Watchdog and fallback behavior
+
+Approval-lane fallback behavior uses the same shared vocabulary everywhere:
+
+- timeout assumptions come from `postman.toml`: `worker` and `worker-alt`
+  900s / 15m, `critic`, `guardian`, `messenger`, and `orchestrator` 1800s /
+  30m, `boss` 3600s / 60m
+- guardian fallback: after the existing watchdog and resend ladder, critic may
+  finish with a critic-only fallback verdict if guardian remains stale
+- critic fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
+  1800s / 30m threshold, then reports `BLOCKED:` if critic still does not
+  reply; never bypass critic
+- boss fallback: never bypass boss; at or beyond the 3600s / 60m threshold,
+  report `BLOCKED:` waiting for boss instead of forcing completion
+- hook, permission, or tool-restriction blocks are immediate `BLOCKED:` states
+  with no silent retry
 
 ## 9. Status and routing rules
 
