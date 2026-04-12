@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+worktree_root="$(git rev-parse --show-toplevel)"
+tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/lazygit-ai-commit.XXXXXX")"
+runner_file="${tmp_root}/run.sh"
+diff_file="${tmp_root}/staged.diff"
+index_file="${tmp_root}/index"
+window_name="ai-commit-$(basename "${worktree_root}")"
+prompt="Generate ONLY a one-line Git commit message following Conventional Commits format (type(scope): description). Types: feat, fix, docs, style, refactor, test, chore. Based strictly on the diff from stdin. Output ONLY the message, nothing else."
+
+git diff --cached > "${diff_file}"
+cp "$(git rev-parse --git-path index)" "${index_file}"
+
+{
+  printf '%s\n' '#!/usr/bin/env bash'
+  printf '%s\n' 'set -o errexit'
+  printf '%s\n' 'set -o nounset'
+  printf '%s\n' 'set -o pipefail'
+  printf 'export PATH=%q\n' "${PATH}"
+  if [ "${GIT_EDITOR:-}" != "" ]; then
+    printf 'export GIT_EDITOR=%q\n' "${GIT_EDITOR}"
+  fi
+  printf 'cd %q\n' "${worktree_root}"
+  printf 'export GIT_INDEX_FILE=%q\n' "${index_file}"
+  printf 'MSG=$(claude -p --append-system-prompt --model haiku %q < %q)\n' "${prompt}" "${diff_file}"
+  printf '%s\n' 'git commit -e -m "$MSG"'
+  printf 'rm -rf %q\n' "${tmp_root}"
+} > "${runner_file}"
+
+chmod +x "${runner_file}"
+window_id="$(tmux new-window -d -P -F '#{window_id}' -n "${window_name}" "${runner_file}")"
+printf 'Started AI commit in background window %s (%s)\n' "${window_id}" "${window_name}"
+tmux display-message "Started AI commit in background window ${window_id} (${window_name})"
