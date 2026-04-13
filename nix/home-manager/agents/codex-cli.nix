@@ -187,22 +187,44 @@ in
     ".codex/hooks.json".source = hooksFile;
   };
 
-  # Generate config.toml from a bounded Nix-managed block without auto-trusting repos
+  # Generate config.toml from Nix base config + dynamic trusted projects
   home.activation.generateCodexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         echo "Generating Codex CLI config..."
         _output="${homeDir}/.codex/config.toml"
         _managed_start='${managedConfigStart}'
         _managed_end='${managedConfigEnd}'
+        _repo_list="$(mktemp)"
+        trap 'rm -f "$_repo_list"' EXIT
         mkdir -p "$(dirname "$_output")"
+        : > "$_repo_list"
 
-        # Preserve marker-less user config verbatim outside the managed block.
-        # Refresh only the bounded Nix-managed block on subsequent activations.
-        # Keep existing managed project tables, but drop managed trust grants.
+        # Match both .git directories (main repos) and .git files (worktrees, submodules).
+        # max-depth 7 covers ~/ghq/<host>/<org>/<repo>/.worktrees/<branch>/.git (depth 6) with margin.
+        # NOTE: Codex CLI's project_trust_key() normalizes via Rust PathBuf.to_string_lossy(),
+        # which strips trailing slashes. The TOML key must match exactly (no trailing slash)
+        # or else HashMap<String, ProjectConfig> lookup misses and the trust prompt re-appears.
+        ${pkgs.fd}/bin/fd --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 7 2>/dev/null |
+          sort |
+          while read -r gitdir; do
+            repo=$(dirname "$gitdir")
+            case "$repo" in
+              *'"'*|*'\'*)
+                echo "WARNING: skipping repo path unsafe for TOML quoted keys: $repo" >&2
+                continue
+                ;;
+            esac
+            printf '%s\n' "$repo"
+          done > "$_repo_list"
+
+        # First upgrade from a marker-less config.toml treats existing content as
+        # user-managed: preserve it verbatim outside the Nix-managed block and only
+        # take ownership of trusted ghq project entries.
         CODEX_BASE_CONFIG="${baseConfigFile}" \
           CODEX_GHQ_ROOT="${ghqRoot}" \
           CODEX_MANAGED_START="$_managed_start" \
           CODEX_MANAGED_END="$_managed_end" \
           CODEX_OUTPUT="$_output" \
+          CODEX_REPO_LIST="$_repo_list" \
           ${pkgs.python3}/bin/python <<'PY'
     import os
     import re
@@ -223,6 +245,8 @@ in
     base_config = base_config_path.read_text()
     existing_text = output_path.read_text() if output_path.exists() else ""
     has_existing_config = bool(existing_text.strip())
+    repo_list_path = Path(os.environ["CODEX_REPO_LIST"])
+    repo_paths = [line for line in repo_list_path.read_text().splitlines() if line]
 
 
     def strip_managed_block(text):
@@ -284,16 +308,10 @@ in
         while body_lines and not body_lines[-1].strip():
             body_lines.pop()
 
-        if not body_lines:
-            return None
-
         rendered = [f'[projects."{repo_path}"]\n']
         rendered.extend(body_lines)
-        rendered_text = "".join(rendered)
-        if not rendered_text.endswith("\n"):
-            rendered_text += "\n"
-
-        return rendered_text
+        rendered.append('trust_level = "trusted"\n')
+        return "".join(rendered)
 
 
     preserved_text, had_managed_block, managed_text = strip_managed_block(existing_text)
@@ -360,10 +378,8 @@ in
 
     if not has_existing_config or had_managed_block:
         managed_sections = [base_config.rstrip("\n")]
-        for repo_path, body_groups in project_tables.items():
-            rendered = render_project_table(repo_path, body_groups)
-            if rendered is None:
-                continue
+        for repo_path in repo_paths:
+            rendered = render_project_table(repo_path, project_tables.get(repo_path, []))
             managed_sections.append(rendered.rstrip("\n"))
 
         output_sections.append(
@@ -384,6 +400,8 @@ in
     PY
 
         chmod 644 "$_output"
+        trap - EXIT
+        rm -f "$_repo_list"
         echo "Generated: $_output"
   '';
 }
