@@ -167,6 +167,9 @@ append_action() {
 
   cleanup_mode="$(category_cleanup_mode "$category")"
   display_path="$(display_action_path "$user_name" "$home_dir" "$path")"
+  if [[ $path == "$home_dir/.claude" ]]; then
+    display_path="${display_path} (Claude built-in 50-day cleanup)"
+  fi
   if [[ $category == user_local_data ]]; then
     display_path="${display_path} (other)"
   fi
@@ -422,4 +425,5 @@ echo "NOTES"
 printf '  %-29s = %s\n' "safe_cache" "Large rebuildable cache. Cleanup candidate."
 printf '  %-29s = %s\n' "review_first" "Review before cleanup."
 printf '  %-29s = %s\n' "preserve" "Keep unless you know the data is disposable."
+printf '  %-29s = %s\n' "Claude (~/.claude)" "review_first; built-in 50-day cleanup handles stale Claude state."
 printf '  %-29s = %s\n' "skipped_or_unreadable_homes" "reported explicitly"

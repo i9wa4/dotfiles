@@ -58,7 +58,8 @@ let
       commit = "";
       pr = "";
     };
-    cleanupPeriodDays = 36000;
+    # Keep Claude state bounded through Claude's own age-based cleanup.
+    cleanupPeriodDays = 50;
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";

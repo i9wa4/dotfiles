@@ -60,7 +60,19 @@ The report is Linux-only by design. It targets `/home` usage and the current
 Ubuntu or WSL2 host. The `SUMMARY` line reports filesystem pressure for the
 filesystem backing the scanned homes.
 
-### 1.6. Low-Risk Cache Cleanup
+### 1.6. Claude Retention
+
+Claude runtime state is `review_first`, not `safe_cache`.
+
+- The repo uses Claude's built-in age-based cleanup instead of a separate
+  custom prune command.
+- `nix/home-manager/agents/claude-code.nix` sets
+  `cleanupPeriodDays = 50;` as the bounded workstation default.
+- The storage report should describe `~/.claude` with the same treatment:
+  review first, with built-in 50-day cleanup already handling stale Claude
+  sessions.
+
+### 1.7. Low-Risk Cache Cleanup
 
 Use the cleanup app for rebuildable user caches that do not need manual review.
 
