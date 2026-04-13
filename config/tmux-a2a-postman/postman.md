@@ -127,6 +127,38 @@ The canonical approval policy lives in
   after the existing watchdog ladder; never bypass critic or boss; node timeout
   assumptions come from `postman.toml`
 
+### 2.11. [common_template] Markdown Task Artifact Contract
+
+For work that spans multiple steps, nodes, or review rounds, the canonical
+task instructions must live in a durable `mkmd` markdown artifact. Follow
+`docs/repo-ai-operating-contract.md` sections 3.1 and 3.2.
+
+- use `plans` for execution work, `research` for investigations, and `reviews`
+  for completion or review handoff
+- if a task already provides a markdown path, keep updating that same file as
+  the single tracker instead of creating a competing checklist
+- track milestones with `[status: pending|in-progress|done]` on the milestone
+  itself and timestamped checkbox lines in `Progress`
+- use checkboxes as much as possible for task items, verification steps, and
+  timestamped progress entries
+- require `reviews` artifacts to point to the plan path, touched files, and
+  verification outcomes that justify the terminal state
+- include the canonical markdown path in handoff, review, and completion
+  traffic
+
+### 2.12. [common_template] Original Checklist Completion Gate
+
+Treat the original markdown checklist as the completion gate.
+
+- compare every original checkbox or acceptance item against observed evidence
+  before reporting completion
+- completion traffic must state whether the original markdown checklist is
+  `PASS` or `FAIL`
+- `DONE:` and `APPROVED:` are valid only when every original checklist item is
+  satisfied with evidence
+- if any original checklist item is still open, failed, or unverified, respond
+  with `BLOCKED:` or `NOT APPROVED:` and name the failing items
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
@@ -429,6 +461,29 @@ On inbox_unread_summary alert: check unread counts, report to user ("Alert:
 <node> has <N> unread"), forward to orchestrator ("DAEMON ALERT: <node> unread
 count = <N>"), archive the alert.
 
+### 6.13. [messenger] Intake Hearing Protocol
+
+Before handing work to orchestrator, restate the user's requested outcome,
+constraints, and success checks in plain language.
+
+- if the user already named a markdown task file, treat it as the original
+  checklist and pass that path through unchanged
+- if the request will span multiple steps, nodes, or review rounds and no
+  markdown tracker exists yet, tell orchestrator to establish one before
+  implementation
+- express the handoff as checkbox-shaped task items as much as possible instead
+  of prose-only paragraphs
+- ask a clarifying question only when a core outcome or constraint is truly
+  missing
+
+### 6.14. [messenger] Completion Relay Gate
+
+When orchestrator reports completion, relay the checklist verdict to the user.
+If the completion report does not include both `Task artifact:` and
+`Original checklist: PASS`, do NOT announce success. Return
+`BLOCKED: completion report missing markdown checklist verdict` to
+orchestrator.
+
 ## 7. `orchestrator`
 
 ### 7.1. [orchestrator] `role`
@@ -566,6 +621,37 @@ attempts remain under the cap.
 | ACK: <topic>              | Received, working on it                    |
 | HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
 
+### 7.15. [orchestrator] Markdown Task Tracker Gate
+
+For any task expected to span multiple steps, nodes, or review rounds:
+
+1. make the first worker task create or update a single `mkmd` markdown
+   artifact in `plans` or `research`
+2. preserve any user-provided markdown path as the original checklist
+3. delegate and review against that artifact instead of drifting chat prose
+4. require worker, critic-facing, and completion traffic to cite the same
+   artifact path
+
+### 7.16. [orchestrator] Checklist Completion Gate
+
+Do NOT send `DONE:` to messenger unless the worker result includes:
+
+- `Task artifact: <path>`
+- `Original checklist: PASS`
+- enough evidence to justify the checklist pass
+
+If the checklist verdict is `FAIL` or missing, return the task to worker as
+incomplete instead of advancing or completing it.
+
+Use this completion shape:
+
+- `DONE: <summary>`
+- `Task artifact: <path>`
+- `Original checklist: PASS`
+- `Commits: ...`
+- `Issues closed: ...`
+- `Remaining blockers: ...`
+
 ## 8. `worker`
 
 ### 8.1. [worker] `role`
@@ -631,6 +717,27 @@ and wait for explicit human user approval.
 
 BLOCKING > IMPORTANT > MINOR
 
+### 8.10. [worker] Markdown Task Artifact Duty
+
+If a task spans multiple steps, nodes, or review rounds and no markdown task
+path is provided, create one with `mkmd` before implementation and keep it as
+the single tracker. If a markdown path is provided, treat it as the original
+checklist and do not create a competing tracker.
+
+Use checkboxes as much as possible for milestones, verification steps, and
+progress entries.
+
+### 8.11. [worker] Checklist Completion Proof
+
+Before sending `DONE:`, compare every original checklist item in the canonical
+markdown artifact against actual evidence.
+
+- send `DONE:` only when all original checklist items are satisfied
+- include `Task artifact: <path>` and `Original checklist: PASS` in the
+  completion report
+- if any original checklist item is still open, failed, or unverified, send
+  `BLOCKED:` with the failing items instead of `DONE:`
+
 ## 9. `worker-alt`
 
 ### 9.1. [worker-alt] `role`
@@ -695,3 +802,24 @@ and wait for explicit human user approval.
 ### 9.9. [worker-alt] Feedback Severity
 
 BLOCKING > IMPORTANT > MINOR
+
+### 9.10. [worker-alt] Markdown Task Artifact Duty
+
+If a task spans multiple steps, nodes, or review rounds and no markdown task
+path is provided, create one with `mkmd` before implementation and keep it as
+the single tracker. If a markdown path is provided, treat it as the original
+checklist and do not create a competing tracker.
+
+Use checkboxes as much as possible for milestones, verification steps, and
+progress entries.
+
+### 9.11. [worker-alt] Checklist Completion Proof
+
+Before sending `DONE:`, compare every original checklist item in the canonical
+markdown artifact against actual evidence.
+
+- send `DONE:` only when all original checklist items are satisfied
+- include `Task artifact: <path>` and `Original checklist: PASS` in the
+  completion report
+- if any original checklist item is still open, failed, or unverified, send
+  `BLOCKED:` with the failing items instead of `DONE:`
