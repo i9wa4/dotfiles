@@ -115,6 +115,34 @@ cd ~/ghq/github.com/i9wa4/dotfiles
 echo "use flake" > .envrc
 ```
 
+### 2.6. Upgrade Nix
+
+The installer re-run upgrades Nix in place while preserving the existing store.
+Before re-running, remove the stale backup file that the previous install left
+behind (the installer refuses to overwrite it):
+
+```sh
+# Linux
+sudo mv /etc/bash.bashrc.backup-before-nix /etc/bash.bashrc
+```
+
+```sh
+# macOS
+sudo mv /etc/zshrc.backup-before-nix /etc/zshrc
+```
+
+Then re-run the installer (same command as install):
+
+```sh
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+```
+
+Verify:
+
+```sh
+nix --version
+```
+
 ## 3. Ubuntu
 
 ### 3.1. Create a User with sudo Privileges
