@@ -290,25 +290,46 @@ gh auth login --with-token
 
 ### 6.1. Upgrade Nix
 
-The installer re-run upgrades Nix in place while preserving the existing store.
-Before re-running, reset the stale backup file that the previous install left
-behind (the installer refuses to proceed if it already exists):
+Nix upgrade ownership differs by OS. On macOS, `nix-darwin` manages
+`nix-daemon` declaratively, so the daily `update` + `switch` flow covers
+upgrades. On Ubuntu, the system `nix-daemon` is outside home-manager's scope,
+so the installer must be re-run in place.
+
+#### 6.1.1. Ubuntu
+
+The installer refuses to proceed if the previous install's shell rc backup
+still exists; reset it first:
 
 ```sh
-# Linux
 sudo mv /etc/bash.bashrc.backup-before-nix /etc/bash.bashrc
 ```
 
-```sh
-# macOS
-sudo mv /etc/zshrc.backup-before-nix /etc/zshrc
-```
-
-Then re-run the installer (same command as install):
+Then re-run the installer (same command as initial install):
 
 ```sh
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
 ```
+
+Verify:
+
+```sh
+nix --version
+```
+
+#### 6.1.2. macOS
+
+Part of the daily flow. `nix-darwin` rewrites
+`/Library/LaunchDaemons/org.nixos.nix-daemon.plist` and reloads the daemon
+whenever `pkgs.nix` resolves to a new store path.
+
+```sh
+nix run '.#update'    # Bump flake.lock (nixpkgs → new Nix)
+nix run '.#switch'    # Rebuild; nix-darwin reloads nix-daemon
+```
+
+Do NOT re-run the curl installer on macOS. The next `nix run '.#switch'`
+reverts the daemon plist to what `nixpkgs` pins, effectively undoing (or even
+downgrading) any version the installer put in place.
 
 Verify:
 
