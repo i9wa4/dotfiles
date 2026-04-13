@@ -25,6 +25,21 @@
       "最終的な項目の取捨選択を私が行います。"
     ]
   },
+  "ai-plan-progress": {
+    "prefix": "ai-plan-progress",
+    "body": [
+      "## Progress",
+      "",
+      "Timestamped checkpoints updated during implementation:",
+      "",
+      "- [ ] {YYYY-MM-DD HH:MM} ${1:Milestone 1} started",
+      "- [x] {YYYY-MM-DD HH:MM} ${1:Milestone 1} completed -- ${2:evidence}",
+      "",
+      "## Surprises and Discoveries",
+      "",
+      "- {YYYY-MM-DD} ${3:description and impact}"
+    ]
+  },
   "ai-orchestrator-status": {
     "prefix": "ai-orchestrator-status",
     "body": [

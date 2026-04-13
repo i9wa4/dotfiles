@@ -101,6 +101,29 @@ Use the standard `mkmd` directories by artifact type:
 - `plans` for execution plans
 - `tmp` for disposable scratch output
 
+### 3.2. Markdown checklist workflow for task artifacts
+
+When work needs a durable task tracker, use a `mkmd` markdown artifact instead
+of ad hoc chat prose.
+
+- intake rule: if the work will span multiple steps, nodes, or review rounds,
+  create or update a `plans` or `research` artifact before implementation
+- single-tracker rule: if a task already provides a plan path, keep updating
+  that artifact instead of creating a competing checklist elsewhere
+- milestone state: track each plan milestone in two places:
+  `[status: pending|in-progress|done]` on the milestone itself and timestamped
+  checkbox lines in `Progress`
+- checklist shape: use
+  `- [ ] {YYYY-MM-DD HH:MM} Milestone 1 started` when work begins and
+  `- [x] {YYYY-MM-DD HH:MM} Milestone 1 completed -- <evidence>` when it ends
+- verification evidence: when a milestone completes, append the actual verifier
+  output or result summary under that milestone and log surprises separately
+- completion artifact rule: `reviews` artifacts should point to the plan path,
+  list the touched files, and summarize the verification outcomes that justify
+  the terminal state
+- `DONE:` gate: do not send `DONE:` until the markdown artifact, intended file
+  set, and observed verification evidence all agree
+
 ## 4. Hook contract
 
 Hooks are not optional conveniences in this repo. They are part of the local
