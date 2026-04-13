@@ -216,9 +216,13 @@ in
             printf '%s\n' "$repo"
           done; } > "$_repo_list"
 
-        # First upgrade from a marker-less config.toml treats existing content as
-        # user-managed: preserve it verbatim outside the Nix-managed block and only
-        # take ownership of trusted ghq project entries.
+        # config.toml is fully owned by Nix. The only non-Nix input preserved
+        # across rebuilds is [projects."..."] trust entries, which Codex TUI
+        # writes when the user approves a new project. These are harvested from
+        # anywhere in the existing file (inside or outside the managed block)
+        # and merged back into the managed block. All other content outside the
+        # block is discarded, so legacy pre-marker Nix output cannot duplicate
+        # keys on upgrade.
         CODEX_BASE_CONFIG="${baseConfigFile}" \
           CODEX_GHQ_ROOT="${ghqRoot}" \
           CODEX_MANAGED_START="$_managed_start" \
@@ -234,7 +238,6 @@ in
     TABLE_HEADER_RE = re.compile(r"^\[[^\]]+\]\s*(?:#.*)?$")
     PROJECT_HEADER_RE = re.compile(r'^\[projects\."(?P<repo_path>[^"]+)"\]\s*(?:#.*)?$')
     TRUST_LEVEL_RE = re.compile(r'^\s*trust_level\s*=')
-    TRUSTED_LEVEL_RE = re.compile(r'^\s*trust_level\s*=\s*"trusted"\s*(?:#.*)?$')
 
 
     output_path = Path(os.environ["CODEX_OUTPUT"])
@@ -244,34 +247,14 @@ in
     managed_end = os.environ["CODEX_MANAGED_END"]
     base_config = base_config_path.read_text()
     existing_text = output_path.read_text() if output_path.exists() else ""
-    has_existing_config = bool(existing_text.strip())
     repo_list_path = Path(os.environ["CODEX_REPO_LIST"])
     repo_paths = [line for line in repo_list_path.read_text().splitlines() if line]
 
 
-    def strip_managed_block(text):
-        lines = text.splitlines(keepends=True)
-        start_index = None
-        end_index = None
-
-        for index, line in enumerate(lines):
-            stripped = line.rstrip("\n")
-            if start_index is None and stripped == managed_start:
-                start_index = index
-                continue
-            if start_index is not None and stripped == managed_end:
-                end_index = index
-                break
-
-        if start_index is None or end_index is None:
-            return text, False, ""
-
-        managed_text = "".join(lines[start_index + 1 : end_index])
-        kept = lines[:start_index] + lines[end_index + 1 :]
-        return "".join(kept), True, managed_text
-
-
     def collect_project_tables(text):
+        # Scan the entire file for [projects."..."] tables regardless of marker
+        # location. On duplicate repo paths, the last occurrence wins (mirrors
+        # TOML's own "last definition wins" behavior for tables).
         lines = text.splitlines(keepends=True)
         tables = {}
         index = 0
@@ -292,111 +275,48 @@ in
                     break
                 body_lines.append(lines[index])
                 index += 1
-            tables.setdefault(repo_path, []).append(body_lines)
+            tables[repo_path] = body_lines
 
         return tables
 
 
-    def render_project_table(repo_path, body_groups):
-        body_lines = []
-        for group in body_groups:
-            for line in group:
-                if TRUST_LEVEL_RE.match(line):
-                    continue
-                body_lines.append(line)
-
-        while body_lines and not body_lines[-1].strip():
-            body_lines.pop()
+    def render_project_table(repo_path, body_lines):
+        filtered = [line for line in body_lines if not TRUST_LEVEL_RE.match(line)]
+        while filtered and not filtered[-1].strip():
+            filtered.pop()
 
         rendered = [f'[projects."{repo_path}"]\n']
-        rendered.extend(body_lines)
+        rendered.extend(filtered)
         rendered.append('trust_level = "trusted"\n')
         return "".join(rendered)
 
 
-    preserved_text, had_managed_block, managed_text = strip_managed_block(existing_text)
-    project_tables = collect_project_tables(managed_text)
-    # Once the managed block exists, nothing should live outside it.
-    if had_managed_block:
-        preserved_text = ""
-
-
-    def is_legacy_managed_repo(repo_path):
+    def is_under_ghq_root(repo_path):
         return repo_path == ghq_root or repo_path.startswith(f"{ghq_root}/")
 
 
-    def scrub_legacy_markerless_project_tables(text):
-        lines = text.splitlines(keepends=True)
-        kept = []
-        index = 0
-
-        while index < len(lines):
-            match = PROJECT_HEADER_RE.match(lines[index].strip())
-            if match is None:
-                kept.append(lines[index])
-                index += 1
-                continue
-
-            repo_path = match.group("repo_path")
-            header_line = lines[index]
-            index += 1
-            body_lines = []
-
-            while index < len(lines):
-                stripped = lines[index].strip()
-                if stripped == managed_start or stripped == managed_end:
-                    break
-                if TABLE_HEADER_RE.match(stripped):
-                    break
-                body_lines.append(lines[index])
-                index += 1
-
-            if not is_legacy_managed_repo(repo_path):
-                kept.append(header_line)
-                kept.extend(body_lines)
-                continue
-
-            filtered_body = [
-                line for line in body_lines if not TRUSTED_LEVEL_RE.match(line)
-            ]
-            while filtered_body and not filtered_body[-1].strip():
-                filtered_body.pop()
-
-            if not filtered_body:
-                continue
-
-            kept.append(header_line)
-            kept.extend(filtered_body)
-            if not "".join(filtered_body).endswith("\n"):
-                kept.append("\n")
-
-        return "".join(kept)
-
-    output_sections = []
-    if has_existing_config and not had_managed_block:
-        preserved_text = scrub_legacy_markerless_project_tables(preserved_text)
-    preserved_text = preserved_text.rstrip("\n")
-    if preserved_text:
-        output_sections.append(preserved_text)
+    existing_tables = collect_project_tables(existing_text)
+    ghq_set = set(repo_paths)
+    # Under-ghq paths not in the live repo list are stale (repo deleted) -> drop.
+    extra_repos = sorted(
+        p for p in existing_tables if p not in ghq_set and not is_under_ghq_root(p)
+    )
 
     managed_sections = [base_config.rstrip("\n")]
     for repo_path in repo_paths:
-        rendered = render_project_table(repo_path, project_tables.get(repo_path, []))
+        rendered = render_project_table(repo_path, existing_tables.get(repo_path, []))
+        managed_sections.append(rendered.rstrip("\n"))
+    for repo_path in extra_repos:
+        rendered = render_project_table(repo_path, existing_tables[repo_path])
         managed_sections.append(rendered.rstrip("\n"))
 
-    output_sections.append(
-        "\n".join(
-            [
-                managed_start,
-                "\n\n".join(managed_sections),
-                managed_end,
-            ]
-        )
-    )
-
-    output_text = "\n\n".join(output_sections)
-    if output_text:
-        output_text += "\n"
+    output_text = "\n".join(
+        [
+            managed_start,
+            "\n\n".join(managed_sections),
+            managed_end,
+        ]
+    ) + "\n"
 
     output_path.write_text(output_text)
     PY
