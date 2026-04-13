@@ -101,6 +101,21 @@ A long-running task, including a delayed worker-alt pass like today's pass 29,
 is NOT by itself an unresponsive-node incident until the relevant threshold is
 crossed or there is direct send/reply failure evidence.
 
+### 2.8.1. [common_template] Waiting-for-Reply Discipline
+
+When you have already handed work off and are waiting on a reply:
+
+- below the relevant timeout, treat the recipient as waiting, not blocked,
+  unless direct send or reply failure evidence proves otherwise
+- you do not need to poll for mail just because `waiting`, `composing`, or
+  `user_input` persists; when new mail is delivered, the mailbox notification
+  tells you it is time to read again
+- this guidance is for waiting-for-reply situations only; it does not replace
+  explicit status requests, direct failure evidence, or role-specific watchdog
+  duties
+- follow up or escalate when your role-specific watchdog or escalation section
+  tells you to, not merely because the waiting state has not changed yet
+
 ### 2.9. [common_template] Mail Reading Command
 
 Read unread mail with `tmux-a2a-postman pop`. It reads and archives the next
@@ -516,8 +531,8 @@ Do NOT research, read code, or investigate. Delegate to worker.
 
 - Use skill: orchestrator for all workflows
 - After each worker reply (DONE/BLOCKED), relay to messenger immediately
-- When blocked waiting for any node after 2 messages:
-  notify messenger "BLOCKED: waiting for {node}"
+- When waiting on any node reply, follow `7.6. [orchestrator] Response
+  Escalation` before notifying messenger `BLOCKED: waiting for {node}`.
 - Obtain critic APPROVED verdict before sending to boss
 - Keep recurring status traffic compact and line-broken: `current task`,
   `blockers`, `waiting_on`, `next action`, and only changed `evidence`
