@@ -316,6 +316,9 @@ in
 
     preserved_text, had_managed_block, managed_text = strip_managed_block(existing_text)
     project_tables = collect_project_tables(managed_text)
+    # Once the managed block exists, nothing should live outside it.
+    if had_managed_block:
+        preserved_text = ""
 
 
     def is_legacy_managed_repo(repo_path):
