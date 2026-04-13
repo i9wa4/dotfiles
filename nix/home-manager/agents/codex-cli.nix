@@ -203,7 +203,7 @@ in
         # NOTE: Codex CLI's project_trust_key() normalizes via Rust PathBuf.to_string_lossy(),
         # which strips trailing slashes. The TOML key must match exactly (no trailing slash)
         # or else HashMap<String, ProjectConfig> lookup misses and the trust prompt re-appears.
-        ${pkgs.fd}/bin/fd --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 7 2>/dev/null |
+        { ${pkgs.fd}/bin/fd --hidden --no-ignore "^\.git$" "${ghqRoot}" --max-depth 7 2>/dev/null |
           sort |
           while read -r gitdir; do
             repo=$(dirname "$gitdir")
@@ -214,7 +214,7 @@ in
                 ;;
             esac
             printf '%s\n' "$repo"
-          done > "$_repo_list"
+          done; } > "$_repo_list"
 
         # First upgrade from a marker-less config.toml treats existing content as
         # user-managed: preserve it verbatim outside the Nix-managed block and only
@@ -376,21 +376,20 @@ in
     if preserved_text:
         output_sections.append(preserved_text)
 
-    if not has_existing_config or had_managed_block:
-        managed_sections = [base_config.rstrip("\n")]
-        for repo_path in repo_paths:
-            rendered = render_project_table(repo_path, project_tables.get(repo_path, []))
-            managed_sections.append(rendered.rstrip("\n"))
+    managed_sections = [base_config.rstrip("\n")]
+    for repo_path in repo_paths:
+        rendered = render_project_table(repo_path, project_tables.get(repo_path, []))
+        managed_sections.append(rendered.rstrip("\n"))
 
-        output_sections.append(
-            "\n".join(
-                [
-                    managed_start,
-                    "\n\n".join(managed_sections),
-                    managed_end,
-                ]
-            )
+    output_sections.append(
+        "\n".join(
+            [
+                managed_start,
+                "\n\n".join(managed_sections),
+                managed_end,
+            ]
         )
+    )
 
     output_text = "\n\n".join(output_sections)
     if output_text:
