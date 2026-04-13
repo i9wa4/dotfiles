@@ -141,11 +141,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1775837506,
-        "narHash": "sha256-9+cOjmUxAy4vdosAzQOv6p2Q4N+VrY+J4LO5p8gy5QQ=",
+        "lastModified": 1776087590,
+        "narHash": "sha256-KbyTf7d7roq+jVFQSBhFEo251tikg7pEjgrrdvFWJpg=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "2feb7e05b8af7be50f1ae26bfe3e5d4dff779ffe",
+        "rev": "f99e8a324bf42df255996122f8444768948d400e",
         "type": "github"
       },
       "original": {
@@ -157,11 +157,11 @@
     "databricks-official-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1775647264,
-        "narHash": "sha256-yHPiSVTEdiVPhC7xXihlclPqug9AJr+1AGn+PFytb8s=",
+        "lastModified": 1776079889,
+        "narHash": "sha256-0kGNI0s0U3ktP6lkOqPV6rYWCE5iNnILkASJDl3WPAM=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "756dcd000db9cd2bfda91bc2c5d2811563e9f510",
+        "rev": "db159a316f475d06b33a90e5b48de51dbdbea258",
         "type": "github"
       },
       "original": {
@@ -558,11 +558,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1776060920,
-        "narHash": "sha256-5dTpNW3eFY76G1A4PgAdic276H+vIFvTWgBxLx7Xy9Y=",
+        "lastModified": 1776092696,
+        "narHash": "sha256-4MQq9lP6b9nBHozK1LHQNXPv72XAgGt8Drb4mQPqd7s=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "df5704a3d06edd7ba96ed86a922bbce0e5a498df",
+        "rev": "215193474714ad712668bda23eef596c2656af6b",
         "type": "github"
       },
       "original": {
@@ -794,11 +794,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1775749320,
-        "narHash": "sha256-msT6frWJSQ2WR+0cpk+KPcZdLTLagUIsJwQwIX9JNSo=",
+        "lastModified": 1775994940,
+        "narHash": "sha256-z5tkSIdPUs6IG3I9HD2e2stdzOKKh0qDeKkOURYQw6o=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "74b87959b2d16f59f54d8559cf3cf26b9d907949",
+        "rev": "9d600cdba342cea3b59aef50e093a547a0f4012f",
         "type": "github"
       },
       "original": {
