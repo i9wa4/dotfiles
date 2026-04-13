@@ -1,24 +1,13 @@
-# AI tool packages from llm-agents.nix (pinned via flake.lock)
+# AI tool packages from llm-agents.nix (versions come from flake.lock)
 # Install with: nix profile add '.#claude-code' etc. (see Makefile nix-profile target)
 { inputs, ... }:
 {
   perSystem =
-    { system, pkgs, ... }:
-    let
-      claude-code = import ../../lib/pinned-claude-code.nix {
-        inherit
-          pkgs
-          inputs
-          system
-          ;
-      };
-    in
+    { system, ... }:
     {
       packages = {
-        inherit
-          claude-code
-          ;
         inherit (inputs.llm-agents.packages.${system})
+          claude-code
           codex
           ccusage
           ccusage-codex

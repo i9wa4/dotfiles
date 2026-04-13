@@ -4,16 +4,6 @@
   inputs,
   ...
 }:
-let
-  inherit (pkgs) system;
-  claude-code = import ../../lib/pinned-claude-code.nix {
-    inherit
-      pkgs
-      inputs
-      system
-      ;
-  };
-in
 {
   imports = [
     ./agent-skills.nix
@@ -22,7 +12,7 @@ in
   ];
 
   home.packages = [
-    claude-code
+    inputs.llm-agents.packages.${pkgs.system}.claude-code
     inputs.llm-agents.packages.${pkgs.system}.codex
     inputs.llm-agents.packages.${pkgs.system}.ccusage
     inputs.llm-agents.packages.${pkgs.system}.ccusage-codex

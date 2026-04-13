@@ -6,11 +6,8 @@
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
-#                               does not rewrite nix/lib/claude-code-pin.nix
 #   nix run '.#update' -- --min-age-days 7
 #                             -- update flake inputs with a minimum-age gate
-#   edit nix/lib/claude-code-pin.nix
-#                             -- pin Claude Code version and fetch hashes in one place
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
@@ -62,8 +59,7 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "update" ''
             set -euo pipefail
-            # Update flake.lock only. Agent version pins live in:
-            # - nix/lib/claude-code-pin.nix
+            # Update flake.lock only.
             export GH_BIN=${gh}
             export NIX_BIN=${nix}
             exec ${python} ${./update-flake.py} "$@"
