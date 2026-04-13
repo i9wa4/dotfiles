@@ -287,6 +287,8 @@ in
 
         rendered = [f'[projects."{repo_path}"]\n']
         rendered.extend(filtered)
+        # Keep owned ghq repos explicitly trusted in the managed block.
+        # Without this, Codex trust dialogs reappear after nix switch.
         rendered.append('trust_level = "trusted"\n')
         return "".join(rendered)
 
