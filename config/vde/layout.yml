@@ -11,7 +11,7 @@ presets:
           ratio: [1, 1]
           panes:
             - name: postman
-              command: tmux-a2a-postman
+              command: tmux-a2a-postman start
               delay: 500
               focus: true
             - name: tailscale
