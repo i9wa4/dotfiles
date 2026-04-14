@@ -18,7 +18,7 @@ presets:
               command: sudo $(which tailscaled)
               delay: 500
         - name: vde-monitor
-          command: vde-monitor --tailscale  # vde-monitor state is review_first; durable state stays separate from pane-log cleanup
+          command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
           delay: 500
 
   dev:

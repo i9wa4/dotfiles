@@ -71,7 +71,7 @@ Use one vocabulary across docs and the Linux storage report.
 | Codex lightweight history and config | `~/.codex/config.toml`, hooks, handoffs, and other small control files | `review_first` | Keep by default and do not confuse these controls with larger interactive session storage |
 | Codex interactive sessions and logs | larger session rollout files and live Codex TUI logs | `review_first` | Treat separately from lightweight history; any later prune policy must stay explicit and review-first |
 | `tmux-a2a-postman` control-plane state | mailbox state, durable handoffs, and approval artifacts | `review_first` | Manual review only under this umbrella; no automatic age-based prune command |
-| `vde-monitor` state | durable monitor state plus disposable pane logs | `review_first` | Preserve durable state by default; only disposable pane-log cleanup should be automated later and separately |
+| `vde-monitor` state | durable monitor state plus disposable pane logs | `review_first` | Preserve durable state by default; only `~/.vde-monitor/panes` is disposable and pruned on startup |
 | Tool payloads outside the Nix store | `~/.local/share/mise`, `~/.local/lib`, `~/.net` | `review_first` | Review before removal or reinstall because these payloads may back active tools |
 | Repo-local rebuildable artifacts | virtual environments, Terraform working directories, local build outputs | `review_first` | Decide per repo or project, not through host-wide cache cleanup |
 | User-owned local data and repo clones | `~/.local` data outside the buckets above, `ghq` repos | `preserve` | Keep unless the operator intentionally removes them after review |
@@ -108,9 +108,10 @@ policy, but for different reasons.
 - `tmux-a2a-postman` state is part of the control plane. It preserves mailbox
   continuity, durable handoffs, and approval evidence, so this umbrella policy
   does not define any age-based pruning for it.
-- `vde-monitor` mixes durable state with disposable pane logs. Treat the whole
-  area as `review_first` here, and keep any later pane-log-only pruning narrow
-  and separate from durable monitor state.
+- `vde-monitor` keeps durable monitor state, config, and notification files
+  under `review_first`. Only the pane-log subtree under
+  `~/.vde-monitor/panes` is disposable, and the VDE startup path prunes that
+  subtree before `exec`-ing the monitor.
 
 ### 1.10. Tool Payloads And Repo-Local Rebuildables
 
