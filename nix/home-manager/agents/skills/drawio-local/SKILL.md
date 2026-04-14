@@ -104,6 +104,45 @@ Choose the right abstraction level before drawing:
 
 Start at Context level; drill down only when the audience needs it.
 
+### 7.3.1. Technical Diagram Families
+
+This section is a selective adaptation inspired by
+`yizhiyanhua-ai/fireworks-tech-graph@c8668407ebfa72e00719be8f4312b71ab90c3c3e`,
+reshaped for native draw.io / `mxGraphModel` work in this repo.
+
+| Family               | Use when                               | Default layout                          | Mandatory cue                          |
+| -------------------- | -------------------------------------- | --------------------------------------- | -------------------------------------- |
+| Architecture         | Layered services, trust boundaries     | Swimlanes or containers, left to right  | Name each layer or boundary            |
+| Data Flow            | Payload movement or transformation     | Source -> process -> store              | Label major arrows with payload names  |
+| Sequence             | Time-ordered interaction               | Lifelines, top to bottom                | Keep one message per row               |
+| Agent                | Planner, model, tool, memory split     | Input -> core -> tools/memory -> output | Show reasoning loop separately         |
+| Memory               | Working, session, and long-term memory | Stacked tiers or parallel stores        | Separate read and write paths          |
+| Comparison / Mapping | Alternatives, roles, capability maps   | Side-by-side cards or 3 columns         | Keep widths and spacing identical      |
+| Network / Deployment | Runtime placement and zones            | Tiered or zoned containers              | Label zones and connection types       |
+
+When the content is AI-heavy, prefer Agent or Memory over a generic System
+diagram so tool calls, retrieval, and persistence stay visible.
+
+### 7.3.2. Technical Shape Vocabulary
+
+Prefer semantic shapes before product icons. Use AWS icons only when cloud
+product identity matters; otherwise keep the diagram portable and concept-led.
+
+| Concept               | Preferred draw.io shape/style      | Meaning                                |
+| --------------------- | ---------------------------------- | -------------------------------------- |
+| User / external actor | `umlActor` or `ellipse`            | Outside initiator or consumer          |
+| Agent / coordinator   | `hexagon`                          | Orchestration or delegated reasoning   |
+| Model / LLM runtime   | `rounded=1;double=1`               | Model boundary, distinct from services |
+| Tool / API / function | `rounded=1` with a verb label      | Callable capability                    |
+| Short-term memory     | `rounded=1;dashed=1`               | Transient context, scratchpad, session |
+| Long-term / vector store | `shape=cylinder3`               | Persistent recall or storage           |
+| Document / knowledge  | `shape=mxgraph.flowchart.document` | Files, prompts, chunks, policy docs    |
+| Queue / async stream  | Long rounded box or grouped lane   | Event path, callback, or buffered handoff |
+| Decision / guard      | `rhombus`                          | Branch, policy gate, or approval point |
+
+Use one shape family per concept class inside a diagram set. Do not mix three
+different shapes for "tool" or "memory" in the same narrative.
+
 ### 7.4. Related Diagram Set Consistency
 
 - YOU MUST: Use identical canvas width, colors, fonts, stroke width across
@@ -180,6 +219,20 @@ Waypoint example:
 ```
 
 ### 9.3. Arrows
+
+#### 9.3.1. Semantic Arrow Meanings
+
+| Meaning           | Default cue                        | Example uses                  |
+| ----------------- | ---------------------------------- | ----------------------------- |
+| Request / control | Solid arrow in source or Primary role | Command, tool call, approval |
+| Primary data path | Thicker solid arrow                | Rows, chunks, embeddings      |
+| Read / retrieval  | Dashed Info arrow toward the reader | Query, lookup, context fetch |
+| Write / persist   | Solid Success arrow toward the store | Save, index, log, consolidate |
+| Async / event     | Dotted Warning or Neutral arrow    | Publish, queue, callback      |
+| Feedback / loop   | Curved Purple or Note arrow        | Reflection, retry, re-rank loop |
+
+Keep arrow semantics to two or three meanings per diagram unless a legend makes
+the differences explicit.
 
 - Structural arrows (flowcharts, ER): place in XML right after Title (back
   layer)

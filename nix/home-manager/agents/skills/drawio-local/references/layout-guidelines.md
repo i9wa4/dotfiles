@@ -281,6 +281,47 @@ Visualize relationships between left and right elements via center.
 - Different color role for left, center, and right
 - Arrow color matches source element color
 
+### 2.6. Technical / AI System Patterns
+
+#### L. Agent + Tool + Memory Loop
+
+Show the user request, agent core, tools, and memory as separate
+responsibilities.
+
+```text
+[User / Trigger] ──→ [Agent / Planner] ──→ [Tool Call]
+                        │   ↑                │
+                        │   └── feedback ───┘
+                        ↓
+                 [Short-term Memory]
+                        ↓
+                 [Long-term Store]
+                        │
+                        └──── retrieval ───→ [Agent / Planner] ──→ [Response]
+```
+
+- Keep the agent core visually distinct from ordinary services
+- Show tool calls and memory reads as different arrow meanings
+- Use a curved feedback arrow only when the reasoning loop matters to the
+  story
+
+#### M. Memory Tier Read / Write Split
+
+Separate what the runtime reads from what it writes.
+
+```text
+                read path
+[Runtime] <──── [Working Set] <──── [Long-term Store]
+    │                  │                   ↑
+    │                  └──── write path ───┘
+    └──────────────→ [Event / History Log]
+```
+
+- Put runtime or agent logic on one side and stores on the other
+- Use dashed retrieval arrows and solid persistence arrows consistently
+- Label the stored asset type when it is not obvious (`chunks`, `embeddings`,
+  `memory`, `events`)
+
 ## 3. Visibility
 
 - Place labels close to their elements
@@ -291,10 +332,12 @@ Visualize relationships between left and right elements via center.
 
 ---
 
-Last updated: 2026-02-02
+Last updated: 2026-04-14
 Source files analyzed:
 
 - i9wa4.github.io/assets/2026-01-27-jedai-ai-gateway/\*.drawio
 - i9wa4.github.io/assets/2025-12-22-aeon-tech-hub-databricks/\*.drawio
 - i9wa4.github.io/assets/2025-12-12-databricks-notebook-ai-ready/\*.drawio
 - i9wa4.github.io/assets/2025-11-07-tamesare-data-sapporo-uma-chan/\*.drawio
+- Selective adaptation study:
+  `yizhiyanhua-ai/fireworks-tech-graph@c8668407ebfa72e00719be8f4312b71ab90c3c3e`
