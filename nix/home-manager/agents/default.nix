@@ -1,4 +1,5 @@
-# Agent tooling boundary for frequent switch/update work
+# Start with README.md in this directory for the human editing map.
+# This file is only the top-level import/package boundary for agent tooling.
 {
   pkgs,
   inputs,

@@ -1,4 +1,6 @@
-# Resolved install contract for agent family outputs and shared skill targets
+# Resolved install contract for agent family outputs and shared skill targets.
+# Edit families/ or agent-skills.nix for source content; this file only maps
+# those resolved outputs into the shared Claude/Codex install seam.
 {
   config,
   pkgs,

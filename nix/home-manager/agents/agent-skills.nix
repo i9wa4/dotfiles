@@ -1,4 +1,7 @@
 # Agent skills declarative management via agent-skills-nix
+# Edit skills/, review/skills/, or source wiring here.
+# This file consumes install-manifest.nix for shared skill installation targets.
+# Do not edit ~/.claude/skills or ~/.codex/skills directly.
 # cf. https://github.com/Kyure-A/agent-skills-nix
 {
   inputs,

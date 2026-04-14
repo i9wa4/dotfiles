@@ -1,3 +1,8 @@
+/*
+  Merges family-local source trees into the installed agent directories.
+  Edit subagents/ or review/ for prompt content; install-manifest.nix and the
+  runtime installers consume the merged outputs from here.
+*/
 {
   pkgs,
 }:
