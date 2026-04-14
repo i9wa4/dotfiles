@@ -133,9 +133,12 @@ let
   codexContextWindow = 272000;
 
   # Static config (everything except dynamic trusted projects).
-  # Codex lightweight history and config controls are not the same as larger
-  # interactive session storage; the shared storage policy keeps both
-  # review_first while documenting them separately.
+  # Codex lightweight history and config controls are not the same as
+  # interactive session rollout JSONL files under ~/.codex/sessions/**/*.jsonl.
+  # The shared storage policy keeps lightweight history separate, retains about
+  # 50 days of closed rollout JSONL by file age, excludes live open session
+  # files, preserves the session data that ccusage-codex reads directly, and
+  # keeps ~/.codex/log/codex-tui.log outside that rollout-retention rule.
   codexConfig = {
     command_attribution = "disable";
     model_auto_compact_token_limit = builtins.floor (codexContextWindow * 0.7); # 70%

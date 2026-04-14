@@ -68,8 +68,9 @@ Use one vocabulary across docs and the Linux storage report.
 | -------------- | ---------------- | ---- | ------ |
 | Low-risk rebuildable caches | uv cache, `~/.cache/pre-commit`, `~/.cache/ruff`, `~/.cache/go-build`, `~/.cache/nix`, `~/.npm` | `safe_cache` | Cleanup candidate through the explicit low-risk cache surface |
 | Claude runtime state | `~/.claude` projects, todos, and runtime files | `review_first` | Keep Claude's built-in age-based cleanup and review before manual deletion |
-| Codex lightweight history and config | `~/.codex/config.toml`, hooks, handoffs, and other small control files | `review_first` | Keep by default and do not confuse these controls with larger interactive session storage |
-| Codex interactive sessions and logs | larger session rollout files and live Codex TUI logs | `review_first` | Treat separately from lightweight history; any later prune policy must stay explicit and review-first |
+| Codex lightweight history and config | `~/.codex/history.jsonl`, `~/.codex/config.toml`, hooks, handoffs, and other small control files | `review_first` | Keep separate from session retention; lightweight history settings do not replace rollout JSONL retention |
+| Codex interactive session rollouts | `~/.codex/sessions/**/*.jsonl` | `review_first` | Keep about 50 days of closed rollout JSONL by file age, skip files still open in a live Codex process, and preserve the session data that `ccusage-codex` reads directly |
+| Codex live TUI logs | `~/.codex/log/codex-tui.log` | `review_first` | Keep separate from rollout JSONL retention; any log cleanup stays a separate review-first decision |
 | `tmux-a2a-postman` control-plane state | mailbox state, durable handoffs, and approval artifacts | `review_first` | Manual review only under this umbrella; no automatic age-based prune command |
 | `vde-monitor` state | durable monitor state plus disposable pane logs | `review_first` | Preserve durable state by default; only `~/.vde-monitor/panes` is disposable and pruned on startup |
 | Tool payloads outside the Nix store | `~/.local/share/mise`, `~/.local/lib`, `~/.net` | `review_first` | Review before removal or reinstall because these payloads may back active tools |
@@ -90,15 +91,25 @@ Claude runtime state is `review_first`, not `safe_cache`.
 
 ### 1.8. Codex Retention
 
-Codex runtime state is also `review_first`, but it has two different storage
+Codex runtime state is also `review_first`, but it has three different storage
 shapes that must not be collapsed into one cleanup rule.
 
-- Lightweight Codex history and config controls are small and should stay
-  separate from larger interactive session storage.
-- Larger interactive session rollouts and live Codex logs must be reviewed
-  deliberately instead of being treated like low-risk caches.
-- This umbrella policy does not add a new Codex prune command. Any later
-  session-retention automation must stay explicit and review-first.
+- Lightweight Codex history and config controls such as
+  `~/.codex/history.jsonl`, `config.toml`, hooks, and handoffs stay separate
+  from session-rollout retention. Small history controls are not a substitute
+  for session policy.
+- Interactive session rollouts live under `~/.codex/sessions/**/*.jsonl`. The
+  target policy is to keep about 50 days of closed rollout JSONL files. Any
+  future cleanup must use file age, not just directory names, and must skip
+  files that are still open by a live Codex process.
+- `ccusage-codex` reads Codex session JSONL files directly from the sessions
+  tree, so the 50-day window is an intentional compatibility boundary rather
+  than an arbitrary cache rule.
+- Live TUI logs such as `~/.codex/log/codex-tui.log` stay `review_first`, but
+  they are not part of the 50-day session-rollout retention window.
+- This follow-up still does not add a new Codex prune command. Any later
+  cleanup automation must stay explicit, review-first, and narrower than the
+  session/log split above.
 
 ### 1.9. `tmux-a2a-postman` And `vde-monitor`
 
