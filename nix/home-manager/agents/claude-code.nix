@@ -12,7 +12,12 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  families = import ./families/default.nix { inherit pkgs; };
+  installManifest = import ./install-manifest.nix {
+    inherit
+      config
+      pkgs
+      ;
+  };
   mcpServers = import ./mcp-servers.nix {
     inherit
       homeDir
@@ -189,7 +194,7 @@ in
       ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
       # Nix store directory symlinks (rebuild required to update)
       ".claude/rules".source = ./rules;
-      ".claude/agents".source = families.claudeAgentsDir;
+      "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };
 

@@ -13,7 +13,12 @@
 let
   homeDir = config.home.homeDirectory;
   ghqRoot = "${homeDir}/ghq";
-  families = import ./families/default.nix { inherit pkgs; };
+  installManifest = import ./install-manifest.nix {
+    inherit
+      config
+      pkgs
+      ;
+  };
 
   mcpServers = import ./mcp-servers.nix {
     inherit
@@ -186,7 +191,7 @@ in
     # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;
     # Subagent definitions (family-managed .toml/markdown generation)
-    ".codex/agents".source = families.codexAgentsDir;
+    "${installManifest.codex.agents.target}".source = installManifest.codex.agents.source;
     # Hook scripts (Nix store, rebuild required to update)
     ".codex/scripts".source = codexScriptsDir;
     # Hooks config (Nix store, rebuild required to update)

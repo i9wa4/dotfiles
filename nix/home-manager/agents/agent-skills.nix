@@ -7,8 +7,12 @@
   ...
 }:
 let
-  homeDir = config.home.homeDirectory;
-  families = import ./families/default.nix { inherit pkgs; };
+  installManifest = import ./install-manifest.nix {
+    inherit
+      config
+      pkgs
+      ;
+  };
   validateSkillSource =
     name: src:
     pkgs.runCommand name { } ''
@@ -154,7 +158,7 @@ in
         subdir = "terraform/provider-development/skills";
       };
     }
-    // families.skillSources;
+    // installManifest.skills.sources;
 
     # Enable all skills from all sources
     skills = {
@@ -171,13 +175,17 @@ in
     targets = {
       # Claude Code: ~/.claude/skills
       claude-home = {
-        dest = "${homeDir}/.claude/skills";
-        structure = "symlink-tree";
+        inherit (installManifest.claude.skills)
+          dest
+          structure
+          ;
       };
       # Codex CLI: ~/.codex/skills
       codex = {
-        dest = "${homeDir}/.codex/skills";
-        structure = "symlink-tree";
+        inherit (installManifest.codex.skills)
+          dest
+          structure
+          ;
       };
     };
 
