@@ -1,7 +1,7 @@
 presets:
   main:
     name: main
-    description: main
+    description: main control plane, review_first state
     windowMode: current-window
     layout:
       type: horizontal
@@ -11,14 +11,14 @@ presets:
           ratio: [1, 1]
           panes:
             - name: postman
-              command: tmux-a2a-postman start
+              command: tmux-a2a-postman start  # tmux-a2a-postman control-plane state is review_first
               delay: 500
               focus: true
             - name: tailscale
               command: sudo $(which tailscaled)
               delay: 500
         - name: vde-monitor
-          command: vde-monitor --tailscale
+          command: vde-monitor --tailscale  # vde-monitor state is review_first; durable state stays separate from pane-log cleanup
           delay: 500
 
   dev:

@@ -74,6 +74,8 @@
           ''}/bin/check";
         };
 
+        # What: Prune only the explicit safe_cache surface for user-owned caches.
+        # When: Run for low-risk reclaim without touching review_first or preserve buckets.
         cleanup = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "cleanup" ''
@@ -134,6 +136,7 @@
         };
 
         # What: Summarize Linux home-directory storage pressure for the current user or all users.
+        # Uses the shared safe_cache / review_first / preserve vocabulary from docs/storage-hygiene.md.
         # When: Run before cleanup so you know which homes and paths are using the most space.
         # Example: nix run '.#storage-report' -- --self --summary
         storage-report = {

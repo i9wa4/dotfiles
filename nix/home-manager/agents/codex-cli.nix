@@ -132,7 +132,10 @@ let
   # All gpt-5.x models share this context window size
   codexContextWindow = 272000;
 
-  # Static config (everything except dynamic trusted projects)
+  # Static config (everything except dynamic trusted projects).
+  # Codex lightweight history and config controls are not the same as larger
+  # interactive session storage; the shared storage policy keeps both
+  # review_first while documenting them separately.
   codexConfig = {
     command_attribution = "disable";
     model_auto_compact_token_limit = builtins.floor (codexContextWindow * 0.7); # 70%

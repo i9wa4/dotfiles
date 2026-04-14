@@ -58,7 +58,8 @@ let
       commit = "";
       pr = "";
     };
-    # Keep Claude state bounded through Claude's own age-based cleanup.
+    # Claude runtime state stays review_first; Claude's own age-based cleanup
+    # bounds stale state without turning it into safe_cache.
     cleanupPeriodDays = 50;
     env = {
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
