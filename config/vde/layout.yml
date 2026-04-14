@@ -23,7 +23,7 @@ presets:
 
   dev:
     name: dev
-    description: dev safe default, no unsafe flags
+    description: dev
     windowMode: current-window
     layout:
       type: horizontal
@@ -35,29 +35,12 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: claude --add-dir "${SUBDIR}" --model "opus[1m]" --effort high  # dev safe default
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
           delay: 500
 
-  dev-unsafe:
-    name: dev-unsafe
-    description: dev unsafe opt-in
-    windowMode: current-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: editor
-          command: vim
-          delay: 500
-          focus: true
-        - name: agent
-          title: agent
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high  # dev-unsafe opt-in only
-          delay: 500
-
-  messenger:
-    name: messenger
-    description: messenger safe default, no unsafe flags
+  messenger-claude:
+    name: messenger-claude
+    description: messenger-claude
     windowMode: current-window
     layout:
       type: horizontal
@@ -69,12 +52,12 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium  # messenger safe default
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
           delay: 500
 
-  messenger-unsafe:
-    name: messenger-unsafe
-    description: messenger unsafe opt-in
+  messenger-codex:
+    name: messenger-codex
+    description: messenger-codex
     windowMode: current-window
     layout:
       type: horizontal
@@ -86,12 +69,12 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # messenger-unsafe opt-in only
+          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=medium
           delay: 500
 
   preset-a:
     name: preset-a
-    description: balanced use of models safe default
+    description: balanced use of models
     windowMode: new-window
     layout:
       type: horizontal
@@ -102,74 +85,35 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
               delay: 500
             - name: worker
               title: worker
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: critic
               title: critic
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=high
               delay: 500
             - name: boss
               title: boss
-              command: claude --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
-              delay: 500
-
-  preset-a-unsafe:
-    name: preset-a-unsafe
-    description: balanced use of models unsafe opt-in
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: orchestrator
-              title: orchestrator
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-a-unsafe opt-in only
-              delay: 500
-            - name: worker
-              title: worker
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-a-unsafe opt-in only
-              delay: 500
-            - name: worker-alt
-              title: worker-alt
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-a-unsafe opt-in only
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: critic
-              title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high  # preset-a-unsafe opt-in only
-              delay: 500
-            - name: guardian
-              title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-a-unsafe opt-in only
-              delay: 500
-            - name: boss
-              title: boss
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high  # preset-a-unsafe opt-in only
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
 
   preset-b:
     name: preset-b
-    description: claude teaming safe default
+    description: codex extreme teaming
     windowMode: new-window
     layout:
       type: horizontal
@@ -180,145 +124,28 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
             - name: worker
               title: worker
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: critic
               title: critic
-              command: claude --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
             - name: guardian
               title: guardian
-              command: claude --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500
             - name: boss
               title: boss
-              command: claude --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
-              delay: 500
-
-  preset-b-unsafe:
-    name: preset-b-unsafe
-    description: claude teaming unsafe opt-in
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: orchestrator
-              title: orchestrator
-              command: claude --dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-b-unsafe opt-in only
-              delay: 500
-            - name: worker
-              title: worker
-              command: claude --dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-b-unsafe opt-in only
-              delay: 500
-            - name: worker-alt
-              title: worker-alt
-              command: claude --dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium  # preset-b-unsafe opt-in only
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: critic
-              title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high  # preset-b-unsafe opt-in only
-              delay: 500
-            - name: guardian
-              title: guardian
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high  # preset-b-unsafe opt-in only
-              delay: 500
-            - name: boss
-              title: boss
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high  # preset-b-unsafe opt-in only
-              delay: 500
-
-  preset-c:
-    name: preset-c
-    description: codex extreme teaming safe default
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: orchestrator
-              title: orchestrator
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-            - name: worker
-              title: worker
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-            - name: worker-alt
-              title: worker-alt
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: critic
-              title: critic
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-            - name: guardian
-              title: guardian
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-            - name: boss
-              title: boss
-              command: codex --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
-              delay: 500
-
-  preset-c-unsafe:
-    name: preset-c-unsafe
-    description: codex extreme teaming unsafe opt-in
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: orchestrator
-              title: orchestrator
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
-              delay: 500
-            - name: worker
-              title: worker
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
-              delay: 500
-            - name: worker-alt
-              title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: critic
-              title: critic
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
-              delay: 500
-            - name: guardian
-              title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
-              delay: 500
-            - name: boss
-              title: boss
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh  # preset-c-unsafe opt-in only
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.4 --config model_reasoning_effort=xhigh
               delay: 500

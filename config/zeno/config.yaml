@@ -99,38 +99,14 @@ snippets:
     keyword: vd
     snippet: vde-layout dev
 
-  - name: (vde-layout) dev unsafe
-    keyword: vdu
-    snippet: vde-layout dev-unsafe
-
   - name: (vde-layout) main
     keyword: vm
     snippet: vde-layout main
 
-  - name: (vde-layout) messenger unsafe
-    keyword: vmu
-    snippet: vde-layout messenger-unsafe
-
   - name: (vde-layout) preset-a
     keyword: va
-    snippet: vde-layout messenger && vde-layout preset-a
-
-  - name: (vde-layout) preset-a unsafe
-    keyword: vau
-    snippet: vde-layout messenger-unsafe && vde-layout preset-a-unsafe
+    snippet: vde-layout messenger-claude && vde-layout preset-a
 
   - name: (vde-layout) preset-b
     keyword: vb
-    snippet: vde-layout messenger && vde-layout preset-b
-
-  - name: (vde-layout) preset-b unsafe
-    keyword: vbu
-    snippet: vde-layout messenger-unsafe && vde-layout preset-b-unsafe
-
-  - name: (vde-layout) preset-c
-    keyword: vc
-    snippet: vde-layout messenger && vde-layout preset-c
-
-  - name: (vde-layout) preset-c unsafe
-    keyword: vcu
-    snippet: vde-layout messenger-unsafe && vde-layout preset-c-unsafe
+    snippet: vde-layout messenger-codex && vde-layout preset-b
