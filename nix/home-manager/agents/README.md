@@ -14,7 +14,7 @@ artifacts.
 | Claude-only instruction delta | `CLAUDE.md`                                                                | Appended to `~/.claude/CLAUDE.md`                                                  |
 | Supplemental rule docs        | `rules/*.md`                                                               | Copied to `~/.claude/rules/`; inlined into `~/.codex/AGENTS.md`                    |
 | Shared instruction merger     | `instruction-artifacts.nix`                                                | Builds the installed Claude and Codex instruction files from the markdown sources  |
-| Shared subagents              | `subagents/*.md`                                                           | Generated into `~/.claude/agents/` and `~/.codex/agents/`                          |
+| Shared subagents              | `subagents/*.md`, `families/subagents/metadata.nix`                       | Generated into `~/.claude/agents/` and `~/.codex/agents/`                          |
 | Review stack prompts/skills   | `review/refs/`, `review/skills/`, `review/review-artifacts-gen.nix`       | Generated reviewer agents and `subagent-review-*` skills                           |
 | Family merge layer            | `families/default.nix`, `families/subagents/`, `families/review/`         | Merges family-local agent outputs before installation                              |
 | Shared install targets        | `install-manifest.nix`                                                     | Resolves the common Claude/Codex agent targets and skill destinations              |
@@ -29,13 +29,15 @@ artifacts.
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
 2. `instruction-artifacts.nix` builds the installed instruction files from
    `AGENTS.md`, `CLAUDE.md`, and `rules/*.md`.
-3. `families/default.nix` merges family-local agent outputs for the installed
+3. `families/subagents/metadata.nix` defines the shared Claude/Codex metadata
+   for the subagent family while `subagents/*.md` stays the prompt-body source.
+4. `families/default.nix` merges family-local agent outputs for the installed
    Claude and Codex agent directories.
-4. `install-manifest.nix` resolves the shared agent install targets and skill
+5. `install-manifest.nix` resolves the shared agent install targets and skill
    destinations that the runtime installers consume.
-5. `agent-skills.nix` validates skill sources and installs them into both
+6. `agent-skills.nix` validates skill sources and installs them into both
    runtimes.
-6. `claude-code.nix` and `codex-cli.nix` materialize the final runtime files
+7. `claude-code.nix` and `codex-cli.nix` materialize the final runtime files
    during activation.
 
 ## Refresh And Verify
