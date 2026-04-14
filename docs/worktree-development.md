@@ -101,8 +101,10 @@ For the adoption decision behind the current tool stack, see
    When that direct lookup fails, it falls back to `zi <keyword>`.
 10. Inside tmux, `z` and `zi` resolve the selected path's git root when
     available, fall back to the selected path otherwise, derive a session name
-    from that resolved path, create the session when missing, and switch the
-    tmux client to it.
+    from that resolved path, create the session when missing with `tmux
+    new-session -c "<selected-path>"`, and switch the tmux client to it. In
+    other words, session naming follows the resolved repo/worktree path, but a
+    newly created session starts in the original selected path.
 11. Outside tmux, `z` and `zi` change directory through the wrapper functions.
 12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
     renames sessions from the selected path. For worktree paths under
