@@ -96,9 +96,10 @@ The agent tree is where repo policy becomes executable behavior.
 This repo does not rely on a single monolithic prompt file. Instead it builds
 the harness from several smaller sources:
 
-- `AGENTS.md` is the shared operating core
-- `CLAUDE.md` is the Claude-only supplement
-- `rules/*.md` provides repo-local rule text
+- `AGENTS.md` is the tiny shared operating core
+- `rules/*.md` carries the residual repo-local rules that still must load
+  outside postman-delivered sessions
+- `CLAUDE.md` is the optional Claude-only supplement and may be empty
 - `instruction-artifacts.nix` assembles those into the installed Claude and
   Codex instruction files
 - `agent-skills.nix` installs both local and upstream skills into both engines

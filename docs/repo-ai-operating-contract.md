@@ -29,11 +29,18 @@ The repo-local AI stack is assembled from a few core sources.
 
 ### 2.1. Shared instruction core
 
-`nix/home-manager/agents/AGENTS.md` is the shared operating baseline for both
-engines. It defines persona, workflow, safety, file handling, and repo-local
-expectations.
+`nix/home-manager/agents/AGENTS.md` carries the tiny persona and language core
+for both engines.
 
-On the Claude side, `CLAUDE.md` is appended as a small Claude-specific suffix.
+`nix/home-manager/agents/rules/*.md` carries the shared repo-local operating
+rules that both engines should load alongside that core.
+
+Prefer `tmux-a2a-postman` common delivery for postman-role sessions. Keep only
+the residual rules here that still must hold in non-postman Claude/Codex
+sessions.
+
+On the Claude side, `CLAUDE.md` is appended as an optional Claude-specific
+suffix and may be empty when no Claude-only runtime delta remains.
 
 On the Codex side, `instruction-artifacts.nix` takes the shared core plus the
 repo-local rule files and emits the installed `.codex/AGENTS.md`.
@@ -59,8 +66,12 @@ not just to abstract agent labels.
 
 ## 3. Shared operating rules
 
-These rules come from the shared agent core and are expected regardless of
-engine:
+These rules are the residual loaded prompt rules kept local because
+non-postman Claude/Codex sessions still need them. Postman-role sessions also
+receive the stronger common contract from `tmux-a2a-postman`.
+
+They come from the loaded shared prompt surfaces (`AGENTS.md` plus
+`rules/*.md`) and are expected regardless of engine:
 
 - read files in full
 - verify against the actual repo before reporting

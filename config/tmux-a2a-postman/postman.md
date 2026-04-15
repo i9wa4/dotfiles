@@ -123,6 +123,12 @@ unread message in one step. Use `tmux-a2a-postman pop --peek` or
 `tmux-a2a-postman read` only when a targeted diagnostic requires it. Do NOT
 move inbox, read, or dead-letter files manually.
 
+### 2.9.1. [common_template] Write-Surface Check
+
+Before editing files, confirm the target path is writable. Some panes or
+installed runtime artifacts may be read-only. If the current surface blocks the
+write, delegate the edit to the appropriate agent instead of forcing it.
+
 ### 2.10. [common_template] Bounded Approval Lane
 
 The canonical approval policy lives in
@@ -148,6 +154,10 @@ For work that spans multiple steps, nodes, or review rounds, the canonical
 task instructions must live in a durable `mkmd` markdown artifact. Follow
 `docs/repo-ai-operating-contract.md` sections 3.1 and 3.2.
 
+- create durable working markdown with `mkmd`; use `mkmd --help` when you need
+  a quick reminder of the path shape or arguments
+- treat `mkmd` outputs as working files unless a later step promotes their
+  contents into checked-in repo files
 - use `plans` for execution work, `research` for investigations, and `reviews`
   for completion or review handoff
 - if a task already provides a markdown path, keep updating that same file as

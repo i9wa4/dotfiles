@@ -51,6 +51,14 @@ artifacts.
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-p' --impure` |
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-w' --impure` |
 
+## Authoring Notes
+
+- Keep reviewer and subagent implementation details near `review/` and
+  `subagents/`, not in the top-level runtime prompt files.
+- After setting up Claude Code on a new machine or after adding new projects,
+  run `/claude-workspace-trust-fix`; otherwise interactive `PreToolUse` hooks
+  can be skipped until workspace trust is recorded.
+
 ## Rule Of Thumb
 
 - If you are changing prompt wording, start with the markdown source files.

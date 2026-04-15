@@ -36,6 +36,7 @@ let
       ./rules/github.md
       ./rules/markdown.md
       ./rules/python.md
+      ./rules/repo-local.md
     ];
   };
 
