@@ -40,8 +40,8 @@
               if isDarwin then
                 ''
                   profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
-                  sudo darwin-rebuild switch --impure --flake ".#$profile"
-                  sudo ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
+                  sudo -H darwin-rebuild switch --impure --flake ".#$profile"
+                  sudo -H ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
                 ''
               else
                 ''

@@ -336,3 +336,42 @@ Verify:
 ```sh
 nix --version
 ```
+
+### 6.2. Recover After macOS Update
+
+macOS updates can break nix-darwin in two ways:
+
+- Replace `/etc/zshrc` and `/etc/zshenv` symlinks with Apple defaults
+- Corrupt files in the Nix store (APFS volume at `/nix`), leaving them empty
+
+1. Source Nix manually (if `nix` is not found)
+
+   ```sh
+   . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+   ```
+
+1. Rename conflicting `/etc` files
+
+   ```sh
+   sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
+   sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
+   sudo mv /etc/zshenv /etc/zshenv.before-nix-darwin 2>/dev/null || true
+   sudo mv /etc/zprofile /etc/zprofile.before-nix-darwin 2>/dev/null || true
+   ```
+
+1. Repair corrupted store paths
+
+   ```sh
+   sudo nix-store --verify --check-contents --repair
+   ```
+
+1. Re-run darwin-rebuild
+
+   ```sh
+   sudo -i /nix/var/nix/profiles/system/sw/bin/darwin-rebuild switch \
+     --flake '.#macos-p' --impure
+   ```
+
+1. Open a new terminal
+
+cf. [nix-darwin#149](https://github.com/nix-darwin/nix-darwin/issues/149)
