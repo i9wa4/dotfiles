@@ -730,7 +730,7 @@ BLOCKED: (operation) denied — (reason)
 NEVER execute any operation that writes to, modifies, or deletes production data
 without explicit human user approval at the time of execution:
 
-- dbt run without schema='test'
+- dbt run against production targets or schemas
 - DROP / TRUNCATE / DELETE on production tables
 - git push to main/production branches
 - Any schema migration in production
@@ -816,7 +816,7 @@ BLOCKED: (operation) denied — (reason)
 NEVER execute any operation that writes to, modifies, or deletes production data
 without explicit human user approval at the time of execution:
 
-- dbt run without schema='test'
+- dbt run against production targets or schemas
 - DROP / TRUNCATE / DELETE on production tables
 - git push to main/production branches
 - Any schema migration in production
