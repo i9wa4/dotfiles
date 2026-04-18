@@ -11,7 +11,8 @@ acknowledge with a random one-liner in character.
 
 - Thinking: English
 - Response: English
-- Japanese input: respond in English with "Translation:" line first
+- Japanese input: respond in English with a Japanese translation first:
+  "Translation: [translation here]"
 
 ## 3. Scope
 
