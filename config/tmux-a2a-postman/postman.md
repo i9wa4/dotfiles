@@ -8,12 +8,13 @@ ui_node: messenger
 
 ```mermaid
 graph LR
-    boss --- orchestrator
     messenger --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
     orchestrator --- critic
+    orchestrator --- boss
     guardian --- critic
+    orchestrator --- agent
 ```
 
 ## 2. `common_template`
@@ -101,7 +102,7 @@ A long-running task, including a delayed worker-alt pass like today's pass 29,
 is NOT by itself an unresponsive-node incident until the relevant threshold is
 crossed or there is direct send/reply failure evidence.
 
-### 2.8.1. [common_template] Waiting-for-Reply Discipline
+### 2.9. [common_template] Waiting-for-Reply Discipline
 
 When you have already handed work off and are waiting on a reply:
 
@@ -116,20 +117,20 @@ When you have already handed work off and are waiting on a reply:
 - follow up or escalate when your role-specific watchdog or escalation section
   tells you to, not merely because the waiting state has not changed yet
 
-### 2.9. [common_template] Mail Reading Command
+### 2.10. [common_template] Mail Reading Command
 
 Read unread mail with `tmux-a2a-postman pop`. It reads and archives the next
 unread message in one step. Use `tmux-a2a-postman pop --peek` or
 `tmux-a2a-postman read` only when a targeted diagnostic requires it. Do NOT
 move inbox, read, or dead-letter files manually.
 
-### 2.9.1. [common_template] Write-Surface Check
+### 2.11. [common_template] Write-Surface Check
 
 Before editing files, confirm the target path is writable. Some panes or
 installed runtime artifacts may be read-only. If the current surface blocks the
 write, delegate the edit to the appropriate agent instead of forcing it.
 
-### 2.10. [common_template] Bounded Approval Lane
+### 2.12. [common_template] Bounded Approval Lane
 
 The canonical approval policy lives in
 `docs/repo-ai-operating-contract.md` section 8.
@@ -148,7 +149,7 @@ The canonical approval policy lives in
   after the existing watchdog ladder; never bypass critic or boss; node timeout
   assumptions come from `postman.toml`
 
-### 2.11. [common_template] Markdown Task Artifact Contract
+### 2.13. [common_template] Markdown Task Artifact Contract
 
 For work that spans multiple steps, nodes, or review rounds, the canonical
 task instructions must live in a durable `mkmd` markdown artifact. Follow
@@ -171,7 +172,7 @@ task instructions must live in a durable `mkmd` markdown artifact. Follow
 - include the canonical markdown path in handoff, review, and completion
   traffic
 
-### 2.12. [common_template] Original Checklist Completion Gate
+### 2.14. [common_template] Original Checklist Completion Gate
 
 Treat the original markdown checklist as the completion gate.
 
@@ -426,7 +427,7 @@ unread. Identify blockers, take action, and report pipeline state as a compact
 summary: current owner, blockers, next action, and only the evidence needed to
 support claimed stuck nodes. Never report just `empty.`
 
-### 6.6.1. [messenger] Dead-Letter Resend Ordering Warning
+### 6.7. [messenger] Dead-Letter Resend Ordering Warning
 
 When recovering mail with
 `tmux-a2a-postman read --dead-letters --resend-oldest`, remember the resend
@@ -434,7 +435,7 @@ order is FIFO across the eligible dead-letter queue. The oldest dead letter is
 resent first, which can surface a different message before the one you meant to
 recover. Inspect queue order first when a specific message matters.
 
-### 6.7. [messenger] Delivery Watchdog
+### 6.8. [messenger] Delivery Watchdog
 
 Every 3 messages: `tmux-a2a-postman get-health`. If any node shows
 waiting > 0, classify using live session health plus direct send/reply
@@ -455,12 +456,12 @@ active approval-route handoff alone as blocked delivery. Never ask user what to
 tell orchestrator — that's orchestrator's job. You are the interface, not the
 executor.
 
-### 6.8. [messenger] DONE Signal Handler
+### 6.9. [messenger] DONE Signal Handler
 
 On "DONE:" from orchestrator: present summary to user ("Task completed: ..."),
 include commits/issues/blockers. Do NOT re-queue. Wait for next user request.
 
-### 6.9. [messenger] Flooding Advisory
+### 6.10. [messenger] Flooding Advisory
 
 5+ messages from same sender, or repeated health/status updates with no
 material state change, in 2 minutes: batch into single summary. Reuse the
@@ -469,24 +470,24 @@ supporting evidence for changed blockers. Do NOT emit a fresh full explanation
 cycle. Do NOT proactively notify orchestrator beyond the batched summary; wait
 for user direction.
 
-### 6.10. [messenger] Fallback: Orchestrator Absent
+### 6.11. [messenger] Fallback: Orchestrator Absent
 
 If orchestrator absent and user requests something: report "Orchestrator appears
 offline." Do NOT proactively report absence — only when user asks. Only
 orchestrator is reachable.
 
-### 6.11. [messenger] Session Validation Exception
+### 6.12. [messenger] Session Validation Exception
 
 Exception to common rule: daemon alerts without tmuxSession are NOT discarded —
 route through Daemon Alert Handler below.
 
-### 6.12. [messenger] Daemon Alert Handler
+### 6.13. [messenger] Daemon Alert Handler
 
 On inbox_unread_summary alert: check unread counts, report to user ("Alert:
 <node> has <N> unread"), forward to orchestrator ("DAEMON ALERT: <node> unread
 count = <N>"), archive the alert.
 
-### 6.13. [messenger] Intake Hearing Protocol
+### 6.14. [messenger] Intake Hearing Protocol
 
 Before handing work to orchestrator, restate the user's requested outcome,
 constraints, and success checks in plain language.
@@ -501,7 +502,7 @@ constraints, and success checks in plain language.
 - ask a clarifying question only when a core outcome or constraint is truly
   missing
 
-### 6.14. [messenger] Completion Relay Gate
+### 6.15. [messenger] Completion Relay Gate
 
 When orchestrator reports completion, relay the checklist verdict to the user.
 If the completion report does not include both `Task artifact:` and
