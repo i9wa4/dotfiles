@@ -46,3 +46,5 @@ dropped_ball_timeout_seconds = 900
 [worker-alt]
 idle_timeout_seconds = 900
 dropped_ball_timeout_seconds = 900
+
+[agent]
