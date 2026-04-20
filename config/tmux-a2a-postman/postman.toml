@@ -15,36 +15,38 @@ alert_delivery_window_seconds = 60
 # watchdog fallback = guardian may end in critic-only fallback after the
 #   existing watchdog ladder; never bypass critic or boss
 #
-# Unresponsive-node boundary by role:
+# Idle boundary by role:
 # worker / worker-alt = 900s / 15m
 # critic / guardian / messenger / orchestrator = 1800s / 30m
 # boss = 3600s / 60m
+# Missing-response alert boundary:
+# all routed nodes = 180s / 3m for dropped_ball_timeout_seconds
 [boss]
 idle_timeout_seconds = 3600
-dropped_ball_timeout_seconds = 3600
+dropped_ball_timeout_seconds = 180
 
 [critic]
 idle_timeout_seconds = 1800
-dropped_ball_timeout_seconds = 1800
+dropped_ball_timeout_seconds = 180
 
 [guardian]
 idle_timeout_seconds = 1800
-dropped_ball_timeout_seconds = 1800
+dropped_ball_timeout_seconds = 180
 
 [messenger]
 idle_timeout_seconds = 1800
-dropped_ball_timeout_seconds = 1800
+dropped_ball_timeout_seconds = 180
 
 [orchestrator]
 idle_timeout_seconds = 1800
-dropped_ball_timeout_seconds = 1800
+dropped_ball_timeout_seconds = 180
 
 [worker]
 idle_timeout_seconds = 900
-dropped_ball_timeout_seconds = 900
+dropped_ball_timeout_seconds = 180
 
 [worker-alt]
 idle_timeout_seconds = 900
-dropped_ball_timeout_seconds = 900
+dropped_ball_timeout_seconds = 180
 
 [agent]

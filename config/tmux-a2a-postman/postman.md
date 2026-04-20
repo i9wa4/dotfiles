@@ -90,17 +90,19 @@ delivery-health follow-up), keep the body to the smallest useful delta:
 
 ### 2.8. [common_template] Timeout Thresholds
 
-Treat the configured timeout windows as the boundary between "slow but alive"
-and "likely unresponsive":
+Treat the configured timeout windows as two different signals:
 
-- `worker` and `worker-alt`: 900s / 15m for both `idle_timeout_seconds` and
-  `dropped_ball_timeout_seconds`
-- `critic`, `guardian`, `messenger`, and `orchestrator`: 1800s / 30m
-- `boss`: 3600s / 60m
+- `dropped_ball_timeout_seconds`: 180s / 3m for every routed node. This is the
+  default missing-response alert boundary.
+- `idle_timeout_seconds`: `worker` and `worker-alt` 900s / 15m, `critic`,
+  `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss` 3600s / 60m.
+  This is the role-specific idle or stale boundary.
 
-A long-running task, including a delayed worker-alt pass like today's pass 29,
-is NOT by itself an unresponsive-node incident until the relevant threshold is
-crossed or there is direct send/reply failure evidence.
+Crossing the 180s / 3m late-reply boundary means "follow up now," not "the
+node is definitely unresponsive." A long-running task, including a delayed
+worker-alt pass like today's pass 29, is NOT by itself an unresponsive-node
+incident until direct send/reply failure evidence appears or the relevant idle
+boundary is crossed.
 
 ### 2.9. [common_template] Waiting-for-Reply Discipline
 
@@ -288,19 +290,21 @@ DO NOT be polite. Find problems before they happen.
 ### 4.6. [critic] Fallback: Guardian Stale or Absent
 
 - Keep ownership of the review leg. Do NOT stop at footer mismatch alone.
-- Use the shared review-node threshold: guardian is only treated as likely
-  unresponsive after 1800s / 30m, or after a direct send failure.
-- Below 1800s / 30m, treat pending guardian review as slow-but-alive unless
-  direct send/reply evidence proves otherwise.
+- Use two thresholds:
+  - shared missing-response alert boundary: 180s / 3m
+  - shared review-node idle boundary: 1800s / 30m
+- Below 180s / 3m, treat pending guardian review as waiting.
+- Below 1800s / 30m, even after the late-reply alert fires, treat guardian as
+  slow-but-alive unless direct send/reply evidence proves otherwise.
 - Recovery ladder:
   1. If the initial handoff to guardian fails, or the active review ask appears
      stranded, resend the same review ask once using the current `Reply:`
      footer command.
-  2. At or beyond 1800s / 30m with no guardian reply, run
+  2. At or beyond 180s / 3m with no guardian reply, run
      `tmux-a2a-postman get-health` and send one compact `[WATCHDOG]`
      follow-up to guardian.
-  3. If guardian is still silent after the watchdog cycle, resend the same
-     review ask one final time.
+  3. If guardian is still silent and later crosses 1800s / 30m without direct
+     failure recovery evidence, resend the same review ask one final time.
   4. If guardian remains silent after the second resend, complete the review
      yourself as critic, return the guardian-equivalent judgment to
      orchestrator, and state explicitly that the verdict is a critic-only
@@ -553,25 +557,30 @@ Do NOT research, read code, or investigate. Delegate to worker.
 
 ### 7.6. [orchestrator] Response Escalation
 
-Treat silence against the configured timeout window first:
+Treat silence with two thresholds first:
 
-- `worker` and `worker-alt`: 900s / 15m
-- `critic`, `guardian`, `messenger`, and `orchestrator`: 1800s / 30m
-- `boss`: 3600s / 60m
+- shared missing-response alert boundary: 180s / 3m for every routed node
+  (`dropped_ball_timeout_seconds`)
+- role-specific idle boundary: `worker` and `worker-alt` 900s / 15m,
+  `critic`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
+  3600s / 60m (`idle_timeout_seconds`)
 
-Below the relevant threshold, a node may be slow but still alive. A delay that
-looks like today's worker-alt pass 29 is NOT, by itself, an unresponsive-node
+Below 180s / 3m, a node may be slow but still alive. Crossing 180s / 3m means
+"follow up now," not "the node is definitely unresponsive." A delay that looks
+like today's worker-alt pass 29 is NOT, by itself, an unresponsive-node
 incident.
 
-Escalation cadence for an actually unresponsive node:
+Escalation cadence for a node that stays silent:
 
-1. After 2 unanswered orchestrator messages to the same node, run
+1. After 2 unanswered orchestrator messages to the same node, and once the
+   180s / 3m alert boundary is crossed, run
    `tmux-a2a-postman get-health`.
 2. If health plus workflow context still indicate missing reply, send exactly
    one SHORT resend: 2-4 lines with the current ask, at most one file or
    message reference, and the `Reply:` footer command.
-3. If that resend is also unanswered, treat it as the third miss and notify
-   messenger `BLOCKED: waiting for {node}`.
+3. If that resend is also unanswered, wait for direct send/reply failure
+   evidence or for the node to cross its role-specific idle boundary, then
+   notify messenger `BLOCKED: waiting for {node}`.
 
 Do NOT keep re-pinging beyond this cadence. Use live session health plus direct
 send/reply evidence; footer mismatch alone is not enough.
@@ -588,15 +597,18 @@ BLOCKED: (operation) denied — (reason)
 
 ### 7.9. [orchestrator] Critic Watchdog Protocol
 
-Use the shared review-node threshold: critic is only treated as likely
-unresponsive after 1800s / 30m, or after direct send failure evidence.
+Use two thresholds for critic review:
 
-Below 1800s / 30m, a pending critic review is waiting, not blocked.
+- late-reply alert threshold: 180s / 3m
+- review-node idle boundary: 1800s / 30m
 
-At or beyond 1800s / 30m with no critic reply, send one watchdog message:
+Below 180s / 3m, a pending critic review is waiting, not blocked.
+
+At or beyond 180s / 3m with no critic reply, send one watchdog message:
 "[WATCHDOG] APPROVE or NOT APPROVE? Reply immediately." If that watchdog is
-also unanswered, notify messenger "BLOCKED: critic unresponsive." Never bypass
-critic — escalate, never skip.
+also unanswered, continue waiting until direct send failure evidence appears or
+the 1800s / 30m idle boundary is crossed, then notify messenger
+"BLOCKED: critic unresponsive." Never bypass critic — escalate, never skip.
 
 ### 7.10. [orchestrator] DONE Completion Signal
 

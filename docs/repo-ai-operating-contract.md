@@ -448,16 +448,21 @@ The approval loop is bounded.
 
 Approval-lane fallback behavior uses the same shared vocabulary everywhere:
 
-- timeout assumptions come from `postman.toml`: `worker` and `worker-alt`
-  900s / 15m, `critic`, `guardian`, `messenger`, and `orchestrator` 1800s /
-  30m, `boss` 3600s / 60m
+- timeout assumptions come from `postman.toml` in two layers: all routed nodes
+  use `dropped_ball_timeout_seconds = 180s / 3m` for missing-response alerts;
+  `idle_timeout_seconds` remains `worker` and `worker-alt` 900s / 15m,
+  `critic`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
+  3600s / 60m for health and staleness
 - guardian fallback: after the existing watchdog and resend ladder, critic may
-  finish with a critic-only fallback verdict if guardian remains stale
+  finish with a critic-only fallback verdict if guardian remains stale after
+  the 180s / 3m alert and the 1800s / 30m review-node idle boundary
 - critic fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
-  1800s / 30m threshold, then reports `BLOCKED:` if critic still does not
-  reply; never bypass critic
-- boss fallback: never bypass boss; at or beyond the 3600s / 60m threshold,
-  report `BLOCKED:` waiting for boss instead of forcing completion
+  180s / 3m late-reply threshold, then reports `BLOCKED:` if critic still does
+  not reply once direct send failure evidence appears or the 1800s / 30m
+  review-node idle boundary is crossed; never bypass critic
+- boss fallback: never bypass boss; late-reply alerts still fire after
+  180s / 3m, and at or beyond the 3600s / 60m idle boundary report
+  `BLOCKED:` waiting for boss instead of forcing completion
 - hook, permission, or tool-restriction blocks are immediate `BLOCKED:` states
   with no silent retry
 
