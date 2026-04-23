@@ -15,6 +15,8 @@ else
   runtime_root="${TMPDIR:-/tmp}/ai-runtime-poc"
 fi
 
+disposable_home_dir="${runtime_root}/home"
+
 case "${runtime_root}" in
 "${HOME}/.claude" | \
   "${HOME}/.claude/"* | \
@@ -30,8 +32,9 @@ if [[ -e ${runtime_root} ]]; then
 fi
 
 rm -rf "${runtime_root}"
-mkdir -p "${runtime_root}"
+mkdir -p "${runtime_root}" "${disposable_home_dir}"
 cd "${repo_root}"
+export AI_RUNTIME_POC_HOME_DIR="${disposable_home_dir}"
 
 # This POC renders directly into disposable temp output and never activates the
 # managed ~/.claude or ~/.codex runtime.
@@ -42,6 +45,7 @@ let
   pkgs = import flake.inputs.nixpkgs { system = builtins.currentSystem; };
   renderCodexAgents = import ./nix/home-manager/agents/families/render-codex-agents.nix { inherit pkgs; };
   family = import ./nix/home-manager/agents/families/subagents/family.nix {
+    homeDir = builtins.getEnv "AI_RUNTIME_POC_HOME_DIR";
     inherit
       pkgs
       renderCodexAgents
