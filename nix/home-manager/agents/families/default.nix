@@ -4,13 +4,16 @@
   runtime installers consume the merged outputs from here.
 */
 {
+  config,
   pkgs,
 }:
 let
   inherit (pkgs) lib;
   renderCodexAgents = import ./render-codex-agents.nix { inherit pkgs; };
+  homeDir = config.home.homeDirectory;
   subagents = import ./subagents/family.nix {
     inherit
+      homeDir
       pkgs
       renderCodexAgents
       ;

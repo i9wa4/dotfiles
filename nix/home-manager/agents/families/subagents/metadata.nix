@@ -1,4 +1,4 @@
-{
+_: {
   researcher-tech = {
     name = "researcher-tech";
     description = "Technical research specialist. Thorough investigator.";

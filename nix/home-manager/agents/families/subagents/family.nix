@@ -1,18 +1,20 @@
 {
+  homeDir,
   pkgs,
   renderCodexAgents,
 }:
 let
   inherit (pkgs) lib;
   sourceDir = ../../subagents;
-  metadata = import ./metadata.nix;
+  metadata = import ./metadata.nix { inherit homeDir; };
   subagentNames = builtins.attrNames metadata;
 
   mkClaudeAgent =
     basename:
     let
       cfg = metadata.${basename};
-      body = builtins.readFile "${sourceDir}/${basename}.md";
+      bodyPath = cfg.sourcePath or "${sourceDir}/${basename}.md";
+      body = builtins.readFile bodyPath;
     in
     {
       name = "${basename}.md";
@@ -34,7 +36,8 @@ let
     basename:
     let
       cfg = metadata.${basename};
-      body = builtins.readFile "${sourceDir}/${basename}.md";
+      bodyPath = cfg.sourcePath or "${sourceDir}/${basename}.md";
+      body = builtins.readFile bodyPath;
     in
     {
       name = "${basename}.toml";

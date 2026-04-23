@@ -7,7 +7,12 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  families = import ./families/default.nix { inherit pkgs; };
+  families = import ./families/default.nix {
+    inherit
+      config
+      pkgs
+      ;
+  };
 in
 {
   claude = {
