@@ -174,11 +174,11 @@
     "dbt-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776811450,
-        "narHash": "sha256-9lm4kfR4i3CEBMSiJ0Xf4obXbpC0kcPLwSfkCxiqTk4=",
+        "lastModified": 1776945729,
+        "narHash": "sha256-ObD/FAmaejicuMfmkKVHKV6FUi+ISIETQeaAtIFhje8=",
         "owner": "dbt-labs",
         "repo": "dbt-agent-skills",
-        "rev": "77cb49cf7a5fb20c6236a3ca5cc3eadd1c5139ee",
+        "rev": "9d919416475cf752ed38c02225e2da0bf0710fe2",
         "type": "github"
       },
       "original": {
@@ -559,11 +559,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1776883427,
-        "narHash": "sha256-prHCm++hniRcoqzvWTEFyAiLKT6m+EUVCRaDLrsuEgM=",
+        "lastModified": 1776939211,
+        "narHash": "sha256-qKIQt25eKt51TJq8V/BlqJaBwUG5v3JU/WmmJw2YTEg=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "6fd26c9cb50d9549f3791b3d35e4f72f97677103",
+        "rev": "c34d2134c626776efee4bf29c681203b9305c90c",
         "type": "github"
       },
       "original": {
@@ -905,11 +905,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1776873618,
-        "narHash": "sha256-ABzG0mX5K+pOb7HkUydRbMTN19IYtr2h1bftT2VE9ck=",
+        "lastModified": 1776940037,
+        "narHash": "sha256-JPhH4AvGXUiiTL1TQxk+PxGzotJLBT6AQQiBKD3F8iM=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "c4acfda443690868a634309c47e21ce1406ee92a",
+        "rev": "25454844a74ef1678494b6ef014c19230954b36f",
         "type": "github"
       },
       "original": {
