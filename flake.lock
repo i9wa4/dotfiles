@@ -158,11 +158,11 @@
     "databricks-official-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776963398,
-        "narHash": "sha256-G6R0qnrEVifNJLXYMfN0avJY3Hp/xIHQIuSov1otb2E=",
+        "lastModified": 1777024174,
+        "narHash": "sha256-+ooBGlU4ATVqQKGPWORDUsj08YZV2CHytPDf0WLJkR8=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "09da51c0df3aec7d86eec836f1a7e91b4eef1d53",
+        "rev": "71b06f6c47c56c2d0d95843bfb11ce40ca3c17e3",
         "type": "github"
       },
       "original": {
@@ -559,11 +559,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1777007344,
-        "narHash": "sha256-snu8Xa+VKZLF5nPinJvHllM4QZ14I/+1890qZFp/RnM=",
+        "lastModified": 1777019177,
+        "narHash": "sha256-YjPvucTsKmGO9QVNz07x7sSsK11PB0jtMniRkTolbq4=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "645fe817aaa212d8a6981abf2d996f69a7e78fe1",
+        "rev": "8ff0f2a7fcd176b4547da6879ad549de2bbded41",
         "type": "github"
       },
       "original": {
@@ -795,11 +795,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1776946615,
-        "narHash": "sha256-Q4SmvLr7PxHm9BLCcsKf4iH3IzIZgqFxV/bk5j4H6AM=",
+        "lastModified": 1777014176,
+        "narHash": "sha256-OzisFv/K6SRIKNOUsR+9Xij/HnS+UqXWhrheEHPJJ3E=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6ea81a59ced133851d02042d2ba8c2911fd54546",
+        "rev": "3f05c8657c7016fb8cfec9ca06dac066cdeddb91",
         "type": "github"
       },
       "original": {
