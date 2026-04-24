@@ -31,7 +31,13 @@ let
   instructionFiles = instructionArtifacts {
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
-    rulePaths = [ ];
+    rulePaths = [
+      ./rules/bash.md
+      ./rules/github.md
+      ./rules/markdown.md
+      ./rules/python.md
+      ./rules/repo-local.md
+    ];
   };
 
   # Generated patterns file name (change here to relocate)
@@ -188,6 +194,7 @@ in
       # Composite CLAUDE.md generated from AGENTS.md + Claude-only fragment
       ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
       # Nix store directory symlinks (rebuild required to update)
+      ".claude/rules".source = ./rules;
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };
