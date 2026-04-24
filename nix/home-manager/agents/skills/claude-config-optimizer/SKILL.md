@@ -3,7 +3,7 @@ name: claude-config-optimizer
 description: |
   Claude Code config optimization skill.
   Use when:
-  - Editing CLAUDE.md, rules/, skills/, agents/, commands/
+  - Editing CLAUDE.md, skills/, agents/, commands/
   - User asks about config best practices
   - Checking optimization status
   - User says "claude code changelog" or "claude code updates"
@@ -28,7 +28,7 @@ Source of truth:
 | ------------------------- | ------------------------------------------------------------ | -------------------------- |
 | `~/.claude/settings.json` | Generated from Nix attributes                                | `claude-code.nix`          |
 | `~/.claude/CLAUDE.md`     | Generated from `AGENTS.md` + `CLAUDE.md` fragment            | `instruction-artifacts.nix` |
-| `~/.claude/rules/`        | `nix/home-manager/agents/rules/`                             | `claude-code.nix`          |
+| `~/.claude/rules/`        | `nix/home-manager/agents/skills/<name>/SKILL.md`            | `claude-code.nix`          |
 | `~/.claude/agents/`       | `nix/home-manager/agents/subagents/`                         | `claude-code.nix`          |
 | `~/.claude/scripts/`      | `nix/home-manager/agents/scripts/`                           | `claude-code.nix`          |
 | `~/.claude/skills/`       | Multiple flake inputs + local                                | `agent-skills.nix`         |
@@ -117,7 +117,7 @@ Task tool with subagent_type: claude-code-guide
 ## 6. CLAUDE.md Design Guidelines
 
 - YOU MUST: Focus only on persona and core guidelines
-- YOU MUST: Split detailed rules into `rules/`
+- YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`
 - NEVER: Include unnecessary information at startup
   (reference links, usage details)
 
@@ -177,7 +177,7 @@ Check the following when editing CLAUDE.md:
 
 - [ ] Is the persona definition concise?
 - [ ] Are basic rules truly needed at all times?
-- [ ] Can detailed explanations be moved to rules/ or skills/?
+- [ ] Can detailed explanations be moved to `skills/<name>/SKILL.md`?
 - [ ] Have reference links been moved to skills?
 - [ ] Does each line pass the "remove this → Claude makes mistakes?" test?
 - [ ] Are @imports used for large doc sections instead of inline content?
@@ -230,7 +230,7 @@ background: true # Always run as background task (v2.1.49+)
 
 ## 10. File Structure Maintenance
 
-When adding/removing files in rules/, skills/, agents/, or commands/:
+When adding/removing files in skills/, agents/, or commands/:
 
 - YOU MUST: Update corresponding table in CLAUDE.md section 4
 - YOU MUST: Keep tables alphabetically sorted or logically grouped
