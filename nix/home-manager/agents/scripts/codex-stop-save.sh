@@ -37,7 +37,7 @@ if [ -d "$HOOK_CWD" ]; then
   cd "$HOOK_CWD"
 fi
 
-GIT_STATUS="$(git status --short 2>/dev/null || echo "(not a git repo)")"
+GIT_STATUS="$(git --no-optional-locks status --short 2>/dev/null || echo "(not a git repo)")"
 RECENT_COMMITS="$(git log --oneline -5 2>/dev/null || echo "(no commits)")"
 CURRENT_BRANCH="$(git branch --show-current 2>/dev/null || echo "(detached HEAD or not git)")"
 

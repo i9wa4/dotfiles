@@ -63,7 +63,7 @@ echo ""
 
 # Git status
 echo "=== Status ==="
-git -C "$repo_path" status -s 2>/dev/null || true
+git -C "$repo_path" --no-optional-locks status -s 2>/dev/null || true
 echo ""
 
 # Git log

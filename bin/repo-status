@@ -59,13 +59,13 @@ if [ "${#branch}" -gt 15 ]; then
 fi
 
 # Get git status counts
-status_output=$(git status --porcelain 2>/dev/null)
+status_output=$(git --no-optional-locks status --porcelain 2>/dev/null)
 untracked=$(echo "${status_output}" | grep -c "^??" 2>/dev/null)
 staged=$(echo "${status_output}" | grep -c "^[MADRC]" 2>/dev/null)
 unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
 
 # Get insertions/deletions (single git diff call)
-read -r insertions deletions <<<"$(git diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
+read -r insertions deletions <<<"$(git --no-optional-locks diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
 
 # Get unpushed commits (try upstream, fall back to origin/branch)
 upstream="@{u}"

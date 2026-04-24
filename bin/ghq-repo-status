@@ -45,7 +45,7 @@ get_repo_status_info() {
 
   # Get all status info at once with git status --porcelain=v1
   local git_status_output
-  git_status_output=$(git -C "$repo_full_path" status --porcelain=v1 2>/dev/null)
+  git_status_output=$(git -C "$repo_full_path" --no-optional-locks status --porcelain=v1 2>/dev/null)
 
   # Get branch name efficiently
   local branch_name
@@ -82,7 +82,7 @@ get_repo_status_info() {
   # Run diff --shortstat only when needed
   if [[ $modified_count -gt 0 ]]; then
     local shortstat
-    shortstat=$(git -C "$repo_full_path" diff --shortstat 2>/dev/null)
+    shortstat=$(git -C "$repo_full_path" --no-optional-locks diff --shortstat 2>/dev/null)
 
     local insertions=0 deletions=0
     if [[ $shortstat =~ ([0-9]+)\ insertion ]]; then
