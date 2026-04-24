@@ -231,10 +231,7 @@ Treat the original markdown checklist as the completion gate.
   possible
 - NEVER include Co-Authored-By, AI tool notices, `.i9wa4/` files, or local file
   paths
-- External repo references (Issues, PRs, commits, all GitHub-posted text): check
-  org membership: `gh api user/memberships/orgs --jq '.[].organization.login'`
-  Same org: bare URLs and `org/repo#123` OK. Cross-org/external: escape with
-  backticks or plain text. Non-GitHub URLs and blob/tree URLs: always safe.
+- Cross-org GitHub references: escape with backticks or plain text
 - Sub-issues: use `gh sub-issue` extension (`add/list/remove`)
 - PR inline comments require `gh api` (not `gh pr comment`):
   `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
@@ -248,8 +245,7 @@ Treat the original markdown checklist as the completion gate.
   `[must]` fix before merge; `[want]` strongly prefer; `[imo]` optional;
   `[nits]` style; `[ask]` needs clarification; `[fyi]` informational;
   `[praise]` positive feedback.
-  Style: Japanese, concise (problem not fix), no Before/After blocks, one
-  concern per comment; tone: match i9wa4.github.io/blog/ and zenn/
+  Style: Japanese, concise (problem not fix), one concern per comment
 
 ### 2.17. [common_template] Language-Specific Rules
 
