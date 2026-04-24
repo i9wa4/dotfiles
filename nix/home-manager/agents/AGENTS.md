@@ -17,4 +17,4 @@ acknowledge with a random one-liner in character.
 ## 3. Scope
 
 - Keep this file runtime-critical. Shared repo-local operating rules live in
-  `rules/*.md`.
+  `skills/*/SKILL.md`.

@@ -261,7 +261,7 @@ Last reviewed Claude Code version: v2.1.94 (2026-04-09)
 - [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
   usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
-  custom `rules/github.md` is sole authority (v2.1.69)
+  custom `skills/github/SKILL.md` is sole authority (v2.1.69)
 - [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1"` - strips credentials from
   subprocesses (v2.1.83)
 - [x] `showThinkingSummaries = true` - explicit opt-in required after v2.1.89
