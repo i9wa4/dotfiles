@@ -194,9 +194,6 @@ Treat the original markdown checklist as the completion gate.
 - No unnecessary error handling, backward compatibility, or defensive code
   (YAGNI, KISS)
 - Prefer the smallest next step that produces a verifiable result
-- Propose additional changes and wait for approval before implementing them
-- When explaining things to humans, use ELI5-like plain language without losing
-  accuracy
 - Verify changes took effect before reporting success; show actual output as
   evidence
 - Verify findings against the actual repo/code before reporting; flag confidence
@@ -206,17 +203,11 @@ Treat the original markdown checklist as the completion gate.
   macOS)
 - Do not pollute global environment (use venv, nvm, rbenv, etc.)
 - Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
-- Do not use complex tooling (home-manager modules) when simple solutions
-  (symlinks, plain files) suffice for config file management in dotfiles
 - Never hardcode user-specific values in shared Nix configs; use
   `config.home.username`
 - Create working files with `mkmd`; match comment language in target file
-- Check entire file for consistency; if unclear, check surrounding files
-- Rollback: confirm exact files and lines before reverting; revert ONLY
-  specified changes; do not refactor during rollback
+- Rollback: revert ONLY specified changes; do not refactor during rollback
 - Annotations: NOTE:, TODO:, FIXME:, WARNING: (uppercase)
-- Environment: always running inside a tmux pane; get role name with
-  `tmux display-message -p '#{pane_title}'`
 
 ### 2.16. [common_template] Git and GitHub Rules
 
@@ -224,7 +215,6 @@ Treat the original markdown checklist as the completion gate.
   Issues/PRs
 - Cite Issue/PR numbers with `#` prefix (e.g. `#240`)
 - Check `.github/ISSUE_TEMPLATE/` before creating issues
-- Match language of recent commits (English or Japanese)
 - Conventional Commits: `<type>(<scope>): <description> (#<Issue>)`
   Types: feat, fix, docs, style, refactor, test, chore
 - Commit body: include "why"; separate structural and behavioral changes when
@@ -232,28 +222,12 @@ Treat the original markdown checklist as the completion gate.
 - NEVER include Co-Authored-By, AI tool notices, `.i9wa4/` files, or local file
   paths
 - Cross-org GitHub references: escape with backticks or plain text
-- Sub-issues: use `gh sub-issue` extension (`add/list/remove`)
-- PR inline comments require `gh api` (not `gh pr comment`):
-  `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
-  Post: `gh api repos/OWNER/REPO/pulls/NUMBER/comments` with `body`,
-  `commit_id`, `path`, `line` (absolute), `side` (RIGHT/LEFT)
-  Reply: `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
-- TodoWrite (Claude Code) uses this two-line template:
-  `- [ ] Commit changes (requires permission)`
-  `- [ ] Push to remote (requires permission)`
-- PR review comment tags (required at start of every comment):
-  `[must]` fix before merge; `[want]` strongly prefer; `[imo]` optional;
-  `[nits]` style; `[ask]` needs clarification; `[fyi]` informational;
-  `[praise]` positive feedback.
-  Style: Japanese, concise (problem not fix), one concern per comment
 
 ### 2.17. [common_template] Language-Specific Rules
 
 Python: no shebang lines; no execute permission on .py files; always run with
-explicit `python` command; use `uv run` if `uv.lock` exists; if `poetry.lock`
-exists, create venv with `uv` per
-<https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html>;
-otherwise `source .venv/bin/activate` then run commands.
+explicit `python` command; use `uv run` if `uv.lock` exists, otherwise activate
+venv.
 
 Markdown: no emojis; numbered lists start from 1; align table columns with
 spaces. Japanese markdown: no bold, no trailing colons.
