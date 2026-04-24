@@ -193,7 +193,9 @@ Treat the original markdown checklist as the completion gate.
   sections
 - No unnecessary error handling, backward compatibility, or defensive code
   (YAGNI, KISS)
-- Prefer the smallest next step that produces a verifiable result
+- Prefer the smallest next step that produces a verifiable result; when
+  changing behavior and a cheap failing test or reproducer is possible, start
+  there
 - Propose additional changes and wait for approval before implementing them
 - When explaining things to humans, use ELI5-like plain language without losing
   accuracy
@@ -227,8 +229,11 @@ Treat the original markdown checklist as the completion gate.
 - Match language of recent commits (English or Japanese)
 - Conventional Commits: `<type>(<scope>): <description> (#<Issue>)`
   Types: feat, fix, docs, style, refactor, test, chore
-- Commit body: include "why"; separate structural and behavioral changes when
-  possible
+- Commit body: include why; separate structural and behavioral changes when
+  possible. Body sections as needed: Summary, Background, Changes, Technical
+  Details, Verification, Related URLs.
+- Granularity: keep commits granular enough that work can be resumed from any
+  point
 - NEVER include Co-Authored-By, AI tool notices, `.i9wa4/` files, or local file
   paths
 - External repo references (Issues, PRs, commits, all GitHub-posted text): check
