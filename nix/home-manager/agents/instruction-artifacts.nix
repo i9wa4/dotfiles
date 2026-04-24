@@ -1,6 +1,6 @@
 /*
   Builds the installed instruction artifacts.
-  Edit AGENTS.md, CLAUDE.md, and rules/*.md for prompt content changes.
+  Edit AGENTS.md, CLAUDE.md, and skills/<name>/SKILL.md for prompt content changes.
   This file only defines how those source files are merged for runtime output.
 */
 { pkgs }:

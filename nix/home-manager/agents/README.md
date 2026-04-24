@@ -12,7 +12,7 @@ artifacts.
 | ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Shared base instructions      | `AGENTS.md`                                                                | Merged into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`                         |
 | Claude-only instruction delta | `CLAUDE.md`                                                                | Appended to `~/.claude/CLAUDE.md`                                                  |
-| Supplemental rule docs        | `rules/*.md`                                                               | Copied to `~/.claude/rules/`; inlined into `~/.codex/AGENTS.md`                    |
+| Supplemental rule docs        | `skills/*/SKILL.md` (see `codex-cli.nix` `rulePaths`)                     | Inlined into `~/.codex/AGENTS.md`; installed to `~/.claude/skills/`                |
 | Shared instruction merger     | `instruction-artifacts.nix`                                                | Builds the installed Claude and Codex instruction files from the markdown sources  |
 | Shared subagents              | `subagents/*.md`, `families/subagents/metadata.nix`                       | Generated into `~/.claude/agents/` and `~/.codex/agents/`                          |
 | Review stack prompts/skills   | `review/refs/`, `review/skills/`, `review/review-artifacts-gen.nix`       | Generated reviewer agents and `subagent-review-*` skills                           |
@@ -28,7 +28,7 @@ artifacts.
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
 2. `instruction-artifacts.nix` builds the installed instruction files from
-   `AGENTS.md`, `CLAUDE.md`, and `rules/*.md`.
+   `AGENTS.md`, `CLAUDE.md`, and `skills/*/SKILL.md`.
 3. `families/subagents/metadata.nix` defines the shared Claude/Codex metadata
    for the subagent family while `subagents/*.md` stays the prompt-body source.
 4. `families/default.nix` merges family-local agent outputs for the installed
