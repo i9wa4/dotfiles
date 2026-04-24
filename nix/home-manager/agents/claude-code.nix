@@ -32,11 +32,11 @@ let
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
     rulePaths = [
-      ./rules/bash.md
-      ./rules/github.md
-      ./rules/markdown.md
-      ./rules/python.md
-      ./rules/repo-local.md
+      ./skills/bash/SKILL.md
+      ./skills/github/SKILL.md
+      ./skills/markdown/SKILL.md
+      ./skills/python/SKILL.md
+      ./skills/repo-local/SKILL.md
     ];
   };
 
@@ -194,7 +194,6 @@ in
       # Composite CLAUDE.md generated from AGENTS.md + Claude-only fragment
       ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
       # Nix store directory symlinks (rebuild required to update)
-      ".claude/rules".source = ./rules;
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };

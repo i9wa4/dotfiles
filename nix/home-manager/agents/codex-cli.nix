@@ -34,11 +34,11 @@ let
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
     rulePaths = [
-      ./rules/bash.md
-      ./rules/github.md
-      ./rules/markdown.md
-      ./rules/python.md
-      ./rules/repo-local.md
+      ./skills/bash/SKILL.md
+      ./skills/github/SKILL.md
+      ./skills/markdown/SKILL.md
+      ./skills/python/SKILL.md
+      ./skills/repo-local/SKILL.md
     ];
   };
 

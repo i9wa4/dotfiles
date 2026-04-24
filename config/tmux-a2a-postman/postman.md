@@ -187,6 +187,35 @@ Treat the original markdown checklist as the completion gate.
 - if any original checklist item is still open, failed, or unverified, respond
   with `BLOCKED:` or `NOT APPROVED:` and name the failing items
 
+### 2.15. [common_template] Available Skills
+
+Invoke with `/skill <name>` (Claude Code) or `@<name>` (Codex CLI).
+
+- `aws-auth` — AWS CLI access needed; authentication handoff
+- `bash` — writing shell commands or scripts in this repo
+- `bigquery-local` — BigQuery queries in this repo (cost-aware patterns)
+- `brainstorming` — approach unclear; requirements fuzzy; comparing options
+- `claude-config-optimizer` — editing CLAUDE.md or skills/ for Claude Code
+- `claude-workspace-trust-fix` — PreToolUse hooks skipped in interactive mode
+- `codex-config-optimizer` — editing agents.md or Codex CLI config
+- `codex-prompting-local` — Codex prompt guidance or resume-handoff
+- `databricks-local` — Databricks Queries API, VARIANT/JSON, dbt integration
+- `dbt-local` — issue-specific dbt target setup or Databricks SQL dialect
+- `drawio-local` — .drawio XML editing or PNG/SVG/PDF export
+- `github` — creating commits, PRs, issues, or review comments
+- `markdown` — writing or editing Markdown files in this repo
+- `mermaid-local` — Mermaid diagrams for Quarto revealjs slides
+- `nix` — Nix package management, nurl, or home-manager config
+- `orchestrator` — acting as orchestrator role in tmux-a2a-postman
+- `plan-design` — user needs a step-by-step plan before implementation
+- `python` — writing or running Python code in this repo
+- `repo-local` — file edits, git operations, or tooling choices in this repo
+- `restricted-bigquery-dbt-environment` — dbt in restricted BigQuery env
+- `systematic-debugging` — broken behavior; cause unknown; guessing failed
+- `tdd-tidy-first` — implementing a verified code change step-by-step
+- `tmux` — sending commands to or monitoring separate tmux panes
+- `using-git-worktrees` — isolated workspaces or PR review in this repo
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
