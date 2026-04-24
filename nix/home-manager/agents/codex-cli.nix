@@ -33,13 +33,7 @@ let
   instructionFiles = instructionArtifacts {
     sharedCore = ./AGENTS.md;
     claudeOnly = ./CLAUDE.md;
-    rulePaths = [
-      ./rules/bash.md
-      ./rules/github.md
-      ./rules/markdown.md
-      ./rules/python.md
-      ./rules/repo-local.md
-    ];
+    rulePaths = [ ];
   };
 
   defaultRulesContent = ''

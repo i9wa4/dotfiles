@@ -187,6 +187,81 @@ Treat the original markdown checklist as the completion gate.
 - if any original checklist item is still open, failed, or unverified, respond
   with `BLOCKED:` or `NOT APPROVED:` and name the failing items
 
+### 2.15. [common_template] Workflow Constraints
+
+- Read each file in full before editing; do not delete unmentioned handlers or
+  sections
+- No unnecessary error handling, backward compatibility, or defensive code
+  (YAGNI, KISS)
+- Prefer the smallest next step that produces a verifiable result
+- Verify changes took effect before reporting success; show actual output as
+  evidence
+- Verify findings against the actual repo/code before reporting; flag confidence
+  level
+- Follow README.md and CONTRIBUTING.md when present
+- Prefer Nix-managed tools or POSIX-compatible commands (repo targets Linux and
+  macOS)
+- Do not pollute global environment (use venv, nvm, rbenv, etc.)
+- Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
+- Never hardcode user-specific values in shared Nix configs; use
+  `config.home.username`
+- Create working files with `mkmd`; match comment language in target file
+- Rollback: revert ONLY specified changes; do not refactor during rollback
+- Annotations: NOTE:, TODO:, FIXME:, WARNING: (uppercase)
+
+### 2.16. [common_template] Git and GitHub Rules
+
+- Use `gh` for GitHub info retrieval; always fetch full body + comments for
+  Issues/PRs
+- Cite Issue/PR numbers with `#` prefix (e.g. `#240`)
+- Check `.github/ISSUE_TEMPLATE/` before creating issues
+- Conventional Commits: `<type>(<scope>): <description> (#<Issue>)`
+  Types: feat, fix, docs, style, refactor, test, chore
+- Commit body: include "why"; separate structural and behavioral changes when
+  possible
+- NEVER include Co-Authored-By, AI tool notices, `.i9wa4/` files, or local file
+  paths
+- Cross-org GitHub references: escape with backticks or plain text
+
+### 2.17. [common_template] Language-Specific Rules
+
+Python: no shebang lines; no execute permission on .py files; always run with
+explicit `python` command; use `uv run` if `uv.lock` exists, otherwise activate
+venv.
+
+Markdown: no emojis; numbered lists start from 1; align table columns with
+spaces. Japanese markdown: no bold, no trailing colons.
+
+Bash: no subshells `()`; use braces `{ }` instead; wrap piped redirects in
+braces `{ }`; split complex operations across separate Bash tool calls; use
+HEREDOC for multi-line file creation.
+
+### 2.18. [common_template] Available Skills
+
+Invoke a skill when its trigger condition matches. Reference by name only; do
+not reconstruct skill content from memory.
+
+| Skill                               | Trigger condition                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------ |
+| aws-auth                            | AWS CLI via authenticated tmux pane; agent cannot run `aws sso login`   |
+| bigquery-local                      | bq commands, GoogleSQL queries, partitioned/clustered table design       |
+| brainstorming                       | Request not yet plan-ready; fuzzy requirements; compare 2-3 options      |
+| claude-config-optimizer             | Editing CLAUDE.md, rules/, skills/, agents/; Claude Code changelog       |
+| claude-workspace-trust-fix          | PreToolUse hooks not firing in interactive mode                          |
+| codex-config-optimizer              | Editing Codex agents or config; Codex CLI changelog                      |
+| codex-prompting-local               | Composing Codex/GPT-5 prompts; review contracts; resumable task prompts  |
+| databricks-local                    | Databricks Queries API, VARIANT/JSON, Dashboard API, dbt+Databricks      |
+| dbt-local                           | Issue-specific dbt target setup; Databricks SQL dialect quirks           |
+| drawio-local                        | draw.io diagram creation, editing, or export                             |
+| mermaid-local                       | Mermaid diagrams in .qmd files; mmdc preview; revealjs color issues      |
+| nix                                 | nurl hash acquisition; Nix package management                            |
+| plan-design                         | Complex task needs a step-by-step plan before implementation             |
+| restricted-bigquery-dbt-environment | Local dbt in restricted BigQuery env; temporary schema='test' override   |
+| systematic-debugging                | Failure mechanism unknown; guessing has already failed                   |
+| tdd-tidy-first                      | Cheap failing test possible; mixing structural and behavioral changes     |
+| tmux                                | Send/capture commands in another pane; monitor parallel pane output      |
+| using-git-worktrees                 | Isolated worktree needed; PR review workspace; worktree cleanup          |
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
