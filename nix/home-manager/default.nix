@@ -89,6 +89,7 @@ in
     ./modules/tmux.nix
     # home.activation
     ./modules/npm.nix
+    ./modules/skk.nix
     # AI agent tools
     ./agents
   ];
