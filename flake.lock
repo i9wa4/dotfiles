@@ -142,11 +142,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776959062,
-        "narHash": "sha256-G71GSjS12QkL+sAiszSoazXds78WFLF5s6OwKwHWl+8=",
+        "lastModified": 1777066167,
+        "narHash": "sha256-O5Lc3ijCZ+fN+zWGomnCte/0i2ygar1KAaXcklAfPDQ=",
         "owner": "databricks-solutions",
         "repo": "ai-dev-kit",
-        "rev": "000c834a2a45f476daeddd4a23ac80fc36a6c7d1",
+        "rev": "281d9acd92d936bd5294f78bd7ec68fb12d4a696",
         "type": "github"
       },
       "original": {
@@ -174,11 +174,11 @@
     "dbt-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776945729,
-        "narHash": "sha256-ObD/FAmaejicuMfmkKVHKV6FUi+ISIETQeaAtIFhje8=",
+        "lastModified": 1777084508,
+        "narHash": "sha256-zB/yCY/rdNH16IkXKA0pycQzkydSJhdPaaSQPTWz06c=",
         "owner": "dbt-labs",
         "repo": "dbt-agent-skills",
-        "rev": "9d919416475cf752ed38c02225e2da0bf0710fe2",
+        "rev": "8643c2cf71c09a9f8b1e3923f676385c8a785867",
         "type": "github"
       },
       "original": {
@@ -501,11 +501,11 @@
     "hashicorp-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776444320,
-        "narHash": "sha256-x9nhalz9MoZWNE7VNtR/0MaVdaRl5WAfTzCsYL2xpK8=",
+        "lastModified": 1777079496,
+        "narHash": "sha256-1V4q+FAb53ZqZir+khNKxdEFCemjbiaD1PxjWADjbhk=",
         "owner": "hashicorp",
         "repo": "agent-skills",
-        "rev": "de4323afdfbc30d1387f287b55062fa8d82b62e8",
+        "rev": "b129bb5c0a8d857d5c36d1fd12492e943730aacf",
         "type": "github"
       },
       "original": {
@@ -521,11 +521,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777004352,
-        "narHash": "sha256-SV+9PgNwZ8jHVCjK6YaCBzaheLSW7cDnm5DpOYrD8Vw=",
+        "lastModified": 1777086106,
+        "narHash": "sha256-hlNpIN18pw3xo34Lsrp6vAMUPn0aB/zFBqL0QXI1Pmk=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6012cf1fed3eba66115f3fd117b9be6bd2a15b2f",
+        "rev": "5826802354a74af18540aef0b01bc1320f82cc17",
         "type": "github"
       },
       "original": {
@@ -559,11 +559,11 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1777019177,
-        "narHash": "sha256-YjPvucTsKmGO9QVNz07x7sSsK11PB0jtMniRkTolbq4=",
+        "lastModified": 1777093284,
+        "narHash": "sha256-tBvsFPJy0/2gocc6QGYFXJF44TvJ8PC726NsdTpFJ44=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "8ff0f2a7fcd176b4547da6879ad549de2bbded41",
+        "rev": "6b4673fddbbe1f2656b3fa8d2a32666570aafbfa",
         "type": "github"
       },
       "original": {
