@@ -49,4 +49,4 @@ jobs:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
 
       - name: Verify isolated disposable Claude/Codex runtime
-        run: bash tests/ai-runtime-poc-smoke.sh
+        run: bash .github/scripts/ai-runtime-poc-smoke.sh
