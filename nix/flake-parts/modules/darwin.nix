@@ -82,6 +82,13 @@ let
                     ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
                     ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
                   '';
+                # NOTE: dpp must run at least once before this activation produces dict output.
+                home.activation.setupMacSkkDict = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                  macSkkDir="$HOME/Library/Application Support/macSKK/Dictionaries"
+                  dppSkkDev="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/skk-dev/dict"
+                  mkdir -p "$macSkkDir"
+                  [[ -f "$dppSkkDev/SKK-JISYO.L" ]] && cp -f "$dppSkkDev/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
+                '';
               };
           };
         }
