@@ -83,8 +83,9 @@ let
                     ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
                   '';
                 # NOTE: dpp must run at least once before this activation produces dict output.
+                # NOTE: macSKK loads file dictionaries from its sandboxed Documents/Dictionaries path.
                 home.activation.setupMacSkkDict = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                  macSkkDir="$HOME/Library/Application Support/macSKK/Dictionaries"
+                  macSkkDir="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
                   dppSkkDev="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/skk-dev/dict"
                   mkdir -p "$macSkkDir"
                   [[ -f "$dppSkkDev/SKK-JISYO.L" ]] && cp -f "$dppSkkDev/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
