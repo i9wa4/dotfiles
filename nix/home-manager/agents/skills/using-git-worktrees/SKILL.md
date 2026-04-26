@@ -1,6 +1,11 @@
 ---
 name: using-git-worktrees
-description: Repo-local workflow for isolated workspaces in this dotfiles repo. Prefer `issue-worktree-create` for issue execution, `pr-worktree-create` for PR review, `worktree-remove` for cleanup, and use `z` or `zi` as the human-facing re-entry commands with `vde-worktree` as supporting generic tooling (`list`, `status`, `path`, `cd`, `switch`). Use when work needs an isolated worktree, a clean review workspace, worktree status/path inspection, or safe cleanup.
+description: |
+  User-level git worktree workflow for isolated workspaces. Use when creating
+  issue or PR worktrees, re-entering with `z` or `zi`, inspecting worktree
+  status or path with `vde-worktree`, or cleaning up linked worktrees with
+  `worktree-remove`. In this repo, prefer `issue-worktree-create` and
+  `pr-worktree-create` as the primary entrypoints.
 ---
 
 # Using Git Worktrees
@@ -64,7 +69,7 @@ wrapper flow already covers the task.
   - `vde-worktree status [branch] --json`
 - Resolve a branch to its absolute path:
   - `vde-worktree path <branch> [--json]`
-- Re-enter a linked worktree or repo through the merged zoxide flow:
+- Re-enter a linked worktree or repo through the zoxide wrapper flow:
   - `z <keyword>`
   - `zi [keywords...]`
 - Pick a worktree path directly from the generic backend when needed:
@@ -74,7 +79,7 @@ wrapper flow already covers the task.
 
 Do not use `vde-worktree` as the primary issue or PR entrypoint in this repo.
 Do not use raw `zoxide` alone as the outermost worktree selector here; use the
-repo `z` or `zi` wrapper functions.
+repo `z` or `zi` wrapper functions that keep navigation in the current shell.
 
 ## 4. Baseline Verification
 

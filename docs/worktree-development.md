@@ -12,9 +12,10 @@ For the adoption decision behind the current tool stack, see
 - Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
   issue work.
 - Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
-- Use `z <keyword>` for the normal jump flow.
+- Use `z <keyword>` for the normal zoxide-backed jump flow.
 - Use `zi [keywords...]` for explicit interactive selection.
-- Treat `z` and `zi` as the human-facing repo/worktree entrypoints in zsh.
+- Treat `z` and `zi` as shell-local navigation helpers that `cd` the current
+  shell into a selected repository or worktree path.
 - In current code, `z` and `zi` are custom wrappers from
   `config/zsh/jump.zsh`, not the default `zoxide` commands.
 - Use `worktree-remove <branch-or-path>` to remove linked worktrees safely.
@@ -84,7 +85,7 @@ For the adoption decision behind the current tool stack, see
 
 1. `ghq + fzf` is still the explicit repository browser when the user wants to
    choose a repository first.
-2. For one-step repo or worktree entry, use `z` or `zi`.
+2. For one-step navigation into a repo or worktree path, use `z` or `zi`.
 3. `zi [keywords...]` merges three candidate sources:
    - `zoxide query --list --score`
    - `ghq list -p`
@@ -99,13 +100,10 @@ For the adoption decision behind the current tool stack, see
 8. `z <directory>` jumps directly to that directory.
 9. `z <keyword>` first tries `zoxide query --exclude "$PWD" -- "$keyword"`.
    When that direct lookup fails, it falls back to `zi <keyword>`.
-10. Inside tmux, `z` and `zi` resolve the selected path's git root when
-    available, fall back to the selected path otherwise, derive a session name
-    from that resolved path, create the session when missing with `tmux
-    new-session -c "<selected-path>"`, and switch the tmux client to it. In
-    other words, session naming follows the resolved repo/worktree path, but a
-    newly created session starts in the original selected path.
-11. Outside tmux, `z` and `zi` change directory through the wrapper functions.
+10. Inside tmux, `z` and `zi` now behave like normal shell directory changes
+    and `cd` the current pane into the selected path.
+11. Outside tmux, `z` and `zi` also change directory through the wrapper
+    functions.
 12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
     renames sessions from the selected path. For worktree paths under
     `/.worktrees/`, the session name uses the repository name plus the full
@@ -115,9 +113,9 @@ For the adoption decision behind the current tool stack, see
 
 - `vde-worktree` is the shared backend, the generic inspection tool, and the
   canonical read model for managed worktree paths.
-- `z` and `zi` are the human-facing re-entry layer in zsh.
-- Inside tmux, `z` and `zi` use plain tmux session lookup/create/switch logic
-  from `config/zsh/jump.zsh`.
+- `z` and `zi` are zoxide-first navigation wrappers in zsh.
+- Inside tmux, `z` and `zi` stay in the current pane and change the shell's
+  working directory like normal `cd`.
 - Their merged candidate set is built from the current `zoxide` database,
   `ghq list -p`, and managed worktree paths from `vde-worktree list --json`.
 - In this repository, current scripts actively use `list --json`, `path`,
@@ -159,8 +157,8 @@ For the adoption decision behind the current tool stack, see
   `nix/home-manager/modules/zsh.nix`.
 - `zi` now shows merged `zoxide` / `ghq` / `worktree` rows with score and
   source metadata.
-- tmux worktree session naming now uses the full worktree directory name with
-  dots normalized to dashes.
+- `z` and `zi` now change the current shell directory even inside tmux instead
+  of switching tmux sessions.
 - Off-main issue and PR flows now keep local `main` unchanged instead of
   rewriting it in place.
 - PR review now supports cross-repository heads by fetching from the PR source
@@ -174,7 +172,7 @@ For the adoption decision behind the current tool stack, see
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `config/zsh/jump.zsh` for the zsh jump flow and tmux session switching
+- `config/zsh/jump.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `bin/worktree-remove`
 - `config/vde/worktree/config.yml`

@@ -6,53 +6,6 @@ if command -v zoxide &>/dev/null; then
   eval "$(zoxide init zsh --no-cmd)"
 fi
 
-__jump_to_path() {
-  local target_path="$1"
-
-  if [[ -n "$TMUX" ]]; then
-    local session_path
-    session_path="$(git -C "$target_path" rev-parse --show-toplevel 2>/dev/null)" || session_path="$target_path"
-
-    local session_name
-    session_name="$(__tmux_session_name_for_path "$session_path")"
-
-    if ! tmux has-session -t "$session_name" 2>/dev/null; then
-      tmux new-session -d -s "$session_name" -c "$target_path"
-    fi
-    local switch_status=$?
-    if [[ $switch_status -eq 0 ]]; then
-      tmux switch-client -t "$session_name"
-      switch_status=$?
-    fi
-    if [[ $switch_status -eq 0 ]]; then
-      tmux rename-session "$session_name" 2>/dev/null || true
-    fi
-    return $switch_status
-  else
-    cd "$target_path" || return $?
-  fi
-}
-
-__tmux_session_name_for_path() {
-  local dir="$1"
-  local session
-
-  if [[ $dir == *"/.worktrees/"* ]]; then
-    local repo=${dir%%/.worktrees/*}
-    repo=${repo:t}
-    local repo_session=${repo//./-}
-    local wt_path=${dir#*/.worktrees/}
-    local wt_dir=${wt_path%%/*}
-    local wt_session=${wt_dir//./-}
-    session="${repo_session}-${wt_session}"
-  else
-    local repo=${dir:t}
-    session=${repo//./-}
-  fi
-
-  printf '%s\n' "$session"
-}
-
 __vde_worktree_query_paths() {
   command -v ghq &>/dev/null || return 0
   command -v jq &>/dev/null || return 0
@@ -151,7 +104,7 @@ zi() {
   selected_path="${selected_row#*$'\t'}"
   selected_path="${selected_path#*$'\t'}"
   [[ -n "$selected_path" ]] || return 1
-  __jump_to_path "$selected_path"
+  cd "$selected_path" || return $?
 }
 
 z() {
@@ -167,7 +120,7 @@ z() {
     fi
 
     if [[ -d "$1" ]]; then
-      __jump_to_path "$1"
+      cd "$1" || return $?
       return $?
     fi
 
@@ -182,7 +135,7 @@ z() {
       return $?
     }
 
-    __jump_to_path "$target_path"
+    cd "$target_path" || return $?
     return $?
   fi
 
