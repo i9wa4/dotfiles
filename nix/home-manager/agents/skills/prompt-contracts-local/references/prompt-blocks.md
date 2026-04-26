@@ -1,7 +1,6 @@
 # Prompt Blocks
 
-Use these blocks selectively when composing prompts for Codex or GPT-5.4-based
-subagents in this repo.
+Use these blocks selectively when composing prompts for agents in this repo.
 
 Wrap each block in the XML tag shown in its heading.
 
@@ -41,7 +40,7 @@ Do not add scene-setting, repeated recap, or filler.
 
 ## `default_follow_through_policy`
 
-Use when Codex should keep going without routine questions.
+Use when the agent should keep going without routine questions.
 
 ```xml
 <default_follow_through_policy>

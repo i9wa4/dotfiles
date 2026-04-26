@@ -198,7 +198,8 @@ Invoke with `/skill <name>` (Claude Code) or `@<name>` (Codex CLI).
 - `claude-config-optimizer` — editing CLAUDE.md or skills/ for Claude Code
 - `claude-workspace-trust-fix` — PreToolUse hooks skipped in interactive mode
 - `codex-config-optimizer` — editing agents.md or Codex CLI config
-- `codex-prompting-local` — Codex prompt guidance or resume-handoff
+- `prompt-contracts-local` — prompt guidance, review contracts, or
+  resume-handoff
 - `databricks-local` — Databricks Queries API, VARIANT/JSON, dbt integration
 - `dbt-local` — issue-specific dbt target setup or Databricks SQL dialect
 - `drawio-local` — .drawio XML editing or PNG/SVG/PDF export
