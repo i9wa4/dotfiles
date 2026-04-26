@@ -87,7 +87,7 @@ Open a new terminal to verify:
 nix --version
 ```
 
-cf. [Download | Nix & NixOS](https://nixos.org/download/#nix-install-linux)
+cf. <https://nixos.org/download/#nix-install-linux>
 
 ### 2.3. Enable Nix Flakes
 
@@ -206,7 +206,7 @@ sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin 2>/dev/null || true
 sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin 2>/dev/null || true
 ```
 
-cf. `https://github.com/nix-darwin/nix-darwin/issues/149`
+cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
 
 ### 4.2. Install Homebrew
 
@@ -217,7 +217,7 @@ but Homebrew itself must be installed manually.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-cf. [Homebrew](https://brew.sh/)
+cf. <https://brew.sh/>
 
 ### 4.3. Initial darwin-rebuild
 
@@ -374,4 +374,4 @@ macOS updates can break nix-darwin in two ways:
 
 1. Open a new terminal
 
-cf. [nix-darwin#149](https://github.com/nix-darwin/nix-darwin/issues/149)
+cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
