@@ -88,6 +88,12 @@ __z_query_rows() {
   '
 }
 
+__jump_cd() {
+  cd "$@" || return $?
+  __rename_tmux_session_for_dir "$PWD"
+  return 0
+}
+
 zi() {
   local selected_row
   local selected_path
@@ -104,7 +110,7 @@ zi() {
   selected_path="${selected_row#*$'\t'}"
   selected_path="${selected_path#*$'\t'}"
   [[ -n "$selected_path" ]] || return 1
-  cd "$selected_path" || return $?
+  __jump_cd "$selected_path"
 }
 
 z() {
@@ -115,12 +121,12 @@ z() {
 
   if [[ "$#" -eq 1 ]]; then
     if [[ "$1" == "-" ]]; then
-      cd - || return $?
+      __jump_cd - || return $?
       return $?
     fi
 
     if [[ -d "$1" ]]; then
-      cd "$1" || return $?
+      __jump_cd "$1" || return $?
       return $?
     fi
 
@@ -135,7 +141,7 @@ z() {
       return $?
     }
 
-    cd "$target_path" || return $?
+    __jump_cd "$target_path" || return $?
     return $?
   fi
 
