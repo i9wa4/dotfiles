@@ -189,6 +189,11 @@ Treat the original markdown checklist as the completion gate.
 
 ### 2.15. [common_template] Available Skills
 
+**Pre-task requirement**: Before starting any task, identify which skills in
+this list are relevant and read their `SKILL.md` file first. Do NOT proceed
+with task execution without reading every applicable skill file. Skill files
+live at `nix/home-manager/agents/skills/<name>/SKILL.md` in the dotfiles repo.
+
 Invoke with `/skill <name>` (Claude Code) or `@<name>` (Codex CLI).
 
 - `aws-auth` — AWS CLI access needed; authentication handoff
@@ -734,6 +739,9 @@ promptly.
 
 ### 8.3. [worker] Mandatory Rules
 
+- Before executing any task, read the `SKILL.md` for every applicable skill
+  listed in section 2.15 (`nix/home-manager/agents/skills/<name>/SKILL.md`).
+  Skipping this step is a policy violation.
 - Execute tasks from orchestrator
 - Report blockers immediately
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line in the
@@ -820,6 +828,9 @@ same standards.
 
 ### 9.3. [worker-alt] Mandatory Rules
 
+- Before executing any task, read the `SKILL.md` for every applicable skill
+  listed in section 2.15 (`nix/home-manager/agents/skills/<name>/SKILL.md`).
+  Skipping this step is a policy violation.
 - Execute tasks from orchestrator
 - Report blockers immediately
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line in the
