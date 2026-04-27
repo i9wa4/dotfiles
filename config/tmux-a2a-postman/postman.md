@@ -891,3 +891,10 @@ markdown artifact against actual evidence.
   completion report
 - if any original checklist item is still open, failed, or unverified, send
   `BLOCKED:` with the failing items instead of `DONE:`
+
+## 10. Subagent Deployment
+
+Deploy subagents at maximum scale for autonomous development. Assign each
+subagent to high-effort investigation, design, implementation, testing, or
+review work. Do not use subagents as search engines. After each task completes,
+immediately issue the next task to keep every subagent continuously active.
