@@ -30,12 +30,11 @@ presets:
       ratio: [1, 1]
       panes:
         - name: editor
-          command: vim
           delay: 500
           focus: true
         - name: agent
           title: agent
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
           delay: 500
 
   messenger-claude:
@@ -47,7 +46,6 @@ presets:
       ratio: [1, 1]
       panes:
         - name: editor
-          command: vim
           delay: 500
           focus: true
         - name: messenger
@@ -64,7 +62,6 @@ presets:
       ratio: [1, 1]
       panes:
         - name: editor
-          command: vim
           delay: 500
           focus: true
         - name: messenger
@@ -85,7 +82,7 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
               delay: 500
             - name: worker
               title: worker
@@ -100,7 +97,7 @@ presets:
           panes:
             - name: critic
               title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
               delay: 500
             - name: guardian
               title: guardian
@@ -108,7 +105,7 @@ presets:
               delay: 500
             - name: boss
               title: boss
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
               delay: 500
 
   preset-b:
