@@ -222,6 +222,401 @@ Invoke with `/skill <name>` (Claude Code) or `@<name>` (Codex CLI).
 - `tmux` — sending commands to or monitoring separate tmux panes
 - `using-git-worktrees` — isolated workspaces or PR review in this repo
 
+### 2.16. [common_template] Skill: bash
+
+#### Bash Rules
+
+##### 1. Bash Tool Syntax
+
+- NEVER: Do not use subshells `()`; use braces `{ }` instead
+- YOU MUST: Wrap pipe `|` commands in braces `{ }` when redirecting
+- YOU MUST: Split complex operations across multiple Bash tool calls
+- YOU MUST: Use HEREDOC (`cat << 'EOF'`) for multi-line file creation
+
+Example (brace group with pipe):
+
+```sh
+FILE=$(mkmd --dir tmp --label output) && { git branch -r | grep issue; } > "$FILE" 2>&1
+```
+
+### 2.17. [common_template] Skill: repo-local
+
+#### Repo-Local Operating Rules
+
+These are the residual repo-local runtime rules that still need to load in
+Claude and Codex sessions even when `tmux-a2a-postman` carries the common
+role contract for postman-driven work.
+
+##### 1. Workflow
+
+- Read a file in full at a time, not separately
+- Do not delete unmentioned handlers, functions, or sections
+- Do not add unnecessary error handling, backward compatibility, or defensive
+  code
+- Respect YAGNI and KISS principles
+- Prefer the smallest next step that produces a verifiable result; when
+  changing behavior and a cheap failing test or reproducer is possible, start
+  there
+- Propose additional changes and wait for approval
+- When explaining things to humans, use ELI5-like plain language without
+  losing accuracy
+- Verify changes took effect before reporting success; show actual output as
+  evidence
+- Verify findings against the actual repo/code before reporting. Flag
+  confidence level.
+- Follow README.md and CONTRIBUTING.md if they exist
+- For `tmux-a2a-postman` role work, follow
+  `config/tmux-a2a-postman/postman.md` and
+  `docs/repo-ai-operating-contract.md` instead of restating that node
+  contract from memory
+
+##### 2. Safety
+
+- This dotfiles repo targets both Linux and macOS; prefer Nix-managed tools
+  or POSIX-compatible commands to avoid platform differences
+- Do not pollute global environment (use venv, nvm, rbenv, etc.)
+- Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
+- Do not use complex tooling (home-manager modules) when simple solutions
+  (symlinks, plain files) suffice for config file management in dotfiles
+- Never hardcode user-specific values (usernames, hostnames, machine names)
+  in shared Nix configs; use `config.home.username` or pass values as
+  arguments
+- Some panes are read-only. Before attempting edits, check write permissions.
+  If blocked, delegate the edit to the appropriate agent.
+
+##### 3. Files
+
+- Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
+- Match comment language in target file
+- Check entire file for consistency; if unclear, check surrounding files
+- Use uppercase for annotations: NOTE:, TODO:, FIXME:, WARNING:
+
+##### 4. Rollback
+
+- Do not refactor or "improve" other code during rollback
+- Revert ONLY the specified changes
+- Confirm exact files and lines before reverting
+
+##### 5. Environment
+
+- Always running inside a tmux pane
+- Your role name: `tmux display-message -p '#{pane_title}'`
+
+### 2.18. [common_template] Skill: github
+
+#### GitHub Rules
+
+##### 1. gh CLI
+
+- YOU MUST: Use `gh` for GitHub info retrieval
+- YOU MUST: Always fetch all comments (body + comments) for Issues/PRs
+- YOU MUST: Cite Issue/PR numbers with `#` prefix (e.g., `#240`)
+
+##### 2. Issue Creation
+
+- YOU MUST: Check `.github/ISSUE_TEMPLATE/` and follow if exists
+
+##### 3. External Repo References (Mention Prevention)
+
+Applies to: Issues, PRs, commit messages, all GitHub-posted text.
+
+Check org membership:
+`gh api user/memberships/orgs --jq '.[].organization.login'`
+
+- Same org: bare URLs and `org/repo#123` OK
+- Cross-org/external: escape with backticks or plain text
+- Non-GitHub URLs and blob/tree URLs: always safe
+
+##### 4. Commit Messages
+
+- YOU MUST: Match language of recent commits (English or Japanese)
+- YOU MUST: Use Conventional Commits:
+  `<type>(<scope>): <description> (#<Issue>)`
+- Types: feat, fix, docs, style, refactor, test, chore
+- Body sections as needed: Summary, Background, Changes, Technical Details,
+  Verification, Related URLs
+- IMPORTANT: Granularity for work resumption; include "why"
+- IMPORTANT: When structural and behavioral changes are both needed, prefer
+  separate commits; if not possible, call out the split explicitly
+- NEVER: Co-Authored-By, AI tool notices
+- NEVER: `.i9wa4/` files, `/tmp/` files, local file paths
+
+##### 5. Sub-issues
+
+- YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
+
+##### 6. PR Inline Comments
+
+- `gh pr comment` = PR-wide only; inline requires `gh api`
+- `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
+- Post: `gh api repos/OWNER/REPO/pulls/NUMBER/comments` with `body`,
+  `commit_id`, `path`, `line`(absolute), `side`(RIGHT/LEFT)
+- Reply:
+  `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
+
+##### 7. TodoWrite (Claude Code)
+
+```text
+- [ ] Commit changes (requires permission)
+- [ ] Push to remote (requires permission)
+```
+
+##### 8. PR Review Comments
+
+Tags (required at start of every comment):
+
+| Tag      | Meaning                       | Action   |
+| -------- | ----------------------------- | -------- |
+| [must]   | Must fix before merge         | Fix      |
+| [want]   | Strongly prefer, not blocking | Respond  |
+| [imo]    | Take it or leave it           | Optional |
+| [nits]   | Style/readability nitpick     | Optional |
+| [ask]    | Needs clarification           | Respond  |
+| [fyi]    | Informational                 | None     |
+| [praise] | Positive feedback             | None     |
+
+- Style: Japanese, concise (problem not fix), no Before/After blocks, one
+  concern per comment.
+- Tone: match `~/ghq/github.com/i9wa4/i9wa4.github.io/blog/` and `zenn/`
+
+### 2.19. [common_template] Skill: markdown
+
+#### Markdown Rules
+
+##### 1. Universal Rules
+
+- NEVER: Do not use emojis
+- NEVER: Do not start numbered lists from 0
+- YOU MUST: Align table columns with spaces
+
+```markdown
+| Name   | Description | Value |
+| ------ | ----------- | ----- |
+| foo    | Foo item    | 100   |
+| barbaz | Bar baz     | 200   |
+```
+
+##### 2. Japanese Markdown Rules
+
+- NEVER: Do not use bold
+- NEVER: Do not use trailing colons (:)
+
+### 2.20. [common_template] Skill: systematic-debugging
+
+#### Systematic Debugging
+
+Use this skill to stop guessing, gather evidence, and narrow the actual cause
+before attempting a fix.
+
+##### 1. Core Defaults
+
+- Reproduce the problem before changing code.
+- Read the exact error, output, or observed behavior first.
+- Change one variable at a time.
+- Compare the broken path with a nearby working path when possible.
+- Prefer the smallest probe that can confirm or kill one hypothesis.
+- Stop after repeated failed fix attempts and re-check the mental model.
+
+##### 2. Investigation Loop
+
+1. State the failure clearly.
+   - observed behavior
+   - expected behavior
+   - where it happens
+
+2. Capture the cheapest reliable reproducer.
+   - failing command
+   - failing test
+   - exact log line
+   - concrete input that triggers the problem
+
+3. Read the relevant files in full.
+   - do not patch based on a snippet alone
+   - include nearby config or wrapper files when they shape the behavior
+
+4. Check recent change surfaces.
+   - `git diff`
+   - recent commits
+   - changed config
+   - dependency or environment shifts
+
+5. Compare with a working pattern.
+   - sibling file
+   - older version
+   - another command path
+   - similar code path that still behaves correctly
+
+6. Form one hypothesis.
+   - say what should be true if the hypothesis is correct
+   - run the narrowest probe that can prove or disprove it
+
+7. Only after the cause is credible, hand off to execution.
+   - use local `tdd-tidy-first` for the smallest verified code or config
+     change
+
+##### 3. Repo Fit
+
+- Prefer `rg` for text and file discovery.
+- Record the reproducer command and the exact output you observed.
+- Use `mkmd` research artifacts when the debugging trail will span many steps
+  or multiple turns.
+- Prefer POSIX-compatible and repo-managed tools over ad hoc global setup.
+- Do not hide uncertainty with speculative cleanup or defensive code.
+
+##### 4. Stop Conditions
+
+Stop and reassess when any of these happen:
+
+- three fix attempts failed
+- the reproducer changed unexpectedly
+- the observed behavior contradicts the current hypothesis
+- the failure depends on permissions, hooks, or environment boundaries outside
+  the current lane
+
+At that point, summarize:
+
+- what is proven
+- what is still unknown
+- which hypothesis failed
+- what to test next
+
+##### 5. Handoff To Implementation
+
+When the likely cause is clear, switch to `tdd-tidy-first` and keep the next
+step narrow:
+
+- add or tighten the reproducer when cheap
+- make the smallest change that should fix the proven cause
+- run the fastest relevant verifier
+- widen verification only after the narrow slice passes
+
+### 2.21. [common_template] Skill: brainstorming
+
+#### Brainstorming
+
+Use this skill to turn a fuzzy request into a concrete direction without
+pretending every task needs a full design exercise.
+
+##### 1. Core Defaults
+
+- Use this skill only when the task is genuinely ambiguous or multi-approach.
+- Do not block already-clear work behind extra ideation.
+- Ask at most one clarifying question at a time when interaction is needed.
+- In non-interactive lanes, make the safest explicit assumption and record it.
+- Produce 2-3 viable approaches with trade-offs before recommending one.
+- Stop brainstorming once the direction is stable enough for planning or
+  implementation.
+
+##### 2. Workflow
+
+1. Restate the objective in plain language.
+   - what success looks like
+   - what must not change
+
+2. Pull out hard constraints.
+   - repo rules
+   - scope limits
+   - approval boundaries
+   - user or lane constraints
+
+3. Identify the real unknowns.
+   - missing requirement
+   - unresolved design choice
+   - unclear audience or operator
+
+4. Resolve the next blocking unknown.
+   - ask one concise clarifying question when interactive
+   - otherwise state the least-risk assumption you will use
+
+5. Generate 2-3 approaches.
+   For each approach, include:
+   - shape of the solution
+   - main benefit
+   - main risk
+   - why it fits or does not fit this repo
+
+6. Recommend one approach.
+   - explain why it is the best local fit
+   - name the next concrete step
+
+##### 3. Repo Fit
+
+- Use `mkmd` artifacts when the brainstorming output needs to persist as
+  research or a plan input.
+- Hand off to `plan-design` when the outcome is a multi-phase execution plan.
+- Hand off directly to implementation when the scope is now narrow and stable.
+- Do not require tracked design docs or a universal approval loop.
+
+##### 4. Good Triggers
+
+- Multiple valid implementation shapes exist.
+- The request mixes product, UX, and technical choices.
+- The user asked for options, trade-offs, or a recommendation.
+- The task is user-facing and failure would come from solving the wrong
+  problem.
+
+##### 5. Bad Triggers
+
+- The task already has a clear acceptance target.
+- The next step is obviously a small mechanical change.
+- The work is already in an approved plan with concrete milestones.
+
+In those cases, skip this skill and proceed with the narrower workflow.
+
+### 2.22. [common_template] Skill: tdd-tidy-first
+
+#### TDD Tidy First Skill
+
+Use this skill to keep code changes small, verifiable, and easy to review.
+
+##### 1. Core Defaults
+
+- Prefer the smallest next step that can be verified quickly
+- For behavioral changes, start with a failing test or minimal reproducer when
+  that is cheap to add
+- Implement only enough code to pass the new check
+- Refactor only after the behavior is verified
+- Keep structural changes separate from behavioral changes when practical
+
+##### 2. Red -> Green -> Refactor
+
+1. Write the smallest failing test or reproducer that demonstrates the next
+   behavior
+2. Make it pass with the minimum code change
+3. Run the fastest relevant verification for that slice
+4. Refactor for clarity or duplication removal only after the check passes
+5. Re-run verification after each refactor step
+
+##### 3. Tidy First Split
+
+- Structural changes: renames, extraction, moves, dependency reshaping, or
+  cleanup that should not change behavior
+- Behavioral changes: new features, bug fixes, changed outputs, or changed
+  side effects
+- When both are needed, do structural work first, verify it preserved
+  behavior, then apply the behavioral change
+
+##### 4. Bug-Fix Pattern
+
+- Start with a failing API-level test when one is easy to add
+- If the failure is hard to isolate, add the smallest reproducer that exposes
+  the defect clearly
+- If the bug is not yet understood, use `systematic-debugging` first to
+  gather evidence and narrow the root cause before changing code
+- Fix the bug only after the reproducer fails for the expected reason
+
+##### 5. Repo Fit
+
+- Do not assume a `plan.md` workflow; this repo uses `mkmd` plan and research
+  artifacts when planning is needed
+- Do not adopt a universal "run all tests every time" rule; run the fastest
+  relevant checks during iteration, then run broader verification before
+  reporting success when available
+- When commits are requested and structural plus behavioral changes are both
+  present, prefer separate commits or state the split explicitly
+- Skip this workflow for doc-only or config-only tasks with no meaningful
+  test surface
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
