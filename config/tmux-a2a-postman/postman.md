@@ -617,6 +617,39 @@ Use this skill to keep code changes small, verifiable, and easy to review.
 - Skip this workflow for doc-only or config-only tasks with no meaningful
   test surface
 
+### 2.23. [common_template] Non-Interactive Bash Discipline
+
+Unless you are the user-facing node (messenger), these panes run with a
+non-interactive bypass-permissions flag (`--dangerously-skip-permissions`,
+`--yolo`, or your CLI's equivalent) precisely because no human is at the
+keyboard to dismiss prompts. Any interactive yes/no prompt deadlocks the
+pane until manual intervention. Messenger may surface yes/no decisions to
+the human user; every other node MUST avoid them.
+
+Recent CLI versions have closed bypass-mode loopholes for compound commands
+and other ambiguous patterns, so several Bash patterns that used to
+auto-skip now produce a confirmation prompt. To stay prompt-free in
+non-messenger panes, NEVER use these patterns in a Bash tool call:
+
+- compound commands chained with `&&`, `;`, or `|` — split each step into
+  a separate Bash tool call (this is also why `§2.16 Skill: bash` says
+  "Split complex operations across multiple Bash tool calls")
+- environment-variable prefixes outside the safe list (`LANG`, `TZ`,
+  `NO_COLOR`) — e.g. `FOO=bar somecmd` may prompt; export first in a
+  separate call
+- redirects to `/dev/tcp/...` or `/dev/udp/...`
+- `find -exec` and `find -delete` — use search-then-act in two steps
+- explicit sandbox-disable flags on a Bash tool call — never set
+
+If a Bash result reports `Command denied` or a hook block, do NOT retry the
+same command. Send BLOCKED to orchestrator via the existing Hook /
+Permission Error Protocol (sections 7.8, 8.7, 9.7).
+
+If a Bash tool call appears stalled with no result for more than the role's
+idle boundary, suspect a yes/no prompt deadlock. The agent in the pane
+cannot dismiss it; report `BLOCKED: prompt deadlock suspected, pane requires
+human dismissal` to orchestrator and stop further action.
+
 ## 3. `boss`
 
 ### 3.1. [boss] `role`
