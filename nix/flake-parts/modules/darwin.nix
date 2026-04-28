@@ -87,8 +87,12 @@ let
                 home.activation.setupMacSkkDict = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
                   macSkkDir="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
                   dppSkkDev="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/skk-dev/dict"
+                  dppSkkEmoji="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/uasi/skk-emoji-jisyo"
                   mkdir -p "$macSkkDir"
                   [[ -f "$dppSkkDev/SKK-JISYO.L" ]] && cp -f "$dppSkkDev/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
+                  [[ -f "$dppSkkDev/SKK-JISYO.jinmei" ]] && cp -f "$dppSkkDev/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei"
+                  [[ -f "$dppSkkDev/SKK-JISYO.assoc" ]] && cp -f "$dppSkkDev/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc"
+                  [[ -f "$dppSkkEmoji/SKK-JISYO.emoji.utf8" ]] && cp -f "$dppSkkEmoji/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8"
                 '';
               };
           };
