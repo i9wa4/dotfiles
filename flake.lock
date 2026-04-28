@@ -158,11 +158,11 @@
     "databricks-official-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1777024174,
-        "narHash": "sha256-+ooBGlU4ATVqQKGPWORDUsj08YZV2CHytPDf0WLJkR8=",
+        "lastModified": 1777384819,
+        "narHash": "sha256-xu70DNwfjy/axaUPtUMBtahLwZ7q3TbivISxMDa1VQM=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "71b06f6c47c56c2d0d95843bfb11ce40ca3c17e3",
+        "rev": "582dcbdfc5a8396349ed8f846a6fe69f6a24dd4e",
         "type": "github"
       },
       "original": {
@@ -521,11 +521,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777349711,
-        "narHash": "sha256-PGKgo2dO6fK603QGI+DWXdKmS09pbJjjTxwRHdhkGZA=",
+        "lastModified": 1777387187,
+        "narHash": "sha256-+c51GFvEZQ+XtfiFNJ65HJ5G3nDY+AaZ1rRyJihA+g0=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c1140540536d483e2730320100f6835d62c94fdf",
+        "rev": "982139628581c309b6a25c55deed564b546ebf74",
         "type": "github"
       },
       "original": {
