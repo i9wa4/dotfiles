@@ -1,0 +1,228 @@
+# Agent Hooks Architecture
+
+This document describes how Claude Code and Codex CLI register lifecycle
+hooks and helper scripts in this repo, and where the two runtimes are
+already aligned versus where they still drift. It is descriptive — it
+records the current state after the 2026-04-29 hook reduction — and
+prescriptive about the direction we want to keep pulling in.
+
+It complements `docs/agent-config-philosophy.md` (high-level principles)
+and `docs/deny-bash-design.md` (the deny rule data model). Read those
+first for the "why share at all" rationale; this doc is the "where we
+are and where the seams still are."
+
+## 1. North Star
+
+We want one logical agent surface and two transport adapters, not two
+parallel agent stacks that happen to share a vendor name.
+
+Concretely, every behavior should land in exactly one of these tiers:
+
+1. **Shared data** — facts both runtimes need (deny rule entries, MCP
+   server definitions, skill bodies, subagent definitions). Lives in
+   `.nix` modules or markdown that both runtimes consume.
+2. **Shared transport** — the same hook script invoked by both runtimes,
+   parameterised when needed. The contract that lets this work is:
+   both runtimes accept the same JSON-on-stdin / JSON-on-stdout hook
+   schema for the events we use.
+3. **Per-runtime transport** — a fork only when the runtimes truly
+   disagree on transport (e.g. Claude reads a status-line script,
+   Codex builds the status from declarative TOML; no shared substrate
+   exists).
+
+Anything in (3) should justify itself in writing. The default is (1)
+or (2).
+
+## 2. What Is Already Shared
+
+### 2.1. Deny Rule Data — `denied-bash-commands.nix`
+
+Single source of truth for Bash command denies. One `entries` array
+produces three artifacts in the same Nix evaluation:
+
+| Output                          | Consumer                                            |
+| ------------------------------- | --------------------------------------------------- |
+| `claudeCode.denyPermissions`    | `~/.claude/settings.json` `permissions.deny` globs  |
+| `claudeCode.patternsFile`       | bash regex array sourced by Claude's deny-bash hook |
+| `codexCli.rulesContent`         | `~/.codex/rules/default.rules` `prefix_rule(...)`   |
+
+Adding a deny rule is one nix entry, picked up by both runtimes on the
+next `nix run '.#switch'`. This is the model we want every other
+shared concept to follow.
+
+### 2.2. Instruction Artifacts — `instruction-artifacts.nix`
+
+A shared `AGENTS.md` core plus a small Claude-only `CLAUDE.md`
+fragment plus a list of skill paths get composed into:
+
+- `~/.claude/CLAUDE.md` (core + Claude fragment + inlined skills)
+- `~/.codex/AGENTS.md` (core + inlined skills)
+
+Skill bodies, subagent definitions (`subagents/*.md`), reviewer
+templates (`review/`), and the family merge layer (`families/`) are
+similarly tool-agnostic — the runtime-specific install layout is the
+only fork.
+
+### 2.3. MCP Servers — `mcp-servers.nix`
+
+One module produces both Claude's `~/.claude/.claude.json` MCP block
+(via activation script) and Codex's `[mcp_servers]` TOML stanza
+(generated into `config.toml`).
+
+### 2.4. Hook Scripts — `common-userpromptsubmit.sh`
+
+The single script invoked from both runtimes' `UserPromptSubmit`
+hook, with the runtime name passed as `argv[1]` (`claude` or `codex`).
+This is the template shape we want every still-duplicated hook to
+adopt.
+
+## 3. Hook Registration Matrix (Current State)
+
+After the 2026-04-29 reduction, the active hook surface looks like this:
+
+| Event                                          | Claude                                  | Codex                                   | Symmetric?                        |
+| ---------------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------- |
+| `PreToolUse` matcher=`Bash`                    | `claude-pretooluse-deny-bash.sh`        | `codex-pretooluse-deny-bash.sh`         | Same intent, two scripts (drift)  |
+| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
+| `UserPromptSubmit`                             | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
+| Status line                                    | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
+
+Removed from both sides on 2026-04-29 for symmetry:
+
+- Claude: `claude-observe.sh` (continuous-learning observation),
+  `claude-detect-project.sh`, `claude-precompact-save.sh`
+  (handoff snapshot writer), `claude-sessionstart-reload.sh`
+  (handoff snapshot reader).
+- Codex: `codex-sessionstart-reload.sh`, `codex-stop-save.sh`,
+  `codex-posttooluse-review.sh`.
+
+Both runtimes now share the same minimal hook surface: one PreToolUse
+deny per matcher, plus shared UserPromptSubmit. The script tree
+shrank from nine hook entries to three hook scripts.
+
+## 4. Where We Still Drift
+
+### 4.1. The Two `pretooluse-deny-bash.sh` Scripts
+
+`claude-pretooluse-deny-bash.sh` (221 lines) and
+`codex-pretooluse-deny-bash.sh` (186 lines) are roughly 90% the same
+code. They share the same JSON-in / JSON-out schema
+(`hookSpecificOutput.permissionDecision = "deny"`), the same
+fragment-trimming and quote-stripping helpers, the same shell-wrapper
+unwrap (`bash -c "..."`), the same top-level shell-operator splitter,
+and the same per-pattern regex loop.
+
+The Codex copy is missing two features that Claude's copy has:
+
+- `is_allow_prefix_bypass` — fragments starting with
+  `tmux-a2a-postman` skip the regex deny check entirely. This is the
+  postman-wrapper escape hatch documented in
+  `docs/deny-bash-design.md`. Without it, Codex would false-positive
+  on legitimate `tmux-a2a-postman send` calls.
+- `strip_data_arg_values` — the quoted value following `-m` is
+  replaced with `""` before the regex check. Without it, Codex would
+  false-positive on `git commit -m "delete the rm hack"` even though
+  `--amend` (a real deny) would still trip.
+
+These omissions are not a deliberate divergence; they are stale-fork.
+A fix landing on the Claude side does not automatically reach Codex.
+This session caught one such case (`\s` regex bug in the `git -C`
+deny pattern) and another (the sed delimiter `|` collision) — both
+were fixed on the Claude path. The Codex copy is not yet known to
+have the same bugs only because nobody has run an equivalent
+diagnostic against it.
+
+The fix shape: collapse to a single `pretooluse-deny-bash.sh` with
+no runtime prefix, referenced by both `claude-code.nix` and
+`codex-cli.nix`. Codex inherits the bypass and strip features for
+free; future fixes only need to land once.
+
+### 4.2. `claude-pretooluse-deny-write.sh` Has No Codex Equivalent
+
+This script enforces "non-`worker*` / non-`agent*` tmux pane titles
+are read-only" — the role-readonly contract that lets messenger,
+orchestrator, critic, etc. roles share the multi-agent surface
+without being able to mutate the repo. It reads `pane_title` via
+`tmux display-message` and emits a deny payload for non-worker
+roles when the target file is outside the allowlisted state
+directories.
+
+Codex has no comparable hook because Codex's multi-agent model is
+different — there is no equivalent `pane_title` role contract to
+enforce against. This asymmetry is deliberate, not drift, and it
+should stay asymmetric until and unless Codex grows a role contract
+worth gating on.
+
+### 4.3. Status Line: Two Different Transport Contracts
+
+Claude's status line is configured as:
+
+```nix
+statusLine = {
+  type = "command";
+  command = "$CLAUDE_CONFIG_DIR/scripts/claude-statusline.sh";
+};
+```
+
+Claude invokes the script and renders whatever it prints to stdout.
+
+Codex's status line is configured as:
+
+```toml
+[tui]
+status_line = ["context-remaining", "model-with-reasoning", "codex-version"]
+```
+
+Codex never invokes a script. It composes the status line from
+declarative pieces it already knows.
+
+There is no shared substrate to share. The right answer is to keep
+each native and accept this asymmetry as a transport-level fork.
+This is the legitimate (3) tier in section 1.
+
+## 5. Direction We Want To Keep Pulling In
+
+We want every still-duplicated hook script to either become a single
+shared script (like `common-userpromptsubmit.sh` already is) or
+explicitly justify why it needs to stay forked. The
+`pretooluse-deny-bash.sh` consolidation is the obvious next step
+toward that target.
+
+Beyond that, the same lens applies to anything new:
+
+- A new hook event that both runtimes can deliver under the same
+  schema should ship as one script in `scripts/` with no runtime
+  prefix.
+- A new hook event that requires runtime-specific preprocessing
+  (e.g. payload shape differs) should still live in one script,
+  with a small runtime-specific shim that normalises the payload
+  before delegating.
+- A behavior that fits in the prompt path (per
+  `agent-config-philosophy.md` principle 1) should live there
+  rather than become a third hook script.
+
+The script directory naming convention we are converging on:
+
+| Prefix         | Meaning                                                                     |
+| -------------- | --------------------------------------------------------------------------- |
+| `claude-*.sh`  | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).             |
+| `codex-*.sh`   | Codex-only by design (none currently).                                      |
+| `common-*.sh`  | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`).   |
+| `<no prefix>`  | Shared, runtime-agnostic (target shape for future deny-bash consolidation). |
+
+A script with a `claude-` or `codex-` prefix should be readable as a
+declaration: "this is intentionally not shared, here is the reason."
+Drift between two same-named-modulo-prefix scripts is the warning
+sign that we owe a consolidation pass.
+
+## 6. Cross-Links
+
+- `docs/agent-config-philosophy.md` — push behavior into prompts; one
+  source of truth for shared concepts.
+- `docs/deny-bash-design.md` — what the Bash deny system protects
+  against and why it is a guardrail rather than a security boundary.
+- `docs/repo-ai-operating-contract.md` — the multi-agent role
+  contract that justifies `claude-pretooluse-deny-write.sh` as an
+  intentional asymmetry.
+- `nix/home-manager/agents/README.md` — practical "edit here, get
+  installed there" map for the agents source tree.

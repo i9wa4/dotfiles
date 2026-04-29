@@ -178,6 +178,9 @@ Before adding agent configuration, walk this checklist:
 
 - `docs/dotfiles-operating-concepts.md` — descriptive operating model
   (section 4 covers Claude/Codex parity in detail).
+- `docs/agent-hooks-architecture.md` — current hook surface in Claude
+  and Codex, where they are aligned, where they still drift, and the
+  direction we want to keep pulling in.
 - `docs/deny-bash-design.md` — concrete realisation of these
   principles in the Bash deny system.
 - `docs/repo-ai-operating-contract.md` — AI operation rules.
