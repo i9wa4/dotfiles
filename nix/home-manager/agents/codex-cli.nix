@@ -29,18 +29,6 @@ let
   };
   # Shared Bash deny surface includes aws sso login; see denied-bash-commands.nix.
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
-  instructionFiles = instructionArtifacts {
-    sharedCore = ./AGENTS.md;
-    claudeOnly = ./CLAUDE.md;
-    rulePaths = [
-      ./skills/bash/SKILL.md
-      ./skills/github/SKILL.md
-      ./skills/markdown/SKILL.md
-      ./skills/python/SKILL.md
-      ./skills/repo-local/SKILL.md
-    ];
-  };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
@@ -153,8 +141,11 @@ let
 in
 {
   home.file = {
-    # Generated AGENTS.md (shared core + inlined rules)
-    ".codex/AGENTS.md".source = instructionFiles.codexAgentsMd;
+    # Persona / language / scope is delivered through postman.md
+    # common_template (§2.24) on each tmux-a2a-postman pop, and the
+    # repo-local skill bodies (bash, github, markdown, python, repo-local)
+    # are inlined into the same common_template (§2.16-§2.22). Codex CLI
+    # has no AGENTS.md generated at the runtime root anymore.
     # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
     # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;

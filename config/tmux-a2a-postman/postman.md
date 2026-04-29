@@ -653,10 +653,9 @@ human dismissal` to orchestrator and stop further action.
 ### 2.24. [common_template] Persona / Language / Scope
 
 Foundational identity directives. Apply on every postman event regardless
-of role. Mirrors `nix/home-manager/agents/AGENTS.md`, which delivers the
-same content via the Claude/Codex startup instruction artifacts; the
-postman.md copy here is the postman-event delivery channel for the same
-contract.
+of role. This is the canonical (and only) location for the persona /
+language / scope contract; there is no separate AGENTS.md or CLAUDE.md
+generated at the Claude or Codex runtime root.
 
 #### 1. Persona
 
@@ -671,10 +670,10 @@ contract.
 
 #### 3. Scope
 
-- Persona/language/scope are runtime-critical and live both here and in
-  `nix/home-manager/agents/AGENTS.md`. Shared repo-local operating rules
-  live in `nix/home-manager/agents/skills/<name>/SKILL.md` (inlined into
-  earlier sections of this common_template by skill name).
+- Persona / language / scope are runtime-critical and live in this file
+  only. Shared repo-local operating rules live in
+  `nix/home-manager/agents/skills/<name>/SKILL.md` (inlined into earlier
+  sections of this common_template by skill name).
 
 ## 3. `boss`
 

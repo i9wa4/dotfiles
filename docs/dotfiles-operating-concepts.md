@@ -96,12 +96,11 @@ The agent tree is where repo policy becomes executable behavior.
 This repo does not rely on a single monolithic prompt file. Instead it builds
 the harness from several smaller sources:
 
-- `AGENTS.md` is the tiny shared operating core
-- `rules/*.md` carries the residual repo-local rules that still must load
-  outside postman-delivered sessions
-- `CLAUDE.md` is the optional Claude-only supplement and may be empty
-- `instruction-artifacts.nix` assembles those into the installed Claude and
-  Codex instruction files
+- `config/tmux-a2a-postman/postman.md` `[common_template]` is the canonical
+  persona / language / scope contract and the inlined repo-local skill
+  bodies; both are delivered to every postman-driven role on each
+  `tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or
+  codex AGENTS.md installed at the runtime root.
 - `agent-skills.nix` installs both local and upstream skills into both engines
 - `review/review-artifacts-gen.nix` generates reviewer agents and review skills
   from shared fragments
@@ -271,7 +270,6 @@ When you need to understand the operating concept, read these in order:
 - `docs/repo-ai-operating-contract.md`
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
-- `nix/home-manager/agents/instruction-artifacts.nix`
 - `nix/home-manager/agents/agent-skills.nix`
 - `nix/home-manager/agents/review/review-artifacts-gen.nix`
 - `nix/home-manager/agents/denied-bash-commands.nix`

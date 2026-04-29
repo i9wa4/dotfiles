@@ -72,9 +72,12 @@ Concrete examples already in the repo:
   set; emits to `~/.claude/settings.json` (`permissions.deny` glob),
   `~/.claude/scripts/deny-bash-patterns.sh` (regex hook), and
   `~/.codex/rules/default.rules` (argv prefix_rule).
-- `nix/home-manager/agents/instruction-artifacts.nix` — assembles the
-  same `AGENTS.md` core into both `~/.claude/CLAUDE.md` and
-  `~/.codex/AGENTS.md`.
+- `config/tmux-a2a-postman/postman.md` `[common_template]` — single
+  authoritative location for the persona / language / scope contract
+  and the inlined repo-local skill bodies; delivered to every
+  postman role on each `tmux-a2a-postman pop`. There is no longer a
+  generated CLAUDE.md or codex AGENTS.md installed at the runtime
+  root.
 - `nix/home-manager/agents/agent-skills.nix` — installs the same skill
   set into both engines.
 - `nix/home-manager/agents/review/review-artifacts-gen.nix` — generates
@@ -188,5 +191,3 @@ Before adding agent configuration, walk this checklist:
   the prompt-path rules into every postman session.
 - `nix/home-manager/agents/denied-bash-commands.nix` — example of a
   shared SSOT emitting to multiple engines.
-- `nix/home-manager/agents/instruction-artifacts.nix` — example of
-  shared instruction assembly.

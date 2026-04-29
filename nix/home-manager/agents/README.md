@@ -10,10 +10,8 @@ artifacts.
 
 | If you want to change...      | Edit here                                                                  | Installed result                                                                   |
 | ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Shared base instructions      | `AGENTS.md`                                                                | Merged into `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`                         |
-| Claude-only instruction delta | `CLAUDE.md`                                                                | Appended to `~/.claude/CLAUDE.md`                                                  |
-| Supplemental rule docs        | `skills/*/SKILL.md` (see `codex-cli.nix` `rulePaths`)                     | Inlined into `~/.codex/AGENTS.md`; installed to `~/.claude/skills/`                |
-| Shared instruction merger     | `instruction-artifacts.nix`                                                | Builds the installed Claude and Codex instruction files from the markdown sources  |
+| Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.24            | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
+| Repo-local skill bodies       | `skills/<skill>/SKILL.md`                                                  | Installed to `~/.claude/skills/` and inlined into postman.md `[common_template]`  |
 | Shared subagents              | `subagents/*.md`, `families/subagents/metadata.nix`                       | Generated into `~/.claude/agents/` and `~/.codex/agents/`                          |
 | Review stack prompts/skills   | `review/refs/`, `review/skills/`, `review/review-artifacts-gen.nix`       | Generated reviewer agents and `subagent-review-*` skills                           |
 | Family merge layer            | `families/default.nix`, `families/subagents/`, `families/review/`         | Merges family-local agent outputs before installation                              |
@@ -27,8 +25,10 @@ artifacts.
 ## How Changes Flow
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
-2. `instruction-artifacts.nix` builds the installed instruction files from
-   `AGENTS.md`, `CLAUDE.md`, and `skills/*/SKILL.md`.
+2. The persona / language / scope contract and the repo-local skill bodies
+   are delivered through `config/tmux-a2a-postman/postman.md`
+   `[common_template]` on each `tmux-a2a-postman pop`. There is no longer
+   a generated CLAUDE.md or codex AGENTS.md installed at the runtime root.
 3. `families/subagents/metadata.nix` defines the shared Claude/Codex metadata
    for the subagent family while `subagents/*.md` stays the prompt-body source.
 4. `families/default.nix` merges family-local agent outputs for the installed
@@ -64,8 +64,8 @@ artifacts.
 - If you are changing prompt wording, start with the markdown source files.
 - If you are changing hook behavior, runtime settings, or install targets, edit
   the `.nix` modules.
-- If a file is named `instruction-artifacts.nix`, `install-manifest.nix`,
-  `families/default.nix`, `render-*.nix`, or `review-artifacts-gen.nix`, it is
-  composition code rather than final installed prompt text.
+- If a file is named `install-manifest.nix`, `families/default.nix`,
+  `render-*.nix`, or `review-artifacts-gen.nix`, it is composition code
+  rather than final installed prompt text.
 - Treat `~/.claude/` and `~/.codex/` as outputs of this tree, not as the
   editing surface.

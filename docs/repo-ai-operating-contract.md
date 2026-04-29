@@ -35,15 +35,17 @@ for both engines.
 `nix/home-manager/agents/rules/*.md` carries the shared repo-local operating
 rules that both engines should load alongside that core.
 
-Prefer `tmux-a2a-postman` common delivery for postman-role sessions. Keep only
-the residual rules here that still must hold in non-postman Claude/Codex
-sessions.
+All operating rules now flow through `tmux-a2a-postman` common delivery.
+The persona / language / scope contract lives in
+`config/tmux-a2a-postman/postman.md` `[common_template]` §2.24, and the
+repo-local skill bodies (bash, github, markdown, python, repo-local)
+are inlined as `[common_template]` §2.16-§2.22. Postman injects these
+into every role pane on each `tmux-a2a-postman pop`.
 
-On the Claude side, `CLAUDE.md` is appended as an optional Claude-specific
-suffix and may be empty when no Claude-only runtime delta remains.
-
-On the Codex side, `instruction-artifacts.nix` takes the shared core plus the
-repo-local rule files and emits the installed `.codex/AGENTS.md`.
+There is no longer a separate `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md`
+generated at the runtime root — non-postman direct sessions (which are
+rare in practice) start with an empty instruction surface and pick up
+the contract from the first postman event.
 
 ### 2.2. Declarative installation
 

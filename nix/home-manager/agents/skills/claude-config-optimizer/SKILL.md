@@ -27,7 +27,7 @@ Source of truth:
 | Destination               | Source                                                       | Managed by                 |
 | ------------------------- | ------------------------------------------------------------ | -------------------------- |
 | `~/.claude/settings.json` | Generated from Nix attributes                                | `claude-code.nix`          |
-| `~/.claude/CLAUDE.md`     | Generated from `AGENTS.md` + `CLAUDE.md` fragment            | `instruction-artifacts.nix` |
+| (no `~/.claude/CLAUDE.md`) | Persona / language / scope delivered through postman.md `[common_template]` §2.24 on each `tmux-a2a-postman pop` | `config/tmux-a2a-postman/postman.md` |
 | `~/.claude/rules/`        | `nix/home-manager/agents/skills/<name>/SKILL.md`            | `claude-code.nix`          |
 | `~/.claude/agents/`       | `nix/home-manager/agents/subagents/`                         | `claude-code.nix`          |
 | `~/.claude/scripts/`      | `nix/home-manager/agents/scripts/`                           | `claude-code.nix`          |

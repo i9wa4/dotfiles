@@ -50,18 +50,22 @@ Adding a deny rule is one nix entry, picked up by both runtimes on the
 next `nix run '.#switch'`. This is the model we want every other
 shared concept to follow.
 
-### 2.2. Instruction Artifacts — `instruction-artifacts.nix`
+### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
-A shared `AGENTS.md` core plus a small Claude-only `CLAUDE.md`
-fragment plus a list of skill paths get composed into:
+The persona / language / scope directives and the repo-local skill
+bodies (bash, github, markdown, python, repo-local) live as
+`[common_template]` sections inside
+`config/tmux-a2a-postman/postman.md` (§2.16-§2.22 inline skills,
+§2.24 persona). The postman daemon delivers these into every role
+pane on each `tmux-a2a-postman pop`. There is no longer a generated
+CLAUDE.md or codex AGENTS.md at the runtime root; postman.md is the
+single delivery channel.
 
-- `~/.claude/CLAUDE.md` (core + Claude fragment + inlined skills)
-- `~/.codex/AGENTS.md` (core + inlined skills)
-
-Skill bodies, subagent definitions (`subagents/*.md`), reviewer
-templates (`review/`), and the family merge layer (`families/`) are
-similarly tool-agnostic — the runtime-specific install layout is the
-only fork.
+Subagent definitions (`subagents/*.md`), reviewer templates
+(`review/`), and the family merge layer (`families/`) remain
+tool-agnostic and continue to be composed for both runtimes via
+the install-manifest path — the runtime-specific install layout is
+the only fork.
 
 ### 2.3. MCP Servers — `mcp-servers.nix`
 

@@ -27,18 +27,6 @@ let
   };
   # Shared Bash deny surface includes aws sso login; see denied-bash-commands.nix.
   deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
-  instructionArtifacts = import ./instruction-artifacts.nix { inherit pkgs; };
-  instructionFiles = instructionArtifacts {
-    sharedCore = ./AGENTS.md;
-    claudeOnly = ./CLAUDE.md;
-    rulePaths = [
-      ./skills/bash/SKILL.md
-      ./skills/github/SKILL.md
-      ./skills/markdown/SKILL.md
-      ./skills/python/SKILL.md
-      ./skills/repo-local/SKILL.md
-    ];
-  };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";
@@ -144,8 +132,10 @@ in
 {
   home = {
     file = {
-      # Composite CLAUDE.md generated from AGENTS.md + Claude-only fragment
-      ".claude/CLAUDE.md".source = instructionFiles.claudeMd;
+      # Persona / language / scope is delivered through postman.md
+      # common_template (§2.24) on each tmux-a2a-postman pop. Skill bodies
+      # are loaded from ~/.claude/skills/ at session start. No CLAUDE.md
+      # is installed at the runtime root anymore.
       # Nix store directory symlinks (rebuild required to update)
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
