@@ -44,7 +44,6 @@ in
       # explicit wrapper binary so the guarded path is active in practice.
       guardedNpm="${npmPrefix}/bin/aikido-npm"
       NPM_PACKAGES=(
-        "@drawio/mcp"
         "vde-layout"
         "vde-monitor"
         "vde-worktree"

@@ -66,9 +66,6 @@
     actrun = {
       url = "github:mizchi/actrun";
     };
-    claude-chill = {
-      url = "github:davidbeesley/claude-chill";
-    };
     tmux-a2a-postman = {
       url = "github:i9wa4/tmux-a2a-postman";
     };
@@ -92,10 +89,6 @@
     };
     databricks-official-skills = {
       url = "github:databricks/databricks-agent-skills";
-      flake = false;
-    };
-    drawio-mcp = {
-      url = "github:jgraph/drawio-mcp";
       flake = false;
     };
     hashicorp-agent-skills = {

@@ -141,12 +141,6 @@ in
         subdir = "skills";
         filter.nameRegex = "databricks(-apps|-pipelines)?"; # exclude databricks-jobs (duplicate)
       };
-      # draw.io skill (jgraph/drawio-mcp)
-      # cf. https://github.com/jgraph/drawio-mcp
-      drawio-mcp = {
-        path = inputs.drawio-mcp;
-        subdir = "skill-cli";
-      };
       # kepano/obsidian-skills: Obsidian-related skills (defuddle,
       # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
       # cf. https://github.com/kepano/obsidian-skills
