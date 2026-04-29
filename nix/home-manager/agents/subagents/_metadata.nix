@@ -35,7 +35,7 @@ let
     };
     codex = {
       tier1 = {
-        model = "gpt-5.4";
+        model = "gpt-5.5";
         modelReasoningEffort = "xhigh";
       };
       tier2 = {
