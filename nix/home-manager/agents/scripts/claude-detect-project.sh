@@ -56,7 +56,12 @@ _clv2_detect_project() {
   local source_hint=""
 
   # 1. Try CLAUDE_PROJECT_DIR env var
-  if [ -n "$CLAUDE_PROJECT_DIR" ] && [ -d "$CLAUDE_PROJECT_DIR" ]; then
+  # NOTE: must be guarded with `${VAR:-}` because this script runs with
+  # `set -o nounset`, and CLAUDE_PROJECT_DIR is only conditionally exported
+  # by callers (e.g. claude-observe.sh exports it only when STDIN_CWD is
+  # set and a directory). An unguarded reference here crashes the entire
+  # PreToolUse hook chain, which silently denies every tool call.
+  if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -d "${CLAUDE_PROJECT_DIR:-}" ]; then
     project_root="$CLAUDE_PROJECT_DIR"
     source_hint="env"
   fi

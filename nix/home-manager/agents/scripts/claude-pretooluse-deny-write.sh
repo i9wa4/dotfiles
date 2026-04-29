@@ -43,9 +43,14 @@ get_file_path() {
 # Role-based check (pane title / role name)
 # ============================================================
 
-# Block only when role name is set AND not starting with "worker"
+# Block only when role name is set AND not starting with "worker"/"agent"
 # (not in tmux or no pane title = normal use, allow all)
-if [[ -n $ROLE_NAME ]] && case "$ROLE_NAME" in worker* | agent) false ;; *) true ;; esac then
+# Escape hatch: CLAUDE_DENY_WRITE_BYPASS=1 disables the role-based block entirely.
+# `agent` was an exact match before; widened to `agent*` so siblings like
+# `agent-codex`, `agent2`, etc. don't get accidentally blocked.
+if [[ ${CLAUDE_DENY_WRITE_BYPASS:-0} != 1 ]] &&
+  [[ -n $ROLE_NAME ]] &&
+  case "$ROLE_NAME" in worker* | agent*) false ;; *) true ;; esac then
   case "$TOOL" in
   Write | Edit | NotebookEdit)
     FILE_PATH=$(get_file_path)
