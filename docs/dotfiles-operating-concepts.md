@@ -46,9 +46,8 @@ Two different delivery patterns are used on purpose:
 
 - editable repo config such as `config/tmux-a2a-postman/` is exposed through
   direct symlinks so changes reflect immediately
-- generated agent artifacts such as `.claude/CLAUDE.md`, `.codex/AGENTS.md`,
-  generated review skills, and hook config are produced by Nix and refreshed on
-  rebuild
+- generated agent artifacts such as `~/.claude/agents/`, `~/.codex/agents/`,
+  installed skills, and hook config are produced by Nix and refreshed on rebuild
 
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.
@@ -101,11 +100,13 @@ the harness from several smaller sources:
   bodies; both are delivered to every postman-driven role on each
   `tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or
   codex AGENTS.md installed at the runtime root.
-- `agent-skills.nix` installs both local and upstream skills into both engines
-- `review/review-artifacts-gen.nix` generates reviewer agents and review skills
-  from shared fragments
-- `denied-bash-commands.nix` is the single source of truth for dangerous Bash
-  denials across both engines
+- `shared/agent-skills.nix` installs both local and upstream skills into both
+  engines
+- `shared/render-agents.nix` renders reviewer agents and the generated
+  `subagent-review` dispatcher skill from `subagents/*.md` and
+  `subagents/_metadata.nix`
+- `shared/denied-bash-commands.nix` is the single source of truth for
+  dangerous Bash denials across both engines
 
 That is the repo's harness-engineering philosophy: keep policy declarative,
 shared, inspectable, and generated from a small number of sources of truth.
@@ -116,27 +117,21 @@ The repo treats hooks as part of the operating model.
 
 ### 3.1. Shared intent
 
-Across Claude and Codex, hooks are used to do five jobs:
+Across Claude and Codex, hooks currently do two load-bearing jobs:
 
 - inject local session context such as role, cwd, and git state
 - deny dangerous Bash commands before they run
-- save handoff context so long sessions can resume coherently
-- reload saved context when a session restarts or resumes
-- add cheap deterministic feedback after verifier failures
 
 ### 3.2. Claude shape
 
-The Claude side has the richer hook surface, so it carries more of the
-instrumentation:
+The Claude side has the richer hook surface, so it carries one additional
+role-readonly guard:
 
 - `common-userpromptsubmit.sh claude` injects time, role, cwd, git, add-dir,
   and usage context
-- `claude-pretooluse-deny-bash.sh` and
-  `claude-pretooluse-deny-write.sh` enforce preflight policy
-- `claude-observe.sh` records pre/post tool observations
-- `claude-precompact-save.sh` writes a structured resumable handoff before
-  compaction
-- `claude-sessionstart-reload.sh` reloads `CLAUDE.md` plus saved handoff state
+- `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
+- `claude-pretooluse-deny-write.sh` prevents non-worker role panes from
+  mutating files outside approved state directories
 
 ### 3.3. Codex shape
 
@@ -144,14 +139,11 @@ The Codex side uses the hooks it has to approximate the same contract:
 
 - `common-userpromptsubmit.sh codex` injects time, role, cwd, git, and
   add-dir context
-- `codex-pretooluse-deny-bash.sh` enforces the shared deny policy
-- `codex-posttooluse-review.sh` adds repair-oriented feedback after failed
-  deterministic commands
-- `codex-stop-save.sh` writes a lightweight resumable handoff on stop
-- `codex-sessionstart-reload.sh` reloads the saved handoff on startup or resume
+- `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
 
-The hook surfaces are not identical, but the repo is clearly pushing both
-engines toward the same local quality bar.
+The hook surfaces are intentionally small after the 2026-04-29 reduction. The
+repo relies on durable `mkmd` artifacts and postman traffic for handoff state
+rather than separate SessionStart, Stop, or PreCompact hook scripts.
 
 ## 4. Claude/Codex quality parity is a design goal
 
@@ -161,11 +153,12 @@ different.
 
 Parity is visible in several places:
 
-- both engines consume the same shared `AGENTS.md` operating core
-- both derive policy from the same `denied-bash-commands.nix`
-- both receive installed skills from the same `agent-skills.nix` graph
-- both receive generated review assets from the same review fragment sources
-- both receive resumable handoff support, even though the exact hooks differ
+- both postman-driven engines receive the same common contract from
+  `config/tmux-a2a-postman/postman.md`
+- both derive policy from the same `shared/denied-bash-commands.nix`
+- both receive installed skills from the same `shared/agent-skills.nix` graph
+- both receive generated reviewer agents from `shared/render-agents.nix`
+- both use durable `mkmd` artifacts and postman routing for resumable handoff
 
 The result is parity of intent rather than byte-for-byte sameness. The repo is
 trying to make a worker on Claude and a worker on Codex behave comparably under
@@ -175,11 +168,12 @@ the same local expectations.
 
 This repo treats review as a built artifact, not ad hoc human ceremony.
 
-`review/review-artifacts-gen.nix` generates two classes of review assets from
-shared fragments:
+`shared/render-agents.nix` generates two classes of review assets from
+`subagents/*.md` and `subagents/_metadata.nix`:
 
 - reviewer agent definitions for Claude and Codex
-- `subagent-review-*` skills for the different engine and depth tiers
+- the unified `subagent-review` dispatcher skill, which selects engine and tier
+  at invocation time
 
 That means the review topology, naming, and engine-specific variants are kept
 in sync from a shared source. Review is therefore another example of the same
@@ -259,9 +253,9 @@ When you need to understand the operating concept, read these in order:
 1. `flake.nix`
 2. `nix/home-manager/default.nix`
 3. `nix/home-manager/modules/tmux.nix`
-4. `nix/home-manager/agents/AGENTS.md`
-5. `nix/home-manager/agents/claude-code.nix`
-6. `nix/home-manager/agents/codex-cli.nix`
+4. `nix/home-manager/agents/README.md`
+5. `nix/home-manager/agents/claude/default.nix`
+6. `nix/home-manager/agents/codex/default.nix`
 7. `config/tmux-a2a-postman/postman.md`
 8. `docs/repo-ai-operating-contract.md`
 
@@ -270,7 +264,7 @@ When you need to understand the operating concept, read these in order:
 - `docs/repo-ai-operating-contract.md`
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
-- `nix/home-manager/agents/agent-skills.nix`
-- `nix/home-manager/agents/review/review-artifacts-gen.nix`
-- `nix/home-manager/agents/denied-bash-commands.nix`
+- `nix/home-manager/agents/shared/agent-skills.nix`
+- `nix/home-manager/agents/shared/render-agents.nix`
+- `nix/home-manager/agents/shared/denied-bash-commands.nix`
 - `config/tmux-a2a-postman/postman.md`

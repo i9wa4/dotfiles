@@ -3,7 +3,7 @@ name: claude-config-optimizer
 description: |
   Claude Code config optimization skill.
   Use when:
-  - Editing CLAUDE.md, skills/, agents/, commands/
+  - Editing Claude settings, skills/, agents/, commands/
   - User asks about config best practices
   - Checking optimization status
   - User says "claude code changelog" or "claude code updates"
@@ -21,18 +21,18 @@ module).
 
 Source of truth:
 
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/claude-code.nix
+- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/claude/default.nix
+- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/shared/
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
 
-| Destination               | Source                                                       | Managed by                 |
-| ------------------------- | ------------------------------------------------------------ | -------------------------- |
-| `~/.claude/settings.json` | Generated from Nix attributes                                | `claude-code.nix`          |
-| (no `~/.claude/CLAUDE.md`) | Persona / language / scope delivered through postman.md `[common_template]` §2.24 on each `tmux-a2a-postman pop` | `config/tmux-a2a-postman/postman.md` |
-| `~/.claude/rules/`        | `nix/home-manager/agents/skills/<name>/SKILL.md`            | `claude-code.nix`          |
-| `~/.claude/agents/`       | `nix/home-manager/agents/subagents/`                         | `claude-code.nix`          |
-| `~/.claude/scripts/`      | `nix/home-manager/agents/scripts/`                           | `claude-code.nix`          |
-| `~/.claude/skills/`       | Multiple flake inputs + local                                | `agent-skills.nix`         |
-| MCP servers               | `nix/home-manager/agents/mcp-servers.nix`                    | `claude-code.nix`          |
+| Destination                | Source                                                | Managed by                           |
+| -------------------------- | ----------------------------------------------------- | ------------------------------------ |
+| `~/.claude/settings.json`  | Generated from Nix attributes                         | `claude/default.nix`                 |
+| no root instruction file   | Persona / language / scope from postman common blocks | `config/tmux-a2a-postman/postman.md` |
+| `~/.claude/agents/`        | Rendered from `subagents/`                            | `shared/render-agents.nix`           |
+| `~/.claude/scripts/`       | `nix/home-manager/agents/scripts/`                    | `claude/default.nix`                 |
+| `~/.claude/skills/`        | Multiple flake inputs + local + generated review skill | `shared/agent-skills.nix`            |
+| MCP servers                | `shared/mcp-servers.nix`                              | `claude/default.nix`                 |
 
 ## 2. Fetch CHANGELOG
 
@@ -114,7 +114,11 @@ Task tool with subagent_type: claude-code-guide
 | Hooks    | PreToolUse, PostToolUse, Stop hooks |
 | Plans    | `plansDirectory`                    |
 
-## 6. CLAUDE.md Design Guidelines
+## 6. Upstream CLAUDE.md Design Guidelines
+
+This section is general Claude Code guidance. This repo does not install a
+root `~/.claude/CLAUDE.md`; repo-local persona and scope are delivered through
+`config/tmux-a2a-postman/postman.md` instead.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`
@@ -162,18 +166,20 @@ commands.
 
 ## 7. Configuration Usage
 
-| Type               | Load Timing                    | Purpose                       |
-| ------------------ | ------------------------------ | ----------------------------- |
-| CLAUDE.md / rules/ | Full load at startup           | Global rules always applied   |
-| commands/          | Explicit user invocation       | Predefined prompts, workflows |
-| skills/            | Auto-triggered by conversation | Specialized knowledge         |
-| agents/            | Delegated via Task tool        | Independent context           |
+| Type                     | Load Timing                    | Purpose                       |
+| ------------------------ | ------------------------------ | ----------------------------- |
+| settings and postman     | Activation and postman pop     | Runtime config and role rules |
+| commands/                | Explicit user invocation       | Predefined prompts, workflows |
+| skills/                  | Auto-triggered by conversation | Specialized knowledge         |
+| agents/                  | Delegated via Task tool        | Independent context           |
+| project instruction docs | Startup or directory traversal | Project-local guidance        |
 
 ## 8. Optimization Checklist
 
 ### 8.1. CLAUDE.md Review
 
-Check the following when editing CLAUDE.md:
+Check the following only when editing a project-specific Claude instruction
+file outside this repo-managed root setup:
 
 - [ ] Is the persona definition concise?
 - [ ] Are basic rules truly needed at all times?
@@ -207,7 +213,8 @@ description: |
   Use when:
   - condition 1
   - condition 2
-disable-model-invocation: true # For workflows with side effects (manual invoke only)
+# For workflows with side effects (manual invoke only)
+disable-model-invocation: true
 ---
 ```
 
@@ -232,7 +239,8 @@ background: true # Always run as background task (v2.1.49+)
 
 When adding/removing files in skills/, agents/, or commands/:
 
-- YOU MUST: Update corresponding table in CLAUDE.md section 4
+- YOU MUST: Update `nix/home-manager/agents/README.md` or the relevant doc
+  table when installed surfaces change
 - YOU MUST: Keep tables alphabetically sorted or logically grouped
 - IMPORTANT: Verify actual files match documentation after changes
 
@@ -242,10 +250,10 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
 
 ### 11.1. Applied Optimizations
 
-- [x] Persona definition minimized
-- [x] Rules split into rules/ directory
-- [x] Skills split into skills/ directory
-- [x] Agents split into agents/ directory
+- [x] Runtime-root instruction file removed; persona and scope now flow through
+  `config/tmux-a2a-postman/postman.md`
+- [x] Skills installed through `shared/agent-skills.nix`
+- [x] Agents rendered through `shared/render-agents.nix`
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"
@@ -369,7 +377,8 @@ Requirements: Python 3.10+, wget (`brew install wget`)
 uvx --from git+https://github.com/laiso/site2skill site2skill <URL> <SKILL_NAME>
 
 # Example
-uvx --from git+https://github.com/laiso/site2skill site2skill https://docs.pay.jp/v1/ payjp
+uvx --from git+https://github.com/laiso/site2skill site2skill \
+  https://docs.pay.jp/v1/ payjp
 ```
 
 Options:

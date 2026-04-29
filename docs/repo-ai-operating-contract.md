@@ -29,28 +29,25 @@ The repo-local AI stack is assembled from a few core sources.
 
 ### 2.1. Shared instruction core
 
-`nix/home-manager/agents/AGENTS.md` carries the tiny persona and language core
-for both engines.
+The current shared instruction core flows through `tmux-a2a-postman` common
+delivery rather than generated runtime-root instruction files.
 
-`nix/home-manager/agents/rules/*.md` carries the shared repo-local operating
-rules that both engines should load alongside that core.
-
-All operating rules now flow through `tmux-a2a-postman` common delivery.
 The persona / language / scope contract lives in
 `config/tmux-a2a-postman/postman.md` `[common_template]` §2.24, and the
 repo-local skill bodies (bash, github, markdown, python, repo-local)
 are inlined as `[common_template]` §2.16-§2.22. Postman injects these
 into every role pane on each `tmux-a2a-postman pop`.
 
-There is no longer a separate `~/.claude/CLAUDE.md` or `~/.codex/AGENTS.md`
-generated at the runtime root — non-postman direct sessions (which are
-rare in practice) start with an empty instruction surface and pick up
-the contract from the first postman event.
+There is no generated root instruction file under `~/.claude/` or `~/.codex/`
+for this repo. Direct non-postman sessions rely on the installed runtime
+settings and skill trees until they receive a postman event.
 
 ### 2.2. Declarative installation
 
-`claude-code.nix`, `codex-cli.nix`, and `agent-skills.nix` declaratively
-materialize the runtime under:
+`nix/home-manager/agents/claude/default.nix`,
+`nix/home-manager/agents/codex/default.nix`, and
+`nix/home-manager/agents/shared/agent-skills.nix` declaratively materialize
+the runtime under:
 
 - `~/.claude/`
 - `~/.codex/`
@@ -72,8 +69,8 @@ These rules are the residual loaded prompt rules kept local because
 non-postman Claude/Codex sessions still need them. Postman-role sessions also
 receive the stronger common contract from `tmux-a2a-postman`.
 
-They come from the loaded shared prompt surfaces (`AGENTS.md` plus
-`rules/*.md`) and are expected regardless of engine:
+They come from the postman common contract plus the installed local skills and
+are expected regardless of engine:
 
 - read files in full
 - verify against the actual repo before reporting
@@ -149,19 +146,15 @@ surfaces allow:
 
 - inject live repo context into prompts
 - deny dangerous Bash actions before execution
-- preserve resumable handoff state
-- reload handoff context on resume
-- tighten cheap repair loops after deterministic failures
+- keep handoff state durable through postman messages and `mkmd` artifacts
 
 ### 4.2. Claude runtime hooks
 
 The Claude runtime currently carries:
 
 - `UserPromptSubmit` for role, cwd, git, and usage context
-- `PreToolUse` for observation plus Bash and write denials
-- `PostToolUse` and `PostToolUseFailure` for observation
-- `SessionStart` for reloading `CLAUDE.md` and saved handoff state
-- `PreCompact` for saving a structured handoff snapshot
+- `PreToolUse` for shared Bash denials
+- `PreToolUse` for Claude-only role write denials
 
 ### 4.3. Codex runtime hooks
 
@@ -169,9 +162,6 @@ The Codex runtime currently carries:
 
 - `UserPromptSubmit` for role, cwd, and git context
 - `PreToolUse` for Bash denials
-- `PostToolUse` for deterministic Bash remediation feedback
-- `SessionStart` for saved handoff reload
-- `Stop` for lightweight handoff persistence
 
 The surface is not identical, but the repo is aiming for equivalent operating
 discipline.
@@ -181,7 +171,7 @@ discipline.
 Two repo files matter especially because they are single sources of truth
 consumed by both engines.
 
-### 5.1. `denied-bash-commands.nix`
+### 5.1. `shared/denied-bash-commands.nix`
 
 This file defines the dangerous Bash patterns once and then emits:
 
@@ -191,150 +181,79 @@ This file defines the dangerous Bash patterns once and then emits:
 
 If the repo changes a Bash safety policy, this is where it should happen.
 
-### 5.2. `review/review-artifacts-gen.nix`
+### 5.2. `shared/render-agents.nix`
 
-This file generates the installed review stack from shared fragments:
+This file generates the installed shared agent surface from
+`subagents/_metadata.nix` and `subagents/*.md`:
 
-- reviewer agent definitions for Claude and Codex
-- generated `subagent-review-*` skills for the engine and depth variants
+- Claude markdown agent definitions
+- Codex TOML agent definitions
+- the generated `subagent-review` dispatcher skill
 
-That is how the repo keeps the review contract synchronized across engines.
+That is how the repo keeps reviewer agents and review dispatch synchronized
+across engines.
 
 ### 5.3. Review-system specification
 
-This section is the canonical repo-side specification for the review system.
-`review/review-artifacts-gen.nix` remains the runtime generation SSOT, but
-questions about public entrypoints, internal labels, normalization, aggregation,
-and installed tree shape should be answered from this document.
+This section is the canonical repo-side specification for the current review
+system. `shared/render-agents.nix` is the runtime generation SSOT, while this
+document describes the public entrypoint, tier model, and installed tree shape.
 
 #### 5.3.1. Canonical components
 
-- `nix/home-manager/agents/review/review-artifacts-gen.nix`
-- `nix/home-manager/agents/review/skills/subagent-review/SKILL.md`
-- `nix/home-manager/agents/agent-skills.nix`
-- `nix/home-manager/agents/claude-code.nix`
-- `nix/home-manager/agents/codex-cli.nix`
+- `nix/home-manager/agents/shared/render-agents.nix`
+- `nix/home-manager/agents/subagents/_metadata.nix`
+- `nix/home-manager/agents/subagents/*.md`
+- `nix/home-manager/agents/shared/agent-skills.nix`
+- `nix/home-manager/agents/claude/default.nix`
+- `nix/home-manager/agents/codex/default.nix`
 
 #### 5.3.2. Current public state
 
-Today the public review skill surface is five entrypoints in both
+The public review skill surface is one generated dispatcher in both
 `~/.claude/skills` and `~/.codex/skills`:
 
 - `subagent-review`
-- `subagent-review-cc`
-- `subagent-review-cc-deep`
-- `subagent-review-cx`
-- `subagent-review-cx-deep`
 
-The wrapper currently accepts the same four internal labels directly:
+The dispatcher accepts space-separated engine and tier tokens:
 
-- `cc`
-- `cc-deep`
-- `cx`
-- `cx-deep`
+| Token Type | Values          | Meaning                           |
+| ---------- | --------------- | --------------------------------- |
+| Engine     | `cc`, `cx`      | Claude or Codex reviewer pool     |
+| Tier       | `tier1`, `tier2` | Deep or shallow model assignment  |
 
-With no arguments, `subagent-review` defaults to `cc cx`.
+With no arguments, `subagent-review` defaults to `cc tier2 cx tier2`.
+The dispatcher fans out to the five review perspectives currently named in
+the generated skill: security, architecture, historian, code, and QA.
 
-#### 5.3.3. Proposed public state
+#### 5.3.3. Tier contract
 
-The approved simplification target is a smaller public surface, not a different
-review topology. The target public entrypoints are:
+Tier defaults live in `subagents/_metadata.nix` and are baked into the
+generated dispatcher skill by `shared/render-agents.nix`.
 
-- `subagent-review`
-- `subagent-review-cc`
-- `subagent-review-cx`
+The agent files themselves carry tier 2 defaults. Tier 1 is selected at spawn
+time by the dispatcher through per-call model and effort overrides, not by
+installing a second set of agent files.
 
-This is a visibility change only. The internal canonical labels remain:
-
-- `cc`
-- `cc-deep`
-- `cx`
-- `cx-deep`
-
-Do not make bare `cc` and bare `cx` imply different default depths. Depth stays
-explicit in the public syntax whenever it changes from the standard tier.
-
-#### 5.3.4. Normalization rules
-
-Public syntax may get shorter, but it must normalize to the same internal
-labels before dispatch, counting, aggregation, or artifact naming happens.
-
-| Public Syntax | Canonical Internal Label |
-| ------------- | ------------------------ |
-| `cc`          | `cc`                     |
-| `cc deep`     | `cc-deep`                |
-| `cx`          | `cx`                     |
-| `cx deep`     | `cx-deep`                |
-
-`subagent-review` with no arguments still normalizes to the pair `cc cx`.
-
-#### 5.3.5. Aggregation contract
-
-The aggregation layer stays keyed to the canonical labels, even if the public
-skill surface shrinks.
-
-- Baseline capture and result verification stay keyed to `cc`, `cc-deep`, `cx`,
-  and `cx-deep`
-- Review artifact filenames stay label-stable, such as `review-*-cc.md` and
-  `review-*-cx-deep.md`
-- Coverage tables, reporter labels, and merged-summary deduplication stay keyed
-  to the canonical labels
-- Public wrapper simplification must be a parsing layer over the canonical
-  labels, not a rename of the aggregation contract
-
-#### 5.3.6. `nix switch` materialization
+#### 5.3.4. `nix switch` materialization
 
 Current materialization:
 
 ```text
 ~/.claude/skills/
   subagent-review/
-  subagent-review-cc/
-  subagent-review-cc-deep/
-  subagent-review-cx/
-  subagent-review-cx-deep/
 ~/.codex/skills/
   subagent-review/
-  subagent-review-cc/
-  subagent-review-cc-deep/
-  subagent-review-cx/
-  subagent-review-cx-deep/
 ~/.claude/agents/
-  reviewer-{role}.md
-  reviewer-{role}-deep.md
-  ... 12 reviewer markdown files total
+  <metadata agent name>.md
 ~/.codex/agents/
-  reviewer-{role}.toml
-  reviewer-{role}-deep.toml
-  ... 12 reviewer TOML files total
+  <metadata agent name>.toml
 ```
 
-Target materialization after the public-surface simplification:
-
-```text
-~/.claude/skills/
-  subagent-review/
-  subagent-review-cc/
-  subagent-review-cx/
-~/.codex/skills/
-  subagent-review/
-  subagent-review-cc/
-  subagent-review-cx/
-~/.claude/agents/
-  reviewer-{role}.md
-  reviewer-{role}-deep.md
-  ... full reviewer runtime retained
-~/.codex/agents/
-  reviewer-{role}.toml
-  reviewer-{role}-deep.toml
-  ... full reviewer runtime retained
-```
-
-`agent-skills.nix` owns the skill-tree materialization into both engines.
-`claude-code.nix` owns the installed Claude reviewer runtime under
-`~/.claude/agents`. `codex-cli.nix` owns the installed Codex reviewer runtime
-under `~/.codex/agents`, converting the generated reviewer markdown into TOML
-agent definitions while keeping the same role and tier shape.
+`shared/agent-skills.nix` owns the skill-tree materialization into both
+engines. `claude/default.nix` installs the Claude agent directory under
+`~/.claude/agents`. `codex/default.nix` installs the Codex agent directory
+under `~/.codex/agents`.
 
 ## 6. Claude/Codex parity contract
 
@@ -342,10 +261,11 @@ The repo expects parity of quality bar, not literal product sameness.
 
 In practice that means:
 
-- both engines should inherit the same repo-local operating core
+- both postman-driven engines should receive the same repo-local operating core
 - both engines should see the same review topology
 - both engines should obey the same Bash deny policy
-- both engines should have resumable handoff support
+- both engines should use the same durable handoff discipline through postman
+  traffic and `mkmd` artifacts
 - both engines should be able to participate in the same repo-local review and
   routing model
 
@@ -365,16 +285,16 @@ review topology, resumable handoff discipline, and launch-command visibility in
 Within that shared policy, the repo currently treats these differences as
 intentional:
 
-- Claude heavier reload/hook path
+- Claude-only role write-deny hook
 - Codex denser installed rules artifact
-- launch-command parity now restored on both sides
+- Claude script-based status line and Codex declarative TOML status line
 
 These differences are acceptable only so long as they keep the same local
 intent: safe execution, explicit handoff, and verifiable reporting.
 
 ## 7. `tmux-a2a-postman` routing contract
 
-The repo-local postman graph has seven logical nodes:
+The approval workflow has seven standing role nodes:
 
 - `messenger`
 - `orchestrator`
@@ -383,6 +303,11 @@ The repo-local postman graph has seven logical nodes:
 - `critic`
 - `guardian`
 - `boss`
+
+The live postman graph also contains an auxiliary `agent` node connected to
+`orchestrator`. It is excluded from the approval-workflow count because it is
+not part of the normal human-facing, execution, review, guardian, or boss
+approval lane.
 
 Reachability is strict:
 
@@ -393,6 +318,8 @@ Reachability is strict:
 - `guardian` talks only to `critic`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
+- `agent` is reachable from `orchestrator` for auxiliary work outside the
+  approval lane
 
 If footer prose conflicts with the live graph or with successful delivery in
 the same context, trust the graph and actual delivery.
@@ -400,8 +327,7 @@ the same context, trust the graph and actual delivery.
 ## 8. Bounded approval-lane contract
 
 This section is the canonical approval-lane policy for this repo.
-`nix/home-manager/agents/AGENTS.md`,
-`config/tmux-a2a-postman/postman.md`, and
+`config/tmux-a2a-postman/postman.md` and
 `config/tmux-a2a-postman/postman.toml` should point here or restate this
 section faithfully instead of drifting into separate policy variants.
 
@@ -533,9 +459,9 @@ not retry silently. Report the block immediately.
 
 When context is thin, read in this order:
 
-1. `nix/home-manager/agents/AGENTS.md`
-2. `nix/home-manager/agents/claude-code.nix`
-3. `nix/home-manager/agents/codex-cli.nix`
-4. `nix/home-manager/agents/agent-skills.nix`
+1. `nix/home-manager/agents/README.md`
+2. `nix/home-manager/agents/claude/default.nix`
+3. `nix/home-manager/agents/codex/default.nix`
+4. `nix/home-manager/agents/shared/agent-skills.nix`
 5. `config/tmux-a2a-postman/postman.md`
 6. this file

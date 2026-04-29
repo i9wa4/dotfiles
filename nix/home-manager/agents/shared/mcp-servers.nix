@@ -1,5 +1,5 @@
 # Shared MCP server definitions for Claude Code and Codex CLI
-# Used by claude-code.nix and codex-cli.nix
+# Used by claude/default.nix and codex/default.nix
 {
   pkgs,
   inputs,

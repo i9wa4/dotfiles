@@ -63,8 +63,8 @@
 #
 # This file covers Bash command deny rules ONLY.
 # File access restrictions (Read/Write deny patterns) are defined
-# directly in claude-code.nix. Codex CLI has no file access deny
-# equivalent (noted in codex-cli.nix).
+# directly in claude/default.nix. Codex CLI has no file access deny
+# equivalent (noted in codex/default.nix).
 { pkgs }:
 let
   entries = [

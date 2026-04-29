@@ -18,13 +18,13 @@ What "prompt path" means in this repo:
 
 - `config/tmux-a2a-postman/postman.md` — multi-agent role contract,
   delivered into every postman session as the live operating contract.
-- `nix/home-manager/agents/AGENTS.md` — shared operating core.
-- `nix/home-manager/agents/CLAUDE.md` — Claude-only fragment, kept small
-  on purpose.
 - `nix/home-manager/agents/skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
-- `subagents/*.md` and review fragments — agent definitions, reviewer
-  templates.
+- `nix/home-manager/agents/subagents/*.md` and
+  `nix/home-manager/agents/subagents/_metadata.nix` — agent definitions,
+  reviewer metadata, and tier defaults.
+- `nix/home-manager/agents/shared/render-agents.nix` — renders the shared
+  subagents and the generated `subagent-review` dispatcher skill.
 
 Why prompt over config:
 
@@ -68,7 +68,7 @@ into both Codex and Claude consumers.
 
 Concrete examples already in the repo:
 
-- `nix/home-manager/agents/denied-bash-commands.nix` — SSOT for the deny
+- `nix/home-manager/agents/shared/denied-bash-commands.nix` — SSOT for the deny
   set; emits to `~/.claude/settings.json` (`permissions.deny` glob),
   `~/.claude/scripts/deny-bash-patterns.sh` (regex hook), and
   `~/.codex/rules/default.rules` (argv prefix_rule).
@@ -78,11 +78,11 @@ Concrete examples already in the repo:
   postman role on each `tmux-a2a-postman pop`. There is no longer a
   generated CLAUDE.md or codex AGENTS.md installed at the runtime
   root.
-- `nix/home-manager/agents/agent-skills.nix` — installs the same skill
+- `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
-- `nix/home-manager/agents/review/review-artifacts-gen.nix` — generates
-  reviewer agents and review skills for both engines from shared
-  fragments.
+- `nix/home-manager/agents/shared/render-agents.nix` with
+  `nix/home-manager/agents/subagents/_metadata.nix` — generates reviewer
+  agents and the unified `subagent-review` dispatcher skill for both engines.
 
 Why shared beats per-tool:
 
@@ -141,7 +141,7 @@ What to avoid:
 - Building core operating policy on top of a vendor-only feature when
   a cross-engine alternative exists.
 - Hardcoding engine-specific names or paths in shared instruction
-  files (`AGENTS.md`, `postman.md`, skill `SKILL.md`).
+  files (`postman.md`, skill `SKILL.md`).
 - Adding a setting only because one engine ships a knob, without
   checking whether the same effect can be achieved through a prompt
   or through the shared SSOT.
@@ -189,5 +189,5 @@ Before adding agent configuration, walk this checklist:
 - `docs/repo-ai-operating-contract.md` — AI operation rules.
 - `config/tmux-a2a-postman/postman.md` — agent contract that carries
   the prompt-path rules into every postman session.
-- `nix/home-manager/agents/denied-bash-commands.nix` — example of a
+- `nix/home-manager/agents/shared/denied-bash-commands.nix` — example of a
   shared SSOT emitting to multiple engines.

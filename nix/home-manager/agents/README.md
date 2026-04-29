@@ -12,14 +12,14 @@ artifacts.
 | ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.24            | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
 | Repo-local skill bodies       | `skills/<skill>/SKILL.md`                                                  | Installed to `~/.claude/skills/` and inlined into postman.md `[common_template]`  |
-| Shared subagents              | `subagents/*.md`, `families/subagents/metadata.nix`                       | Generated into `~/.claude/agents/` and `~/.codex/agents/`                          |
-| Review stack prompts/skills   | `review/refs/`, `review/skills/`, `review/review-artifacts-gen.nix`       | Generated reviewer agents and `subagent-review-*` skills                           |
-| Family merge layer            | `families/default.nix`, `families/subagents/`, `families/review/`         | Merges family-local agent outputs before installation                              |
-| Shared install targets        | `install-manifest.nix`                                                     | Resolves the common Claude/Codex agent targets and skill destinations              |
-| Local reusable skills         | `skills/<skill>/`, `agent-skills.nix`                                      | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
+| Shared subagents              | `subagents/*.md`, `subagents/_metadata.nix`                               | Rendered into `~/.claude/agents/` and `~/.codex/agents/`                           |
+| Review dispatcher skill       | `shared/render-agents.nix`, `subagents/_metadata.nix`                     | Generated `subagent-review` skill installed into both engines                      |
+| Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
+| Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                              | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
 | Hook/runtime scripts          | `scripts/*`                                                                | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
-| Claude runtime settings       | `claude-code.nix`, `mcp-servers.nix`, `denied-bash-commands.nix`           | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
-| Codex runtime settings        | `codex-cli.nix`, `mcp-servers.nix`, `denied-bash-commands.nix`             | `~/.codex/config.toml`, `~/.codex/hooks.json`, `~/.codex/rules/`, and runtime dirs |
+| Shared runtime data           | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`               | Context7 MCP and Bash deny data emitted into both engines                          |
+| Claude runtime settings       | `claude/default.nix`                                                       | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
+| Codex runtime settings        | `codex/default.nix`                                                        | `~/.codex/config.toml`, `~/.codex/hooks.json`, `~/.codex/rules/`, and runtime dirs |
 | Top-level package boundary    | `default.nix`                                                              | Imports the agent modules and installs the shared CLI packages                     |
 
 ## How Changes Flow
@@ -29,16 +29,16 @@ artifacts.
    are delivered through `config/tmux-a2a-postman/postman.md`
    `[common_template]` on each `tmux-a2a-postman pop`. There is no longer
    a generated CLAUDE.md or codex AGENTS.md installed at the runtime root.
-3. `families/subagents/metadata.nix` defines the shared Claude/Codex metadata
-   for the subagent family while `subagents/*.md` stays the prompt-body source.
-4. `families/default.nix` merges family-local agent outputs for the installed
-   Claude and Codex agent directories.
-5. `install-manifest.nix` resolves the shared agent install targets and skill
-   destinations that the runtime installers consume.
-6. `agent-skills.nix` validates skill sources and installs them into both
+3. `subagents/_metadata.nix` defines shared Claude/Codex metadata while
+   `subagents/*.md` stays the prompt-body source.
+4. `shared/render-agents.nix` renders Claude markdown agents, Codex TOML
+   agents, and the generated `subagent-review` dispatcher skill.
+5. `shared/install-manifest.nix` resolves the shared agent install targets and
+   skill destinations that the runtime installers consume.
+6. `shared/agent-skills.nix` validates skill sources and installs them into both
    runtimes.
-7. `claude-code.nix` and `codex-cli.nix` materialize the final runtime files
-   during activation.
+7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
+   files during activation.
 
 ## Refresh And Verify
 
@@ -53,8 +53,9 @@ artifacts.
 
 ## Authoring Notes
 
-- Keep reviewer and subagent implementation details near `review/` and
-  `subagents/`, not in the top-level runtime prompt files.
+- Keep reviewer and subagent implementation details near `subagents/`,
+  `subagents/_metadata.nix`, and `shared/render-agents.nix`, not in the
+  top-level runtime modules.
 - After setting up Claude Code on a new machine or after adding new projects,
   run `/claude-workspace-trust-fix`; otherwise interactive `PreToolUse` hooks
   can be skipped until workspace trust is recorded.
@@ -64,8 +65,9 @@ artifacts.
 - If you are changing prompt wording, start with the markdown source files.
 - If you are changing hook behavior, runtime settings, or install targets, edit
   the `.nix` modules.
-- If a file is named `install-manifest.nix`, `families/default.nix`,
-  `render-*.nix`, or `review-artifacts-gen.nix`, it is composition code
-  rather than final installed prompt text.
+- If a file lives under `shared/` and is named `install-manifest.nix`,
+  `render-agents.nix`, `agent-skills.nix`, `mcp-servers.nix`, or
+  `denied-bash-commands.nix`, it is composition or shared data code rather
+  than final installed prompt text.
 - Treat `~/.claude/` and `~/.codex/` as outputs of this tree, not as the
   editing surface.

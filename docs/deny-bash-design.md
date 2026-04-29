@@ -32,8 +32,8 @@ both of which exceed the value the hook is meant to deliver.
 
 ## 2. Single Source of Truth
 
-`nix/home-manager/agents/denied-bash-commands.nix` is the SSOT. It defines
-three top-level lists:
+`nix/home-manager/agents/shared/denied-bash-commands.nix` is the SSOT. It
+defines three top-level lists:
 
 - `entries` — deny rules. Each entry has an `argv` token list, an
   `anchored` flag, an optional `hookRegex` override, an optional
@@ -80,7 +80,7 @@ Per-repo deny rules sourced from the SSOT. Two sub-layers:
 - `permissions.deny` glob entries (only entries with
   `claudeSettingsJson = true`). Claude Code refuses to even attempt these
   commands. Bypass mode does not weaken this set.
-- The PreToolUse hook (`scripts/claude-pretooluse-deny-bash.sh`) reads
+- The PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) reads
   `patternsFile` and matches every entry's regex against the issued Bash
   command. A match emits a deny payload with the entry's `justification`.
 
@@ -199,12 +199,12 @@ special cases on top of regex.
 - `docs/agent-config-philosophy.md` — the design principles this hook
   system follows (prompt-first, shared SSOT, vendor-specific as
   compensation).
-- `nix/home-manager/agents/denied-bash-commands.nix` — SSOT.
-- `nix/home-manager/agents/scripts/claude-pretooluse-deny-bash.sh` — the
+- `nix/home-manager/agents/shared/denied-bash-commands.nix` — SSOT.
+- `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` — the
   PreToolUse hook script.
-- `nix/home-manager/agents/claude-code.nix` — wires the SSOT into
+- `nix/home-manager/agents/claude/default.nix` — wires the SSOT into
   `~/.claude/settings.json` and `~/.claude/scripts/`.
-- `nix/home-manager/agents/codex-cli.nix` — wires the SSOT into
+- `nix/home-manager/agents/codex/default.nix` — wires the SSOT into
   `~/.codex/rules/default.rules`.
 - `config/tmux-a2a-postman/postman.md` section 2.23 — multi-agent
   bash discipline that complements this hook system on the agent side.

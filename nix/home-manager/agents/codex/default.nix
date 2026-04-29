@@ -7,7 +7,6 @@
   lib,
   config,
   inputs,
-  nodejsPackage,
   ...
 }:
 let
@@ -22,7 +21,6 @@ let
 
   mcpServers = import ../shared/mcp-servers.nix {
     inherit
-      homeDir
       pkgs
       inputs
       ;
@@ -32,7 +30,7 @@ let
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
-    # Generated from nix/home-manager/agents/denied-bash-commands.nix
+    # Generated from nix/home-manager/agents/shared/denied-bash-commands.nix
     # File access restrictions (Read/Write patterns) have no Codex equivalent.
 
     ${deniedBash.codexCli.rulesContent}
@@ -40,7 +38,8 @@ let
 
   generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;
 
-  # Exec policy rules only (.rules files); .md instructions go via AGENTS.md
+  # Exec policy rules only (.rules files); markdown instructions are delivered
+  # through postman.md common_template, not runtime-root AGENTS.md.
   codexRulesDir = pkgs.runCommand "codex-rules" { } ''
     mkdir -p $out
     cp ${generatedDefaultRules} $out/default.rules
@@ -146,10 +145,11 @@ in
     # repo-local skill bodies (bash, github, markdown, python, repo-local)
     # are inlined into the same common_template (§2.16-§2.22). Codex CLI
     # has no AGENTS.md generated at the runtime root anymore.
-    # Exec policy rules (.rules files only; .md is not auto-loaded by Codex CLI)
+    # Exec policy rules (.rules files only; markdown instructions are delivered
+    # through postman.md common_template, not auto-loaded by Codex CLI)
     # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;
-    # Subagent definitions (family-managed .toml/markdown generation)
+    # Subagent definitions rendered from shared metadata and prompt bodies
     "${installManifest.codex.agents.target}".source = installManifest.codex.agents.source;
     # Hook scripts (Nix store, rebuild required to update)
     ".codex/scripts".source = codexScriptsDir;

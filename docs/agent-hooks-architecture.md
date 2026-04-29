@@ -61,13 +61,13 @@ pane on each `tmux-a2a-postman pop`. There is no longer a generated
 CLAUDE.md or codex AGENTS.md at the runtime root; postman.md is the
 single delivery channel.
 
-Subagent definitions (`subagents/*.md`), reviewer templates
-(`review/`), and the family merge layer (`families/`) remain
-tool-agnostic and continue to be composed for both runtimes via
-the install-manifest path — the runtime-specific install layout is
-the only fork.
+Subagent definitions (`subagents/*.md`) and metadata
+(`subagents/_metadata.nix`) remain tool-agnostic. The shared renderer
+(`shared/render-agents.nix`) turns them into Claude markdown agents,
+Codex TOML agents, and the unified `subagent-review` dispatcher skill;
+the runtime-specific install layout is the only fork.
 
-### 2.3. MCP Servers — `mcp-servers.nix`
+### 2.3. MCP Servers — `shared/mcp-servers.nix`
 
 One module produces both Claude's `~/.claude/.claude.json` MCP block
 (via activation script) and Codex's `[mcp_servers]` TOML stanza

@@ -7,7 +7,6 @@
   pkgs,
   inputs,
   lib,
-  nodejsPackage,
   ...
 }:
 let
@@ -20,7 +19,6 @@ let
   };
   mcpServers = import ../shared/mcp-servers.nix {
     inherit
-      homeDir
       pkgs
       inputs
       ;
