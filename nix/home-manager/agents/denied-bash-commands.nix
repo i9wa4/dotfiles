@@ -204,6 +204,19 @@ let
     "tmux-a2a-postman"
   ];
 
+  # Hook arg-value strip: for each arg name listed here, the quoted value
+  # immediately following the arg gets replaced with "" before the regex
+  # deny check runs. This lets the rest of the command still be checked.
+  # Example: `git commit -m "fix: rm dead code"` has "rm" stripped from the
+  # message, so the rm deny does not false-positive. Meanwhile
+  # `git commit -m "msg" --amend` strips the message but leaves --amend
+  # intact, so the --amend deny still fires.
+  # Like allowPrefixBypass, this is Claude-only (Codex argv matching does
+  # not need it).
+  stripDataArgs = [
+    "-m"
+  ];
+
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
   #   1 token  → ^token([[:space:]]|$) (must be the command, not an argument)
   #   2+ tokens → ^token1.*tokenN([[:space:]]|$) (last token anchored at a word
@@ -272,6 +285,9 @@ in
       )
       ALLOW_PREFIX_BYPASS=(
       ${builtins.concatStringsSep "\n" (map (p: "  '${p}'") allowPrefixBypass)}
+      )
+      STRIP_DATA_ARGS=(
+      ${builtins.concatStringsSep "\n" (map (a: "  '${a}'") stripDataArgs)}
       )
     '';
   };

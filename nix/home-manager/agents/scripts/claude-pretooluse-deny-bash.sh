@@ -80,6 +80,22 @@ is_allow_prefix_bypass() {
   return 1
 }
 
+# Replace the quoted value following each STRIP_DATA_ARGS arg with an empty
+# string before the regex deny check. This neutralises false positives from
+# arg values that legitimately contain words like "rm" or "sudo" without
+# weakening the check on the surrounding command (e.g. --amend still trips).
+# The original fragment is preserved separately so error messages report the
+# command the agent actually issued, not the stripped version.
+strip_data_arg_values() {
+  local fragment="$1"
+  local arg
+  for arg in "${STRIP_DATA_ARGS[@]}"; do
+    fragment=$(printf '%s' "$fragment" | sed -E "s|(^|[[:space:]])${arg}[[:space:]]+\"[^\"]*\"|\1${arg} \"\"|g")
+    fragment=$(printf '%s' "$fragment" | sed -E "s|(^|[[:space:]])${arg}[[:space:]]+'[^']*'|\1${arg} ''|g")
+  done
+  printf '%s' "$fragment"
+}
+
 emit_bash_deny_payload() {
   local fragment="$1"
   local reason="$2"
@@ -91,6 +107,7 @@ emit_bash_deny_payload() {
 
 check_bash_fragment_for_denials() {
   local fragment="$1"
+  local original_fragment
   local inner_script
   local i
 
@@ -109,9 +126,12 @@ check_bash_fragment_for_denials() {
     fi
   fi
 
+  original_fragment="$fragment"
+  fragment="$(strip_data_arg_values "$fragment")"
+
   for i in "${!DENY_PATTERNS[@]}"; do
     if [[ $fragment =~ ${DENY_PATTERNS[$i]} ]]; then
-      emit_bash_deny_payload "$fragment" "${DENY_JUSTIFICATIONS[$i]}"
+      emit_bash_deny_payload "$original_fragment" "${DENY_JUSTIFICATIONS[$i]}"
       return 0
     fi
   done
