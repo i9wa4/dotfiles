@@ -12,21 +12,21 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  installManifest = import ./install-manifest.nix {
+  installManifest = import ../shared/install-manifest.nix {
     inherit
       config
       pkgs
       ;
   };
-  mcpServers = import ./mcp-servers.nix {
+  mcpServers = import ../shared/mcp-servers.nix {
     inherit
       homeDir
       pkgs
       inputs
       ;
   };
-  # Shared Bash deny surface includes aws sso login; see denied-bash-commands.nix.
-  deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  # Shared Bash deny surface includes aws sso login; see shared/denied-bash-commands.nix.
+  deniedBash = import ../shared/denied-bash-commands.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";
@@ -34,7 +34,7 @@ let
   # Merge repo scripts + generated patterns file into a single directory
   scriptsDir = pkgs.runCommand "claude-scripts" { } ''
     mkdir -p $out
-    for f in ${./scripts}/*; do
+    for f in ${../scripts}/*; do
       ln -s "$f" "$out/$(basename "$f")"
     done
     ln -s ${deniedBash.claudeCode.patternsFile} $out/${bashDenyPatternsName}

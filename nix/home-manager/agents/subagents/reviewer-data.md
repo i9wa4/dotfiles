@@ -1,7 +1,3 @@
----
-name: reviewer-data
-description: Data model expert. Normalization master.
----
 
 # Reviewer: Data
 

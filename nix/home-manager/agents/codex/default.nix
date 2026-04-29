@@ -13,22 +13,22 @@
 let
   homeDir = config.home.homeDirectory;
   ghqRoot = "${homeDir}/ghq";
-  installManifest = import ./install-manifest.nix {
+  installManifest = import ../shared/install-manifest.nix {
     inherit
       config
       pkgs
       ;
   };
 
-  mcpServers = import ./mcp-servers.nix {
+  mcpServers = import ../shared/mcp-servers.nix {
     inherit
       homeDir
       pkgs
       inputs
       ;
   };
-  # Shared Bash deny surface includes aws sso login; see denied-bash-commands.nix.
-  deniedBash = import ./denied-bash-commands.nix { inherit pkgs; };
+  # Shared Bash deny surface includes aws sso login; see shared/denied-bash-commands.nix.
+  deniedBash = import ../shared/denied-bash-commands.nix { inherit pkgs; };
 
   defaultRulesContent = ''
     # Exec policy rules for Codex CLI
@@ -53,8 +53,8 @@ let
   # here -- not a wildcard, to keep the consumed surface explicit.
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
     mkdir -p $out
-    ln -s ${./scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
-    ln -s ${./scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
+    ln -s ${../scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
+    ln -s ${../scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
     ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
 

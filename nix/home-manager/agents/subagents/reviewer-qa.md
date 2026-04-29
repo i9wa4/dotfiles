@@ -1,7 +1,3 @@
----
-name: reviewer-qa
-description: Acceptance criteria expert. Guardian of goal achievement.
----
 
 # Reviewer: QA
 

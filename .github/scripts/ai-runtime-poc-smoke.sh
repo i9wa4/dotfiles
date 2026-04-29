@@ -43,19 +43,12 @@ nix_expr=$(
 let
   flake = builtins.getFlake (toString ./.);
   pkgs = import flake.inputs.nixpkgs { system = builtins.currentSystem; };
-  renderCodexAgents = import ./nix/home-manager/agents/families/render-codex-agents.nix { inherit pkgs; };
-  family = import ./nix/home-manager/agents/families/subagents/family.nix {
-    homeDir = builtins.getEnv "AI_RUNTIME_POC_HOME_DIR";
-    inherit
-      pkgs
-      renderCodexAgents
-      ;
-  };
+  agents = import ./nix/home-manager/agents/shared/render-agents.nix { inherit pkgs; };
 in
 pkgs.runCommand "ai-runtime-poc" { } ''
   mkdir -p "$out/.claude/agents" "$out/.codex/agents"
-  cp -LR ${family.claudeAgentsDir}/. "$out/.claude/agents/"
-  cp -LR ${family.codexAgentsDir}/. "$out/.codex/agents/"
+  cp -LR ${agents.claudeAgentsDir}/. "$out/.claude/agents/"
+  cp -LR ${agents.codexAgentsDir}/. "$out/.codex/agents/"
 ''
 EOF
 )

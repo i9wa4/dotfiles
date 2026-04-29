@@ -1,7 +1,3 @@
----
-name: reviewer-code
-description: Code quality expert. Perfectionist.
----
 
 # Reviewer: Code
 
