@@ -315,15 +315,12 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
 - [ ] `alwaysLoad: true` on hot MCP servers (v2.1.121) - bypass
   `ENABLE_TOOL_SEARCH=auto:3` deferral for frequently-called servers; pick
   based on per-session call frequency, not server count
-- [ ] PostToolUse `hookSpecificOutput.updatedToolOutput` for all tools
-  (v2.1.121) - opens tool-output rewriting/redaction in `claude-observe.sh`
-  (was MCP-only before)
-- [ ] PreCompact hook can block compaction (v2.1.105) - exit code 2 or
-  `{"decision":"block"}` from `claude-precompact-save.sh` to gate compaction
-  during in-flight critical state
-- [ ] `duration_ms` in PostToolUse / PostToolUseFailure hook input (v2.1.119)
-  - native tool-duration metric for `claude-observe.sh post`, no separate
-  timer
+- [ ] ~~PostToolUse `hookSpecificOutput.updatedToolOutput`~~ N/A — observe.sh
+  removed 2026-04-29.
+- [ ] ~~PreCompact hook can block compaction~~ N/A — precompact-save.sh
+  removed 2026-04-29.
+- [ ] ~~`duration_ms` in PostToolUse hook input~~ N/A — observe.sh removed
+  2026-04-29.
 - [ ] `DISABLE_UPDATES=1` env (v2.1.118) - stricter than `DISABLE_AUTOUPDATER`;
   blocks manual `claude update` too. Reasonable for fully Nix-managed installs
 - [ ] `prUrlTemplate` setting (v2.1.119) - footer PR badge target; only useful

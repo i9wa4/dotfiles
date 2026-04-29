@@ -100,15 +100,6 @@ let
       ];
       PreToolUse = [
         {
-          matcher = "*";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh pre";
-            }
-          ];
-        }
-        {
           matcher = "Bash";
           hooks = [
             {
@@ -123,49 +114,6 @@ let
             {
               type = "command";
               command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-deny-write.sh";
-            }
-          ];
-        }
-      ];
-      PostToolUse = [
-        {
-          matcher = "*";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
-            }
-          ];
-        }
-      ];
-      PostToolUseFailure = [
-        {
-          matcher = "*";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-observe.sh post";
-            }
-          ];
-        }
-      ];
-      SessionStart = [
-        {
-          matcher = "compact|resume|clear";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-sessionstart-reload.sh";
-            }
-          ];
-        }
-      ];
-      PreCompact = [
-        {
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-precompact-save.sh";
             }
           ];
         }
@@ -221,18 +169,6 @@ in
           && mv "$TARGET.tmp" "$TARGET"
       '';
 
-      claudeObservationPermissions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        STATE_ROOT="''${XDG_STATE_HOME:-$HOME/.local/state}/claude"
-        if [ -d "$STATE_ROOT" ]; then
-          find "$STATE_ROOT" \
-            \( -name 'observations*.jsonl' -o -name 'project.json' -o -name 'projects.json' \) \
-            -type f |
-            while IFS= read -r file; do
-              chmod 600 "$file"
-              chmod 700 "$(dirname "$file")"
-            done
-        fi
-      '';
     };
   };
 }
