@@ -20,6 +20,7 @@
       isDarwin = lib.hasSuffix "darwin" system;
       isLinux = lib.hasSuffix "linux" system;
       gh = lib.getExe pkgs.gh;
+      jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
@@ -33,6 +34,51 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "switch" ''
             set -euo pipefail
+
+            check_nix_profile_shadows() {
+              profile_entries="$(${nix} profile list --json | ${jq} -r '
+                .elements // {}
+                | to_entries[]
+                | select(.key != "home-manager-path")
+                | select(.value.active != false)
+                | .key as $name
+                | (.value.storePaths // [])[]
+                | [$name, .]
+                | @tsv
+              ')"
+              shadowing_entries=""
+
+              while IFS="$(printf '\t')" read -r entry store_path; do
+                if [ -z "$entry" ]; then
+                  continue
+                fi
+
+                if [ -x "$store_path/bin/tmux-a2a-postman" ]; then
+                  printf -v shadowing_entries '%s%s -> %s\n' \
+                    "$shadowing_entries" \
+                    "$entry" \
+                    "$store_path/bin/tmux-a2a-postman"
+                fi
+              done <<< "$profile_entries"
+
+              if [ -z "$shadowing_entries" ]; then
+                return 0
+              fi
+
+              echo "ERROR: direct nix profile entry provides a Home Manager-managed tool." >&2
+              printf '%s' "$shadowing_entries" >&2
+              echo "This dotfiles configuration manages tmux-a2a-postman through Home Manager." >&2
+              echo "Remove only the listed direct profile entry, clear the shell command cache," >&2
+              echo "and rerun the switch:" >&2
+              echo >&2
+              echo "  nix profile remove <listed-entry-name>" >&2
+              echo "  hash -r" >&2
+              echo "  nix run '.#switch'" >&2
+              return 1
+            }
+
+            check_nix_profile_shadows
+
             ${
               if isDarwin then
                 ''
