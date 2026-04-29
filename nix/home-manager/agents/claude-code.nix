@@ -78,7 +78,12 @@ let
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "20000";
       CLAUDE_CODE_ENABLE_PROMPT_SUGGESTIONS = "false";
-      CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1";
+      # `1` forces permission mode to "default" and silently overrides
+      # `--dangerously-skip-permissions`, so every Bash call falls back to
+      # an "ask" prompt -- which the user can never auto-approve, hence the
+      # exit 126 storm we just debugged. Disable until we can declare an
+      # explicit `allowedTools` set.
+      CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0";
       ENABLE_TOOL_SEARCH = "auto:3";
       IS_DEMO = "true";
     };
