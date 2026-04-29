@@ -269,6 +269,8 @@ When you need to understand the operating concept, read these in order:
 ## 10. Related files
 
 - `docs/repo-ai-operating-contract.md`
+- `docs/agent-config-philosophy.md`
+- `docs/deny-bash-design.md`
 - `nix/home-manager/agents/instruction-artifacts.nix`
 - `nix/home-manager/agents/agent-skills.nix`
 - `nix/home-manager/agents/review/review-artifacts-gen.nix`

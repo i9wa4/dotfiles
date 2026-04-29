@@ -196,6 +196,9 @@ special cases on top of regex.
 
 ## 7. References
 
+- `docs/agent-config-philosophy.md` — the design principles this hook
+  system follows (prompt-first, shared SSOT, vendor-specific as
+  compensation).
 - `nix/home-manager/agents/denied-bash-commands.nix` — SSOT.
 - `nix/home-manager/agents/scripts/claude-pretooluse-deny-bash.sh` — the
   PreToolUse hook script.
