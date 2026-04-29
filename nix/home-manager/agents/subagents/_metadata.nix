@@ -18,10 +18,8 @@
     resolved.<name> -- defaults deep-merged with per-agent overrides; the
                       shape consumers should read from
 */
+{ lib }:
 let
-  pkgs = import <nixpkgs> { };
-  inherit (pkgs) lib;
-
   # Per-(engine, tier) defaults. Apply to every agent unless that agent
   # overrides the same field below.
   defaults = {

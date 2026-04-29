@@ -16,7 +16,7 @@
 { pkgs }:
 let
   inherit (pkgs) lib;
-  metadata = import ../subagents/_metadata.nix;
+  metadata = import ../subagents/_metadata.nix { inherit lib; };
   inherit (metadata) resolved defaults;
   names = builtins.attrNames resolved;
   subagentsDir = ../subagents;
