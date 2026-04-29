@@ -54,8 +54,8 @@ if [ -n "${action}" ]; then
 fi
 
 # Truncate branch name to 15 characters
-if [ "${#branch}" -gt 15 ]; then
-  branch="${branch:0:15}..."
+if [ "${#branch}" -gt 20 ]; then
+  branch="${branch:0:20}..."
 fi
 
 # Get git status counts
