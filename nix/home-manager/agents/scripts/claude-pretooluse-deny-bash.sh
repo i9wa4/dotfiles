@@ -86,12 +86,17 @@ is_allow_prefix_bypass() {
 # weakening the check on the surrounding command (e.g. --amend still trips).
 # The original fragment is preserved separately so error messages report the
 # command the agent actually issued, not the stripped version.
+# NOTE: sed delimiter must NOT appear inside the regex. Using `|` collides
+# with the `|` inside `(^|[[:space:]])` and makes sed treat the regex as
+# malformed (`unknown option to 's'`), silently emptying the fragment so
+# every subsequent deny pattern matches against "" -- net effect, no denies
+# fire and the hook leaks stderr noise into the harness. Use `#` instead.
 strip_data_arg_values() {
   local fragment="$1"
   local arg
   for arg in "${STRIP_DATA_ARGS[@]}"; do
-    fragment=$(printf '%s' "$fragment" | sed -E "s|(^|[[:space:]])${arg}[[:space:]]+\"[^\"]*\"|\1${arg} \"\"|g")
-    fragment=$(printf '%s' "$fragment" | sed -E "s|(^|[[:space:]])${arg}[[:space:]]+'[^']*'|\1${arg} ''|g")
+    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+\"[^\"]*\"#\1${arg} \"\"#g")
+    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+'[^']*'#\1${arg} ''#g")
   done
   printf '%s' "$fragment"
 }
