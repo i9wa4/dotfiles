@@ -174,7 +174,8 @@ let
 
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
   #   1 token  → ^token([[:space:]]|$) (must be the command, not an argument)
-  #   2+ tokens → ^token1.*token2 (first token anchored, rest flexible)
+  #   2+ tokens → ^token1.*tokenN([[:space:]]|$) (last token anchored at a word
+  #     boundary so substrings like "merge" inside "--no-merges" do not match)
   #   anchored = false → use (^|[[:space:]]) instead of ^ so wrapper prefixes
   #     (bash -c, env, exec) are caught without relying on non-POSIX \b
   #   hookRegex override → use verbatim (ignores anchored field)
@@ -184,11 +185,12 @@ let
       let
         anchored = cmd.anchored or true;
         prefix = if anchored then "^" else "(^|[[:space:]])";
+        tail = "([[:space:]]|$)";
       in
       if builtins.length cmd.argv == 1 then
-        "${prefix}${builtins.head cmd.argv}([[:space:]]|$)"
+        "${prefix}${builtins.head cmd.argv}${tail}"
       else
-        prefix + builtins.concatStringsSep ".*" cmd.argv
+        prefix + builtins.concatStringsSep ".*" cmd.argv + tail
     );
 
   # Auto-derive claudeGlob from argv (for entries with claudeSettingsJson = true):
