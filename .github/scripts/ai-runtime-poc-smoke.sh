@@ -57,7 +57,7 @@ runtime_store=$(nix build --impure --no-link --print-out-paths --expr "${nix_exp
 cp -LR "${runtime_store}/." "${runtime_root}/"
 
 claude_agent="${runtime_root}/.claude/agents/researcher-tech.md"
-codex_agent="${runtime_root}/.codex/agents/super-codex-reviewer.toml"
+codex_agent="${runtime_root}/.codex/agents/reviewer-code.toml"
 
 test -f "${claude_agent}"
 test -f "${codex_agent}"
@@ -66,10 +66,10 @@ grep -F 'name: "researcher-tech"' "${claude_agent}" >/dev/null
 grep -F 'model: "sonnet"' "${claude_agent}" >/dev/null
 grep -F 'Technical research specialist. Verifies claims, compares options, provides' "${claude_agent}" >/dev/null
 
-grep -F 'name = "super-codex-reviewer"' "${codex_agent}" >/dev/null
-grep -F 'model = "gpt-5.4"' "${codex_agent}" >/dev/null
+grep -F 'name = "reviewer-code"' "${codex_agent}" >/dev/null
+grep -F 'model_reasoning_effort = "medium"' "${codex_agent}" >/dev/null
 grep -F "developer_instructions = '''" "${codex_agent}" >/dev/null
-grep -F 'Perfectionist code reviewer. Demands correctness at every level.' "${codex_agent}" >/dev/null
+grep -F 'Code quality expert. Reads every line, misses nothing.' "${codex_agent}" >/dev/null
 
 printf 'Disposable runtime root: %s\n' "${runtime_root}"
 printf 'Verified Claude agent: %s\n' "${claude_agent}"
