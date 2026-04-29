@@ -13,9 +13,7 @@ snippets:
 
   - name: update
     keyword: up
-    snippet: zinit self-update &&
-      zinit update --all &&
-      ghq list | ghq get --update &&
+    snippet: ghq list | ghq get --update &&
       ghq-repo-status
 
   - name: (AWS) profile
