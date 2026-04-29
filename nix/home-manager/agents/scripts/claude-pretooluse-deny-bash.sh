@@ -62,6 +62,24 @@ unwrap_shell_wrapper() {
   return 1
 }
 
+# Bypass the regex deny check entirely for fragments that start with a
+# known-safe wrapper prefix (e.g. tmux-a2a-postman, which only carries data
+# in --body / --to and does not execute arbitrary commands).
+# Multi-token prefixes are matched flexibly: spaces in the prefix string
+# are interpreted as one-or-more whitespace in the fragment.
+is_allow_prefix_bypass() {
+  local fragment="$1"
+  local prefix
+  local prefix_re
+  for prefix in "${ALLOW_PREFIX_BYPASS[@]}"; do
+    prefix_re="${prefix// /[[:space:]]+}"
+    if [[ $fragment =~ ^${prefix_re}([[:space:]]|$) ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 emit_bash_deny_payload() {
   local fragment="$1"
   local reason="$2"
@@ -78,6 +96,10 @@ check_bash_fragment_for_denials() {
 
   fragment="$(trim_bash_fragment "$fragment")"
   if [ -z "$fragment" ]; then
+    return 1
+  fi
+
+  if is_allow_prefix_bypass "$fragment"; then
     return 1
   fi
 

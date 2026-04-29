@@ -191,6 +191,19 @@ let
     }
   ];
 
+  # Hook bypass: fragments starting with these prefixes (followed by whitespace
+  # or end) skip the regex deny check entirely. Use only for tools that take
+  # user-data as arguments and do not execute arbitrary user commands.
+  # The hook still recursively checks bash -c / sh -c wrappers via
+  # unwrap_shell_wrapper, so wrapping a denied command in bash -c does not
+  # reach the bypass.
+  # This list is consumed only by the Claude Code regex hook; Codex CLI's
+  # argv-based prefix_rule matcher does not have the substring false-positive
+  # this guards against.
+  allowPrefixBypass = [
+    "tmux-a2a-postman"
+  ];
+
   # Auto-derive hookRegex from argv (applied per shell fragment after ;&| split):
   #   1 token  → ^token([[:space:]]|$) (must be the command, not an argument)
   #   2+ tokens → ^token1.*tokenN([[:space:]]|$) (last token anchored at a word
@@ -256,6 +269,9 @@ in
       ${builtins.concatStringsSep "\n" (
         map (cmd: "  '${builtins.replaceStrings [ "'" ] [ "'\\''" ] cmd.justification}'") entries
       )}
+      )
+      ALLOW_PREFIX_BYPASS=(
+      ${builtins.concatStringsSep "\n" (map (p: "  '${p}'") allowPrefixBypass)}
       )
     '';
   };
