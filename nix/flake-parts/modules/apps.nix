@@ -6,8 +6,6 @@
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
-#   nix run '.#update' -- --min-age-days 7
-#                             -- update flake inputs with a minimum-age gate
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
@@ -23,7 +21,6 @@
       isLinux = lib.hasSuffix "linux" system;
       gh = lib.getExe pkgs.gh;
       nix = lib.getExe pkgs.nix;
-      python = lib.getExe pkgs.python3;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
     in
@@ -59,10 +56,8 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "update" ''
             set -euo pipefail
-            # Update flake.lock only.
-            export GH_BIN=${gh}
-            export NIX_BIN=${nix}
-            exec ${python} ${./update-flake.py} "$@"
+            access_token=$(${gh} auth token)
+            exec ${nix} flake update --access-tokens "github.com=$access_token"
           ''}/bin/update";
         };
 
