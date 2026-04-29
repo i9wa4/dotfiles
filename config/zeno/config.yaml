@@ -13,7 +13,7 @@ snippets:
 
   - name: update
     keyword: up
-    snippet: ghq list | ghq get --update &&
+    snippet: ghq list | ghq get --update --parallel &&
       ghq-repo-status
 
   - name: (AWS) profile
