@@ -72,18 +72,6 @@ let
 
   codexHooks = {
     hooks = {
-      SessionStart = [
-        {
-          matcher = "startup|resume";
-          hooks = [
-            {
-              type = "command";
-              command = "$HOME/.codex/scripts/codex-sessionstart-reload.sh";
-              statusMessage = "Loading Codex handoff";
-            }
-          ];
-        }
-      ];
       PreToolUse = [
         {
           matcher = "Bash";
@@ -96,36 +84,12 @@ let
           ];
         }
       ];
-      PostToolUse = [
-        {
-          matcher = "Bash";
-          hooks = [
-            {
-              type = "command";
-              command = "$HOME/.codex/scripts/codex-posttooluse-review.sh";
-              statusMessage = "Reviewing Bash feedback";
-            }
-          ];
-        }
-      ];
       UserPromptSubmit = [
         {
           hooks = [
             {
               type = "command";
               command = "$HOME/.codex/scripts/common-userpromptsubmit.sh codex";
-            }
-          ];
-        }
-      ];
-      Stop = [
-        {
-          hooks = [
-            {
-              type = "command";
-              command = "$HOME/.codex/scripts/codex-stop-save.sh";
-              statusMessage = "Saving Codex handoff";
-              timeout = 10;
             }
           ];
         }
