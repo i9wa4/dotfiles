@@ -90,7 +90,7 @@ let
       description = "Deep code reviewer. Perfectionist. Debates until consensus.";
       # Pin the Codex model even at tier2 -- this agent was authored against
       # gpt-5.4 specifically and the prompt assumes that capability profile.
-      codex.tier2.model = "gpt-5.4";
+      codex.tier2.model = "gpt-5.5";
     };
   };
 
