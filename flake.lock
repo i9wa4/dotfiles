@@ -809,6 +809,22 @@
         "type": "github"
       }
     },
+    "obsidian-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1775150516,
+        "narHash": "sha256-/D5HKtLvVdBh7g7zCFDQmInL7/q8koiR6HL0ARmTCoE=",
+        "owner": "kepano",
+        "repo": "obsidian-skills",
+        "rev": "fa1e131a014576ff8f8919f191a7ca8d8fded39b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kepano",
+        "repo": "obsidian-skills",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "actrun": "actrun",
@@ -830,6 +846,7 @@
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_5",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "obsidian-skills": "obsidian-skills",
         "streamlit-skills": "streamlit-skills",
         "tmux-a2a-postman": "tmux-a2a-postman",
         "treefmt-nix": "treefmt-nix_4"

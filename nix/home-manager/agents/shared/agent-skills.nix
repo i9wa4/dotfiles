@@ -147,6 +147,13 @@ in
         path = inputs.drawio-mcp;
         subdir = "skill-cli";
       };
+      # kepano/obsidian-skills: Obsidian-related skills (defuddle,
+      # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
+      # cf. https://github.com/kepano/obsidian-skills
+      obsidian = {
+        path = inputs.obsidian-skills;
+        subdir = "skills";
+      };
       # HashiCorp agent skills (split by plugin)
       # cf. https://github.com/hashicorp/agent-skills
       hashicorp-terraform-codegen = {

@@ -102,6 +102,10 @@
       url = "github:hashicorp/agent-skills";
       flake = false;
     };
+    obsidian-skills = {
+      url = "github:kepano/obsidian-skills";
+      flake = false;
+    };
   };
 
   outputs =
