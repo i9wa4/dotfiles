@@ -82,7 +82,7 @@ After the 2026-04-29 reduction, the active hook surface looks like this:
 
 | Event                                          | Claude                                  | Codex                                   | Symmetric?                        |
 | ---------------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------- |
-| `PreToolUse` matcher=`Bash`                    | `claude-pretooluse-deny-bash.sh`        | `codex-pretooluse-deny-bash.sh`         | Same intent, two scripts (drift)  |
+| `PreToolUse` matcher=`Bash`                    | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
 | `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
 | `UserPromptSubmit`                             | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
 | Status line                                    | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
@@ -100,44 +100,14 @@ Both runtimes now share the same minimal hook surface: one PreToolUse
 deny per matcher, plus shared UserPromptSubmit. The script tree
 shrank from nine hook entries to three hook scripts.
 
-## 4. Where We Still Drift
+## 4. Intentional Asymmetries
 
-### 4.1. The Two `pretooluse-deny-bash.sh` Scripts
+As of the deny-bash consolidation that landed alongside this doc,
+there is no remaining unintentional drift. The two asymmetries below
+are documented as the persistent shape of the boundary, not as items
+waiting to be unified.
 
-`claude-pretooluse-deny-bash.sh` (221 lines) and
-`codex-pretooluse-deny-bash.sh` (186 lines) are roughly 90% the same
-code. They share the same JSON-in / JSON-out schema
-(`hookSpecificOutput.permissionDecision = "deny"`), the same
-fragment-trimming and quote-stripping helpers, the same shell-wrapper
-unwrap (`bash -c "..."`), the same top-level shell-operator splitter,
-and the same per-pattern regex loop.
-
-The Codex copy is missing two features that Claude's copy has:
-
-- `is_allow_prefix_bypass` — fragments starting with
-  `tmux-a2a-postman` skip the regex deny check entirely. This is the
-  postman-wrapper escape hatch documented in
-  `docs/deny-bash-design.md`. Without it, Codex would false-positive
-  on legitimate `tmux-a2a-postman send` calls.
-- `strip_data_arg_values` — the quoted value following `-m` is
-  replaced with `""` before the regex check. Without it, Codex would
-  false-positive on `git commit -m "delete the rm hack"` even though
-  `--amend` (a real deny) would still trip.
-
-These omissions are not a deliberate divergence; they are stale-fork.
-A fix landing on the Claude side does not automatically reach Codex.
-This session caught one such case (`\s` regex bug in the `git -C`
-deny pattern) and another (the sed delimiter `|` collision) — both
-were fixed on the Claude path. The Codex copy is not yet known to
-have the same bugs only because nobody has run an equivalent
-diagnostic against it.
-
-The fix shape: collapse to a single `pretooluse-deny-bash.sh` with
-no runtime prefix, referenced by both `claude-code.nix` and
-`codex-cli.nix`. Codex inherits the bypass and strip features for
-free; future fixes only need to land once.
-
-### 4.2. `claude-pretooluse-deny-write.sh` Has No Codex Equivalent
+### 4.1. `claude-pretooluse-deny-write.sh` Has No Codex Equivalent
 
 This script enforces "non-`worker*` / non-`agent*` tmux pane titles
 are read-only" — the role-readonly contract that lets messenger,
@@ -153,7 +123,15 @@ enforce against. This asymmetry is deliberate, not drift, and it
 should stay asymmetric until and unless Codex grows a role contract
 worth gating on.
 
-### 4.3. Status Line: Two Different Transport Contracts
+Codex's primary file-edit primitive is `apply_patch` (a single
+patch-applied tool), not the Write/Edit/NotebookEdit triple Claude
+exposes. Even if a role-readonly enforcement were wanted on Codex,
+the matcher and the patch-shaped payload differ enough that the
+script body could not be shared with Claude's pane-title-aware
+deny-write — a separate `pretooluse-deny-apply-patch.sh` would have
+to be written.
+
+### 4.2. Status Line: Two Different Transport Contracts
 
 Claude's status line is configured as:
 
@@ -182,13 +160,9 @@ This is the legitimate (3) tier in section 1.
 
 ## 5. Direction We Want To Keep Pulling In
 
-We want every still-duplicated hook script to either become a single
-shared script (like `common-userpromptsubmit.sh` already is) or
-explicitly justify why it needs to stay forked. The
-`pretooluse-deny-bash.sh` consolidation is the obvious next step
-toward that target.
-
-Beyond that, the same lens applies to anything new:
+After the deny-bash consolidation, every shared hook script either
+already has no runtime prefix (target shape) or explicitly justifies
+why it stays forked. The same lens applies to anything new:
 
 - A new hook event that both runtimes can deliver under the same
   schema should ship as one script in `scripts/` with no runtime
@@ -208,7 +182,7 @@ The script directory naming convention we are converging on:
 | `claude-*.sh`  | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).             |
 | `codex-*.sh`   | Codex-only by design (none currently).                                      |
 | `common-*.sh`  | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`).   |
-| `<no prefix>`  | Shared, runtime-agnostic (target shape for future deny-bash consolidation). |
+| `<no prefix>`  | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                  |
 
 A script with a `claude-` or `codex-` prefix should be readable as a
 declaration: "this is intentionally not shared, here is the reason."

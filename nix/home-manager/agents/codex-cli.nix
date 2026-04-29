@@ -58,11 +58,14 @@ let
     cp ${generatedDefaultRules} $out/default.rules
   '';
 
+  # Codex consumes the runtime-agnostic shared scripts plus generated
+  # patterns. There are currently no codex-only scripts, so we list each
+  # explicitly (cleaner than a `codex-*` glob that would expand to nothing
+  # and break ln). If a Codex-only script is ever added back, add a line
+  # here -- not a wildcard, to keep the consumed surface explicit.
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
     mkdir -p $out
-    for f in ${./scripts}/codex-*; do
-      ln -s "$f" "$out/$(basename "$f")"
-    done
+    ln -s ${./scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
     ln -s ${./scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
     ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
@@ -78,7 +81,7 @@ let
           hooks = [
             {
               type = "command";
-              command = "$HOME/.codex/scripts/codex-pretooluse-deny-bash.sh";
+              command = "$HOME/.codex/scripts/pretooluse-deny-bash.sh";
               statusMessage = "Checking Bash policy";
             }
           ];

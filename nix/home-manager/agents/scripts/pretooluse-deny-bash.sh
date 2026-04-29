@@ -1,28 +1,24 @@
 #!/usr/bin/env bash
-# codex-pretooluse-deny-bash.sh - Bash command deny hook for Codex CLI
-#
-# Hook: PreToolUse | Matcher: Bash
-# Patterns: deny-bash-patterns.sh (generated from denied-bash-commands.nix)
 set -o errexit
 set -o nounset
 set -o pipefail
 set -o posix
 
+# pretooluse-deny-bash.sh - Bash command deny hook (shared by Claude/Codex)
+# Hook: PreToolUse | Matcher: Bash
+# Patterns: deny-bash-patterns.sh (generated from denied-bash-commands.nix)
+# Same JSON-in / JSON-out schema (`hookSpecificOutput.permissionDecision`)
+# is accepted by both Claude Code and Codex CLI hook runtimes.
+
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PATTERNS_FILE="$SCRIPT_DIR/deny-bash-patterns.sh"
-INPUT_JSON=$(cat)
-
-if [ ! -f "$PATTERNS_FILE" ]; then
-  exit 0
-fi
+[[ ! -f $PATTERNS_FILE ]] && exit 0
 
 # shellcheck source=/dev/null
 source "$PATTERNS_FILE"
 
-COMMAND=$(printf '%s' "$INPUT_JSON" | jq -r '.tool_input.command // empty' 2>/dev/null) || true
-if [ -z "$COMMAND" ]; then
-  exit 0
-fi
+COMMAND=$(jq -r '.tool_input.command // empty' 2>/dev/null) || true
+[[ -z $COMMAND ]] && exit 0
 
 trim_bash_fragment() {
   local fragment="$1"
@@ -68,28 +64,66 @@ unwrap_shell_wrapper() {
   return 1
 }
 
+# Bypass the regex deny check entirely for fragments that start with a
+# known-safe wrapper prefix (e.g. tmux-a2a-postman, which only carries data
+# in --body / --to and does not execute arbitrary commands).
+# Multi-token prefixes are matched flexibly: spaces in the prefix string
+# are interpreted as one-or-more whitespace in the fragment.
+is_allow_prefix_bypass() {
+  local fragment="$1"
+  local prefix
+  local prefix_re
+  for prefix in "${ALLOW_PREFIX_BYPASS[@]}"; do
+    prefix_re="${prefix// /[[:space:]]+}"
+    if [[ $fragment =~ ^${prefix_re}([[:space:]]|$) ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Replace the quoted value following each STRIP_DATA_ARGS arg with an empty
+# string before the regex deny check. This neutralises false positives from
+# arg values that legitimately contain words like "rm" or "sudo" without
+# weakening the check on the surrounding command (e.g. --amend still trips).
+# The original fragment is preserved separately so error messages report the
+# command the agent actually issued, not the stripped version.
+# NOTE: sed delimiter must NOT appear inside the regex. Using `|` collides
+# with the `|` inside `(^|[[:space:]])` and makes sed treat the regex as
+# malformed (`unknown option to 's'`), silently emptying the fragment so
+# every subsequent deny pattern matches against "" -- net effect, no denies
+# fire and the hook leaks stderr noise into the harness. Use `#` instead.
+strip_data_arg_values() {
+  local fragment="$1"
+  local arg
+  for arg in "${STRIP_DATA_ARGS[@]}"; do
+    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+\"[^\"]*\"#\1${arg} \"\"#g")
+    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+'[^']*'#\1${arg} ''#g")
+  done
+  printf '%s' "$fragment"
+}
+
 emit_bash_deny_payload() {
   local fragment="$1"
   local reason="$2"
 
   jq -n \
     --arg reason "Command denied: ${reason}"$'\n'"Fragment: $fragment" \
-    '{
-      hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "deny",
-        permissionDecisionReason: $reason
-      }
-    }'
+    '{ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason } }'
 }
 
 check_bash_fragment_for_denials() {
   local fragment="$1"
+  local original_fragment
   local inner_script
   local i
 
   fragment="$(trim_bash_fragment "$fragment")"
   if [ -z "$fragment" ]; then
+    return 1
+  fi
+
+  if is_allow_prefix_bypass "$fragment"; then
     return 1
   fi
 
@@ -99,9 +133,12 @@ check_bash_fragment_for_denials() {
     fi
   fi
 
+  original_fragment="$fragment"
+  fragment="$(strip_data_arg_values "$fragment")"
+
   for i in "${!DENY_PATTERNS[@]}"; do
     if [[ $fragment =~ ${DENY_PATTERNS[$i]} ]]; then
-      emit_bash_deny_payload "$fragment" "${DENY_JUSTIFICATIONS[$i]}"
+      emit_bash_deny_payload "$original_fragment" "${DENY_JUSTIFICATIONS[$i]}"
       return 0
     fi
   done
