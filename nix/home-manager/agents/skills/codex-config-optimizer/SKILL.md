@@ -28,7 +28,7 @@ Source of truth:
 | `~/.codex/AGENTS.md`   | Generated from `AGENTS.md` + inlined `skills/*/SKILL.md` | `instruction-artifacts.nix` |
 | `~/.codex/rules/`      | Generated `default.rules` from denied Bash policy     | `codex-cli.nix`           |
 | `~/.codex/hooks.json`  | Generated hook config                                 | `codex-cli.nix`           |
-| `~/.codex/scripts/`    | Symlinked `codex-*` scripts + shared deny patterns    | `codex-cli.nix`           |
+| `~/.codex/scripts/`    | Explicit ln list of shared scripts + deny patterns    | `codex-cli.nix`           |
 | `~/.codex/skills/`     | Multiple flake inputs + local                         | `agent-skills.nix`        |
 | MCP servers            | `nix/home-manager/agents/mcp-servers.nix`             | `codex-cli.nix`           |
 
@@ -38,9 +38,16 @@ Static settings (model, analytics, features, MCP servers) are defined as Nix
 attributes in `codex-cli.nix`. Trusted projects are discovered dynamically
 by `fd` at `home-manager switch` time and appended to `config.toml`.
 
-Hooks are also declared in `codex-cli.nix`; their runtime scripts live under
-`nix/home-manager/agents/scripts/codex-*` and are materialized into
-`~/.codex/scripts/` at switch time.
+Hooks are also declared in `codex-cli.nix`. The runtime scripts they invoke
+are drawn from `nix/home-manager/agents/scripts/` and split as follows:
+runtime-agnostic shared scripts (no prefix, e.g. `pretooluse-deny-bash.sh`),
+shared scripts parameterised by runtime arg (`common-*`, e.g.
+`common-userpromptsubmit.sh`), and Codex-only scripts (`codex-*`, currently
+none — none are needed at the present hook surface). All consumed scripts
+are listed explicitly in `codexScriptsDir` so the consumed surface is
+self-documenting; see `docs/agent-hooks-architecture.md` §5 for the
+prefix convention. Scripts are materialized into `~/.codex/scripts/` at
+switch time.
 
 To update settings, edit `nix/home-manager/agents/codex-cli.nix` and rebuild.
 
@@ -112,7 +119,7 @@ Ignore any release entries for versions newer than `codex --version`.
 | Behavior  | `approval_mode`, `sandbox`, `network_access`         |
 | Display   | `notify`, `tui.notifications_method`                 |
 | Shell     | `shell_environment_commands`                         |
-| Hooks     | `features.codex_hooks`, `hooks.json`, `scripts/codex-*` |
+| Hooks     | `features.codex_hooks`, `hooks.json`, `scripts/`     |
 | History   | `history`, `project_doc_max_bytes`                   |
 | Features  | `features.skills`, `features.web_search_request`     |
 | Disable   | `disable_response_storage`, `hide_agent_*`           |
@@ -125,26 +132,36 @@ Ignore any release entries for versions newer than `codex --version`.
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex-cli.nix` unless there is a deliberate
   repo-local override need
-- YOU MUST: Keep Codex hook scripts under
-  `nix/home-manager/agents/scripts/codex-*`
+- YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/`
+  using the prefix convention from `docs/agent-hooks-architecture.md` §5:
+  - `<no prefix>` for runtime-agnostic shared scripts (e.g.
+    `pretooluse-deny-bash.sh`, invoked by both Claude and Codex)
+  - `common-*` for shared scripts that take a runtime arg (e.g.
+    `common-userpromptsubmit.sh codex`)
+  - `codex-*` only for genuinely Codex-only behavior (none currently)
 - YOU MUST: Reuse `denied-bash-commands.nix` as the SSOT for Bash deny policy
   instead of hand-maintaining separate Codex-only command lists
+- YOU MUST: Reuse `pretooluse-deny-bash.sh` instead of forking a Codex copy.
+  A previous Codex-only fork drifted (missed `is_allow_prefix_bypass`,
+  `strip_data_arg_values`, and the `\s` -> `[[:space:]]` and sed delimiter
+  fixes that landed on the Claude path); the consolidation closed that
+  drift class on 2026-04-29.
 - YOU MUST: Keep shared Bash deny justifications repair-oriented so the
   rejection tells the agent what to do next, not just what was blocked
-- YOU MUST: Treat Codex `PreToolUse` and `PostToolUse` as Bash-only today
-- YOU MUST: Keep `PostToolUse` Bash hooks feedback-only; the command already
-  ran, so use them for concise remediation rather than fake enforcement
+- YOU MUST: Treat Codex `PreToolUse` as Bash-only today
 - NEVER: Claim Codex currently intercepts `Write|Edit|NotebookEdit`; those
   matcher examples are valid regex but do not match current Codex runtime
 - NEVER: Rely on unsupported `permissionDecision: "ask"` / `"allow"`,
   `updatedInput`, or `additionalContext` fields for `PreToolUse`; the current
   runtime parses them but fails open
 - NOTE: Official docs say `SessionStart`, `PreToolUse`, `PostToolUse`,
-  `UserPromptSubmit`, and `Stop` are the supported current events
+  `UserPromptSubmit`, and `Stop` are the supported current events. Of these,
+  this repo currently uses only `PreToolUse` and `UserPromptSubmit`. The
+  others were removed on 2026-04-29 because their consumers (handoff
+  persistence, deterministic-command feedback decoration) were not load-
+  bearing -- see `docs/agent-hooks-architecture.md` §3 for the rationale.
 - NOTE: Official docs say matching hooks from multiple `hooks.json` files all
   run, and matching command hooks for the same event launch concurrently
-- NOTE: `Stop` is the closest current Codex equivalent to Claude `PreCompact`;
-  use it for lightweight handoff persistence, not as proof of full parity
 
 ## 7. AGENTS.md Design Guidelines
 
@@ -162,31 +179,49 @@ Check the following when editing AGENTS.md or config.toml:
 - [ ] Is config.toml using appropriate approval_mode?
 - [ ] Are shared Bash deny messages phrased as safe next steps, not only
   denials?
-- [ ] Are Codex hook limitations documented honestly (Bash-only pre/post tool)?
-- [ ] Is `PostToolUse` scoped to deterministic Bash feedback, not enforcement?
-- [ ] Is hook state split correctly between `hooks.json` and `scripts/codex-*`?
+- [ ] Are Codex hook limitations documented honestly (Bash-only PreToolUse)?
+- [ ] Is hook state split correctly between `hooks.json` (declaration) and
+  `scripts/` (runtime, prefix-conventioned per `agent-hooks-architecture.md`)?
+- [ ] Are shared scripts (no prefix) actually shared with Claude rather than
+  Codex-only forks waiting to drift?
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
+Last reviewed Codex CLI version: v0.125.0 (2026-04-29)
 
 ### 9.1. Applied Optimizations
 
 - [x] AGENTS.md generated from shared `AGENTS.md` + inlined rule markdown
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
-- [x] Home-level Codex hooks enabled for `UserPromptSubmit`, `SessionStart`,
-  `PreToolUse` (`Bash` only), `PostToolUse` (`Bash` only), and `Stop`
+- [x] Home-level Codex hooks reduced to the load-bearing minimum:
+  `UserPromptSubmit` (shared `common-userpromptsubmit.sh codex`) and
+  `PreToolUse` matcher=`Bash` (shared `pretooluse-deny-bash.sh`).
+  Removed 2026-04-29: `SessionStart` (`codex-sessionstart-reload.sh`),
+  `PostToolUse` matcher=`Bash` (`codex-posttooluse-review.sh`), and
+  `Stop` (`codex-stop-save.sh`) — see commit `6add5abb`.
 - [x] Shared deny-bash patterns reused by both Claude Code and Codex CLI hooks
+  (`denied-bash-commands.nix` SSOT; both runtimes consume).
+- [x] Shared deny-bash *script* now also shared, not just the patterns:
+  `pretooluse-deny-bash.sh` (no runtime prefix) is invoked by both
+  Claude and Codex. Replaced the previous `codex-pretooluse-deny-bash.sh`
+  fork that had drifted (missed `is_allow_prefix_bypass`,
+  `strip_data_arg_values`, and the in-session `\s` -> `[[:space:]]`
+  and sed delimiter fixes). See commit `5fb7e44a`.
 - [x] Shared deny-bash justifications upgraded from bare denials to repair
   guidance for both Claude Code and Codex CLI
 - [x] Codex `UserPromptSubmit` now carries time, role, cwd, and git context
-- [x] Lightweight Codex handoff persistence via `Stop` + `SessionStart`
+  (via shared `common-userpromptsubmit.sh codex`)
 - [x] `model_auto_compact_token_limit =
   builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
   tokens for gpt-5.x 272k window)
 - [x] `tui.terminal_title = []` disables Codex terminal-title writes so tmux
   `pane_title` stays reserved for role identity (v0.117.0)
+- [x] `codexScriptsDir` switched from `codex-*` glob to explicit `ln` list
+  (commit `5fb7e44a`). The old glob would have expanded to literal
+  `codex-*` after consolidation (no codex-prefixed scripts left) and
+  failed the `runCommand` build. The explicit list also documents the
+  Codex consumed surface in one place.
 
 ### 9.2. Pending Considerations
 
@@ -196,8 +231,10 @@ Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
   (v0.103.0)
-- [ ] PostToolUse Bash feedback heuristics - keep scope narrow and deterministic
-  as new repo failure patterns repeat
+- [ ] ~~PostToolUse Bash feedback heuristics~~ N/A — the
+  `codex-posttooluse-review.sh` decorator that this would have extended
+  was removed 2026-04-29 (commit `6add5abb`). Reintroducing it would
+  be a deliberate new design decision, not a heuristic tweak.
 - [ ] `code_mode` experimental feature - isolated coding workflow; watch
   for stabilization (v0.114.0)
 - [ ] Disable bundled system skills config switch - useful if custom skills
@@ -209,6 +246,12 @@ Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
 - [ ] `openai_base_url` config override - custom API endpoint (v0.115.0)
 - [ ] Smart Approvals guardian - route review requests through guardian
   subagent for reduced approval friction (v0.115.0)
+- [ ] Optional: re-introduce a `Stop` handoff script if multi-day Codex
+  resume becomes a regular workflow. Currently dropped because the
+  Claude-side equivalent (`PreCompact` snapshot) was also dropped and
+  the saved snapshots were rarely actionable. If reintroduced, the new
+  script should land as a runtime-agnostic shared script (no prefix)
+  with a runtime-arg shim, not as a fresh `codex-stop-save.sh` fork.
 
 ### 9.3. Not Adopting
 
@@ -221,13 +264,19 @@ Last reviewed Codex CLI version: v0.117.0 (2026-03-30)
   Codex runtime only emits `Bash`, so these configs are misleading today
 - `permissionDecision: "ask"` / `"allow"` and `updatedInput` in `PreToolUse` -
   current runtime parses them but does not enforce them
-- PostToolUse decision/block semantics for Bash repair hooks - keep these
-  feedback-only so Codex still sees the raw command result
+- PostToolUse Bash hooks at all - the previous `codex-posttooluse-review.sh`
+  feedback decorator was removed 2026-04-29 (commit `6add5abb`); the agent
+  reads command failures directly from stdout/stderr without a hook
+  decoration. Keep the slot empty unless a load-bearing case appears.
 - `AfterToolUse` hook - superseded by documented hooks engine
 - `smart_approvals` - keep default behavior (v0.93.0)
 
 ### 9.4. Version Notes
 
+- v0.118.0 → v0.125.0 (2026-04-29): release notes not yet reviewed; the
+  local install jumped while the previous review window stayed at
+  v0.117.0. Run §3.2 fetch and skim breaking-change candidates before the
+  next material config edit.
 - v0.117.0: `/title` terminal-title picker now works in both classic and
   app-server TUI, plugins become a first-class workflow, app-server TUI is now
   enabled by default, and legacy `artifact`, `read_file`, and `grep_files`
