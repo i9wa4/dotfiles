@@ -136,6 +136,25 @@ let
       justification = "branch force-deletion is denied; leave branch cleanup to the user and report the stale branch instead";
     }
     {
+      argv = [
+        "git"
+        "branch"
+        "--delete"
+      ];
+      anchored = false;
+      justification = "branch deletion is denied; leave branch cleanup to the user and report the stale branch instead";
+    }
+    {
+      argv = [
+        "git"
+        "branch"
+        "--delete"
+        "--force"
+      ];
+      anchored = false;
+      justification = "branch force-deletion is denied; leave branch cleanup to the user and report the stale branch instead";
+    }
+    {
       argv = [ "rm" ];
       anchored = false;
       # Override: \b is not POSIX ERE; causes false positives on paths like "dataplatform".
