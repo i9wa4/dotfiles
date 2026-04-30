@@ -120,9 +120,14 @@ of ad hoc chat prose.
   create or update a `plans` or `research` artifact before implementation
 - single-tracker rule: if a task already provides a plan path, keep updating
   that artifact instead of creating a competing checklist elsewhere
+- plan artifact shape: `plans` artifacts must include Purpose, Acceptance
+  Criteria, Milestones, Decision Log, Risks, Test Strategy, Progress, Touched
+  Files, Verification, and Surprises and Discoveries
 - milestone state: track each plan milestone in two places:
   `[status: pending|in-progress|done]` on the milestone itself and timestamped
   checkbox lines in `Progress`
+- milestone metadata: each milestone in `plans` artifacts must state scope,
+  deliverables, files, and verification metadata
 - checklist shape: use
   `- [ ] {YYYY-MM-DD HH:MM} Milestone 1 started` when work begins and
   `- [x] {YYYY-MM-DD HH:MM} Milestone 1 completed -- <evidence>` when it ends

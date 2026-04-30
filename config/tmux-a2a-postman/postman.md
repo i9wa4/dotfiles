@@ -165,8 +165,13 @@ task instructions must live in a durable `mkmd` markdown artifact. Follow
   for completion or review handoff
 - if a task already provides a markdown path, keep updating that same file as
   the single tracker instead of creating a competing checklist
+- `plans` artifacts must include Purpose, Acceptance Criteria, Milestones,
+  Decision Log, Risks, Test Strategy, Progress, Touched Files, Verification,
+  and Surprises and Discoveries
 - track milestones with `[status: pending|in-progress|done]` on the milestone
   itself and timestamped checkbox lines in `Progress`
+- each milestone in `plans` artifacts must state scope, deliverables, files,
+  and verification metadata
 - use checkboxes as much as possible for task items, verification steps, and
   timestamped progress entries
 - require `reviews` artifacts to point to the plan path, touched files, and
