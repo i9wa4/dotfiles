@@ -121,3 +121,42 @@ IMPORTANT limitation: `alt` and `loop` blocks share the same `.loopLine` CSS
 class. They cannot be styled with different colors without more invasive CSS.
 
 Apply via `include-in-header` `<style>` block with `!important`.
+
+## 8. Width / Layout Issues (graph TD)
+
+### 8.1. Disconnected Subgraphs Tile Horizontally
+
+`graph TD` with multiple disconnected subgraphs places them side-by-side
+**regardless of `%%{init}%%` layout directives**. A diagram with many groups
+can produce an extremely wide output (e.g., 26:1 width:height ratio) that
+overflows slides or is unreadable as an image.
+
+`%%{init}%%` spacing/padding directives (`nodeSpacing`, `rankSpacing`,
+`wrappingWidth`) control only intra-subgraph node placement. They cannot
+force vertical stacking of disconnected subgraphs.
+
+### 8.2. Fix: Split into Multiple Code Blocks
+
+The reliable fix is to split one wide diagram into multiple separate Mermaid
+code blocks — one per logical group. Each block renders independently and
+stacks vertically on the slide.
+
+```text
+# Instead of one graph TD with 6 disconnected subgraphs:
+# → split into 6 separate ```{mermaid} blocks, each with its own subgraph
+```
+
+This avoids the horizontal-tiling behavior entirely without requiring any
+`%%{init}%%` tuning.
+
+### 8.3. Verify Dimensions with mmdc Before Reporting Fixed
+
+Text review of Mermaid source is **insufficient** to detect width problems.
+Always render with `mmdc` and check the SVG `viewBox` for authoritative
+width:height dimensions before reporting layout as correct.
+
+```bash
+PUPPETEER_EXECUTABLE_PATH="..." , mmdc -i input.mmd -o output.svg
+# Check: grep viewBox output.svg
+# Width >> Height indicates a horizontal-tiling problem
+```
