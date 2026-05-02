@@ -31,10 +31,6 @@ vmap gcc <Plug>(caw:hatpos:toggle)
 '''
 
 [[plugins]]
-repo = 'thinca/vim-qfreplace'
-on_event = ['VimEnter']
-
-[[plugins]]
 repo = 'monaqa/dps-dial.vim'
 depends = ['denops.vim']
 on_map = { n = '<C-a>', x = '<C-a>' }
