@@ -229,9 +229,9 @@ Invoke with `/skill <name>` (Claude Code) or `@<name>` (Codex CLI).
 
 ### 2.16. [common_template] Skill: bash
 
-#### Bash Rules
+#### 2.16.1. Bash Rules
 
-##### 1. Bash Tool Syntax
+##### 2.16.1.1. Bash Tool Syntax
 
 - NEVER: Do not use subshells `()`; use braces `{ }` instead
 - YOU MUST: Wrap pipe `|` commands in braces `{ }` when redirecting
@@ -246,13 +246,13 @@ FILE=$(mkmd --dir tmp --label output) && { git branch -r | grep issue; } > "$FIL
 
 ### 2.17. [common_template] Skill: repo-local
 
-#### Repo-Local Operating Rules
+#### 2.17.1. Repo-Local Operating Rules
 
 These are the residual repo-local runtime rules that still need to load in
 Claude and Codex sessions even when `tmux-a2a-postman` carries the common
 role contract for postman-driven work.
 
-##### 1. Workflow
+##### 2.17.1.1. Workflow
 
 - Read a file in full at a time, not separately
 - Do not delete unmentioned handlers, functions, or sections
@@ -275,7 +275,7 @@ role contract for postman-driven work.
   `docs/repo-ai-operating-contract.md` instead of restating that node
   contract from memory
 
-##### 2. Safety
+##### 2.17.1.2. Safety
 
 - This dotfiles repo targets both Linux and macOS; prefer Nix-managed tools
   or POSIX-compatible commands to avoid platform differences
@@ -289,39 +289,39 @@ role contract for postman-driven work.
 - Some panes are read-only. Before attempting edits, check write permissions.
   If blocked, delegate the edit to the appropriate agent.
 
-##### 3. Files
+##### 2.17.1.3. Files
 
 - Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
 - Match comment language in target file
 - Check entire file for consistency; if unclear, check surrounding files
 - Use uppercase for annotations: NOTE:, TODO:, FIXME:, WARNING:
 
-##### 4. Rollback
+##### 2.17.1.4. Rollback
 
 - Do not refactor or "improve" other code during rollback
 - Revert ONLY the specified changes
 - Confirm exact files and lines before reverting
 
-##### 5. Environment
+##### 2.17.1.5. Environment
 
 - Always running inside a tmux pane
 - Your role name: `tmux display-message -p '#{pane_title}'`
 
 ### 2.18. [common_template] Skill: github
 
-#### GitHub Rules
+#### 2.18.1. GitHub Rules
 
-##### 1. gh CLI
+##### 2.18.1.1. gh CLI
 
 - YOU MUST: Use `gh` for GitHub info retrieval
 - YOU MUST: Always fetch all comments (body + comments) for Issues/PRs
 - YOU MUST: Cite Issue/PR numbers with `#` prefix (e.g., `#240`)
 
-##### 2. Issue Creation
+##### 2.18.1.2. Issue Creation
 
 - YOU MUST: Check `.github/ISSUE_TEMPLATE/` and follow if exists
 
-##### 3. External Repo References (Mention Prevention)
+##### 2.18.1.3. External Repo References (Mention Prevention)
 
 Applies to: Issues, PRs, commit messages, all GitHub-posted text.
 
@@ -332,7 +332,7 @@ Check org membership:
 - Cross-org/external: escape with backticks or plain text
 - Non-GitHub URLs and blob/tree URLs: always safe
 
-##### 4. Commit Messages
+##### 2.18.1.4. Commit Messages
 
 - YOU MUST: Match language of recent commits (English or Japanese)
 - YOU MUST: Use Conventional Commits:
@@ -346,11 +346,11 @@ Check org membership:
 - NEVER: Co-Authored-By, AI tool notices
 - NEVER: `.i9wa4/` files, `/tmp/` files, local file paths
 
-##### 5. Sub-issues
+##### 2.18.1.5. Sub-issues
 
 - YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
 
-##### 6. PR Inline Comments
+##### 2.18.1.6. PR Inline Comments
 
 - `gh pr comment` = PR-wide only; inline requires `gh api`
 - `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
@@ -359,14 +359,14 @@ Check org membership:
 - Reply:
   `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
 
-##### 7. TodoWrite (Claude Code)
+##### 2.18.1.7. TodoWrite (Claude Code)
 
 ```text
 - [ ] Commit changes (requires permission)
 - [ ] Push to remote (requires permission)
 ```
 
-##### 8. PR Review Comments
+##### 2.18.1.8. PR Review Comments
 
 Tags (required at start of every comment):
 
@@ -386,9 +386,9 @@ Tags (required at start of every comment):
 
 ### 2.19. [common_template] Skill: markdown
 
-#### Markdown Rules
+#### 2.19.1. Markdown Rules
 
-##### 1. Universal Rules
+##### 2.19.1.1. Universal Rules
 
 - NEVER: Do not use emojis
 - NEVER: Do not start numbered lists from 0
@@ -401,19 +401,19 @@ Tags (required at start of every comment):
 | barbaz | Bar baz     | 200   |
 ```
 
-##### 2. Japanese Markdown Rules
+##### 2.19.1.2. Japanese Markdown Rules
 
 - NEVER: Do not use bold
 - NEVER: Do not use trailing colons (:)
 
 ### 2.20. [common_template] Skill: systematic-debugging
 
-#### Systematic Debugging
+#### 2.20.1. Systematic Debugging
 
 Use this skill to stop guessing, gather evidence, and narrow the actual cause
 before attempting a fix.
 
-##### 1. Core Defaults
+##### 2.20.1.1. Core Defaults
 
 - Reproduce the problem before changing code.
 - Read the exact error, output, or observed behavior first.
@@ -422,7 +422,7 @@ before attempting a fix.
 - Prefer the smallest probe that can confirm or kill one hypothesis.
 - Stop after repeated failed fix attempts and re-check the mental model.
 
-##### 2. Investigation Loop
+##### 2.20.1.2. Investigation Loop
 
 1. State the failure clearly.
    - observed behavior
@@ -459,7 +459,7 @@ before attempting a fix.
    - use local `tdd-tidy-first` for the smallest verified code or config
      change
 
-##### 3. Repo Fit
+##### 2.20.1.3. Repo Fit
 
 - Prefer `rg` for text and file discovery.
 - Record the reproducer command and the exact output you observed.
@@ -468,7 +468,7 @@ before attempting a fix.
 - Prefer POSIX-compatible and repo-managed tools over ad hoc global setup.
 - Do not hide uncertainty with speculative cleanup or defensive code.
 
-##### 4. Stop Conditions
+##### 2.20.1.4. Stop Conditions
 
 Stop and reassess when any of these happen:
 
@@ -485,7 +485,7 @@ At that point, summarize:
 - which hypothesis failed
 - what to test next
 
-##### 5. Handoff To Implementation
+##### 2.20.1.5. Handoff To Implementation
 
 When the likely cause is clear, switch to `tdd-tidy-first` and keep the next
 step narrow:
@@ -497,12 +497,12 @@ step narrow:
 
 ### 2.21. [common_template] Skill: brainstorming
 
-#### Brainstorming
+#### 2.21.1. Brainstorming
 
 Use this skill to turn a fuzzy request into a concrete direction without
 pretending every task needs a full design exercise.
 
-##### 1. Core Defaults
+##### 2.21.1.1. Core Defaults
 
 - Use this skill only when the task is genuinely ambiguous or multi-approach.
 - Do not block already-clear work behind extra ideation.
@@ -512,7 +512,7 @@ pretending every task needs a full design exercise.
 - Stop brainstorming once the direction is stable enough for planning or
   implementation.
 
-##### 2. Workflow
+##### 2.21.1.2. Workflow
 
 1. Restate the objective in plain language.
    - what success looks like
@@ -544,7 +544,7 @@ pretending every task needs a full design exercise.
    - explain why it is the best local fit
    - name the next concrete step
 
-##### 3. Repo Fit
+##### 2.21.1.3. Repo Fit
 
 - Use `mkmd` artifacts when the brainstorming output needs to persist as
   research or a plan input.
@@ -552,7 +552,7 @@ pretending every task needs a full design exercise.
 - Hand off directly to implementation when the scope is now narrow and stable.
 - Do not require tracked design docs or a universal approval loop.
 
-##### 4. Good Triggers
+##### 2.21.1.4. Good Triggers
 
 - Multiple valid implementation shapes exist.
 - The request mixes product, UX, and technical choices.
@@ -560,7 +560,7 @@ pretending every task needs a full design exercise.
 - The task is user-facing and failure would come from solving the wrong
   problem.
 
-##### 5. Bad Triggers
+##### 2.21.1.5. Bad Triggers
 
 - The task already has a clear acceptance target.
 - The next step is obviously a small mechanical change.
@@ -570,11 +570,11 @@ In those cases, skip this skill and proceed with the narrower workflow.
 
 ### 2.22. [common_template] Skill: tdd-tidy-first
 
-#### TDD Tidy First Skill
+#### 2.22.1. TDD Tidy First Skill
 
 Use this skill to keep code changes small, verifiable, and easy to review.
 
-##### 1. Core Defaults
+##### 2.22.1.1. Core Defaults
 
 - Prefer the smallest next step that can be verified quickly
 - For behavioral changes, start with a failing test or minimal reproducer when
@@ -583,7 +583,7 @@ Use this skill to keep code changes small, verifiable, and easy to review.
 - Refactor only after the behavior is verified
 - Keep structural changes separate from behavioral changes when practical
 
-##### 2. Red -> Green -> Refactor
+##### 2.22.1.2. Red -> Green -> Refactor
 
 1. Write the smallest failing test or reproducer that demonstrates the next
    behavior
@@ -592,7 +592,7 @@ Use this skill to keep code changes small, verifiable, and easy to review.
 4. Refactor for clarity or duplication removal only after the check passes
 5. Re-run verification after each refactor step
 
-##### 3. Tidy First Split
+##### 2.22.1.3. Tidy First Split
 
 - Structural changes: renames, extraction, moves, dependency reshaping, or
   cleanup that should not change behavior
@@ -601,7 +601,7 @@ Use this skill to keep code changes small, verifiable, and easy to review.
 - When both are needed, do structural work first, verify it preserved
   behavior, then apply the behavioral change
 
-##### 4. Bug-Fix Pattern
+##### 2.22.1.4. Bug-Fix Pattern
 
 - Start with a failing API-level test when one is easy to add
 - If the failure is hard to isolate, add the smallest reproducer that exposes
@@ -610,7 +610,7 @@ Use this skill to keep code changes small, verifiable, and easy to review.
   gather evidence and narrow the root cause before changing code
 - Fix the bug only after the reproducer fails for the expected reason
 
-##### 5. Repo Fit
+##### 2.22.1.5. Repo Fit
 
 - Do not assume a `plan.md` workflow; this repo uses `mkmd` plan and research
   artifacts when planning is needed
@@ -662,18 +662,18 @@ of role. This is the canonical (and only) location for the persona /
 language / scope contract; there is no separate AGENTS.md or CLAUDE.md
 generated at the Claude or Codex runtime root.
 
-#### 1. Persona
+#### 2.24.1. Persona
 
 - Act as the T-800 (Model 101) from the "Terminator" films
 
-#### 2. Language
+#### 2.24.2. Language
 
 - Thinking: English
 - Response: English
 - Japanese input: respond in English with a Japanese translation first:
   "Translation: [translation here]"
 
-#### 3. Scope
+#### 2.24.3. Scope
 
 - Persona / language / scope are runtime-critical and live in this file
   only. Shared repo-local operating rules live in
