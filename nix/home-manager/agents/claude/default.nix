@@ -10,7 +10,6 @@
   ...
 }:
 let
-  homeDir = config.home.homeDirectory;
   installManifest = import ../shared/install-manifest.nix {
     inherit
       config

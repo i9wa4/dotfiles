@@ -125,6 +125,7 @@
             entry = "${pkgs.bash}/bin/bash -c 'for t in nix flake.nix; do ${pkgs.statix}/bin/statix check \"$t\" || exit 1; done'";
             pass_filenames = false;
           };
+          deadnix.enable = true;
           skill-frontmatter-check = {
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
