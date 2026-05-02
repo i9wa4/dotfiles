@@ -6,6 +6,7 @@
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs
+#   nix run '.#profile-update' -- install or upgrade entries listed in `profilePackages`
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
@@ -24,6 +25,13 @@
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
+      profilePackages = {
+        tmux-a2a-postman = "github:i9wa4/tmux-a2a-postman";
+        claude-code = ".#claude-code";
+        codex = ".#codex";
+        ccusage = ".#ccusage";
+        ccusage-codex = ".#ccusage-codex";
+      };
     in
     {
       apps = {
@@ -34,50 +42,6 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "switch" ''
             set -euo pipefail
-
-            check_nix_profile_shadows() {
-              profile_entries="$(${nix} profile list --json | ${jq} -r '
-                .elements // {}
-                | to_entries[]
-                | select(.key != "home-manager-path")
-                | select(.value.active != false)
-                | .key as $name
-                | (.value.storePaths // [])[]
-                | [$name, .]
-                | @tsv
-              ')"
-              shadowing_entries=""
-
-              while IFS="$(printf '\t')" read -r entry store_path; do
-                if [ -z "$entry" ]; then
-                  continue
-                fi
-
-                if [ -x "$store_path/bin/tmux-a2a-postman" ]; then
-                  printf -v shadowing_entries '%s%s -> %s\n' \
-                    "$shadowing_entries" \
-                    "$entry" \
-                    "$store_path/bin/tmux-a2a-postman"
-                fi
-              done <<< "$profile_entries"
-
-              if [ -z "$shadowing_entries" ]; then
-                return 0
-              fi
-
-              echo "ERROR: direct nix profile entry provides a Home Manager-managed tool." >&2
-              printf '%s' "$shadowing_entries" >&2
-              echo "This dotfiles configuration manages tmux-a2a-postman through Home Manager." >&2
-              echo "Remove only the listed direct profile entry, clear the shell command cache," >&2
-              echo "and rerun the switch:" >&2
-              echo >&2
-              echo "  nix profile remove <listed-entry-name>" >&2
-              echo "  hash -r" >&2
-              echo "  nix run '.#switch'" >&2
-              return 1
-            }
-
-            check_nix_profile_shadows
 
             ${
               if isDarwin then
@@ -106,6 +70,34 @@
             ${nix} flake update --access-tokens "github.com=$access_token"
             exec ${pkgs.zsh}/bin/zsh -ic 'zinit self-update && zinit update --all'
           ''}/bin/update";
+        };
+
+        # What: Reconcile the user's nix profile with `profilePackages`.
+        #       Adds entries that are missing and upgrades entries that already exist.
+        # When: Run any time, independent of `nix run '.#switch'`.
+        # Example: nix run '.#profile-update'
+        profile-update = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "profile-update" ''
+            set -euo pipefail
+
+            declare -A packages=( ${
+              lib.concatStringsSep " " (lib.mapAttrsToList (n: u: "[${n}]='${u}'") profilePackages)
+            } )
+
+            for name in "''${!packages[@]}"; do
+              url="''${packages[$name]}"
+              if { ${nix} profile list --json | ${jq} -e --arg n "$name" '.elements | has($n)'; } >/dev/null; then
+                echo "Upgrading $name"
+                ${nix} profile upgrade "$name"
+              else
+                echo "Installing $name ($url)"
+                ${nix} profile add "$url"
+              fi
+            done
+
+            echo "profile-update: done"
+          ''}/bin/profile-update";
         };
 
         check = {

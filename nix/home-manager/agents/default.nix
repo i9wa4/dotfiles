@@ -12,8 +12,6 @@
 #
 # See README.md for the editing map.
 {
-  pkgs,
-  inputs,
   ...
 }:
 {
@@ -21,13 +19,5 @@
     ./shared/agent-skills.nix
     ./claude
     ./codex
-  ];
-
-  home.packages = [
-    inputs.llm-agents.packages.${pkgs.system}.claude-code
-    inputs.llm-agents.packages.${pkgs.system}.codex
-    inputs.llm-agents.packages.${pkgs.system}.ccusage
-    inputs.llm-agents.packages.${pkgs.system}.ccusage-codex
-    inputs.tmux-a2a-postman.packages.${pkgs.system}.default
   ];
 }
