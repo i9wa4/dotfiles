@@ -34,6 +34,42 @@ fi
 # Get repository root
 repo_root=$(git rev-parse --show-toplevel)
 
+fetch_pr_branch() {
+  local remote=$1
+  local branch=$2
+  local target=$3
+
+  if ! git fetch "${remote}" "+refs/heads/${branch}:refs/remotes/${remote}/${branch}"; then
+    echo "Error: Could not fetch '${target}'." >&2
+    return 1
+  fi
+
+  if ! git show-ref --verify --quiet "refs/remotes/${remote}/${branch}"; then
+    echo "Error: fetched PR branch is not registered at refs/remotes/${remote}/${branch}." >&2
+    return 1
+  fi
+}
+
+connect_review_branch() {
+  local branch=$1
+  local upstream=$2
+  local branch_existed=$3
+
+  if [[ $branch_existed == "true" ]]; then
+    git branch --set-upstream-to="${upstream}" "${branch}"
+    echo "* Connected local review branch: ${branch}"
+  else
+    git branch --track "${branch}" "${upstream}"
+    echo "* Created local review branch: ${branch}"
+  fi
+
+  actual_upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/${branch}")
+  if [[ $actual_upstream != "$upstream" ]]; then
+    echo "Error: local review branch upstream is '${actual_upstream}', expected '${upstream}'." >&2
+    return 1
+  fi
+}
+
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
 git fetch origin
@@ -107,27 +143,25 @@ for pr_number in "$@"; do
 
   if [[ -z $existing_worktree_path ]]; then
     echo "* Fetch target: ${pr_fetch_target}"
-    if ! git fetch "${pr_remote}" "+refs/heads/${pr_branch}:refs/remotes/${pr_remote}/${pr_branch}"; then
-      echo "Error: Could not fetch '${pr_fetch_target}'." >&2
+    fetch_pr_branch "${pr_remote}" "${pr_branch}" "${pr_fetch_target}" || {
       echo ""
       continue
-    fi
+    }
 
-    if [[ $local_branch_existed == "true" ]]; then
-      git branch --set-upstream-to="${pr_fetch_target}" "${pr_local_branch}"
-      echo "* Connected local review branch: ${pr_local_branch}"
-    else
-      git branch --track "${pr_local_branch}" "${pr_fetch_target}"
-      echo "* Created local review branch: ${pr_local_branch}"
-    fi
+    connect_review_branch "${pr_local_branch}" "${pr_fetch_target}" "${local_branch_existed}" || {
+      echo ""
+      continue
+    }
   else
-    if ! git fetch "${pr_remote}" "+refs/heads/${pr_branch}:refs/remotes/${pr_remote}/${pr_branch}"; then
-      echo "Error: Could not fetch '${pr_fetch_target}'." >&2
+    fetch_pr_branch "${pr_remote}" "${pr_branch}" "${pr_fetch_target}" || {
       echo ""
       continue
-    fi
+    }
 
-    git branch --set-upstream-to="${pr_fetch_target}" "${pr_local_branch}"
+    connect_review_branch "${pr_local_branch}" "${pr_fetch_target}" "true" || {
+      echo ""
+      continue
+    }
   fi
 
   worktree_path=$(vde-worktree switch "${pr_local_branch}")

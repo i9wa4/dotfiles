@@ -110,6 +110,13 @@ done <"$repos_file"
 worktree_count=$(wc -l <"$inventory_file" | tr -d '[:space:]')
 candidate_count=$(wc -l <"$candidates_file" | tr -d '[:space:]')
 
+bold=""
+reset=""
+if [[ -t 1 ]]; then
+  bold=$'\033[1m'
+  reset=$'\033[0m'
+fi
+
 if [[ $worktree_count -eq 0 ]]; then
   echo "No managed worktrees found."
   exit 0
@@ -117,12 +124,15 @@ fi
 
 echo "Managed worktrees:"
 echo ""
-awk -F '\t' '
+awk -F '\t' -v bold="$bold" -v reset="$reset" '
   function shorten(value, width) {
     if (length(value) <= width) {
       return value
     }
     return substr(value, 1, width - 1) "…"
+  }
+  function row_style(cleanup) {
+    return cleanup == "🧹" ? bold : ""
   }
   BEGIN {
     printf "%-4s  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s\n",
@@ -132,13 +142,20 @@ awk -F '\t' '
   }
   {
     upstream = $9 == "" ? "" : " upstream=" $9
-    printf "%-4d  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s%s\n",
-      NR, $4, $5, $6, $7, $8, shorten($2, 38), $3, upstream
+    style = row_style($4)
+    end_style = style == "" ? "" : reset
+    printf "%s%-4d  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s%s%s\n",
+      style,
+      NR, $4, $5, $6, $7, $8, shorten($2, 38), $3, upstream,
+      end_style
   }
 ' "$inventory_file"
 echo ""
 echo "Legend: C=cleanup candidate, M=merged, D=dirty, L=locked"
 echo "        🧹=candidate, ✅=merged, ⚠️=dirty, 🔒=locked, ・=no"
+if [[ -n $bold ]]; then
+  echo "        candidate rows are bold"
+fi
 echo ""
 echo "Worktrees: ${worktree_count}"
 
