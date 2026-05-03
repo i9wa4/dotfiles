@@ -95,8 +95,8 @@ presets:
         - type: vertical
           ratio: [1, 1, 1]
           panes:
-            - name: reviewer
-              title: reviewer
+            - name: critic
+              title: critic
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
               delay: 500
             - name: guardian
@@ -134,8 +134,8 @@ presets:
         - type: vertical
           ratio: [1, 1, 1]
           panes:
-            - name: reviewer
-              title: reviewer
+            - name: critic
+              title: critic
               command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
               delay: 500
             - name: guardian

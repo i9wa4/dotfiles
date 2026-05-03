@@ -305,7 +305,7 @@ The approval workflow has seven standing role nodes:
 - `orchestrator`
 - `worker`
 - `worker-alt`
-- `reviewer`
+- `critic`
 - `guardian`
 - `boss`
 
@@ -317,10 +317,10 @@ approval lane.
 Reachability is strict:
 
 - `messenger` talks only to `orchestrator`
-- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `reviewer`, and
+- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `critic`, and
   `boss`
-- `reviewer` talks to `orchestrator` and `guardian`
-- `guardian` talks only to `reviewer`
+- `critic` talks to `orchestrator` and `guardian`
+- `guardian` talks only to `critic`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
@@ -339,12 +339,12 @@ faithfully instead of drifting into separate policy variants.
 
 Artifact work is not complete until this exact Approval route succeeds:
 
-`worker DONE -> orchestrator -> reviewer -> guardian -> reviewer ->
+`worker DONE -> orchestrator -> critic -> guardian -> critic ->
 orchestrator -> boss -> orchestrator -> messenger`
 
 `worker-alt` follows the same route when it is the executor.
 
-Do not collapse or bypass the `reviewer -> guardian -> reviewer` hop.
+Do not collapse or bypass the `critic -> guardian -> critic` hop.
 
 ### 8.2. Pass criteria
 
@@ -352,15 +352,15 @@ An approval-lane pass means all of the following are true:
 
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
-- reviewer returns `APPROVED:` with no remaining BLOCKING defects
-- boss approves after reviewer approval
+- critic returns `APPROVED:` with no remaining BLOCKING defects
+- boss approves after critic approval
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
 ### 8.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from reviewer or boss must name the concrete blocking defects
+- `NOT APPROVED:` from critic or boss must name the concrete blocking defects
 - orchestrator returns that exact defect list to the worker instead of vague
   "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
@@ -372,7 +372,7 @@ The approval loop is bounded.
 
 - each artifact gets at most 3 approval attempts: the initial review plus 2
   rework attempts
-- any reviewer `NOT APPROVED:` or boss rejection consumes one attempt
+- any critic `NOT APPROVED:` or boss rejection consumes one attempt
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 
@@ -383,19 +383,19 @@ These timeout thresholds are role policy, not daemon configuration:
 
 - all routed nodes use 180s / 3m as the missing-response alert boundary
 - `worker` and `worker-alt` use 900s / 15m as the idle boundary
-- `reviewer`, `guardian`, `messenger`, and `orchestrator` use 1800s / 30m as
+- `critic`, `guardian`, `messenger`, and `orchestrator` use 1800s / 30m as
   the idle boundary
 - `boss` uses 3600s / 60m as the idle boundary
 
 Fallback behavior:
 
-- guardian fallback: after the existing watchdog and resend ladder, reviewer may
-  finish with a reviewer-only fallback verdict if guardian remains stale after
-  the 180s / 3m alert and the 1800s / 30m review-node idle boundary
-- reviewer fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
-  180s / 3m late-reply threshold, then reports `BLOCKED:` if reviewer still does
+- guardian fallback: after the existing watchdog and resend ladder, critic may
+  finish with a critic-only fallback verdict if guardian remains unavailable
+  after the 180s / 3m alert and the 1800s / 30m review-node idle boundary
+- critic fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
+  180s / 3m late-reply threshold, then reports `BLOCKED:` if critic still does
   not reply once direct send failure evidence appears or the 1800s / 30m
-  review-node idle boundary is crossed; never bypass reviewer
+  review-node idle boundary is crossed; never bypass critic
 - boss fallback: never bypass boss; late-reply alerts still fire after
   180s / 3m, and at or beyond the 3600s / 60m idle boundary report
   `BLOCKED:` waiting for boss instead of forcing completion
@@ -432,7 +432,8 @@ result.
 
 ## 10. Delivery-health rules
 
-Do not treat raw `waiting_count > 0` as proof of stuck delivery.
+Do not treat unread mail, quiet panes, or old wait terminology as proof of
+stuck delivery by themselves.
 
 Before escalating:
 

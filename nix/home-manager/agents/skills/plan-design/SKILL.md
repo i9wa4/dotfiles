@@ -1,6 +1,6 @@
 ---
 name: plan-design
-description: Create high-quality, executable implementation plans for complex tasks by combining source digestion, parallel worker investigations, reviewer+guardian+boss review gates, and beginner-friendly packaging. Use when a user needs a step-by-step plan (not immediate implementation), especially when source material is large, fragmented, or hard for newcomers to understand.
+description: Create high-quality, executable implementation plans for complex tasks by combining source digestion, parallel worker investigations, critic+guardian+boss review gates, and beginner-friendly packaging. Use when a user needs a step-by-step plan (not immediate implementation), especially when source material is large, fragmented, or hard for newcomers to understand.
 ---
 
 # Plan Design
@@ -31,7 +31,7 @@ Use this skill when one or more apply:
 - Input includes large docs, predecessor notes, or investigation artifacts.
 - User asks for beginner-friendly documentation or says they cannot understand
   the current plan.
-- Plan must pass explicit approval gates (reviewer/boss or equivalents; reviewer
+- Plan must pass explicit approval gates (critic/boss or equivalents; critic
   consults guardian internally).
 - If the request is still ambiguous or has multiple viable approaches, use
   `brainstorming` first and return here once the work is plan-ready.
@@ -144,23 +144,23 @@ Required response format from each worker:
 4. Keep a decision log for each non-obvious choice.
 
 When synthesis is complete, proceed to Step 4 (formal review gate).
-Do NOT dispatch to reviewer or guardian here -- that is Step 4's responsibility.
+Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 ### 5.4. Step 4: Review Gate Order (Strict)
 
-1. Send to reviewer. (Reviewer will consult guardian; orchestrator does not
+1. Send to critic. (Critic will consult guardian; orchestrator does not
    contact guardian directly.)
-2. If reviewer rejects: revise the plan artifact, resubmit to reviewer. Repeat
-   until reviewer approves (with guardian's endorsement).
+2. If critic rejects: revise the plan artifact, resubmit to critic. Repeat
+   until critic approves (with guardian's endorsement).
    - Maximum 3 revision rounds per gate pass.
    - If consensus is not reached after 3 rounds: a. Record the disagreement in
-     the Decision Log. b. Notify messenger: "BLOCKED: reviewer deadlock
+     the Decision Log. b. Notify messenger: "BLOCKED: critic deadlock
      after 3 rounds -- human decision required." c. Do not proceed to boss until
      messenger resolves the deadlock.
-3. Submit to boss only after reviewer approves (with guardian's endorsement).
+3. Submit to boss only after critic approves (with guardian's endorsement).
 4. If boss rejects: a. Record the rejection reason in the Decision Log. b.
    Revise the plan artifact per boss feedback. c. Return to step 1 of this gate
-   (re-run reviewer before resubmitting to boss). d. Maximum 2 boss
+   (re-run critic before resubmitting to boss). d. Maximum 2 boss
    rejection rounds. e. If boss rejects a second time, notify messenger:
    "BLOCKED: plan rejected twice by boss -- escalate."
 5. Do not finalize or send to messenger until boss approves.
@@ -244,7 +244,7 @@ a beginner audience:
 
 1. Stop -- do NOT make assumptions and proceed.
 2. Flag the ambiguity explicitly in the DONE/BLOCKED report to orchestrator.
-3. Orchestrator runs the full reviewer + guardian + boss review cycle on the
+3. Orchestrator runs the full critic + guardian + boss review cycle on the
    revised content.
 4. Notify messenger of the ambiguity and the review outcome before finalizing.
 
@@ -259,7 +259,7 @@ A plan is ready for boss review only if all are true:
 - Every phase has commands + expected outputs + done criteria.
 - Prerequisites and access requirements are explicit.
 - Placeholder decisions are resolved or converted into named decision gates.
-- Reviewer approved (with guardian's endorsement).
+- Critic approved (with guardian's endorsement).
 
 ## 10. Deliverables
 
@@ -282,6 +282,6 @@ That verifier should be:
 - explicit in the milestone command block
 - paired with an expected output or success condition
 
-Run that verifier before escalating to subagent review, reviewer, guardian,
+Run that verifier before escalating to subagent review, critic, guardian,
 boss, or other expensive approval paths, unless the lane is documentation-only
 and `git diff --check` is the cheapest useful verifier.

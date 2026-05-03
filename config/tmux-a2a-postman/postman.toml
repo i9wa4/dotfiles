@@ -1,3 +1,0 @@
-[postman]
-# Let newly launched AI coding agents finish startup before the auto PING is pasted.
-auto_ping_delay_seconds = 10.0

@@ -79,8 +79,8 @@ That shows up in three places:
 
 - `config/tmux-a2a-postman/postman.md` defines the role templates, graph, and
   routing semantics
-- `config/tmux-a2a-postman/postman.toml` keeps the small runtime overrides
-  that still differ from embedded defaults
+- embedded `tmux-a2a-postman` defaults cover runtime timing unless a local
+  override is intentionally added
 - `nix/home-manager/default.nix` exposes the checked-in config as the live
   XDG config directory
 
@@ -190,8 +190,8 @@ The repo-local operating model is:
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement
 - `worker` and `worker-alt` execute
-- `reviewer` runs the review pipeline
-- `guardian` is the deep review hop behind `reviewer`
+- `critic` runs the postman review pipeline
+- `guardian` is the deep review hop behind `critic`
 - `boss` is final approval
 
 The persistent control-plane role of `tmux-a2a-postman` matters because the

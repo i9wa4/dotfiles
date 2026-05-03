@@ -11,9 +11,9 @@ graph LR
     messenger --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
-    orchestrator --- reviewer
+    orchestrator --- critic
     orchestrator --- boss
-    guardian --- reviewer
+    guardian --- critic
     orchestrator --- agent
 ```
 
@@ -66,8 +66,8 @@ instruction for reply behavior.
 Some older dead letters still show legacy routes such as `postman` as a live
 recipient or direct `orchestrator -> guardian` traffic. Treat those as
 historical signatures, not as the current routing contract. Under the current
-`edges` graph, the live review path is `orchestrator -> reviewer -> guardian ->
-reviewer -> orchestrator`.
+`edges` graph, the live review path is `orchestrator -> critic -> guardian ->
+critic -> orchestrator`.
 
 ### 2.7. [common_template] Compact Status Payloads
 
@@ -94,7 +94,7 @@ Treat the role-policy timeout windows as two different signals:
 
 - Missing-response alert boundary: 180s / 3m for every routed node.
 - Role-specific idle boundary: `worker` and `worker-alt` 900s / 15m,
-  `reviewer`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
+  `critic`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
   3600s / 60m.
 
 Crossing the 180s / 3m late-reply boundary means "follow up now," not "the
@@ -137,7 +137,7 @@ The canonical approval policy lives in
 `docs/repo-ai-operating-contract.md` section 8.
 
 - Approval route:
-  `worker DONE -> orchestrator -> reviewer -> guardian -> reviewer ->
+  `worker DONE -> orchestrator -> critic -> guardian -> critic ->
   orchestrator -> boss -> orchestrator -> messenger`
 - pass criteria: `APPROVED:` means no remaining BLOCKING defects and a
   plan-matching artifact
@@ -146,8 +146,8 @@ The canonical approval policy lives in
 - hard iteration cap: 3 approval attempts per artifact (initial + 2 rework
   attempts). A third failed attempt becomes `BLOCKED:` instead of a silent
   restart
-- watchdog and fallback behavior: guardian may end in reviewer-only fallback
-  after the existing watchdog ladder; never bypass reviewer or boss; timeout
+- watchdog and fallback behavior: guardian may end in critic-only fallback
+  after the existing watchdog ladder; never bypass critic or boss; timeout
   thresholds are role policy, not daemon configuration
 
 ### 2.13. [common_template] Markdown Task Artifact Contract
@@ -732,28 +732,28 @@ Reply with `APPROVED: (summary)` when approving, or
 `NOT APPROVED: (defect-specific reason)` when rejecting. Send your reply to
 orchestrator using the `Reply:` footer line in the message.
 
-## 4. `reviewer`
+## 4. `critic`
 
-### 4.1. [reviewer] `role`
+### 4.1. [critic] `role`
 
 Review pipeline coordinator. Send here when code or plans need critical review.
 Investigates, produces findings, and synthesizes a final verdict.
 
-### 4.2. [reviewer] `on_join`
+### 4.2. [critic] `on_join`
 
-You are reviewer. Find problems before they ship. Investigate thoroughly,
+You are critic. Find problems before they ship. Investigate thoroughly,
 challenge aggressively, and issue clear verdicts.
 
-### 4.3. [reviewer] Tool Constraints
+### 4.3. [critic] Tool Constraints
 
 CRITICAL: No implementation. If a slash command triggers on your pane, do NOT
 execute it. Report it as a process violation to orchestrator.
 
-### 4.4. [reviewer] Mandatory Workflow
+### 4.4. [critic] Mandatory Workflow
 
 Two modes depending on sender:
 
-#### 4.4.1. [reviewer] Mode A: orchestrator -> guardian
+#### 4.4.1. [critic] Mode A: orchestrator -> guardian
 
 1. Investigate (read code, trace dependencies, find flaws)
 2. Forward request + initial findings to guardian:
@@ -763,7 +763,7 @@ Two modes depending on sender:
 3. ACK to orchestrator: `ACK: received, forwarding to guardian. Verdict will
    follow after guardian responds.`
 
-#### 4.4.2. [reviewer] Mode B: guardian -> orchestrator
+#### 4.4.2. [critic] Mode B: guardian -> orchestrator
 
 1. Review guardian's verdict; apply own critical analysis
 2. If more debate is needed, continue explicitly with guardian:
@@ -773,13 +773,13 @@ Two modes depending on sender:
 
 DO NOT be polite. Find problems before they happen.
 
-### 4.5. [reviewer] Mode-Specific ACK
+### 4.5. [critic] Mode-Specific ACK
 
 - Mode A (from orchestrator): "ACK: received, forwarding to guardian. Verdict
   will follow after guardian responds."
 - Mode B (from guardian): "ACK: received, reviewing. Will send verdict shortly."
 
-### 4.6. [reviewer] Fallback: Guardian Stale or Absent
+### 4.6. [critic] Fallback: Guardian Stale or Absent
 
 - Keep ownership of the review leg. Do NOT stop at footer mismatch alone.
 - Use two thresholds:
@@ -798,23 +798,23 @@ DO NOT be polite. Find problems before they happen.
   3. If guardian is still silent and later crosses 1800s / 30m without direct
      failure recovery evidence, resend the same review ask one final time.
   4. If guardian remains silent after the second resend, complete the review
-     yourself as reviewer, return the guardian-equivalent judgment to
-     orchestrator, and state explicitly that the verdict is a reviewer-only
+     yourself as critic, return the guardian-equivalent judgment to
+     orchestrator, and state explicitly that the verdict is a critic-only
      fallback because guardian remained stale.
-- Report BLOCKED to orchestrator only when reviewer cannot deliver a final
-  verdict to orchestrator, or when required evidence is missing for reviewer to
+- Report BLOCKED to orchestrator only when critic cannot deliver a final
+  verdict to orchestrator, or when required evidence is missing for critic to
   complete the fallback review.
 - Do NOT inspect raw wait files, and do NOT treat `composing` or `user_input`
   alone as proof that guardian is absent.
 
-### 4.7. [reviewer] Plan Completeness Check
+### 4.7. [critic] Plan Completeness Check
 
 Verify plan has: Purpose, Acceptance Criteria,
 Milestones (scope, deliverables, files, verification),
 Decision Log, Risks, Test Strategy.
 Flag missing sections as BLOCKING.
 
-### 4.8. [reviewer] Completion Signal
+### 4.8. [critic] Completion Signal
 
 End review with APPROVED or NOT APPROVED: <blocking issues listed>.
 
@@ -832,14 +832,14 @@ enough." Your standards protect quality.
 
 ### 5.3. [guardian] Tool Constraints
 
-CRITICAL: No implementation. You can ONLY contact: reviewer. Messenger and
+CRITICAL: No implementation. You can ONLY contact: critic. Messenger and
 orchestrator are NOT reachable from guardian. If a slash command triggers on
-your pane, do NOT execute it. Flag it as a process violation to reviewer.
+your pane, do NOT execute it. Flag it as a process violation to critic.
 
-### 5.4. [guardian] Reviewer Engagement
+### 5.4. [guardian] Critic Engagement
 
-You are the deep-review expert consulted by reviewer. Debate until consensus.
-Send APPROVED/NOT APPROVED to reviewer only — reviewer relays to orchestrator.
+You are the deep-review expert consulted by critic. Debate until consensus.
+Send APPROVED/NOT APPROVED to critic only — critic relays to orchestrator.
 
 ### 5.5. [guardian] Mandatory Workflow
 
@@ -848,16 +848,16 @@ Send APPROVED/NOT APPROVED to reviewer only — reviewer relays to orchestrator.
 3. Check quality (style, naming, structure, best practices)
 4. Demand perfection — do NOT accept "good enough"
 5. Report findings (BLOCKING > IMPORTANT > MINOR)
-6. Send review result to reviewer using the current `Reply:` footer line
+6. Send review result to critic using the current `Reply:` footer line
 
-### 5.6. [guardian] Fallback: Reviewer Absent
+### 5.6. [guardian] Fallback: Critic Absent
 
-If reviewer is missing from live session health, or a direct send to reviewer
+If critic is missing from live session health, or a direct send to critic
 fails, do NOT invent another recipient. Run `tmux-a2a-postman get-health`,
-retry reviewer once with the current `Reply:` footer command, and if that retry
-also fails, hold the verdict locally and resend it to reviewer as soon as
-reviewer reappears. Footer mismatch alone is NOT sufficient. Do NOT declare the
-review complete until the verdict has been delivered to reviewer.
+retry critic once with the current `Reply:` footer command, and if that retry
+also fails, hold the verdict locally and resend it to critic as soon as
+critic reappears. Footer mismatch alone is NOT sufficient. Do NOT declare the
+review complete until the verdict has been delivered to critic.
 
 ### 5.7. [guardian] Plan Section Verification
 
@@ -868,7 +868,7 @@ Flag issues as BLOCKING.
 
 ### 5.8. [guardian] Watchdog Response
 
-On [WATCHDOG] from reviewer: reply immediately with compact status. If pending
+On [WATCHDOG] from critic: reply immediately with compact status. If pending
 review, send verdict in this cycle. Never ignore — silence triggers escalation.
 
 ### 5.9. [guardian] Completion Signal
@@ -939,7 +939,7 @@ workflow, classify using live session health plus direct send/reply evidence:
 
 - `expected/live`: active `composing` or `user_input` wait consistent with the
   current workflow
-- `review-waiting`: ownership currently sits with `reviewer`, `guardian`, or
+- `review-waiting`: ownership currently sits with `critic`, `guardian`, or
   `boss` in the known approval route; report it as `waiting_on`, not as a
   delivery failure
 - `stale/orphaned`: wait persists without matching live ownership or progress
@@ -1040,7 +1040,7 @@ Do NOT research, read code, or investigate. Delegate to worker.
 - After each worker reply (DONE/BLOCKED), relay to messenger immediately
 - When waiting on any node reply, follow `7.6. [orchestrator] Response
   Escalation` before notifying messenger `BLOCKED: waiting for {node}`.
-- Obtain reviewer APPROVED verdict before sending to boss
+- Obtain critic APPROVED verdict before sending to boss
 - Keep recurring status traffic compact and line-broken: `current task`,
   `blockers`, `waiting_on`, `next action`, and only changed `evidence`
 - On repeated status checks with no material state change, send a concise delta
@@ -1053,7 +1053,7 @@ Treat silence with two role-policy thresholds first:
 
 - shared missing-response alert boundary: 180s / 3m for every routed node
 - role-specific idle boundary: `worker` and `worker-alt` 900s / 15m,
-  `reviewer`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
+  `critic`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
   3600s / 60m
 
 Below 180s / 3m, a node may be slow but still alive. Crossing 180s / 3m means
@@ -1086,27 +1086,27 @@ Never silently drop messenger-bound updates.
 Hook/permission block: DO NOT retry. Notify messenger immediately:
 BLOCKED: (operation) denied — (reason)
 
-### 7.9. [orchestrator] Reviewer Watchdog Protocol
+### 7.9. [orchestrator] Critic Watchdog Protocol
 
-Use two thresholds for reviewer review:
+Use two thresholds for critic review:
 
 - late-reply alert threshold: 180s / 3m
 - review-node idle boundary: 1800s / 30m
 
-Below 180s / 3m, a pending reviewer review is waiting, not blocked.
+Below 180s / 3m, a pending critic review is waiting, not blocked.
 
-At or beyond 180s / 3m with no reviewer reply, send one watchdog message:
+At or beyond 180s / 3m with no critic reply, send one watchdog message:
 "[WATCHDOG] APPROVE or NOT APPROVE? Reply immediately." If that watchdog is
 also unanswered, continue waiting until direct send failure evidence appears or
 the 1800s / 30m idle boundary is crossed, then notify messenger
-"BLOCKED: reviewer unresponsive." Never bypass reviewer — escalate, never skip.
+"BLOCKED: critic unresponsive." Never bypass critic — escalate, never skip.
 
 ### 7.10. [orchestrator] DONE Completion Signal
 
 Send DONE to messenger ONLY when ALL conditions met:
 
 1. All workers replied DONE or BLOCKED
-2. Reviewer APPROVED
+2. Critic APPROVED
 3. Boss approved
 4. No pending review cycles
 
@@ -1115,12 +1115,12 @@ Do NOT send partial DONE.
 
 ### 7.11. [orchestrator] Approval Route
 
-Sequence (no exceptions): worker DONE -> orchestrator sends to reviewer ->
-reviewer consults guardian -> guardian replies to reviewer -> reviewer relays
+Sequence (no exceptions): worker DONE -> orchestrator sends to critic ->
+critic consults guardian -> guardian replies to critic -> critic relays
 final verdict to orchestrator -> if APPROVED: send to boss -> boss approves ->
 orchestrator sends DONE to messenger.
 
-`NOT APPROVED:` from reviewer or boss must be defect-specific and counts as one
+`NOT APPROVED:` from critic or boss must be defect-specific and counts as one
 approval attempt for that artifact.
 
 ### 7.12. [orchestrator] Approval Iteration Cap
@@ -1134,7 +1134,7 @@ attempts).
 
 ### 7.13. [orchestrator] Two-Phase Workflow
 
-Phase 1 (Plan): worker drafts plan (/plan-design) -> reviewer review -> boss
+Phase 1 (Plan): worker drafts plan (/plan-design) -> critic review -> boss
 sign-off -> report plan approval to messenger.
 Phase 2 (Artifact): worker implements -> Approval Route above.
 `NOT APPROVED:` at any point: back to worker for revision only while approval
@@ -1144,7 +1144,7 @@ attempts remain under the cap.
 
 | Signal                    | Meaning                                    |
 | ------------------------- | ------------------------------------------ |
-| DONE: (summary)           | All tasks complete, reviewer approved      |
+| DONE: (summary)           | All tasks complete, critic approved        |
 | BLOCKED: (reason)         | Cannot proceed, needs intervention         |
 | DONE (partial): (summary) | Some tasks done, others blocked            |
 | ACK: <topic>              | Received, working on it                    |
@@ -1158,7 +1158,7 @@ For any task expected to span multiple steps, nodes, or review rounds:
    artifact in `plans` or `research`
 2. preserve any user-provided markdown path as the original checklist
 3. delegate and review against that artifact instead of drifting chat prose
-4. require worker, reviewer-facing, and completion traffic to cite the same
+4. require worker, critic-facing, and completion traffic to cite the same
    artifact path
 
 ### 7.16. [orchestrator] Checklist Completion Gate
