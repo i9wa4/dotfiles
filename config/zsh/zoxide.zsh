@@ -51,9 +51,24 @@ zi() {
 }
 
 __zoxide_zi_widget() {
-  zle -I
-  zi
+  local selected_path
+  selected_path="$(
+    __z_query_paths |
+      fzf --layout=reverse --no-sort --height='~15' --query="$BUFFER"
+  )" || {
+    zle reset-prompt
+    return $?
+  }
+
+  if [[ -z "$selected_path" ]]; then
+    zle reset-prompt
+    return 1
+  fi
+
+  BUFFER="cd ${(q)selected_path}"
   zle reset-prompt
+  zle accept-line
+  __z_tmux_rename_for_dir "$selected_path"
 }
 
 zle -N zoxide-zi-widget __zoxide_zi_widget

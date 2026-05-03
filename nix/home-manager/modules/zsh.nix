@@ -134,8 +134,8 @@ in
 
       # Source modular configs
       source "${zshDir}/aws.zsh"
-      source "${zshDir}/zoxide.zsh"
       source "${zshDir}/keybind.zsh"
+      source "${zshDir}/zoxide.zsh"
       source "${zshDir}/prompt.zsh"
       source "${zshDir}/zinit.zsh"
 
