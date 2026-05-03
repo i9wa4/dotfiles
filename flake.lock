@@ -47,11 +47,11 @@
     "anthropic-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1776964038,
-        "narHash": "sha256-xFsg66TCtKzSgRIW6Ab771FWEIhei3jPgfE4byMiB44=",
+        "lastModified": 1777816720,
+        "narHash": "sha256-6GyoLtVWna20TrLg7Y2R6wCWD6C4GbDtIB0jbl5VESY=",
         "owner": "anthropics",
         "repo": "skills",
-        "rev": "5128e1865d670f5d6c9cef000e6dfc4e951fb5b9",
+        "rev": "d230a6dd6eb1a0dbee9fec55e2f00a96e28dff81",
         "type": "github"
       },
       "original": {
@@ -483,11 +483,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777780644,
-        "narHash": "sha256-CYpc+mk28rmcQWGygeM8CA+Z8SZYy8BOyQtiW18spao=",
+        "lastModified": 1777815398,
+        "narHash": "sha256-MrIhEoqXc4YsHEUfH4rDU/K09XnWcKntNhCjs7n7zi8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "b9311028044a9e9b2cf27db15ef0a87d464e212d",
+        "rev": "b5e86c1b19f178a8ee10f7cb747325e02e3d3991",
         "type": "github"
       },
       "original": {
@@ -837,11 +837,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1777813453,
-        "narHash": "sha256-yuY4PVgcraHPANYJNdJPTzxiztbF5xRrY0xIY7pIO7s=",
+        "lastModified": 1777817161,
+        "narHash": "sha256-bFPS268olwVntGpuNPEwrTwnNdNa4QB6GPG79sJCKGg=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "503bc0a41bb8b6cb4645ba066a6f1cbcb7b6d888",
+        "rev": "ec99452ceedfe33d7e1caac6b1d3ef201ec89680",
         "type": "github"
       },
       "original": {
