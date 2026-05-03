@@ -55,7 +55,7 @@ agent under stress may break them. That is acceptable when the cost of a
 broken rule is friction (an agent retries with a different phrasing) and
 unacceptable when the cost is unbounded (a destructive command runs).
 
-`config/tmux-a2a-postman/postman.md` section 2.23 (non-interactive bash
+`config/tmux-a2a-postman/postman.md` section 2.16 (non-interactive bash
 discipline) is the canonical example of the prompt path winning over a
 config knob: the rule lives in the agent contract rather than as a
 `permissions.deny` glob, because the goal is to teach the agent to write
@@ -74,10 +74,10 @@ Concrete examples already in the repo:
   `~/.codex/rules/default.rules` (argv prefix_rule).
 - `config/tmux-a2a-postman/postman.md` `[common_template]` — single
   authoritative location for the persona / language / scope contract
-  and the inlined repo-local skill bodies; delivered to every
-  postman role on each `tmux-a2a-postman pop`. There is no longer a
-  generated CLAUDE.md or codex AGENTS.md installed at the runtime
-  root.
+  and the compact skill-use rule; delivered to every postman role on each
+  `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
+  for dotfiles-owned skills only. There is no longer a generated CLAUDE.md or
+  codex AGENTS.md installed at the runtime root.
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
 - `nix/home-manager/agents/shared/render-agents.nix` with
@@ -151,11 +151,11 @@ What to avoid:
 The deny-bash work in commits `29d8b422` through `37f4ff25` is a clean
 worked example. The mapping below is illustrative, not exhaustive.
 
-| Decision | Principle | Concrete form |
-| --- | --- | --- |
-| Section 2.23 added to `postman.md` rather than as a deny glob | 1.1 prompt-first | Rule lives in the agent contract, applies to both engines, no settings.json change |
-| `denied-bash-commands.nix` extended with new entries and bypass/strip lists | 1.2 shared SSOT | One file feeds three downstream outputs (Claude glob, Claude regex hook, Codex prefix_rule) |
-| `allowPrefixBypass` and `stripDataArgs` emitted only into the Claude regex hook | 1.3 vendor-specific as compensation | Codex argv matcher does not need them; the modules name the limitation explicitly |
+| Decision                                                   | Principle                           | Concrete form                                                                        |
+| ---------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
+| Section 2.16 uses `postman.md` rather than a deny glob      | 1.1 prompt-first                    | Rule lives in the agent contract, applies to both engines, no settings.json change   |
+| `denied-bash-commands.nix` is the shared deny source        | 1.2 shared SSOT                     | One file feeds three downstream outputs (Claude glob, Claude regex hook, Codex rule) |
+| Claude-only hook bypass fields stay in the Claude emitter   | 1.3 vendor-specific as compensation | Codex argv matcher does not need them; the modules name the limitation explicitly    |
 
 ## 3. Decision Checklist for New Agent Config
 

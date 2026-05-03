@@ -96,10 +96,11 @@ This repo does not rely on a single monolithic prompt file. Instead it builds
 the harness from several smaller sources:
 
 - `config/tmux-a2a-postman/postman.md` `[common_template]` is the canonical
-  persona / language / scope contract and the inlined repo-local skill
-  bodies; both are delivered to every postman-driven role on each
-  `tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or
-  codex AGENTS.md installed at the runtime root.
+  persona / language / scope contract and compact skill-use rule. Its
+  `skill_path` frontmatter injects a generated catalog of dotfiles-owned
+  skills into every postman-driven role on each `tmux-a2a-postman pop`.
+  There is no longer a generated CLAUDE.md or codex AGENTS.md installed at
+  the runtime root.
 - `shared/agent-skills.nix` installs both local and upstream skills into both
   engines
 - `shared/render-agents.nix` renders reviewer agents and the generated

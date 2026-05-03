@@ -19,7 +19,7 @@ parallel agent stacks that happen to share a vendor name.
 Concretely, every behavior should land in exactly one of these tiers:
 
 1. **Shared data** — facts both runtimes need (deny rule entries, MCP
-   server definitions, skill bodies, subagent definitions). Lives in
+   server definitions, local skill catalog, subagent definitions). Lives in
    `.nix` modules or markdown that both runtimes consume.
 2. **Shared transport** — the same hook script invoked by both runtimes,
    parameterised when needed. The contract that lets this work is:
@@ -52,14 +52,13 @@ shared concept to follow.
 
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
-The persona / language / scope directives and the repo-local skill
-bodies (bash, github, markdown, python, repo-local) live as
-`[common_template]` sections inside
-`config/tmux-a2a-postman/postman.md` (§2.16-§2.22 inline skills,
-§2.24 persona). The postman daemon delivers these into every role
-pane on each `tmux-a2a-postman pop`. There is no longer a generated
-CLAUDE.md or codex AGENTS.md at the runtime root; postman.md is the
-single delivery channel.
+The persona / language / scope directives live as `[common_template]`
+sections inside `config/tmux-a2a-postman/postman.md` (§2.17 persona).
+Dotfiles-owned skill bodies stay in `nix/home-manager/agents/skills`, and
+postman.md `skill_path` injects only their generated catalog. The postman
+daemon delivers this common contract into every role pane on each
+`tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or codex
+AGENTS.md at the runtime root; postman.md is the common delivery channel.
 
 Subagent definitions (`subagents/*.md`) and metadata
 (`subagents/_metadata.nix`) remain tool-agnostic. The shared renderer

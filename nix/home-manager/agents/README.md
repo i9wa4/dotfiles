@@ -10,8 +10,8 @@ artifacts.
 
 | If you want to change...      | Edit here                                                                  | Installed result                                                                   |
 | ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.24            | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
-| Repo-local skill bodies       | `skills/<skill>/SKILL.md`                                                  | Installed to `~/.claude/skills/` and inlined into postman.md `[common_template]`  |
+| Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.17            | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
+| Dotfiles-owned skill bodies   | `skills/<skill>/SKILL.md`                                                  | Installed to both engines and indexed by postman.md `skill_path`                  |
 | Shared subagents              | `subagents/*.md`, `subagents/_metadata.nix`                               | Rendered into `~/.claude/agents/` and `~/.codex/agents/`                           |
 | Review dispatcher skill       | `shared/render-agents.nix`, `subagents/_metadata.nix`                     | Generated `subagent-review` skill installed into both engines                      |
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
@@ -25,10 +25,12 @@ artifacts.
 ## How Changes Flow
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
-2. The persona / language / scope contract and the repo-local skill bodies
-   are delivered through `config/tmux-a2a-postman/postman.md`
-   `[common_template]` on each `tmux-a2a-postman pop`. There is no longer
-   a generated CLAUDE.md or codex AGENTS.md installed at the runtime root.
+2. The persona / language / scope contract is delivered through
+   `config/tmux-a2a-postman/postman.md` `[common_template]` on each
+   `tmux-a2a-postman pop`. Dotfiles-owned skill bodies stay in
+   `skills/<skill>/SKILL.md`; postman traffic gets only the generated
+   `skill_path` catalog. There is no longer a generated CLAUDE.md or codex
+   AGENTS.md installed at the runtime root.
 3. `subagents/_metadata.nix` defines shared Claude/Codex metadata while
    `subagents/*.md` stays the prompt-body source.
 4. `shared/render-agents.nix` renders Claude markdown agents, Codex TOML

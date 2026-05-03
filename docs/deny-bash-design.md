@@ -206,5 +206,5 @@ special cases on top of regex.
   `~/.claude/settings.json` and `~/.claude/scripts/`.
 - `nix/home-manager/agents/codex/default.nix` — wires the SSOT into
   `~/.codex/rules/default.rules`.
-- `config/tmux-a2a-postman/postman.md` section 2.23 — multi-agent
+- `config/tmux-a2a-postman/postman.md` section 2.16 — multi-agent
   bash discipline that complements this hook system on the agent side.

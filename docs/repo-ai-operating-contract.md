@@ -33,10 +33,9 @@ The current shared instruction core flows through `tmux-a2a-postman` common
 delivery rather than generated runtime-root instruction files.
 
 The persona / language / scope contract lives in
-`config/tmux-a2a-postman/postman.md` `[common_template]` §2.24, and the
-repo-local skill bodies (bash, github, markdown, python, repo-local)
-are inlined as `[common_template]` §2.16-§2.22. Postman injects these
-into every role pane on each `tmux-a2a-postman pop`.
+`config/tmux-a2a-postman/postman.md` `[common_template]` §2.17. Dotfiles-owned
+skill bodies live in `nix/home-manager/agents/skills/<name>/SKILL.md`; postman
+injects a generated catalog for that local skill tree through `skill_path`.
 
 There is no generated root instruction file under `~/.claude/` or `~/.codex/`
 for this repo. Direct non-postman sessions rely on the installed runtime
@@ -69,8 +68,8 @@ These rules are the residual loaded prompt rules kept local because
 non-postman Claude/Codex sessions still need them. Postman-role sessions also
 receive the stronger common contract from `tmux-a2a-postman`.
 
-They come from the postman common contract plus the installed local skills and
-are expected regardless of engine:
+They come from the postman common contract plus the installed local skills.
+They are expected regardless of engine:
 
 - read files in full
 - verify against the actual repo before reporting
