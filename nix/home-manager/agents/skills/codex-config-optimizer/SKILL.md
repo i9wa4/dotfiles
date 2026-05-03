@@ -193,7 +193,7 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.125.0 (2026-04-29)
+Last reviewed Codex CLI version: v0.128.0 (2026-05-03)
 
 ### 9.1. Applied Optimizations
 
@@ -229,13 +229,17 @@ Last reviewed Codex CLI version: v0.125.0 (2026-04-29)
   `codex-*` after consolidation (no codex-prefixed scripts left) and
   failed the `runCommand` build. The explicit list also documents the
   Codex consumed surface in one place.
+- [x] `features.apps = false` disables Codex Apps startup integration. Added
+  2026-05-03 after observing `codex_apps` MCP startup hangs in tmux panes.
+  Keep `plugins` enabled separately unless plugin discovery itself becomes a
+  measured first-display blocker.
 
 ### 9.2. Pending Considerations
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
-- [ ] Tune context7 MCP loading policy only if observed call frequency warrants
-  it; adding other MCP servers is a separate design decision
+- [x] Context7 MCP disabled; Context7 docs are handled through `ctx7` CLI plus
+  the `find-docs` skill instead
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
   (v0.103.0)
@@ -281,10 +285,14 @@ Last reviewed Codex CLI version: v0.125.0 (2026-04-29)
 
 ### 9.4. Version Notes
 
+- v0.128.0 (2026-05-03): Reviewed local release notes via GitHub releases.
+  Relevant items: plugin workflows expanded, MCP/plugin cleanup fixes landed,
+  `apps` remains a stable feature flag and can be disabled explicitly with
+  `features.apps = false`; permission-profile work is active but this repo
+  still relies on current `--yolo`/config flow.
 - v0.118.0 → v0.125.0 (2026-04-29): release notes not yet reviewed; the
   local install jumped while the previous review window stayed at
-  v0.117.0. Run §3.2 fetch and skim breaking-change candidates before the
-  next material config edit.
+  v0.117.0. Superseded by the v0.128.0 review above.
 - v0.117.0: `/title` terminal-title picker now works in both classic and
   app-server TUI, plugins become a first-class workflow, app-server TUI is now
   enabled by default, and legacy `artifact`, `read_file`, and `grep_files`

@@ -17,7 +17,7 @@ artifacts.
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
 | Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                              | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
 | Hook/runtime scripts          | `scripts/*`                                                                | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
-| Shared runtime data           | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`               | Context7 MCP and Bash deny data emitted into both engines                          |
+| Shared runtime data           | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`               | Empty MCP server set and Bash deny data emitted into both engines                  |
 | Claude runtime settings       | `claude/default.nix`                                                       | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
 | Codex runtime settings        | `codex/default.nix`                                                        | `~/.codex/config.toml`, `~/.codex/hooks.json`, `~/.codex/rules/`, and runtime dirs |
 | Top-level package boundary    | `default.nix`                                                              | Imports the agent modules and installs the shared CLI packages                     |

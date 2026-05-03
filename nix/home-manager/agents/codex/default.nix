@@ -115,6 +115,7 @@ let
     feedback.enabled = false;
 
     features = {
+      apps = false;
       codex_hooks = true;
       multi_agent = true;
       skills = true;
