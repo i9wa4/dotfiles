@@ -15,14 +15,15 @@ skill_path:
 
 ```mermaid
 graph LR
-    messenger:::ui_node --- orchestrator
+    messenger --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
     orchestrator --- critic
     orchestrator --- boss
     guardian --- critic
     orchestrator --- agent
-    classDef ui_node fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
+    class messenger ui_node
+    classDef ui_node fill:#e0f2fe
 ```
 
 ## 2. `common_template`
