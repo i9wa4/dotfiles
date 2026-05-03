@@ -2,21 +2,7 @@
 ui_node: messenger
 skill_path:
   - path: ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/
-    skills:
-      - bash
-      - brainstorming
-      - github
-      - markdown
-      - nix
-      - orchestrator
-      - plan-design
-      - prompt-contracts-local
-      - python
-      - repo-local
-      - systematic-debugging
-      - tdd-tidy-first
-      - tmux
-      - using-git-worktrees
+    skills: all
   - path: ~/.claude/skills
     skills:
       - postman-config-auditor
