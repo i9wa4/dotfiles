@@ -22,8 +22,6 @@ skill_path:
       - postman-config-auditor
       - postman-send-message
       - postman-session-operator
-      - skill-creator
-      - subagent-review
 ---
 
 # tmux-a2a-postman Node Templates
