@@ -18,7 +18,6 @@ For the adoption decision behind the current tool stack, see
   shell into a selected repository or worktree path.
 - In current code, `z` and `zi` are custom wrappers from
   `config/zsh/zoxide.zsh`, not the default `zoxide` commands.
-- Use `worktree-remove <branch-or-path>` to remove linked worktrees safely.
 - Keep issue numbers and PR numbers as the primary human input. Do not replace
   them with free-form naming schemes.
 
@@ -122,8 +121,10 @@ For the adoption decision behind the current tool stack, see
 - Do not use `vde-worktree` as the primary issue or PR entrypoint here.
 - Do not use `vde-worktree` alone as the outermost global selector from an
   arbitrary directory.
-- Do not teach `extract`, `absorb`, `unabsorb`, `adopt`, or `gone` as normal
-  flow commands for this repository.
+- Use `vde-worktree list --json`, `status`, and `gone --json` as inspection
+  helpers before deleting stale linked worktrees.
+- Do not teach `extract`, `absorb`, `unabsorb`, or `adopt` as normal flow
+  commands for this repository.
 
 ## 7. Removal and repository hygiene
 
@@ -131,18 +132,14 @@ For the adoption decision behind the current tool stack, see
   `.worktrees/` and `.vde/`.
 - Treat `.vde/` as intentional `vde-worktree` runtime state, not as a tracked
   repository file tree.
-- `worktree-remove` prefers managed branch names such as `issue-123-...` and
-  `pr-456-...`, then repo-local `.worktrees/...` or absolute linked-worktree
-  paths. ghq-relative paths are fallback only when they already point at an
-  existing linked worktree.
-- `worktree-remove` only removes linked worktrees (`.git` is a file), not
-  regular repositories.
-- It resolves the target branch, runs `vde-worktree init` on demand from the
-  main repository, then deletes through `vde-worktree del`.
-- That managed delete path intentionally keeps Git's dirty-worktree refusal
-  from `#128`, but still allows normal issue/PR cleanup without requiring the
-  branch to be merged or pushed first.
-- When possible, it also removes the path from `zoxide`.
+- Inspect cleanup candidates with `vde-worktree list --json`,
+  `vde-worktree status <branch> --json`, and `vde-worktree gone --json`.
+- Treat clean merged `pr-*` worktrees as normal deletion candidates.
+- Treat clean `issue-*` worktrees as deletion candidates only after confirming
+  the issue is closed and the branch is merged or otherwise obsolete.
+- Delete confirmed linked worktrees with `vde-worktree del <branch>`.
+- If a path was added to zoxide manually and still appears after deletion,
+  remove it with `zoxide remove <path>`.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
   backend or jump layer.
 - Notification or daemon behavior is outside this document. That belongs to
@@ -161,8 +158,8 @@ For the adoption decision behind the current tool stack, see
   rewriting it in place.
 - PR review now supports cross-repository heads by fetching from the PR source
   repository directly.
-- `worktree-remove` now relies on Git's safe default refusal for dirty
-  worktrees instead of forcing deletion.
+- The standalone cleanup wrapper was removed; cleanup now uses explicit
+  `vde-worktree` inspection and deletion commands.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
@@ -172,7 +169,6 @@ For the adoption decision behind the current tool stack, see
 - `bin/pr-worktree-create`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
-- `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/zsh.nix`
 - `docs/dotfiles-operating-concepts.md`

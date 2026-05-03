@@ -6,7 +6,6 @@ The current repository wrappers and checked-in config are the source of truth:
 
 - `issue-worktree-create`
 - `pr-worktree-create`
-- `worktree-remove`
 - `z` and `zi`
 - `config/vde/worktree/config.yml`
 
@@ -26,7 +25,8 @@ The current repository wrappers and checked-in config are the source of truth:
   - tmux re-entry through `z` and `zi`
 - Safety defaults in current scripts are already opinionated:
   - off-main flows do not rewrite local `main`
-  - dirty worktrees are refused on removal
+  - cleanup is performed explicitly through `vde-worktree` inspection and
+    deletion commands
   - linked worktrees stay under repo-local state paths
 
 ## 2. Evaluation
@@ -74,7 +74,6 @@ Revisit this decision only if one of these becomes true:
 - `docs/worktree-development.md`
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/npm.nix`
 - `nix/home-manager/agents/skills/using-git-worktrees/SKILL.md`

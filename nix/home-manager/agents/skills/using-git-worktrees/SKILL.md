@@ -3,8 +3,8 @@ name: using-git-worktrees
 description: |
   User-level git worktree workflow for isolated workspaces. Use when creating
   issue or PR worktrees, re-entering with `z` or `zi`, inspecting worktree
-  status or path with `vde-worktree`, or cleaning up linked worktrees with
-  `worktree-remove`. In this repo, prefer `issue-worktree-create` and
+  status or path with `vde-worktree`, or identifying linked worktree cleanup
+  candidates. In this repo, prefer `issue-worktree-create` and
   `pr-worktree-create` as the primary entrypoints.
 ---
 
@@ -49,15 +49,6 @@ entrypoint.
   - copy `.envrc` when available
   - run `repo-setup` when available
 
-### Cleanup
-
-- Run `worktree-remove <path>` for linked-worktree cleanup.
-- Accepted path styles:
-  - ghq-style path
-  - absolute path
-  - relative path
-- Expect it to remove only linked worktrees, not a regular repository clone.
-
 ## 3. Supporting Generic Tooling
 
 Use `vde-worktree` only as supporting generic tooling after checking whether the
@@ -67,8 +58,12 @@ wrapper flow already covers the task.
   - `vde-worktree list --json`
 - Inspect one worktree:
   - `vde-worktree status [branch] --json`
+- Inspect likely stale worktrees:
+  - `vde-worktree gone --json`
 - Resolve a branch to its absolute path:
   - `vde-worktree path <branch> [--json]`
+- Delete a confirmed linked worktree:
+  - `vde-worktree del <branch>`
 - Re-enter a linked worktree or repo through the zoxide wrapper flow:
   - `z <keyword>`
   - `zi [keywords...]`
@@ -97,8 +92,8 @@ Use one of these when the lane needs broader worktree visibility:
 
 ## 5. Repo Fit Notes
 
-- This repo already exposes cleanup ergonomics through shell snippets, so keep
-  cleanup guidance aligned with `worktree-remove`.
+- Cleanup should be explicit: inspect with `vde-worktree list`, `status`, or
+  `gone`, then delete confirmed linked worktrees with `vde-worktree del`.
 - The repo may contain detached linked worktrees, so do not assume every linked
   worktree is a simple branch-only case.
 - If the task is actually about changing worktree scripts or config, read those
@@ -109,6 +104,6 @@ Use one of these when the lane needs broader worktree visibility:
 
 - Do not ask the user to choose an arbitrary worktree directory.
 - Do not teach or rely on `vde-worktree extract`, `absorb`, `unabsorb`,
-  `adopt`, or `gone` as part of the normal repo flow.
+  or `adopt` as part of the normal repo flow.
 - Do not edit `.gitignore`, `config/vde/worktree/config.yml`, or the wrapper
   scripts unless the task is explicitly about those files.
