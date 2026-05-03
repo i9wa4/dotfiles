@@ -54,7 +54,7 @@ shared concept to follow.
 
 The persona / language / scope directives live as `[common_template]`
 sections inside `config/tmux-a2a-postman/postman.md` (§2.17 persona).
-Dotfiles-owned skill bodies stay in `nix/home-manager/agents/skills`, and
+Dotfiles-owned skill bodies stay in top-level `skills/`, and
 postman.md `skill_path` injects only their generated catalog. The postman
 daemon delivers this common contract into every role pane on each
 `tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or codex

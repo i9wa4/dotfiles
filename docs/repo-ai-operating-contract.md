@@ -34,7 +34,7 @@ delivery rather than generated runtime-root instruction files.
 
 The persona / language / scope contract lives in
 `config/tmux-a2a-postman/postman.md` `[common_template]` §2.17. Dotfiles-owned
-skill bodies live in `nix/home-manager/agents/skills/<name>/SKILL.md`; postman
+skill bodies live in top-level `skills/<name>/SKILL.md`; postman
 injects a generated catalog for that local skill tree through `skill_path`.
 
 There is no generated root instruction file under `~/.claude/` or `~/.codex/`

@@ -1,7 +1,7 @@
 ---
 ui_node: messenger
 skill_path:
-  - path: ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/
+  - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
     skills: all
   - path: ~/.claude/skills
     skills:

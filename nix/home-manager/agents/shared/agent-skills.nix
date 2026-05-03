@@ -1,7 +1,7 @@
-# Agent skills declarative management via agent-skills-nix
-# Edit skills/ for hand-authored skills, or shared/render-agents.nix for the
-# generated subagent-review SKILL.md. This file consumes install-manifest.nix
-# for the shared skill installation targets.
+# Agent skills declarative management via agent-skills-nix.
+# Edit top-level skills/ for hand-authored, publishable skills, or
+# shared/render-agents.nix for the generated subagent-review SKILL.md. This
+# file consumes install-manifest.nix for the shared skill installation targets.
 # Do not edit ~/.claude/skills or ~/.codex/skills directly.
 # cf. https://github.com/Kyure-A/agent-skills-nix
 {
@@ -24,7 +24,7 @@ let
       chmod -R u+w $out
       ${pkgs.bash}/bin/bash ${../scripts/validate-skill-frontmatter.sh} "$out"
     '';
-  local-skills-validated = validateSkillSource "local-skills-validated" ../skills;
+  local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
   # Normalize upstream anthropic/skills frontmatter for claude-api/SKILL.md.
   # Preserve upstream metadata keys while rewriting invalid YAML description

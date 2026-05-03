@@ -16,7 +16,11 @@
 { lib, ... }:
 {
   perSystem =
-    { pkgs, system, ... }:
+    {
+      pkgs,
+      system,
+      ...
+    }:
     let
       isDarwin = lib.hasSuffix "darwin" system;
       isLinux = lib.hasSuffix "linux" system;

@@ -1,0 +1,66 @@
+name: skill-publish
+run-name: publish skills for ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish, for example v1.0.0
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@ab739621df7a23f52766f9ccc97f38da6b7af14f # v31.10.5
+        with:
+          github_access_token: ${{ github.token }}
+
+      - name: Resolve tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG:-${GITHUB_REF_NAME}}"
+          if [[ ! "$tag" =~ ^v[0-9]+(\.[0-9]+){1,2}([-.][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid skill release tag: $tag" >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Validate skills
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run nixpkgs#gh -- skill publish --dry-run
+
+      - name: Publish skills
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SKILL_RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+        run: nix run nixpkgs#gh -- skill publish --tag "$SKILL_RELEASE_TAG"

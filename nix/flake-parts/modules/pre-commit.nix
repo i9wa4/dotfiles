@@ -136,6 +136,12 @@
             types = [ "file" ];
             pass_filenames = false;
           };
+          skill-publish-dry-run = {
+            enable = true;
+            entry = "${pkgs-unstable.gh}/bin/gh skill publish --dry-run";
+            files = "^skills/";
+            pass_filenames = false;
+          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===

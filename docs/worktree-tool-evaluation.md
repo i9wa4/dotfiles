@@ -45,7 +45,7 @@ The current repository wrappers and checked-in config are the source of truth:
   - `vde-worktree` as the backend and generic inspection tool
 - Do not replace the current flow with `git-wt`.
 - Do not import `vw-worktree-ops` as the primary skill for this repo.
-- Keep `nix/home-manager/agents/skills/using-git-worktrees/SKILL.md` as the
+- Keep `skills/using-git-worktrees/SKILL.md` as the
   canonical repo-local skill because it preserves the wrapper-first policy.
 
 ## 4. Why this decision is narrow
@@ -76,4 +76,4 @@ Revisit this decision only if one of these becomes true:
 - `bin/pr-worktree-create`
 - `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/npm.nix`
-- `nix/home-manager/agents/skills/using-git-worktrees/SKILL.md`
+- `skills/using-git-worktrees/SKILL.md`

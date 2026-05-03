@@ -18,7 +18,7 @@ What "prompt path" means in this repo:
 
 - `config/tmux-a2a-postman/postman.md` — multi-agent role contract,
   delivered into every postman session as the live operating contract.
-- `nix/home-manager/agents/skills/<name>/SKILL.md` — skill-triggered
+- `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
 - `nix/home-manager/agents/subagents/*.md` and
   `nix/home-manager/agents/subagents/_metadata.nix` — agent definitions,
