@@ -168,8 +168,9 @@ Ignore any release entries for versions newer than `codex --version`.
 ## 7. Prompt-Path Design Guidelines
 
 This repo does not install a root `~/.codex/AGENTS.md`; postman common blocks
-deliver persona, language, scope, and inlined repo-local skill bodies to
-postman-driven roles.
+deliver persona, language, scope, and role contracts to postman-driven roles.
+Repo-local skill bodies are exposed through the generated `skill_path` catalog
+and must stay in `SKILL.md`.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Keep instructions compatible with both Claude Code and Codex CLI
@@ -197,8 +198,9 @@ Last reviewed Codex CLI version: v0.128.0 (2026-05-03)
 
 ### 9.1. Applied Optimizations
 
-- [x] Runtime-root instruction file removed; persona, scope, and inlined
-  repo-local skill bodies now flow through `config/tmux-a2a-postman/postman.md`
+- [x] Runtime-root instruction file removed; persona and scope now flow through
+  `config/tmux-a2a-postman/postman.md`; repo-local skill bodies flow through
+  the generated `skill_path` catalog
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
 - [x] Home-level Codex hooks reduced to the load-bearing minimum:
