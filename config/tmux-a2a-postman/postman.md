@@ -1,5 +1,6 @@
 ---
 ui_node: messenger
+skill_path: ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/skills/
 ---
 
 # tmux-a2a-postman Node Templates
