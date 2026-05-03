@@ -54,6 +54,7 @@ connect_review_branch() {
   local branch=$1
   local upstream=$2
   local branch_existed=$3
+  local actual_upstream
 
   if [[ $branch_existed == "true" ]]; then
     git branch --set-upstream-to="${upstream}" "${branch}"
@@ -70,6 +71,54 @@ connect_review_branch() {
   fi
 }
 
+sync_existing_review_branch() {
+  local branch=$1
+  local upstream=$2
+  local worktree_path=$3
+  local branch_ref="refs/heads/${branch}"
+  local branch_head
+  local upstream_head
+
+  if ! branch_head=$(git rev-parse --verify "${branch_ref}^{commit}"); then
+    echo "Error: local review branch '${branch}' does not exist." >&2
+    return 1
+  fi
+
+  if ! upstream_head=$(git rev-parse --verify "${upstream}^{commit}"); then
+    echo "Error: upstream '${upstream}' does not exist." >&2
+    return 1
+  fi
+
+  if [[ $branch_head == "$upstream_head" ]]; then
+    echo "* Review branch is up to date: ${branch}"
+    return 0
+  fi
+
+  if git merge-base --is-ancestor "${branch_ref}" "${upstream}"; then
+    if [[ -n $worktree_path ]]; then
+      if ! git -C "${worktree_path}" merge --ff-only "${upstream}"; then
+        echo "Error: could not fast-forward '${branch}' in '${worktree_path}'." >&2
+        return 1
+      fi
+    else
+      if ! git branch --force "${branch}" "${upstream}"; then
+        echo "Error: could not fast-forward local review branch '${branch}'." >&2
+        return 1
+      fi
+    fi
+    echo "* Fast-forwarded local review branch: ${branch}"
+    return 0
+  fi
+
+  if git merge-base --is-ancestor "${upstream}" "${branch_ref}"; then
+    echo "Error: local review branch '${branch}' has commits not in '${upstream}'; refusing to rewind." >&2
+  else
+    echo "Error: local review branch '${branch}' has diverged from '${upstream}'; refusing to update automatically." >&2
+  fi
+  echo "Please inspect the local branch before retrying." >&2
+  return 1
+}
+
 # Fetch remote and update main branch
 echo "-> Fetching remote..."
 git fetch origin
@@ -82,11 +131,13 @@ fi
 echo ""
 
 # Process each PR number
+had_failure="false"
 for pr_number in "$@"; do
   # Validate PR number
   if [[ ! $pr_number =~ ^[0-9]+$ ]]; then
     echo "Warning: '$pr_number' is not a valid PR number. Skipping." >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -94,12 +145,15 @@ for pr_number in "$@"; do
 
   # Fetch PR branch name
   echo "-> Fetching PR #${pr_number} info..."
-  pr_info=$(gh pr view "${pr_number}" --json headRefName,headRepositoryOwner,headRepository,isCrossRepository --jq '[.headRefName, .headRepositoryOwner.login, .headRepository.name, .isCrossRepository] | @tsv' 2>/dev/null)
+  if ! pr_info=$(gh pr view "${pr_number}" --json headRefName,headRepositoryOwner,headRepository,isCrossRepository --jq '[.headRefName, .headRepositoryOwner.login, .headRepository.name, .isCrossRepository] | @tsv' 2>/dev/null); then
+    pr_info=""
+  fi
 
   if [[ -z $pr_info ]]; then
     echo "Error: Could not get branch details for PR #${pr_number}." >&2
     echo "Please verify the PR exists and you have access." >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -108,6 +162,7 @@ for pr_number in "$@"; do
   if [[ -z $pr_branch || -z $pr_owner || -z $pr_repo || -z $pr_is_cross_repo ]]; then
     echo "Error: Could not parse branch details for PR #${pr_number}." >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -145,26 +200,49 @@ for pr_number in "$@"; do
     echo "* Fetch target: ${pr_fetch_target}"
     fetch_pr_branch "${pr_remote}" "${pr_branch}" "${pr_fetch_target}" || {
       echo ""
+      had_failure="true"
       continue
     }
 
     connect_review_branch "${pr_local_branch}" "${pr_fetch_target}" "${local_branch_existed}" || {
       echo ""
+      had_failure="true"
       continue
     }
+
+    if [[ $local_branch_existed == "true" ]]; then
+      sync_existing_review_branch "${pr_local_branch}" "${pr_fetch_target}" "${existing_worktree_path}" || {
+        echo ""
+        had_failure="true"
+        continue
+      }
+    fi
   else
     fetch_pr_branch "${pr_remote}" "${pr_branch}" "${pr_fetch_target}" || {
       echo ""
+      had_failure="true"
       continue
     }
 
     connect_review_branch "${pr_local_branch}" "${pr_fetch_target}" "true" || {
       echo ""
+      had_failure="true"
+      continue
+    }
+
+    sync_existing_review_branch "${pr_local_branch}" "${pr_fetch_target}" "${existing_worktree_path}" || {
+      echo ""
+      had_failure="true"
       continue
     }
   fi
 
-  worktree_path=$(vde-worktree switch "${pr_local_branch}")
+  if ! worktree_path=$(vde-worktree switch "${pr_local_branch}"); then
+    echo "Error: Could not prepare worktree for '${pr_local_branch}'." >&2
+    echo ""
+    had_failure="true"
+    continue
+  fi
 
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
@@ -195,6 +273,12 @@ for pr_number in "$@"; do
 
   echo ""
 done
+
+if [[ $had_failure == "true" ]]; then
+  echo "Error: Some PR review worktrees could not be prepared." >&2
+  echo ""
+  exit 1
+fi
 
 echo "* All PR review worktrees are ready."
 echo ""

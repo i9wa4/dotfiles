@@ -75,13 +75,18 @@ For the adoption decision behind the current tool stack, see
    `vde-worktree path "<derived-local-branch>"`.
 7. It fetches the PR head into a remote-tracking branch and sets the local
    review branch upstream to the PR source branch, so `git pull` works from the
-   review worktree.
+   review worktree. If the local review branch already exists, it
+   fast-forwards that branch to the freshly fetched PR head when safe. If the
+   local branch is ahead of or diverged from the PR head, it refuses to rewrite
+   the branch automatically.
 8. It resolves the review worktree with `vde-worktree switch
    "<derived-local-branch>"`.
 9. On a newly created worktree, it copies `.envrc` when present and runs
    `repo-setup` when available.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
     exists.
+11. If any requested PR is invalid, skipped, refused, or otherwise fails, the
+    command exits nonzero and does not print the all-ready success message.
 
 ## 5. Current re-entry flow
 

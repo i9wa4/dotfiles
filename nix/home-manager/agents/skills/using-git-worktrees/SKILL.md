@@ -46,9 +46,15 @@ entrypoint.
   - refresh `main`
   - resolve the PR head branch from GitHub
   - keep the local review branch connected to the PR source branch as upstream
+  - fast-forward an existing local review branch to the PR source branch when
+    safe
+  - refuse to rewrite an existing local review branch that is ahead of or
+    diverged from the PR source branch
   - create or reuse a linked review worktree
   - copy `.envrc` when available
   - run `repo-setup` when available
+  - exit nonzero and avoid the all-ready success message when any requested PR
+    is invalid, skipped, refused, or otherwise fails
 
 ## 3. Supporting Generic Tooling
 
