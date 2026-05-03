@@ -3,8 +3,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# List merged vde-worktree cleanup candidates across ghq repositories and
-# delete them only after explicit confirmation.
+# List vde-worktrees across ghq repositories with status metadata and delete
+# merged cleanup candidates only after explicit confirmation.
 
 usage() {
   cat <<'EOF'
@@ -54,12 +54,14 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 repos_file="${tmpdir}/repos.tsv"
 candidates_file="${tmpdir}/candidates.tsv"
+inventory_file="${tmpdir}/inventory.tsv"
 repos_apply_file="${tmpdir}/repos-apply.txt"
 gone_json_file="${tmpdir}/gone.json"
 list_json_file="${tmpdir}/list.json"
 
 ghq list -p >"$repos_file"
 : >"$candidates_file"
+: >"$inventory_file"
 
 while IFS= read -r repo; do
   [[ -n $repo ]] || continue
@@ -79,6 +81,25 @@ while IFS= read -r repo; do
   printf '%s\n' "$list_json" >"$list_json_file"
 
   jq -r --arg repo "$repo" --slurpfile gone "$gone_json_file" '
+    def yn($value): if $value then "yes" else "no" end;
+    ($gone[0].candidates // []) as $candidates
+    | .worktrees[]?
+    | select(.branch != null)
+    | . as $worktree
+    | [
+        $repo,
+        ($worktree.branch // ""),
+        ($worktree.path // ""),
+        yn($candidates | index($worktree.branch)),
+        yn($worktree.merged.overall // false),
+        yn($worktree.dirty // false),
+        yn($worktree.locked.value // false),
+        ($worktree.pr.status // "none"),
+        ($worktree.upstream.remote // "")
+      ] | @tsv
+  ' "$list_json_file" >>"$inventory_file"
+
+  jq -r --arg repo "$repo" --slurpfile gone "$gone_json_file" '
     ($gone[0].candidates // []) as $candidates
     | .worktrees[]?
     | select(.branch as $branch | $candidates | index($branch))
@@ -86,13 +107,46 @@ while IFS= read -r repo; do
   ' "$list_json_file" >>"$candidates_file"
 done <"$repos_file"
 
+worktree_count=$(wc -l <"$inventory_file" | tr -d '[:space:]')
 candidate_count=$(wc -l <"$candidates_file" | tr -d '[:space:]')
+
+if [[ $worktree_count -eq 0 ]]; then
+  echo "No managed worktrees found."
+  exit 0
+fi
+
+echo "Managed worktrees:"
+echo ""
+awk -F '\t' '
+  function shorten(value, width) {
+    if (length(value) <= width) {
+      return value
+    }
+    return substr(value, 1, width - 1) "…"
+  }
+  BEGIN {
+    printf "%-4s  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
+      "No.", "Repo", "Branch", "Candidate", "Merged", "Dirty", "Locked", "PR", "Upstream"
+    printf "%-4s  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
+      "---", "----", "------", "---------", "------", "-----", "------", "--", "--------"
+  }
+  {
+    repo = $1
+    sub("^.*/github.com/", "", repo)
+    printf "%-4d  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
+      NR, shorten(repo, 56), shorten($2, 44), $4, $5, $6, $7, $8, $9
+  }
+' "$inventory_file"
+echo ""
+echo "Worktrees: ${worktree_count}"
+
 if [[ $candidate_count -eq 0 ]]; then
+  echo "Cleanup candidates: 0"
   echo "No merged worktree cleanup candidates found."
   exit 0
 fi
 
-echo "Merged worktree cleanup candidates:"
+echo "Cleanup candidates: ${candidate_count}"
 echo ""
 awk -F '\t' '
   {
