@@ -1,5 +1,4 @@
 ---
-ui_node: messenger
 skill_path:
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
     skills: all
@@ -16,13 +15,14 @@ skill_path:
 
 ```mermaid
 graph LR
-    messenger --- orchestrator
+    messenger:::ui_node --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
     orchestrator --- critic
     orchestrator --- boss
     guardian --- critic
     orchestrator --- agent
+    classDef ui_node fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
 ```
 
 ## 2. `common_template`
