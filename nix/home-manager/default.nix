@@ -78,6 +78,7 @@ in
       pkgs.wget
       # Tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
+      nodejsPackage
       pkgs-unstable.acli
       pkgs-unstable.aws-sam-cli
       pkgs-unstable.gws
@@ -95,7 +96,6 @@ in
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
-      nodejsPackage
       pkgs.ripgrep
       pkgs.shellcheck
       pkgs.uv
