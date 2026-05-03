@@ -44,38 +44,41 @@ zinit ice lucid depth"1" blockf \
       bindkey " "  zeno-auto-snippet
       bindkey "^m" zeno-auto-snippet-and-accept-line
       bindkey "^i" zeno-completion
-      bindkey "^g" zeno-ghq-cd
+      # Ctrl-G zoxide/zi navigation is handled by config/zsh/zoxide.zsh.
+      # bindkey "^g" zeno-ghq-cd
       bindkey "^r" zeno-history-selection
       bindkey "^x^i" zeno-insert-snippet
     else
       bindkey "^r" history-incremental-search-backward
     fi
 
-    function __rename_tmux_session_for_dir() {
-      local dir="$1"
-      [[ -n $TMUX && -n $dir ]] || return 0
-
-      local session
-      if [[ $dir == *"/.worktrees/"* ]]; then
-        local repository_root=${dir%%/.worktrees/*}
-        local repository=${repository_root:t}
-        local repository_session=${repository//./-}
-        local worktree_path=${dir#*/.worktrees/}
-        local worktree_dir=${worktree_path%%/*}
-        local worktree_session=${worktree_dir//./-}
-        session="${repository_session}-${worktree_session}"
-      else
-        local repository=${dir:t}
-        session=${repository//./-}
-      fi
-
-      tmux rename-session "${session}"
-    }
-
-    function zeno-ghq-cd-post-hook-impl() {
-      __rename_tmux_session_for_dir "$ZENO_GHQ_CD_DIR"
-    }
-
-    zle -N zeno-ghq-cd-post-hook zeno-ghq-cd-post-hook-impl
+    # tmux session rename after zoxide/zi navigation is handled by
+    # config/zsh/zoxide.zsh.
+    # function __rename_tmux_session_for_dir() {
+    #   local dir="$1"
+    #   [[ -n $TMUX && -n $dir ]] || return 0
+    #
+    #   local session
+    #   if [[ $dir == *"/.worktrees/"* ]]; then
+    #     local repository_root=${dir%%/.worktrees/*}
+    #     local repository=${repository_root:t}
+    #     local repository_session=${repository//./-}
+    #     local worktree_path=${dir#*/.worktrees/}
+    #     local worktree_dir=${worktree_path%%/*}
+    #     local worktree_session=${worktree_dir//./-}
+    #     session="${repository_session}-${worktree_session}"
+    #   else
+    #     local repository=${dir:t}
+    #     session=${repository//./-}
+    #   fi
+    #
+    #   tmux rename-session "${session}"
+    # }
+    #
+    # function zeno-ghq-cd-post-hook-impl() {
+    #   __rename_tmux_session_for_dir "$ZENO_GHQ_CD_DIR"
+    # }
+    #
+    # zle -N zeno-ghq-cd-post-hook zeno-ghq-cd-post-hook-impl
   '
 zinit light yuki-yano/zeno.zsh

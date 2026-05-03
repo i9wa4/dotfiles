@@ -1,6 +1,6 @@
 # Zsh configuration (managed by home-manager programs.zsh)
 # Replaces config/zsh/.zshenv, .zshrc
-# Modular source files remain in config/zsh/ (aws.zsh, jump.zsh, keybind.zsh, prompt.zsh, zinit.zsh)
+# Modular source files remain in config/zsh/ (aws.zsh, zoxide.zsh, keybind.zsh, prompt.zsh, zinit.zsh)
 {
   pkgs,
   lib,
@@ -134,7 +134,7 @@ in
 
       # Source modular configs
       source "${zshDir}/aws.zsh"
-      source "${zshDir}/jump.zsh"
+      source "${zshDir}/zoxide.zsh"
       source "${zshDir}/keybind.zsh"
       source "${zshDir}/prompt.zsh"
       source "${zshDir}/zinit.zsh"

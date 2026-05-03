@@ -17,7 +17,7 @@ For the adoption decision behind the current tool stack, see
 - Treat `z` and `zi` as shell-local navigation helpers that `cd` the current
   shell into a selected repository or worktree path.
 - In current code, `z` and `zi` are custom wrappers from
-  `config/zsh/jump.zsh`, not the default `zoxide` commands.
+  `config/zsh/zoxide.zsh`, not the default `zoxide` commands.
 - Use `worktree-remove <branch-or-path>` to remove linked worktrees safely.
 - Keep issue numbers and PR numbers as the primary human input. Do not replace
   them with free-form naming schemes.
@@ -86,15 +86,13 @@ For the adoption decision behind the current tool stack, see
 1. `ghq + fzf` is still the explicit repository browser when the user wants to
    choose a repository first.
 2. For one-step navigation into a repo or worktree path, use `z` or `zi`.
-3. `zi [keywords...]` merges three candidate sources:
-   - `zoxide query --list --score`
+3. `zi [keywords...]` merges two candidate sources:
+   - `zoxide query --list`
    - `ghq list -p`
-   - managed worktree paths from `vde-worktree list --json`
-4. Worktree discovery is repo-aware. The zsh helper asks each `ghq` repository
-   that has `config/vde/worktree/config.yml` for `vde-worktree list --json`
-   instead of scanning `.worktrees/` directly.
-5. `zi` shows `score`, `source`, and `path` columns in `fzf`, keeps first-seen
-   path order, and preserves `zoxide` scores when available.
+4. Worktree paths appear through zoxide because the worktree creation commands
+   add them with `zoxide add`.
+5. `zi` shows paths in `fzf`, preserving zoxide order first and appending ghq
+   repositories that were not already present.
 6. `z` with no arguments opens `zi`.
 7. `z -` still means `cd -`.
 8. `z <directory>` jumps directly to that directory.
@@ -104,10 +102,11 @@ For the adoption decision behind the current tool stack, see
     and `cd` the current pane into the selected path.
 11. Outside tmux, `z` and `zi` also change directory through the wrapper
     functions.
-12. `zeno-ghq-cd` still exists through the zeno key binding. Its tmux post-hook
-    renames sessions from the selected path. For worktree paths under
-    `/.worktrees/`, the session name uses the repository name plus the full
-    worktree directory name with dots replaced by dashes.
+12. Ctrl-G uses the zoxide-side `zoxide-zi-widget`. It runs `zi`, changes the
+    current shell directory, and renames tmux sessions from the selected path.
+    For worktree paths under `/.worktrees/`, the session name uses the
+    repository name plus the full worktree directory name with dots replaced by
+    dashes.
 
 ## 6. How `vde-worktree` fits
 
@@ -116,8 +115,8 @@ For the adoption decision behind the current tool stack, see
 - `z` and `zi` are zoxide-first navigation wrappers in zsh.
 - Inside tmux, `z` and `zi` stay in the current pane and change the shell's
   working directory like normal `cd`.
-- Their merged candidate set is built from the current `zoxide` database,
-  `ghq list -p`, and managed worktree paths from `vde-worktree list --json`.
+- Their merged candidate set is built from the current `zoxide` database and
+  `ghq list -p`.
 - In this repository, current scripts actively use `list --json`, `path`,
   `get`, and `switch`.
 - Do not use `vde-worktree` as the primary issue or PR entrypoint here.
@@ -153,10 +152,9 @@ For the adoption decision behind the current tool stack, see
 
 - Managed worktrees now live under repo-root `.worktrees/` through
   `config/vde/worktree/config.yml`.
-- The zsh jump commands now live in `config/zsh/jump.zsh` and are sourced from
+- The zsh jump commands now live in `config/zsh/zoxide.zsh` and are sourced from
   `nix/home-manager/modules/zsh.nix`.
-- `zi` now shows merged `zoxide` / `ghq` / `worktree` rows with score and
-  source metadata.
+- `zi` now shows zoxide paths plus missing ghq repositories as plain path rows.
 - `z` and `zi` now change the current shell directory even inside tmux instead
   of switching tmux sessions.
 - Off-main issue and PR flows now keep local `main` unchanged instead of
@@ -172,7 +170,7 @@ For the adoption decision behind the current tool stack, see
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
-- `config/zsh/jump.zsh` for the zsh jump flow
+- `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `bin/worktree-remove`
 - `config/vde/worktree/config.yml`
