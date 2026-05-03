@@ -12,6 +12,8 @@ For the adoption decision behind the current tool stack, see
 - Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
   issue work.
 - Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
+- Use `worktree-cleanup-merged` to list merged cleanup candidates across ghq
+  repositories and delete them only after typing `yes`.
 - Use `z <keyword>` for the normal zoxide-backed jump flow.
 - Use `zi [keywords...]` for explicit interactive selection.
 - Treat `z` and `zi` as shell-local navigation helpers that `cd` the current
@@ -134,6 +136,9 @@ For the adoption decision behind the current tool stack, see
   repository file tree.
 - Inspect cleanup candidates with `vde-worktree list --json`,
   `vde-worktree status <branch> --json`, and `vde-worktree gone --json`.
+- For host-wide cleanup, run `worktree-cleanup-merged`. It scans `ghq list -p`,
+  collects candidates with `vde-worktree gone --json`, shows the full list, and
+  deletes only after explicit confirmation.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.
@@ -167,6 +172,7 @@ For the adoption decision behind the current tool stack, see
 
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
+- `bin/worktree-cleanup-merged`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `config/vde/worktree/config.yml`

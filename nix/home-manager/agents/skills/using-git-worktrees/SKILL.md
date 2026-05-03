@@ -65,6 +65,10 @@ wrapper flow already covers the task.
   - `vde-worktree path <branch> [--json]`
 - Delete a confirmed linked worktree:
   - `vde-worktree del <branch>`
+- List merged cleanup candidates across ghq repositories:
+  - `worktree-cleanup-merged --dry-run`
+- Delete those candidates after an explicit prompt:
+  - `worktree-cleanup-merged`
 - Re-enter a linked worktree or repo through the zoxide wrapper flow:
   - `z <keyword>`
   - `zi [keywords...]`

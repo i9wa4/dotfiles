@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# List merged vde-worktree cleanup candidates across ghq repositories and
+# delete them only after explicit confirmation.
+
+usage() {
+  cat <<'EOF'
+Usage:
+  worktree-cleanup-merged [--dry-run] [--yes]
+
+Options:
+  --dry-run  List candidates without prompting or deleting.
+  --yes      Delete without prompting.
+  -h, --help Show this help.
+EOF
+}
+
+dry_run=false
+assume_yes=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      dry_run=true
+      ;;
+    --yes)
+      assume_yes=true
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Error: unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
+done
+
+for cmd in ghq jq vde-worktree; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: $cmd command not found. Please install it." >&2
+    exit 1
+  fi
+done
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+repos_file="${tmpdir}/repos.tsv"
+candidates_file="${tmpdir}/candidates.tsv"
+repos_apply_file="${tmpdir}/repos-apply.txt"
+gone_json_file="${tmpdir}/gone.json"
+list_json_file="${tmpdir}/list.json"
+
+ghq list -p >"$repos_file"
+: >"$candidates_file"
+
+while IFS= read -r repo; do
+  [[ -n $repo ]] || continue
+  [[ $repo != *"/.worktrees/"* ]] || continue
+  [[ -d "${repo}/.git" || -f "${repo}/.git" ]] || continue
+  [[ -d "${repo}/.worktrees" || -d "${repo}/.vde" || -f "${repo}/config/vde/worktree/config.yml" ]] || continue
+
+  if ! gone_json=$({ cd "$repo" && vde-worktree gone --json; } 2>/dev/null); then
+    echo "Warning: failed to inspect ${repo}" >&2
+    continue
+  fi
+
+  printf '%s\n' "$gone_json" >"$gone_json_file"
+  if ! list_json=$({ cd "$repo" && vde-worktree list --json; } 2>/dev/null); then
+    list_json='{"worktrees":[]}'
+  fi
+  printf '%s\n' "$list_json" >"$list_json_file"
+
+  jq -r --arg repo "$repo" --slurpfile gone "$gone_json_file" '
+    ($gone[0].candidates // []) as $candidates
+    | .worktrees[]?
+    | select(.branch as $branch | $candidates | index($branch))
+    | [$repo, .branch, (.path // "")] | @tsv
+  ' "$list_json_file" >>"$candidates_file"
+done <"$repos_file"
+
+candidate_count=$(wc -l <"$candidates_file" | tr -d '[:space:]')
+if [[ $candidate_count -eq 0 ]]; then
+  echo "No merged worktree cleanup candidates found."
+  exit 0
+fi
+
+echo "Merged worktree cleanup candidates:"
+echo ""
+awk -F '\t' '
+  {
+    printf "%2d. %s\n    branch: %s\n    path:   %s\n", NR, $1, $2, $3
+  }
+' "$candidates_file"
+echo ""
+echo "Total: ${candidate_count}"
+
+if [[ $dry_run == "true" ]]; then
+  exit 0
+fi
+
+if [[ $assume_yes != "true" ]]; then
+  if [[ ! -t 0 ]]; then
+    echo "Refusing to delete without a TTY. Re-run with --yes if this is intended." >&2
+    exit 2
+  fi
+
+  printf 'Delete these merged worktrees? Type yes to continue: '
+  IFS= read -r answer
+  if [[ $answer != "yes" ]]; then
+    echo "Cancelled."
+    exit 0
+  fi
+fi
+
+cut -f 1 "$candidates_file" | sort -u >"$repos_apply_file"
+
+while IFS= read -r repo; do
+  [[ -n $repo ]] || continue
+  echo "-> Cleaning ${repo}"
+  { cd "$repo" && vde-worktree gone --apply; }
+done <"$repos_apply_file"
+
+if command -v zoxide >/dev/null 2>&1; then
+  while IFS=$'\t' read -r _repo _branch path; do
+    [[ -n $path ]] || continue
+    zoxide remove "$path" >/dev/null 2>&1 || true
+  done <"$candidates_file"
+fi
+
+echo "Done."
