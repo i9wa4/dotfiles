@@ -43,7 +43,7 @@ zi() {
   local selected_path
   selected_path="$(
     __z_query_paths |
-      fzf --layout=reverse --no-sort --height='~15' --query="$*"
+      fzf --layout=reverse --no-sort --query="$*"
   )" || return $?
 
   [[ -n "$selected_path" ]] || return 1
