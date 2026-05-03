@@ -63,7 +63,7 @@ Three details matter:
 - the pane title is surfaced in the border format, so role identity stays
   visible while working
 - the tmux status line includes
-  `tmux-a2a-postman -- get-health-oneline`, which makes control-plane
+  `tmux-a2a-postman get-health-oneline`, which makes control-plane
   state part of the normal terminal view
 
 So the repo is not treating agent orchestration as a hidden sidecar. It is a
@@ -79,8 +79,8 @@ That shows up in three places:
 
 - `config/tmux-a2a-postman/postman.md` defines the role templates, graph, and
   routing semantics
-- `config/tmux-a2a-postman/postman.toml` sets node-specific dropped-ball
-  timing
+- `config/tmux-a2a-postman/postman.toml` keeps the small runtime overrides
+  that still differ from embedded defaults
 - `nix/home-manager/default.nix` exposes the checked-in config as the live
   XDG config directory
 
@@ -190,8 +190,8 @@ The repo-local operating model is:
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement
 - `worker` and `worker-alt` execute
-- `critic` runs the review pipeline
-- `guardian` is the deep review hop behind `critic`
+- `reviewer` runs the review pipeline
+- `guardian` is the deep review hop behind `reviewer`
 - `boss` is final approval
 
 The persistent control-plane role of `tmux-a2a-postman` matters because the

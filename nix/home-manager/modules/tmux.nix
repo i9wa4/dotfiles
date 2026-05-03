@@ -56,7 +56,7 @@
       set-option -g status-position top
       if-shell '[ -n "$SSH_TTY" ]' \
         "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\"; set-option -g status-format[1] '#[align=right]#(tmux-a2a-postman get-health-oneline 2>/dev/null)'" \
-        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman -- get-health-oneline) #(${dotfilesDir}/bin/system-load)\""
+        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman get-health-oneline 2>/dev/null) #(${dotfilesDir}/bin/system-load)\""
       set-option -g status-right-length 200
       set-option -g status-style bg=default
       set-option -g window-status-bell-style 'none'

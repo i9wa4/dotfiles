@@ -305,7 +305,7 @@ The approval workflow has seven standing role nodes:
 - `orchestrator`
 - `worker`
 - `worker-alt`
-- `critic`
+- `reviewer`
 - `guardian`
 - `boss`
 
@@ -317,10 +317,10 @@ approval lane.
 Reachability is strict:
 
 - `messenger` talks only to `orchestrator`
-- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `critic`, and
+- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `reviewer`, and
   `boss`
-- `critic` talks to `orchestrator` and `guardian`
-- `guardian` talks only to `critic`
+- `reviewer` talks to `orchestrator` and `guardian`
+- `guardian` talks only to `reviewer`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
@@ -332,20 +332,19 @@ the same context, trust the graph and actual delivery.
 ## 8. Bounded approval-lane contract
 
 This section is the canonical approval-lane policy for this repo.
-`config/tmux-a2a-postman/postman.md` and
-`config/tmux-a2a-postman/postman.toml` should point here or restate this
-section faithfully instead of drifting into separate policy variants.
+`config/tmux-a2a-postman/postman.md` should point here or restate this section
+faithfully instead of drifting into separate policy variants.
 
 ### 8.1. Approval route
 
 Artifact work is not complete until this exact Approval route succeeds:
 
-`worker DONE -> orchestrator -> critic -> guardian -> critic ->
+`worker DONE -> orchestrator -> reviewer -> guardian -> reviewer ->
 orchestrator -> boss -> orchestrator -> messenger`
 
 `worker-alt` follows the same route when it is the executor.
 
-Do not collapse or bypass the `critic -> guardian -> critic` hop.
+Do not collapse or bypass the `reviewer -> guardian -> reviewer` hop.
 
 ### 8.2. Pass criteria
 
@@ -353,15 +352,15 @@ An approval-lane pass means all of the following are true:
 
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
-- critic returns `APPROVED:` with no remaining BLOCKING defects
-- boss approves after critic approval
+- reviewer returns `APPROVED:` with no remaining BLOCKING defects
+- boss approves after reviewer approval
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
 ### 8.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from critic or boss must name the concrete blocking defects
+- `NOT APPROVED:` from reviewer or boss must name the concrete blocking defects
 - orchestrator returns that exact defect list to the worker instead of vague
   "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
@@ -373,26 +372,30 @@ The approval loop is bounded.
 
 - each artifact gets at most 3 approval attempts: the initial review plus 2
   rework attempts
-- any critic `NOT APPROVED:` or boss rejection consumes one attempt
+- any reviewer `NOT APPROVED:` or boss rejection consumes one attempt
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 
 ### 8.5. Watchdog and fallback behavior
 
-Approval-lane fallback behavior uses the same shared vocabulary everywhere:
+Approval-lane fallback behavior uses the same shared vocabulary everywhere.
+These timeout thresholds are role policy, not daemon configuration:
 
-- timeout assumptions come from `postman.toml` in two layers: all routed nodes
-  use `dropped_ball_timeout_seconds = 180s / 3m` for missing-response alerts;
-  `idle_timeout_seconds` remains `worker` and `worker-alt` 900s / 15m,
-  `critic`, `guardian`, `messenger`, and `orchestrator` 1800s / 30m, `boss`
-  3600s / 60m for health and staleness
-- guardian fallback: after the existing watchdog and resend ladder, critic may
-  finish with a critic-only fallback verdict if guardian remains stale after
+- all routed nodes use 180s / 3m as the missing-response alert boundary
+- `worker` and `worker-alt` use 900s / 15m as the idle boundary
+- `reviewer`, `guardian`, `messenger`, and `orchestrator` use 1800s / 30m as
+  the idle boundary
+- `boss` uses 3600s / 60m as the idle boundary
+
+Fallback behavior:
+
+- guardian fallback: after the existing watchdog and resend ladder, reviewer may
+  finish with a reviewer-only fallback verdict if guardian remains stale after
   the 180s / 3m alert and the 1800s / 30m review-node idle boundary
-- critic fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
-  180s / 3m late-reply threshold, then reports `BLOCKED:` if critic still does
+- reviewer fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
+  180s / 3m late-reply threshold, then reports `BLOCKED:` if reviewer still does
   not reply once direct send failure evidence appears or the 1800s / 30m
-  review-node idle boundary is crossed; never bypass critic
+  review-node idle boundary is crossed; never bypass reviewer
 - boss fallback: never bypass boss; late-reply alerts still fire after
   180s / 3m, and at or beyond the 3600s / 60m idle boundary report
   `BLOCKED:` waiting for boss instead of forcing completion

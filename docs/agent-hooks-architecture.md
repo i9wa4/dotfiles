@@ -115,7 +115,7 @@ waiting to be unified.
 
 This script enforces "non-`worker*` / non-`agent*` tmux pane titles
 are read-only" — the role-readonly contract that lets messenger,
-orchestrator, critic, etc. roles share the multi-agent surface
+orchestrator, reviewer, etc. roles share the multi-agent surface
 without being able to mutate the repo. It reads `pane_title` via
 `tmux display-message` and emits a deny payload for non-worker
 roles when the target file is outside the allowlisted state
