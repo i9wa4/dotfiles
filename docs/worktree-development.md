@@ -63,16 +63,16 @@ For the adoption decision behind the current tool stack, see
 2. It can process multiple PR numbers in one run.
 3. For each PR, it reads `headRefName`, `headRepositoryOwner`,
    `headRepository`, and `isCrossRepository` with `gh pr view`.
-4. If the PR comes from another repository, it fetches that head branch
-   directly from `https://github.com/<owner>/<repo>.git`. Otherwise it fetches
-   the head branch from `origin`.
+4. If the PR comes from another repository, it adds or refreshes a PR-specific
+   remote pointing at `https://github.com/<owner>/<repo>.git`. Otherwise it
+   uses `origin`.
 5. It derives a local review branch name as
    `pr-<number>-<headRefName with slashes replaced by dashes>`.
 6. It checks for an existing managed worktree path with
    `vde-worktree path "<derived-local-branch>"`.
-7. When no managed worktree exists yet, it fetches the PR head directly into
-   that local review branch and reports whether the local review branch was
-   created or refreshed.
+7. It fetches the PR head into a remote-tracking branch and sets the local
+   review branch upstream to the PR source branch, so `git pull` works from the
+   review worktree.
 8. It resolves the review worktree with `vde-worktree switch
    "<derived-local-branch>"`.
 9. On a newly created worktree, it copies `.envrc` when present and runs

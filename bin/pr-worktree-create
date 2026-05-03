@@ -79,10 +79,17 @@ for pr_number in "$@"; do
   pr_local_branch="pr-${pr_number}-${pr_branch//\//-}"
 
   if [[ $pr_is_cross_repo == "true" ]]; then
-    pr_fetch_source="https://github.com/${pr_owner}/${pr_repo}.git"
-    pr_fetch_target="${pr_owner}/${pr_repo}:${pr_branch}"
+    pr_remote="pr-${pr_number}-${pr_owner}-${pr_repo}"
+    pr_remote_url="https://github.com/${pr_owner}/${pr_repo}.git"
+    pr_fetch_target="${pr_remote}/${pr_branch}"
+
+    if git remote get-url "${pr_remote}" >/dev/null 2>&1; then
+      git remote set-url "${pr_remote}" "${pr_remote_url}"
+    else
+      git remote add "${pr_remote}" "${pr_remote_url}"
+    fi
   else
-    pr_fetch_source="origin"
+    pr_remote="origin"
     pr_fetch_target="origin/${pr_branch}"
   fi
 
@@ -100,24 +107,34 @@ for pr_number in "$@"; do
 
   if [[ -z $existing_worktree_path ]]; then
     echo "* Fetch target: ${pr_fetch_target}"
-    if ! git fetch "${pr_fetch_source}" "+refs/heads/${pr_branch}:${pr_local_branch}"; then
-      echo "Error: Could not fetch '${pr_fetch_target}' into '${pr_local_branch}'." >&2
+    if ! git fetch "${pr_remote}" "+refs/heads/${pr_branch}:refs/remotes/${pr_remote}/${pr_branch}"; then
+      echo "Error: Could not fetch '${pr_fetch_target}'." >&2
       echo ""
       continue
     fi
 
     if [[ $local_branch_existed == "true" ]]; then
-      echo "* Refreshed local review branch: ${pr_local_branch}"
+      git branch --set-upstream-to="${pr_fetch_target}" "${pr_local_branch}"
+      echo "* Connected local review branch: ${pr_local_branch}"
     else
+      git branch --track "${pr_local_branch}" "${pr_fetch_target}"
       echo "* Created local review branch: ${pr_local_branch}"
     fi
+  else
+    if ! git fetch "${pr_remote}" "+refs/heads/${pr_branch}:refs/remotes/${pr_remote}/${pr_branch}"; then
+      echo "Error: Could not fetch '${pr_fetch_target}'." >&2
+      echo ""
+      continue
+    fi
+
+    git branch --set-upstream-to="${pr_fetch_target}" "${pr_local_branch}"
   fi
 
   worktree_path=$(vde-worktree switch "${pr_local_branch}")
 
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
-    echo "* Branch: ${pr_local_branch} -> ${pr_branch}"
+    echo "* Branch: ${pr_local_branch} -> ${pr_fetch_target}"
   else
     echo "* Created worktree: ${worktree_path}"
     echo "* Using review branch: ${pr_fetch_target} (local: ${pr_local_branch})"

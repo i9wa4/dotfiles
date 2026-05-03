@@ -45,6 +45,7 @@ entrypoint.
   - fetch `origin`
   - refresh `main`
   - resolve the PR head branch from GitHub
+  - keep the local review branch connected to the PR source branch as upstream
   - create or reuse a linked review worktree
   - copy `.envrc` when available
   - run `repo-setup` when available
