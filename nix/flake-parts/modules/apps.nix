@@ -25,12 +25,11 @@
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
+      # Packages that live in the user's `nix profile` (independent of `nix run '.#switch'`).
+      # Most agent CLIs are installed via Home Manager (see nix/home-manager/default.nix);
+      # this list is reserved for tools that do not fit cleanly into HM's package set.
       profilePackages = {
         tmux-a2a-postman = "github:i9wa4/tmux-a2a-postman";
-        claude-code = ".#claude-code";
-        codex = ".#codex";
-        ccusage = ".#ccusage";
-        ccusage-codex = ".#ccusage-codex";
       };
     in
     {
@@ -89,7 +88,9 @@
               url="''${packages[$name]}"
               if { ${nix} profile list --json | ${jq} -e --arg n "$name" '.elements | has($n)'; } >/dev/null; then
                 echo "Upgrading $name"
-                ${nix} profile upgrade "$name"
+                # --refresh bypasses tarball-ttl (24h) so `github:` refs without a pinned rev
+                # actually pick up new HEAD commits on every run.
+                ${nix} profile upgrade --refresh "$name"
               else
                 echo "Installing $name ($url)"
                 ${nix} profile add "$url"

@@ -1,6 +1,7 @@
 {
   pkgs,
   pkgs-unstable,
+  inputs,
   lib,
   config,
   username,
@@ -15,6 +16,10 @@ let
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
   nodejsPackage = pkgs.nodejs_24;
+
+  # AI agent CLIs from llm-agents.nix flake input
+  # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
+  llmAgents = inputs.llm-agents.packages.${pkgs.system};
 
 in
 {
@@ -101,6 +106,11 @@ in
       pkgs.uv
       pkgs.vim
       pkgs.zoxide
+      # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
+      llmAgents.ccusage
+      llmAgents.ccusage-codex
+      llmAgents.claude-code
+      llmAgents.codex
     ];
 
     # ==========================================================================
