@@ -81,7 +81,7 @@ while IFS= read -r repo; do
   printf '%s\n' "$list_json" >"$list_json_file"
 
   jq -r --arg repo "$repo" --slurpfile gone "$gone_json_file" '
-    def yn($value): if $value then "yes" else "no" end;
+    def mark($value; $yes; $no): if $value then $yes else $no end;
     ($gone[0].candidates // []) as $candidates
     | .worktrees[]?
     | select(.branch != null)
@@ -90,10 +90,10 @@ while IFS= read -r repo; do
         $repo,
         ($worktree.branch // ""),
         ($worktree.path // ""),
-        yn($candidates | index($worktree.branch)),
-        yn($worktree.merged.overall // false),
-        yn($worktree.dirty // false),
-        yn($worktree.locked.value // false),
+        mark($candidates | index($worktree.branch); "🧹"; "・"),
+        mark($worktree.merged.overall // false; "✅"; "・"),
+        mark($worktree.dirty // false; "⚠️"; "・"),
+        mark($worktree.locked.value // false; "🔒"; "・"),
         ($worktree.pr.status // "none"),
         ($worktree.upstream.remote // "")
       ] | @tsv
@@ -125,18 +125,20 @@ awk -F '\t' '
     return substr(value, 1, width - 1) "…"
   }
   BEGIN {
-    printf "%-4s  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
-      "No.", "Repo", "Branch", "Candidate", "Merged", "Dirty", "Locked", "PR", "Upstream"
-    printf "%-4s  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
-      "---", "----", "------", "---------", "------", "-----", "------", "--", "--------"
+    printf "%-4s  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s\n",
+      "No.", "C", "M", "D", "L", "PR", "Branch", "Path"
+    printf "%-4s  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s\n",
+      "---", "-", "-", "-", "-", "--", "------", "----"
   }
   {
-    repo = $1
-    sub("^.*/github.com/", "", repo)
-    printf "%-4d  %-56s  %-44s  %-9s  %-6s  %-5s  %-6s  %-15s  %s\n",
-      NR, shorten(repo, 56), shorten($2, 44), $4, $5, $6, $7, $8, $9
+    upstream = $9 == "" ? "" : " upstream=" $9
+    printf "%-4d  %-2s %-2s %-2s %-2s  %-15s  %-38s  %s%s\n",
+      NR, $4, $5, $6, $7, $8, shorten($2, 38), $3, upstream
   }
 ' "$inventory_file"
+echo ""
+echo "Legend: C=cleanup candidate, M=merged, D=dirty, L=locked"
+echo "        🧹=candidate, ✅=merged, ⚠️=dirty, 🔒=locked, ・=no"
 echo ""
 echo "Worktrees: ${worktree_count}"
 
