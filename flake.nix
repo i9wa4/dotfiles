@@ -75,6 +75,10 @@
       url = "github:anthropics/skills";
       flake = false;
     };
+    context7 = {
+      url = "github:upstash/context7";
+      flake = false;
+    };
     dbt-agent-skills = {
       url = "github:dbt-labs/dbt-agent-skills";
       flake = false;

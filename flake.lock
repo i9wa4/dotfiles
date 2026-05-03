@@ -119,6 +119,22 @@
         "type": "github"
       }
     },
+    "context7": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777544160,
+        "narHash": "sha256-FS4JNh9QXCicV2mRuN7jMos4nEbr7eqO/g97HLQJAyU=",
+        "owner": "upstash",
+        "repo": "context7",
+        "rev": "795d5da720e16c417ae30a548a475672ae35e92f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "upstash",
+        "repo": "context7",
+        "type": "github"
+      }
+    },
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
@@ -761,6 +777,7 @@
         "actrun": "actrun",
         "agent-skills": "agent-skills",
         "anthropic-skills": "anthropic-skills",
+        "context7": "context7",
         "databricks-agent-skills": "databricks-agent-skills",
         "databricks-official-skills": "databricks-official-skills",
         "dbt-agent-skills": "dbt-agent-skills",

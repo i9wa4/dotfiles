@@ -117,6 +117,13 @@ in
         path = anthropic-skills-patched;
         subdir = "skills";
       };
+      # Upstash Context7 skills. MCP servers remain disabled in mcp-servers.nix;
+      # these skills use the existing ctx7 CLI/global package path.
+      context7 = {
+        path = inputs.context7;
+        subdir = "skills";
+        filter.nameRegex = "context7-(cli|mcp)";
+      };
       # Streamlit official agent skills
       streamlit = {
         path = inputs.streamlit-skills;
