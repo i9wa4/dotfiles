@@ -16,6 +16,7 @@ artifacts.
 | Review dispatcher skill       | `shared/render-agents.nix`, `subagents/_metadata.nix`                     | Generated `subagent-review` skill installed into both engines                      |
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
 | Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                              | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
+| Skill discovery index         | `skills/skill-index/`                                                      | Small skill installed into both engines; script scans user-level skill trees       |
 | Hook/runtime scripts          | `scripts/*`                                                                | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
 | Shared runtime data           | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`               | Empty MCP server set and Bash deny data emitted into both engines                  |
 | Claude runtime settings       | `claude/default.nix`                                                       | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
