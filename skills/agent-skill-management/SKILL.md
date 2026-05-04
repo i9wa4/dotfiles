@@ -79,17 +79,24 @@ publish and frontmatter checks still pass.
 ## 4. Publishing Harness
 
 Check whether the repository already has a skill publishing harness before
-adding one. A complete harness usually has two separate paths:
+adding one. Keep validation and publishing separate. Pre-commit and ordinary CI
+should prove publishability without publishing.
+
+Common harness pieces:
 
 - pre-commit or CI validation: run frontmatter checks and
   `gh skill publish --dry-run`
-- release publishing: dispatch a release workflow with a new version tag and
-  run `gh skill publish --tag "$TAG"`
+- tag-push validation: on `v*` or `v[0-9]*` tags, run
+  `gh skill publish --dry-run` and let `gh skill install` resolve skills from
+  the published repository tag when no separate release artifact is required
+- manual publish: create a new tag/release with `gh skill publish --tag "$TAG"`
+  only in a flow that owns tag creation
 
-Keep validation and publishing separate. Pre-commit and ordinary CI should
-prove publishability without publishing. Actual publish should happen only in a
-release workflow with appropriate credentials. `gh skill publish --tag` creates
-the GitHub release and tag, so do not trigger it from an already-pushed tag.
+Do not mix tag ownership models. `gh skill publish --tag` creates the GitHub
+release and tag, so do not trigger it from an already-pushed tag unless the
+workflow also proves the tag collision has been resolved. A tag-push workflow
+should normally validate with `--dry-run` only, or create a GitHub Release with
+a separate release-owner command after validation.
 
 Check GitHub CLI capability before relying on `gh skill`:
 
@@ -107,8 +114,9 @@ nix run nixpkgs#gh -- skill publish --dry-run
 nix run nixpkgs#gh -- skill publish --tag "$TAG"
 ```
 
-For GitHub Actions publishing, validate that the tag name is well-formed and
-does not already exist, then publish with the resolved tag value:
+For manual GitHub Actions publishing that owns the new tag, validate that the
+tag name is well-formed and does not already exist, then publish with the
+resolved tag value:
 
 ```sh
 gh skill publish --dry-run
@@ -144,6 +152,7 @@ nix run nixpkgs#gh -- skill publish --dry-run
 ```
 
 The existing pre-commit harness is in `nix/flake-parts/modules/pre-commit.nix`;
-the tag publish workflow is `.github/workflows/skill-publish.yaml`. `nix run
-'.#switch'` is only needed when verifying installed runtime output, not for
+the tag-push skill workflow is `.github/workflows/skill-publish.yaml` and is a
+dry-run validation workflow, not a `gh skill publish --tag` release owner. `nix
+run '.#switch'` is only needed when verifying installed runtime output, not for
 source-only skill edits.

@@ -1,16 +1,10 @@
 name: skill-publish
-run-name: publish skills for ${{ github.ref_name }} by @${{ github.actor }}
+run-name: validate skills for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Tag to publish, for example v1.0.0
-        required: true
-        type: string
   push:
     tags:
-      - "v*"
+      - "v[0-9]*"
 
 permissions: {}
 
@@ -23,11 +17,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout
@@ -41,26 +35,7 @@ jobs:
         with:
           github_access_token: ${{ github.token }}
 
-      - name: Resolve tag
-        id: tag
-        env:
-          INPUT_TAG: ${{ inputs.tag }}
-        run: |
-          set -euo pipefail
-          tag="${INPUT_TAG:-${GITHUB_REF_NAME}}"
-          if [[ ! "$tag" =~ ^v[0-9]+(\.[0-9]+){1,2}([-.][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Invalid skill release tag: $tag" >&2
-            exit 1
-          fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-
       - name: Validate skills
         env:
           GH_TOKEN: ${{ github.token }}
         run: nix run nixpkgs#gh -- skill publish --dry-run
-
-      - name: Publish skills
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SKILL_RELEASE_TAG: ${{ steps.tag.outputs.tag }}
-        run: nix run nixpkgs#gh -- skill publish --tag "$SKILL_RELEASE_TAG"
