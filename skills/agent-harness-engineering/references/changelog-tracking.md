@@ -1,6 +1,8 @@
-# Changelog Tracking
+# Claude Code Changelog Tracking
 
 Version history and optimization decision log for Claude Code configuration.
+This reference preserves older review notes that support current
+`agent-harness-engineering` decisions.
 
 ## 1. Not Adopting
 
@@ -39,8 +41,10 @@ Version history and optimization decision log for Claude Code configuration.
 - `CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK` (v2.1.83) - fallback is useful
 - `allowRead` sandbox setting (v2.1.77) - not configuring sandbox read
   restrictions
-- `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` - keep unset (adaptive thinking
-  stays ON). Decision (2026-04-08) based on HN discussion of Feb 2026 Claude
+- Superseded adaptive-thinking decision - an earlier 2026-04-08 review kept
+  `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` unset. Current config now sets it to
+  `"1"`; see `claude-code.md` Applied Optimizations for the active
+  decision. The earlier rationale was based on HN discussion of Feb 2026 Claude
   Code updates (<https://news.ycombinator.com/item?id=47664442>). Boris
   (bcherny, Anthropic Claude Code team) confirmed Opus 4.6 ships with
   adaptive thinking where the model self-allocates reasoning budget per
@@ -49,13 +53,9 @@ Version history and optimization decision log for Claude Code configuration.
   complex engineering tasks by forcing a fixed high budget via
   `MAX_THINKING_TOKENS`. However, this setup already boosts effort to
   `high` at session startup, which raises adaptive's ceiling to match the
-  Team/Enterprise default that Anthropic formalized in v2.1.94 (default
-  effort changed from medium to high for API-key/Bedrock/Vertex/Foundry/
-  Team/Enterprise users). Adaptive ON + high effort preserves cost
-  efficiency on trivial ops (rg, file edits) while still reaching high
-  depth on complex tasks like nix debugging or multi-step investigations.
-  Revisit if shallow or fabricated answers are observed on complex tasks;
-  fall back to setting `=1` plus `MAX_THINKING_TOKENS` as escalation path.
+  Team/Enterprise default that Anthropic formalized in v2.1.94 (default effort
+  changed from medium to high for API-key/Bedrock/Vertex/Foundry/Team/Enterprise
+  users). This note is retained for historical context only.
 - `CLAUDE_CODE_USE_MANTLE` (v2.1.94) - not using Amazon Bedrock via Mantle
 - Default effort change to high (v2.1.94) - applies only to API-key/
   Bedrock/Vertex/Foundry/Team/Enterprise; solo Pro/Max user not

@@ -1,0 +1,93 @@
+---
+name: agent-harness-engineering
+license: MIT
+description: |
+  Agent harness engineering for this dotfiles repo. Use when editing, reviewing,
+  debugging, or designing Claude Code or Codex CLI runtime configuration;
+  Nix/Home Manager-managed agent settings; hooks; MCP servers; skills;
+  subagents; tmux-a2a-postman routing; cross-engine parity; changelog tracking;
+  or migrations from per-engine agent configuration skills.
+---
+
+# Agent Harness Engineering
+
+Use this skill when a task changes how the local Claude Code, Codex CLI, tmux,
+skills, hooks, MCP, subagent, or `tmux-a2a-postman` harness is designed,
+installed, validated, or explained.
+
+## Working Rules
+
+- Treat top-level `skills/` and `nix/home-manager/agents/` as the editable
+  source. Do not hand-edit installed outputs under `~/.claude/` or `~/.codex/`.
+- Prefer prompt or skill guidance when a behavior can be expressed as agent
+  instructions. Use config, hooks, or deny rules for hard guarantees and runtime
+  settings the engine must enforce.
+- Define shared policy once, then emit it to both Claude Code and Codex CLI when
+  possible. Per-runtime forks need a written reason.
+- Keep `SKILL.md` short. Put detailed Claude Code, Codex CLI, changelog, or
+  release-tracking material in `references/`.
+- Keep `claude-workspace-trust-fix` independent. It handles workspace trust and
+  interactive hook trust state, not general harness design.
+- For multi-step harness work, create or update a durable `mkmd` plan and record
+  verification evidence before reporting completion.
+
+## Source Map
+
+- Harness principles: `docs/agent-config-philosophy.md`
+- Operating model: `docs/dotfiles-operating-concepts.md`
+- AI workflow and artifacts: `docs/repo-ai-operating-contract.md`
+- Hook architecture: `docs/agent-hooks-architecture.md`
+- Bash deny model: `docs/deny-bash-design.md`
+- Skill installation: `nix/home-manager/agents/shared/agent-skills.nix`
+- Claude runtime config: `nix/home-manager/agents/claude/default.nix` and
+  `references/claude-code.md`
+- Codex runtime config: `nix/home-manager/agents/codex/default.nix` and
+  `references/codex-cli.md`
+- Changelog decisions: `references/changelog-tracking.md`
+- Postman role contract: `config/tmux-a2a-postman/postman.md`
+
+## Design Workflow
+
+1. Classify the change as prompt-path, shared policy/data, shared transport, or
+   per-runtime transport.
+2. Inspect the current source and docs before changing runtime behavior.
+3. Put common behavior in shared Nix modules, shared scripts, shared skills, or
+   postman common templates.
+4. Use runtime-specific files only when Claude Code and Codex CLI have different
+   product surfaces. Name that limitation in the file or plan.
+5. After edits, search for drift between Claude and Codex wording, hook
+   consumers, and stale skill names.
+
+## Runtime Notes
+
+- Claude Code runtime details, settings categories, permission notes, and
+  optimization tracking live in [Claude Code](references/claude-code.md).
+- Codex CLI runtime details, hook limitations, settings categories, and release
+  tracking live in [Codex CLI](references/codex-cli.md).
+- Older Claude Code changelog decisions and release notes live in
+  [Changelog Tracking](references/changelog-tracking.md).
+
+## Changelog and Release Reviews
+
+- Detect the locally installed runtime version first with `claude --version` or
+  `codex --version`.
+- Scope release analysis to the installed version and below. Do not report newer
+  upstream releases as active local behavior.
+- Record adopted, rejected, and deferred runtime decisions in the relevant
+  reference so future config work can see the rationale.
+
+## Verification
+
+- Validate skill frontmatter after skill edits:
+
+  ```sh
+  bash nix/home-manager/agents/scripts/validate-skill-frontmatter.sh skills/agent-harness-engineering
+  ```
+
+- For publishable skill changes, run `gh skill publish --dry-run` if the local
+  GitHub CLI supports it. If not, record that CLI limitation and use the repo
+  frontmatter validation as the relevant local check.
+- Run `nix flake check` when feasible after changes that affect installed agent
+  sources or Nix validation.
+- Run `nix run '.#switch'` only when activation output needs to be materialized
+  or tested.

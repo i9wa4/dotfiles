@@ -1,19 +1,8 @@
----
-name: claude-config-optimizer
-license: MIT
-description: |
-  Claude Code config optimization skill.
-  Use when:
-  - Editing Claude settings, skills/, agents/, commands/
-  - User asks about config best practices
-  - Checking optimization status
-  - User says "claude code changelog" or "claude code updates"
-  - User asks about new features or breaking changes in Claude Code
----
+# Claude Code Harness Reference
 
-# Claude Config Optimizer Skill
-
-Rules and tracking for Claude Code configuration optimization.
+Runtime-specific rules and tracking for Claude Code configuration inside the
+shared agent harness. Use this as the detailed reference from the
+`agent-harness-engineering` skill.
 
 ## 1. Config File Location
 
@@ -95,14 +84,10 @@ Ignore any CHANGELOG sections for versions newer than `claude --version`.
 
 ## 4. Specification Reference
 
-For detailed questions about Claude Code specifications, features, and usage:
-
-- YOU MUST: Use the `claude-code-guide` subagent via Task tool
-- Example queries: hooks, MCP servers, settings, IDE integrations
-
-```text
-Task tool with subagent_type: claude-code-guide
-```
+For detailed questions about Claude Code specifications, features, and usage,
+prefer official Claude Code documentation or a dedicated guide workflow when one
+is available in the active runtime. Do not spawn a subagent only because this
+reference was loaded; follow the current session's delegation policy.
 
 ## 5. Settings Categories
 
@@ -287,7 +272,7 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
       effort stays pinned at the launch value (currently `--effort xhigh`).
       Predictable per-turn cost and latency, no auto-downshift. Diverges from
       the v2.1.94 Team/Enterprise default by design. See
-      `references/changelog-tracking.md` for the prior rationale around adaptive
+      `changelog-tracking.md` for the prior rationale around adaptive
       thinking.
 
 ### 11.2. Pending Considerations
@@ -345,7 +330,7 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
   set; new dirs swept automatically
 
 For decision log ("Not Adopting") and per-version changelog,
-see [Changelog Tracking](references/changelog-tracking.md).
+see [Changelog Tracking](changelog-tracking.md).
 
 ## 12. Response Format (CHANGELOG)
 

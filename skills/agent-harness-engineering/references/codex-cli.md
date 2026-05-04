@@ -1,18 +1,8 @@
----
-name: codex-config-optimizer
-license: MIT
-description: |
-  Codex CLI config optimization skill.
-  Use when:
-  - Editing Codex config, skills/, or agents/
-  - User asks about Codex CLI config best practices
-  - User says "codex cli changelog" or "codex cli updates"
-  - User asks about new features or changes in Codex CLI
----
+# Codex CLI Harness Reference
 
-# Codex CLI Optimizer Skill
-
-Rules and tracking for Codex CLI configuration optimization.
+Runtime-specific rules and tracking for Codex CLI configuration inside the
+shared agent harness. Use this as the detailed reference from the
+`agent-harness-engineering` skill.
 
 ## 1. Config File Location
 
