@@ -76,6 +76,9 @@ They are expected regardless of engine:
 - prefer small verifiable steps
 - use Nix-managed or POSIX-safe tooling where possible
 - avoid destructive git operations unless explicitly instructed
+- use repo-relative paths or stable URLs on public GitHub surfaces; reserve
+  machine-local absolute paths for user chat, internal artifacts, and debug
+  evidence
 - treat pane-title identity as important runtime state
 
 For worker-style nodes inside the postman graph, two more rules matter:

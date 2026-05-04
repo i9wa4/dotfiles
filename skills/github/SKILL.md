@@ -20,6 +20,12 @@ description: GitHub interaction rules for gh CLI usage, commit messages, issue c
 
 Applies to: Issues, PRs, commit messages, all GitHub-posted text.
 
+Public and permanent GitHub surfaces MUST use repo-relative paths or stable web
+URLs. Do not write machine-local absolute paths such as `/home/...`,
+`/nix/store/...`, or `~/ghq/...` in issues, PRs, commit messages, review
+comments, or other GitHub-posted text. Local absolute paths are only for
+user-facing chat, internal task artifacts, and debug evidence.
+
 Check org membership:
 `gh api user/memberships/orgs --jq '.[].organization.login'`
 
@@ -39,7 +45,7 @@ Check org membership:
 - IMPORTANT: When structural and behavioral changes are both needed, prefer
   separate commits; if not possible, call out the split explicitly
 - NEVER: Co-Authored-By, AI tool notices
-- NEVER: `.i9wa4/` files, `/tmp/` files, local file paths
+- NEVER: `.i9wa4/` files, `/tmp/` files, machine-local absolute paths
 
 ## 5. Sub-issues
 

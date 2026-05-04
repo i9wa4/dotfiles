@@ -45,6 +45,14 @@ Status traffic uses this field order: `current task`, `blockers`,
 `waiting_on`, `next action`, `evidence` when present. Error traffic states:
 description, affected node, mitigation, next step.
 
+### 2.3.1. [common_template] Public Surface Path Hygiene
+
+Public and permanent GitHub surfaces, including commit messages, issue/PR
+bodies, comments, and reviews, must use repo-relative paths or stable web URLs.
+Do not write machine-local absolute paths such as `/home/...`, `/nix/store/...`,
+or `~/ghq/...` there. Local absolute paths are allowed only in user-facing
+chat, internal task artifacts, and debug evidence.
+
 ### 2.4. [common_template] Mail and Reply Contract
 
 Current `edges`, explicit body instructions, health output, and observed send

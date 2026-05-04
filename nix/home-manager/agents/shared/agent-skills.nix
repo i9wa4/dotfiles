@@ -7,10 +7,54 @@
 {
   inputs,
   config,
+  lib,
   pkgs,
   ...
 }:
 let
+  cfg = config.i9wa4.agentSkills;
+  sourceType = lib.types.submodule (_: {
+    options = {
+      input = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Flake input name providing this source.";
+      };
+
+      path = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Local path fallback instead of `input`.";
+      };
+
+      subdir = lib.mkOption {
+        type = lib.types.str;
+        default = ".";
+        description = "Subdirectory under the input/path that contains skills.";
+      };
+
+      idPrefix = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Optional prefix to prepend to discovered skill IDs.";
+      };
+
+      filter = {
+        maxDepth = lib.mkOption {
+          type = lib.types.nullOr lib.types.ints.positive;
+          default = null;
+          description = "Maximum recursion depth when discovering SKILL.md directories.";
+        };
+
+        nameRegex = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+          description = "Optional regex to restrict discovered skill paths.";
+        };
+      };
+    };
+  });
+
   installManifest = import ./install-manifest.nix {
     inherit
       config
@@ -82,127 +126,166 @@ let
     mv "$tmp" "$target"
     ${pkgs.bash}/bin/bash ${../scripts/validate-skill-frontmatter.sh} "$out/skills"
   '';
+  baseSources = {
+    # Local skills from this dotfiles repository
+    local = {
+      path = local-skills-validated;
+    };
+    # tmux-a2a-postman skills
+    tmux-a2a-postman = {
+      path = inputs.tmux-a2a-postman;
+      subdir = "skills";
+    };
+    # dbt-labs official agent skills (split by skill group)
+    dbt = {
+      path = inputs.dbt-agent-skills;
+      subdir = "skills/dbt/skills";
+    };
+    dbt-migration = {
+      path = inputs.dbt-agent-skills;
+      subdir = "skills/dbt-migration/skills";
+    };
+    # Anthropic official agent skills (claude-api/SKILL.md frontmatter
+    # normalized, then validated before installation)
+    anthropic = {
+      path = anthropic-skills-patched;
+      subdir = "skills";
+    };
+    # Upstash Context7 CLI skill. MCP servers remain disabled in
+    # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
+    # path.
+    context7 = {
+      path = inputs.context7;
+      subdir = "skills";
+      filter.nameRegex = "context7-cli";
+    };
+    # Streamlit official agent skills
+    streamlit = {
+      path = inputs.streamlit-skills;
+      subdir = "developing-with-streamlit/skills";
+    };
+    # Databricks official agent skills (ai-dev-kit)
+    # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills
+    databricks = {
+      path = inputs.databricks-agent-skills;
+      subdir = "databricks-skills";
+    };
+    # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
+    databricks-claude = {
+      path = inputs.databricks-agent-skills;
+      subdir = ".claude/skills";
+      filter.nameRegex = "python-dev"; # exclude databricks-python-sdk (duplicate)
+    };
+    # Databricks official agent skills (databricks org)
+    # cf. https://github.com/databricks/databricks-agent-skills
+    databricks-official = {
+      path = inputs.databricks-official-skills;
+      subdir = "skills";
+      filter.nameRegex = "databricks(-apps|-pipelines)?"; # exclude databricks-jobs (duplicate)
+    };
+    # kepano/obsidian-skills: Obsidian-related skills (defuddle,
+    # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
+    # cf. https://github.com/kepano/obsidian-skills
+    obsidian = {
+      path = inputs.obsidian-skills;
+      subdir = "skills";
+    };
+    # HashiCorp agent skills (split by plugin)
+    # cf. https://github.com/hashicorp/agent-skills
+    hashicorp-terraform-codegen = {
+      path = inputs.hashicorp-agent-skills;
+      subdir = "terraform/code-generation/skills";
+    };
+    hashicorp-terraform-module = {
+      path = inputs.hashicorp-agent-skills;
+      subdir = "terraform/module-generation/skills";
+    };
+    hashicorp-terraform-provider = {
+      path = inputs.hashicorp-agent-skills;
+      subdir = "terraform/provider-development/skills";
+    };
+  };
+  collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
+  sourceNameCollisions = lib.filter (collision: collision.names != [ ]) [
+    {
+      left = "baseSources";
+      right = "i9wa4.agentSkills.extraSources";
+      names = collisionNames baseSources cfg.extraSources;
+    }
+    {
+      left = "baseSources";
+      right = "installManifest.skills.sources";
+      names = collisionNames baseSources installManifest.skills.sources;
+    }
+    {
+      left = "i9wa4.agentSkills.extraSources";
+      right = "installManifest.skills.sources";
+      names = collisionNames cfg.extraSources installManifest.skills.sources;
+    }
+  ];
+  formatCollision =
+    collision: "${collision.left} and ${collision.right}: ${lib.concatStringsSep ", " collision.names}";
 in
 {
   imports = [
     inputs.agent-skills.homeManagerModules.default
   ];
 
-  programs.agent-skills = {
-    enable = true;
+  options.i9wa4.agentSkills.extraSources = lib.mkOption {
+    type = lib.types.attrsOf sourceType;
+    default = { };
+    description = ''
+      Additional agent-skills-nix sources injected by wrapper flakes.
+      Public dotfiles keeps this empty; private wrappers may add private
+      sources without adding private inputs to this public flake.
+    '';
+  };
 
-    # Skill sources
-    sources = {
-      # Local skills from this dotfiles repository
-      local = {
-        path = local-skills-validated;
-      };
-      # tmux-a2a-postman skills
-      tmux-a2a-postman = {
-        path = inputs.tmux-a2a-postman;
-        subdir = "skills";
-      };
-      # dbt-labs official agent skills (split by skill group)
-      dbt = {
-        path = inputs.dbt-agent-skills;
-        subdir = "skills/dbt/skills";
-      };
-      dbt-migration = {
-        path = inputs.dbt-agent-skills;
-        subdir = "skills/dbt-migration/skills";
-      };
-      # Anthropic official agent skills (claude-api/SKILL.md frontmatter
-      # normalized, then validated before installation)
-      anthropic = {
-        path = anthropic-skills-patched;
-        subdir = "skills";
-      };
-      # Upstash Context7 CLI skill. MCP servers remain disabled in
-      # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
-      # path.
-      context7 = {
-        path = inputs.context7;
-        subdir = "skills";
-        filter.nameRegex = "context7-cli";
-      };
-      # Streamlit official agent skills
-      streamlit = {
-        path = inputs.streamlit-skills;
-        subdir = "developing-with-streamlit/skills";
-      };
-      # Databricks official agent skills (ai-dev-kit)
-      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills
-      databricks = {
-        path = inputs.databricks-agent-skills;
-        subdir = "databricks-skills";
-      };
-      # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
-      databricks-claude = {
-        path = inputs.databricks-agent-skills;
-        subdir = ".claude/skills";
-        filter.nameRegex = "python-dev"; # exclude databricks-python-sdk (duplicate)
-      };
-      # Databricks official agent skills (databricks org)
-      # cf. https://github.com/databricks/databricks-agent-skills
-      databricks-official = {
-        path = inputs.databricks-official-skills;
-        subdir = "skills";
-        filter.nameRegex = "databricks(-apps|-pipelines)?"; # exclude databricks-jobs (duplicate)
-      };
-      # kepano/obsidian-skills: Obsidian-related skills (defuddle,
-      # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
-      # cf. https://github.com/kepano/obsidian-skills
-      obsidian = {
-        path = inputs.obsidian-skills;
-        subdir = "skills";
-      };
-      # HashiCorp agent skills (split by plugin)
-      # cf. https://github.com/hashicorp/agent-skills
-      hashicorp-terraform-codegen = {
-        path = inputs.hashicorp-agent-skills;
-        subdir = "terraform/code-generation/skills";
-      };
-      hashicorp-terraform-module = {
-        path = inputs.hashicorp-agent-skills;
-        subdir = "terraform/module-generation/skills";
-      };
-      hashicorp-terraform-provider = {
-        path = inputs.hashicorp-agent-skills;
-        subdir = "terraform/provider-development/skills";
-      };
-    }
-    // installManifest.skills.sources;
+  config = {
+    assertions = [
+      {
+        assertion = sourceNameCollisions == [ ];
+        message = "agent skill source names must be unique across merge inputs; collisions: ${lib.concatStringsSep "; " (map formatCollision sourceNameCollisions)}";
+      }
+    ];
 
-    # Enable all skills from all sources
-    skills = {
-      enableAll = true;
-      # Explicit skill definitions (for rename or custom config)
-      explicit.databricks-jobs-bundles = {
-        from = "databricks-official";
-        path = "databricks-jobs";
-        rename = "databricks-jobs-bundles"; # avoid duplicate with ai-dev-kit
+    programs.agent-skills = {
+      enable = true;
+
+      # Skill sources
+      sources = baseSources // cfg.extraSources // installManifest.skills.sources;
+
+      # Enable all skills from all sources
+      skills = {
+        enableAll = true;
+        # Explicit skill definitions (for rename or custom config)
+        explicit.databricks-jobs-bundles = {
+          from = "databricks-official";
+          path = "databricks-jobs";
+          rename = "databricks-jobs-bundles"; # avoid duplicate with ai-dev-kit
+        };
       };
+
+      # Target destinations (symlink-tree uses activation rsync)
+      targets = {
+        # Claude Code: ~/.claude/skills
+        claude-home = {
+          inherit (installManifest.claude.skills)
+            dest
+            structure
+            ;
+        };
+        # Codex CLI: ~/.codex/skills
+        codex = {
+          inherit (installManifest.codex.skills)
+            dest
+            structure
+            ;
+        };
+      };
+
+      # Preserve .system directory (created by agents at runtime)
+      excludePatterns = [ "/.system" ];
     };
-
-    # Target destinations (symlink-tree uses activation rsync)
-    targets = {
-      # Claude Code: ~/.claude/skills
-      claude-home = {
-        inherit (installManifest.claude.skills)
-          dest
-          structure
-          ;
-      };
-      # Codex CLI: ~/.codex/skills
-      codex = {
-        inherit (installManifest.codex.skills)
-          dest
-          structure
-          ;
-      };
-    };
-
-    # Preserve .system directory (created by agents at runtime)
-    excludePatterns = [ "/.system" ];
   };
 }
