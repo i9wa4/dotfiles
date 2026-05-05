@@ -312,7 +312,9 @@ Read-only checks:
 
 ```sh
 df -h / /tmp "$HOME"
-findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS / /tmp "$HOME"
+findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS --target /
+findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS --target /tmp
+findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS --target "$HOME"
 find /tmp -maxdepth 1 -type d -name '*cleanup*' -print
 ```
 
