@@ -345,7 +345,11 @@ Manual consolidation steps, all requiring root:
 4. Remove the `/swap.img` entry from `/etc/fstab`.
 5. Delete `/swap.img`.
 6. Verify that `cat /proc/swaps` shows exactly one device.
-7. Re-run `setup-swap.sh` after approval.
+7. After approval, run the helper from the dotfiles repo root.
+
+   ```sh
+   sudo bash ./bin/ubuntu/setup-swap.sh
+   ```
 
 ### 3.3. Approved Live Resize Procedure
 
@@ -367,10 +371,10 @@ Run this only after patch review and explicit approval for the host.
 2. Confirm there is enough available memory to tolerate `swapoff`. If memory is
    tight or swap use is unexpectedly high, stop and reschedule for a quieter
    period.
-3. Run the managed helper.
+3. From the dotfiles repo root, run the managed helper.
 
    ```sh
-   sudo setup-swap
+   sudo bash ./bin/ubuntu/setup-swap.sh
    ```
 
 4. Verify the live result.

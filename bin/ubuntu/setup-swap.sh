@@ -8,7 +8,7 @@ set -o posix
 # Idempotent: safe to run multiple times.
 #
 # Usage:
-#   sudo setup-swap
+#   sudo bash ./bin/ubuntu/setup-swap.sh
 
 SWAPFILE="/swapfile"
 SWAP_SIZE_GB=8
@@ -53,17 +53,24 @@ verify_single_fstab_entry() {
 }
 
 if [[ $EUID -ne 0 ]]; then
-  echo "ERROR: Run as root (sudo setup-swap)" >&2
+  echo "ERROR: Run as root, for example: sudo bash ./bin/ubuntu/setup-swap.sh" >&2
   exit 1
 fi
 
-# Guard: refuse to proceed if multiple swap devices are already active.
-# Two coexisting swapfiles waste disk space and must be resolved manually
-# before this script mutates swap configuration.
+# Guard: refuse to proceed if non-target swap is already active.
+# Coexisting swap devices waste disk space and must be resolved manually before
+# this script mutates swap configuration.
 active_swap_count=$(awk 'NR>1 {count++} END {print count+0}' /proc/swaps)
 if [[ $active_swap_count -gt 1 ]]; then
   echo "ERROR: $active_swap_count swap devices active. Resolve duplicates before running setup-swap.sh." >&2
   awk 'NR>1 {print "  " $1 " size=" $3 "kB priority=" $5}' /proc/swaps >&2
+  exit 1
+fi
+
+if [[ $active_swap_count -eq 1 ]] && ! is_swapfile_active; then
+  echo "ERROR: A non-target swap device is active. Resolve it before enabling ${SWAPFILE}." >&2
+  awk 'NR>1 {print "  " $1 " size=" $3 "kB priority=" $5}' /proc/swaps >&2
+  echo "Remediation: disable the non-target swap device and remove its /etc/fstab entry after approval." >&2
   exit 1
 fi
 
