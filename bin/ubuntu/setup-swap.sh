@@ -4,16 +4,53 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# Set up a 16GB swapfile on Ubuntu.
+# Set up an 8GB swapfile on Ubuntu.
 # Idempotent: safe to run multiple times.
 #
 # Usage:
 #   sudo setup-swap
 
 SWAPFILE="/swapfile"
-SWAP_SIZE_GB=16
+SWAP_SIZE_GB=8
 SWAP_SIZE_BYTES=$((SWAP_SIZE_GB * 1024 * 1024 * 1024))
 SWAPPINESS_TARGET=30
+FSTAB_ENTRY="${SWAPFILE} none swap sw 0 0"
+
+is_swapfile_active() {
+  awk -v path="$SWAPFILE" 'NR > 1 && $1 == path {found = 1} END {exit found ? 0 : 1}' /proc/swaps
+}
+
+swapfile_fstab_count() {
+  awk -v path="$SWAPFILE" '$1 == path {count++} END {print count + 0}' /etc/fstab 2>/dev/null || echo 0
+}
+
+swapfile_fstab_is_canonical() {
+  awk -v path="$SWAPFILE" '$1 == path && $2 == "none" && $3 == "swap" && $4 == "sw" && $5 == "0" && $6 == "0" {found = 1} END {exit found ? 0 : 1}' /etc/fstab 2>/dev/null
+}
+
+ensure_single_fstab_entry() {
+  fstab_tmp=$(mktemp)
+  awk -v path="$SWAPFILE" '$1 != path {print}' /etc/fstab >"$fstab_tmp"
+  echo "$FSTAB_ENTRY" >>"$fstab_tmp"
+  install -m 644 "$fstab_tmp" /etc/fstab
+  rm -f "$fstab_tmp"
+}
+
+verify_swapfile_size() {
+  actual_size=$(stat -c%s "$SWAPFILE")
+  if [[ $actual_size -ne $SWAP_SIZE_BYTES ]]; then
+    echo "ERROR: ${SWAPFILE} size is ${actual_size} bytes, expected ${SWAP_SIZE_BYTES} bytes." >&2
+    exit 1
+  fi
+}
+
+verify_single_fstab_entry() {
+  fstab_count=$(swapfile_fstab_count)
+  if [[ $fstab_count -ne 1 ]] || ! swapfile_fstab_is_canonical; then
+    echo "ERROR: /etc/fstab must contain exactly one canonical ${SWAPFILE} swap entry." >&2
+    exit 1
+  fi
+}
 
 if [[ $EUID -ne 0 ]]; then
   echo "ERROR: Run as root (sudo setup-swap)" >&2
@@ -42,27 +79,34 @@ echo ""
 
 # Determine what actions are needed
 actions=()
+needs_recreate=false
+needs_format=false
 
 if [[ ! -f $SWAPFILE ]]; then
   actions+=("Create swapfile (${SWAP_SIZE_GB}GB) at ${SWAPFILE}")
+  needs_recreate=true
 else
   actual_size=$(stat -c%s "$SWAPFILE")
   if [[ $actual_size -ne $SWAP_SIZE_BYTES ]]; then
     actual_gb=$((actual_size / 1024 / 1024 / 1024))
     actions+=("Recreate swapfile (current: ${actual_gb}GB -> target: ${SWAP_SIZE_GB}GB)")
+    needs_recreate=true
   fi
 fi
 
-if ! file "$SWAPFILE" 2>/dev/null | grep -q "swap file"; then
+if [[ $needs_recreate == true ]]; then
+  needs_format=true
+elif ! file "$SWAPFILE" 2>/dev/null | grep -q "swap file"; then
   actions+=("Format ${SWAPFILE} as swap")
+  needs_format=true
 fi
 
-if ! swapon --show 2>/dev/null | grep -q "$SWAPFILE"; then
+if ! is_swapfile_active; then
   actions+=("Enable swap (swapon ${SWAPFILE})")
 fi
 
-if ! grep -q "$SWAPFILE" /etc/fstab 2>/dev/null; then
-  actions+=("Add ${SWAPFILE} entry to /etc/fstab")
+if [[ "$(swapfile_fstab_count)" -ne 1 ]] || ! swapfile_fstab_is_canonical; then
+  actions+=("Ensure single ${SWAPFILE} entry in /etc/fstab")
 fi
 
 if [[ "$(sysctl -n vm.swappiness)" -ne $SWAPPINESS_TARGET ]]; then
@@ -71,6 +115,8 @@ fi
 
 # If nothing to do, exit early
 if [[ ${#actions[@]} -eq 0 ]]; then
+  verify_swapfile_size
+  verify_single_fstab_entry
   echo "* Already configured correctly. Nothing to do."
   exit 0
 fi
@@ -94,18 +140,16 @@ echo ""
 # Execute actions
 
 # Swapfile creation / recreation
-if [[ ! -f $SWAPFILE ]]; then
-  echo "* Creating swapfile (${SWAP_SIZE_GB}GB)..."
-  fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
-  echo "* Swapfile created"
-else
-  actual_size=$(stat -c%s "$SWAPFILE")
-  if [[ $actual_size -ne $SWAP_SIZE_BYTES ]]; then
-    echo "* Recreating swapfile..."
-    swapoff "$SWAPFILE" 2>/dev/null || true
-    fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
-    echo "* Swapfile recreated"
+if [[ $needs_recreate == true ]]; then
+  if is_swapfile_active; then
+    echo "* Disabling active swapfile before recreation..."
+    swapoff "$SWAPFILE"
   fi
+
+  echo "* Recreating swapfile (${SWAP_SIZE_GB}GB)..."
+  rm -f "$SWAPFILE"
+  fallocate -l "${SWAP_SIZE_GB}G" "$SWAPFILE"
+  echo "* Swapfile recreated"
 fi
 
 # Permissions
@@ -113,21 +157,21 @@ chmod 600 "$SWAPFILE"
 echo "* Permissions set (600)"
 
 # Format as swap
-if ! file "$SWAPFILE" | grep -q "swap file"; then
+if [[ $needs_format == true ]]; then
   mkswap "$SWAPFILE"
   echo "* Formatted as swap"
 fi
 
 # Enable swap
-if ! swapon --show | grep -q "$SWAPFILE"; then
+if ! is_swapfile_active; then
   swapon "$SWAPFILE"
   echo "* Swap enabled"
 fi
 
-# Add to /etc/fstab
-if ! grep -q "$SWAPFILE" /etc/fstab; then
-  echo "${SWAPFILE} none swap sw 0 0" >>/etc/fstab
-  echo "* Added to /etc/fstab"
+# Maintain one canonical /etc/fstab entry
+if [[ "$(swapfile_fstab_count)" -ne 1 ]] || ! swapfile_fstab_is_canonical; then
+  ensure_single_fstab_entry
+  echo "* Ensured single /etc/fstab entry"
 fi
 
 # Swappiness
@@ -136,6 +180,10 @@ if [[ "$(sysctl -n vm.swappiness)" -ne $SWAPPINESS_TARGET ]]; then
   echo "* vm.swappiness set to ${SWAPPINESS_TARGET}"
 fi
 
+verify_swapfile_size
+verify_single_fstab_entry
+
 echo ""
 echo "=== Setup complete ==="
 swapon --show
+echo "* Verified ${SWAPFILE} size: ${SWAP_SIZE_BYTES} bytes"

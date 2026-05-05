@@ -293,21 +293,125 @@ links such as `profile-*` stay `KEEP`.
 - It attempts deletion as the current user and keeps going when a specific root
   cannot be removed.
 
-## 3. Swap Consolidation
+## 3. Managed Swapfile
 
-The host has two swap devices: `/swapfile` (16G) and `/swap.img` (8G). Only
-one is needed. `setup-swap.sh` refuses to run when more than one swap device is
-active. It does not disable duplicate swap devices, rewrite `/etc/fstab`, or
-delete `/swap.img` automatically.
+The managed Ubuntu swap target is `/swapfile` at `8G`. This is the default
+storage-priority setting for machines with enough RAM and no hibernation
+requirement. A `16G` swapfile remains a conservative option for hosts where
+maximum OOM margin matters more than reclaiming disk; make that policy choice
+as a reviewed patch to `SWAP_SIZE_GB` before running the helper.
 
-Manual consolidation steps (all require root):
+`setup-swap.sh` is the only managed live mutation path for this swapfile. It
+refuses to run when more than one swap device is active. It does not disable
+duplicate swap devices, rewrite unrelated swap entries, or delete `/swap.img`
+automatically.
 
-1. Confirm active swap devices: `cat /proc/swaps`
-2. Choose the device to keep (prefer `/swapfile` at `16G`)
-3. Disable `/swap.img` with `swapoff /swap.img`
-4. Remove the `/swap.img` entry from `/etc/fstab`
-5. Delete `/swap.img`
-6. Verify: `cat /proc/swaps` should show exactly one device
-7. Re-run `setup-swap.sh`
+### 3.1. Approval Gate
 
-After consolidation, `setup-swap.sh` can run normally.
+Do not run the live resize path until the user has explicitly approved the
+patch and the planned host operation. The helper may run `swapoff`, recreate
+`/swapfile`, run `mkswap`, run `swapon`, and rewrite the `/swapfile` entry in
+`/etc/fstab`.
+
+Before approval, the safe validation surface is static only:
+
+```sh
+bash -n bin/ubuntu/setup-swap.sh
+shellcheck bin/ubuntu/setup-swap.sh
+git diff --check
+```
+
+### 3.2. Duplicate Swap Consolidation
+
+If the host has two swap devices, such as `/swapfile` and `/swap.img`, only one
+is needed. Consolidate duplicates manually before running `setup-swap.sh`.
+
+Manual consolidation steps, all requiring root:
+
+1. Confirm active swap devices.
+
+   ```sh
+   cat /proc/swaps
+   ```
+
+2. Choose the device to keep. Prefer managed `/swapfile` at `8G` unless the
+   reviewed policy for the host is the conservative `16G` target.
+3. Disable `/swap.img`.
+
+   ```sh
+   swapoff /swap.img
+   ```
+
+4. Remove the `/swap.img` entry from `/etc/fstab`.
+5. Delete `/swap.img`.
+6. Verify that `cat /proc/swaps` shows exactly one device.
+7. Re-run `setup-swap.sh` after approval.
+
+### 3.3. Approved Live Resize Procedure
+
+Run this only after patch review and explicit approval for the host.
+
+1. Capture preflight state.
+
+   ```sh
+   df -h /
+   findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS /
+   free -h
+   cat /proc/swaps
+   swapon --show --bytes
+   sysctl -n vm.swappiness
+   stat -c%s /swapfile
+   stat -c '%n %s bytes mode=%a' /swapfile
+   ```
+
+2. Confirm there is enough available memory to tolerate `swapoff`. If memory is
+   tight or swap use is unexpectedly high, stop and reschedule for a quieter
+   period.
+3. Run the managed helper.
+
+   ```sh
+   sudo setup-swap
+   ```
+
+4. Verify the live result.
+
+   ```sh
+   df -h /
+   findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS /
+   free -h
+   cat /proc/swaps
+   swapon --show --bytes
+   sysctl -n vm.swappiness
+   stat -c%s /swapfile
+   stat -c '%n %s bytes mode=%a' /swapfile
+   ```
+
+5. Verify there is exactly one canonical `/swapfile` entry in `/etc/fstab`.
+
+   ```sh
+   awk '$1 == "/swapfile" {count++} END {print count + 0}' /etc/fstab
+   awk '
+     $1 == "/swapfile" && $2 == "none" && $3 == "swap" &&
+       $4 == "sw" && $5 == "0" && $6 == "0" {found = 1}
+     END {exit found ? 0 : 1}
+   ' /etc/fstab
+   ```
+
+Expected result for the default policy:
+
+- `/swapfile` size is `8589934592` bytes.
+- `/swapfile` mode is `600`.
+- `/proc/swaps` and `swapon --show --bytes` show `/swapfile` as active.
+- `/etc/fstab` contains exactly one canonical `/swapfile none swap sw 0 0`
+  entry.
+
+### 3.4. Rollback Considerations
+
+If the approved 8G target causes memory pressure or OOM risk, restore the
+conservative policy through a reviewed patch that sets `SWAP_SIZE_GB=16`, then
+repeat the same approved live procedure. The rollback path must use the same
+recreate and `mkswap` behavior as the shrink path, followed by the same
+`df`, `findmnt`, `free -h`, `/proc/swaps`, `swapon --show --bytes`,
+`sysctl -n vm.swappiness`, `stat -c%s /swapfile`, mode, and fstab checks.
+Do not hand-edit the live swapfile size outside the helper; the helper owns
+recreate, `mkswap`, activation, fstab normalization, and verification.
