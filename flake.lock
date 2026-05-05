@@ -122,11 +122,11 @@
     "context7": {
       "flake": false,
       "locked": {
-        "lastModified": 1777916223,
-        "narHash": "sha256-FiOzc1jkx7XUBgMpfOIPBa8H44Th4pOuUQ0WQfjE5z4=",
+        "lastModified": 1777978348,
+        "narHash": "sha256-Dv6pj5y6McLNQ63sT7w6FwlIx+e/OBtCmOINSjtq414=",
         "owner": "upstash",
         "repo": "context7",
-        "rev": "85c3a0cbfdab70f00c3bed5f8b6ca0e445077151",
+        "rev": "798a0f69d2f6b806acceaa9416d608cf67cdf695",
         "type": "github"
       },
       "original": {
@@ -170,11 +170,11 @@
     "dbt-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1777970116,
-        "narHash": "sha256-UYugeDg9QLExU2tK/fc9sNT8HLWNR9QMyqp2NoIf7uo=",
+        "lastModified": 1777977949,
+        "narHash": "sha256-p2Mhxhwji88rXihdYsQPc2a1sPIhYGEr6MnUdE45b9U=",
         "owner": "dbt-labs",
         "repo": "dbt-agent-skills",
-        "rev": "9b60e7cbb2a3268e7e61e092b1bb1f9bab677cc7",
+        "rev": "d1055a4d8a776075598bebb716d5ce689a593c8d",
         "type": "github"
       },
       "original": {
@@ -838,11 +838,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1777975353,
-        "narHash": "sha256-93go6/OdYwDThSeCbOIb0dzPBZM4o77LBrRmx0lwmNU=",
+        "lastModified": 1777978976,
+        "narHash": "sha256-UQW8ByFjC2P6G+mC5dPj5+hUplSzS6hLhHTGcE8pyQY=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "df7015b6ec2699818c20f9d53e809dbd583c789b",
+        "rev": "325686962505435580ac9af52fbb61420016f0a0",
         "type": "github"
       },
       "original": {
