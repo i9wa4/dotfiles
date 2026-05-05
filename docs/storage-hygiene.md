@@ -191,42 +191,231 @@ The cleanup app currently prunes:
 
 This is the safest immediate reclaim path for user-owned cache pressure.
 
-### 1.12. Urgent Disk-Pressure Triage
+### 1.12. Storage-Pressure Incident Runbook
 
-When the root filesystem is near exhaustion, measure first and act only on
-known-safe surfaces.
+Use this runbook when `/` or the filesystem backing `/home` is close to full.
+The default mode is read-only measurement. Run cleanup, process restart, swap
+resize, Nix GC, or deletion only after the user approves that exact action.
 
-1. Capture filesystem pressure:
+#### 1.12.1. Triage Order
+
+1. Confirm which filesystem is under pressure.
 
    ```sh
-   df -h / "$HOME" /tmp
+   df -h /
+   df -B1 /
+   findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS /
+   findmnt -R -n -o TARGET,SOURCE,FSTYPE,SIZE,USED,AVAIL,USE% /
    ```
 
-1. Capture the home storage summary:
+2. Capture current-user home pressure.
 
    ```sh
    nix run '.#storage-report' -- --self --summary
    ```
 
-1. Run the low-risk cache cleanup app:
+3. If the host has multiple Linux users, capture the all-users summary. This is
+   a read-only triage command, but it uses `sudo` so the operator can see every
+   `/home` owner.
 
    ```sh
-   nix run '.#cleanup'
+   sudo nix run '.#storage-report' -- --all-users --summary
    ```
 
-1. If `~/.codex` is a top driver, split it by storage shape before cleanup:
+4. Capture bounded root-accounting data. Keep the timeout; broad recursive
+   `du /nix` or `du /nix/store` can stall a live incident.
 
    ```sh
-   du -sh ~/.codex ~/.codex/sessions ~/.codex/logs_*.sqlite* ~/.codex/state_*.sqlite* 2>/dev/null
-   lsof ~/.codex/logs_*.sqlite-wal 2>/dev/null
+   find / -xdev -maxdepth 1 -mindepth 1 -printf '%p\n' | sort
+   timeout 90s nice -n 19 du -sxh \
+     /home /tmp /usr /var /etc /boot /opt /srv /snap /mnt /media \
+     /nix/var /nix/store/.links /swapfile 2>/dev/null
    ```
 
-1. Re-measure free space and changed buckets after every action.
+5. Capture deleted-open pressure before concluding that `du` and `df` disagree.
 
-Do not treat a same-filesystem quarantine under `/tmp` as reclaimed space.
-It is useful for removing files from a repo tree, but the root filesystem stays
-under pressure until the quarantine is deleted or the files move to a different
-filesystem.
+   ```sh
+   timeout 25s lsof -nP +L1 2>/dev/null |
+     awk '$7 ~ /^[0-9]+$/ {count++; sum += $7; bycmd[$1] += $7; bycmdc[$1]++}
+       END {
+         print "total_count", count, "total_bytes", sum;
+         for (cmd in bycmd) print "cmd", cmd, "count", bycmdc[cmd], "bytes", bycmd[cmd]
+       }' |
+     sort
+   ```
+
+6. Rank actions by safety and expected reclaim. Prefer explicit repo-managed
+   surfaces before ad hoc deletion.
+
+7. Re-measure `df`, the affected bucket, and deleted-open handles after every
+   approved action.
+
+#### 1.12.2. Root `df` Accounting
+
+`df` reports allocated blocks on the filesystem. Directory `du` reports visible
+files that can be traversed. The two views differ for normal reasons:
+
+- deleted-open files still count in `df` until the owning process closes the
+  handle
+- ext4 reserved blocks reduce `Available` even though they are not `df Used`
+- hardlinks and Nix store structure can make simple `du` sums misleading
+- permission-limited paths and live writes can move numbers during measurement
+
+Use this accounting frame for incident notes:
+
+```text
+remaining_gap = df_used_bytes - measured_visible_paths_bytes - visible_deleted_open_bytes
+```
+
+The gap is not a delete target. It is a signal to keep measuring likely
+contributors, usually Nix store paths, deleted-open handles, root-owned data,
+or live writes.
+
+#### 1.12.3. Deleted-Open Handles
+
+Deleted-open files are already unlinked from the directory tree, so deleting
+new replacement files does not reclaim the old space. The reclaim happens only
+when the process holding the old handle exits or closes it.
+
+For Codex and Claude, preserve active work first. If the user approves process
+closure, prefer normal session shutdown, then `TERM` to exact PIDs if needed,
+and avoid blind `kill -9`.
+
+Read-only checks:
+
+```sh
+lsof ~/.codex/logs_*.sqlite-wal 2>/dev/null
+lsof ~/.codex/state_*.sqlite-wal 2>/dev/null
+timeout 25s lsof -nP +L1 2>/dev/null
+```
+
+Approved action only, after active work is saved and exact PIDs are reviewed:
+
+```sh
+kill -TERM <pid>
+```
+
+Recheck after process release:
+
+```sh
+df -h /
+timeout 25s lsof -nP +L1 2>/dev/null
+```
+
+#### 1.12.4. `/tmp` Quarantine Rules
+
+Moving generated project artifacts into a dated `/tmp` quarantine can make a
+repo tree smaller and easier to inspect. It does not free root filesystem space
+when `/tmp` is on the same filesystem as the source path.
+
+Read-only checks:
+
+```sh
+df -h / /tmp "$HOME"
+findmnt -no SOURCE,TARGET,FSTYPE,OPTIONS / /tmp "$HOME"
+find /tmp -maxdepth 1 -type d -name '*cleanup*' -print
+```
+
+Use quarantine only for explicit generated paths after checking the owning repo
+status. Give each quarantine an owner, reason, and expiry path. Delete the
+quarantine only as a separately approved cleanup action.
+
+#### 1.12.5. Agent Runtime Retention
+
+Treat agent runtime state as `review_first` unless a narrower policy says
+otherwise.
+
+- Codex session JSONL retention is about 50 days for closed rollouts. Skip
+  files open by live Codex processes and preserve data used by accounting
+  tools.
+- Codex SQLite databases and WAL files are live state. Do not delete, truncate,
+  checkpoint, or compact them while `lsof` shows active writers.
+- Claude uses its configured age-based cleanup window. Review before manual
+  deletion.
+- `tmux-a2a-postman` state is control-plane evidence. Review old contexts
+  manually and preserve the active context.
+- `vde-monitor` durable state is preserved. Only its pane-log subtree is
+  disposable through the monitor's own startup pruning.
+
+#### 1.12.6. Nix Generations And GC Roots
+
+Do not delete `/nix/store`, `/nix/store/.links`, `/nix/var/nix/gcroots`, or
+profile symlinks by hand. The Nix store is a graph, and direct deletion can
+break active profiles or builds.
+
+Read-only checks:
+
+```sh
+nix profile history \
+  --profile "$HOME/.local/state/nix/profiles/profile" 2>/dev/null || true
+find /nix/var/nix/profiles -maxdepth 3 -type l 2>/dev/null | wc -l
+find "$HOME/.local/state/nix/profiles" -maxdepth 1 -type l 2>/dev/null | wc -l
+find /nix/var/nix/gcroots -maxdepth 3 -type l 2>/dev/null | head -50
+```
+
+Approved action only, after the retention policy is known:
+
+```sh
+nix run '.#gc-roots-delete'
+```
+
+For normal daily maintenance, prefer the repo's switch/update flow and the
+explicit GC-root delete surface. Do not use ad hoc `rm` under `/nix`.
+
+#### 1.12.7. `/home` Ownership
+
+Each `/home/<user>` tree belongs to that user. Measure all homes during host
+triage, but do not delete another user's data, change ownership, or move their
+repositories without owner approval.
+
+Read-only checks:
+
+```sh
+sudo nix run '.#storage-report' -- --all-users --summary
+sudo find /home -mindepth 1 -maxdepth 1 -printf '%p owner=%u group=%g mode=%m\n'
+```
+
+If a home is `SKIPPED` or `UNREADABLE`, record that state. Do not silently
+exclude it from the incident summary.
+
+#### 1.12.8. What Not To Delete
+
+Do not delete these during first response:
+
+- `/nix/store` paths, `/nix/store/.links`, or Nix gcroots by hand
+- `.git` directories, Git object stores, worktree admin directories, or linked
+  worktree lock files
+- active Codex or Claude SQLite databases, WAL files, credentials, config,
+  active sessions, or live logs
+- `tmux-a2a-postman` active mailbox state or current durable handoff artifacts
+- user data under another `/home/<user>` tree without owner approval
+- same-filesystem `/tmp` quarantine directories unless their deletion is the
+  explicit approved action
+- swap files or `/etc/fstab` entries outside the managed swap runbook
+
+#### 1.12.9. Approved Immediate Reclaim Surfaces
+
+Use these only after the user approves the exact action.
+
+Low-risk rebuildable cache cleanup:
+
+```sh
+nix run '.#cleanup'
+```
+
+Guarded stale GC-root cleanup:
+
+```sh
+nix run '.#gc-roots-delete'
+```
+
+Managed swap reduction from 16GiB to 8GiB:
+
+```sh
+sudo bash ./bin/ubuntu/setup-swap.sh
+```
+
+The swap command is approved only as part of the section 3 runbook.
 
 ### 1.13. Durable Prevention
 
@@ -351,9 +540,15 @@ Manual consolidation steps, all requiring root:
    sudo bash ./bin/ubuntu/setup-swap.sh
    ```
 
-### 3.3. Approved Live Resize Procedure
+### 3.3. Swap 16GiB To 8GiB Runbook
 
-Run this only after patch review and explicit approval for the host.
+Use this procedure when the host currently has a 16GiB `/swapfile` and the
+reviewed policy is to move to the managed 8GiB target. Run it only after patch
+review and explicit approval for the host.
+
+Expected reclaim is about `8589934592` bytes, or 8GiB, before filesystem
+metadata and live-write drift. It increases root filesystem headroom because
+`/swapfile` is a regular file on `/`.
 
 1. Capture preflight state.
 
@@ -366,18 +561,31 @@ Run this only after patch review and explicit approval for the host.
    sysctl -n vm.swappiness
    stat -c%s /swapfile
    stat -c '%n %s bytes mode=%a' /swapfile
+   awk '$1 == "/swapfile" {print}' /etc/fstab
    ```
 
 2. Confirm there is enough available memory to tolerate `swapoff`. If memory is
    tight or swap use is unexpectedly high, stop and reschedule for a quieter
    period.
-3. From the dotfiles repo root, run the managed helper.
+3. Confirm the managed helper target before running it.
+
+   ```sh
+   rg -n '^(SWAPFILE|SWAP_SIZE_GB|SWAPPINESS_TARGET)=' bin/ubuntu/setup-swap.sh
+   ```
+
+   Expected policy for the default storage-priority host:
+
+   - `SWAPFILE="/swapfile"`
+   - `SWAP_SIZE_GB=8`
+   - `SWAPPINESS_TARGET=30`
+
+4. Approved action only: from the dotfiles repo root, run the managed helper.
 
    ```sh
    sudo bash ./bin/ubuntu/setup-swap.sh
    ```
 
-4. Verify the live result.
+5. Verify the live result.
 
    ```sh
    df -h /
@@ -390,7 +598,7 @@ Run this only after patch review and explicit approval for the host.
    stat -c '%n %s bytes mode=%a' /swapfile
    ```
 
-5. Verify there is exactly one canonical `/swapfile` entry in `/etc/fstab`.
+6. Verify there is exactly one canonical `/swapfile` entry in `/etc/fstab`.
 
    ```sh
    awk '$1 == "/swapfile" {count++} END {print count + 0}' /etc/fstab
@@ -408,6 +616,19 @@ Expected result for the default policy:
 - `/proc/swaps` and `swapon --show --bytes` show `/swapfile` as active.
 - `/etc/fstab` contains exactly one canonical `/swapfile none swap sw 0 0`
   entry.
+- `df -h /` shows roughly 8GiB more headroom than the preflight sample, allowing
+  for concurrent writes and filesystem accounting drift.
+
+Risks:
+
+- If memory pressure is already high, `swapoff` can stall or fail. Stop before
+  the helper when swap use is high or `MemAvailable` is low.
+- A host that needs hibernation or maximum OOM margin may need the conservative
+  16GiB policy instead of the storage-priority 8GiB target.
+- Duplicate active swap devices must be resolved first; the helper intentionally
+  refuses to mutate when multiple swap devices are active.
+- The helper rewrites the canonical `/swapfile` fstab entry. Do not run it if a
+  host intentionally uses a different swap path or mount policy.
 
 ### 3.4. Rollback Considerations
 
