@@ -82,18 +82,34 @@ let
                     ${fd} ".DS_Store" ${ghqRoot} --hidden --no-ignore | xargs rm -f || true
                     ${fd} . ${ghqRoot} -t f --exclude ".git" -x /usr/bin/xattr -c {} \; || true
                   '';
-                # NOTE: dpp must run at least once before this activation produces dict output.
                 # NOTE: macSKK loads file dictionaries from its sandboxed Documents/Dictionaries path.
-                home.activation.setupMacSkkDict = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-                  macSkkDir="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
-                  dppSkkDev="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/skk-dev/dict"
-                  dppSkkEmoji="''${XDG_CACHE_HOME:-$HOME/.cache}/dpp/repos/github.com/uasi/skk-emoji-jisyo"
-                  mkdir -p "$macSkkDir"
-                  [[ -f "$dppSkkDev/SKK-JISYO.L" ]] && cp -f "$dppSkkDev/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
-                  [[ -f "$dppSkkDev/SKK-JISYO.jinmei" ]] && cp -f "$dppSkkDev/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei"
-                  [[ -f "$dppSkkDev/SKK-JISYO.assoc" ]] && cp -f "$dppSkkDev/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc"
-                  [[ -f "$dppSkkEmoji/SKK-JISYO.emoji.utf8" ]] && cp -f "$dppSkkEmoji/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8"
-                '';
+                # NOTE: Dictionaries are installed once; existing files are left untouched.
+                home.activation.setupMacSkkDict =
+                  let
+                    git = "${pkgs.git}/bin/git";
+                  in
+                  lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+                    macSkkDir="$HOME/Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries"
+                    mkdir -p "$macSkkDir"
+
+                    missing=()
+                    for dict in SKK-JISYO.L SKK-JISYO.jinmei SKK-JISYO.assoc SKK-JISYO.emoji.utf8; do
+                      [[ -f "$macSkkDir/$dict" ]] || missing+=("$dict")
+                    done
+
+                    if [[ ''${#missing[@]} -gt 0 ]]; then
+                      tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")"
+
+                      ${git} clone --depth 1 https://github.com/skk-dev/dict "$tmpDir/skk-dev-dict"
+                      ${git} clone --depth 1 https://github.com/uasi/skk-emoji-jisyo "$tmpDir/skk-emoji-jisyo"
+
+                      [[ -f "$macSkkDir/SKK-JISYO.L" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
+                      [[ -f "$macSkkDir/SKK-JISYO.jinmei" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei"
+                      [[ -f "$macSkkDir/SKK-JISYO.assoc" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc"
+                      [[ -f "$macSkkDir/SKK-JISYO.emoji.utf8" ]] || cp "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8"
+                      rm -rf "$tmpDir"
+                    fi
+                  '';
               };
           };
         }
