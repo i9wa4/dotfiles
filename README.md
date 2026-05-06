@@ -293,23 +293,31 @@ gh auth login --with-token
 Nix upgrade ownership differs by OS. On macOS, `nix-darwin` manages
 `nix-daemon` declaratively, so the daily `update` + `switch` flow covers
 upgrades. On Ubuntu, the system `nix-daemon` is outside home-manager's scope,
-so the installer must be re-run in place.
+so upgrade it separately from the root Nix profile.
 
 #### 6.1.1. Ubuntu
 
-The installer refuses to proceed if the previous install's shell rc backup
-still exists; reset it first.
-
-Then re-run the installer (same command as initial install):
+For a normal upgrade, do not re-run the curl installer. Upgrade the system Nix
+profile as root, then reload and restart `nix-daemon`:
 
 ```sh
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+sudo -i sh -c 'nix-channel --update && nix-env --install --attr nixpkgs.nix nixpkgs.cacert && systemctl daemon-reload && systemctl restart nix-daemon'
 ```
 
 Verify:
 
 ```sh
 nix --version
+systemctl is-active nix-daemon.service nix-daemon.socket
+```
+
+Only re-run the installer for install repair or recovery. Stop the daemon and
+socket first so the installer does not try to overwrite the active
+`nix-daemon` executable:
+
+```sh
+sudo systemctl stop nix-daemon.socket nix-daemon.service
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
 ```
 
 #### 6.1.2. macOS
