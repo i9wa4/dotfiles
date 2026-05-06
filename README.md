@@ -312,22 +312,6 @@ nix --version
 systemctl is-active nix-daemon.service nix-daemon.socket
 ```
 
-Only re-run the installer for install repair or recovery. If a previous
-installer run left `*.backup-before-nix` files behind, restore them first. This
-command aborts if a backup already contains Nix settings:
-
-```sh
-for path in /etc/bashrc /etc/profile.d/nix.sh /etc/zshrc /etc/bash.bashrc; do backup="$path.backup-before-nix"; if sudo test -e "$backup"; then if sudo grep -Eq '(^# Nix$|nix-daemon|/nix/)' "$backup"; then echo "Refusing to restore Nix-containing backup: $backup" >&2; exit 1; fi; sudo cp -a "$path" "$path.before-nix-repair-$(date +%Y%m%d%H%M%S)" 2>/dev/null || true; sudo mv "$backup" "$path"; fi; done
-```
-
-Then stop the daemon and socket so the installer does not try to overwrite the
-active `nix-daemon` executable:
-
-```sh
-sudo systemctl stop nix-daemon.socket nix-daemon.service
-sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-```
-
 ### 7.2. macOS
 
 Part of the daily flow. `nix-darwin` rewrites
