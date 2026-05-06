@@ -348,7 +348,7 @@ Verify:
 nix --version
 ```
 
-## 8. Recover After macOS Update
+### 7.3. Recover After macOS Update
 
 macOS updates can break nix-darwin in two ways:
 
