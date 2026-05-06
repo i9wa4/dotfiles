@@ -5,61 +5,16 @@ set -o pipefail
 set -o posix
 
 # Set up repository environment for development.
-# Creates local.vim and prints explicit manual trust steps when needed.
-# Also runs repository-specific setup based on repo name.
+# Prints explicit manual trust steps when needed and runs repository-specific
+# setup based on repo name.
 #
 # Usage:
 #   repo-setup
 #
-# Created files:
-#   - local.vim: Vim local configuration
-#   - memo file created via mkmd
-
 # Get current worktree root
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
 project_dir="$(basename "${worktree_root}")"
-script_path="$(command -v repo-setup 2>/dev/null || printf '%s\n' "$0")"
-script_dir="$(CDPATH='' cd -- "$(dirname -- "${script_path}")" && pwd -P)"
-dotfiles_root="$(CDPATH='' cd -- "${script_dir}/.." && pwd -P)"
 echo "* Repository: ${project_dir}"
-
-# Create local.vim via CreateLocalVimrc
-vimrc_path="${dotfiles_root}/config/vim/vimrc"
-if command -v vim &>/dev/null && [[ -f $vimrc_path ]]; then
-  vim -Nu "$vimrc_path" -n -es +'CreateLocalVimrc' +qall
-else
-  cat >local.vim <<'EOF'
-let g:mnh_header_level_shift = 1
-EOF
-fi
-echo "* Created local.vim"
-
-# Create memo file via mkmd
-memo_path="$(mkmd --dir memo --label memo)"
-cat >"$memo_path" <<'EOF'
-# temp
-EOF
-echo "* Memo:"
-echo "${memo_path}"
-tp_line="let g:my_tp_path = '${memo_path}'->expand()"
-if grep -q '^let g:my_tp_path = ' local.vim; then
-  tmp_file="$(mktemp)"
-  awk -v line="$tp_line" '
-    BEGIN { replaced = 0 }
-    /^let g:my_tp_path = / {
-      if (!replaced) {
-        print line
-        replaced = 1
-      }
-      next
-    }
-    { print }
-    END { if (!replaced) print line }
-  ' local.vim >"$tmp_file"
-  mv "$tmp_file" local.vim
-else
-  printf '%s\n' "$tp_line" >>local.vim
-fi
 
 # Keep repository trust changes opt-in only.
 if [[ -f "mise.toml" ]]; then

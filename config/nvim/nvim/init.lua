@@ -1,8 +1,11 @@
-vim.opt.runtimepath:prepend(vim.fn.expand("~/.config/vim"))
-vim.opt.runtimepath:append(vim.fn.expand("~/.config/vim/after"))
-vim.opt.packpath:prepend(vim.fn.expand("~/.config/vim"))
+local xdg_config_home = vim.fn.expand("$XDG_CONFIG_HOME")
+local vim_config_path = xdg_config_home .. "/vim"
 
-local vimrc_path = vim.fn.expand("$XDG_CONFIG_HOME") .. "/vim/vimrc"
+vim.opt.runtimepath:prepend(vim_config_path)
+vim.opt.runtimepath:append(vim_config_path .. "/after")
+vim.opt.packpath:prepend(vim_config_path)
+
+local vimrc_path = vim_config_path .. "/vimrc"
 if vim.fn.filereadable(vimrc_path) == 1 then
   vim.cmd("source " .. vim.fn.fnameescape(vimrc_path))
 end

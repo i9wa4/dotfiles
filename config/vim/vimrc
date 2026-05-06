@@ -1,4 +1,4 @@
-" ~/ghq/github.com/i9wa4/dotfiles/config/nvim/nvim/init.vim
+" ~/ghq/github.com/i9wa4/dotfiles/config/nvim/nvim/init.lua
 set encoding=utf-8
 
 filetype off
@@ -9,21 +9,7 @@ syntax off
 " --------------------------------------
 " Variable
 "
-let g:markdown_recommended_style = 0
-let g:netrw_banner = 0
-let g:netrw_clipboard = 0
-let g:netrw_dirhistmax = 0
-let g:netrw_hide = 0
-let g:netrw_liststyle = 0
-let g:vim_indent = #{line_continuation: 0}
-
-let g:mnh_header_level_shift = 7
-let g:my_i0_path = getenv('SUBDIR') .. '/index/00.md'->expand()
-let g:my_i1_path = getenv('SUBDIR') .. '/index/05.md'->expand()
-let g:my_i2_path = getenv('SUBDIR') .. '/index/07.md'->expand()
 let g:my_vr_path = '~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc'->expand()
-let g:python3_host_prog = exepath('python3')
-let g:denops#debug = 1
 
 
 " --------------------------------------
@@ -43,8 +29,8 @@ nnoremap - "_
 xnoremap - "_
 
 " Toggle Quote
-nnoremap gqq :call utils#toggle_quote()<CR>
-vnoremap gqq :call utils#toggle_quote()<CR>
+nnoremap gqq :call <SID>ToggleQuote()<CR>
+vnoremap gqq :call <SID>ToggleQuote()<CR>
 
 " Insert Mode
 " i_CTRL-T Insert one indent
@@ -83,19 +69,14 @@ nnoremap <Plug>(my-Edit)qr <Cmd>%s/"//g<CR>
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)aa <Cmd>execute 'edit' g:my_aa_path<CR>
-nnoremap <Plug>(my-Filer)c  <Cmd>execute '15Lexplore'<CR>
-nnoremap <Plug>(my-Filer)i0 <Cmd>execute 'edit' g:my_i0_path<CR>
-nnoremap <Plug>(my-Filer)i1 <Cmd>execute 'edit' g:my_i1_path<CR>
-nnoremap <Plug>(my-Filer)i2 <Cmd>execute 'edit' g:my_i2_path<CR>
-nnoremap <Plug>(my-Filer)o  <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <Plug>(my-Filer)t  <Cmd>execute 'edit' g:my_tp_path<CR>
-nnoremap <Plug>(my-Filer)v  <Cmd>execute 'edit' g:my_vr_path<CR>
+nnoremap <Plug>(my-Filer)c <Cmd>execute '15Lexplore'<CR>
+nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
+nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' g:my_vr_path<CR>
 
 " Register
 nnoremap <Plug>(my-Register) <Nop>
 nmap <Space>r <Plug>(my-Register)
-nnoremap <expr> <Plug>(my-Register)t ':call utils#send_register(' .. string(nr2char(getchar())) .. ")\<CR>"
+nnoremap <Plug>(my-Register)t <Cmd>call <SID>SendRegister(nr2char(getchar()))<CR>
 
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
@@ -111,21 +92,75 @@ nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 
 
 " --------------------------------------
-" Command
-"
-command! CreateLocalVimrc
-\ call system('echo "let g:mnh_header_level_shift = 1" > ./local.vim')
-
-
-" --------------------------------------
 " Autocmd
 "
+function! s:ToggleQuote() range abort
+  let l:all_quoted = v:true
+  for l:lnum in range(a:firstline, a:lastline)
+    if getline(l:lnum) !~ '^>'
+      let l:all_quoted = v:false
+      break
+    endif
+  endfor
+
+  for l:lnum in range(a:firstline, a:lastline)
+    let l:line = getline(l:lnum)
+    if l:all_quoted
+      call setline(l:lnum, substitute(l:line, '^>\s\?', '', ''))
+    else
+      call setline(l:lnum, '> ' .. l:line)
+    endif
+  endfor
+endfunction
+
+
+function! s:SendRegister(reg) abort
+  let l:content = getreg(a:reg)
+  silent! let @+ = l:content
+  call system('tmux load-buffer -w -', l:content)
+endfunction
+
+
+function! s:HighlightDefine() abort
+  highlight HlMS guibg=#FFB6C1 guifg=#000000
+
+  " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
+  highlight link markdownError Normal
+  highlight link markdownItalic Normal
+
+  " transparent background
+  highlight EndOfBuffer   guibg=NONE
+  highlight Folded        guibg=NONE
+  highlight Identifier    guibg=NONE
+  highlight LineNr        guibg=NONE
+  highlight NonText       guibg=NONE
+  highlight Normal        guibg=NONE
+  highlight Special       guibg=NONE
+  highlight StatusLine    guibg=NONE
+  highlight StatusLineNC  guibg=NONE
+  highlight VertSplit     guibg=NONE
+endfunction
+
+
+function! s:HighlightMatch() abort
+  call clearmatches()
+
+  call matchadd('HlMS', 'HlMS')
+  call matchadd('HlMS', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
+  call matchadd('HlMS', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
+  call matchadd('HlMS', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
+  call matchadd('HlMS', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
+
+  if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
+    let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
+  endif
+endfunction
+
+
 augroup MyAutocmd
   autocmd!
 
   autocmd BufReadPost * silent! normal! g`"
-  autocmd BufEnter,BufNewFile *
-  \ call utils#source_local_vimrc('<afile>:p'->expand())
   autocmd BufEnter *
   \   if empty(&buftype)
   \|    call setreg('a', '%'->expand()->fnamemodify(':p:~'))
@@ -138,9 +173,8 @@ augroup MyAutocmd
   autocmd BufNewFile,BufReadPost *.tf,*.tftpl
   \ setfiletype terraform
 
-  autocmd ColorScheme * call utils#highlight_define()
-  autocmd WinEnter,FileType * call utils#highlight_match()
-  autocmd VimLeave * call utils#clean_viminfo()
+  autocmd ColorScheme * call <SID>HighlightDefine()
+  autocmd WinEnter,FileType * call <SID>HighlightMatch()
 augroup END
 
 let g:auto_reload = timer_start(
@@ -154,11 +188,7 @@ let g:auto_reload = timer_start(
 " Option
 "
 " Edit
-set completeopt=menuone,noinsert,noselect
-set fileencodings=utf-8,euc-jp,cp932
-set fileformats=unix,dos,mac
 set hidden
-set nofoldenable autoindent
 set nrformats=unsigned
 set virtualedit=block
 
@@ -181,19 +211,6 @@ set ambiwidth=double
 set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
 set number
 set signcolumn=number
-
-" Window
-set noequalalways
-set splitbelow
-set splitright
-set wildmenu wildoptions=pum,tagfile wildchar=<Tab>
-
-" CommandLine
-set cmdheight=1
-set showcmd
-
-" StatusLine
-set laststatus=2
 
 " TabLine
 set showtabline=2
