@@ -18,6 +18,10 @@ user home directory. On the Ubuntu target, the daily `storage-report` timer
 rewrites the latest scheduled self report at
 `${XDG_STATE_HOME:-~/.local/state}/storage-report/latest.log`.
 
+For agents, the internal `storage-hygiene` skill is the operational entrypoint.
+Its storage-report bridge executes this same report implementation so
+`nix run '.#storage-report'` remains the stable user-facing command.
+
 ### 1.2. All Linux Home Users
 
 ```sh
@@ -131,9 +135,10 @@ shapes that must not be collapsed into one cleanup rule.
   memories, handoffs, and session data needed by accounting tools.
 - Live TUI logs such as `~/.codex/log/codex-tui.log` stay `review_first`, but
   they are not part of the 50-day session-rollout retention window.
-- This follow-up still does not add a new Codex prune command. Any later
-  cleanup automation must stay explicit, review-first, and narrower than the
-  session/log split above.
+- The internal `storage-hygiene` skill provides a manual dry-run-first Codex
+  session JSONL pruning helper. It is not scheduled, requires an explicit
+  `--days` threshold, requires `--delete` for mutation, refuses open handles,
+  and stays narrower than the session/log split above.
 
 ### 1.9. `tmux-a2a-postman` And `vde-monitor`
 
