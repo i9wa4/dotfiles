@@ -7,12 +7,6 @@ syntax off
 
 
 " --------------------------------------
-" Variable
-"
-let g:my_vr_path = '~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc'->expand()
-
-
-" --------------------------------------
 " Keymap
 "
 nnoremap gf gF
@@ -40,18 +34,6 @@ command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
 nnoremap <C-p> :Lprevious<CR>
 nnoremap <C-n> :Lnext<CR>
 
-" Resize Window
-" https://zenn.dev/mattn/articles/83c2d4c7645faa
-nmap <C-w>H <C-w><<SID>ws
-nmap <C-w>J <C-w>-<SID>ws
-nmap <C-w>K <C-w>+<SID>ws
-nmap <C-w>L <C-w>><SID>ws
-nmap <SID>ws <Nop>
-nnoremap <script> <SID>wsH <C-w><<SID>ws
-nnoremap <script> <SID>wsJ <C-w>-<SID>ws
-nnoremap <script> <SID>wsK <C-w>+<SID>ws
-nnoremap <script> <SID>wsL <C-w>><SID>ws
-
 " Open parent directory
 if !has('nvim')
   nnoremap - <Cmd>edit %:p:h<CR>
@@ -61,18 +43,14 @@ endif
 " Edit
 nnoremap <Plug>(my-Edit) <Nop>
 nmap <Space>e <Plug>(my-Edit)
-nnoremap <Plug>(my-Edit)r  <Cmd>%s/\r$//e<CR>
-nnoremap <Plug>(my-Edit)s  <Cmd>%s/\s\+$//e<CR>
-nnoremap <Plug>(my-Edit)n  <Cmd>%s/\%ua0//e<CR>
-nnoremap <Plug>(my-Edit)qa <Cmd>%s/\([^,]*\)/"\1"/g<CR>
-nnoremap <Plug>(my-Edit)qr <Cmd>%s/"//g<CR>
+nnoremap <Plug>(my-Edit)n <Cmd>%s/\%ua0//e<CR>
+nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
+nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
 
 " Filer
 nnoremap <Plug>(my-Filer) <Nop>
 nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)c <Cmd>execute '15Lexplore'<CR>
-nnoremap <Plug>(my-Filer)o <Cmd>execute '15Lexplore' '%:p:h'->expand()<CR>
-nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' g:my_vr_path<CR>
+nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC->expand()<CR>
 
 " Register
 nnoremap <Plug>(my-Register) <Nop>
