@@ -60,8 +60,9 @@ artifacts.
   `subagents/_metadata.nix`, and `shared/render-agents.nix`, not in the
   top-level runtime modules.
 - After setting up Claude Code on a new machine or after adding new projects,
-  run `/claude-workspace-trust-fix`; otherwise interactive `PreToolUse` hooks
-  can be skipped until workspace trust is recorded.
+  use `/agent-harness-engineering` and its Claude workspace trust workflow;
+  otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
+  is recorded.
 
 ## Rule Of Thumb
 
