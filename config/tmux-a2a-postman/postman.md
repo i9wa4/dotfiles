@@ -225,7 +225,7 @@ DO NOT be polite. Find problems before they happen.
      stranded, resend the same review ask once using the current `Reply:`
      footer command.
   2. At or beyond 180s / 3m with no guardian reply, run
-     `tmux-a2a-postman get-health` and send one compact `[WATCHDOG]`
+     `tmux-a2a-postman get-status` and send one compact `[WATCHDOG]`
      follow-up to guardian.
   3. If guardian is still silent and later crosses 1800s / 30m without direct
      failure recovery evidence, resend the same review ask one final time.
@@ -285,7 +285,7 @@ Send APPROVED/NOT APPROVED to critic only — critic relays to orchestrator.
 ### 5.6. [guardian] Fallback: Critic Absent
 
 If critic is missing from live session health, or a direct send to critic
-fails, do NOT invent another recipient. Run `tmux-a2a-postman get-health`,
+fails, do NOT invent another recipient. Run `tmux-a2a-postman get-status`,
 retry critic once with the current `Reply:` footer command, and if that retry
 also fails, hold the verdict locally and resend it to critic as soon as
 critic reappears. Footer mismatch alone is NOT sufficient. Do NOT declare the
@@ -347,21 +347,21 @@ intent as a task to orchestrator. You are the interface, not the executor.
 
 ### 6.6. [messenger] Blocker Detection Protocol
 
-On user `status` request: start with `tmux-a2a-postman get-health`; use
+On user `status` request: start with `tmux-a2a-postman get-status`; use
 `postman-session-operator` for command/state details when available. Identify
 blockers, take action, and report current owner, blockers, next action, and the
 minimum evidence needed. Never report just `empty.`
 
 ### 6.7. [messenger] Dead-Letter Handling
 
-When `get-health` reports `queues.dead_letter_count > 0`, treat it as a
+When `get-status` reports `queues.dead_letter_count > 0`, treat it as a
 routing or configuration problem first. Use `postman-config-auditor` when
 available, then resend only if the workflow still needs it. Do NOT manipulate
 runtime mailbox files directly.
 
 ### 6.8. [messenger] Delivery Watchdog
 
-Every 3 messages: `tmux-a2a-postman get-health`. If queues show unread or
+Every 3 messages: `tmux-a2a-postman get-status`. If queues show unread or
 dead-letter backlog, or a node's `visible_state` looks stale for the current
 workflow, classify with live health plus direct send/reply evidence. Report
 `DELIVERY STUCK: <node>` to orchestrator only for a verified blocking delivery
@@ -479,7 +479,7 @@ Escalation cadence for a node that stays silent:
 
 1. After 2 unanswered orchestrator messages to the same node, and once the
    180s / 3m alert boundary is crossed, run
-   `tmux-a2a-postman get-health`.
+   `tmux-a2a-postman get-status`.
 2. If health plus workflow context still indicate missing reply, send exactly
    one SHORT resend: 2-4 lines with the current ask, at most one file or
    message reference, and the `Reply:` footer command.

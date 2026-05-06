@@ -63,7 +63,7 @@ Three details matter:
 - the pane title is surfaced in the border format, so role identity stays
   visible while working
 - the tmux status line includes
-  `tmux-a2a-postman get-health-oneline`, which makes control-plane
+  `tmux-a2a-postman get-status-oneline`, which makes control-plane
   state part of the normal terminal view
 
 So the repo is not treating agent orchestration as a hidden sidecar. It is a

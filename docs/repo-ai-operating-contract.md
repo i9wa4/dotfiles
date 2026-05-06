@@ -439,7 +439,7 @@ stuck delivery by themselves.
 
 Before escalating:
 
-1. start with `tmux-a2a-postman get-health`
+1. start with `tmux-a2a-postman get-status`
 2. classify the state using live session health plus direct send/reply evidence
 3. escalate only if it is genuinely blocking
 
