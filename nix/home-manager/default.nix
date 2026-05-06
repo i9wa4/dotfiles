@@ -128,13 +128,13 @@ in
 
   xdg.configFile = {
     # symlink
+    "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
+    "vim".source = symlink "${dotfilesDir}/config/vim";
     "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
     "kitty".source = ../../config/kitty;
-    "nvim".source = ../../config/nvim/nvim;
-    "vim".source = ../../config/vim;
   };
 
   # Nix settings (user-level, written to ~/.config/nix/nix.conf)
