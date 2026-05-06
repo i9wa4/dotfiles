@@ -24,10 +24,6 @@ nmap gk gk<SID>g
 nnoremap <script> <SID>gj gj<SID>g
 nnoremap <script> <SID>gk gk<SID>g
 
-" https://blog.atusy.net/2025/08/08/map-minus-to-blackhole-register/
-nnoremap - "_
-xnoremap - "_
-
 " Toggle Quote
 nnoremap gqq :call <SID>ToggleQuote()<CR>
 vnoremap gqq :call <SID>ToggleQuote()<CR>
@@ -55,6 +51,11 @@ nnoremap <script> <SID>wsH <C-w><<SID>ws
 nnoremap <script> <SID>wsJ <C-w>-<SID>ws
 nnoremap <script> <SID>wsK <C-w>+<SID>ws
 nnoremap <script> <SID>wsL <C-w>><SID>ws
+
+" Open parent directory
+if !has('nvim')
+  nnoremap - <Cmd>edit %:p:h<CR>
+endif
 
 " https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Edit
