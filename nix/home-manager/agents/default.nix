@@ -6,8 +6,8 @@
 #   shared/       cross-runtime data and builders (deny rules, MCP servers,
 #                 install manifest, render-agents, agent-skills installer)
 #   subagents/    subagent prompt bodies + _metadata.nix (single SSOT)
-#   skills/       hand-authored skills (claude/codex config optimizers,
-#                 workspace-trust-fix, etc.)
+#   skills/       hand-authored skills (agent-harness-engineering, runtime
+#                 config optimizers, etc.)
 #   scripts/      hook + statusline scripts
 #
 # See README.md for the editing map.
