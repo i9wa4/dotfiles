@@ -298,11 +298,7 @@ so the installer must be re-run in place.
 #### 6.1.1. Ubuntu
 
 The installer refuses to proceed if the previous install's shell rc backup
-still exists; reset it first:
-
-```sh
-sudo mv /etc/bash.bashrc.backup-before-nix /etc/bash.bashrc
-```
+still exists; reset it first.
 
 Then re-run the installer (same command as initial install):
 
