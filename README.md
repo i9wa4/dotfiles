@@ -298,10 +298,11 @@ so upgrade it separately from the root Nix profile.
 ### 7.1. Ubuntu
 
 For a normal upgrade, do not re-run the curl installer. Upgrade the system Nix
-profile as root, then reload and restart `nix-daemon`:
+profile as root, then reload and restart `nix-daemon`. `--remove-all` avoids a
+profile conflict with the `nix-manual` output from the original installer:
 
 ```sh
-sudo -i sh -c 'nix-channel --update && nix-env --install --attr nixpkgs.nix nixpkgs.cacert && systemctl daemon-reload && systemctl restart nix-daemon'
+sudo -i sh -c 'nix-channel --update && nix-env --install --remove-all --attr nixpkgs.nix nixpkgs.cacert && systemctl daemon-reload && systemctl restart nix-daemon'
 ```
 
 Verify:
