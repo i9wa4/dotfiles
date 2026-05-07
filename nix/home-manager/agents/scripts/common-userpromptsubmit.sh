@@ -57,6 +57,18 @@ read_add_dir_summary() {
       exit
     }
 
+    NR == 1 && $0 ~ /^[[:space:]]*---[[:space:]]*$/ {
+      in_frontmatter = 1
+      next
+    }
+
+    in_frontmatter {
+      if ($0 ~ /^[[:space:]]*(---|\.\.\.)[[:space:]]*$/) {
+        in_frontmatter = 0
+      }
+      next
+    }
+
     /^[[:space:]]*$/ {
       flush_paragraph()
       next
