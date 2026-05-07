@@ -70,10 +70,11 @@ read_frontmatter() {
 }
 
 emit_root() {
-  local runtime=$1
-  local root=$2
+  local root=$1
+  local skill_root
 
   [ -d "$root" ] || return 0
+  skill_root=$(to_home_relative "$root")
 
   find -L "$root" -mindepth 2 -maxdepth 2 -name SKILL.md -print |
     sort |
@@ -88,21 +89,29 @@ emit_root() {
 
       skill_path=$(to_home_relative "$skill_file")
       printf "| %s | \`%s\` | \`%s\` | %s |\n" \
-        "$runtime" \
+        "$(printf '%s' "$skill_root" | escape_table_cell)" \
         "$(printf '%s' "$name" | escape_table_cell)" \
         "$(printf '%s' "$skill_path" | escape_table_cell)" \
         "$(printf '%s' "$description" | escape_table_cell)"
     done
 }
 
+emit_installed_skill_roots() {
+  local root
+
+  for root in "$home"/.*/skills; do
+    [ -d "$root" ] || continue
+    emit_root "$root"
+  done
+}
+
 cat <<'EOF'
-# Agent Skill Index
+# Agent Skill Description Index
 
 Generated from installed user-level skill trees.
 
-| Runtime | Skill | SKILL.md Path | Description |
-| ------- | ----- | ------------- | ----------- |
+| Skill Root | Skill | SKILL.md Path | Description |
+| ---------- | ----- | ------------- | ----------- |
 EOF
 
-emit_root "Codex CLI" "$home/.codex/skills"
-emit_root "Claude Code" "$home/.claude/skills"
+emit_installed_skill_roots
