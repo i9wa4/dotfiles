@@ -194,11 +194,21 @@ v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
 contention, or TUI TRACE log churn. Remove or rewrite this section once the
 workaround is no longer needed.
 
+The automated mitigation in this repo is a daily checkpoint timer; see
+[Automated Mitigation](#automated-mitigation-this-repo) below. The runbook
+below is the manual fallback for one-time recovery (e.g. when the timer has
+been disabled or when truncate has been blocked by `busy=1` for many
+consecutive ticks and the WAL has grown beyond what the timer can reclaim
+in a single pass).
+
 #### What we know so far
 
 - Codex CLI 0.128.0 appears affected by `~/.codex/logs_2.sqlite-wal` bloat.
 - Local observed symptom on 2026-05-07: root/home was 98% used,
   `~/.codex` was 38G, `logs_2.sqlite-wal` was 32G, and `sessions` was 5.9G.
+  Manual `PRAGMA wal_checkpoint(TRUNCATE)` against an idle Codex returned
+  `busy=0 log_pages=0 checkpointed=0` and reclaimed the full 32G in 4.3s
+  (no rows needed to fold; the WAL had simply never been truncated).
 - No general maintainer-endorsed cleanup command or environment flag has been
   found yet.
 - A user-reported workaround in
@@ -209,6 +219,11 @@ workaround is no longer needed.
 - A live cleanup attempt while Codex panes were still running failed:
   `DELETE FROM logs` raised `OperationalError: database is locked`, and
   `PRAGMA wal_checkpoint(TRUNCATE)` returned busy `(1, -1, -1)`.
+- A pure `PRAGMA wal_checkpoint(TRUNCATE)` (without `DELETE`/`VACUUM`) is
+  safe to run while Codex is active: it folds writes into the main DB and
+  best-effort truncates the WAL. On `busy=1` it returns without truncating
+  (no data loss, just no shrink that round). The automated timer below
+  relies on this property.
 
 #### Symptoms and diagnosis
 
@@ -282,10 +297,76 @@ Rollback/testing notes:
   DB boundary; it is a poor long-term pin because of feature and model metadata
   drift. `gpt-5.5` support was first checked as stable around 0.125.0.
 
+#### Automated Mitigation (this repo)
+
+A periodic `PRAGMA wal_checkpoint(TRUNCATE)` is wired into the Nix-managed
+agent harness in `nix/home-manager/agents/codex/default.nix`. It treats the
+symptom (unbounded WAL) at the harness layer because the root cause lives
+upstream in Codex CLI's logging connection lifecycle and cannot be fixed
+from config.
+
+Implementation:
+
+- `walCheckpointScript` (`pkgs.writeShellApplication`): bash + Python
+  one-shot that opens `~/.codex/logs_2.sqlite` with a 30-second busy
+  timeout, runs `PRAGMA wal_checkpoint(TRUNCATE)`, and logs WAL size
+  before/after plus the `(busy, log_pages, checkpointed)` triple. On
+  `OperationalError` (lock contention at connect time) it logs and exits 0
+  -- the next timer tick retries.
+- Linux (`pkgs.stdenv.isLinux`):
+  `systemd.user.services.codex-wal-checkpoint` (oneshot) +
+  `systemd.user.timers.codex-wal-checkpoint`. Schedule:
+  `OnCalendar = "hourly"`, `Persistent = true` (catches up missed ticks
+  after suspend/offline), `RandomizedDelaySec = "5m"`.
+- Darwin (`pkgs.stdenv.isDarwin`): Home Manager
+  `launchd.agents.codex-wal-checkpoint`. Schedule: `StartCalendarInterval` at
+  minute 0 of every hour, `RunAtLoad = false`, `AbandonProcessGroup = true`.
+  Logs to `~/Library/Logs/codex-wal-checkpoint.log`. launchd auto-reschedules to
+  the next wake when the Mac is asleep at trigger time.
+- Cross-platform values are gated with `lib.mkIf pkgs.stdenv.isLinux` /
+  `lib.mkIf pkgs.stdenv.isDarwin`, NOT `lib.optionalAttrs` at the
+  module-return shape: an earlier draft using `optionalAttrs` triggered an
+  infinite-recursion at Home-Manager-on-nix-darwin's entry path, because
+  `optionalAttrs` forced `pkgs.stdenv` to evaluate before `_module.args`
+  resolved. `mkIf` defers the conditional to the option-merge phase, so
+  it doesn't enter the module-shape evaluation cycle.
+
+Why this is safe to run while Codex is active:
+
+- WAL mode is designed for concurrent multi-process access. Checkpoint is a
+  cleanup operation, not a competing one.
+- `TRUNCATE` is best-effort. On `busy=1` it returns without truncating; the
+  WAL stays its current size and no data is lost.
+- Logs go to journald (Linux) or `~/Library/Logs/` (Darwin). If `busy=1`
+  shows up consistently, that is a signal to investigate Codex usage
+  patterns or to schedule the timer at a quieter hour, not to fix the
+  script.
+
+Inspecting the timer:
+
+```sh
+# Linux
+systemctl --user list-timers codex-wal-checkpoint.timer
+journalctl --user -u codex-wal-checkpoint.service -n 50
+
+# Darwin
+launchctl list | grep codex-wal-checkpoint
+tail -n 50 ~/Library/Logs/codex-wal-checkpoint.log
+```
+
+This is symptom containment, not a root-cause fix. Revisit when upstream
+addresses the issues tracked in the table below; the timer can stay as
+defense-in-depth even after the upstream fix lands, but its observed
+busy/checkpointed ratio is the signal for whether it remains needed.
+
 #### Things not to do
 
-- Do not delete, truncate, or move only `logs_2.sqlite-wal`.
-- Do not run `DELETE`, checkpoint, or `VACUUM` while Codex holds SQLite locks.
+- Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand. Use
+  `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer or the manual
+  runbook above) so the writes are folded into the main DB first.
+- Do not run `DELETE` or `VACUUM` while Codex holds SQLite locks. Plain
+  `PRAGMA wal_checkpoint(TRUNCATE)` is safe under contention; `DELETE`
+  and `VACUUM` are not.
 - Do not touch `state_5.sqlite*` or `sessions` for this issue.
 - Do not run storage-heavy builds or broad checks just to diagnose the WAL.
 - Do not claim PRs are confirmed fixes unless upstream says so and local
@@ -350,6 +431,14 @@ this runbook.
   2026-05-03 after observing `codex_apps` MCP startup hangs in tmux panes.
   Keep `plugins` enabled separately unless plugin discovery itself becomes a
   measured first-display blocker.
+- [x] WAL checkpoint timer added 2026-05-07 after `~/.codex/logs_2.sqlite-wal`
+  reached 32 GB on the Linux host (root/home at 97% used). One-shot manual
+  `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
+  timer keeps the WAL from growing back. Cross-platform: `systemd.user`
+  timer on Linux, `launchd.agents` on Darwin, gated by `lib.optionalAttrs`
+  on `pkgs.stdenv.isLinux` / `isDarwin`. Symptom containment, not an
+  upstream fix; see [Automated Mitigation](#automated-mitigation-this-repo)
+  for inspection commands.
 
 ### 9.2. Pending Considerations
 

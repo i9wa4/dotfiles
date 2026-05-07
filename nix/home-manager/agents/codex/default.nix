@@ -138,6 +138,67 @@ let
   baseConfigFile = tomlFormat.generate "codex-config-base.toml" codexConfig;
   managedConfigStart = "# BEGIN DOTFILES NIX MANAGED CODEX CONFIG";
   managedConfigEnd = "# END DOTFILES NIX MANAGED CODEX CONFIG";
+
+  # Periodic WAL checkpoint to keep ~/.codex/logs_2.sqlite-wal from growing
+  # unbounded. Codex CLI's internal logging connection holds long-lived
+  # readers that block SQLite passive auto-checkpoints; without this timer
+  # the WAL has been observed to reach 30+ GB. PRAGMA wal_checkpoint(TRUNCATE)
+  # is safe to run while Codex is active: it folds writes into the main DB
+  # and best-effort truncates the WAL. On busy=1 it returns without
+  # truncating (no data loss, just no shrink that round) -- the next timer
+  # tick retries. Documented in the WAL Bloat Runbook in
+  # skills/agent-harness-engineering/references/codex-cli.md.
+  walCheckpointScript = pkgs.writeShellApplication {
+    name = "codex-wal-checkpoint";
+    runtimeInputs = [ pkgs.python3 ];
+    text = ''
+      DB="$HOME/.codex/logs_2.sqlite"
+      WAL="$DB-wal"
+
+      if [ ! -f "$DB" ]; then
+        echo "codex-wal-checkpoint: $DB not found, skipping"
+        exit 0
+      fi
+
+      stat_size() {
+        if size=$(stat -c%s "$1" 2>/dev/null); then
+          printf '%s' "$size"
+        else
+          stat -f%z "$1" 2>/dev/null || printf '0'
+        fi
+      }
+
+      before=0
+      if [ -f "$WAL" ]; then before=$(stat_size "$WAL"); fi
+      echo "codex-wal-checkpoint: WAL before = $before bytes"
+
+      python3 - <<'PY'
+      import os
+      import sqlite3
+      import sys
+
+      db = os.path.expanduser("~/.codex/logs_2.sqlite")
+      try:
+          conn = sqlite3.connect(db, timeout=30)
+          try:
+              busy, log_pages, checkpointed = conn.execute(
+                  "PRAGMA wal_checkpoint(TRUNCATE)"
+              ).fetchone()
+              print(
+                  f"codex-wal-checkpoint: result busy={busy} "
+                  f"log_pages={log_pages} checkpointed={checkpointed}"
+              )
+          finally:
+              conn.close()
+      except sqlite3.OperationalError as exc:
+          print(f"codex-wal-checkpoint: skipped ({exc})", file=sys.stderr)
+      PY
+
+      after=0
+      if [ -f "$WAL" ]; then after=$(stat_size "$WAL"); fi
+      echo "codex-wal-checkpoint: WAL after  = $after bytes"
+    '';
+  };
 in
 {
   home.file = {
@@ -299,4 +360,60 @@ in
         rm -f "$_repo_list"
         echo "Generated: $_output"
   '';
+
+  # Cross-platform WAL checkpoint scheduling.
+  # Using lib.mkIf (not lib.optionalAttrs) keeps the conditional at the
+  # option-merge phase; lib.optionalAttrs at the module-return shape
+  # forces pkgs.stdenv evaluation before _module.args resolve and triggers
+  # an infinite-recursion at Home Manager's Darwin entry path.
+
+  # Linux: systemd user timer.
+  # Hourly checkpoint with persistent catch-up so suspended/offline hosts
+  # still run a missed tick on next boot. Random delay smears the start
+  # across the first 5 minutes of each hour to avoid hammering the wall
+  # clock; with ~5m skew the next tick is still reliably within the same
+  # hour even if codex was busy at the top.
+  systemd.user.services.codex-wal-checkpoint = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Truncate Codex CLI logs SQLite WAL";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${walCheckpointScript}/bin/codex-wal-checkpoint";
+    };
+  };
+  systemd.user.timers.codex-wal-checkpoint = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = {
+      Description = "Hourly Codex CLI logs SQLite WAL checkpoint";
+    };
+    Timer = {
+      OnCalendar = "hourly";
+      Persistent = true;
+      RandomizedDelaySec = "5m";
+    };
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  # Darwin: launchd user agent.
+  # Hourly at minute 0; if the Mac is asleep at trigger time, launchd
+  # runs the job at the next wake. RunAtLoad=false avoids running on
+  # every login. AbandonProcessGroup keeps the python child alive even if
+  # launchd reaps the parent quickly (rare for a single-shot but cheap to
+  # set).
+  launchd.agents.codex-wal-checkpoint = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      Label = "user.codex-wal-checkpoint";
+      ProgramArguments = [ "${walCheckpointScript}/bin/codex-wal-checkpoint" ];
+      StartCalendarInterval = [
+        { Minute = 0; }
+      ];
+      StandardOutPath = "${homeDir}/Library/Logs/codex-wal-checkpoint.log";
+      StandardErrorPath = "${homeDir}/Library/Logs/codex-wal-checkpoint.log";
+      RunAtLoad = false;
+      AbandonProcessGroup = true;
+    };
+  };
 }
