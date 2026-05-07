@@ -187,6 +187,130 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 Last reviewed Codex CLI version: v0.128.0 (2026-05-03)
 
+### Temporary WAL Bloat Runbook (2026-05)
+
+This note is temporary. Revisit it after the local Codex CLI version moves past
+v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
+contention, or TUI TRACE log churn. Remove or rewrite this section once the
+workaround is no longer needed.
+
+#### What we know so far
+
+- Codex CLI 0.128.0 appears affected by `~/.codex/logs_2.sqlite-wal` bloat.
+- Local observed symptom on 2026-05-07: root/home was 98% used,
+  `~/.codex` was 38G, `logs_2.sqlite-wal` was 32G, and `sessions` was 5.9G.
+- No general maintainer-endorsed cleanup command or environment flag has been
+  found yet.
+- A user-reported workaround in
+  [openai/codex#20213](https://github.com/openai/codex/issues/20213) is:
+  stop Codex, back up `logs_2.sqlite*`, run `DELETE FROM logs`,
+  `PRAGMA wal_checkpoint(TRUNCATE)`, and `VACUUM` against
+  `~/.codex/logs_2.sqlite`.
+- A live cleanup attempt while Codex panes were still running failed:
+  `DELETE FROM logs` raised `OperationalError: database is locked`, and
+  `PRAGMA wal_checkpoint(TRUNCATE)` returned busy `(1, -1, -1)`.
+
+#### Symptoms and diagnosis
+
+Use read-only checks first:
+
+```sh
+codex --version
+df -hT ~
+du -sh ~/.codex ~/.codex/logs_2.sqlite* ~/.codex/sessions 2>/dev/null
+ls -lh ~/.codex/logs_2.sqlite*
+lsof ~/.codex/logs_2.sqlite* 2>/dev/null
+fuser -v ~/.codex/logs_2.sqlite* 2>/dev/null
+lslocks 2>/dev/null | rg 'logs_2\.sqlite|COMMAND|PID' || true
+```
+
+Interpretation:
+
+- A huge `logs_2.sqlite-wal` with a small `logs_2.sqlite` points to WAL growth,
+  not session JSONL retention.
+- Any live Codex process with the DB files open can make cleanup unsafe or
+  ineffective. Write locks on `logs_2.sqlite-shm` are a hard stop for SQLite
+  write cleanup.
+- Track `~/.codex/sessions` separately; pruning sessions is not the fix for
+  this WAL issue.
+
+#### Countermeasures and safe mitigation
+
+Only run SQLite writes during a coordinated quiet period when all protected
+Codex roles have stopped or released the DB. If another agent is active, ask
+for coordination instead of racing the database.
+
+Preconditions:
+
+- Preserve any current conversation/session needed for recovery.
+- Confirm no live Codex process holds `~/.codex/logs_2.sqlite*`.
+- Back up `logs_2.sqlite`, `logs_2.sqlite-wal`, and `logs_2.sqlite-shm`
+  together if space allows. If space does not allow a full triplet backup,
+  record that tradeoff and do not present a partial copy as restorable.
+- Use SQLite-native operations only.
+
+Cleanup shape, after the preconditions are met:
+
+```sh
+sqlite3 ~/.codex/logs_2.sqlite <<'SQL'
+PRAGMA busy_timeout=10000;
+SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'logs';
+DELETE FROM logs;
+PRAGMA wal_checkpoint(TRUNCATE);
+VACUUM;
+SQL
+```
+
+If `sqlite3` is unavailable, use Python's `sqlite3` module to run the same SQL
+and record `sqlite3.sqlite_version` in the handoff.
+
+Afterward, verify:
+
+```sh
+df -hT ~
+du -sh ~/.codex/logs_2.sqlite* ~/.codex/sessions 2>/dev/null
+ls -lh ~/.codex/logs_2.sqlite*
+codex --version
+```
+
+Rollback/testing notes:
+
+- Restore the backup only as a complete SQLite triplet while Codex is stopped.
+- Start one Codex session after cleanup and verify it launches normally before
+  restarting many panes.
+- Downgrading to 0.120.0 can be used only as an A/B test before the TUI TRACE
+  DB boundary; it is a poor long-term pin because of feature and model metadata
+  drift. `gpt-5.5` support was first checked as stable around 0.125.0.
+
+#### Things not to do
+
+- Do not delete, truncate, or move only `logs_2.sqlite-wal`.
+- Do not run `DELETE`, checkpoint, or `VACUUM` while Codex holds SQLite locks.
+- Do not touch `state_5.sqlite*` or `sessions` for this issue.
+- Do not run storage-heavy builds or broad checks just to diagnose the WAL.
+- Do not claim PRs are confirmed fixes unless upstream says so and local
+  verification supports it.
+
+#### Issue and PR tracking
+
+Last checked 2026-05-07 with `gh issue view` and `gh pr view`.
+
+| Item                                                    | Status           | Watch for                                      |
+| ------------------------------------------------------- | ---------------- | ---------------------------------------------- |
+| [#17320](https://github.com/openai/codex/issues/17320)  | open             | TRACE logs ignoring `RUST_LOG`, WAL churn      |
+| [#20213](https://github.com/openai/codex/issues/20213)  | open             | SQLite lock contention and cleanup workaround  |
+| [#20563](https://github.com/openai/codex/issues/20563)  | open             | Heavy idle I/O reports                         |
+| [#21134](https://github.com/openai/codex/issues/21134)  | open             | Long-thread memory and TRACE log churn         |
+| [#16886](https://github.com/openai/codex/issues/16886)  | open             | TUI logs growing without rotation              |
+| [PR #16989](https://github.com/openai/codex/pull/16989) | closed, unmerged | Shutdown flushing ideas, not an adopted fix    |
+| [PR #20561](https://github.com/openai/codex/pull/20561) | merged           | State DB handle changes; not confirmed WAL fix |
+| [PR #21367](https://github.com/openai/codex/pull/21367) | merged           | Thread `updated_at` coalescing; verify impact  |
+| [PR #21107](https://github.com/openai/codex/pull/21107) | merged           | Noisy OTEL diagnostics; not confirmed WAL fix  |
+
+When revisiting, check the local version with `codex --version`, scan release
+notes up to that version, and re-check the issue/PR statuses before changing
+this runbook.
+
 ### 9.1. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
