@@ -1,19 +1,7 @@
----
-name: tmux
-license: MIT
-description: |
-  tmux pane operations guide for debugging and monitoring separate panes
-  Use when:
-  - Sending commands to another tmux pane
-  - Capturing output from another tmux pane
-  - Monitoring long-running commands in separate panes
-  - Debugging devcontainer build/up operations
-  - Working with multiple panes in parallel
----
-
 # tmux Pane Operations
 
-This skill provides a guide for interacting with separate tmux panes.
+Full reference for interacting with separate tmux panes.
+Migrated from `skills/tmux/SKILL.md`.
 
 ## 1. Basic Commands
 
@@ -177,11 +165,14 @@ tmux list-panes -a
 
 # Get current pane ID
 tmux display-message -p '#{pane_id}'
+
+# List panes with title, command, path
+tmux list-panes -t <session> -a -F "#{window_index} #{pane_id} #{pane_title} #{pane_current_command} #{pane_current_path}"
 ```
 
 ## 6. Notes
 
 - Pane IDs persist within a tmux session
-- Use unique pane IDs (%N format) for reliable targeting
+- Use unique pane IDs (`%N` format) for reliable targeting
 - Commands sent via send-keys execute in the target pane's context
 - Captured output reflects the current visible content of the pane

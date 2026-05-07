@@ -35,7 +35,7 @@ The current repository wrappers and checked-in config are the source of truth:
 | ------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ------------------------------ |
 | `vde-worktree`      | Already installable in this repo today via `nix/home-manager/modules/npm.nix` global npm activation. Upstream requires Node.js 22+, pnpm 10+, and `fzf` for `cd`. | Strong fit as the backend. Current wrappers already use `vde-worktree path`, `get`, `switch`, and `list --json`. | Strong fit. Upstream exposes stable JSON, repo locking, hooks, and unsafe overrides that are explicit instead of implicit. | Low migration cost because the repo already runs on it. The remaining work is wrapper and doc polish, not backend replacement. | Keep as the backend.           |
 | `git-wt`            | Feasible to install. It exists in `nixpkgs`, and upstream ships a Go binary plus Homebrew install path. | Weak fit as a primary tool here. Its shell integration wraps `git()`, while this repo already uses `issue-worktree-create`, `pr-worktree-create`, `z`, and `zi` as the human interface. | Good local safety defaults, but it does not provide the repo-specific issue/PR workflow, `gh` metadata fetch, or current `vde-worktree` state model by itself. | Medium to high migration cost for little user benefit because it would duplicate current wrapper behavior instead of replacing only one small gap. | Do not adopt now.              |
-| `vw-worktree-ops` skill | No packaging cost by itself, but adopting it would add a second worktree policy surface next to the existing repo-local skill. | Weak fit as-is. It teaches direct `vw` operation, while this repo deliberately keeps repo wrappers as the primary entrypoints. | Good safety discipline, but broader than this repo wants. It teaches direct cleanup and generic maintenance flows that the local skill intentionally does not teach by default. | Extra cognitive load without solving a current repo problem. The local `using-git-worktrees` skill already matches this repo better. | Do not adopt as-is.            |
+| `vw-worktree-ops` skill | No packaging cost by itself, but adopting it would add a second worktree policy surface next to the existing repo-local skill. | Weak fit as-is. It teaches direct `vw` operation, while this repo deliberately keeps repo wrappers as the primary entrypoints. | Good safety discipline, but broader than this repo wants. It teaches direct cleanup and generic maintenance flows that the local skill intentionally does not teach by default. | Extra cognitive load without solving a current repo problem. The local `agent-workspace` skill already matches this repo better. | Do not adopt as-is.            |
 
 ## 3. Decision
 
@@ -45,7 +45,7 @@ The current repository wrappers and checked-in config are the source of truth:
   - `vde-worktree` as the backend and generic inspection tool
 - Do not replace the current flow with `git-wt`.
 - Do not import `vw-worktree-ops` as the primary skill for this repo.
-- Keep `skills/using-git-worktrees/SKILL.md` as the
+- Keep `skills/agent-workspace/SKILL.md` as the
   canonical repo-local skill because it preserves the wrapper-first policy.
 
 ## 4. Why this decision is narrow
@@ -76,4 +76,4 @@ Revisit this decision only if one of these becomes true:
 - `bin/pr-worktree-create`
 - `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/npm.nix`
-- `skills/using-git-worktrees/SKILL.md`
+- `skills/agent-workspace/SKILL.md`
