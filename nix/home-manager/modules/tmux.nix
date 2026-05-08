@@ -31,7 +31,7 @@
       bind-key % split-window -h -c "#{pane_current_path}"
       bind-key '"' split-window -v -c "#{pane_current_path}"
       bind-key c new-window -c "#{pane_current_path}"
-      bind-key s choose-tree -sZ -F '#{?session_attached,*, }(#{session_windows})'
+      # bind-key s choose-tree -sZ -F '#{?session_attached,*, }(#{session_windows})'
 
       # Options
       # Use C-a on remote (SSH), C-b on local
@@ -40,14 +40,15 @@
         "set-option -g prefix C-b; unbind C-a; bind-key C-b send-prefix"
 
       # Default pane title (override hostname)
-      set-hook -g after-new-session 'select-pane -T "pane"'
-      set-hook -g after-new-window 'select-pane -T "pane"'
-      set-hook -g after-split-window 'select-pane -T "pane"'
+      # set-hook -g after-new-session 'select-pane -T "pane"'
+      # set-hook -g after-new-window 'select-pane -T "pane"'
+      # set-hook -g after-split-window 'select-pane -T "pane"'
+      # set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
       set-option -g pane-active-border-style 'fg=red'
-      set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} > #{history_size} lines >'
+      set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} >'
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
-      set-option -g status-interval 5
+      set-option -g status-interval 6
       if-shell '[ -n "$SSH_TTY" ]' \
         "set-option -g status 2" \
         "set-option -g status on"
@@ -56,7 +57,7 @@
       set-option -g status-position top
       if-shell '[ -n "$SSH_TTY" ]' \
         "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\"; set-option -g status-format[1] '#[align=right]#(tmux-a2a-postman get-status-oneline 2>/dev/null)'" \
-        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status)#(tmux-a2a-postman get-status-oneline 2>/dev/null) #(${dotfilesDir}/bin/system-load)\""
+        "set-option -g status-right \"#(tmux-a2a-postman get-status-oneline 2>/dev/null) #(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\""
       set-option -g status-right-length 200
       set-option -g status-style bg=default
       set-option -g window-status-bell-style 'none'
