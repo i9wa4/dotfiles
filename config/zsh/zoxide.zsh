@@ -113,7 +113,7 @@ __z_seed_ghq_paths() {
   local ghq_path zoxide_db
   zoxide_db="$(zoxide query --list 2>/dev/null)"
   while IFS= read -r ghq_path; do
-    grep -qxF "$ghq_path" <<< "$zoxide_db" || zoxide add --score 50 -- "$ghq_path"
+    grep -qxF "$ghq_path" <<< "$zoxide_db" || zoxide add --score 5 -- "$ghq_path"
   done < <(ghq list -p 2>/dev/null)
 }
 __z_seed_ghq_paths
