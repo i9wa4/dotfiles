@@ -27,10 +27,7 @@ __z_tmux_rename_for_dir() {
 }
 
 __z_query_paths() {
-  {
-    zoxide query --list 2>/dev/null || true
-    ghq list -p 2>/dev/null || true
-  } | awk '!seen[$0]++ { print; fflush() }'
+  zoxide query --list --score 2>/dev/null || true
 }
 
 __z_cd() {
@@ -47,6 +44,7 @@ zi() {
   )" || return $?
 
   [[ -n "$selected_path" ]] || return 1
+  selected_path="$(printf '%s' "$selected_path" | sed 's/^[[:space:]]*[0-9][0-9.]*[[:space:]]*//')"
   __z_cd "$selected_path"
 }
 
@@ -65,6 +63,7 @@ __zoxide_zi_widget() {
     return 1
   fi
 
+  selected_path="$(printf '%s' "$selected_path" | sed 's/^[[:space:]]*[0-9][0-9.]*[[:space:]]*//')"
   BUFFER="cd ${(q)selected_path}"
   zle reset-prompt
   zle accept-line
@@ -108,3 +107,13 @@ z() {
 
   zi "$@"
 }
+
+__z_seed_ghq_paths() {
+  command -v zoxide &>/dev/null && command -v ghq &>/dev/null || return 0
+  local ghq_path zoxide_db
+  zoxide_db="$(zoxide query --list 2>/dev/null)"
+  while IFS= read -r ghq_path; do
+    grep -qxF "$ghq_path" <<< "$zoxide_db" || zoxide add --score 50 -- "$ghq_path"
+  done < <(ghq list -p 2>/dev/null)
+}
+__z_seed_ghq_paths
