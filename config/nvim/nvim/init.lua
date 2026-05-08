@@ -1,4 +1,5 @@
 -- ~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc
+
 local vimrc_path = vim.fn.expand("$XDG_CONFIG_HOME") .. "/vim/vimrc"
 if vim.fn.filereadable(vimrc_path) == 1 then
   vim.cmd("source " .. vim.fn.fnameescape(vimrc_path))
@@ -12,7 +13,9 @@ vim.opt.runtimepath:prepend(lazypath)
 require("lazy").setup({
   {
     "stevearc/oil.nvim",
+    lazy = false,
     opts = {
+      default_file_explorer = true,
       view_options = {
         show_hidden = true,
       },
