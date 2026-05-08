@@ -2,14 +2,7 @@
 name: databricks-local
 license: MIT
 description: |
-  Databricks local additions - Queries API, VARIANT/JSON, Dashboard API, dbt integration, Jupyter kernel
-  Supplements the official `databricks` skill with project-specific patterns.
-  Use when:
-  - Working with Databricks Queries API (saved queries)
-  - Handling VARIANT type or JSON operations
-  - Working with Lakeview Dashboard API
-  - Integrating dbt with Databricks JSON/VARIANT columns
-  - Running Jupyter notebooks with Databricks kernel
+  Databricks local: Queries API, VARIANT/JSON, Dashboard API, dbt integration (target setup, SQL dialect), Jupyter kernel.
 ---
 
 # Databricks Local Additions

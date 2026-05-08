@@ -1,14 +1,7 @@
 ---
 name: prompt-contracts-local
 license: MIT
-description: |
-  Prompt, review-contract, and resume-handoff guidance for agent workflows in
-  this Nix-managed setup. Use when:
-  - Composing task prompts for agents in this repo
-  - Designing structured review or adversarial-review prompt contracts
-  - Writing resumable task prompts or result handoffs
-  - Re-expressing useful old command-specific workflows as skill-side prompt
-    patterns
+description: Task prompts, review contracts, and resume-handoff patterns for Claude Code and Codex CLI agent workflows in this repo.
 ---
 
 # prompt-contracts-local

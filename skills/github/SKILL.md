@@ -1,7 +1,8 @@
 ---
 name: github
 license: MIT
-description: GitHub interaction rules for gh CLI usage, commit messages, issue creation, PR inline comments, sub-issues, and review comment style. Use whenever creating commits, opening PRs, posting issues, or writing review comments.
+description: |
+  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules.
 ---
 
 # GitHub Rules

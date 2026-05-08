@@ -2,12 +2,7 @@
 name: bigquery-local
 license: MIT
 description: |
-  BigQuery local additions - cost-aware query patterns and project conventions.
-  Supplements general BigQuery knowledge with guardrails.
-  Use when:
-  - Running bq commands
-  - Writing GoogleSQL queries
-  - Designing partitioned/clustered tables
+  BigQuery local: cost-aware query patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table design, slot usage.
 ---
 
 # BigQuery Local Skill

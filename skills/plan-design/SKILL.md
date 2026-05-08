@@ -1,7 +1,7 @@
 ---
 name: plan-design
 license: MIT
-description: Create high-quality, executable implementation plans for complex tasks by combining source digestion, parallel worker investigations, critic+guardian+boss review gates, and beginner-friendly packaging. Use when a user needs a step-by-step plan (not immediate implementation), especially when source material is large, fragmented, or hard for newcomers to understand.
+description: Implementation plans for complex tasks. Covers parallel investigation, multi-source synthesis, and review gates. Task must be plan-ready.
 ---
 
 # Plan Design

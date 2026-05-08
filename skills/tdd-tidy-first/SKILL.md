@@ -1,14 +1,7 @@
 ---
 name: tdd-tidy-first
 license: MIT
-description: |
-  Kent Beck style workflow for code changes using small verifiable steps,
-  Red-Green-Refactor, and Tidy First separation of structural versus
-  behavioral changes.
-  Use when:
-  - Implementing or fixing code where a cheap failing test or reproducer is possible
-  - Refactoring mixed changes into structural and behavioral slices
-  - Choosing the smallest safe next step for a code change
+description: Red-Green-Refactor, Tidy First for small verifiable changes. Bug mechanism must be understood; use systematic-debugging first otherwise.
 ---
 
 # TDD Tidy First Skill

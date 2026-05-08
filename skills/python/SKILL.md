@@ -1,7 +1,8 @@
 ---
 name: python
 license: MIT
-description: Python coding rules covering shebang, permissions, and virtual environment selection (uv, poetry, venv). Use when writing or running Python code in this repository.
+description: |
+  Python coding rules: shebang, file permissions, venv selection (uv, poetry, venv). Use when writing or running Python code in this repo.
 ---
 
 # Python Rules

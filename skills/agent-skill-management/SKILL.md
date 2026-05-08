@@ -2,11 +2,7 @@
 name: agent-skill-management
 license: MIT
 description: |
-  Manage agent skills from a repository top-level skills/ tree. Use when
-  adding, editing, organizing, validating, publishing, or preparing
-  pre-commit/CI release harnesses for skills/<name>/SKILL.md, including
-  frontmatter, directory naming, gh skill publish dry-runs, and release tags.
-  Do not use for runtime hook/config/agent harness design.
+  Manage skills/<name>/SKILL.md: add, edit, organize, validate, publish, dry-runs, release tags. Not for runtime hook/config/harness design.
 ---
 
 # Agent Skill Management

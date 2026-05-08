@@ -2,10 +2,7 @@
 name: mermaid-local
 license: MIT
 description: |
-  Mermaid diagram creation and debugging for Quarto revealjs slides.
-  Use when creating or editing mermaid diagrams (sequenceDiagram, flowchart, pie,
-  etc.) embedded in .qmd files, previewing with mmdc, or fixing text color issues
-  in revealjs output. Covers %%{init}%% config, CSS overrides, and sequenceDiagram tips.
+  Mermaid diagrams in Quarto revealjs .qmd files: sequenceDiagram, flowchart, pie; mmdc preview; %%{init}%% config; CSS color overrides.
 ---
 
 # Mermaid Skill

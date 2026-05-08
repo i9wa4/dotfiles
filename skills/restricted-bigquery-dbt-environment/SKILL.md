@@ -2,10 +2,7 @@
 name: restricted-bigquery-dbt-environment
 license: MIT
 description: |
-  Restricted BigQuery dbt environment safety workflow. Use when running dbt in a
-  restricted BigQuery environment where local execution must temporarily add
-  `schema='test'` to avoid production writes, then remove that override before
-  commit.
+  BigQuery dbt safety workflow: temporarily add schema='test' to avoid production writes, run dbt, remove override before commit.
 ---
 
 # Restricted BigQuery dbt Environment

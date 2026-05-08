@@ -1,10 +1,7 @@
 ---
 name: aws-auth
 license: MIT
-description: |
-  AWS authentication handoff rules for this repo. Use when AWS CLI access depends
-  on a user-authenticated tmux pane and the agent must execute AWS commands via
-  `tmux send-keys` instead of handling `aws sso login` itself.
+description: AWS authentication via tmux send-keys to user-authenticated pane. Use when AWS SSO login must happen in user pane, not agent pane.
 ---
 
 # AWS Auth Skill

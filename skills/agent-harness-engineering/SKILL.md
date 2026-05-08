@@ -2,11 +2,7 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  Agent harness engineering for this dotfiles repo. Use when editing, reviewing,
-  debugging, or designing Claude Code or Codex CLI runtime configuration;
-  Nix/Home Manager-managed agent settings; hooks; MCP servers; skills;
-  subagents; tmux-a2a-postman routing; workspace trust; cross-engine parity;
-  changelog tracking; or migrations from per-engine agent configuration skills.
+  Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing
 ---
 
 # Agent Harness Engineering

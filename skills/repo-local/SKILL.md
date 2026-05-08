@@ -1,7 +1,7 @@
 ---
 name: repo-local
 license: MIT
-description: Repo-local operating rules for workflow, safety, file management, rollback, and environment. Use when working in this dotfiles repository for any task involving file edits, git operations, or tooling choices.
+description: Foundational dotfiles repo rules (workflow, safety, file management, rollback) that co-load with task-specific skills intentionally.
 ---
 
 # Repo-Local Operating Rules

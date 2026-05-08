@@ -1,7 +1,7 @@
 ---
 name: brainstorming
 license: MIT
-description: Ambiguity-reduction workflow for requests that are not yet plan-ready or implementation-ready. Use when there are multiple plausible approaches, the task is user-facing or design-shaping, requirements are fuzzy, or Codex needs to compare 2-3 options with trade-offs before choosing a direction.
+description: Ambiguity-reduction for fuzzy requirements or multiple plausible approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs.
 ---
 
 # Brainstorming

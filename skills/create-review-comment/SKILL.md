@@ -1,11 +1,7 @@
 ---
 name: create-review-comment
 license: MIT
-description: |
-  Create Japanese GitHub Pull Request review comment drafts from reviewer
-  findings. Use when the user says `ai-create-review-comment`, asks to become a
-  PR reviewer, wants review comments drafted from PR findings, or asks to turn
-  important review findings into Markdown comments for final human selection.
+description: Create Japanese GitHub PR review comments from findings. Use for ai-create-review-comment or turning findings into Markdown drafts.
 ---
 
 # Create Review Comment

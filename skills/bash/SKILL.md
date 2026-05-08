@@ -2,10 +2,7 @@
 name: bash
 license: MIT
 description: |
-  Bash scripting and shell-tool rules for this repo.
-  Use when writing shell commands or scripts, running commands from a
-  tmux-a2a-postman worker pane, avoiding interactive prompts, handling hook or
-  permission denials, or diagnosing a stalled Bash tool call.
+  Bash scripting for this repo: writing scripts, worker pane discipline, interactive prompt avoidance, hook denial handling, stall diagnosis
 ---
 
 # Bash Rules

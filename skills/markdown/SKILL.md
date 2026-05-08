@@ -1,7 +1,7 @@
 ---
 name: markdown
 license: MIT
-description: Markdown authoring rules for emoji, list numbering, table alignment, and Japanese-specific constraints. Use when writing or editing any Markdown files in this repository.
+description: Markdown authoring rules for emoji, list numbering, table alignment, and Japanese-specific constraints for this repository.
 ---
 
 # Markdown Rules

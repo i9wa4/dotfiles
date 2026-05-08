@@ -1,7 +1,8 @@
 ---
 name: systematic-debugging
 license: MIT
-description: Root-cause-first debugging workflow for broken behavior, confusing errors, flaky reproducers, or repeated failed fix attempts. Use when the failure is real but the mechanism is not yet understood, when guessing has already failed, or when a working pattern comparison is needed before making code or config changes.
+description: |
+  Root-cause-first debugging for unknown failures: reproducer isolation, working-pattern comparison. Use when mechanism is unclear.
 ---
 
 # Systematic Debugging
