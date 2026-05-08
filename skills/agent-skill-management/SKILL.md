@@ -143,7 +143,7 @@ the repo's supported newer `gh` path and document that choice in the handoff.
 For this dotfiles repo:
 
 ```sh
-bash nix/home-manager/agents/scripts/validate-skill-frontmatter.sh skills
+bash bin/validate-skill-frontmatter.sh skills
 nix run nixpkgs#gh -- skill publish --dry-run
 ```
 

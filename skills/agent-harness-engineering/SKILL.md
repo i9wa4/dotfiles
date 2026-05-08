@@ -95,7 +95,7 @@ Full diagnosis and commands live in
 - Validate skill frontmatter after skill edits:
 
   ```sh
-  bash nix/home-manager/agents/scripts/validate-skill-frontmatter.sh skills/agent-harness-engineering
+  bash bin/validate-skill-frontmatter.sh skills/agent-harness-engineering
   ```
 
 - For publishable skill changes, run `gh skill publish --dry-run` if the local

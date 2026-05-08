@@ -130,7 +130,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../home-manager/agents/scripts/validate-skill-frontmatter.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-frontmatter.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -142,7 +142,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../home-manager/agents/scripts/validate-skill-description-length.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-description-length.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];

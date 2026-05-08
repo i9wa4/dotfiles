@@ -66,7 +66,7 @@ let
     pkgs.runCommand name { } ''
       cp -r ${src} $out
       chmod -R u+w $out
-      ${pkgs.bash}/bin/bash ${../scripts/validate-skill-frontmatter.sh} "$out"
+      ${pkgs.bash}/bin/bash ${../../../../bin/validate-skill-frontmatter.sh} "$out"
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
@@ -124,7 +124,7 @@ let
       ' "$target" > "$tmp"
     fi
     mv "$tmp" "$target"
-    ${pkgs.bash}/bin/bash ${../scripts/validate-skill-frontmatter.sh} "$out/skills"
+    ${pkgs.bash}/bin/bash ${../../../../bin/validate-skill-frontmatter.sh} "$out/skills"
   '';
   baseSources = {
     # Local skills from this dotfiles repository
