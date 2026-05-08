@@ -136,6 +136,18 @@
             types = [ "file" ];
             pass_filenames = false;
           };
+          # Warn-only: 19/24 skills exceed the 138-char threshold today.
+          # Flip to block: set SKILL_DESC_LENGTH_STRICT=1 after fixing violations.
+          skill-description-length-check = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-description-length-check" ''
+              #!${pkgs.bash}/bin/bash
+              exec ${pkgs.bash}/bin/bash ${../../home-manager/agents/scripts/validate-skill-description-length.sh} --staged
+            ''}";
+            files = "(^|/)SKILL\\.md$";
+            types = [ "file" ];
+            pass_filenames = false;
+          };
           skill-publish-dry-run = {
             enable = true;
             entry = "${pkgs-unstable.gh}/bin/gh skill publish --dry-run";
