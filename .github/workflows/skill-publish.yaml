@@ -3,8 +3,17 @@ run-name: validate skills for ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v[0-9]*"
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions: {}
 
@@ -35,7 +44,16 @@ jobs:
         with:
           github_access_token: ${{ github.token }}
 
+      - name: Validate skill frontmatter
+        run: bash nix/home-manager/agents/scripts/validate-skill-frontmatter.sh skills/
+
+      - name: Validate skill description lengths (warn-only)
+        run: bash nix/home-manager/agents/scripts/validate-skill-description-length.sh skills/
+        # To switch to block mode: add env: SKILL_DESC_LENGTH_STRICT: "1"
+        # Do so only after fixing the 19 existing over-limit descriptions.
+
       - name: Validate skills
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}
         run: nix run nixpkgs#gh -- skill publish --dry-run
