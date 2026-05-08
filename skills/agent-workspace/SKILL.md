@@ -154,7 +154,7 @@ Key rules:
 ## 7. Postman Integration Caveats
 
 - Freshly-booted sessions may not appear in `tmux-a2a-postman get-status` even
-  when tmux topology is correct; check daemon health and retry
+  when tmux topology is correct; wait briefly and retry status
 - `tmux list-sessions` is authoritative for session existence; postman routing
   may lag
 - WAL bloat (`~/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex

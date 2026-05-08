@@ -68,18 +68,18 @@ renamed session.
 
 **Mitigation:** Wait 3-4s after sending `z <dir>` before checking session name.
 
-## 4. Auto-Ping Daemon Unreliability
+## 4. Postman Status Visibility Lag
 
-**Root cause:** The tmux-a2a-postman daemon's routing table is built from
-detected pane titles. A freshly-booted session may not be scanned by the daemon
-before its next health cycle.
+**Root cause:** tmux-a2a-postman status can lag briefly behind freshly-created
+tmux panes because pane discovery is asynchronous.
 
 **Symptom:** `tmux-a2a-postman get-status` does not list the newly-created
 session's panes even though `tmux list-panes -a` shows them correctly.
 
-**Mitigation:** Check daemon health explicitly; wait and retry.
+**Mitigation:** Wait briefly and retry `tmux-a2a-postman get-status`.
 `tmux list-sessions` is authoritative for session existence — use it rather than
-postman status for session confirmation.
+postman status for session confirmation. Do not run infrastructure repair or
+low-level checks from this workspace skill.
 
 ## 5. WAL Bloat from Codex Multi-Pane Sessions
 
