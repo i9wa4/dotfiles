@@ -12,7 +12,11 @@ vim.opt.runtimepath:prepend(lazypath)
 require("lazy").setup({
   {
     "stevearc/oil.nvim",
-    opts = {},
+    opts = {
+      view_options = {
+        show_hidden = true,
+      },
+    },
     keys = { { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" } },
   },
 })
