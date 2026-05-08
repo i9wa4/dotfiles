@@ -27,12 +27,23 @@ Apply these skills together when available:
 1. Confirm the target PR from local branch context or the user's prompt.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run a deep multi-perspective review to extract findings.
-   - Prefer the current equivalent of deep Claude plus Codex review, such as
-     `subagent-review cc tier1 cx tier1`.
-   - If the local command still uses the legacy snippet form, `/subagent-review
-     cc cx-deep` is the intended workflow.
-4. Select only IMPORTANT findings.
+3. Run a deep multi-perspective review via the `subagent-review` skill.
+   - REQUIRED invocation: `subagent-review cc tier1 cx tier1`. Do not
+     substitute by spawning individual `reviewer-*` agents directly — the
+     dispatcher's parallel fan-out and the dual-engine (Claude + Codex)
+     coverage are the point of this step.
+   - If you believe the prescribed invocation is too costly or unnecessary
+     for this PR, STOP and ask the user via `AskUserQuestion` before
+     deviating. Never downgrade silently.
+   - Legacy fallback: if the local command still exposes only the snippet
+     form, `/subagent-review cc cx-deep` is the equivalent invocation. The
+     prohibition on substituting `reviewer-*` agents still applies.
+4. Select only IMPORTANT findings from the merged summary produced by
+   `subagent-review` (typically under
+   `~/.local/state/mkmd/.../reviews/summary-*.md`).
+   - The selection step MUST cite this summary file path in the final
+     output's `Source review` line. If no such file exists, halt — step 3
+     was not actually performed and you cannot proceed to drafting.
    - Keep correctness, security, data loss, regression, compatibility,
      operational risk, and missing-test issues that materially affect merge
      confidence.
@@ -71,7 +82,8 @@ Use this shape for the final visible Markdown:
 ## Summary
 
 - Target PR: #123
-- Source review: subagent-review cc tier1 cx tier1
+- Source review: `~/.local/state/mkmd/.../reviews/summary-YYYYMMDD-HHMMSS.md`
+  (path to the `subagent-review` merged summary file produced in step 3)
 - Selected: 3 comments
 - Dropped: 4 findings
 
