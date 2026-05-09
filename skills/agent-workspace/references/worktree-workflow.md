@@ -82,6 +82,8 @@ wrapper flow already covers the task.
 - Inspect one worktree: `vde-worktree status [branch] --json`
 - Inspect likely stale worktrees: `vde-worktree gone --json`
 - Resolve a branch to its absolute path: `vde-worktree path <branch> [--json]`
+- Select and delete one current-repo managed worktree:
+  `worktree-remove`
 - Delete a confirmed linked worktree: `vde-worktree del <branch>`
 - List merged cleanup candidates across ghq repositories:
   `worktree-cleanup-merged --dry-run`
@@ -113,8 +115,9 @@ vde-worktree list --json
 
 ## 6. Repo Fit Notes
 
-- Cleanup should be explicit: inspect with `vde-worktree list`, `status`, or
-  `gone`, then delete confirmed linked worktrees with `vde-worktree del`.
+- Cleanup should be explicit: inspect with `worktree-remove`,
+  `vde-worktree list`, `status`, or `gone`, then delete confirmed linked
+  worktrees with `vde-worktree del`.
 - The repo may contain detached linked worktrees; do not assume every linked
   worktree is a simple branch-only case.
 - If the task is about changing worktree scripts or config, read those files in
