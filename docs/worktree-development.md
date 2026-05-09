@@ -49,13 +49,16 @@ For the adoption decision behind the current tool stack, see
 6. Otherwise it tries to generate a short kebab-case slug with `claude`.
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
-7. It resolves the worktree through `vde-worktree`:
+7. Existing remote issue branches are configured as upstream. New local issue
+   branches rely on `push.autoSetupRemote=true`, so the first plain `git push`
+   creates `origin/<branch>` and records upstream.
+8. It resolves the worktree through `vde-worktree`:
    - existing managed path via `vde-worktree path`
    - remote branch via `vde-worktree get`
    - existing local branch or new local branch via `vde-worktree switch`
-8. On a newly created worktree, it copies `.envrc` when present and runs
+9. On a newly created worktree, it copies `.envrc` when present and runs
    `repo-setup` when available.
-9. It adds the final worktree path to the `zoxide` database when `zoxide`
+10. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
 
 ## 4. Current PR review workflow

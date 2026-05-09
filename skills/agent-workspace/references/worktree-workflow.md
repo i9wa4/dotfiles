@@ -25,7 +25,9 @@ Run `issue-worktree-create <issue_number>` from the repo. Expect it to:
 - refresh `main`
 - reuse `origin/issue-<number>` when present, otherwise reuse the first
   `origin/issue-<number>-*` branch when present
-- set `origin/<branch>` as upstream for the local issue branch
+- set existing remote issue branches as upstream
+- rely on `push.autoSetupRemote=true` for new local issue branches, so the first
+  plain `git push` creates and records `origin/<branch>`
 - create a new linked worktree when needed
 - copy `.envrc` when available
 - run `repo-setup` when available

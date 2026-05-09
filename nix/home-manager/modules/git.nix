@@ -66,7 +66,10 @@
         prompt = false;
         vimdiff.path = "vim";
       };
-      push.default = "upstream";
+      push = {
+        autoSetupRemote = true;
+        default = "upstream";
+      };
       submodule.recurse = true;
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
       user = {

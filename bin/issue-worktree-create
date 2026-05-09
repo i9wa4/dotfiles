@@ -153,8 +153,10 @@ ${issue_comments}
     branch_origin="new"
   fi
 
-  git config "branch.${branch_name}.remote" origin
-  git config "branch.${branch_name}.merge" "refs/heads/${branch_name}"
+  if [[ ${branch_origin} == "remote" ]]; then
+    git config "branch.${branch_name}.remote" origin
+    git config "branch.${branch_name}.merge" "refs/heads/${branch_name}"
+  fi
 
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"

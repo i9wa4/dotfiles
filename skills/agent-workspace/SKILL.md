@@ -145,9 +145,11 @@ Both scripts:
 - Run `repo-setup` if available
 - Register path with `zoxide add "$worktree_path"` as the last step
 
-Issue worktrees use the issue branch name as the worktree directory name and
-set `origin/<branch>` as upstream. PR worktrees keep the local branch name equal
-to the PR head branch, but use a directory name like
+Issue worktrees use the issue branch name as the worktree directory name.
+Existing remote issue branches are configured as upstream; new local issue
+branches rely on `push.autoSetupRemote=true` so the first plain `git push`
+creates and records `origin/<branch>`. PR worktrees keep the local branch name
+equal to the PR head branch, but use a directory name like
 `.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`.
 
 Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).
