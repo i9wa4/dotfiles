@@ -42,6 +42,7 @@
         quotepath = false;
         safecrlf = true;
       };
+      branch.sort = "-committerdate";
       credential.helper = "store";
       diff = {
         algorithm = "histogram";
@@ -52,7 +53,10 @@
         prompt = false;
         vimdiff.path = "vim";
       };
-      fetch.prune = true;
+      fetch = {
+        prune = true;
+        pruneTags = true;
+      };
       ghq.root = ghqRoot;
       gpg.format = "ssh";
       grep.lineNumber = true;
@@ -70,7 +74,11 @@
         autoSetupRemote = true;
         default = "upstream";
       };
+      pull.ff = "only";
+      rebase.autoStash = true;
+      rerere.enabled = true;
       submodule.recurse = true;
+      tag.sort = "version:refname";
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
       user = {
         email = "127664533+i9wa4@users.noreply.github.com";
