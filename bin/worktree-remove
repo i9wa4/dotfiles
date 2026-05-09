@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# Select and remove one managed worktree from all ghq repositories.
+# Select and remove one managed worktree from the current repository.
 # The destructive removal is delegated to `vde-worktree del`, which keeps the
 # same dirty, locked, unmerged, and unpushed safety checks as the backend.
 
@@ -13,8 +13,9 @@ usage() {
 Usage:
   worktree-remove
 
-Search all ghq repositories for managed worktrees, select one with fzf, confirm
-by typing "yes", then remove it with vde-worktree del.
+Search the current repository's .worktrees/ directory for managed worktrees,
+select one with fzf, confirm by typing "yes", then remove it with
+vde-worktree del.
 
 Options:
   -h, --help  Show this help.
@@ -29,6 +30,226 @@ require_command() {
     exit 1
   fi
 }
+
+path_basename() {
+  local path="$1"
+
+  path="${path%/}"
+  printf '%s\n' "${path##*/}"
+}
+
+extract_prefixed_number() {
+  local value="$1"
+  local prefix="$2"
+  local rest
+  local number
+
+  case "$value" in
+    "${prefix}-"[0-9]*)
+      rest="${value#"${prefix}-"}"
+      number="${rest%%-*}"
+      case "$number" in
+        "" | *[!0-9]*)
+          return 1
+          ;;
+        *)
+          printf '%s\n' "$number"
+          ;;
+      esac
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+classify_worktree() {
+  local branch="$1"
+  local worktree_path="$2"
+  local worktree_name
+  local number
+
+  worktree_name=$(path_basename "$worktree_path")
+
+  if number=$(extract_prefixed_number "$worktree_name" "pr"); then
+    printf 'pr\t%s\tPR-origin\n' "$number"
+    return 0
+  fi
+
+  if number=$(extract_prefixed_number "$branch" "issue"); then
+    printf 'issue\t%s\tissue-origin\n' "$number"
+    return 0
+  fi
+
+  if number=$(extract_prefixed_number "$worktree_name" "issue"); then
+    printf 'issue\t%s\tissue-origin\n' "$number"
+    return 0
+  fi
+
+  printf 'misc\t-\tmiscellaneous\n'
+}
+
+github_repo_from_origin() {
+  local repo_root="$1"
+  local remote_url
+  local repo=""
+
+  remote_url=$(git -C "$repo_root" remote get-url origin 2>/dev/null || true)
+  case "$remote_url" in
+    git@github.com:*)
+      repo="${remote_url#git@github.com:}"
+      ;;
+    https://github.com/*)
+      repo="${remote_url#https://github.com/}"
+      ;;
+    ssh://git@github.com/*)
+      repo="${remote_url#ssh://git@github.com/}"
+      ;;
+  esac
+
+  repo="${repo%.git}"
+  printf '%s\n' "$repo"
+}
+
+show_github_status() {
+  local repo_root="$1"
+  local origin_kind="$2"
+  local origin_number="$3"
+  local github_repo
+  local output
+
+  if [[ "$origin_kind" != "issue" && "$origin_kind" != "pr" ]]; then
+    echo "GitHub: no issue or PR number detected"
+    return 0
+  fi
+
+  if [[ "$origin_number" == "-" ]]; then
+    echo "GitHub: no issue or PR number detected"
+    return 0
+  fi
+
+  if ! command -v gh &>/dev/null; then
+    echo "GitHub: gh command unavailable"
+    return 0
+  fi
+
+  github_repo=$(github_repo_from_origin "$repo_root")
+  if [[ -z "$github_repo" ]]; then
+    echo "GitHub: origin is not a GitHub repository"
+    return 0
+  fi
+
+  case "$origin_kind" in
+    issue)
+      if output=$(gh issue view "$origin_number" --repo "$github_repo" --json number,state,title,url --jq '"Issue #\(.number): \(.state)\n\(.title)\n\(.url)"' 2>/dev/null); then
+        printf '%s\n' "$output"
+      else
+        echo "GitHub: issue status unavailable"
+      fi
+      ;;
+    pr)
+      if output=$(gh pr view "$origin_number" --repo "$github_repo" --json number,state,isDraft,mergeStateStatus,reviewDecision,title,url --jq '"PR #\(.number): \(.state)" + (if .isDraft then " draft" else "" end) + " merge=" + (.mergeStateStatus // "-") + " review=" + (.reviewDecision // "-") + "\n" + .title + "\n" + .url' 2>/dev/null); then
+        printf '%s\n' "$output"
+      else
+        echo "GitHub: PR status unavailable"
+      fi
+      ;;
+  esac
+}
+
+show_branch_tracking() {
+  local repo_root="$1"
+  local branch="$2"
+  local upstream
+  local head
+  local counts
+  local ahead="-"
+  local behind="-"
+
+  head=$(git -C "$repo_root" rev-parse --short "refs/heads/${branch}" 2>/dev/null || true)
+  upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
+
+  echo "Branch: ${branch}"
+  if [[ -n "$head" ]]; then
+    echo "HEAD: ${head}"
+  else
+    echo "HEAD: unavailable"
+  fi
+
+  if [[ -z "$upstream" ]]; then
+    echo "Upstream: none"
+    return 0
+  fi
+
+  echo "Upstream: ${upstream}"
+  counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
+  if [[ -n "$counts" ]]; then
+    read -r ahead behind <<<"$counts"
+  fi
+  echo "Tracking: ahead=${ahead} behind=${behind}"
+}
+
+preview_worktree() {
+  local repo_root="$1"
+  local worktree_path="$2"
+  local branch="$3"
+  local origin_kind="$4"
+  local origin_number="$5"
+  local category
+  local status_output
+  local log_output
+
+  case "$origin_kind" in
+    issue)
+      category="issue-origin"
+      ;;
+    pr)
+      category="PR-origin"
+      ;;
+    *)
+      category="miscellaneous"
+      ;;
+  esac
+
+  echo "Worktree"
+  echo "  Category: ${category}"
+  echo "  Number:   ${origin_number}"
+  echo "  Path:     ${worktree_path}"
+  echo ""
+  echo "GitHub"
+  show_github_status "$repo_root" "$origin_kind" "$origin_number"
+  echo ""
+  echo "Branch tracking"
+  show_branch_tracking "$repo_root" "$branch"
+  echo ""
+  echo "Worktree status"
+  if status_output=$(git -C "$worktree_path" --no-optional-locks status --short 2>/dev/null); then
+    if [[ -n "$status_output" ]]; then
+      printf '%s\n' "$status_output"
+    else
+      echo "(clean)"
+    fi
+  else
+    echo "status unavailable"
+  fi
+  echo ""
+  echo "Recent commits"
+  if log_output=$(git -C "$worktree_path" --no-optional-locks log -n 8 --oneline 2>/dev/null); then
+    printf '%s\n' "$log_output"
+  else
+    echo "log unavailable"
+  fi
+}
+
+if [[ "${1:-}" == "__preview" ]]; then
+  shift
+  if [[ $# -ne 5 ]]; then
+    echo "preview unavailable: invalid arguments" >&2
+    exit 0
+  fi
+  preview_worktree "$@"
+  exit 0
+fi
 
 if [[ $# -gt 0 ]]; then
   case "$1" in
@@ -49,108 +270,117 @@ if [[ ! -t 0 ]]; then
 fi
 
 require_command git
-require_command ghq
 require_command jq
 require_command fzf
 require_command vde-worktree
 
-repo_list=$(mktemp)
 inventory_file=$(mktemp)
-trap 'rm -f "$repo_list" "$inventory_file"' EXIT HUP INT TERM
+trap 'rm -f "$inventory_file"' EXIT HUP INT TERM
 
-if ! ghq list -p >"$repo_list"; then
-  echo "Error: failed to list ghq repositories." >&2
+if ! current_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+  echo "Error: worktree-remove must be run inside a git repository." >&2
   exit 1
 fi
 
-repo_count=0
-scanned_count=0
-skipped_count=0
+case "$current_root" in
+  *"/.worktrees/"*)
+    repo_root="${current_root%%/.worktrees/*}"
+    ;;
+  *)
+    repo_root="$current_root"
+    ;;
+esac
 
-while IFS= read -r repo_path; do
-  repo_count=$((repo_count + 1))
+repo_name=$(path_basename "$repo_root")
+managed_root="${repo_root}/.worktrees"
 
-  if [[ ! -d "$repo_path" || "$repo_path" == *"/.worktrees/"* ]]; then
-    skipped_count=$((skipped_count + 1))
+if ! list_json=$({ cd "$repo_root" && vde-worktree list --json; } 2>/dev/null); then
+  echo "Error: failed to list worktrees for ${repo_root}." >&2
+  exit 1
+fi
+
+if ! raw_inventory=$(printf '%s' "$list_json" |
+  jq -r --arg fallbackRepo "$repo_root" --arg fallbackManaged "$managed_root" '
+    (.repoRoot // $fallbackRepo) as $repoRoot
+    | (.managedWorktreeRoot // $fallbackManaged) as $managedRoot
+    | .worktrees[]?
+    | select((.branch // "") != "")
+    | select((.path // "") != $repoRoot)
+    | select($managedRoot != "" and ((.path // "") | startswith($managedRoot + "/")))
+    | [
+        (.branch // ""),
+        (if .dirty == true then "dirty" else "clean" end),
+        (if .merged.overall == true then "merged" elif .merged.overall == false then "unmerged" else "merge?" end),
+        (if .locked.value == true then "locked" else "unlocked" end),
+        (.pr.status // "-"),
+        ((.upstream.remote // "-") | tostring),
+        ((.upstream.ahead // "-") | tostring),
+        ((.upstream.behind // "-") | tostring),
+        (.path // "")
+      ]
+    | @tsv
+  '); then
+  echo "Error: failed to parse vde-worktree output for ${repo_root}." >&2
+  exit 1
+fi
+
+while IFS=$'\t' read -r branch dirty_state merge_state lock_state pr_status upstream_remote upstream_ahead upstream_behind worktree_path; do
+  if [[ -z "$branch" || -z "$worktree_path" ]]; then
     continue
   fi
 
-  if [[ ! -d "${repo_path}/.git" && ! -f "${repo_path}/.git" ]]; then
-    skipped_count=$((skipped_count + 1))
-    continue
-  fi
+  origin_record=$(classify_worktree "$branch" "$worktree_path")
+  IFS=$'\t' read -r origin_kind origin_number category <<<"$origin_record"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$category" \
+    "$branch" \
+    "$dirty_state" \
+    "$merge_state" \
+    "$lock_state" \
+    "$pr_status" \
+    "$upstream_remote" \
+    "$upstream_ahead" \
+    "$upstream_behind" \
+    "$worktree_path" \
+    "$repo_root" \
+    "$managed_root" \
+    "$origin_kind" \
+    "$origin_number" >>"$inventory_file"
+done <<<"$raw_inventory"
 
-  if [[ ! -d "${repo_path}/.worktrees" && ! -d "${repo_path}/.vde" && ! -f "${repo_path}/config/vde/worktree/config.yml" ]]; then
-    skipped_count=$((skipped_count + 1))
-    continue
-  fi
-
-  if ! git -C "$repo_path" rev-parse --show-toplevel >/dev/null 2>&1; then
-    skipped_count=$((skipped_count + 1))
-    continue
-  fi
-
-  if ! list_json="$(
-    cd "$repo_path"
-    vde-worktree list --json 2>/dev/null
-  )"; then
-    skipped_count=$((skipped_count + 1))
-    continue
-  fi
-
-  scanned_count=$((scanned_count + 1))
-  if ! printf '%s' "$list_json" |
-    jq -r --arg fallbackRepo "$repo_path" '
-      (.repoRoot // $fallbackRepo) as $repoRoot
-      | (.managedWorktreeRoot // "") as $managedRoot
-      | .worktrees[]?
-      | select((.branch // "") != "")
-      | select((.path // "") != $repoRoot)
-      | select($managedRoot != "" and ((.path // "") | startswith($managedRoot + "/")))
-      | [
-          ($repoRoot | split("/")[-1]),
-          (.branch // ""),
-          (if .dirty == true then "dirty" else "clean" end),
-          (if .merged.overall == true then "merged" elif .merged.overall == false then "unmerged" else "merge?" end),
-          (if .locked.value == true then "locked" else "unlocked" end),
-          (.pr.status // "-"),
-          ((.upstream.ahead // "-") | tostring),
-          ((.upstream.behind // "-") | tostring),
-          (.path // ""),
-          $repoRoot,
-          $managedRoot
-        ]
-      | @tsv
-    ' >>"$inventory_file"; then
-    echo "Warning: failed to parse vde-worktree output for ${repo_path}" >&2
-    skipped_count=$((skipped_count + 1))
-  fi
-done <"$repo_list"
-
-inventory="$(cat "$inventory_file")"
+inventory=$(cat "$inventory_file")
 
 if [[ -z "$inventory" ]]; then
-  echo "No removable managed worktrees found across ${repo_count} ghq repositories."
+  echo "No removable managed worktrees found under ${managed_root}."
   exit 0
 fi
+
+script_path="$0"
+case "$script_path" in
+  */*) ;;
+  *)
+    script_path=$(command -v "$script_path" 2>/dev/null || printf '%s\n' "$script_path")
+    ;;
+esac
+preview_command=$(printf '%q __preview {11} {10} {2} {13} {14}' "$script_path")
 
 if ! selection="$(
   printf '%s\n' "$inventory" |
     fzf \
       --delimiter=$'\t' \
-      --with-nth=1,2,3,4,5,6,7,8,9 \
+      --with-nth=1,2,3,4,5,6,7,8,9,10 \
       --prompt='worktree-remove> ' \
-      --header='Select a worktree to remove. Columns: repo branch state merge lock PR ahead behind path' \
-      --preview='git -C {9} --no-optional-locks status --short 2>/dev/null; printf "\n"; git -C {9} log -n 8 --oneline 2>/dev/null' \
+      --header='Select a worktree to remove. Columns: category branch state merge lock PR upstream ahead behind path' \
+      --preview="$preview_command" \
       --preview-window='down,60%'
 )"; then
   echo "Cancelled."
   exit 0
 fi
 
-IFS=$'\t' read -r repo_name branch dirty_state merge_state lock_state pr_status upstream_ahead upstream_behind worktree_path repo_root managed_root <<<"$selection"
+IFS=$'\t' read -r category branch dirty_state merge_state lock_state pr_status upstream_remote upstream_ahead upstream_behind worktree_path repo_root managed_root origin_kind origin_number <<<"$selection"
 
-if [[ -z "$repo_name" || -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
+if [[ -z "$category" || -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
   exit 1
 fi
@@ -178,9 +408,10 @@ fi
 echo "Selected worktree:"
 echo "  Repo:   ${repo_name}"
 echo "  Branch: ${branch}"
+echo "  Kind:   ${category} (${origin_number})"
 echo "  Path:   ${worktree_path}"
-echo "  State:  ${dirty_state}, ${merge_state}, ${lock_state}, PR=${pr_status}, ahead=${upstream_ahead}, behind=${upstream_behind}"
-echo "  Scan:   ${scanned_count} scanned, ${skipped_count} skipped, ${repo_count} total ghq repositories"
+echo "  State:  ${dirty_state}, ${merge_state}, ${lock_state}, PR=${pr_status}, upstream=${upstream_remote}, ahead=${upstream_ahead}, behind=${upstream_behind}"
+echo "  Scope:  ${managed_root}"
 echo ""
 echo "This will remove the linked worktree and its branch through vde-worktree del."
 printf 'Type yes to continue: '
@@ -191,10 +422,8 @@ if [[ "$answer" != "yes" ]]; then
   exit 0
 fi
 
-(
-  cd "$repo_root"
-  vde-worktree del "$branch"
-)
+cd "$repo_root"
+vde-worktree del "$branch"
 
 if command -v zoxide &>/dev/null; then
   zoxide remove "$worktree_path" >/dev/null 2>&1 || true
