@@ -194,7 +194,7 @@ v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
 contention, or TUI TRACE log churn. Remove or rewrite this section once the
 workaround is no longer needed.
 
-The automated mitigation in this repo is a daily checkpoint timer; see
+The automated mitigation in this repo is an hourly checkpoint timer; see
 [Automated Mitigation](#automated-mitigation-this-repo) below. The runbook
 below is the manual fallback for one-time recovery (e.g. when the timer has
 been disabled or when truncate has been blocked by `busy=1` for many
@@ -219,6 +219,18 @@ in a single pass).
 - A live cleanup attempt while Codex panes were still running failed:
   `DELETE FROM logs` raised `OperationalError: database is locked`, and
   `PRAGMA wal_checkpoint(TRUNCATE)` returned busy `(1, -1, -1)`.
+- 2026-05-09 full-disk incident: `/` reported size `98G`, used `93G`,
+  available `0`, use `100%`. `~/.codex/logs_2.sqlite-wal` was about `35G`
+  while `~/.codex/logs_2.sqlite` was `108M`. The `sqlite3` CLI was
+  unavailable, so Python's `sqlite3` module ran
+  `PRAGMA wal_checkpoint(TRUNCATE)` and returned `[(1, 603, 603)]`.
+  Interpretation: `busy=1`, but `log_pages == checkpointed == 603`, so the
+  WAL frames had been checkpointed into the main DB and active Codex readers
+  were preventing the final SQLite-managed truncate. Process evidence from
+  `fuser -v ~/.codex/logs_2.sqlite*` showed many live `.codex-wrapped`
+  processes holding the DB/WAL open. The emergency action was
+  `truncate -s 0 ~/.codex/logs_2.sqlite-wal` after the full checkpoint proof;
+  that restored `/` to size `98G`, used `58G`, available `35G`, use `63%`.
 - A pure `PRAGMA wal_checkpoint(TRUNCATE)` (without `DELETE`/`VACUUM`) is
   safe to run while Codex is active: it folds writes into the main DB and
   best-effort truncates the WAL. On `busy=1` it returns without truncating
@@ -279,6 +291,47 @@ SQL
 If `sqlite3` is unavailable, use Python's `sqlite3` module to run the same SQL
 and record `sqlite3.sqlite_version` in the handoff.
 
+For checkpoint-only emergency proof when `sqlite3` is unavailable:
+
+```sh
+python3 - <<'PY'
+import os
+import sqlite3
+
+db = os.path.expanduser("~/.codex/logs_2.sqlite")
+conn = sqlite3.connect(db, timeout=30)
+try:
+    print(conn.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchall())
+finally:
+    conn.close()
+PY
+```
+
+Emergency full-disk exception:
+
+Do not normalize manual WAL truncation as cleanup. It is an emergency-only
+last resort when the filesystem is already full or about to block the machine,
+the SQLite-managed checkpoint cannot truncate because live Codex readers are
+holding the WAL open, and stopping those processes first would lose the active
+recovery path.
+
+Strict preconditions before `truncate -s 0 ~/.codex/logs_2.sqlite-wal`:
+
+- Capture `df -h /`, `ls -lh ~/.codex/logs_2.sqlite*`, and
+  `fuser -v ~/.codex/logs_2.sqlite*` or equivalent process evidence.
+- Run `PRAGMA wal_checkpoint(TRUNCATE)` against `~/.codex/logs_2.sqlite` with
+  `sqlite3` or Python's `sqlite3` module.
+- Proceed only if the returned checkpoint triple proves every WAL frame was
+  checkpointed: `log_pages >= 0` and `log_pages == checkpointed`. The observed
+  emergency shape was `busy=1 log_pages=603 checkpointed=603`.
+- Do not truncate when the result is `(1, -1, -1)`,
+  `checkpointed < log_pages`, or the checkpoint command fails; in those cases
+  the WAL may still contain frames that have not been folded into the main DB.
+- Prefer a coordinated Codex shutdown and complete `logs_2.sqlite*` backup
+  whenever enough space and operator control exist.
+- After emergency truncation, verify disk recovery and restart affected Codex
+  panes if any session reports SQLite/logging errors.
+
 Afterward, verify:
 
 ```sh
@@ -311,6 +364,10 @@ Implementation:
   one-shot that opens `~/.codex/logs_2.sqlite` with a 30-second busy
   timeout, runs `PRAGMA wal_checkpoint(TRUNCATE)`, and logs WAL size
   before/after plus the `(busy, log_pages, checkpointed)` triple. On
+  `busy=1` with `log_pages == checkpointed`, it also logs that all WAL
+  frames were checkpointed but active readers prevented truncate; this is
+  diagnostic evidence for the emergency exception above, not permission for
+  routine manual truncation. On
   `OperationalError` (lock contention at connect time) it logs and exits 0
   -- the next timer tick retries.
 - Linux (`pkgs.stdenv.isLinux`):
@@ -337,6 +394,9 @@ Why this is safe to run while Codex is active:
   cleanup operation, not a competing one.
 - `TRUNCATE` is best-effort. On `busy=1` it returns without truncating; the
   WAL stays its current size and no data is lost.
+- `busy=1` with `log_pages == checkpointed` means checkpointing succeeded but
+  live readers blocked the final truncation step. It is the only busy shape
+  that can justify the emergency full-disk exception above.
 - Logs go to journald (Linux) or `~/Library/Logs/` (Darwin). If `busy=1`
   shows up consistently, that is a signal to investigate Codex usage
   patterns or to schedule the timer at a quieter hour, not to fix the
@@ -361,9 +421,11 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 
 #### Things not to do
 
-- Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand. Use
-  `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer or the manual
-  runbook above) so the writes are folded into the main DB first.
+- Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand for
+  routine cleanup. Use `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer
+  or the manual runbook above) so the writes are folded into the main DB
+  first. The only exception is the documented full-disk emergency case after
+  a checkpoint result proves every WAL frame was already checkpointed.
 - Do not run `DELETE` or `VACUUM` while Codex holds SQLite locks. Plain
   `PRAGMA wal_checkpoint(TRUNCATE)` is safe under contention; `DELETE`
   and `VACUUM` are not.
@@ -432,13 +494,17 @@ this runbook.
   Keep `plugins` enabled separately unless plugin discovery itself becomes a
   measured first-display blocker.
 - [x] WAL checkpoint timer added 2026-05-07 after `~/.codex/logs_2.sqlite-wal`
-  reached 32 GB on the Linux host (root/home at 97% used). One-shot manual
+  reached 32 GB on the Linux host (root/home at 98% used). One-shot manual
   `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
-  timer keeps the WAL from growing back. Cross-platform: `systemd.user`
-  timer on Linux, `launchd.agents` on Darwin, gated by `lib.optionalAttrs`
-  on `pkgs.stdenv.isLinux` / `isDarwin`. Symptom containment, not an
-  upstream fix; see [Automated Mitigation](#automated-mitigation-this-repo)
-  for inspection commands.
+  hourly timer keeps the WAL from growing back. On 2026-05-09, a separate
+  full-disk incident showed `busy=1 log_pages=603 checkpointed=603`, where
+  frames were checkpointed but active readers prevented truncation; the
+  runbook now documents the emergency-only manual truncate exception with
+  strict preconditions. Cross-platform: `systemd.user` timer on Linux,
+  `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
+  `isDarwin`. Symptom containment, not an upstream fix; see
+  [Automated Mitigation](#automated-mitigation-this-repo) for inspection
+  commands.
 
 ### 9.2. Pending Considerations
 

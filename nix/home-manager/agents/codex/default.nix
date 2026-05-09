@@ -145,8 +145,10 @@ let
   # the WAL has been observed to reach 30+ GB. PRAGMA wal_checkpoint(TRUNCATE)
   # is safe to run while Codex is active: it folds writes into the main DB
   # and best-effort truncates the WAL. On busy=1 it returns without
-  # truncating (no data loss, just no shrink that round) -- the next timer
-  # tick retries. Documented in the WAL Bloat Runbook in
+  # truncating (no data loss, just no shrink that round); when all log pages
+  # were checkpointed but active readers kept TRUNCATE busy, the script logs
+  # that distinction for emergency diagnosis. Documented in the WAL Bloat
+  # Runbook in
   # skills/agent-harness-engineering/references/codex-cli.md.
   walCheckpointScript = pkgs.writeShellApplication {
     name = "codex-wal-checkpoint";
@@ -188,6 +190,16 @@ let
                   f"codex-wal-checkpoint: result busy={busy} "
                   f"log_pages={log_pages} checkpointed={checkpointed}"
               )
+              if busy and log_pages >= 0 and log_pages == checkpointed:
+                  print(
+                      "codex-wal-checkpoint: all WAL frames checkpointed, "
+                      "but active readers prevented truncate"
+                  )
+              elif busy:
+                  print(
+                      "codex-wal-checkpoint: checkpoint incomplete because "
+                      "the database is busy"
+                  )
           finally:
               conn.close()
       except sqlite3.OperationalError as exc:
