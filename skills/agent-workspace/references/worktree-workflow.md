@@ -82,7 +82,7 @@ wrapper flow already covers the task.
 - Inspect one worktree: `vde-worktree status [branch] --json`
 - Inspect likely stale worktrees: `vde-worktree gone --json`
 - Resolve a branch to its absolute path: `vde-worktree path <branch> [--json]`
-- Select and delete one current-repo managed worktree:
+- Select and delete one managed worktree across all `ghq` repositories:
   `worktree-remove`
 - Delete a confirmed linked worktree: `vde-worktree del <branch>`
 - List merged cleanup candidates across ghq repositories:

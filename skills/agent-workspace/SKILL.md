@@ -139,9 +139,9 @@ session by name in tmux commands.
 ## 4. Worktree Lifecycle
 
 Primary creation entrypoints: `bin/issue-worktree-create <issue_number>` and
-`bin/pr-worktree-create <pr_number>`. For current-repo cleanup, use
-`bin/worktree-remove` to choose one managed worktree with `fzf`, confirm with
-`yes`, and delete through `vde-worktree del`.
+`bin/pr-worktree-create <pr_number>`. For interactive cleanup across `ghq`
+repositories, use `bin/worktree-remove` to choose one managed worktree with
+`fzf`, confirm with `yes`, and delete through `vde-worktree del`.
 
 Both scripts:
 
@@ -168,7 +168,7 @@ inspection, cleanup, and baseline verification.
 - `^g` / `__zoxide_zi_widget` — fzf picker merging zoxide + ghq sources; calls
   `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
 - `zi [keywords...]` — interactive fzf version of `z`
-- `worktree-remove` — current-repo `fzf` selector for confirmed single
+- `worktree-remove` — `ghq`-wide `fzf` selector for confirmed single
   worktree deletion
 - `vde-worktree list/status/gone/path/del` — inspection and cleanup backend
   (see `references/worktree-workflow.md`)

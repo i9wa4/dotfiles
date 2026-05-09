@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# Select and remove one managed worktree from the current repository.
+# Select and remove one managed worktree from all ghq repositories.
 # The destructive removal is delegated to `vde-worktree del`, which keeps the
 # same dirty, locked, unmerged, and unpushed safety checks as the backend.
 
@@ -13,8 +13,8 @@ usage() {
 Usage:
   worktree-remove
 
-Select a managed worktree with fzf, confirm by typing "yes", then remove it
-with vde-worktree del.
+Search all ghq repositories for managed worktrees, select one with fzf, confirm
+by typing "yes", then remove it with vde-worktree del.
 
 Options:
   -h, --help  Show this help.
@@ -28,18 +28,6 @@ require_command() {
     echo "Error: ${command_name} command not found. Please install it." >&2
     exit 1
   fi
-}
-
-main_repo_path() {
-  local worktree_path="$1"
-  local common_dir
-
-  common_dir="$(git -C "$worktree_path" rev-parse --git-common-dir)"
-  if [[ "$common_dir" != /* ]]; then
-    common_dir="${worktree_path}/${common_dir}"
-  fi
-
-  cd "$(dirname "$common_dir")" 2>/dev/null && pwd -P
 }
 
 if [[ $# -gt 0 ]]; then
@@ -61,49 +49,88 @@ if [[ ! -t 0 ]]; then
 fi
 
 require_command git
+require_command ghq
 require_command jq
 require_command fzf
 require_command vde-worktree
 
-current_root="$(git rev-parse --show-toplevel)"
-repo_root="$(main_repo_path "$current_root")"
+repo_list=$(mktemp)
+inventory_file=$(mktemp)
+trap 'rm -f "$repo_list" "$inventory_file"' EXIT HUP INT TERM
 
-list_json="$(
-  cd "$repo_root"
-  vde-worktree list --json
-)"
-
-managed_root="$(printf '%s' "$list_json" | jq -r '.managedWorktreeRoot // empty')"
-if [[ -z "$managed_root" ]]; then
-  echo "Error: vde-worktree did not report a managed worktree root." >&2
+if ! ghq list -p >"$repo_list"; then
+  echo "Error: failed to list ghq repositories." >&2
   exit 1
 fi
 
-inventory="$(
-  printf '%s' "$list_json" |
-    jq -r '
-      (.repoRoot // "") as $repoRoot
+repo_count=0
+scanned_count=0
+skipped_count=0
+
+while IFS= read -r repo_path; do
+  repo_count=$((repo_count + 1))
+
+  if [[ ! -d "$repo_path" || "$repo_path" == *"/.worktrees/"* ]]; then
+    skipped_count=$((skipped_count + 1))
+    continue
+  fi
+
+  if [[ ! -d "${repo_path}/.git" && ! -f "${repo_path}/.git" ]]; then
+    skipped_count=$((skipped_count + 1))
+    continue
+  fi
+
+  if [[ ! -d "${repo_path}/.worktrees" && ! -d "${repo_path}/.vde" && ! -f "${repo_path}/config/vde/worktree/config.yml" ]]; then
+    skipped_count=$((skipped_count + 1))
+    continue
+  fi
+
+  if ! git -C "$repo_path" rev-parse --show-toplevel >/dev/null 2>&1; then
+    skipped_count=$((skipped_count + 1))
+    continue
+  fi
+
+  if ! list_json="$(
+    cd "$repo_path"
+    vde-worktree list --json 2>/dev/null
+  )"; then
+    skipped_count=$((skipped_count + 1))
+    continue
+  fi
+
+  scanned_count=$((scanned_count + 1))
+  if ! printf '%s' "$list_json" |
+    jq -r --arg fallbackRepo "$repo_path" '
+      (.repoRoot // $fallbackRepo) as $repoRoot
       | (.managedWorktreeRoot // "") as $managedRoot
       | .worktrees[]?
       | select((.branch // "") != "")
       | select((.path // "") != $repoRoot)
       | select($managedRoot != "" and ((.path // "") | startswith($managedRoot + "/")))
       | [
+          ($repoRoot | split("/")[-1]),
           (.branch // ""),
-          (.path // ""),
           (if .dirty == true then "dirty" else "clean" end),
           (if .merged.overall == true then "merged" elif .merged.overall == false then "unmerged" else "merge?" end),
           (if .locked.value == true then "locked" else "unlocked" end),
           (.pr.status // "-"),
           ((.upstream.ahead // "-") | tostring),
-          ((.upstream.behind // "-") | tostring)
+          ((.upstream.behind // "-") | tostring),
+          (.path // ""),
+          $repoRoot,
+          $managedRoot
         ]
       | @tsv
-    '
-)"
+    ' >>"$inventory_file"; then
+    echo "Warning: failed to parse vde-worktree output for ${repo_path}" >&2
+    skipped_count=$((skipped_count + 1))
+  fi
+done <"$repo_list"
+
+inventory="$(cat "$inventory_file")"
 
 if [[ -z "$inventory" ]]; then
-  echo "No removable managed worktrees found for ${repo_root}."
+  echo "No removable managed worktrees found across ${repo_count} ghq repositories."
   exit 0
 fi
 
@@ -111,19 +138,19 @@ if ! selection="$(
   printf '%s\n' "$inventory" |
     fzf \
       --delimiter=$'\t' \
-      --with-nth=1,3,4,5,6,7,8,2 \
+      --with-nth=1,2,3,4,5,6,7,8,9 \
       --prompt='worktree-remove> ' \
-      --header='Select a worktree to remove. Columns: branch state merge lock PR ahead behind path' \
-      --preview='git -C {2} --no-optional-locks status --short 2>/dev/null; printf "\n"; git -C {2} log -n 8 --oneline 2>/dev/null' \
+      --header='Select a worktree to remove. Columns: repo branch state merge lock PR ahead behind path' \
+      --preview='git -C {9} --no-optional-locks status --short 2>/dev/null; printf "\n"; git -C {9} log -n 8 --oneline 2>/dev/null' \
       --preview-window='down,60%'
 )"; then
   echo "Cancelled."
   exit 0
 fi
 
-IFS=$'\t' read -r branch worktree_path dirty_state merge_state lock_state pr_status upstream_ahead upstream_behind <<<"$selection"
+IFS=$'\t' read -r repo_name branch dirty_state merge_state lock_state pr_status upstream_ahead upstream_behind worktree_path repo_root managed_root <<<"$selection"
 
-if [[ -z "$branch" || -z "$worktree_path" ]]; then
+if [[ -z "$repo_name" || -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
   exit 1
 fi
@@ -143,10 +170,17 @@ if [[ ! -d "$worktree_path" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$worktree_path/.git" ]]; then
+  echo "Error: refusing to remove a path that is not a linked worktree: ${worktree_path}" >&2
+  exit 1
+fi
+
 echo "Selected worktree:"
+echo "  Repo:   ${repo_name}"
 echo "  Branch: ${branch}"
 echo "  Path:   ${worktree_path}"
 echo "  State:  ${dirty_state}, ${merge_state}, ${lock_state}, PR=${pr_status}, ahead=${upstream_ahead}, behind=${upstream_behind}"
+echo "  Scan:   ${scanned_count} scanned, ${skipped_count} skipped, ${repo_count} total ghq repositories"
 echo ""
 echo "This will remove the linked worktree and its branch through vde-worktree del."
 printf 'Type yes to continue: '

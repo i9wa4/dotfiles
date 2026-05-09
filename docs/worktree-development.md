@@ -12,8 +12,9 @@ For the adoption decision behind the current tool stack, see
 - Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
   issue work.
 - Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
-- Use `worktree-remove` to choose one managed worktree in the current repo with
-  `fzf`, type `yes`, and delete it through `vde-worktree del`.
+- Use `worktree-remove` to search all `ghq` repositories for managed
+  worktrees, choose one with `fzf`, type `yes`, and delete it through
+  `vde-worktree del`.
 - Use `worktree-cleanup-merged` to list managed worktrees across ghq
   repositories with status columns and delete merged candidates only after
   typing `yes`.
@@ -146,9 +147,10 @@ For the adoption decision behind the current tool stack, see
   repository file tree.
 - Inspect cleanup candidates with `vde-worktree list --json`,
   `vde-worktree status <branch> --json`, and `vde-worktree gone --json`.
-- For current-repo interactive deletion, run `worktree-remove`. It lists only
-  secondary managed worktrees under `.worktrees/`, requires typing `yes`, and
-  delegates the destructive operation to `vde-worktree del <branch>`.
+- For interactive deletion across `ghq` repositories, run `worktree-remove`.
+  It lists only secondary managed worktrees under each repo's `.worktrees/`,
+  requires typing `yes`, and delegates the destructive operation to
+  `vde-worktree del <branch>` from the selected repo root.
 - For host-wide cleanup, run `worktree-cleanup-merged`. It scans `ghq list -p`,
   shows managed worktrees with candidate, merged, dirty, locked, PR, and
   upstream status, then deletes candidates only after explicit confirmation.
@@ -176,9 +178,9 @@ For the adoption decision behind the current tool stack, see
   rewriting it in place.
 - PR review now supports cross-repository heads by fetching from the PR source
   repository directly.
-- `worktree-remove` now provides a current-repo `fzf` selector for confirmed
+- `worktree-remove` now provides a `ghq`-wide `fzf` selector for confirmed
   single-worktree deletion, while `worktree-cleanup-merged` remains the
-  host-wide merged cleanup flow.
+  merged-candidate cleanup flow.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
