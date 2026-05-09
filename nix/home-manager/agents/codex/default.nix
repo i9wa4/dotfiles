@@ -138,6 +138,9 @@ let
   baseConfigFile = tomlFormat.generate "codex-config-base.toml" codexConfig;
   managedConfigStart = "# BEGIN DOTFILES NIX MANAGED CODEX CONFIG";
   managedConfigEnd = "# END DOTFILES NIX MANAGED CODEX CONFIG";
+  codexSessionRetentionDays = 50;
+  codexTempRetentionHours = 1;
+  codexWalPressureThresholdBytes = 8 * 1024 * 1024 * 1024;
 
   # Periodic WAL checkpoint to keep ~/.codex/logs_2.sqlite-wal from growing
   # unbounded. Codex CLI's internal logging connection holds long-lived
@@ -209,6 +212,318 @@ let
       after=0
       if [ -f "$WAL" ]; then after=$(stat_size "$WAL"); fi
       echo "codex-wal-checkpoint: WAL after  = $after bytes"
+    '';
+  };
+
+  # Pressure-oriented Codex storage relief for Linux systemd. This is more
+  # assertive than the safe hourly checkpoint: it prunes disposable temp data,
+  # expires closed rollout JSONL outside the 50-day compatibility window, then
+  # logs holder PIDs when a large fully-checkpointed WAL still cannot be
+  # truncated. It never deletes SQLite files, manually truncates the WAL, or
+  # manages the Codex process lifecycle.
+  storagePressureReliefScript = pkgs.writeShellApplication {
+    name = "codex-storage-pressure-relief";
+    runtimeInputs = [ pkgs.python3 ];
+    text = ''
+      export CODEX_SESSION_RETENTION_DAYS="${toString codexSessionRetentionDays}"
+      export CODEX_TEMP_RETENTION_HOURS="${toString codexTempRetentionHours}"
+      export CODEX_WAL_PRESSURE_THRESHOLD_BYTES="${toString codexWalPressureThresholdBytes}"
+
+      python3 - <<'PY'
+      import os
+      import shutil
+      import sqlite3
+      import sys
+      import time
+      from pathlib import Path
+
+
+      PREFIX = "codex-storage-pressure-relief"
+      HOME = Path.home()
+      CODEX_HOME = HOME / ".codex"
+      DB = CODEX_HOME / "logs_2.sqlite"
+      WAL = Path(f"{DB}-wal")
+      SHM = Path(f"{DB}-shm")
+      SESSIONS = CODEX_HOME / "sessions"
+      TMP_ROOTS = [CODEX_HOME / ".tmp", CODEX_HOME / "tmp"]
+      SESSION_RETENTION_DAYS = int(os.environ["CODEX_SESSION_RETENTION_DAYS"])
+      TEMP_RETENTION_HOURS = int(os.environ["CODEX_TEMP_RETENTION_HOURS"])
+      WAL_PRESSURE_THRESHOLD = int(os.environ["CODEX_WAL_PRESSURE_THRESHOLD_BYTES"])
+
+
+      def log(message):
+          print(f"{PREFIX}: {message}")
+
+
+      def warn(message):
+          print(f"{PREFIX}: {message}", file=sys.stderr)
+
+
+      def real(path):
+          return os.path.realpath(path)
+
+
+      def file_size(path):
+          try:
+              return path.stat().st_size
+          except FileNotFoundError:
+              return 0
+          except OSError as exc:
+              warn(f"stat failed for {path}: {exc}")
+              return 0
+
+
+      def collect_open_paths(prefixes):
+          proc = Path("/proc")
+          prefixes = [real(path) for path in prefixes if path.exists()]
+          if not proc.is_dir() or not prefixes:
+              return set(), False
+
+          open_paths = set()
+          for fd_dir in proc.glob("[0-9]*/fd"):
+              try:
+                  entries = list(fd_dir.iterdir())
+              except OSError:
+                  continue
+              for fd in entries:
+                  try:
+                      target = os.readlink(fd)
+                  except OSError:
+                      continue
+                  if target.endswith(" (deleted)"):
+                      target = target[:-10]
+                  target_real = real(target)
+                  if any(
+                      target_real == prefix or target_real.startswith(f"{prefix}/")
+                      for prefix in prefixes
+                  ):
+                      open_paths.add(target_real)
+          return open_paths, True
+
+
+      def child_has_open_file(child, open_paths):
+          child_real = real(child)
+          return any(
+              path == child_real or path.startswith(f"{child_real}/")
+              for path in open_paths
+          )
+
+
+      def directory_size(path):
+          total = 0
+          for child in path.rglob("*"):
+              try:
+                  if child.is_file():
+                      total += child.stat().st_size
+              except OSError:
+                  continue
+          return total
+
+
+      def prune_temp(open_paths):
+          cutoff = time.time() - TEMP_RETENTION_HOURS * 3600
+          entries_deleted = 0
+          bytes_deleted = 0
+          errors = 0
+
+          for root in TMP_ROOTS:
+              if not root.exists():
+                  continue
+              try:
+                  children = list(root.iterdir())
+              except OSError as exc:
+                  warn(f"cannot list temp root {root}: {exc}")
+                  errors += 1
+                  continue
+              for child in children:
+                  try:
+                      stat = child.stat()
+                  except FileNotFoundError:
+                      continue
+                  except OSError as exc:
+                      warn(f"cannot stat temp entry {child}: {exc}")
+                      errors += 1
+                      continue
+                  if stat.st_mtime >= cutoff or child_has_open_file(child, open_paths):
+                      continue
+                  try:
+                      if child.is_dir():
+                          size = directory_size(child)
+                          shutil.rmtree(child)
+                      else:
+                          size = stat.st_size
+                          child.unlink()
+                      entries_deleted += 1
+                      bytes_deleted += size
+                  except OSError as exc:
+                      warn(f"cannot delete temp entry {child}: {exc}")
+                      errors += 1
+
+          log(
+              "temp prune "
+              f"entries_deleted={entries_deleted} "
+              f"bytes_deleted={bytes_deleted} errors={errors}"
+          )
+          return errors
+
+
+      def prune_sessions(open_paths):
+          if not SESSIONS.exists():
+              log("sessions directory not found, skipping session prune")
+              return 0
+
+          cutoff = time.time() - SESSION_RETENTION_DAYS * 86400
+          seen = 0
+          deleted = 0
+          skipped_open = 0
+          bytes_deleted = 0
+          errors = 0
+
+          for path in SESSIONS.rglob("*.jsonl"):
+              try:
+                  stat = path.stat()
+              except FileNotFoundError:
+                  continue
+              except OSError as exc:
+                  warn(f"cannot stat session {path}: {exc}")
+                  errors += 1
+                  continue
+              if stat.st_mtime >= cutoff:
+                  continue
+              seen += 1
+              if real(path) in open_paths:
+                  skipped_open += 1
+                  continue
+              try:
+                  path.unlink()
+                  deleted += 1
+                  bytes_deleted += stat.st_size
+              except OSError as exc:
+                  warn(f"cannot delete session {path}: {exc}")
+                  errors += 1
+
+          empty_dirs_removed = 0
+          for path in sorted((p for p in SESSIONS.rglob("*") if p.is_dir()), reverse=True):
+              try:
+                  path.rmdir()
+                  empty_dirs_removed += 1
+              except OSError:
+                  pass
+
+          log(
+              "session prune "
+              f"old_seen={seen} deleted={deleted} skipped_open={skipped_open} "
+              f"empty_dirs_removed={empty_dirs_removed} bytes_deleted={bytes_deleted} "
+              f"errors={errors}"
+          )
+          return errors
+
+
+      def checkpoint_wal(label):
+          before = file_size(WAL)
+          log(f"{label}: WAL before={before} bytes")
+          if not DB.exists():
+              log(f"{DB} not found, skipping checkpoint")
+              return None
+
+          try:
+              conn = sqlite3.connect(DB, timeout=30)
+              try:
+                  conn.execute("PRAGMA busy_timeout=30000")
+                  row = conn.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+              finally:
+                  conn.close()
+          except sqlite3.OperationalError as exc:
+              warn(f"{label}: checkpoint skipped ({exc})")
+              return None
+
+          busy, log_pages, checkpointed = row
+          after = file_size(WAL)
+          log(
+              f"{label}: result busy={busy} log_pages={log_pages} "
+              f"checkpointed={checkpointed} WAL after={after} bytes"
+          )
+          if busy and log_pages >= 0 and log_pages == checkpointed:
+              log(f"{label}: all WAL frames checkpointed, truncate blocked by holders")
+          elif busy:
+              log(f"{label}: checkpoint incomplete because the database is busy")
+          return busy, log_pages, checkpointed
+
+
+      def process_cmdline(pid):
+          try:
+              raw = Path(f"/proc/{pid}/cmdline").read_bytes()
+          except OSError:
+              return ""
+          return raw.replace(b"\0", b" ").decode("utf-8", "replace").strip()
+
+
+      def wal_holders():
+          proc = Path("/proc")
+          targets = {real(path) for path in [DB, WAL, SHM] if path.exists()}
+          if not proc.is_dir() or not targets:
+              return []
+
+          holders = {}
+          for fd_dir in proc.glob("[0-9]*/fd"):
+              try:
+                  pid = int(fd_dir.parent.name)
+                  entries = list(fd_dir.iterdir())
+              except (OSError, ValueError):
+                  continue
+              for fd in entries:
+                  try:
+                      target = os.readlink(fd)
+                  except OSError:
+                      continue
+                  if target.endswith(" (deleted)"):
+                      target = target[:-10]
+                  if real(target) in targets:
+                      holders[pid] = process_cmdline(pid)
+                      break
+          return sorted(holders.items())
+
+
+      if not CODEX_HOME.exists():
+          log(f"{CODEX_HOME} not found, skipping")
+          sys.exit(0)
+
+      open_paths, open_detection = collect_open_paths([SESSIONS, *TMP_ROOTS])
+      if not open_detection:
+          log("open-file detection unavailable; skipping mutable temp/session prune")
+          prune_errors = 0
+      else:
+          prune_errors = prune_temp(open_paths) + prune_sessions(open_paths)
+
+      first_result = checkpoint_wal("initial checkpoint")
+      wal_after = file_size(WAL)
+      free_bytes = shutil.disk_usage(HOME).free
+      pressure = wal_after >= WAL_PRESSURE_THRESHOLD
+      fully_checkpointed = (
+          first_result is not None
+          and first_result[1] >= 0
+          and first_result[1] == first_result[2]
+      )
+      log(
+          "pressure check "
+          f"wal_after={wal_after} free_bytes={free_bytes} pressure={pressure} "
+          f"fully_checkpointed={fully_checkpointed}"
+      )
+
+      if pressure and fully_checkpointed:
+          holders = wal_holders()
+          if holders:
+              log("large fully-checkpointed WAL is still held open; manual review needed")
+              for pid, cmdline in holders:
+                  log(f"holder pid={pid} cmdline={cmdline!r}")
+          else:
+              log("large fully-checkpointed WAL has no visible /proc holders")
+      else:
+          log("no manual holder review needed")
+
+      if prune_errors:
+          sys.exit(1)
+      PY
     '';
   };
 in
@@ -379,32 +694,65 @@ in
   # forces pkgs.stdenv evaluation before _module.args resolve and triggers
   # an infinite-recursion at Home Manager's Darwin entry path.
 
-  # Linux: systemd user timer.
-  # Hourly checkpoint with persistent catch-up so suspended/offline hosts
-  # still run a missed tick on next boot. Random delay smears the start
-  # across the first 5 minutes of each hour to avoid hammering the wall
-  # clock; with ~5m skew the next tick is still reliably within the same
-  # hour even if codex was busy at the top.
-  systemd.user.services.codex-wal-checkpoint = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "Truncate Codex CLI logs SQLite WAL";
+  systemd.user = lib.mkIf pkgs.stdenv.isLinux {
+    # Linux: systemd user timer.
+    # Hourly checkpoint with persistent catch-up so suspended/offline hosts
+    # still run a missed tick on next boot. Random delay smears the start
+    # across the first 5 minutes of each hour to avoid hammering the wall
+    # clock; with ~5m skew the next tick is still reliably within the same
+    # hour even if codex was busy at the top.
+    services.codex-wal-checkpoint = {
+      Unit = {
+        Description = "Truncate Codex CLI logs SQLite WAL";
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${walCheckpointScript}/bin/codex-wal-checkpoint";
+      };
     };
-    Service = {
-      Type = "oneshot";
-      ExecStart = "${walCheckpointScript}/bin/codex-wal-checkpoint";
+    timers.codex-wal-checkpoint = {
+      Unit = {
+        Description = "Hourly Codex CLI logs SQLite WAL checkpoint";
+      };
+      Timer = {
+        OnCalendar = "hourly";
+        Persistent = true;
+        RandomizedDelaySec = "5m";
+      };
+      Install = {
+        WantedBy = [ "timers.target" ];
+      };
     };
-  };
-  systemd.user.timers.codex-wal-checkpoint = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = {
-      Description = "Hourly Codex CLI logs SQLite WAL checkpoint";
+
+    # Linux: pressure-oriented Codex storage relief.
+    # Runs after the ordinary checkpoint window. Under normal conditions this
+    # prunes disposable temp/session data and no-ops after a successful
+    # checkpoint. If a large WAL remains fully checkpointed but held open, it
+    # logs holder PIDs for manual review.
+    services.codex-storage-pressure-relief = {
+      Unit = {
+        Description = "Relieve Codex CLI storage pressure";
+        ConditionPathExists = "%h/.codex";
+      };
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${storagePressureReliefScript}/bin/codex-storage-pressure-relief";
+        Nice = 10;
+        IOSchedulingClass = "idle";
+      };
     };
-    Timer = {
-      OnCalendar = "hourly";
-      Persistent = true;
-      RandomizedDelaySec = "5m";
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
+    timers.codex-storage-pressure-relief = {
+      Unit = {
+        Description = "Hourly Codex CLI storage pressure relief";
+      };
+      Timer = {
+        OnCalendar = "*-*-* *:17:00";
+        Persistent = true;
+        RandomizedDelaySec = "10m";
+      };
+      Install = {
+        WantedBy = [ "timers.target" ];
+      };
     };
   };
 

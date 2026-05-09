@@ -375,6 +375,15 @@ Implementation:
   `systemd.user.timers.codex-wal-checkpoint`. Schedule:
   `OnCalendar = "hourly"`, `Persistent = true` (catches up missed ticks
   after suspend/offline), `RandomizedDelaySec = "5m"`.
+- Linux also installs `codex-storage-pressure-relief` as a Home Manager
+  `systemd.user` service/timer. Schedule: `OnCalendar = "*-*-* *:17:00"`,
+  `Persistent = true`, `RandomizedDelaySec = "10m"`. This pressure timer
+  prunes disposable Codex temp entries older than 1 hour, prunes closed
+  `~/.codex/sessions/**/*.jsonl` files older than 50 days while skipping
+  open files, runs the same SQLite checkpoint, and logs holder PIDs when a
+  large fully-checkpointed WAL remains open. It only performs storage-safe
+  cleanup and records evidence; it does not delete SQLite files or manually
+  truncate WAL files.
 - Darwin (`pkgs.stdenv.isDarwin`): Home Manager
   `launchd.agents.codex-wal-checkpoint`. Schedule: `StartCalendarInterval` at
   minute 0 of every hour, `RunAtLoad = false`, `AbandonProcessGroup = true`.
@@ -407,7 +416,9 @@ Inspecting the timer:
 ```sh
 # Linux
 systemctl --user list-timers codex-wal-checkpoint.timer
+systemctl --user list-timers codex-storage-pressure-relief.timer
 journalctl --user -u codex-wal-checkpoint.service -n 50
+journalctl --user -u codex-storage-pressure-relief.service -n 50
 
 # Darwin
 launchctl list | grep codex-wal-checkpoint
@@ -429,7 +440,8 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 - Do not run `DELETE` or `VACUUM` while Codex holds SQLite locks. Plain
   `PRAGMA wal_checkpoint(TRUNCATE)` is safe under contention; `DELETE`
   and `VACUUM` are not.
-- Do not touch `state_5.sqlite*` or `sessions` for this issue.
+- Do not touch `state_5.sqlite*` for this issue. Session JSONL retention is a
+  separate storage-pressure control and is not a fix for WAL bloat.
 - Do not run storage-heavy builds or broad checks just to diagnose the WAL.
 - Do not claim PRs are confirmed fixes unless upstream says so and local
   verification supports it.
@@ -505,6 +517,13 @@ this runbook.
   `isDarwin`. Symptom containment, not an upstream fix; see
   [Automated Mitigation](#automated-mitigation-this-repo) for inspection
   commands.
+- [x] Linux `codex-storage-pressure-relief.timer` added 2026-05-09 after a
+  full-disk incident where `logs_2.sqlite-wal` reached about 37 GB and
+  `tmux-a2a-postman` could not write state. The timer prunes disposable Codex
+  temp data, prunes closed session JSONL older than 50 days while skipping
+  open files, checkpoints `logs_2.sqlite`, and logs holder PIDs when a large
+  fully-checkpointed WAL remains open. The managed policy is storage relief
+  only: process lifecycle stays outside the timer.
 
 ### 9.2. Pending Considerations
 

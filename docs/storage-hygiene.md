@@ -73,8 +73,8 @@ Use one vocabulary across docs and the Linux storage report.
 | Low-risk rebuildable caches | uv cache, `~/.cache/pre-commit`, `~/.cache/ruff`, `~/.cache/go-build`, `~/.cache/nix`, `~/.npm` | `safe_cache` | Cleanup candidate through the explicit low-risk cache surface |
 | Claude runtime state | `~/.claude` projects, todos, and runtime files | `review_first` | Keep Claude's built-in age-based cleanup and review before manual deletion |
 | Codex lightweight history and config | `~/.codex/history.jsonl`, `~/.codex/config.toml`, hooks, handoffs, and other small control files | `review_first` | Keep separate from session retention; lightweight history settings do not replace rollout JSONL retention |
-| Codex interactive session rollouts | `~/.codex/sessions/**/*.jsonl` | `review_first` | Keep about 50 days of closed rollout JSONL by file age, skip files still open in a live Codex process, and preserve the session data that `ccusage-codex` reads directly |
-| Codex SQLite state and WAL files | `~/.codex/logs_*.sqlite*`, `~/.codex/state_*.sqlite*` | `review_first` | Never delete or truncate while a Codex process has the files open; checkpoint or compact only after live writers are closed and the active session is preserved |
+| Codex interactive session rollouts | `~/.codex/sessions/**/*.jsonl` | `review_first` | Keep about 50 days of closed rollout JSONL by file age, skip files still open in a live Codex process, and preserve the session data that `ccusage-codex` reads directly; the Linux Codex storage-pressure timer enforces this default window |
+| Codex SQLite state and WAL files | `~/.codex/logs_*.sqlite*`, `~/.codex/state_*.sqlite*` | `review_first` | Never delete or manually truncate while a Codex process has the files open; use SQLite checkpoint first, and let the managed pressure timer log proven fully-checkpointed WAL holders for manual review |
 | Codex live TUI logs | `~/.codex/log/codex-tui.log` | `review_first` | Keep separate from rollout JSONL retention; any log cleanup stays a separate review-first decision |
 | `tmux-a2a-postman` control-plane state | mailbox state, durable handoffs, and approval artifacts | `review_first` | Manual review only under this umbrella; no automatic age-based prune command |
 | `vde-monitor` state | durable monitor state plus disposable pane logs | `review_first` | Preserve durable state by default; only `~/.vde-monitor/panes` is disposable and pruned on startup |
@@ -105,40 +105,37 @@ shapes that must not be collapsed into one cleanup rule.
   from session-rollout retention. Small history controls are not a substitute
   for session policy.
 - Interactive session rollouts live under `~/.codex/sessions/**/*.jsonl`. The
-  target policy is to keep about 50 days of closed rollout JSONL files. Any
-  future cleanup must use file age, not just directory names, and must skip
-  files that are still open by a live Codex process.
+  Nix-managed Linux storage-pressure timer keeps about 50 days of closed
+  rollout JSONL files by file age, not directory names, and skips files that
+  are still open by a live Codex process.
 - `ccusage-codex` reads Codex session JSONL files directly from the sessions
   tree, so the 50-day window is an intentional compatibility boundary rather
   than an arbitrary cache rule.
 - SQLite state and WAL files under `~/.codex`, including `logs_*.sqlite*` and
   `state_*.sqlite*`, are live database state. A large WAL is a maintenance
-  signal, not a delete target. First check open handles with `lsof`; if Codex
-  writers still hold the WAL open, preserve the current session and report the
-  compaction as blocked until the processes are closed.
-- After closing nonessential Codex panes and confirming the database is not
-  open, checkpoint or compact the SQLite database through an explicit,
-  operator-approved maintenance step. Do not run a truncate or remove command
-  against a live WAL.
+  signal, not a delete target. The managed hourly checkpoint is safe while
+  Codex is active. The pressure-relief timer logs Codex holder PIDs when a
+  large WAL remains fully checkpointed but held open. Process lifecycle stays
+  outside the timer.
+- For manual maintenance, prefer a quiet period after closing nonessential
+  Codex panes. Do not run a manual truncate or remove command against a live
+  WAL.
 - If SQLite files were deleted while Codex was running, assume the process may
   still hold deleted-open file handles. Check with `lsof +L1` before declaring
   disk reclaimed. The safe recovery path is to finish or preserve active
-  conversations, close/restart Codex processes, then confirm the database files
-  are recreated cleanly and no deleted-open Codex handles remain.
-- Do not signal processes by copying the truncated `COMMAND` column from
-  `lsof`. If graceful termination is needed after saving active work, target the
-  unique PIDs reported by `lsof +L1`, send `TERM` first, and recheck `lsof +L1`
-  and `df`. Avoid blind `kill -9`.
+  conversations, record exact holder PIDs, and defer any process-lifecycle
+  decision outside this managed storage path.
+- The managed storage-pressure path only reports holder PIDs. It does not
+  manage Codex processes.
 - Clearly disposable Codex state is limited to small non-live cache/temp
   contents and closed session JSONL files outside the retention window. Preserve
   credentials, `config.toml`, active sessions, `history.jsonl`, hooks, skills,
   memories, handoffs, and session data needed by accounting tools.
 - Live TUI logs such as `~/.codex/log/codex-tui.log` stay `review_first`, but
   they are not part of the 50-day session-rollout retention window.
-- The internal `storage-hygiene` skill provides a manual dry-run-first Codex
-  session JSONL pruning helper. It is not scheduled, requires an explicit
-  `--days` threshold, requires `--delete` for mutation, refuses open handles,
-  and stays narrower than the session/log split above.
+- The internal `storage-hygiene` skill still provides a manual dry-run-first
+  Codex session JSONL pruning helper for ad hoc checks. The scheduled Linux
+  harness path is `codex-storage-pressure-relief.timer`.
 
 ### 1.9. `tmux-a2a-postman` And `vde-monitor`
 
@@ -282,9 +279,8 @@ Deleted-open files are already unlinked from the directory tree, so deleting
 new replacement files does not reclaim the old space. The reclaim happens only
 when the process holding the old handle exits or closes it.
 
-For Codex and Claude, preserve active work first. If the user approves process
-closure, prefer normal session shutdown, then `TERM` to exact PIDs if needed,
-and avoid blind `kill -9`.
+For Codex and Claude, preserve active work first. The managed storage-relief
+path reports deleted-open holders only.
 
 Read-only checks:
 
@@ -294,13 +290,7 @@ lsof ~/.codex/state_*.sqlite-wal 2>/dev/null
 timeout 25s lsof -nP +L1 2>/dev/null
 ```
 
-Approved action only, after active work is saved and exact PIDs are reviewed:
-
-```sh
-kill -TERM <pid>
-```
-
-Recheck after process release:
+Recheck after any later operator-led remediation:
 
 ```sh
 df -h /
@@ -335,8 +325,10 @@ otherwise.
 - Codex session JSONL retention is about 50 days for closed rollouts. Skip
   files open by live Codex processes and preserve data used by accounting
   tools.
-- Codex SQLite databases and WAL files are live state. Do not delete, truncate,
-  checkpoint, or compact them while `lsof` shows active writers.
+- Codex SQLite databases and WAL files are live state. Do not delete or
+  manually truncate them while `lsof` shows active writers. SQLite checkpoint
+  is the managed safe maintenance surface; compaction remains a quiet-period
+  manual task.
 - Claude uses its configured age-based cleanup window. Review before manual
   deletion.
 - `tmux-a2a-postman` state is control-plane evidence. Review old contexts
@@ -432,10 +424,12 @@ Use one-off deletion only to exit the emergency. The durable controls are:
   filesystem reaches critical pressure.
 - Add alerting or a manual checkpoint at warning thresholds such as 90%, 95%,
   and 98% used.
-- Track Codex WAL size separately from Codex session JSONL retention. A growing
-  WAL needs database checkpoint/compaction planning, not session pruning.
+- Track Codex WAL size separately from Codex session JSONL retention. The
+  managed `codex-wal-checkpoint` and `codex-storage-pressure-relief` systemd
+  timers are the durable Linux controls for WAL growth and pressure response.
 - Keep closed Codex rollout cleanup aligned with the 50-day compatibility
-  window and always skip live-open files.
+  window and always skip live-open files; the Linux pressure timer enforces
+  that default window.
 - Review `tmux-a2a-postman` state manually as control-plane evidence rather
   than applying automatic pruning.
 - Avoid duplicated generated environments by fixing the process that recreates
