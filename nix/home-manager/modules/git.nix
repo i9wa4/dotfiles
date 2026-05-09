@@ -60,7 +60,7 @@
       ghq.root = ghqRoot;
       gpg.format = "ssh";
       grep.lineNumber = true;
-      http.sslVerify = false;
+      http.sslVerify = true;
       init.defaultBranch = "main";
       merge = {
         conflictstyle = "diff3";
