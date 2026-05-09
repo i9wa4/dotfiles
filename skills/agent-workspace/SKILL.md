@@ -13,8 +13,27 @@ creation, vde-layout preset boot, worktree lifecycle, and pane operations.
 
 ### Agent-Driven Boot (9 steps)
 
-Use direct vde-layout invocation — do NOT rely on zeno snippet injection from
-non-interactive shells.
+For a `tmux-a2a-postman` agent session, the expected end-user flow is:
+
+```text
+new tmux session -> z tmux-a2a-postman -> vb
+```
+
+When driving that flow from another agent pane, resolve `vb` from the repo's
+current configuration, then send the expanded vde-layout command directly. Do
+not rely on zeno snippet injection from non-interactive shells, and do not trust
+hardcoded examples in this skill over the config files.
+
+Resolution order for `vb`:
+
+1. Inspect `config/zeno/config.yaml` and find the snippet whose `keyword` is
+   `vb`.
+2. Inspect `config/vde/layout.yml` for every `vde-layout <preset>` referenced
+   by that snippet.
+3. Send the snippet command exactly as resolved, unless the user requested a
+   different preset.
+
+After resolving `vb`, boot the session:
 
 1. Create session and capture pane id:
 
@@ -25,9 +44,12 @@ non-interactive shells.
 2. Wait 5s minimum for zinit turbo + zoxide.zsh + zeno to fully initialize in
    the new pane. (Empirically confirmed: 2s is insufficient; see
    `references/boot-failure-modes.md`)
-3. Navigate to repo:
+3. Navigate to the postman workspace, or to the target repo for non-postman
+   workspaces:
 
    ```bash
+   tmux send-keys -t "$PANE_ID" "z tmux-a2a-postman" Enter
+   # or, for a non-postman workspace:
    tmux send-keys -t "$PANE_ID" "z <repo-basename-or-dir>" Enter
    ```
 
@@ -45,7 +67,8 @@ non-interactive shells.
    tmux display-message -t "$PANE_ID" -p '#{session_name}'
    ```
 
-7. Send the expanded vde-layout command directly:
+7. Execute the resolved `vb` end state by sending the expanded vde-layout
+   command directly. As of the current config this is:
 
    ```bash
    tmux send-keys -t "$PANE_ID" 'vde-layout messenger-codex && vde-layout preset-b' Enter
