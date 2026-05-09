@@ -12,11 +12,10 @@ set -o posix
 #
 # Dependencies:
 #   - gh (GitHub CLI)
-#   - vde-worktree
 #   - repo-setup (optional)
 
 # Check required dependencies
-for cmd in gh git vde-worktree; do
+for cmd in gh git; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "Error: $cmd command not found. Please install it." >&2
     exit 1
@@ -69,6 +68,26 @@ connect_review_branch() {
     echo "Error: local review branch upstream is '${actual_upstream}', expected '${upstream}'." >&2
     return 1
   fi
+}
+
+find_worktree_for_branch() {
+  local branch=$1
+  local target_ref="refs/heads/${branch}"
+
+  git worktree list --porcelain | awk -v target_ref="$target_ref" '
+    /^worktree / {
+      path = substr($0, 10)
+    }
+    /^branch / {
+      if (substr($0, 8) == target_ref) {
+        print path
+        found = 1
+      }
+    }
+    END {
+      exit found ? 0 : 1
+    }
+  '
 }
 
 sync_existing_review_branch() {
@@ -167,7 +186,9 @@ for pr_number in "$@"; do
   fi
 
   echo "* PR #${pr_number} branch: ${pr_branch}"
-  pr_local_branch="pr-${pr_number}-${pr_branch//\//-}"
+  pr_local_branch="${pr_branch}"
+  pr_worktree_name="pr-${pr_number}-${pr_branch//\//-}"
+  pr_worktree_path="${repo_root}/.worktrees/${pr_worktree_name}"
 
   if [[ $pr_is_cross_repo == "true" ]]; then
     pr_remote="pr-${pr_number}-${pr_owner}-${pr_repo}"
@@ -185,7 +206,7 @@ for pr_number in "$@"; do
   fi
 
   existing_worktree_path=""
-  if existing_worktree_path=$(vde-worktree path "${pr_local_branch}" 2>/dev/null); then
+  if existing_worktree_path=$(find_worktree_for_branch "${pr_local_branch}" 2>/dev/null); then
     :
   else
     existing_worktree_path=""
@@ -237,11 +258,23 @@ for pr_number in "$@"; do
     }
   fi
 
-  if ! worktree_path=$(vde-worktree switch "${pr_local_branch}"); then
-    echo "Error: Could not prepare worktree for '${pr_local_branch}'." >&2
-    echo ""
-    had_failure="true"
-    continue
+  if [[ -n $existing_worktree_path ]]; then
+    worktree_path=$existing_worktree_path
+  else
+    mkdir -p "${repo_root}/.worktrees"
+    if [[ -e $pr_worktree_path ]]; then
+      echo "Error: desired PR worktree path already exists: ${pr_worktree_path}" >&2
+      echo ""
+      had_failure="true"
+      continue
+    fi
+    if ! git worktree add "${pr_worktree_path}" "${pr_local_branch}"; then
+      echo "Error: Could not prepare worktree for '${pr_local_branch}' at '${pr_worktree_path}'." >&2
+      echo ""
+      had_failure="true"
+      continue
+    fi
+    worktree_path=$pr_worktree_path
   fi
 
   if [[ -n $existing_worktree_path ]]; then

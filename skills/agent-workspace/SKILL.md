@@ -141,11 +141,14 @@ Primary entrypoints: `bin/issue-worktree-create <issue_number>` and
 
 Both scripts:
 
-- Create worktree at `.worktrees/<branch>/` (per
-  `config/vde/worktree/config.yml`)
 - Copy `.envrc` from repo root
 - Run `repo-setup` if available
 - Register path with `zoxide add "$worktree_path"` as the last step
+
+Issue worktrees use the issue branch name as the worktree directory name and
+set `origin/<branch>` as upstream. PR worktrees keep the local branch name equal
+to the PR head branch, but use a directory name like
+`.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`.
 
 Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).
 

@@ -23,7 +23,9 @@ Run `issue-worktree-create <issue_number>` from the repo. Expect it to:
 
 - fetch `origin`
 - refresh `main`
-- reuse an existing matching branch when present
+- reuse `origin/issue-<number>` when present, otherwise reuse the first
+  `origin/issue-<number>-*` branch when present
+- set `origin/<branch>` as upstream for the local issue branch
 - create a new linked worktree when needed
 - copy `.envrc` when available
 - run `repo-setup` when available
@@ -35,6 +37,9 @@ Run `pr-worktree-create <pr_number>` from the repo. Expect it to:
 - fetch `origin`
 - refresh `main`
 - resolve the PR head branch from GitHub
+- keep the local review branch name equal to the PR head branch name
+- use a review directory named
+  `.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`
 - keep the local review branch connected to the PR source branch as upstream
 - fast-forward an existing local review branch to the PR source branch when safe
 - refuse to rewrite an existing local review branch that is ahead of or diverged

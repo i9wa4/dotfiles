@@ -44,8 +44,8 @@ For the adoption decision behind the current tool stack, see
 3. It can process multiple issue numbers in one run.
 4. For each issue, it fetches `title`, `body`, and `comments` with
    `gh issue view --json title,body,comments`.
-5. If a remote branch matching `origin/issue-<number>-*` already exists, it
-   reuses that branch name.
+5. If `origin/issue-<number>` or a remote branch matching
+   `origin/issue-<number>-*` already exists, it reuses that branch name.
 6. Otherwise it tries to generate a short kebab-case slug with `claude`.
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
@@ -69,23 +69,22 @@ For the adoption decision behind the current tool stack, see
 4. If the PR comes from another repository, it adds or refreshes a PR-specific
    remote pointing at `https://github.com/<owner>/<repo>.git`. Otherwise it
    uses `origin`.
-5. It derives a local review branch name as
-   `pr-<number>-<headRefName with slashes replaced by dashes>`.
-6. It checks for an existing managed worktree path with
-   `vde-worktree path "<derived-local-branch>"`.
-7. It fetches the PR head into a remote-tracking branch and sets the local
+5. It keeps the local review branch name equal to the PR head branch name.
+6. It derives the worktree directory name as
+   `.worktrees/pr-<number>-<headRefName with slashes replaced by dashes>`.
+7. It checks for an existing worktree attached to the PR head branch.
+8. It fetches the PR head into a remote-tracking branch and sets the local
    review branch upstream to the PR source branch, so `git pull` works from the
    review worktree. If the local review branch already exists, it
    fast-forwards that branch to the freshly fetched PR head when safe. If the
    local branch is ahead of or diverged from the PR head, it refuses to rewrite
    the branch automatically.
-8. It resolves the review worktree with `vde-worktree switch
-   "<derived-local-branch>"`.
-9. On a newly created worktree, it copies `.envrc` when present and runs
-   `repo-setup` when available.
-10. It adds the final worktree path to the `zoxide` database when `zoxide`
+9. It creates the review worktree at the derived PR directory path when needed.
+10. On a newly created worktree, it copies `.envrc` when present and runs
+    `repo-setup` when available.
+11. It adds the final worktree path to the `zoxide` database when `zoxide`
     exists.
-11. If any requested PR is invalid, skipped, refused, or otherwise fails, the
+12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
     command exits nonzero and does not print the all-ready success message.
 
 ## 5. Current re-entry flow

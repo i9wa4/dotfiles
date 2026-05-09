@@ -66,7 +66,7 @@
         prompt = false;
         vimdiff.path = "vim";
       };
-      push.default = "current";
+      push.default = "upstream";
       submodule.recurse = true;
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
       user = {

@@ -80,7 +80,12 @@ for issue_number in "$@"; do
 
   # Check for existing remote branch with issue number prefix
   echo "-> Checking for existing remote branch..."
-  existing_branch=$(git branch -r --list "origin/issue-${issue_number}-*" | head -n 1 | sed 's|^[[:space:]]*origin/||')
+  existing_branch=""
+  if git show-ref --verify --quiet "refs/remotes/origin/issue-${issue_number}"; then
+    existing_branch="issue-${issue_number}"
+  else
+    existing_branch=$(git branch -r --list "origin/issue-${issue_number}-*" | head -n 1 | sed 's|^[[:space:]]*origin/||')
+  fi
 
   if [[ -n $existing_branch ]]; then
     echo "  Found existing remote branch: ${existing_branch}"
@@ -147,6 +152,9 @@ ${issue_comments}
     worktree_path=$(vde-worktree switch "${branch_name}")
     branch_origin="new"
   fi
+
+  git config "branch.${branch_name}.remote" origin
+  git config "branch.${branch_name}.merge" "refs/heads/${branch_name}"
 
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
