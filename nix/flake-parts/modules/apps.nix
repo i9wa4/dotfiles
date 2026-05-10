@@ -29,7 +29,8 @@
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
-      wazaUpdateScript = ./../../packages/update-waza-nix.sh;
+      wazaUpdateScript = ./../../packages/waza-nix-update.sh;
+      actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
       # Packages that live in the user's `nix profile` (independent of `nix run '.#switch'`).
       # Most agent CLIs are installed via Home Manager (see nix/home-manager/default.nix);
       # this list is reserved for tools that do not fit cleanly into HM's package set.
@@ -74,6 +75,8 @@
             ${nix} flake update --access-tokens "github.com=$access_token"
             WAZA_GH=${gh} WAZA_NIX=${nix} \
               ${pkgs.bash}/bin/bash ${wazaUpdateScript}
+            ACTRUN_GH=${gh} ACTRUN_NIX=${nix} ACTRUN_JQ=${jq} \
+              ${pkgs.bash}/bin/bash ${actrunUpdateScript}
           ''}/bin/update";
         };
 

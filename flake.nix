@@ -71,10 +71,6 @@
       url = "github:numtide/llm-agents.nix";
     };
 
-    # No follows
-    actrun = {
-      url = "github:mizchi/actrun";
-    };
     tmux-a2a-postman = {
       url = "github:i9wa4/tmux-a2a-postman";
     };

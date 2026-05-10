@@ -20,7 +20,7 @@ hash_for() {
   local hex
   hex="$(awk -v asset="$asset" '$2 == asset { print $1 }' "$checksums")"
   if [[ -z $hex ]]; then
-    echo "update-waza-nix: checksum for $asset not found in $repo $tag" >&2
+    echo "waza-nix-update: checksum for $asset not found in $repo $tag" >&2
     return 1
   fi
   "$nix_bin" hash convert --hash-algo sha256 --from base16 --to sri "$hex"

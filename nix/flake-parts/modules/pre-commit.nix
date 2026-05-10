@@ -23,7 +23,10 @@
         headings = false
         reflow = true
       '';
-      hasActrun = inputs.actrun.packages ? ${system};
+      hasActrun = builtins.elem system [
+        "aarch64-darwin"
+        "x86_64-linux"
+      ];
       betterleaksPlatforms = {
         x86_64-linux = {
           url = "https://github.com/betterleaks/betterleaks/releases/download/v1.1.1/betterleaks_1.1.1_linux_x64.tar.gz";
@@ -53,14 +56,18 @@
           install -Dm755 betterleaks $out/bin/betterleaks
         '';
       };
-      actrun = inputs.actrun.packages.${system}.default;
+      actrun = pkgs.callPackage ../../packages/actrun.nix {
+        inherit system;
+      };
       opensslLib = pkgs.lib.getLib pkgs.openssl;
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
     in
     {
-      packages = if hasBetterleaks then { inherit betterleaks; } else { };
+      packages =
+        (if hasBetterleaks then { inherit betterleaks; } else { })
+        // (if hasActrun then { inherit actrun; } else { });
 
       pre-commit = {
         check.enable = true;
