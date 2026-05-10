@@ -171,8 +171,6 @@ inspection, cleanup, and baseline verification.
 - `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
   single worktree deletion, with issue, PR, miscellaneous, and upstream preview
   context
-- `worktree-cleanup-merged --dry-run` — host-wide merged cleanup candidate
-  inspection across `ghq` repositories
 
 ## 6. Common tmux Pane Operations
 

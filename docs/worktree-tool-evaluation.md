@@ -7,7 +7,6 @@ The current repository wrappers and checked-in config are the source of truth:
 - `issue-worktree-create`
 - `pr-worktree-create`
 - `worktree-remove`
-- `worktree-cleanup-merged`
 - `z` and `zi`
 
 ## 1. Current Repo Constraints
@@ -25,7 +24,8 @@ The current repository wrappers and checked-in config are the source of truth:
 - Safety defaults in current scripts are already opinionated:
   - off-main flows do not rewrite local `main`
   - cleanup is explicit and requires confirmation
-  - dirty, locked, and unmerged branch worktrees are refused by cleanup wrappers
+  - dirty, locked, and unmerged branch worktrees are refused by
+    `worktree-remove`
   - linked worktrees stay under repo-local `.worktrees/`
 
 ## 2. Evaluation
@@ -70,6 +70,5 @@ Revisit this decision only if one of these becomes true:
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
-- `bin/worktree-cleanup-merged`
 - `nix/home-manager/modules/npm.nix`
 - `skills/agent-workspace/SKILL.md`

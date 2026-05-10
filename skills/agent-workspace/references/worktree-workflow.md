@@ -81,9 +81,6 @@ task.
 - Select and delete one managed worktree under the current repo's
   `.worktrees/` directory:
   `worktree-remove`
-- List merged cleanup candidates across ghq repositories:
-  `worktree-cleanup-merged --dry-run`
-- Delete those candidates after an explicit prompt: `worktree-cleanup-merged`
 
 Do not use raw `git worktree add` as the primary issue or PR entrypoint in this
 repo.
@@ -108,9 +105,8 @@ git worktree list --porcelain
 ## 6. Repo Fit Notes
 
 - Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-remove` or host-wide candidates with
-  `worktree-cleanup-merged --dry-run`, then delete confirmed linked worktrees
-  with the wrapper flow.
+  `worktree-remove` or `git worktree list --porcelain`, then delete confirmed
+  linked worktrees with the wrapper flow.
 - `worktree-remove` categorizes fzf rows as issue-origin, PR-origin, or
   miscellaneous. Its preview shows issue or PR status when a number is
   detectable and `gh` can resolve it, plus local branch upstream tracking,

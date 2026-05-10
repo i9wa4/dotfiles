@@ -15,9 +15,6 @@ For the adoption decision behind the current tool stack, see
 - Use `worktree-remove` from a repository to list that repo's managed
   worktrees under `.worktrees/`, choose one with `fzf`, type `yes`, and delete
   it through `git worktree remove`.
-- Use `worktree-cleanup-merged` to list managed worktrees across ghq
-  repositories with status columns and delete merged candidates only after
-  typing `yes`.
 - Use `z <keyword>` for the normal zoxide-backed jump flow.
 - Use `zi [keywords...]` for explicit interactive selection.
 - Treat `z` and `zi` as shell-local navigation helpers that `cd` the current
@@ -129,23 +126,20 @@ For the adoption decision behind the current tool stack, see
   --porcelain`, `git worktree add`, and `git worktree remove`.
 - Do not use a generic worktree package as the primary issue or PR entrypoint
   here.
-- Use `git worktree list --porcelain` and the checked-in cleanup wrappers when
+- Use `git worktree list --porcelain` and `worktree-remove` when
   inspecting stale linked worktrees.
 
 ## 7. Removal and repository hygiene
 
 - Keep linked worktrees under repo-local `.worktrees/`.
-- Inspect cleanup candidates with `worktree-remove`,
-  `worktree-cleanup-merged --dry-run`, or `git worktree list --porcelain`.
+- Inspect cleanup candidates with `worktree-remove` or
+  `git worktree list --porcelain`.
 - For interactive deletion in the current repository, run `worktree-remove`.
   It lists only secondary managed worktrees under the repo's `.worktrees/`,
   categorizes candidates as issue-origin, PR-origin, or miscellaneous, shows
   fzf preview context for issue/PR status and branch upstream tracking when
   detectable, requires typing `yes`, and removes clean, unlocked, merged branch
   worktrees with `git worktree remove` plus local branch deletion.
-- For host-wide cleanup, run `worktree-cleanup-merged`. It scans `ghq list -p`,
-  shows managed worktrees with candidate, merged, dirty, locked, PR, and
-  upstream status, then deletes candidates only after explicit confirmation.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.
@@ -172,8 +166,7 @@ For the adoption decision behind the current tool stack, see
   repository directly.
 - `worktree-remove` now provides a repo-root `.worktrees/` `fzf` selector for
   confirmed single-worktree deletion with issue, PR, and miscellaneous preview
-  context, while `worktree-cleanup-merged` remains the host-wide
-  merged-candidate cleanup flow.
+  context.
 - Worktree scripts now use native `git worktree` commands directly; the
   npm-managed worktree backend package was removed.
 - The old “approved target after migration” framing was removed from this page
@@ -184,7 +177,6 @@ For the adoption decision behind the current tool stack, see
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
-- `bin/worktree-cleanup-merged`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `nix/home-manager/modules/zsh.nix`
