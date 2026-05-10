@@ -23,8 +23,6 @@ nnoremap gqq :call <SID>ToggleQuote()<CR>
 vnoremap gqq :call <SID>ToggleQuote()<CR>
 
 " Insert Mode
-" i_CTRL-T Insert one indent
-" i_CTRL-D Delete one indent
 inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
 inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
 
@@ -136,20 +134,13 @@ augroup MyAutocmd
   \|  endif
 
   autocmd FileType *
-  \   setlocal spelllang+=cjk spell
-  \|  if &diff | setlocal nospell | endif
-  autocmd BufNewFile,BufReadPost *.tf,*.tftpl
-  \ setfiletype terraform
+  \ if &diff | setlocal nospell | else | setlocal spelllang+=cjk spell | endif
 
   autocmd ColorScheme * call <SID>HighlightDefine()
   autocmd WinEnter,FileType * call <SID>HighlightMatch()
 augroup END
 
-let g:auto_reload = timer_start(
-\   1000,
-\   {-> execute('silent! checktime')},
-\   {'repeat': -1}
-\ )
+let g:auto_reload = timer_start(1000, {-> execute('silent! checktime')}, {'repeat': -1})
 
 
 " --------------------------------------
@@ -158,7 +149,6 @@ let g:auto_reload = timer_start(
 " Edit
 set hidden
 set nrformats=unsigned
-set virtualedit=block
 
 " Search
 if executable('rg')
@@ -168,26 +158,14 @@ endif
 set hlsearch
 set ignorecase
 set incsearch
-set shortmess+=c
 set shortmess-=S
 set smartcase
 set wrapscan
 
 " View
 set ambiwidth=double
-" space:\\u2423,extends:\\u00BB,precedes:\\u00AB
-set list listchars=space:␣,tab:>-,trail:~,nbsp:%,extends:»,precedes:«
+set list listchars=space:␣,tab:>-,trail:~,nbsp:%  " space:\\u2423
 set number
-
-" TabLine
-set showtabline=2
-
-" Highlight
-set cursorline
-
-" Abbreviation
-" :w' --> :w
-cnoreabbrev w' w
 
 
 " --------------------------------------
@@ -198,12 +176,17 @@ let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 " System
 set autoread
-set belloff=all
 set nobackup
 set noswapfile
 set noundofile
 set clipboard&
 
+" Plugin
+if !has('nvim')
+  packadd! editorconfig
+endif
+
+" Clipboard
 if has('mac')
   set clipboard^=unnamed
 elseif has('nvim') || has('clipboard')
@@ -297,17 +280,10 @@ else
   endif
 endif
 
-" Plugin
-if !has('nvim')
-  packadd! editorconfig
-endif
-
 
 " --------------------------------------
 " End of settings
 "
-" set background=dark
-
 filetype plugin on
 syntax enable
 
