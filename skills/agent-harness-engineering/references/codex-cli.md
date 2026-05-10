@@ -329,9 +329,11 @@ Strict preconditions before `truncate -s 0 ~/.codex/logs_2.sqlite-wal`:
 - Proceed only if the returned checkpoint triple proves every WAL frame was
   checkpointed: `log_pages >= 0` and `log_pages == checkpointed`. The observed
   emergency shape was `busy=1 log_pages=603 checkpointed=603`.
-- Do not truncate when the result is `(1, -1, -1)`,
+- Avoid manual truncation when the result is `(1, -1, -1)`,
   `checkpointed < log_pages`, or the checkpoint command fails; in those cases
   the WAL may still contain frames that have not been folded into the main DB.
+  The managed pressure timer is intentionally more assertive: it logs this
+  risk and truncates a large WAL whenever the pressure threshold is crossed.
 - Prefer a coordinated Codex shutdown and complete `logs_2.sqlite*` backup
   whenever enough space and operator control exist.
 - After emergency truncation, verify disk recovery and restart affected Codex
@@ -387,11 +389,11 @@ Implementation:
   prunes disposable Codex temp entries older than 1 hour, prunes closed
   `~/.codex/sessions/**/*.jsonl` files older than 50 days while skipping
   open files, runs the same SQLite checkpoint, and truncates the WAL to zero
-  when the WAL is at least 8 GiB and the checkpoint triple proves all WAL
-  frames are already in the main DB (`log_pages >= 0` and
-  `log_pages == checkpointed`). It logs holder PIDs before truncating when
-  live Codex processes still have the DB files open. It does not delete
-  SQLite files.
+  when the WAL is at least 1 GiB. It logs holder PIDs whenever a large WAL
+  remains under pressure, records whether SQLite proved all WAL frames are
+  already in the main DB (`log_pages >= 0` and `log_pages == checkpointed`),
+  and loudly marks truncation without checkpoint proof when SQLite cannot prove
+  that condition. It does not delete SQLite files.
 - Darwin (`pkgs.stdenv.isDarwin`): Home Manager
   `launchd.agents.codex-wal-checkpoint`. Schedule: `StartCalendarInterval` at
   minute 0 of every hour, `RunAtLoad = false`, `AbandonProcessGroup = true`.

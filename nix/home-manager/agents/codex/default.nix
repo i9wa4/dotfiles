@@ -149,7 +149,8 @@ let
   managedConfigEnd = "# END DOTFILES NIX MANAGED CODEX CONFIG";
   codexSessionRetentionDays = 50;
   codexTempRetentionHours = 1;
-  codexWalPressureThresholdBytes = 8 * 1024 * 1024 * 1024;
+  codexWalPressureThresholdBytes = 1 * 1024 * 1024 * 1024;
+  codexCriticalFreeBytes = 2 * 1024 * 1024 * 1024;
 
   # Periodic WAL checkpoint to keep ~/.codex/logs_2.sqlite-wal from growing
   # unbounded. Codex CLI's internal logging connection holds long-lived
@@ -227,9 +228,8 @@ let
   # Pressure-oriented Codex storage relief for Linux systemd. This is more
   # assertive than the safe periodic checkpoint: it prunes disposable temp data,
   # expires closed rollout JSONL outside the 50-day compatibility window, then
-  # truncates a large WAL only when SQLite proves all WAL frames have already
-  # been checkpointed into the main DB. It never deletes SQLite files or
-  # manages the Codex process lifecycle.
+  # truncates a large WAL whenever it crosses the pressure threshold. It never
+  # deletes SQLite files or manages the Codex process lifecycle.
   storagePressureReliefScript = pkgs.writeShellApplication {
     name = "codex-storage-pressure-relief";
     runtimeInputs = [ pkgs.python3 ];
@@ -237,6 +237,7 @@ let
       export CODEX_SESSION_RETENTION_DAYS="${toString codexSessionRetentionDays}"
       export CODEX_TEMP_RETENTION_HOURS="${toString codexTempRetentionHours}"
       export CODEX_WAL_PRESSURE_THRESHOLD_BYTES="${toString codexWalPressureThresholdBytes}"
+      export CODEX_CRITICAL_FREE_BYTES="${toString codexCriticalFreeBytes}"
 
       python3 - <<'PY'
       import os
@@ -258,6 +259,7 @@ let
       SESSION_RETENTION_DAYS = int(os.environ["CODEX_SESSION_RETENTION_DAYS"])
       TEMP_RETENTION_HOURS = int(os.environ["CODEX_TEMP_RETENTION_HOURS"])
       WAL_PRESSURE_THRESHOLD = int(os.environ["CODEX_WAL_PRESSURE_THRESHOLD_BYTES"])
+      CRITICAL_FREE_BYTES = int(os.environ["CODEX_CRITICAL_FREE_BYTES"])
 
 
       def log(message):
@@ -459,7 +461,7 @@ let
           return busy, log_pages, checkpointed
 
 
-      def truncate_checkpointed_wal(label):
+      def truncate_wal(label):
           before = file_size(WAL)
           if before == 0:
               log(f"{label}: WAL already zero bytes")
@@ -528,6 +530,7 @@ let
       wal_after = file_size(WAL)
       free_bytes = shutil.disk_usage(HOME).free
       pressure = wal_after >= WAL_PRESSURE_THRESHOLD
+      critical_pressure = pressure and free_bytes <= CRITICAL_FREE_BYTES
       fully_checkpointed = (
           first_result is not None
           and first_result[1] >= 0
@@ -536,18 +539,44 @@ let
       log(
           "pressure check "
           f"wal_after={wal_after} free_bytes={free_bytes} pressure={pressure} "
-          f"fully_checkpointed={fully_checkpointed}"
+          f"critical_pressure={critical_pressure} fully_checkpointed={fully_checkpointed}"
       )
 
-      if pressure and fully_checkpointed:
+      if pressure:
           holders = wal_holders()
           if holders:
-              log("large fully-checkpointed WAL is still held open; truncating WAL")
+              if fully_checkpointed:
+                  log("large fully-checkpointed WAL is still held open; truncating WAL")
+              elif critical_pressure:
+                  warn(
+                      "critical filesystem pressure and checkpoint incomplete; "
+                      "emergency truncating WAL without SQLite full-checkpoint proof"
+                  )
+              else:
+                  warn(
+                      "large WAL pressure remains but checkpoint incomplete; "
+                      "policy truncates WAL anyway"
+                  )
               for pid, cmdline in holders:
                   log(f"holder pid={pid} cmdline={cmdline!r}")
-          else:
+          elif fully_checkpointed:
               log("large fully-checkpointed WAL has no visible /proc holders; truncating WAL")
-          truncate_checkpointed_wal("pressure truncate")
+          elif critical_pressure:
+              warn(
+                  "critical filesystem pressure, checkpoint incomplete, and no visible "
+                  "/proc holders; emergency truncating WAL without SQLite full-checkpoint proof"
+              )
+          else:
+              warn(
+                  "large WAL pressure remains but checkpoint incomplete "
+                  "and no visible /proc holders; policy truncates WAL anyway"
+              )
+          if fully_checkpointed:
+              truncate_wal("pressure truncate")
+          elif critical_pressure:
+              truncate_wal("emergency pressure truncate")
+          else:
+              truncate_wal("pressure truncate without checkpoint proof")
       else:
           log("no pressure truncate needed")
 
@@ -757,8 +786,9 @@ in
     # Linux: pressure-oriented Codex storage relief.
     # Runs on a 10-minute cadence. Under normal conditions this
     # prunes disposable temp/session data and no-ops after a successful
-    # checkpoint. If a large WAL remains fully checkpointed but held open, it
-    # records holder PIDs and truncates the WAL.
+    # checkpoint. If a large WAL remains under pressure, it records holder PIDs
+    # and truncates the WAL while logging whether SQLite proved a full
+    # checkpoint first.
     services.codex-storage-pressure-relief = {
       Unit = {
         Description = "Relieve Codex CLI storage pressure";

@@ -74,7 +74,7 @@ Use one vocabulary across docs and the Linux storage report.
 | Claude runtime state | `~/.claude` projects, todos, and runtime files | `review_first` | Keep Claude's built-in age-based cleanup and review before manual deletion |
 | Codex lightweight history and config | `~/.codex/history.jsonl`, `~/.codex/config.toml`, hooks, handoffs, and other small control files | `review_first` | Keep separate from session retention; lightweight history settings do not replace rollout JSONL retention |
 | Codex interactive session rollouts | `~/.codex/sessions/**/*.jsonl` | `review_first` | Keep about 50 days of closed rollout JSONL by file age, skip files still open in a live Codex process, and preserve the session data that `ccusage-codex` reads directly; the Linux Codex storage-pressure timer enforces this default window |
-| Codex SQLite state and WAL files | `~/.codex/logs_*.sqlite*`, `~/.codex/state_*.sqlite*` | `review_first` | Never delete or manually truncate while a Codex process has the files open; use SQLite checkpoint first, and let the managed pressure timer log proven fully-checkpointed WAL holders for manual review |
+| Codex SQLite state and WAL files | `~/.codex/logs_*.sqlite*`, `~/.codex/state_*.sqlite*` | `review_first` | Never delete SQLite files; use SQLite checkpoint first. The managed pressure timer truncates a large WAL whenever it crosses the pressure threshold and logs whether SQLite proved a full checkpoint |
 | Codex live TUI logs | `~/.codex/log/codex-tui.log` | `review_first` | Keep separate from rollout JSONL retention; any log cleanup stays a separate review-first decision |
 | `tmux-a2a-postman` control-plane state | mailbox state, durable handoffs, and approval artifacts | `review_first` | Manual review only under this umbrella; no automatic age-based prune command |
 | `vde-monitor` state | durable monitor state plus disposable pane logs | `review_first` | Preserve durable state by default; only `~/.vde-monitor/panes` is disposable and pruned on startup |
@@ -115,18 +115,22 @@ shapes that must not be collapsed into one cleanup rule.
   `state_*.sqlite*`, are live database state. A large WAL is a maintenance
   signal, not a delete target. The managed hourly checkpoint is safe while
   Codex is active. The pressure-relief timer logs Codex holder PIDs when a
-  large WAL remains fully checkpointed but held open. Process lifecycle stays
+  large WAL remains under pressure, attempts a SQLite checkpoint, then
+  truncates the WAL whenever it remains over the pressure threshold. If SQLite
+  cannot prove all frames were checkpointed, the timer logs that it is
+  truncating by policy without full-checkpoint proof. Process lifecycle stays
   outside the timer.
 - For manual maintenance, prefer a quiet period after closing nonessential
-  Codex panes. Do not run a manual truncate or remove command against a live
-  WAL.
+  Codex panes. Manual live WAL truncation should stay an operator-directed
+  emergency action with captured evidence.
 - If SQLite files were deleted while Codex was running, assume the process may
   still hold deleted-open file handles. Check with `lsof +L1` before declaring
   disk reclaimed. The safe recovery path is to finish or preserve active
   conversations, record exact holder PIDs, and defer any process-lifecycle
   decision outside this managed storage path.
-- The managed storage-pressure path only reports holder PIDs. It does not
-  manage Codex processes.
+- The managed storage-pressure path reports holder PIDs and truncates a large
+  WAL whenever the pressure threshold is crossed. It does not manage Codex
+  processes.
 - Clearly disposable Codex state is limited to small non-live cache/temp
   contents and closed session JSONL files outside the retention window. Preserve
   credentials, `config.toml`, active sessions, `history.jsonl`, hooks, skills,
