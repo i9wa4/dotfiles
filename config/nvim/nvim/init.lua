@@ -41,8 +41,8 @@ end
 
 local function highlight_define()
   vim.api.nvim_set_hl(0, "HlMS", { bg = "#FFB6C1", fg = "#000000" })
-  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+  vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+  vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
   for _, group in ipairs({
     "EndOfBuffer",
