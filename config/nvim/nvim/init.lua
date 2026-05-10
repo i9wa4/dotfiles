@@ -41,8 +41,8 @@ end
 
 local function highlight_define()
   vim.api.nvim_set_hl(0, "HlMS", { bg = "#FFB6C1", fg = "#000000" })
-  vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
   for _, group in ipairs({
     "EndOfBuffer",
@@ -72,8 +72,12 @@ local function highlight_match()
     ids[#ids + 1] = vim.fn.matchadd(group, pattern)
   end
 
+  add("Error", [[\%u3000]])
+  add("Error", [[\s\+$]])
   add("HlMS", "HlMS")
-  add("HlMS", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]])
+  add("HlMS", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:]])
+  add("HlMS", [[# %%]])
+  add("HlMS", [[\[ \]])
   local now = vim.fn.localtime()
   add("HlMS", vim.fn.strftime("%Y%m%d", now))
   add("HlMS", vim.fn.strftime("%Y-%m-%d", now))
@@ -180,7 +184,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   callback = highlight_define,
 })
 
-vim.api.nvim_create_autocmd({ "WinEnter", "FileType" }, {
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
   group = augroup,
   callback = highlight_match,
 })
