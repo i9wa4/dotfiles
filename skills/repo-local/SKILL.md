@@ -1,65 +1,43 @@
 ---
 name: repo-local
 license: MIT
-description: Foundational dotfiles repo rules (workflow, safety, file management, rollback) that co-load with task-specific skills intentionally.
+description: |
+  USE FOR: Foundational dotfiles repo rules (workflow, safety, file management, rollback) that co-load with task-specific skills intentionally. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# Repo-Local Operating Rules
+# Repo Local
 
-These are the residual repo-local runtime rules that still need to load in
-Claude and Codex sessions even when `tmux-a2a-postman` carries the common role
-contract for postman-driven work.
+**UTILITY SKILL:** Apply this skill to Foundational dotfiles repo rules
+(workflow, safety, file management, rollback) that co-load with task-specific
+skills intentionally. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-## 1. Workflow
+**USE FOR:** Foundational dotfiles repo rules (workflow, safety, file
+management, rollback) that co-load with task-specific skills intentionally;
+related file edits; verification and handoff in this skill domain.
 
-- Read a file in full at a time, not separately
-- Do not delete unmentioned handlers, functions, or sections
-- Do not add unnecessary error handling, backward compatibility, or defensive
-  code
-- Respect YAGNI and KISS principles
-- Prefer the smallest next step that produces a verifiable result; when
-  changing behavior and a cheap failing test or reproducer is possible, start
-  there
-- Propose additional changes and wait for approval
-- When explaining things to humans, use ELI5-like plain language without losing
-  accuracy
-- Verify changes took effect before reporting success; show actual output as
-  evidence
-- Verify findings against the actual repo/code before reporting. Flag confidence
-  level.
-- Follow README.md and CONTRIBUTING.md if they exist
-- For `tmux-a2a-postman` role work, follow
-  `config/tmux-a2a-postman/postman.md` and
-  `docs/repo-ai-operating-contract.md` instead of restating that node contract
-  from memory
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Safety
+## Workflow
 
-- This dotfiles repo targets both Linux and macOS; prefer Nix-managed tools
-  or POSIX-compatible commands to avoid platform differences
-- Do not pollute global environment (use venv, nvm, rbenv, etc.)
-- Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
-- Do not use complex tooling (home-manager modules) when simple solutions
-  (symlinks, plain files) suffice for config file management in dotfiles
-- Never hardcode user-specific values (usernames, hostnames, machine names) in
-  shared Nix configs; use `config.home.username` or pass values as arguments
-- Some panes are read-only. Before attempting edits, check write
-  permissions. If blocked, delegate the edit to the appropriate agent.
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## 3. Files
+## Examples
 
-- Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
-- Match comment language in target file
-- Check entire file for consistency; if unclear, check surrounding files
-- Use uppercase for annotations: NOTE:, TODO:, FIXME:, WARNING:
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-## 4. Rollback
+## References
 
-- Do not refactor or "improve" other code during rollback
-- Revert ONLY the specified changes
-- Confirm exact files and lines before reverting
+- [Preserved Guidance](references/preserved-guidance.md)
 
-## 5. Environment
+## Troubleshooting
 
-- Always running inside a tmux pane
-- Your role name: `tmux display-message -p '#{pane_title}'`
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
