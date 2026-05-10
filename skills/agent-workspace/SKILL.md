@@ -21,13 +21,12 @@ new tmux session -> z tmux-a2a-postman -> vb
 
 When driving that flow from another agent pane, resolve `vb` from the repo's
 current configuration, then send the expanded vde-layout command directly. Do
-not rely on zeno snippet injection from non-interactive shells, and do not trust
-hardcoded examples in this skill over the config files.
+not rely on interactive snippet injection from non-interactive shells, and do
+not trust hardcoded examples in this skill over the config files.
 
 Resolution order for `vb`:
 
-1. Inspect `config/zeno/config.yaml` and find the snippet whose `keyword` is
-   `vb`.
+1. Inspect `config/zsh/snippet.zsh` and find the snippet whose keyword is `vb`.
 2. Inspect `config/vde/layout.yml` for every `vde-layout <preset>` referenced
    by that snippet.
 3. Send the snippet command exactly as resolved, unless the user requested a
@@ -41,8 +40,8 @@ After resolving `vb`, boot the session:
    PANE_ID=$(tmux new-session -d -P -F '#{pane_id}' -s <session-name>)
    ```
 
-2. Wait 5s minimum for zinit turbo + zoxide.zsh + zeno to fully initialize in
-   the new pane. (Empirically confirmed: 2s is insufficient; see
+2. Wait 5s minimum for zsh init, zoxide.zsh, and snippet widgets to fully
+   initialize in the new pane. (Empirically confirmed: 2s is insufficient; see
    `references/boot-failure-modes.md`)
 3. Navigate to the postman workspace, or to the target repo for non-postman
    workspaces:
@@ -88,32 +87,32 @@ After resolving `vb`, boot the session:
 
 ### Human-Driven Boot
 
-The human types `vb` + Space in interactive zsh. `zeno-auto-snippet` expands to
-`vde-layout messenger-codex && vde-layout preset-b`, then Enter executes it.
+The human types `vb` + Space in interactive zsh. `snippet-magic-space` expands
+to `vde-layout messenger-codex && vde-layout preset-b`, then Enter executes it.
 Both paths arrive at identical end state.
 
-Source: `config/zeno/config.yaml`, `config/vde/layout.yml`
+Source: `config/zsh/snippet.zsh`, `config/vde/layout.yml`
 See also: `references/boot-failure-modes.md`
 
 ## 2. Preset Comparison
 
-| Aspect          | va (preset-a)                               | vb (preset-b)                    |
-| --------------- | ------------------------------------------- | -------------------------------- |
-| Zeno expansion  | `vde-layout messenger-claude && vde-layout preset-a`  | `vde-layout messenger-codex && vde-layout preset-b` |
-| Messenger       | claude sonnet, effort medium                | codex gpt-5.5, medium            |
-| Grid            | 3x2, new window                             | 3x2, new window                  |
-| orchestrator    | claude sonnet xhigh                         | codex gpt-5.5 xhigh              |
-| worker          | claude sonnet high                          | codex gpt-5.5 xhigh              |
-| worker-alt      | claude sonnet high                          | codex gpt-5.5 xhigh              |
-| critic          | claude sonnet xhigh                         | codex gpt-5.5 xhigh              |
-| guardian        | codex gpt-5.5 high                          | codex gpt-5.5 xhigh              |
-| boss            | claude opus[1m] xhigh                       | codex gpt-5.5 xhigh              |
-| Engine mix      | 5 claude + 1 codex (balanced)               | all 6 codex (extreme teaming)    |
-| Description     | "balanced use of models"                    | "codex extreme teaming"          |
+| Aspect            | va (preset-a)                                        | vb (preset-b)                                       |
+| ----------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| Snippet expansion | `vde-layout messenger-claude && vde-layout preset-a` | `vde-layout messenger-codex && vde-layout preset-b` |
+| Messenger         | claude sonnet, effort medium                         | codex gpt-5.5, medium                               |
+| Grid              | 3x2, new window                                      | 3x2, new window                                     |
+| orchestrator      | claude sonnet xhigh                                  | codex gpt-5.5 xhigh                                 |
+| worker            | claude sonnet high                                   | codex gpt-5.5 xhigh                                 |
+| worker-alt        | claude sonnet high                                   | codex gpt-5.5 xhigh                                 |
+| critic            | claude sonnet xhigh                                  | codex gpt-5.5 xhigh                                 |
+| guardian          | codex gpt-5.5 high                                   | codex gpt-5.5 xhigh                                 |
+| boss              | claude opus[1m] xhigh                                | codex gpt-5.5 xhigh                                 |
+| Engine mix        | 5 claude + 1 codex (balanced)                        | all 6 codex (extreme teaming)                       |
+| Description       | "balanced use of models"                             | "codex extreme teaming"                             |
 
-Config source: `dotfiles/config/vde/layout.yml` (preset-a lines 72-109, preset-b
-lines 111-148); zeno snippets: `dotfiles/config/zeno/config.yaml` (va: line
-98-99, vb: line 102-103). See also: `references/vde-layout-internals.md`
+Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:
+`dotfiles/config/zsh/snippet.zsh`. See also:
+`references/vde-layout-internals.md`
 
 ## 3. Session Naming
 

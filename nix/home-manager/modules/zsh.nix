@@ -1,6 +1,6 @@
 # Zsh configuration (managed by home-manager programs.zsh)
 # Replaces config/zsh/.zshenv, .zshrc
-# Modular source files remain in config/zsh/ (aws.zsh, zoxide.zsh, keybind.zsh, prompt.zsh, zinit.zsh)
+# Modular source files remain in config/zsh/
 {
   pkgs,
   lib,
@@ -15,7 +15,7 @@ in
   programs.zsh = {
     enable = true;
     dotDir = "${config.xdg.configHome}/zsh";
-    # compinit is owned by config/zsh/zinit.zsh to avoid double initialization.
+    # compinit is owned by config/zsh/completion.zsh to avoid double initialization.
     completionInit = "";
 
     # ========================================================================
@@ -136,7 +136,9 @@ in
       source "${zshDir}/aws.zsh"
       source "${zshDir}/keybind.zsh"
       source "${zshDir}/prompt.zsh"
-      source "${zshDir}/zinit.zsh"
+      source "${zshDir}/completion.zsh"
+      source "${zshDir}/history-fzf.zsh"
+      source "${zshDir}/snippet.zsh"
       source "${zshDir}/zoxide.zsh"
 
       # Safe-chain

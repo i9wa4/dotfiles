@@ -132,7 +132,6 @@ in
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
-    "zeno".source = symlink "${dotfilesDir}/config/zeno";
     # Nix store
     "kitty".source = ../../config/kitty;
   };
@@ -154,11 +153,11 @@ in
     nix-index-database.comma.enable = true;
 
     # direnv (auto-activate devShell when cd into project)
-    # Note: zsh hook is handled by zinit turbo mode for faster startup
+    # Note: zsh hook is loaded manually in modules/zsh.nix.
     direnv = {
       enable = true;
       nix-direnv.enable = true;
-      enableZshIntegration = false; # Handled by zinit turbo
+      enableZshIntegration = false; # Handled manually in modules/zsh.nix
     };
   };
 }

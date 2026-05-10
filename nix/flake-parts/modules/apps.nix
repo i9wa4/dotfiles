@@ -71,7 +71,6 @@
             set -euo pipefail
             access_token=$(${gh} auth token)
             ${nix} flake update --access-tokens "github.com=$access_token"
-            exec ${pkgs.zsh}/bin/zsh -ic 'zinit self-update && zinit update --all'
           ''}/bin/update";
         };
 

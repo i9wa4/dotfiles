@@ -116,4 +116,30 @@ __z_seed_ghq_paths() {
     grep -qxF "$ghq_path" <<< "$zoxide_db" || zoxide add --score 5 -- "$ghq_path"
   done < <(ghq list -p 2>/dev/null)
 }
-__z_seed_ghq_paths
+
+__z_seed_ghq_paths_once_daily() {
+  local stamp="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/zoxide-ghq-seed.stamp"
+  local lock="${stamp}.lock"
+  local stamp_mtime
+
+  mkdir -p "${stamp:h}"
+  zmodload zsh/datetime 2>/dev/null || return 0
+  zmodload zsh/stat 2>/dev/null || return 0
+
+  if [[ -e "$stamp" ]]; then
+    stamp_mtime="$(zstat +mtime "$stamp" 2>/dev/null)" || stamp_mtime=0
+    (( EPOCHSECONDS - stamp_mtime < 1 )) && return 0
+  fi
+
+  [[ -n "${stamp}"(#qN.mh-24) ]] && return 0
+  if ! (set -o noclobber; print -r -- "$$" > "$lock") 2>/dev/null; then
+    return 0
+  fi
+
+  : >| "$stamp"
+  {
+    __z_seed_ghq_paths || rm -f "$stamp"
+    rm -f "$lock"
+  } >/dev/null 2>&1 &!
+}
+__z_seed_ghq_paths_once_daily
