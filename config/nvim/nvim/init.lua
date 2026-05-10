@@ -157,18 +157,6 @@ map("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 map("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 map("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
-vim.cmd([[
-nmap <C-w>-    <C-w>-<SNR>999_my_window_resize_repeat
-nmap <C-w>+    <C-w>+<SNR>999_my_window_resize_repeat
-nmap <C-w><lt> <C-w><lt><SNR>999_my_window_resize_repeat
-nmap <C-w>>    <C-w>><SNR>999_my_window_resize_repeat
-nmap <SNR>999_my_window_resize_repeat <Nop>
-nnoremap <script> <SNR>999_my_window_resize_repeat-    <C-w>-<SNR>999_my_window_resize_repeat
-nnoremap <script> <SNR>999_my_window_resize_repeat+    <C-w>+<SNR>999_my_window_resize_repeat
-nnoremap <script> <SNR>999_my_window_resize_repeat<lt> <C-w><lt><SNR>999_my_window_resize_repeat
-nnoremap <script> <SNR>999_my_window_resize_repeat>    <C-w>><SNR>999_my_window_resize_repeat
-]])
-
 -- --------------------------------------
 -- Autocmd
 --
