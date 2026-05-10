@@ -1,25 +1,43 @@
 ---
 name: markdown
 license: MIT
-description: Markdown authoring rules for emoji, list numbering, table alignment, and Japanese-specific constraints for this repository.
+description: |
+  USE FOR: Markdown authoring rules for emoji, list numbering, table alignment, and Japanese-specific constraints for this repository. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# Markdown Rules
+# Markdown
 
-## 1. Universal Rules
+**UTILITY SKILL:** Apply this skill to Markdown authoring rules for emoji, list
+numbering, table alignment, and Japanese-specific constraints for this
+repository. Keep the task scoped to the requested domain and preserve existing
+repo conventions.
 
-- NEVER: Do not use emojis
-- NEVER: Do not start numbered lists from 0
-- YOU MUST: Align table columns with spaces
+**USE FOR:** Markdown authoring rules for emoji, list numbering, table
+alignment, and Japanese-specific constraints for this repository; related file
+edits; verification and handoff in this skill domain.
 
-```markdown
-| Name   | Description | Value |
-| ------ | ----------- | ----- |
-| foo    | Foo item    | 100   |
-| barbaz | Bar baz     | 200   |
-```
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Japanese Markdown Rules
+## Workflow
 
-- NEVER: Do not use bold
-- NEVER: Do not use trailing colons (:)
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
+
+## Examples
+
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
+
+## References
+
+- [Preserved Guidance](references/preserved-guidance.md)
+
+## Troubleshooting
+
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
