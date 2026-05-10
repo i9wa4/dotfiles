@@ -1,262 +1,33 @@
-" ~/ghq/github.com/i9wa4/dotfiles/config/nvim/nvim/init.lua
-set encoding=utf-8
-
-" --------------------------------------
-" Start of settings
-"
+" ~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc
 filetype off
 filetype plugin indent off
 syntax off
 
-
-" --------------------------------------
-" Keymap
-"
-nnoremap gf gF
-
-" https://zenn.dev/mattn/articles/83c2d4c7645faa
-nmap <SID>g <Nop>
-nmap gj gj<SID>g
-nmap gk gk<SID>g
-nnoremap <script> <SID>gj gj<SID>g
-nnoremap <script> <SID>gk gk<SID>g
-
-" Toggle Quote
-nnoremap gqq :call <SID>ToggleQuote()<CR>
-vnoremap gqq :call <SID>ToggleQuote()<CR>
-
-" Insert Mode
-inoremap ,now <C-r>=strftime('%Y-%m-%d %X +0900')<CR>
-inoremap ,today <C-r>=strftime('%Y-%m-%d')<CR>
-
-" Location List
-command! Lprevious  try | lprevious | catch | llast   | catch | endtry
-command! Lnext      try | lnext     | catch | lfirst  | catch | endtry
-nnoremap <C-p> :Lprevious<CR>
-nnoremap <C-n> :Lnext<CR>
-
-" Resize Window
-" https://zenn.dev/mattn/articles/83c2d4c7645faa
-nnoremap <script> <C-w>-    <C-w>-<SID>ws
-nnoremap <script> <C-w>+    <C-w>+<SID>ws
-nnoremap <script> <C-w><lt> <C-w><lt><SID>ws
-nnoremap <script> <C-w>>    <C-w>><SID>ws
-nmap <SID>ws <Nop>
-nnoremap <script> <SID>ws-    <C-w>-<SID>ws
-nnoremap <script> <SID>ws+    <C-w>+<SID>ws
-nnoremap <script> <SID>ws<lt> <C-w><lt><SID>ws
-nnoremap <script> <SID>ws>    <C-w>><SID>ws
-
-" Open parent directory
-if !has('nvim')
-  nnoremap - <Cmd>edit %:p:h<CR>
-endif
-
-" Register
-nnoremap <Space>r <Cmd>call <SID>SendRegister(nr2char(getchar()))<CR>
-
-" https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-" Switch
-nnoremap <Plug>(my-Switch) <Nop>
-nmap <Space>s <Plug>(my-Switch)
-nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! list?<CR>
-nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
-nnoremap <Plug>(my-Switch)t <Cmd>setlocal expandtab! expandtab?<CR>
-nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
-
-
-" --------------------------------------
-" Autocmd
-"
-function! s:ToggleQuote() range abort
-  let l:all_quoted = v:true
-  for l:lnum in range(a:firstline, a:lastline)
-    if getline(l:lnum) !~ '^>'
-      let l:all_quoted = v:false
-      break
-    endif
-  endfor
-
-  for l:lnum in range(a:firstline, a:lastline)
-    let l:line = getline(l:lnum)
-    if l:all_quoted
-      call setline(l:lnum, substitute(l:line, '^>\s\?', '', ''))
-    else
-      call setline(l:lnum, '> ' .. l:line)
-    endif
-  endfor
-endfunction
-
-
-function! s:SendRegister(reg) abort
-  let l:content = getreg(a:reg)
-  silent! let @+ = l:content
-  call <SID>SendTmuxClipboard(l:content)
-endfunction
-
-
-function! s:SendTmuxClipboard(content) abort
-  if executable('tmux') && !empty($TMUX)
-    call system('tmux load-buffer -w -', a:content)
-  endif
-endfunction
-
-
-function! s:SendYankToHostClipboard() abort
-  if v:event.operator ==# 'y' && v:event.regname ==# ''
-    call <SID>SendTmuxClipboard(getreg(''))
-  endif
-endfunction
-
-
-function! s:HighlightDefine() abort
-  highlight HlMS guibg=#FFB6C1 guifg=#000000
-
-  " substitution for $XDG_CONFIG_HOME/vim/after/ftplugin/markdown.vim
-  highlight link markdownError Normal
-  highlight link markdownItalic Normal
-
-  " transparent background
-  highlight EndOfBuffer   guibg=NONE
-  highlight Folded        guibg=NONE
-  highlight Identifier    guibg=NONE
-  highlight LineNr        guibg=NONE
-  highlight NonText       guibg=NONE
-  highlight Normal        guibg=NONE
-  highlight Special       guibg=NONE
-  highlight StatusLine    guibg=NONE
-  highlight StatusLineNC  guibg=NONE
-  highlight VertSplit     guibg=NONE
-endfunction
-
-
-function! s:HighlightMatch() abort
-  call clearmatches()
-
-  call matchadd('HlMS', 'HlMS')
-  call matchadd('HlMS', 'TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]')
-  call matchadd('HlMS', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
-  call matchadd('HlMS', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
-  call matchadd('HlMS', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
-endfunction
-
-
-augroup MyAutocmd
-  autocmd!
-
-  autocmd BufReadPost * silent! normal! g`"
-  autocmd BufEnter *
-  \   if empty(&buftype)
-  \|    call setreg('a', '%'->expand()->fnamemodify(':p:~'))
-  \|  endif
-
-  autocmd FileType *
-  \ if &diff | setlocal nospell | else | setlocal spelllang+=cjk spell | endif
-  autocmd TextYankPost * call <SID>SendYankToHostClipboard()
-
-  autocmd ColorScheme * call <SID>HighlightDefine()
-  autocmd WinEnter,FileType * call <SID>HighlightMatch()
-augroup END
-
-let g:auto_reload = timer_start(1000, {-> execute('silent! checktime')}, {'repeat': -1})
-
-
-" --------------------------------------
-" Option
-"
-" Edit
-set hidden
-set nrformats=unsigned
-
-" Search
-if executable('rg')
-  let &grepprg = 'rg --vimgrep --no-heading'
-  set grepformat=%f:%l:%c:%m
-endif
-set hlsearch
-set ignorecase
-set incsearch
-set shortmess-=S
-set smartcase
-set wrapscan
-
-" View
-set ambiwidth=double
-set list listchars=space:␣,tab:>-,trail:~,nbsp:%  " space:\\u2423
-set number
-
-
-" --------------------------------------
-" Minimum setting
-"
-" Variable
 let g:netrw_home = $XDG_CACHE_HOME->expand()
 
-" System
 set autoread
 set nobackup
 set noswapfile
 set noundofile
-set clipboard&
 
-" Plugin
-if !has('nvim')
-  packadd! editorconfig
-endif
+nnoremap - <Cmd>edit %:p:h<CR>
 
-" Clipboard
-if has('mac')
-  set clipboard^=unnamed
-elseif has('nvim') || has('clipboard') || exists('v:clipproviders')
-  set clipboard^=unnamedplus
-endif
-
-let s:clip = {}
-if has('mac') && executable('pbcopy') && executable('pbpaste')
-  let s:clip = {'name': 'pb', 'copy': 'pbcopy', 'paste': 'pbpaste'}
-elseif executable('wl-copy') && executable('wl-paste')
-  let s:clip = {'name': 'wl', 'copy': 'wl-copy', 'paste': 'wl-paste'}
-elseif executable('xclip')
-  let s:clip = {
-  \   'name': 'xclip',
-  \   'copy': 'xclip -selection clipboard',
-  \   'paste': 'xclip -selection clipboard -o',
-  \ }
-elseif executable('xsel')
-  let s:clip = {
-  \   'name': 'xsel',
-  \   'copy': 'xsel --clipboard --input',
-  \   'paste': 'xsel --clipboard --output',
-  \ }
-elseif executable('tmux') && !empty($TMUX)
-  let s:clip = {
-  \   'name': 'tmux',
-  \   'copy': 'tmux load-buffer -w -',
-  \   'paste': 'tmux save-buffer -',
-  \ }
-endif
-
-if !has('nvim') && exists('v:clipproviders') && !empty(s:clip)
-  function! s:ClipAvailable() abort
-    return '+*'
-  endfunction
-  function! s:ClipPaste(reg, opts) abort
-    return [systemlist(s:clip.paste), 'v']
-  endfunction
-  function! s:ClipCopy(reg, regtype, lines) abort
-    call system(s:clip.copy, join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
-  endfunction
-  let v:clipproviders[s:clip.name] = {
-  \   'available': function('s:ClipAvailable'),
-  \   'paste': {'+': function('s:ClipPaste'), '*': function('s:ClipPaste')},
-  \   'copy':  {'+': function('s:ClipCopy'),  '*': function('s:ClipCopy')},
-  \ }
-endif
+augroup MyAutocmd
+  autocmd!
+  autocmd ColorScheme *
+  \   highlight EndOfBuffer   guibg=NONE
+  \|  highlight Folded        guibg=NONE
+  \|  highlight Identifier    guibg=NONE
+  \|  highlight LineNr        guibg=NONE
+  \|  highlight NonText       guibg=NONE
+  \|  highlight Normal        guibg=NONE
+  \|  highlight Special       guibg=NONE
+  \|  highlight StatusLine    guibg=NONE
+  \|  highlight StatusLineNC  guibg=NONE
+  \|  highlight VertSplit     guibg=NONE
+augroup END
 
 
-" --------------------------------------
-" End of settings
-"
 if has('termguicolors')
   set termguicolors
 endif
