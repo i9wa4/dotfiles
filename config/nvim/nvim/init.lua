@@ -118,8 +118,12 @@ vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 --   :ldo s/old/new/ge | update
 --   :lfdo %s/old/new/ge | update
 -- Use :ldo for matched lines and :lfdo for matched files.
-vim.keymap.set("n", "<C-n>", "<Cmd>silent! lnext<CR>")
-vim.keymap.set("n", "<C-p>", "<Cmd>silent! lprevious<CR>")
+vim.keymap.set("n", "<C-n>", function()
+  pcall(vim.cmd.lnext)
+end)
+vim.keymap.set("n", "<C-p>", function()
+  pcall(vim.cmd.lprevious)
+end)
 
 -- --------------------------------------
 -- Autocmd
