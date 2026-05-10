@@ -2,52 +2,42 @@
 name: bigquery-local
 license: MIT
 description: |
-  BigQuery local: cost-aware query patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table design, slot usage.
+  USE FOR: BigQuery local: cost-aware query patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table design, slot usage. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# BigQuery Local Skill
+# Bigquery Local
 
-Project-specific BigQuery conventions. Standard GoogleSQL syntax, bq CLI
-usage, JOIN patterns, window functions, BQML, and external tables are
-assumed knowledge.
+**UTILITY SKILL:** Apply this skill to BigQuery local: cost-aware query
+patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table
+design, slot usage. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-## 1. Cost Guardrails
+**USE FOR:** BigQuery local: cost-aware query patterns, GoogleSQL guardrails,
+project conventions, partitioned/clustered table design, slot usage; related
+file edits; verification and handoff in this skill domain.
 
-- YOU MUST: Use `--dry_run` before large queries
-- YOU MUST: Avoid `SELECT *`; specify columns explicitly
-- YOU MUST: Always filter on partition columns
-- IMPORTANT: Partition pruning fails when functions wrap the partition column
-  - Bad: `WHERE DATE(created_at) = '2024-01-01'`
-  - Good: `WHERE created_at >= '2024-01-01' AND created_at < '2024-01-02'`
-- IMPORTANT: Use `APPROX_COUNT_DISTINCT` over `COUNT(DISTINCT)` when exact
-  counts are not required
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Table Design Conventions
+## Workflow
 
-- Combine partitioning (date) + clustering (up to 4 high-cardinality columns)
-- Set `require_partition_filter = TRUE` on large tables
-- Put smaller table on right side of JOIN (broadcast optimization)
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## 3. Pricing Reference
+## Examples
 
-- On-demand: $5/TB scanned
-- Storage: Active $0.02/GB, Long-term $0.01/GB
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-## 4. Slot Usage Check
+## References
 
-```sql
-SELECT
-  job_id,
-  total_bytes_processed,
-  total_slot_ms,
-  TIMESTAMP_DIFF(end_time, start_time, SECOND) AS duration_sec
-FROM `region-us`.INFORMATION_SCHEMA.JOBS
-WHERE creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-ORDER BY total_slot_ms DESC
-LIMIT 10;
-```
+- [Preserved Guidance](references/preserved-guidance.md)
 
-## 5. Reference Links
+## Troubleshooting
 
-- Official docs: <https://cloud.google.com/bigquery/docs>
-- Pricing: <https://cloud.google.com/bigquery/pricing>
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
