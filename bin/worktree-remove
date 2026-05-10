@@ -217,6 +217,73 @@ default_base_ref() {
   printf '%s\n' "HEAD"
 }
 
+base_branch_from_ref() {
+  local base_ref="$1"
+
+  case "$base_ref" in
+    refs/remotes/origin/*)
+      printf '%s\n' "${base_ref#refs/remotes/origin/}"
+      ;;
+    origin/*)
+      printf '%s\n' "${base_ref#origin/}"
+      ;;
+    refs/heads/*)
+      printf '%s\n' "${base_ref#refs/heads/}"
+      ;;
+    HEAD)
+      printf '%s\n' ""
+      ;;
+    *)
+      printf '%s\n' "$base_ref"
+      ;;
+  esac
+}
+
+branch_has_merged_github_pr() {
+  local repo_root="$1"
+  local branch="$2"
+  local base_ref="$3"
+  local github_repo
+  local base_branch
+  local merged_count
+
+  if ! command -v gh &>/dev/null; then
+    return 1
+  fi
+
+  github_repo=$(github_repo_from_origin "$repo_root")
+  if [[ -z "$github_repo" ]]; then
+    return 1
+  fi
+
+  base_branch=$(base_branch_from_ref "$base_ref")
+  if [[ -n "$base_branch" ]]; then
+    merged_count=$(gh pr list \
+      --repo "$github_repo" \
+      --state merged \
+      --head "$branch" \
+      --base "$base_branch" \
+      --json number \
+      --jq 'length' 2>/dev/null || true)
+  else
+    merged_count=$(gh pr list \
+      --repo "$github_repo" \
+      --state merged \
+      --head "$branch" \
+      --json number \
+      --jq 'length' 2>/dev/null || true)
+  fi
+
+  case "$merged_count" in
+    [1-9] | [1-9][0-9]*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 branch_merge_state() {
   local repo_root="$1"
   local branch="$2"
@@ -234,6 +301,8 @@ branch_merge_state() {
 
   base_ref=$(default_base_ref "$repo_root")
   if git -C "$repo_root" merge-base --is-ancestor "refs/heads/${branch}" "$base_ref" 2>/dev/null; then
+    echo "merged"
+  elif branch_has_merged_github_pr "$repo_root" "$branch" "$base_ref"; then
     echo "merged"
   else
     echo "unmerged"

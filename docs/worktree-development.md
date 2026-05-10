@@ -139,7 +139,9 @@ For the adoption decision behind the current tool stack, see
   categorizes candidates as issue-origin, PR-origin, or miscellaneous, shows
   fzf preview context for issue/PR status and branch upstream tracking when
   detectable, requires typing `yes`, and removes clean, unlocked, merged branch
-  worktrees with `git worktree remove` plus local branch deletion.
+  worktrees with `git worktree remove` plus local branch deletion. Squash-merged
+  GitHub PR branches count as merged when `gh` can resolve the matching merged
+  PR, even though the local branch commit is not an ancestor of `origin/main`.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.

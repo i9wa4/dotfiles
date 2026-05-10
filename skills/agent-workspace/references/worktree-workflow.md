@@ -111,6 +111,9 @@ git worktree list --porcelain
   miscellaneous. Its preview shows issue or PR status when a number is
   detectable and `gh` can resolve it, plus local branch upstream tracking,
   worktree status, and recent commits.
+- `worktree-remove` treats both ancestry-merged branches and matching
+  squash-merged GitHub PR branches as merged when `gh` can resolve the merged
+  PR by head branch.
 - The repo may contain detached linked worktrees; do not assume every linked
   worktree is a simple branch-only case.
 - If the task is about changing worktree scripts or config, read those files in
