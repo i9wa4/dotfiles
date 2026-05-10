@@ -2,106 +2,46 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing
+  USE FOR: Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Agent Harness Engineering
 
-Use this skill when a task changes how the local Claude Code, Codex CLI, tmux,
-skills, hooks, MCP, subagent, or `tmux-a2a-postman` harness is designed,
-installed, validated, or explained.
+**UTILITY SKILL:** Apply this skill to Dotfiles agent harness: Claude Code/Codex
+CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side),
+postman routing. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-## Working Rules
+**USE FOR:** Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM
+settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing;
+related file edits; verification and handoff in this skill domain.
 
-- Treat top-level `skills/` and `nix/home-manager/agents/` as the editable
-  source. Do not hand-edit installed outputs under `~/.claude/` or `~/.codex/`.
-- Prefer prompt or skill guidance when a behavior can be expressed as agent
-  instructions. Use config, hooks, or deny rules for hard guarantees and runtime
-  settings the engine must enforce.
-- Define shared policy once, then emit it to both Claude Code and Codex CLI when
-  possible. Per-runtime forks need a written reason.
-- Keep `SKILL.md` short. Put detailed Claude Code, Codex CLI, workspace trust,
-  changelog, or release-tracking material in `references/`.
-- Treat Claude workspace trust as part of harness diagnosis. Interactive
-  `PreToolUse` hooks can be skipped when `~/.claude/.claude.json` project
-  entries have `hasTrustDialogAccepted` set to `false`.
-- For multi-step harness work, create or update a durable `mkmd` plan and record
-  verification evidence before reporting completion.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## Source Map
+## Workflow
 
-- Harness principles: `docs/agent-config-philosophy.md`
-- Operating model: `docs/dotfiles-operating-concepts.md`
-- AI workflow and artifacts: `docs/repo-ai-operating-contract.md`
-- Hook architecture: `docs/agent-hooks-architecture.md`
-- Bash deny model: `docs/deny-bash-design.md`
-- Skill installation: `nix/home-manager/agents/shared/agent-skills.nix`
-- Claude runtime config: `nix/home-manager/agents/claude/default.nix` and
-  `references/claude-code.md`
-- Claude workspace trust: `references/claude-workspace-trust.md`
-- Codex runtime config: `nix/home-manager/agents/codex/default.nix` and
-  `references/codex-cli.md`
-- Changelog decisions: `references/changelog-tracking.md`
-- Postman role contract: `config/tmux-a2a-postman/postman.md`
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## Design Workflow
+## Examples
 
-1. Classify the change as prompt-path, shared policy/data, shared transport, or
-   per-runtime transport.
-2. Inspect the current source and docs before changing runtime behavior.
-3. Put common behavior in shared Nix modules, shared scripts, shared skills, or
-   postman common templates.
-4. Use runtime-specific files only when Claude Code and Codex CLI have different
-   product surfaces. Name that limitation in the file or plan.
-5. After edits, search for drift between Claude and Codex wording, hook
-   consumers, and stale skill names.
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-## Claude Workspace Trust
+## References
 
-Use the workspace trust workflow when Claude Code `PreToolUse` hooks are
-silently skipped in interactive mode, when hooks work in `claude -p` but not in
-interactive sessions, when setting up Claude Code on a new machine, or after
-adding new Claude project entries.
+- [Preserved Guidance](references/preserved-guidance.md)
+- [Claude Code](references/claude-code.md)
+- [Claude Workspace Trust](references/claude-workspace-trust.md)
+- [Codex CLI](references/codex-cli.md)
+- [Changelog Tracking](references/changelog-tracking.md)
 
-The fix is local runtime state, not repo source: back up
-`~/.claude/.claude.json`, set `hasTrustDialogAccepted: true` for every
-`projects` entry, verify no project entries remain `false`, then restart
-running Claude Code sessions. Do not edit this file during source-only harness
-work unless the user has explicitly requested a live local repair.
+## Troubleshooting
 
-Full diagnosis and commands live in
-[Claude Workspace Trust](references/claude-workspace-trust.md).
-
-## Runtime Notes
-
-- Claude Code runtime details, settings categories, permission notes, and
-  optimization tracking live in [Claude Code](references/claude-code.md).
-- Codex CLI runtime details, hook limitations, settings categories, and release
-  tracking live in [Codex CLI](references/codex-cli.md).
-- Older Claude Code changelog decisions and release notes live in
-  [Changelog Tracking](references/changelog-tracking.md).
-
-## Changelog and Release Reviews
-
-- Detect the locally installed runtime version first with `claude --version` or
-  `codex --version`.
-- Scope release analysis to the installed version and below. Do not report newer
-  upstream releases as active local behavior.
-- Record adopted, rejected, and deferred runtime decisions in the relevant
-  reference so future config work can see the rationale.
-
-## Verification
-
-- Validate skill frontmatter after skill edits:
-
-  ```sh
-  bash bin/validate-skill-frontmatter.sh skills/agent-harness-engineering
-  ```
-
-- For publishable skill changes, run `gh skill publish --dry-run` if the local
-  GitHub CLI supports it. If not, record that CLI limitation and use the repo
-  frontmatter validation as the relevant local check.
-- Run `nix flake check` when feasible after changes that affect installed agent
-  sources or Nix validation.
-- Run `nix run '.#switch'` only when activation output needs to be materialized
-  or tested.
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
