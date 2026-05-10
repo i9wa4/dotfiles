@@ -22,42 +22,6 @@ snippets:
     context:
       lbuffer: '^aws\s'
 
-  - name: (Claude Code) unsafe yolo
-    keyword: uy
-    snippet: --dangerously-skip-permissions  # unsafe opt-in only
-    context:
-      lbuffer: 'claude\s'
-
-  - name: (Codex CLI) unsafe yolo
-    keyword: uy
-    snippet: --yolo  # unsafe opt-in only
-    context:
-      lbuffer: 'codex\s'
-
-  - name: (Docker) remove all containers
-    keyword: rm
-    snippet: rm -f $(docker ps -aq)
-    context:
-      lbuffer: '^docker\s'
-
-  - name: (Docker) remove all images
-    keyword: rmi
-    snippet: rmi -f $(docker images -aq)
-    context:
-      lbuffer: '^docker\s'
-
-  - name: (Docker) stop all containers
-    keyword: s
-    snippet: stop $(docker ps -aq)
-    context:
-      lbuffer: '^docker\s'
-
-  - name: (Docker) df
-    keyword: df
-    snippet: system df
-    context:
-      lbuffer: '^docker\s'
-
   - name: (Git) graph
     keyword: lo
     snippet: log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status
@@ -70,21 +34,9 @@ snippets:
     context:
       lbuffer: '^git\s'
 
-  - name: (ghq) fzf preview
-    keyword: gf
-    snippet: ghq list -p | fzf --preview 'ghq-fzf-preview {}' --bind 'enter:execute(cd {} && $SHELL)+reload(ghq list -p)'
-
   - name: (macOS) caffeinate
     keyword: caffeinate
     snippet: sudo pmset disablesleep
-
-  - name: (Quarto) preview
-    keyword: qp
-    snippet: uv run quarto preview
-
-  - name: (Quarto) render
-    keyword: qr
-    snippet: uv run quarto render
 
   - name: (vde-layout) dev
     keyword: vd
