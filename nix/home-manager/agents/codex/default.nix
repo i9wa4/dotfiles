@@ -746,7 +746,7 @@ in
     };
 
     # Linux: pressure-oriented Codex storage relief.
-    # Runs after the ordinary checkpoint window. Under normal conditions this
+    # Runs on a 10-minute cadence. Under normal conditions this
     # prunes disposable temp/session data and no-ops after a successful
     # checkpoint. If a large WAL remains fully checkpointed but held open, it
     # records holder PIDs and truncates the WAL.
@@ -764,12 +764,12 @@ in
     };
     timers.codex-storage-pressure-relief = {
       Unit = {
-        Description = "30-minute Codex CLI storage pressure relief";
+        Description = "10-minute Codex CLI storage pressure relief";
       };
       Timer = {
-        OnCalendar = "*-*-* *:17/30:00";
+        OnCalendar = "*-*-* *:7/10:00";
         Persistent = true;
-        RandomizedDelaySec = "5m";
+        RandomizedDelaySec = "1m";
       };
       Install = {
         WantedBy = [ "timers.target" ];

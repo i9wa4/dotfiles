@@ -195,7 +195,7 @@ contention, or TUI TRACE log churn. Remove or rewrite this section once the
 workaround is no longer needed.
 
 The automated mitigation in this repo is a 30-minute checkpoint timer plus a
-30-minute pressure-relief timer; see
+10-minute pressure-relief timer; see
 [Automated Mitigation](#automated-mitigation-this-repo) below. The runbook
 below is the manual fallback for one-time recovery (e.g. when the timer has
 been disabled or when truncate has been blocked by `busy=1` and the WAL has
@@ -377,8 +377,8 @@ Implementation:
   ticks after suspend/offline), `RandomizedDelaySec = "5m"`.
 - Linux also installs `codex-storage-pressure-relief` as a Home Manager
   `systemd.user` service/timer. Schedule:
-  `OnCalendar = "*-*-* *:17/30:00"`, `Persistent = true`,
-  `RandomizedDelaySec = "5m"`. This pressure timer
+  `OnCalendar = "*-*-* *:7/10:00"`, `Persistent = true`,
+  `RandomizedDelaySec = "1m"`. This pressure timer
   prunes disposable Codex temp entries older than 1 hour, prunes closed
   `~/.codex/sessions/**/*.jsonl` files older than 50 days while skipping
   open files, runs the same SQLite checkpoint, and truncates the WAL to zero
