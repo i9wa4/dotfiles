@@ -35,24 +35,9 @@ function _get_context_line() {
   print -n "${remote}${devshell}${aws}"
 }
 
-# typeset -g _PROMPT_REPO_STATUS=""
-# typeset -g _PROMPT_REPO_STATUS_PWD=""
-# typeset -g _PROMPT_REPO_STATUS_UPDATED_AT=0
-#
-# function _refresh_repo_status() {
-#   if [[ "${PWD}" == "${_PROMPT_REPO_STATUS_PWD}" && $((SECONDS - _PROMPT_REPO_STATUS_UPDATED_AT)) -lt 5 ]]; then
-#     return
-#   fi
-#
-#   _PROMPT_REPO_STATUS="$(${HOME}/ghq/github.com/i9wa4/dotfiles/bin/repo-status)"
-#   _PROMPT_REPO_STATUS_PWD="${PWD}"
-#   _PROMPT_REPO_STATUS_UPDATED_AT=${SECONDS}
-# }
-
 precmd() {
   # _refresh_repo_status
   local context="$(_get_context_line)"
   local path="$(_get_simplified_path)"
-  # PROMPT=$'\n'"${context}[%D{%Y-%m-%d %H:%M:%S}] %S[${path}]%s ${_PROMPT_REPO_STATUS}"$'\n$ '
   PROMPT=$'\n'"${context}[%D{%Y-%m-%d %H:%M:%S}] %S[${path}]%s"$'\n$ '
 }
