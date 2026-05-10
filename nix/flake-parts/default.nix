@@ -25,6 +25,7 @@ in
     ./modules/apps.nix
     ./modules/pre-commit.nix
     ./modules/treefmt.nix
+    ./modules/waza.nix
     ./modules/darwin.nix
     ./modules/ubuntu.nix
   ];

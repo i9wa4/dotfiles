@@ -5,7 +5,7 @@
 #   nix run '.#switch'       -- rebuild and activate configuration
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
-#   nix run '.#update'       -- update flake inputs
+#   nix run '.#update'       -- update flake inputs and Waza release pins
 #   nix run '.#profile-update' -- install or upgrade entries listed in `profilePackages`
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
@@ -29,6 +29,7 @@
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
+      wazaUpdateScript = ./../../packages/update-waza-nix.sh;
       # Packages that live in the user's `nix profile` (independent of `nix run '.#switch'`).
       # Most agent CLIs are installed via Home Manager (see nix/home-manager/default.nix);
       # this list is reserved for tools that do not fit cleanly into HM's package set.
@@ -71,6 +72,8 @@
             set -euo pipefail
             access_token=$(${gh} auth token)
             ${nix} flake update --access-tokens "github.com=$access_token"
+            WAZA_GH=${gh} WAZA_NIX=${nix} \
+              ${pkgs.bash}/bin/bash ${wazaUpdateScript}
           ''}/bin/update";
         };
 

@@ -20,6 +20,9 @@ let
   # AI agent CLIs from llm-agents.nix flake input
   # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
   llmAgents = inputs.llm-agents.packages.${pkgs.system};
+  wazaPackage = pkgs.callPackage ../packages/waza.nix {
+    inherit (pkgs) system;
+  };
 
 in
 {
@@ -103,6 +106,7 @@ in
       pkgs.shellcheck
       pkgs.uv
       pkgs.vim
+      wazaPackage
       pkgs.zoxide
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
       llmAgents.ccusage
