@@ -76,6 +76,11 @@ classify_worktree() {
     return 0
   fi
 
+  if number=$(extract_prefixed_number "$branch" "pr"); then
+    printf 'pr\t%s\tPR-origin\n' "$number"
+    return 0
+  fi
+
   if number=$(extract_prefixed_number "$branch" "issue"); then
     printf 'issue\t%s\tissue-origin\n' "$number"
     return 0
@@ -152,6 +157,52 @@ show_github_status() {
         printf '%s\n' "$output"
       else
         echo "GitHub: PR status unavailable"
+      fi
+      ;;
+  esac
+}
+
+github_origin_status() {
+  local repo_root="$1"
+  local origin_kind="$2"
+  local origin_number="$3"
+  local github_repo
+  local output
+
+  if [[ "$origin_kind" != "issue" && "$origin_kind" != "pr" ]]; then
+    echo "-"
+    return 0
+  fi
+
+  if [[ "$origin_number" == "-" ]]; then
+    echo "-"
+    return 0
+  fi
+
+  if ! command -v gh &>/dev/null; then
+    echo "gh-unavailable"
+    return 0
+  fi
+
+  github_repo=$(github_repo_from_origin "$repo_root")
+  if [[ -z "$github_repo" ]]; then
+    echo "github-unavailable"
+    return 0
+  fi
+
+  case "$origin_kind" in
+    issue)
+      if output=$(gh issue view "$origin_number" --repo "$github_repo" --json state --jq '.state' 2>/dev/null); then
+        printf 'issue:%s\n' "$output"
+      else
+        echo "issue:unknown"
+      fi
+      ;;
+    pr)
+      if output=$(gh pr view "$origin_number" --repo "$github_repo" --json state,mergedAt --jq 'if .mergedAt != null then "MERGED" else .state end' 2>/dev/null); then
+        printf 'pr:%s\n' "$output"
+      else
+        echo "pr:unknown"
       fi
       ;;
   esac
@@ -243,9 +294,22 @@ branch_has_merged_github_pr() {
   local repo_root="$1"
   local branch="$2"
   local base_ref="$3"
+  local origin_kind="${4:-misc}"
+  local origin_number="${5:--}"
   local github_repo
   local base_branch
   local merged_count
+  local merged_at
+
+  if [[ "$origin_kind" == "pr" && "$origin_number" != "-" ]]; then
+    github_repo=$(github_repo_from_origin "$repo_root")
+    if [[ -n "$github_repo" ]] && command -v gh &>/dev/null; then
+      merged_at=$(gh pr view "$origin_number" --repo "$github_repo" --json mergedAt --jq '.mergedAt // ""' 2>/dev/null || true)
+      if [[ -n "$merged_at" ]]; then
+        return 0
+      fi
+    fi
+  fi
 
   if ! command -v gh &>/dev/null; then
     return 1
@@ -287,6 +351,8 @@ branch_has_merged_github_pr() {
 branch_merge_state() {
   local repo_root="$1"
   local branch="$2"
+  local origin_kind="${3:-misc}"
+  local origin_number="${4:--}"
   local base_ref
 
   if [[ -z "$branch" || "$branch" == "-" ]]; then
@@ -302,7 +368,7 @@ branch_merge_state() {
   base_ref=$(default_base_ref "$repo_root")
   if git -C "$repo_root" merge-base --is-ancestor "refs/heads/${branch}" "$base_ref" 2>/dev/null; then
     echo "merged"
-  elif branch_has_merged_github_pr "$repo_root" "$branch" "$base_ref"; then
+  elif branch_has_merged_github_pr "$repo_root" "$branch" "$base_ref" "$origin_kind" "$origin_number"; then
     echo "merged"
   else
     echo "unmerged"
@@ -332,24 +398,31 @@ branch_upstream_status() {
   local counts
   local ahead="-"
   local behind="-"
+  local upstream_state
 
   if [[ -z "$branch" || "$branch" == "-" ]]; then
-    printf '%s\t%s\t%s\n' "-" "-" "-"
+    printf '%s\t%s\t%s\t%s\n' "-" "-" "-" "-"
     return 0
   fi
 
   upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
   if [[ -z "$upstream" ]]; then
-    printf '%s\t%s\t%s\n' "-" "-" "-"
+    printf '%s\t%s\t%s\t%s\n' "-" "none" "-" "-"
     return 0
   fi
 
+  if ! git -C "$repo_root" rev-parse --verify --quiet "${upstream}^{commit}" >/dev/null; then
+    printf '%s\t%s\t%s\t%s\n' "$upstream" "deleted" "-" "-"
+    return 0
+  fi
+
+  upstream_state="exists"
   counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
   if [[ -n "$counts" ]]; then
     read -r ahead behind <<<"$counts"
   fi
 
-  printf '%s\t%s\t%s\n' "$upstream" "$ahead" "$behind"
+  printf '%s\t%s\t%s\t%s\n' "$upstream" "$upstream_state" "$ahead" "$behind"
 }
 
 list_managed_worktrees() {
@@ -514,21 +587,22 @@ while IFS=$'\t' read -r branch lock_state worktree_path; do
   fi
 
   dirty_state=$(worktree_dirty_state "$worktree_path")
-  merge_state=$(branch_merge_state "$repo_root" "$branch")
-  pr_status="-"
-  upstream_record=$(branch_upstream_status "$repo_root" "$branch")
-  IFS=$'\t' read -r upstream_remote upstream_ahead upstream_behind <<<"$upstream_record"
-
   origin_record=$(classify_worktree "$branch" "$worktree_path")
   IFS=$'\t' read -r origin_kind origin_number category <<<"$origin_record"
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+  github_state=$(github_origin_status "$repo_root" "$origin_kind" "$origin_number")
+  merge_state=$(branch_merge_state "$repo_root" "$branch" "$origin_kind" "$origin_number")
+  upstream_record=$(branch_upstream_status "$repo_root" "$branch")
+  IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
+
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$category" \
     "$branch" \
     "$dirty_state" \
     "$merge_state" \
     "$lock_state" \
-    "$pr_status" \
+    "$github_state" \
     "$upstream_remote" \
+    "$upstream_state" \
     "$upstream_ahead" \
     "$upstream_behind" \
     "$worktree_path" \
@@ -552,15 +626,15 @@ case "$script_path" in
     script_path=$(command -v "$script_path" 2>/dev/null || printf '%s\n' "$script_path")
     ;;
 esac
-preview_command=$(printf '%q __preview {11} {10} {2} {13} {14}' "$script_path")
+preview_command=$(printf '%q __preview {12} {11} {2} {14} {15}' "$script_path")
 
 if ! selection="$(
   printf '%s\n' "$inventory" |
     fzf \
       --delimiter=$'\t' \
-      --with-nth=1,2,3,4,5,6,7,8,9,10 \
+      --with-nth=1,2,3,5,6,8,11 \
       --prompt='worktree-remove> ' \
-      --header='Select a worktree to remove. Columns: category branch state merge lock PR upstream ahead behind path' \
+      --header='Select a worktree to remove. Columns: category branch state lock GitHub upstream-state path' \
       --preview="$preview_command" \
       --preview-window='down,60%'
 )"; then
@@ -568,7 +642,7 @@ if ! selection="$(
   exit 0
 fi
 
-IFS=$'\t' read -r category branch dirty_state merge_state lock_state pr_status upstream_remote upstream_ahead upstream_behind worktree_path repo_root managed_root origin_kind origin_number <<<"$selection"
+IFS=$'\t' read -r category branch dirty_state merge_state lock_state github_state upstream_remote upstream_state upstream_ahead upstream_behind worktree_path repo_root managed_root origin_kind origin_number <<<"$selection"
 
 if [[ -z "$category" || -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
@@ -615,7 +689,7 @@ echo "  Repo:   ${repo_name}"
 echo "  Branch: ${branch}"
 echo "  Kind:   ${category} (${origin_number})"
 echo "  Path:   ${worktree_path}"
-echo "  State:  ${dirty_state}, ${merge_state}, ${lock_state}, PR=${pr_status}, upstream=${upstream_remote}, ahead=${upstream_ahead}, behind=${upstream_behind}"
+echo "  State:  ${dirty_state}, ${lock_state}, GitHub=${github_state}, upstream=${upstream_remote} (${upstream_state})"
 echo "  Scope:  ${managed_root}"
 echo ""
 echo "This will remove the linked worktree and its local branch with git worktree."
