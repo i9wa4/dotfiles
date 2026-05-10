@@ -2,12 +2,13 @@ filetype off
 filetype plugin indent off
 syntax off
 
-let g:netrw_home = $XDG_CACHE_HOME->expand()
-
 set autoread
 set nobackup
 set noswapfile
 set noundofile
+
+let g:auto_reload = timer_start(1000, {-> execute('silent! checktime')}, {'repeat': -1})
+let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 nnoremap - <Cmd>edit %:p:h<CR>
 

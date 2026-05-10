@@ -182,7 +182,8 @@ The current editor config keeps the clipboard model small:
 - Neovim uses its built-in provider detection.
 - `+` is treated as the real system clipboard target.
 - Inside tmux, Neovim unnamed yanks are mirrored to `tmux load-buffer -w -`.
-- In Neovim, `<Space>r{register}` can push a named register manually.
+- In Neovim, `<Space>r` can push the unnamed register manually.
+- In Neovim, `:R {register}` can push a named register manually.
 - Vim does not define clipboard providers or alter `clipboard`.
 
 ## 8. Recommended Daily Flow
@@ -198,7 +199,8 @@ Use these rules while editing:
 - When editing on the Ubuntu server from a MacBook tmux session, expect the
   remote tmux path to be the bridge back to the Mac clipboard.
 - Use normal yanks such as `yy` for the default path. In Neovim, use
-  `<Space>r{register}` when a named register must be pushed manually.
+  `<Space>r` when the unnamed register must be pushed manually, or `:R
+  {register}` for a named register.
 - When clipboard writes work in Neovim but not Vim, remember that Vim clipboard
   routing is intentionally not customized by this repo.
 - When clipboard writes work in Vim but not Neovim, inspect Neovim provider and

@@ -113,6 +113,9 @@ end, { range = true })
 
 api.nvim_create_user_command("Lprevious", lprevious, {})
 api.nvim_create_user_command("Lnext", lnext, {})
+api.nvim_create_user_command("R", function(opts)
+  send_register(opts.args)
+end, { nargs = "?" })
 
 -- --------------------------------------
 -- Keymap
@@ -131,7 +134,7 @@ end, { expr = true })
 map("n", "<C-p>", "<Cmd>Lprevious<CR>")
 map("n", "<C-n>", "<Cmd>Lnext<CR>")
 map("n", "<Space>r", function()
-  send_register(fn.getcharstr())
+  send_register("")
 end)
 map("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 map("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
@@ -233,6 +236,7 @@ opt.smartcase = true
 opt.wrapscan = true
 
 opt.ambiwidth = "double"
+opt.cursorline = true
 opt.list = true
 opt.listchars = { space = "␣", tab = ">-", trail = "~", nbsp = "%" }
 opt.number = true
