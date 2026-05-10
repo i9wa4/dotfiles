@@ -51,32 +51,15 @@ if !has('nvim')
   nnoremap - <Cmd>edit %:p:h<CR>
 endif
 
-" https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-" Edit
-nnoremap <Plug>(my-Edit) <Nop>
-nmap <Space>e <Plug>(my-Edit)
-nnoremap <Plug>(my-Edit)r <Cmd>%s/\r$//e<CR>
-nnoremap <Plug>(my-Edit)s <Cmd>%s/\s\+$//e<CR>
-
-" Filer
-nnoremap <Plug>(my-Filer) <Nop>
-nmap <Space>f <Plug>(my-Filer)
-nnoremap <Plug>(my-Filer)v <Cmd>execute 'edit' $MYVIMRC->expand()<CR>
-
 " Register
-nnoremap <Plug>(my-Register) <Nop>
-nmap <Space>r <Plug>(my-Register)
-nnoremap <Plug>(my-Register)t <Cmd>call <SID>SendRegister(nr2char(getchar()))<CR>
+nnoremap <Space>r <Cmd>call <SID>SendRegister(nr2char(getchar()))<CR>
 
+" https://lambdalisue.hatenablog.com/entry/2015/12/25/000046
 " Switch
 nnoremap <Plug>(my-Switch) <Nop>
 nmap <Space>s <Plug>(my-Switch)
-nnoremap <Plug>(my-Switch)b <Cmd>setlocal scrollbind! scrollbind?<CR>
 nnoremap <Plug>(my-Switch)l <Cmd>setlocal list! list?<CR>
 nnoremap <Plug>(my-Switch)n <Cmd>setlocal number! number?<CR>
-nnoremap <Plug>(my-Switch)p <Cmd>setlocal paste! paste?<CR>
-nnoremap <Plug>(my-Switch)r <Cmd>setlocal relativenumber! relativenumber?<CR>
-nnoremap <Plug>(my-Switch)s <Cmd>setlocal spell! spell?<CR>
 nnoremap <Plug>(my-Switch)t <Cmd>setlocal expandtab! expandtab?<CR>
 nnoremap <Plug>(my-Switch)w <Cmd>setlocal wrap! wrap?<CR>
 
@@ -140,10 +123,6 @@ function! s:HighlightMatch() abort
   call matchadd('HlMS', strftime('%Y%m%d',    localtime() + 0 * 24 * 60 * 60))
   call matchadd('HlMS', strftime('%Y-%m-%d',  localtime() + 0 * 24 * 60 * 60))
   call matchadd('HlMS', strftime('%Y/%m/%d',  localtime() + 0 * 24 * 60 * 60))
-
-  if &filetype != 'ddu-ff' && &filetype != 'ddu-ff-filter'
-    let w:trailing_space_match_id = matchadd('Error', '　\|\s\+$')
-  endif
 endfunction
 
 
@@ -154,7 +133,6 @@ augroup MyAutocmd
   autocmd BufEnter *
   \   if empty(&buftype)
   \|    call setreg('a', '%'->expand()->fnamemodify(':p:~'))
-  \|    call setreg('b', '%'->expand()->fnamemodify(':p'))
   \|  endif
 
   autocmd FileType *
@@ -328,7 +306,7 @@ endif
 " --------------------------------------
 " End of settings
 "
-set background=dark
+" set background=dark
 
 filetype plugin on
 syntax enable
@@ -337,4 +315,4 @@ if has('termguicolors')
   set termguicolors
 endif
 
-execute 'colorscheme' get(g:, 'colors_name', 'retrobox')
+execute 'colorscheme' get(g:, 'colors_name', 'habamax')
