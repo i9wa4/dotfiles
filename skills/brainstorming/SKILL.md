@@ -1,75 +1,43 @@
 ---
 name: brainstorming
 license: MIT
-description: Ambiguity-reduction for fuzzy requirements or multiple plausible approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs.
+description: |
+  USE FOR: Ambiguity-reduction for fuzzy requirements or multiple plausible approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Brainstorming
 
-Use this skill to turn a fuzzy request into a concrete direction without
-pretending every task needs a full design exercise.
+**UTILITY SKILL:** Apply this skill to Ambiguity-reduction for fuzzy
+requirements or multiple plausible approaches. Pre-step to plan-design. Produces
+2-3 options with tradeoffs. Keep the task scoped to the requested domain and
+preserve existing repo conventions.
 
-## 1. Core Defaults
+**USE FOR:** Ambiguity-reduction for fuzzy requirements or multiple plausible
+approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs;
+related file edits; verification and handoff in this skill domain.
 
-- Use this skill only when the task is genuinely ambiguous or multi-approach.
-- Do not block already-clear work behind extra ideation.
-- Ask at most one clarifying question at a time when interaction is needed.
-- In non-interactive lanes, make the safest explicit assumption and record it.
-- Produce 2-3 viable approaches with trade-offs before recommending one.
-- Stop brainstorming once the direction is stable enough for planning or
-  implementation.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Workflow
+## Workflow
 
-1. Restate the objective in plain language.
-   - what success looks like
-   - what must not change
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-2. Pull out hard constraints.
-   - repo rules
-   - scope limits
-   - approval boundaries
-   - user or lane constraints
+## Examples
 
-3. Identify the real unknowns.
-   - missing requirement
-   - unresolved design choice
-   - unclear audience or operator
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-4. Resolve the next blocking unknown.
-   - ask one concise clarifying question when interactive
-   - otherwise state the least-risk assumption you will use
+## References
 
-5. Generate 2-3 approaches.
-   For each approach, include:
-   - shape of the solution
-   - main benefit
-   - main risk
-   - why it fits or does not fit this repo
+- [Preserved Guidance](references/preserved-guidance.md)
 
-6. Recommend one approach.
-   - explain why it is the best local fit
-   - name the next concrete step
+## Troubleshooting
 
-## 3. Repo Fit
-
-- Use `mkmd` artifacts when the brainstorming output needs to persist as
-  research or a plan input.
-- Hand off to `plan-design` when the outcome is a multi-phase execution plan.
-- Hand off directly to implementation when the scope is now narrow and stable.
-- Do not require tracked design docs or a universal approval loop.
-
-## 4. Good Triggers
-
-- Multiple valid implementation shapes exist.
-- The request mixes product, UX, and technical choices.
-- The user asked for options, trade-offs, or a recommendation.
-- The task is user-facing and failure would come from solving the wrong problem.
-
-## 5. Bad Triggers
-
-- The task already has a clear acceptance target.
-- The next step is obviously a small mechanical change.
-- The work is already in an approved plan with concrete milestones.
-
-In those cases, skip this skill and proceed with the narrower workflow.
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
