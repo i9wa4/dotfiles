@@ -10,6 +10,10 @@ local fn = vim.fn
 local opt = vim.opt
 
 local function toggle_quote(line1, line2)
+  if line2 < line1 then
+    line1, line2 = line2, line1
+  end
+
   local lines = api.nvim_buf_get_lines(0, line1 - 1, line2, false)
   local all_quoted = true
   for _, line in ipairs(lines) do
@@ -107,12 +111,23 @@ local function lnext()
   end
 end
 
-api.nvim_create_user_command("ToggleQuote", function(opts)
-  toggle_quote(opts.line1, opts.line2)
-end, { range = true })
+-- Location list replacement recipes:
+--   :lgrep! old **/*.lua
+--   ! keeps the cursor in place instead of jumping to the first match.
+--   :ldo s/old/new/ge | update
+--   :lfdo %s/old/new/ge | update
+-- Use :ldo for matched lines and :lfdo for matched files.
+local function open_quickfix_item_keep_focus()
+  local qf_win = api.nvim_get_current_win()
+  local wininfo = fn.getwininfo(qf_win)[1] or {}
+  local command = wininfo.loclist == 1 and "ll" or "cc"
 
-api.nvim_create_user_command("Lprevious", lprevious, {})
-api.nvim_create_user_command("Lnext", lnext, {})
+  pcall(vim.cmd, command .. " " .. fn.line("."))
+  if api.nvim_win_is_valid(qf_win) then
+    api.nvim_set_current_win(qf_win)
+  end
+end
+
 api.nvim_create_user_command("R", function(opts)
   send_register(opts.args)
 end, { nargs = "?" })
@@ -123,31 +138,26 @@ end, { nargs = "?" })
 local map = vim.keymap.set
 
 map("n", "gf", "gF")
-map("n", "gqq", "<Cmd>ToggleQuote<CR>")
-map("v", "gqq", ":'<,'>ToggleQuote<CR>")
+map("n", "gqq", function()
+  toggle_quote(fn.line("."), fn.line("."))
+end)
+map("v", "gqq", function()
+  toggle_quote(fn.line("v"), fn.line("."))
+end)
 map("i", ",now", function()
   return fn.strftime("%Y-%m-%d %X +0900")
 end, { expr = true })
 map("i", ",today", function()
   return fn.strftime("%Y-%m-%d")
 end, { expr = true })
-map("n", "<C-p>", "<Cmd>Lprevious<CR>")
-map("n", "<C-n>", "<Cmd>Lnext<CR>")
-map("n", "<Space>r", function()
-  send_register("")
-end)
+map("n", "<C-p>", lprevious)
+map("n", "<C-n>", lnext)
 map("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 map("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 map("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 map("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
 vim.cmd([[
-nmap <Plug>(my-line-motion-repeat) <Nop>
-nmap gj gj<Plug>(my-line-motion-repeat)
-nmap gk gk<Plug>(my-line-motion-repeat)
-nnoremap <script> <Plug>(my-line-motion-repeat)j gj<Plug>(my-line-motion-repeat)
-nnoremap <script> <Plug>(my-line-motion-repeat)k gk<Plug>(my-line-motion-repeat)
-
 nmap <C-w>-    <C-w>-<SNR>999_my_window_resize_repeat
 nmap <C-w>+    <C-w>+<SNR>999_my_window_resize_repeat
 nmap <C-w><lt> <C-w><lt><SNR>999_my_window_resize_repeat
@@ -183,6 +193,11 @@ api.nvim_create_autocmd("BufEnter", {
 api.nvim_create_autocmd("FileType", {
   group = augroup,
   callback = function()
+    if vim.bo.filetype == "qf" then
+      map("n", "<CR>", open_quickfix_item_keep_focus, { buffer = true })
+      return
+    end
+
     if vim.wo.diff then
       vim.opt_local.spell = false
     else
