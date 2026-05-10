@@ -179,6 +179,13 @@
             entry = "${pkgs-unstable.rumdl}/bin/rumdl check --config ${rumdlConfig}";
             types = [ "markdown" ];
           };
+          markdown-formatter = {
+            enable = true;
+            entry = "${
+              inputs.markdown-formatter.packages.${system}.default
+            }/bin/mdfmt --no-heading-numbering --write";
+            types = [ "markdown" ];
+          };
 
           # === Shell ===
           shellcheck.enable = true;

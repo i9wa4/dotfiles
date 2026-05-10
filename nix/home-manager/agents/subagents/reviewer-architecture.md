@@ -1,4 +1,3 @@
-
 # Reviewer: Architecture
 
 Architecture expert. Bird's-eye view of structure and design.

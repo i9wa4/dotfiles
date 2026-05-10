@@ -45,11 +45,11 @@ defines three top-level lists:
 
 The Nix module exposes three outputs that consume this SSOT:
 
-| Output | Consumer | Mechanism |
-| --- | --- | --- |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` | `Bash(<glob>)` glob match (Claude Code built-in) |
-| `claudeCode.patternsFile` | `~/.claude/scripts/deny-bash-patterns.sh` (sourced by the PreToolUse hook) | POSIX ERE regex match |
-| `codexCli.rulesContent` | `~/.codex/rules/default.rules` | argv-based prefix match (Codex CLI built-in) |
+| Output                       | Consumer                                                                   | Mechanism                                        |
+| ---------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------ |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                               | `Bash(<glob>)` glob match (Claude Code built-in) |
+| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` (sourced by the PreToolUse hook) | POSIX ERE regex match                            |
+| `codexCli.rulesContent`      | `~/.codex/rules/default.rules`                                             | argv-based prefix match (Codex CLI built-in)     |
 
 `allowPrefixBypass` and `stripDataArgs` are emitted only into
 `claudeCode.patternsFile`. Codex CLI's argv-based matcher already avoids the

@@ -30,10 +30,10 @@ The current repository wrappers and checked-in config are the source of truth:
 
 ## 2. Evaluation
 
-| Candidate | Installation Feasibility | Workflow Fit | Safety Fit | Complexity vs Benefit | Decision |
-| --- | --- | --- | --- | --- | --- |
+| Candidate                      | Installation Feasibility                                             | Workflow Fit                                                                                   | Safety Fit                                                                      | Complexity vs Benefit                                                 | Decision            |
+| ------------------------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------- |
 | Native `git worktree` wrappers | Already available through Git. No extra Node/npm global is required. | Strong fit because issue, PR, cleanup, and navigation behavior already lives in repo wrappers. | Good fit when wrappers centralize clean, locked, merged, and path-scope checks. | Lowest moving parts and no shell-startup-adjacent package dependency. | Use as the backend. |
-| Extra worktree CLI package | Adds another global tool and a second worktree policy surface. | Weak fit because the repo still needs the existing issue, PR, zoxide, and tmux wrappers. | Depends on the package, but duplicates checks the wrappers can do directly. | Extra dependency for behavior that is already covered locally. | Do not adopt now. |
+| Extra worktree CLI package     | Adds another global tool and a second worktree policy surface.       | Weak fit because the repo still needs the existing issue, PR, zoxide, and tmux wrappers.       | Depends on the package, but duplicates checks the wrappers can do directly.     | Extra dependency for behavior that is already covered locally.        | Do not adopt now.   |
 
 ## 3. Decision
 

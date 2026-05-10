@@ -536,6 +536,35 @@
         "type": "github"
       }
     },
+    "markdown-formatter": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "git-hooks": [
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778437190,
+        "narHash": "sha256-qfSOtnGRgCjkuLPj0DSveMcui2sSDGoU6YCAphe3CYM=",
+        "owner": "i9wa4",
+        "repo": "markdown-formatter",
+        "rev": "7c749fc0b9c5875dcf20b8a72bd9a7fe7817e22e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "i9wa4",
+        "repo": "markdown-formatter",
+        "type": "github"
+      }
+    },
     "mcp-servers-nix": {
       "inputs": {
         "nixpkgs": [
@@ -805,6 +834,7 @@
         "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
+        "markdown-formatter": "markdown-formatter",
         "mcp-servers-nix": "mcp-servers-nix",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",

@@ -1,4 +1,3 @@
-
 # Reviewer: QA
 
 Acceptance criteria expert. Traces requirements to implementation.

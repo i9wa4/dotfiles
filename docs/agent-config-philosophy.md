@@ -153,9 +153,9 @@ worked example. The mapping below is illustrative, not exhaustive.
 
 | Decision                                                   | Principle                           | Concrete form                                                                        |
 | ---------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ |
-| Section 2.16 uses `postman.md` rather than a deny glob      | 1.1 prompt-first                    | Rule lives in the agent contract, applies to both engines, no settings.json change   |
-| `denied-bash-commands.nix` is the shared deny source        | 1.2 shared SSOT                     | One file feeds three downstream outputs (Claude glob, Claude regex hook, Codex rule) |
-| Claude-only hook bypass fields stay in the Claude emitter   | 1.3 vendor-specific as compensation | Codex argv matcher does not need them; the modules name the limitation explicitly    |
+| Section 2.16 uses `postman.md` rather than a deny glob     | 1.1 prompt-first                    | Rule lives in the agent contract, applies to both engines, no settings.json change   |
+| `denied-bash-commands.nix` is the shared deny source       | 1.2 shared SSOT                     | One file feeds three downstream outputs (Claude glob, Claude regex hook, Codex rule) |
+| Claude-only hook bypass fields stay in the Claude emitter  | 1.3 vendor-specific as compensation | Codex argv matcher does not need them; the modules name the limitation explicitly    |
 
 ## 3. Decision Checklist for New Agent Config
 

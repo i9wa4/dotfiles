@@ -15,14 +15,14 @@ Source of truth:
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/shared/
 - @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
 
-| Destination                | Source                                                | Managed by                           |
-| -------------------------- | ----------------------------------------------------- | ------------------------------------ |
-| `~/.claude/settings.json`  | Generated from Nix attributes                         | `claude/default.nix`                 |
-| no root instruction file   | Persona / language / scope from postman common blocks | `config/tmux-a2a-postman/postman.md` |
-| `~/.claude/agents/`        | Rendered from `subagents/`                            | `shared/render-agents.nix`           |
-| `~/.claude/scripts/`       | `nix/home-manager/agents/scripts/`                    | `claude/default.nix`                 |
+| Destination                | Source                                                 | Managed by                           |
+| -------------------------- | ------------------------------------------------------ | ------------------------------------ |
+| `~/.claude/settings.json`  | Generated from Nix attributes                          | `claude/default.nix`                 |
+| no root instruction file   | Persona / language / scope from postman common blocks  | `config/tmux-a2a-postman/postman.md` |
+| `~/.claude/agents/`        | Rendered from `subagents/`                             | `shared/render-agents.nix`           |
+| `~/.claude/scripts/`       | `nix/home-manager/agents/scripts/`                     | `claude/default.nix`                 |
 | `~/.claude/skills/`        | Multiple flake inputs + local + generated review skill | `shared/agent-skills.nix`            |
-| MCP servers                | `shared/mcp-servers.nix`                              | `claude/default.nix`                 |
+| MCP servers                | `shared/mcp-servers.nix`                               | `claude/default.nix`                 |
 
 ## 2. Fetch CHANGELOG
 

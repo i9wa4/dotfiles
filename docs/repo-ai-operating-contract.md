@@ -224,9 +224,9 @@ The public review skill surface is one generated dispatcher in both
 
 The dispatcher accepts space-separated engine and tier tokens:
 
-| Token Type | Values          | Meaning                           |
-| ---------- | --------------- | --------------------------------- |
-| Engine     | `cc`, `cx`      | Claude or Codex reviewer pool     |
+| Token Type | Values           | Meaning                           |
+| ---------- | ---------------- | --------------------------------- |
+| Engine     | `cc`, `cx`       | Claude or Codex reviewer pool     |
 | Tier       | `tier1`, `tier2` | Deep or shallow model assignment  |
 
 With no arguments, `subagent-review` defaults to `cc tier2 cx tier2`.

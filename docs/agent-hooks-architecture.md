@@ -83,13 +83,13 @@ adopt.
 
 After the 2026-04-29 reduction, the active hook surface looks like this:
 
-| Event                                          | Claude                                  | Codex                                   | Symmetric?                        |
-| ---------------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------- |
-| `PreToolUse` matcher=`Bash`                    | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
+| Event                                            | Claude                                  | Codex                                   | Symmetric?                        |
+| ------------------------------------------------ | --------------------------------------- | --------------------------------------- | --------------------------------- |
+| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
 | `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
-| `PreToolUse` matcher=`apply_patch\|Edit\|Write` | (no equivalent)                         | `codex-pretooluse-observe-write.sh`     | Codex-only observer               |
-| `UserPromptSubmit`                             | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
-| Status line                                    | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
+| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                         | `codex-pretooluse-observe-write.sh`     | Codex-only observer               |
+| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
+| Status line                                      | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
 
 Removed from both sides on 2026-04-29 for symmetry:
 

@@ -43,6 +43,15 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    markdown-formatter = {
+      url = "github:i9wa4/markdown-formatter";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        git-hooks.follows = "git-hooks";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+    };
 
     # Follows nixpkgs-unstable
     mcp-servers-nix = {
