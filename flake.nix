@@ -99,6 +99,10 @@
       url = "github:hashicorp/agent-skills";
       flake = false;
     };
+    aws-agent-toolkit = {
+      url = "github:aws/agent-toolkit-for-aws";
+      flake = false;
+    };
     obsidian-skills = {
       url = "github:kepano/obsidian-skills";
       flake = false;

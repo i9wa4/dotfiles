@@ -204,6 +204,13 @@ let
       path = inputs.hashicorp-agent-skills;
       subdir = "terraform/provider-development/skills";
     };
+    # AWS Agent Toolkit skills. Install skill bodies only; plugin and MCP
+    # integration remain out of scope for this Home Manager module.
+    # cf. https://github.com/aws/agent-toolkit-for-aws
+    aws = {
+      path = inputs.aws-agent-toolkit;
+      subdir = "skills";
+    };
   };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
   sourceNameCollisions = lib.filter (collision: collision.names != [ ]) [

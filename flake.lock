@@ -60,6 +60,22 @@
         "type": "github"
       }
     },
+    "aws-agent-toolkit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778234734,
+        "narHash": "sha256-pv38JKbpB/spghq0ACHDQ+JoAZnvTxh2s3llZ/E18nQ=",
+        "owner": "aws",
+        "repo": "agent-toolkit-for-aws",
+        "rev": "b2520950040503a2d75afe23a0e2d30beff10912",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aws",
+        "repo": "agent-toolkit-for-aws",
+        "type": "github"
+      }
+    },
     "blueprint": {
       "inputs": {
         "nixpkgs": [
@@ -778,6 +794,7 @@
         "actrun": "actrun",
         "agent-skills": "agent-skills",
         "anthropic-skills": "anthropic-skills",
+        "aws-agent-toolkit": "aws-agent-toolkit",
         "context7": "context7",
         "databricks-agent-skills": "databricks-agent-skills",
         "databricks-official-skills": "databricks-official-skills",
