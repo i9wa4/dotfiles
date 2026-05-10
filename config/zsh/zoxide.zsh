@@ -27,6 +27,7 @@ __z_tmux_rename_for_dir() {
 }
 
 __z_query_paths() {
+  __z_seed_ghq_paths_if_stale
   zoxide query --list --score 2>/dev/null || true
 }
 
@@ -117,7 +118,7 @@ __z_seed_ghq_paths() {
   done < <(ghq list -p 2>/dev/null)
 }
 
-__z_seed_ghq_paths_once_daily() {
+__z_seed_ghq_paths_if_stale() {
   local stamp="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/zoxide-ghq-seed.stamp"
   local lock="${stamp}.lock"
   local stamp_mtime
@@ -128,18 +129,15 @@ __z_seed_ghq_paths_once_daily() {
 
   if [[ -e "$stamp" ]]; then
     stamp_mtime="$(zstat +mtime "$stamp" 2>/dev/null)" || stamp_mtime=0
-    (( EPOCHSECONDS - stamp_mtime < 1 )) && return 0
+    (( EPOCHSECONDS - stamp_mtime < 5 )) && return 0
   fi
 
-  [[ -n "${stamp}"(#qN.mh-24) ]] && return 0
   if ! (set -o noclobber; print -r -- "$$" > "$lock") 2>/dev/null; then
     return 0
   fi
 
   : >| "$stamp"
-  {
-    __z_seed_ghq_paths || rm -f "$stamp"
-    rm -f "$lock"
-  } >/dev/null 2>&1 &!
+  __z_seed_ghq_paths || rm -f "$stamp"
+  rm -f "$lock"
 }
-__z_seed_ghq_paths_once_daily
+{ __z_seed_ghq_paths_if_stale } >/dev/null 2>&1 &!
