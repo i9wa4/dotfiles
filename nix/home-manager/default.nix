@@ -41,7 +41,6 @@ in
     ./modules/zsh.nix
     # xdg.configFile
     ./modules/editorconfig.nix
-    ./modules/efm-langserver.nix
     # home.file
     ./modules/tmux.nix
     # home.activation
@@ -92,7 +91,6 @@ in
       pkgs.awscli2
       pkgs.azure-cli
       pkgs.deno
-      pkgs.efm-langserver
       pkgs.fd
       pkgs.fzf
       pkgs.ghq
