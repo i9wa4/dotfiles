@@ -10,27 +10,30 @@ local fn = vim.fn
 local opt = vim.opt
 
 local function toggle_quote(line1, line2)
+  local lines = api.nvim_buf_get_lines(0, line1 - 1, line2, false)
   local all_quoted = true
-  for lnum = line1, line2 do
-    if not fn.getline(lnum):match("^>") then
+  for _, line in ipairs(lines) do
+    if not line:match("^>") then
       all_quoted = false
       break
     end
   end
 
-  for lnum = line1, line2 do
-    local line = fn.getline(lnum)
+  local new_lines = {}
+  for _, line in ipairs(lines) do
     if all_quoted then
-      fn.setline(lnum, (line:gsub("^>%s?", "", 1)))
+      new_lines[#new_lines + 1] = line:gsub("^>%s?", "", 1)
     else
-      fn.setline(lnum, "> " .. line)
+      new_lines[#new_lines + 1] = "> " .. line
     end
   end
+
+  api.nvim_buf_set_lines(0, line1 - 1, line2, false, new_lines)
 end
 
 local function send_tmux_clipboard(content)
   if fn.executable("tmux") == 1 and vim.env.TMUX and vim.env.TMUX ~= "" then
-    fn.system({ "tmux", "load-buffer", "-w", "-" }, content)
+    vim.system({ "tmux", "load-buffer", "-w", "-" }, { stdin = content }):wait()
   end
 end
 
@@ -41,9 +44,15 @@ local function send_register(reg)
 end
 
 local function highlight_define()
-  vim.cmd("highlight HlMS guibg=#FFB6C1 guifg=#000000")
-  vim.cmd("highlight link markdownError Normal")
-  vim.cmd("highlight link markdownItalic Normal")
+  api.nvim_set_hl(0, "HlMS", { bg = "#FFB6C1", fg = "#000000" })
+  api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+  api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+
+  local function clear_bg(group)
+    local hl = api.nvim_get_hl(0, { name = group, link = false })
+    hl.bg = nil
+    api.nvim_set_hl(0, group, hl)
+  end
 
   for _, group in ipairs({
     "EndOfBuffer",
@@ -57,19 +66,33 @@ local function highlight_define()
     "StatusLineNC",
     "VertSplit",
   }) do
-    vim.cmd("highlight " .. group .. " guibg=NONE")
+    clear_bg(group)
   end
 end
 
-local function highlight_match()
-  fn.clearmatches()
-  fn.matchadd("HlMS", "HlMS")
-  fn.matchadd("HlMS", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]])
+local function delete_highlight_matches()
+  for _, id in ipairs(vim.w.my_highlight_match_ids or {}) do
+    pcall(fn.matchdelete, id)
+  end
+  vim.w.my_highlight_match_ids = {}
+end
 
+local function highlight_match()
+  delete_highlight_matches()
+
+  local ids = {}
+  local function add(pattern)
+    ids[#ids + 1] = fn.matchadd("HlMS", pattern)
+  end
+
+  add("HlMS")
+  add([[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:\|# %%\|\[ \]])
   local now = fn.localtime()
-  fn.matchadd("HlMS", fn.strftime("%Y%m%d", now))
-  fn.matchadd("HlMS", fn.strftime("%Y-%m-%d", now))
-  fn.matchadd("HlMS", fn.strftime("%Y/%m/%d", now))
+  add(fn.strftime("%Y%m%d", now))
+  add(fn.strftime("%Y-%m-%d", now))
+  add(fn.strftime("%Y/%m/%d", now))
+
+  vim.w.my_highlight_match_ids = ids
 end
 
 local function lprevious()
@@ -122,15 +145,15 @@ nmap gk gk<Plug>(my-line-motion-repeat)
 nnoremap <script> <Plug>(my-line-motion-repeat)j gj<Plug>(my-line-motion-repeat)
 nnoremap <script> <Plug>(my-line-motion-repeat)k gk<Plug>(my-line-motion-repeat)
 
-nnoremap <script> <C-w>-    <C-w>-<Plug>(my-window-resize-repeat)
-nnoremap <script> <C-w>+    <C-w>+<Plug>(my-window-resize-repeat)
-nnoremap <script> <C-w><lt> <C-w><lt><Plug>(my-window-resize-repeat)
-nnoremap <script> <C-w>>    <C-w>><Plug>(my-window-resize-repeat)
-nmap <Plug>(my-window-resize-repeat) <Nop>
-nnoremap <script> <Plug>(my-window-resize-repeat)-    <C-w>-<Plug>(my-window-resize-repeat)
-nnoremap <script> <Plug>(my-window-resize-repeat)+    <C-w>+<Plug>(my-window-resize-repeat)
-nnoremap <script> <Plug>(my-window-resize-repeat)<lt> <C-w><lt><Plug>(my-window-resize-repeat)
-nnoremap <script> <Plug>(my-window-resize-repeat)>    <C-w>><Plug>(my-window-resize-repeat)
+nmap <C-w>-    <C-w>-<SNR>999_my_window_resize_repeat
+nmap <C-w>+    <C-w>+<SNR>999_my_window_resize_repeat
+nmap <C-w><lt> <C-w><lt><SNR>999_my_window_resize_repeat
+nmap <C-w>>    <C-w>><SNR>999_my_window_resize_repeat
+nmap <SNR>999_my_window_resize_repeat <Nop>
+nnoremap <script> <SNR>999_my_window_resize_repeat-    <C-w>-<SNR>999_my_window_resize_repeat
+nnoremap <script> <SNR>999_my_window_resize_repeat+    <C-w>+<SNR>999_my_window_resize_repeat
+nnoremap <script> <SNR>999_my_window_resize_repeat<lt> <C-w><lt><SNR>999_my_window_resize_repeat
+nnoremap <script> <SNR>999_my_window_resize_repeat>    <C-w>><SNR>999_my_window_resize_repeat
 ]])
 
 -- --------------------------------------
@@ -236,7 +259,7 @@ end
 --
 local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
-  fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath })
+  vim.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath }):wait()
 end
 opt.runtimepath:prepend(lazypath)
 
