@@ -1,4 +1,3 @@
-" ~/ghq/github.com/i9wa4/dotfiles/config/vim/vimrc
 filetype off
 filetype plugin indent off
 syntax off
