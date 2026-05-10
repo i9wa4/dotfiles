@@ -36,15 +36,15 @@ nnoremap <C-n> :Lnext<CR>
 
 " Resize Window
 " https://zenn.dev/mattn/articles/83c2d4c7645faa
-nmap <C-w>H <C-w><<SID>ws
-nmap <C-w>J <C-w>-<SID>ws
-nmap <C-w>K <C-w>+<SID>ws
-nmap <C-w>L <C-w>><SID>ws
+nnoremap <script> <C-w>- <C-w>-<SID>ws
+nnoremap <script> <C-w>+ <C-w>+<SID>ws
+nnoremap <script> <C-w><lt> <C-w><lt><SID>ws
+nnoremap <script> <C-w>> <C-w>><SID>ws
 nmap <SID>ws <Nop>
-nnoremap <script> <SID>wsH <C-w><<SID>ws
-nnoremap <script> <SID>wsJ <C-w>-<SID>ws
-nnoremap <script> <SID>wsK <C-w>+<SID>ws
-nnoremap <script> <SID>wsL <C-w>><SID>ws
+nnoremap <script> <SID>ws- <C-w>-<SID>ws
+nnoremap <script> <SID>ws+ <C-w>+<SID>ws
+nnoremap <script> <SID>ws<lt> <C-w><lt><SID>ws
+nnoremap <script> <SID>ws> <C-w>><SID>ws
 
 " Open parent directory
 if !has('nvim')
