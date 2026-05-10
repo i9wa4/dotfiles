@@ -2,86 +2,42 @@
 name: github
 license: MIT
 description: |
-  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules.
+  USE FOR: GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# GitHub Rules
+# Github
 
-## 1. gh CLI
+**UTILITY SKILL:** Apply this skill to GitHub: gh CLI usage, commit messages,
+issue/PR creation, inline comments, sub-issues, review style, public surface
+path hygiene rules. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-- YOU MUST: Use `gh` for GitHub info retrieval
-- YOU MUST: Always fetch all comments (body + comments) for Issues/PRs
-- YOU MUST: Cite Issue/PR numbers with `#` prefix (e.g., `#240`)
+**USE FOR:** GitHub: gh CLI usage, commit messages, issue/PR creation, inline
+comments, sub-issues, review style, public surface path hygiene rules; related
+file edits; verification and handoff in this skill domain.
 
-## 2. Issue Creation
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-- YOU MUST: Check `.github/ISSUE_TEMPLATE/` and follow if exists
+## Workflow
 
-## 3. External Repo References (Mention Prevention)
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-Applies to: Issues, PRs, commit messages, all GitHub-posted text.
+## Examples
 
-Public and permanent GitHub surfaces MUST use repo-relative paths or stable web
-URLs. Do not write machine-local absolute paths such as `/home/...`,
-`/nix/store/...`, or `~/ghq/...` in issues, PRs, commit messages, review
-comments, or other GitHub-posted text. Local absolute paths are only for
-user-facing chat, internal task artifacts, and debug evidence.
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-Check org membership:
-`gh api user/memberships/orgs --jq '.[].organization.login'`
+## References
 
-- Same org: bare URLs and `org/repo#123` OK
-- Cross-org/external: escape with backticks or plain text
-- Non-GitHub URLs and blob/tree URLs: always safe
+- [Preserved Guidance](references/preserved-guidance.md)
 
-## 4. Commit Messages
+## Troubleshooting
 
-- YOU MUST: Match language of recent commits (English or Japanese)
-- YOU MUST: Use Conventional Commits:
-  `<type>(<scope>): <description> (#<Issue>)`
-- Types: feat, fix, docs, style, refactor, test, chore
-- Body sections as needed: Summary, Background, Changes, Technical Details,
-  Verification, Related URLs
-- IMPORTANT: Granularity for work resumption; include "why"
-- IMPORTANT: When structural and behavioral changes are both needed, prefer
-  separate commits; if not possible, call out the split explicitly
-- NEVER: Co-Authored-By, AI tool notices
-- NEVER: `.i9wa4/` files, `/tmp/` files, machine-local absolute paths
-
-## 5. Sub-issues
-
-- YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
-
-## 6. PR Inline Comments
-
-- `gh pr comment` = PR-wide only; inline requires `gh api`
-- `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
-- Post: `gh api repos/OWNER/REPO/pulls/NUMBER/comments` with `body`,
-  `commit_id`, `path`, `line`(absolute), `side`(RIGHT/LEFT)
-- Reply: `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
-
-## 7. TodoWrite (Claude Code)
-
-```text
-- [ ] Commit changes (requires permission)
-- [ ] Push to remote (requires permission)
-```
-
-## 8. PR Review Comments
-
-Tags (required at start of every comment):
-
-| Tag      | Meaning                       | Action   |
-| -------- | ----------------------------- | -------- |
-| [must]   | Must fix before merge         | Fix      |
-| [want]   | Strongly prefer, not blocking | Respond  |
-| [imo]    | Take it or leave it           | Optional |
-| [nits]   | Style/readability nitpick     | Optional |
-| [ask]    | Needs clarification           | Respond  |
-| [fyi]    | Informational                 | None     |
-| [praise] | Positive feedback             | None     |
-
-- Style: Japanese, concise (problem not fix), no Before/After blocks, one
-  concern
-per comment.
-- Tone: match @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and zenn/
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
