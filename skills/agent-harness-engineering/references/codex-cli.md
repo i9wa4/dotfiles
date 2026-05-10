@@ -112,7 +112,7 @@ Ignore any release entries for versions newer than `codex --version`.
 | Behavior  | `approval_mode`, `sandbox`, `network_access`         |
 | Display   | `notify`, `tui.notifications_method`                 |
 | Shell     | `shell_environment_commands`                         |
-| Hooks     | `features.codex_hooks`, `hooks.json`, `scripts/`     |
+| Hooks     | `features.hooks`, `hooks.json`, `scripts/`           |
 | History   | `history`, `project_doc_max_bytes`                   |
 | Features  | `features.skills`, `features.web_search_request`     |
 | Disable   | `disable_response_storage`, `hide_agent_*`           |
@@ -120,7 +120,7 @@ Ignore any release entries for versions newer than `codex --version`.
 
 ## 6. Hooks Guidance
 
-- YOU MUST: Enable hooks with `features.codex_hooks = true` before relying on
+- YOU MUST: Enable hooks with `features.hooks = true` before relying on
   any `hooks.json` behavior
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
@@ -131,7 +131,8 @@ Ignore any release entries for versions newer than `codex --version`.
     `pretooluse-deny-bash.sh`, invoked by both Claude and Codex)
   - `common-*` for shared scripts that take a runtime arg (e.g.
     `common-userpromptsubmit.sh codex`)
-  - `codex-*` only for genuinely Codex-only behavior (none currently)
+  - `codex-*` only for genuinely Codex-only behavior (e.g. current write-tool
+    payload observation)
 - YOU MUST: Reuse `denied-bash-commands.nix` as the SSOT for Bash deny policy
   instead of hand-maintaining separate Codex-only command lists
 - YOU MUST: Reuse `pretooluse-deny-bash.sh` instead of forking a Codex copy.
@@ -141,9 +142,12 @@ Ignore any release entries for versions newer than `codex --version`.
   drift class on 2026-04-29.
 - YOU MUST: Keep shared Bash deny justifications repair-oriented so the
   rejection tells the agent what to do next, not just what was blocked
-- YOU MUST: Treat Codex `PreToolUse` as Bash-only today
-- NEVER: Claim Codex currently intercepts `Write|Edit|NotebookEdit`; those
-  matcher examples are valid regex but do not match current Codex runtime
+- YOU MUST: Treat Codex write-tool control as observational until local hook
+  payloads prove enough structure for reliable deny logic
+- NOTE: Official docs say `PreToolUse` can match canonical `Bash`,
+  `apply_patch`, and MCP tool names; `apply_patch` also matches `Edit` and
+  `Write`. This repo observes `apply_patch|Edit|Write` before adding write
+  enforcement.
 - NEVER: Rely on unsupported `permissionDecision: "ask"` / `"allow"`,
   `updatedInput`, or `additionalContext` fields for `PreToolUse`; the current
   runtime parses them but fails open
@@ -177,7 +181,8 @@ Check the following when editing postman prompt blocks or `config.toml`:
 - [ ] Is config.toml using appropriate approval_mode?
 - [ ] Are shared Bash deny messages phrased as safe next steps, not only
   denials?
-- [ ] Are Codex hook limitations documented honestly (Bash-only PreToolUse)?
+- [ ] Are Codex hook limitations documented honestly (Bash deny enforced;
+  write-tool payloads observed before deny logic)?
 - [ ] Is hook state split correctly between `hooks.json` (declaration) and
   `scripts/` (runtime, prefix-conventioned per `agent-hooks-architecture.md`)?
 - [ ] Are shared scripts (no prefix) actually shared with Claude rather than
@@ -185,7 +190,7 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.128.0 (2026-05-03)
+Last reviewed Codex CLI version: v0.130.0 (2026-05-11)
 
 ### Temporary WAL Bloat Runbook (2026-05)
 
@@ -586,6 +591,15 @@ this runbook.
 
 ### 9.4. Version Notes
 
+- v0.130.0 (2026-05-11): Reviewed local release notes via GitHub releases
+  after local `codex --version` reported `codex-cli 0.130.0`. Relevant
+  follow-up: v0.129.0 included `#20522 Alias codex_hooks feature as hooks`;
+  local v0.130.0 now warns that `[features].codex_hooks` is deprecated, so
+  this repo uses `features.hooks = true` in generated `config.toml`. Other
+  notable release items were plugin sharing/details, `codex remote-control`,
+  thread pagination, selected-environment `view_image`, live app-server config
+  refresh, and improved apply-patch diff tracking; no additional harness
+  config change was adopted from those items.
 - v0.128.0 (2026-05-03): Reviewed local release notes via GitHub releases.
   Relevant items: plugin workflows expanded, MCP/plugin cleanup fixes landed,
   `apps` remains a stable feature flag and can be disabled explicitly with

@@ -45,15 +45,14 @@ let
     cp ${generatedDefaultRules} $out/default.rules
   '';
 
-  # Codex consumes the runtime-agnostic shared scripts plus generated
-  # patterns. There are currently no codex-only scripts, so we list each
-  # explicitly (cleaner than a `codex-*` glob that would expand to nothing
-  # and break ln). If a Codex-only script is ever added back, add a line
-  # here -- not a wildcard, to keep the consumed surface explicit.
+  # Codex consumes runtime-agnostic shared scripts, one Codex-only observer,
+  # and generated patterns. List each script explicitly; do not use wildcards,
+  # because this makes the consumed hook surface reviewable in this file.
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
     mkdir -p $out
     ln -s ${../scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
     ln -s ${../scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
+    ln -s ${../scripts}/codex-pretooluse-observe-write.sh $out/codex-pretooluse-observe-write.sh
     ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
 
@@ -70,6 +69,16 @@ let
               type = "command";
               command = "$HOME/.codex/scripts/pretooluse-deny-bash.sh";
               statusMessage = "Checking Bash policy";
+            }
+          ];
+        }
+        {
+          matcher = "apply_patch|Edit|Write";
+          hooks = [
+            {
+              type = "command";
+              command = "$HOME/.codex/scripts/codex-pretooluse-observe-write.sh";
+              statusMessage = "Observing write-tool hook payload";
             }
           ];
         }
@@ -116,7 +125,7 @@ let
 
     features = {
       apps = false;
-      codex_hooks = true;
+      hooks = true;
       multi_agent = true;
       skills = true;
     };

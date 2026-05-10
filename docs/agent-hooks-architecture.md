@@ -87,6 +87,7 @@ After the 2026-04-29 reduction, the active hook surface looks like this:
 | ---------------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------- |
 | `PreToolUse` matcher=`Bash`                    | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
 | `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
+| `PreToolUse` matcher=`apply_patch\|Edit\|Write` | (no equivalent)                         | `codex-pretooluse-observe-write.sh`     | Codex-only observer               |
 | `UserPromptSubmit`                             | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
 | Status line                                    | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
 
@@ -99,9 +100,10 @@ Removed from both sides on 2026-04-29 for symmetry:
 - Codex: `codex-sessionstart-reload.sh`, `codex-stop-save.sh`,
   `codex-posttooluse-review.sh`.
 
-Both runtimes now share the same minimal hook surface: one PreToolUse
-deny per matcher, plus shared UserPromptSubmit. The script tree
-shrank from nine hook entries to three hook scripts.
+Both runtimes now share the same minimal enforcement surface: one Bash
+PreToolUse deny plus shared UserPromptSubmit. Codex also has a write-tool
+observer to record the actual `apply_patch` / `Edit` / `Write` hook payload
+shape before this repo decides whether to add Codex write-deny enforcement.
 
 ## 4. Intentional Asymmetries
 
@@ -120,19 +122,19 @@ without being able to mutate the repo. It reads `pane_title` via
 roles when the target file is outside the allowlisted state
 directories.
 
-Codex has no comparable hook because Codex's multi-agent model is
-different — there is no equivalent `pane_title` role contract to
-enforce against. This asymmetry is deliberate, not drift, and it
-should stay asymmetric until and unless Codex grows a role contract
-worth gating on.
+Codex does not yet have comparable enforcement because Codex's multi-agent
+model is different — there is no equivalent `pane_title` role contract to
+enforce against. This asymmetry is deliberate, not drift, and it should stay
+asymmetric unless Codex grows a role contract worth gating on or local payload
+observations prove that role-aware deny logic can be implemented reliably.
 
-Codex's primary file-edit primitive is `apply_patch` (a single
-patch-applied tool), not the Write/Edit/NotebookEdit triple Claude
-exposes. Even if a role-readonly enforcement were wanted on Codex,
-the matcher and the patch-shaped payload differ enough that the
-script body could not be shared with Claude's pane-title-aware
-deny-write — a separate `pretooluse-deny-apply-patch.sh` would have
-to be written.
+Codex's primary file-edit primitive is `apply_patch` (a single patch-applied
+tool), not the Write/Edit/NotebookEdit triple Claude exposes. The current
+Codex hook observes `apply_patch|Edit|Write` payload shape only and writes
+metadata to `~/.codex/hook-observations/pretooluse-write-tools.jsonl`; it does
+not deny. If enforcement is added later, the matcher and patch-shaped payload
+differ enough that the script body should stay separate from Claude's
+pane-title-aware deny-write hook.
 
 ### 4.2. Status Line: Two Different Transport Contracts
 
