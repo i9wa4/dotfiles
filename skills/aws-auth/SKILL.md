@@ -1,60 +1,43 @@
 ---
 name: aws-auth
 license: MIT
-description: AWS authentication via tmux send-keys to user-authenticated pane. Use when AWS SSO login must happen in user pane, not agent pane.
+description: |
+  USE FOR: AWS authentication via tmux send-keys to user-authenticated pane. Use when AWS SSO login must happen in user pane, not agent pane. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# AWS Auth Skill
+# Aws Auth
 
-## Core Pattern
+**UTILITY SKILL:** Apply this skill to AWS authentication via tmux send-keys to
+user-authenticated pane. Use when AWS SSO login must happen in user pane, not
+agent pane. Keep the task scoped to the requested domain and preserve existing
+repo conventions.
 
-Do NOT run AWS CLI commands in the agent's own pane. Execute AWS CLI commands in
-the authenticated pane provided by the user (e.g. pane %50). Use
-`tmux send-keys` to run commands in that pane.
+**USE FOR:** AWS authentication via tmux send-keys to user-authenticated pane.
+Use when AWS SSO login must happen in user pane, not agent pane; related file
+edits; verification and handoff in this skill domain.
 
-```sh
-# Send a command to the authenticated pane and wait for output
-tmux send-keys -t %50 'aws sts get-caller-identity' Enter
-sleep 2
-tmux capture-pane -t %50 -p
-```
-
-## Why This Pattern
-
-All shincorp profiles (`shincorp-stg-admin`, `shincorp-prod-admin`) are
-SSO-based. SSO tokens expire and require interactive browser/device auth
-(`aws sso login`). The agent cannot do this interactively — the human must
-authenticate first in a dedicated pane. Once authenticated, the pane holds valid
-session credentials accessible to all commands sent there.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
 ## Workflow
 
-1. User authenticates: `aws sso login --profile shincorp-stg-admin` in their
-   pane
-2. User provides pane ID (e.g. `%50`) or the agent discovers it from context
-3. Agent sends all AWS commands to that pane via `tmux send-keys -t <pane_id>`
-4. Agent captures output via `tmux capture-pane -t <pane_id> -p`
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## Confirmation Step
+## Examples
 
-Before running real operations, confirm the pane has valid credentials:
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-```sh
-tmux send-keys -t %50 'aws sts get-caller-identity' Enter
-sleep 2
-tmux capture-pane -t %50 -p | tail -20
-```
+## References
 
-Expected output includes `Account`, `UserId`, `Arn`. If expired, instruct user
-to re-login.
+- [Preserved Guidance](references/preserved-guidance.md)
 
-## Key Rules
+## Troubleshooting
 
-- WORKERS NEVER HANDLE AUTHENTICATION — do not run `aws sso login`, profile
-  discovery, or credential selection
-- Before any AWS task, ask messenger which pane has the authenticated shell
-- Send all AWS CLI commands to that pane via `tmux send-keys`
-- Never attempt `aws sso login`, credential discovery, or profile selection
-  yourself
-- If the user says "I logged into pane X" — use that pane ID directly via tmux
-  send-keys
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
