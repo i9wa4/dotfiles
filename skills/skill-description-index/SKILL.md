@@ -1,36 +1,43 @@
 ---
 name: skill-description-index
 license: MIT
-description: Recover full skill descriptions from disk. Use when descriptions are missing, truncated, or unclear, including after autocompaction.
+description: |
+  USE FOR: Recover full skill descriptions from disk. Use when descriptions are missing, truncated, or unclear, including after autocompaction. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Skill Description Index
 
-Use this skill when descriptions in the active skill catalog are missing,
-truncated, or unclear; when the catalog appears compressed by autocompaction;
-or when looking up a skill by name or domain across installed agent runtimes.
+**UTILITY SKILL:** Apply this skill to Recover full skill descriptions from
+disk. Use when descriptions are missing, truncated, or unclear, including after
+autocompaction. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-## Index Generation
+**USE FOR:** Recover full skill descriptions from disk. Use when descriptions
+are missing, truncated, or unclear, including after autocompaction; related file
+edits; verification and handoff in this skill domain.
 
-Run the bundled script from either installed skill tree. The two paths are
-equivalent: the script scans every user-level skill tree under
-`$HOME/.*/skills` regardless of which copy launches it.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-```sh
-bash ~/.codex/skills/skill-description-index/scripts/agent-skill-description-index.sh
-```
+## Workflow
 
-```sh
-bash ~/.claude/skills/skill-description-index/scripts/agent-skill-description-index.sh
-```
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-The script prints a Markdown index with skill root, skill name, home-relative
-`SKILL.md` path, and frontmatter description. Filter the output with `rg` when
-searching for a domain or tool.
+## Examples
 
-## Rules
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-- Treat installed skill trees as generated output.
-- Edit source skills under this repository's top-level `skills/` tree, not the
-  installed skill trees.
-- Do not create or rely on `agents/skills` compatibility paths.
+## References
+
+- [Preserved Guidance](references/preserved-guidance.md)
+
+## Troubleshooting
+
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
