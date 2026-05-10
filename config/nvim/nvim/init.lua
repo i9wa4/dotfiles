@@ -9,6 +9,28 @@ local api = vim.api
 local fn = vim.fn
 local opt = vim.opt
 
+api.nvim_create_user_command("R", function(opts)
+  send_register(opts.args)
+end, { nargs = "?" })
+
+-- Location list replacement recipes:
+--   :lgrep! old **/*.lua
+--   ! keeps the cursor in place instead of jumping to the first match.
+--   :ldo s/old/new/ge | update
+--   :lfdo %s/old/new/ge | update
+-- Use :ldo for matched lines and :lfdo for matched files.
+local function lprevious()
+  if not pcall(vim.cmd.lprevious) then
+    pcall(vim.cmd.llast)
+  end
+end
+
+local function lnext()
+  if not pcall(vim.cmd.lnext) then
+    pcall(vim.cmd.lfirst)
+  end
+end
+
 local function toggle_quote(line1, line2)
   if line2 < line1 then
     line1, line2 = line2, line1
@@ -99,39 +121,6 @@ local function highlight_match()
   vim.w.my_highlight_match_ids = ids
 end
 
-local function lprevious()
-  if not pcall(vim.cmd.lprevious) then
-    pcall(vim.cmd.llast)
-  end
-end
-
-local function lnext()
-  if not pcall(vim.cmd.lnext) then
-    pcall(vim.cmd.lfirst)
-  end
-end
-
--- Location list replacement recipes:
---   :lgrep! old **/*.lua
---   ! keeps the cursor in place instead of jumping to the first match.
---   :ldo s/old/new/ge | update
---   :lfdo %s/old/new/ge | update
--- Use :ldo for matched lines and :lfdo for matched files.
-local function open_quickfix_item_keep_focus()
-  local qf_win = api.nvim_get_current_win()
-  local wininfo = fn.getwininfo(qf_win)[1] or {}
-  local command = wininfo.loclist == 1 and "ll" or "cc"
-
-  pcall(vim.cmd, command .. " " .. fn.line("."))
-  if api.nvim_win_is_valid(qf_win) then
-    api.nvim_set_current_win(qf_win)
-  end
-end
-
-api.nvim_create_user_command("R", function(opts)
-  send_register(opts.args)
-end, { nargs = "?" })
-
 -- --------------------------------------
 -- Keymap
 --
@@ -181,11 +170,6 @@ api.nvim_create_autocmd("BufEnter", {
 api.nvim_create_autocmd("FileType", {
   group = augroup,
   callback = function()
-    if vim.bo.filetype == "qf" then
-      map("n", "<CR>", open_quickfix_item_keep_focus, { buffer = true })
-      return
-    end
-
     if vim.wo.diff then
       vim.opt_local.spell = false
     else
