@@ -1,43 +1,46 @@
 ---
 name: prompt-contracts-local
 license: MIT
-description: Task prompts, review contracts, and resume-handoff patterns for Claude Code and Codex CLI agent workflows in this repo.
+description: |
+  USE FOR: Task prompts, review contracts, and resume-handoff patterns for Claude Code and Codex CLI agent workflows in this repo. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# prompt-contracts-local
+# Prompt Contracts Local
 
-This skill captures the shared prompt-shaping patterns used across the current
-`nix/home-manager/agents/` setup.
+**UTILITY SKILL:** Apply this skill to Task prompts, review contracts, and
+resume-handoff patterns for Claude Code and Codex CLI agent workflows in this
+repo. Keep the task scoped to the requested domain and preserve existing repo
+conventions.
 
-Use it for prompt and output contracts, not as a new runtime control plane.
-This repo's runtime authority still lives in Nix-managed hooks, agents, MCP
-definitions, and generated home files.
+**USE FOR:** Task prompts, review contracts, and resume-handoff patterns for
+Claude Code and Codex CLI agent workflows in this repo; related file edits;
+verification and handoff in this skill domain.
 
-Core rules:
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-- Use one concrete task per agent run unless there is a clear reason to batch.
-- Prefer compact XML-style prompt blocks over long freeform instructions.
-- Tell the agent what done looks like, how to verify it, and when to keep going
-  by default.
-- Use machine-readable review output only when the downstream consumer benefits
-  from it. Otherwise keep the repo's normal findings-first prose review style.
-- Keep resumable results thread-aware and action-oriented. If a thread ID is
-  known, surface it explicitly. If not, do not invent one.
-- Treat old command-specific behavior as workflow intent to preserve in skills,
-  scripts, or prompts. Do not reintroduce plugin frontmatter, `AskUserQuestion`,
-  or `.claude-plugin` assumptions.
+## Workflow
 
-Recommended workflow:
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-1. Pick the smallest prompt shape that fits the task.
-2. Add only the blocks the task actually needs.
-3. Add a structured review contract only for review surfaces that should emit
-   parseable output.
-4. For long-running or multi-turn work, write the result so it can be resumed
-   cleanly from saved handoff context.
+## Examples
 
-Open these references as needed:
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-- [references/prompt-blocks.md](references/prompt-blocks.md)
-- [references/review-output-contract.md](references/review-output-contract.md)
-- [references/resume-handoff.md](references/resume-handoff.md)
+## References
+
+- [Preserved Guidance](references/preserved-guidance.md)
+- [Prompt Blocks](references/prompt-blocks.md)
+- [Resume Handoff](references/resume-handoff.md)
+- [Review Output Contract](references/review-output-contract.md)
+
+## Troubleshooting
+
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
