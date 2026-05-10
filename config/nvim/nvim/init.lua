@@ -115,27 +115,25 @@ end
 -- --------------------------------------
 -- Keymap
 --
-local map = vim.keymap.set
-
-map("n", "gf", "gF")
-map("n", "gqq", function()
+vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
+vim.keymap.set("n", "gqq", function()
   toggle_quote(vim.fn.line("."), vim.fn.line("."))
 end)
-map("v", "gqq", function()
+vim.keymap.set("v", "gqq", function()
   toggle_quote(vim.fn.line("v"), vim.fn.line("."))
 end)
-map("i", ",now", function()
+vim.keymap.set("i", ",now", function()
   return vim.fn.strftime("%Y-%m-%d %X +0900")
 end, { expr = true })
-map("i", ",today", function()
+vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
-map("n", "<C-p>", lprevious)
-map("n", "<C-n>", lnext)
-map("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
-map("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
-map("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
-map("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
+vim.keymap.set("n", "<C-p>", lprevious)
+vim.keymap.set("n", "<C-n>", lnext)
+vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
+vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
+vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
+vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
 -- --------------------------------------
 -- Autocmd
@@ -255,7 +253,6 @@ require("lazy").setup({
         show_hidden = true,
       },
     },
-    keys = { { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" } },
   },
 })
 
