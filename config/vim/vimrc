@@ -1,38 +1,11 @@
-filetype off
-filetype plugin indent off
-syntax off
-
 set autoread
 set nobackup
 set noswapfile
 set noundofile
 
-let g:auto_reload = timer_start(1000, {-> execute('silent! checktime')}, {'repeat': -1})
 let g:netrw_home = $XDG_CACHE_HOME->expand()
 
 nnoremap - <Cmd>edit %:p:h<CR>
 
-augroup MyAutocmd
-  autocmd!
-  autocmd ColorScheme *
-  \   highlight EndOfBuffer   guibg=NONE
-  \|  highlight Folded        guibg=NONE
-  \|  highlight Identifier    guibg=NONE
-  \|  highlight LineNr        guibg=NONE
-  \|  highlight NonText       guibg=NONE
-  \|  highlight Normal        guibg=NONE
-  \|  highlight Special       guibg=NONE
-  \|  highlight StatusLine    guibg=NONE
-  \|  highlight StatusLineNC  guibg=NONE
-  \|  highlight VertSplit     guibg=NONE
-augroup END
-
-
-if has('termguicolors')
-  set termguicolors
-endif
-
 filetype plugin indent on
 syntax enable
-
-execute 'colorscheme' get(g:, 'colors_name', 'habamax')
