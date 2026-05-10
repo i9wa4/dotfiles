@@ -14,7 +14,7 @@ For the adoption decision behind the current tool stack, see
 - Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
 - Use `worktree-remove` from a repository to list that repo's managed
   worktrees under `.worktrees/`, choose one with `fzf`, type `yes`, and delete
-  it through `vde-worktree del`.
+  it through `git worktree remove`.
 - Use `worktree-cleanup-merged` to list managed worktrees across ghq
   repositories with status columns and delete merged candidates only after
   typing `yes`.
@@ -29,12 +29,9 @@ For the adoption decision behind the current tool stack, see
 
 ## 2. Current layout and backend
 
-- Managed worktrees live under repo-local `.worktrees/`. This comes from
-  `config/vde/worktree/config.yml`, which sets `worktreeRoot: .worktrees`.
-- `vde-worktree` is the shared backend. Current scripts rely on
-  `vde-worktree path`, `vde-worktree get`, `vde-worktree switch`, and
-  `vde-worktree list --json`.
-- `.vde/` is intentional runtime state for `vde-worktree`.
+- Managed worktrees live under repo-local `.worktrees/`.
+- The checked-in wrappers use native `git worktree` commands directly.
+- There is no separate worktree backend package or repo-local backend state.
 - Treat sibling layouts such as `../dotfiles-issue-123` as legacy behavior.
   Current tooling is aligned around repo-root `.worktrees/`.
 
@@ -55,10 +52,9 @@ For the adoption decision behind the current tool stack, see
 7. Existing remote issue branches are configured as upstream. New local issue
    branches rely on `push.autoSetupRemote=true`, so the first plain `git push`
    creates `origin/<branch>` and records upstream.
-8. It resolves the worktree through `vde-worktree`:
-   - existing managed path via `vde-worktree path`
-   - remote branch via `vde-worktree get`
-   - existing local branch or new local branch via `vde-worktree switch`
+8. It resolves an existing branch worktree with `git worktree list
+   --porcelain`. If no worktree exists, it creates one under `.worktrees/`
+   with `git worktree add`.
 9. On a newly created worktree, it copies `.envrc` when present and runs
    `repo-setup` when available.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
@@ -120,46 +116,41 @@ For the adoption decision behind the current tool stack, see
     repository name plus the full worktree directory name with dots replaced by
     dashes.
 
-## 6. How `vde-worktree` fits
+## 6. How Native Worktree Support Fits
 
-- `vde-worktree` is the shared backend, the generic inspection tool, and the
-  canonical read model for managed worktree paths.
+- `git worktree` is the backend and canonical read model for managed worktree
+  paths.
 - `z` and `zi` are zoxide-first navigation wrappers in zsh.
 - Inside tmux, `z` and `zi` stay in the current pane and change the shell's
   working directory like normal `cd`.
 - Their merged candidate set is built from the current `zoxide` database and
   `ghq list -p`.
-- In this repository, current scripts actively use `list --json`, `path`,
-  `get`, and `switch`.
-- Do not use `vde-worktree` as the primary issue or PR entrypoint here.
-- Do not use `vde-worktree` alone as the outermost global selector from an
-  arbitrary directory.
-- Use `vde-worktree list --json`, `status`, and `gone --json` as inspection
-  helpers before deleting stale linked worktrees.
-- Do not teach `extract`, `absorb`, `unabsorb`, or `adopt` as normal flow
-  commands for this repository.
+- In this repository, current scripts actively use `git worktree list
+  --porcelain`, `git worktree add`, and `git worktree remove`.
+- Do not use a generic worktree package as the primary issue or PR entrypoint
+  here.
+- Use `git worktree list --porcelain` and the checked-in cleanup wrappers when
+  inspecting stale linked worktrees.
 
 ## 7. Removal and repository hygiene
 
-- Keep linked worktrees and tool state under repo-local paths such as
-  `.worktrees/` and `.vde/`.
-- Treat `.vde/` as intentional `vde-worktree` runtime state, not as a tracked
-  repository file tree.
-- Inspect cleanup candidates with `vde-worktree list --json`,
-  `vde-worktree status <branch> --json`, and `vde-worktree gone --json`.
+- Keep linked worktrees under repo-local `.worktrees/`.
+- Inspect cleanup candidates with `worktree-remove`,
+  `worktree-cleanup-merged --dry-run`, or `git worktree list --porcelain`.
 - For interactive deletion in the current repository, run `worktree-remove`.
   It lists only secondary managed worktrees under the repo's `.worktrees/`,
   categorizes candidates as issue-origin, PR-origin, or miscellaneous, shows
   fzf preview context for issue/PR status and branch upstream tracking when
-  detectable, requires typing `yes`, and delegates the destructive operation
-  to `vde-worktree del <branch>` from the repo root.
+  detectable, requires typing `yes`, and removes clean, unlocked, merged branch
+  worktrees with `git worktree remove` plus local branch deletion.
 - For host-wide cleanup, run `worktree-cleanup-merged`. It scans `ghq list -p`,
   shows managed worktrees with candidate, merged, dirty, locked, PR, and
   upstream status, then deletes candidates only after explicit confirmation.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.
-- Delete confirmed linked worktrees with `vde-worktree del <branch>`.
+- Delete confirmed linked worktrees with `worktree-remove` or
+  `git worktree remove` after the same clean, unlocked, merged checks.
 - If a path was added to zoxide manually and still appears after deletion,
   remove it with `zoxide remove <path>`.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
@@ -169,8 +160,7 @@ For the adoption decision behind the current tool stack, see
 
 ## 8. Recent changes reflected here
 
-- Managed worktrees now live under repo-root `.worktrees/` through
-  `config/vde/worktree/config.yml`.
+- Managed worktrees live under repo-root `.worktrees/`.
 - The zsh jump commands now live in `config/zsh/zoxide.zsh` and are sourced from
   `nix/home-manager/modules/zsh.nix`.
 - `zi` now shows zoxide paths plus missing ghq repositories as plain path rows.
@@ -184,6 +174,8 @@ For the adoption decision behind the current tool stack, see
   confirmed single-worktree deletion with issue, PR, and miscellaneous preview
   context, while `worktree-cleanup-merged` remains the host-wide
   merged-candidate cleanup flow.
+- Worktree scripts now use native `git worktree` commands directly; the
+  npm-managed worktree backend package was removed.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
@@ -195,7 +187,7 @@ For the adoption decision behind the current tool stack, see
 - `bin/worktree-cleanup-merged`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
-- `config/vde/worktree/config.yml`
 - `nix/home-manager/modules/zsh.nix`
+- `nix/home-manager/modules/npm.nix`
 - `docs/dotfiles-operating-concepts.md`
 - `docs/worktree-tool-evaluation.md`

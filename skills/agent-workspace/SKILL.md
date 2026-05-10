@@ -141,7 +141,7 @@ Primary creation entrypoints: `bin/issue-worktree-create <issue_number>` and
 `bin/pr-worktree-create <pr_number>`. For interactive cleanup in the current
 repository, use `bin/worktree-remove` to choose one managed worktree under the
 repo's `.worktrees/` directory with `fzf`, confirm with `yes`, and delete
-through `vde-worktree del`.
+through native `git worktree` cleanup.
 
 Both scripts:
 
@@ -171,8 +171,8 @@ inspection, cleanup, and baseline verification.
 - `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
   single worktree deletion, with issue, PR, miscellaneous, and upstream preview
   context
-- `vde-worktree list/status/gone/path/del` — inspection and cleanup backend
-  (see `references/worktree-workflow.md`)
+- `worktree-cleanup-merged --dry-run` — host-wide merged cleanup candidate
+  inspection across `ghq` repositories
 
 ## 6. Common tmux Pane Operations
 

@@ -5,10 +5,7 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 ## 1. Core Defaults
 
-- Prefer repo wrappers before generic `git worktree` or `vde-worktree` creation
-  flows.
-- Treat `config/vde/worktree/config.yml` as the local worktree policy source of
-  truth.
+- Prefer repo wrappers before generic `git worktree` creation flows.
 - Assume the managed root is `.worktrees`, even if generic tool help mentions a
   different default.
 - Report the final worktree path and branch in handoff or status messages.
@@ -75,26 +72,21 @@ Do not use raw `zoxide` alone as the outermost worktree selector; use the repo
 
 ## 4. Supporting Generic Tooling
 
-Use `vde-worktree` only as supporting generic tooling after checking whether the
-wrapper flow already covers the task.
+Use native Git only after checking whether the wrapper flow already covers the
+task.
 
-- Inspect all worktrees: `vde-worktree list --json`
-- Inspect one worktree: `vde-worktree status [branch] --json`
-- Inspect likely stale worktrees: `vde-worktree gone --json`
-- Resolve a branch to its absolute path: `vde-worktree path <branch> [--json]`
+- Inspect all worktrees: `git worktree list --porcelain`
+- Resolve a branch to its absolute path:
+  `git worktree list --porcelain` and match `branch refs/heads/<branch>`
 - Select and delete one managed worktree under the current repo's
   `.worktrees/` directory:
   `worktree-remove`
-- Delete a confirmed linked worktree: `vde-worktree del <branch>`
 - List merged cleanup candidates across ghq repositories:
   `worktree-cleanup-merged --dry-run`
 - Delete those candidates after an explicit prompt: `worktree-cleanup-merged`
-- Pick a worktree path directly from the generic backend:
-  `cd "$(vde-worktree cd)"`
-- Reuse or create a branch worktree as a generic fallback:
-  `vde-worktree switch <branch>`
 
-Do not use `vde-worktree` as the primary issue or PR entrypoint in this repo.
+Do not use raw `git worktree add` as the primary issue or PR entrypoint in this
+repo.
 
 ## 5. Baseline Verification
 
@@ -111,14 +103,14 @@ For broader worktree visibility:
 
 ```bash
 git worktree list --porcelain
-vde-worktree list --json
 ```
 
 ## 6. Repo Fit Notes
 
 - Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-remove`, `vde-worktree list`, `status`, or `gone`, then delete
-  confirmed linked worktrees with `vde-worktree del`.
+  `worktree-remove` or host-wide candidates with
+  `worktree-cleanup-merged --dry-run`, then delete confirmed linked worktrees
+  with the wrapper flow.
 - `worktree-remove` categorizes fzf rows as issue-origin, PR-origin, or
   miscellaneous. Its preview shows issue or PR status when a number is
   detectable and `gh` can resolve it, plus local branch upstream tracking,
@@ -131,7 +123,6 @@ vde-worktree list --json
 ## 7. Do Not Do These By Default
 
 - Do not ask the user to choose an arbitrary worktree directory.
-- Do not teach or rely on `vde-worktree extract`, `absorb`, `unabsorb`, or
-  `adopt` as part of the normal repo flow.
-- Do not edit `.gitignore`, `config/vde/worktree/config.yml`, or the wrapper
-  scripts unless the task is explicitly about those files.
+- Do not teach raw `git worktree add` as the issue or PR creation path.
+- Do not edit `.gitignore` or the wrapper scripts unless the task is explicitly
+  about those files.
