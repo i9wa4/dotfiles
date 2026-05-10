@@ -1,57 +1,43 @@
 ---
 name: tdd-tidy-first
 license: MIT
-description: Red-Green-Refactor, Tidy First for small verifiable changes. Bug mechanism must be understood; use systematic-debugging first otherwise.
+description: |
+  USE FOR: Red-Green-Refactor, Tidy First for small verifiable changes. Bug mechanism must be understood; use systematic-debugging first otherwise. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# TDD Tidy First Skill
+# Tdd Tidy First
 
-Use this skill to keep code changes small, verifiable, and easy to review.
+**UTILITY SKILL:** Apply this skill to Red-Green-Refactor, Tidy First for small
+verifiable changes. Bug mechanism must be understood; use systematic-debugging
+first otherwise. Keep the task scoped to the requested domain and preserve
+existing repo conventions.
 
-## 1. Core Defaults
+**USE FOR:** Red-Green-Refactor, Tidy First for small verifiable changes. Bug
+mechanism must be understood; use systematic-debugging first otherwise; related
+file edits; verification and handoff in this skill domain.
 
-- Prefer the smallest next step that can be verified quickly
-- For behavioral changes, start with a failing test or minimal reproducer when
-  that is cheap to add
-- Implement only enough code to pass the new check
-- Refactor only after the behavior is verified
-- Keep structural changes separate from behavioral changes when practical
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Red -> Green -> Refactor
+## Workflow
 
-1. Write the smallest failing test or reproducer that demonstrates the next
-   behavior
-2. Make it pass with the minimum code change
-3. Run the fastest relevant verification for that slice
-4. Refactor for clarity or duplication removal only after the check passes
-5. Re-run verification after each refactor step
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## 3. Tidy First Split
+## Examples
 
-- Structural changes: renames, extraction, moves, dependency reshaping, or
-  cleanup that should not change behavior
-- Behavioral changes: new features, bug fixes, changed outputs, or changed side
-  effects
-- When both are needed, do structural work first, verify it preserved behavior,
-  then apply the behavioral change
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-## 4. Bug-Fix Pattern
+## References
 
-- Start with a failing API-level test when one is easy to add
-- If the failure is hard to isolate, add the smallest reproducer that exposes
-  the defect clearly
-- If the bug is not yet understood, use `systematic-debugging` first to gather
-  evidence and narrow the root cause before changing code
-- Fix the bug only after the reproducer fails for the expected reason
+- [Preserved Guidance](references/preserved-guidance.md)
 
-## 5. Repo Fit
+## Troubleshooting
 
-- Do not assume a `plan.md` workflow; this repo uses `mkmd` plan and research
-  artifacts when planning is needed
-- Do not adopt a universal "run all tests every time" rule; run the fastest
-  relevant checks during iteration, then run broader verification before
-  reporting success when available
-- When commits are requested and structural plus behavioral changes are both
-  present, prefer separate commits or state the split explicitly
-- Skip this workflow for doc-only or config-only tasks with no meaningful test
-  surface
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
