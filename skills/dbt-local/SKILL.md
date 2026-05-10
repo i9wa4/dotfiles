@@ -2,69 +2,42 @@
 name: dbt-local
 license: MIT
 description: |
-  Local dbt additions - Issue-specific target setup and Databricks SQL dialect notes.
-  Supplements the official `dbt` and `running-dbt-commands` skills.
-  Use when:
-  - Setting up Issue-specific targets in profiles.yml
-  - Working with Databricks SQL dialect quirks in dbt
+  USE FOR: Local dbt additions - Issue-specific target setup and Databricks SQL dialect notes. Supplements the official dbt and running-dbt-commands skills. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# dbt Local Additions
+# Dbt Local
 
-Supplements the official `dbt` skill. For command basics (`debug`, `compile`,
-`run`, `test`, `show`), selectors, verification procedures, and ad-hoc queries,
-use the official `dbt` and `running-dbt-commands` skills.
+**UTILITY SKILL:** Apply this skill to Local dbt additions - Issue-specific
+target setup and Databricks SQL dialect notes. Supplements the official dbt and
+running-dbt-commands skills. Keep the task scoped to the requested domain and
+preserve existing repo conventions.
 
-## 1. Issue Work Target Setup
+**USE FOR:** Local dbt additions - Issue-specific target setup and Databricks
+SQL dialect notes. Supplements the official dbt and running-dbt-commands skills;
+related file edits; verification and handoff in this skill domain.
 
-Always set up Issue-specific target before `dbt run` during Issue work.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-### 1.1. Setup Procedure
+## Workflow
 
-1. Read `~/.dbt/profiles.yml` and check existing settings
-2. Add Issue-specific target if not exists, based on existing `dev` target
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-```yaml
-my_databricks_dbt:
-  outputs:
-    dev:
-      # Existing settings...
-    issue_123: # Name based on issue number
-      catalog: dbt_dev_{username} # Same as dev
-      host: dbc-xxxxx.cloud.databricks.com # Same as dev
-      http_path: /sql/1.0/warehouses/xxxxx # Same as dev
-      schema: dwh_issue_123 # Include issue number in schema name
-      threads: 1
-      token: dapixxxxx # Same as dev
-      type: databricks
-  target: dev
-```
+## Examples
 
-Then switch with `--target` option when executing dbt commands
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-```sh
-# Execute with issue_123 target
-dbt run --select +model_name --target issue_123 --profiles-dir ~/.dbt --no-use-colors
+## References
 
-# Verify connection
-dbt debug --target issue_123 --profiles-dir ~/.dbt --no-use-colors
-```
+- [Preserved Guidance](references/preserved-guidance.md)
 
-### 1.2. Notes
+## Troubleshooting
 
-- Keep target name and schema name consistent with issue number
-- Manually delete unused schemas after work completion
-- Intermediate layer auto-generates as `{schema}_dbt_intermediates`
-
-## 2. Databricks SQL Dialect
-
-- Full-width column names require backticks
-- Column names and catalog names with hyphens require backticks
-
-```sql
--- Reference catalog name with hyphen
-select * from `catalog-name`.schema_name.table_name;
-
--- Reference full-width column name
-select `full-width column` from table_name;
-```
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
