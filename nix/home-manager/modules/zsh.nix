@@ -24,8 +24,8 @@ in
     envExtra = lib.concatStringsSep "\n" [
       # System
       ''
-        export EDITOR=vim
-        export VISUAL=vim
+        export EDITOR=nvim
+        export VISUAL=nvim
         export TZ="Asia/Tokyo"
       ''
 
@@ -135,9 +135,9 @@ in
       # Source modular configs
       source "${zshDir}/aws.zsh"
       source "${zshDir}/keybind.zsh"
-      source "${zshDir}/zoxide.zsh"
       source "${zshDir}/prompt.zsh"
       source "${zshDir}/zinit.zsh"
+      source "${zshDir}/zoxide.zsh"
 
       # Safe-chain
       if [[ -f ~/.safe-chain/scripts/init-posix.sh ]]; then
