@@ -76,7 +76,7 @@ discover_repo_root() {
   candidate_repo=""
 
   candidate_repo="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-  if [[ -n $candidate_repo && -f $candidate_repo/config/vde/worktree/config.yml ]]; then
+  if [[ -n $candidate_repo && (-d $candidate_repo/.git || -f $candidate_repo/.git) ]]; then
     printf '%s\n' "$candidate_repo"
     return 0
   fi
@@ -87,7 +87,7 @@ discover_repo_root() {
     case "$candidate_link" in
     *"/.worktrees/"*)
       candidate_repo="${candidate_link%%/.worktrees/*}"
-      if [[ -f $candidate_repo/config/vde/worktree/config.yml ]]; then
+      if [[ -d $candidate_repo/.git || -f $candidate_repo/.git ]]; then
         printf '%s\n' "$candidate_repo"
         return 0
       fi
@@ -98,19 +98,6 @@ discover_repo_root() {
   return 1
 }
 
-run_repo_vde_worktree_list() {
-  if [[ -z ${REPO_ROOT:-} ]]; then
-    return 1
-  fi
-
-  if [[ $EUID -eq 0 && $REAL_USER != root ]]; then
-    # shellcheck disable=SC2016
-    runuser -u "$REAL_USER" -- sh -c 'cd "$1" && vde-worktree list --json' sh "$REPO_ROOT"
-  else
-    { cd "$REPO_ROOT" && vde-worktree list --json; }
-  fi
-}
-
 REPO_ROOT="$(discover_repo_root || true)"
 
 if [[ -n $REPO_ROOT ]]; then
@@ -119,10 +106,6 @@ if [[ -n $REPO_ROOT ]]; then
       /^worktree / { print substr($0, 10) }
     '
   } >>"$active_paths_file"
-
-  if command -v vde-worktree >/dev/null 2>&1; then
-    { run_repo_vde_worktree_list 2>/dev/null | jq -r '.worktrees[]?.path // empty'; } >>"$active_paths_file" || true
-  fi
 fi
 
 sort -u "$active_paths_file" -o "$active_paths_file"

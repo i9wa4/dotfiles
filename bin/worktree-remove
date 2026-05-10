@@ -5,8 +5,8 @@ set -o pipefail
 set -o posix
 
 # Select and remove one managed worktree from the current repository.
-# The destructive removal is delegated to `vde-worktree del`, which keeps the
-# same dirty, locked, unmerged, and unpushed safety checks as the backend.
+# Removal uses git worktree directly and refuses dirty, locked, or unmerged
+# branch worktrees before deleting anything.
 
 usage() {
   cat <<'EOF'
@@ -14,8 +14,8 @@ Usage:
   worktree-remove
 
 Search the current repository's .worktrees/ directory for managed worktrees,
-select one with fzf, confirm by typing "yes", then remove it with
-vde-worktree del.
+select one with fzf, confirm by typing "yes", then remove it with git
+worktree remove.
 
 Options:
   -h, --help  Show this help.
@@ -166,6 +166,11 @@ show_branch_tracking() {
   local ahead="-"
   local behind="-"
 
+  if [[ -z "$branch" || "$branch" == "-" ]]; then
+    echo "Branch: detached or unavailable"
+    return 0
+  fi
+
   head=$(git -C "$repo_root" rev-parse --short "refs/heads/${branch}" 2>/dev/null || true)
   upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
 
@@ -187,6 +192,143 @@ show_branch_tracking() {
     read -r ahead behind <<<"$counts"
   fi
   echo "Tracking: ahead=${ahead} behind=${behind}"
+}
+
+default_base_ref() {
+  local repo_root="$1"
+  local origin_head
+
+  origin_head=$(git -C "$repo_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+  if [[ -n "$origin_head" ]]; then
+    printf '%s\n' "$origin_head"
+    return 0
+  fi
+
+  if git -C "$repo_root" show-ref --verify --quiet refs/remotes/origin/main; then
+    printf '%s\n' "origin/main"
+    return 0
+  fi
+
+  if git -C "$repo_root" show-ref --verify --quiet refs/heads/main; then
+    printf '%s\n' "main"
+    return 0
+  fi
+
+  printf '%s\n' "HEAD"
+}
+
+branch_merge_state() {
+  local repo_root="$1"
+  local branch="$2"
+  local base_ref
+
+  if [[ -z "$branch" || "$branch" == "-" ]]; then
+    echo "merge?"
+    return 0
+  fi
+
+  if ! git -C "$repo_root" show-ref --verify --quiet "refs/heads/${branch}"; then
+    echo "merge?"
+    return 0
+  fi
+
+  base_ref=$(default_base_ref "$repo_root")
+  if git -C "$repo_root" merge-base --is-ancestor "refs/heads/${branch}" "$base_ref" 2>/dev/null; then
+    echo "merged"
+  else
+    echo "unmerged"
+  fi
+}
+
+worktree_dirty_state() {
+  local worktree_path="$1"
+  local status_output
+
+  if ! status_output=$(git -C "$worktree_path" --no-optional-locks status --porcelain 2>/dev/null); then
+    echo "dirty?"
+    return 0
+  fi
+
+  if [[ -n "$status_output" ]]; then
+    echo "dirty"
+  else
+    echo "clean"
+  fi
+}
+
+branch_upstream_status() {
+  local repo_root="$1"
+  local branch="$2"
+  local upstream
+  local counts
+  local ahead="-"
+  local behind="-"
+
+  if [[ -z "$branch" || "$branch" == "-" ]]; then
+    printf '%s\t%s\t%s\n' "-" "-" "-"
+    return 0
+  fi
+
+  upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
+  if [[ -z "$upstream" ]]; then
+    printf '%s\t%s\t%s\n' "-" "-" "-"
+    return 0
+  fi
+
+  counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
+  if [[ -n "$counts" ]]; then
+    read -r ahead behind <<<"$counts"
+  fi
+
+  printf '%s\t%s\t%s\n' "$upstream" "$ahead" "$behind"
+}
+
+list_managed_worktrees() {
+  local repo_root="$1"
+  local managed_root="$2"
+
+  git -C "$repo_root" worktree list --porcelain | awk \
+    -v repo_root="$repo_root" \
+    -v managed_root="$managed_root" '
+    function flush() {
+      if (path != "" && path != repo_root && index(path, managed_root "/") == 1) {
+        if (branch == "") {
+          branch = "-"
+        }
+        print branch "\t" lock_state "\t" path
+      }
+    }
+
+    /^worktree / {
+      flush()
+      path = substr($0, 10)
+      branch = ""
+      lock_state = "unlocked"
+      next
+    }
+
+    /^branch / {
+      ref = substr($0, 8)
+      if (index(ref, "refs/heads/") == 1) {
+        branch = substr(ref, 12)
+      }
+      next
+    }
+
+    /^detached$/ {
+      branch = "-"
+      next
+    }
+
+    /^locked/ {
+      lock_state = "locked"
+      next
+    }
+
+    END {
+      flush()
+    }
+  '
 }
 
 preview_worktree() {
@@ -270,9 +412,7 @@ if [[ ! -t 0 ]]; then
 fi
 
 require_command git
-require_command jq
 require_command fzf
-require_command vde-worktree
 
 inventory_file=$(mktemp)
 trap 'rm -f "$inventory_file"' EXIT HUP INT TERM
@@ -294,40 +434,21 @@ esac
 repo_name=$(path_basename "$repo_root")
 managed_root="${repo_root}/.worktrees"
 
-if ! list_json=$({ cd "$repo_root" && vde-worktree list --json; } 2>/dev/null); then
+if ! raw_inventory=$(list_managed_worktrees "$repo_root" "$managed_root"); then
   echo "Error: failed to list worktrees for ${repo_root}." >&2
   exit 1
 fi
 
-if ! raw_inventory=$(printf '%s' "$list_json" |
-  jq -r --arg fallbackRepo "$repo_root" --arg fallbackManaged "$managed_root" '
-    (.repoRoot // $fallbackRepo) as $repoRoot
-    | (.managedWorktreeRoot // $fallbackManaged) as $managedRoot
-    | .worktrees[]?
-    | select((.branch // "") != "")
-    | select((.path // "") != $repoRoot)
-    | select($managedRoot != "" and ((.path // "") | startswith($managedRoot + "/")))
-    | [
-        (.branch // ""),
-        (if .dirty == true then "dirty" else "clean" end),
-        (if .merged.overall == true then "merged" elif .merged.overall == false then "unmerged" else "merge?" end),
-        (if .locked.value == true then "locked" else "unlocked" end),
-        (.pr.status // "-"),
-        ((.upstream.remote // "-") | tostring),
-        ((.upstream.ahead // "-") | tostring),
-        ((.upstream.behind // "-") | tostring),
-        (.path // "")
-      ]
-    | @tsv
-  '); then
-  echo "Error: failed to parse vde-worktree output for ${repo_root}." >&2
-  exit 1
-fi
-
-while IFS=$'\t' read -r branch dirty_state merge_state lock_state pr_status upstream_remote upstream_ahead upstream_behind worktree_path; do
-  if [[ -z "$branch" || -z "$worktree_path" ]]; then
+while IFS=$'\t' read -r branch lock_state worktree_path; do
+  if [[ -z "$worktree_path" ]]; then
     continue
   fi
+
+  dirty_state=$(worktree_dirty_state "$worktree_path")
+  merge_state=$(branch_merge_state "$repo_root" "$branch")
+  pr_status="-"
+  upstream_record=$(branch_upstream_status "$repo_root" "$branch")
+  IFS=$'\t' read -r upstream_remote upstream_ahead upstream_behind <<<"$upstream_record"
 
   origin_record=$(classify_worktree "$branch" "$worktree_path")
   IFS=$'\t' read -r origin_kind origin_number category <<<"$origin_record"
@@ -405,6 +526,21 @@ if [[ ! -f "$worktree_path/.git" ]]; then
   exit 1
 fi
 
+if [[ "$dirty_state" != "clean" ]]; then
+  echo "Error: refusing to remove a dirty worktree: ${worktree_path}" >&2
+  exit 1
+fi
+
+if [[ "$lock_state" != "unlocked" ]]; then
+  echo "Error: refusing to remove a locked worktree: ${worktree_path}" >&2
+  exit 1
+fi
+
+if [[ "$branch" != "-" && "$merge_state" != "merged" ]]; then
+  echo "Error: refusing to remove an unmerged branch worktree: ${branch}" >&2
+  exit 1
+fi
+
 echo "Selected worktree:"
 echo "  Repo:   ${repo_name}"
 echo "  Branch: ${branch}"
@@ -413,7 +549,7 @@ echo "  Path:   ${worktree_path}"
 echo "  State:  ${dirty_state}, ${merge_state}, ${lock_state}, PR=${pr_status}, upstream=${upstream_remote}, ahead=${upstream_ahead}, behind=${upstream_behind}"
 echo "  Scope:  ${managed_root}"
 echo ""
-echo "This will remove the linked worktree and its branch through vde-worktree del."
+echo "This will remove the linked worktree and its local branch with git worktree."
 printf 'Type yes to continue: '
 read -r answer
 
@@ -423,7 +559,10 @@ if [[ "$answer" != "yes" ]]; then
 fi
 
 cd "$repo_root"
-vde-worktree del "$branch"
+git worktree remove "$worktree_path"
+if [[ "$branch" != "-" ]]; then
+  git branch -D "$branch"
+fi
 
 if command -v zoxide &>/dev/null; then
   zoxide remove "$worktree_path" >/dev/null 2>&1 || true
