@@ -216,10 +216,10 @@ let
   };
 
   # Pressure-oriented Codex storage relief for Linux systemd. This is more
-  # assertive than the safe hourly checkpoint: it prunes disposable temp data,
+  # assertive than the safe periodic checkpoint: it prunes disposable temp data,
   # expires closed rollout JSONL outside the 50-day compatibility window, then
-  # logs holder PIDs when a large fully-checkpointed WAL still cannot be
-  # truncated. It never deletes SQLite files, manually truncates the WAL, or
+  # truncates a large WAL only when SQLite proves all WAL frames have already
+  # been checkpointed into the main DB. It never deletes SQLite files or
   # manages the Codex process lifecycle.
   storagePressureReliefScript = pkgs.writeShellApplication {
     name = "codex-storage-pressure-relief";
@@ -450,6 +450,26 @@ let
           return busy, log_pages, checkpointed
 
 
+      def truncate_checkpointed_wal(label):
+          before = file_size(WAL)
+          if before == 0:
+              log(f"{label}: WAL already zero bytes")
+              return
+
+          try:
+              with WAL.open("r+b") as file:
+                  file.truncate(0)
+          except FileNotFoundError:
+              log(f"{label}: WAL not found, skipping truncate")
+              return
+          except OSError as exc:
+              warn(f"{label}: WAL truncate failed ({exc})")
+              return
+
+          after = file_size(WAL)
+          log(f"{label}: WAL truncate before={before} after={after} bytes")
+
+
       def process_cmdline(pid):
           try:
               raw = Path(f"/proc/{pid}/cmdline").read_bytes()
@@ -513,13 +533,14 @@ let
       if pressure and fully_checkpointed:
           holders = wal_holders()
           if holders:
-              log("large fully-checkpointed WAL is still held open; manual review needed")
+              log("large fully-checkpointed WAL is still held open; truncating WAL")
               for pid, cmdline in holders:
                   log(f"holder pid={pid} cmdline={cmdline!r}")
           else:
-              log("large fully-checkpointed WAL has no visible /proc holders")
+              log("large fully-checkpointed WAL has no visible /proc holders; truncating WAL")
+          truncate_checkpointed_wal("pressure truncate")
       else:
-          log("no manual holder review needed")
+          log("no pressure truncate needed")
 
       if prune_errors:
           sys.exit(1)
@@ -712,10 +733,10 @@ in
     };
     timers.codex-wal-checkpoint = {
       Unit = {
-        Description = "Hourly Codex CLI logs SQLite WAL checkpoint";
+        Description = "30-minute Codex CLI logs SQLite WAL checkpoint";
       };
       Timer = {
-        OnCalendar = "hourly";
+        OnCalendar = "*-*-* *:0/30:00";
         Persistent = true;
         RandomizedDelaySec = "5m";
       };
@@ -728,7 +749,7 @@ in
     # Runs after the ordinary checkpoint window. Under normal conditions this
     # prunes disposable temp/session data and no-ops after a successful
     # checkpoint. If a large WAL remains fully checkpointed but held open, it
-    # logs holder PIDs for manual review.
+    # records holder PIDs and truncates the WAL.
     services.codex-storage-pressure-relief = {
       Unit = {
         Description = "Relieve Codex CLI storage pressure";
@@ -743,12 +764,12 @@ in
     };
     timers.codex-storage-pressure-relief = {
       Unit = {
-        Description = "Hourly Codex CLI storage pressure relief";
+        Description = "30-minute Codex CLI storage pressure relief";
       };
       Timer = {
-        OnCalendar = "*-*-* *:17:00";
+        OnCalendar = "*-*-* *:17/30:00";
         Persistent = true;
-        RandomizedDelaySec = "10m";
+        RandomizedDelaySec = "5m";
       };
       Install = {
         WantedBy = [ "timers.target" ];

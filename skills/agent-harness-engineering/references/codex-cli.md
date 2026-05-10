@@ -194,12 +194,12 @@ v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
 contention, or TUI TRACE log churn. Remove or rewrite this section once the
 workaround is no longer needed.
 
-The automated mitigation in this repo is an hourly checkpoint timer; see
+The automated mitigation in this repo is a 30-minute checkpoint timer plus a
+30-minute pressure-relief timer; see
 [Automated Mitigation](#automated-mitigation-this-repo) below. The runbook
 below is the manual fallback for one-time recovery (e.g. when the timer has
-been disabled or when truncate has been blocked by `busy=1` for many
-consecutive ticks and the WAL has grown beyond what the timer can reclaim
-in a single pass).
+been disabled or when truncate has been blocked by `busy=1` and the WAL has
+grown beyond what the pressure-relief timer can reclaim in a single pass).
 
 #### What we know so far
 
@@ -365,25 +365,28 @@ Implementation:
   timeout, runs `PRAGMA wal_checkpoint(TRUNCATE)`, and logs WAL size
   before/after plus the `(busy, log_pages, checkpointed)` triple. On
   `busy=1` with `log_pages == checkpointed`, it also logs that all WAL
-  frames were checkpointed but active readers prevented truncate; this is
-  diagnostic evidence for the emergency exception above, not permission for
-  routine manual truncation. On
+  frames were checkpointed but active readers prevented truncate. The
+  pressure-relief service uses the same proof before truncating a large WAL.
+  On
   `OperationalError` (lock contention at connect time) it logs and exits 0
   -- the next timer tick retries.
 - Linux (`pkgs.stdenv.isLinux`):
   `systemd.user.services.codex-wal-checkpoint` (oneshot) +
   `systemd.user.timers.codex-wal-checkpoint`. Schedule:
-  `OnCalendar = "hourly"`, `Persistent = true` (catches up missed ticks
-  after suspend/offline), `RandomizedDelaySec = "5m"`.
+  `OnCalendar = "*-*-* *:0/30:00"`, `Persistent = true` (catches up missed
+  ticks after suspend/offline), `RandomizedDelaySec = "5m"`.
 - Linux also installs `codex-storage-pressure-relief` as a Home Manager
-  `systemd.user` service/timer. Schedule: `OnCalendar = "*-*-* *:17:00"`,
-  `Persistent = true`, `RandomizedDelaySec = "10m"`. This pressure timer
+  `systemd.user` service/timer. Schedule:
+  `OnCalendar = "*-*-* *:17/30:00"`, `Persistent = true`,
+  `RandomizedDelaySec = "5m"`. This pressure timer
   prunes disposable Codex temp entries older than 1 hour, prunes closed
   `~/.codex/sessions/**/*.jsonl` files older than 50 days while skipping
-  open files, runs the same SQLite checkpoint, and logs holder PIDs when a
-  large fully-checkpointed WAL remains open. It only performs storage-safe
-  cleanup and records evidence; it does not delete SQLite files or manually
-  truncate WAL files.
+  open files, runs the same SQLite checkpoint, and truncates the WAL to zero
+  when the WAL is at least 8 GiB and the checkpoint triple proves all WAL
+  frames are already in the main DB (`log_pages >= 0` and
+  `log_pages == checkpointed`). It logs holder PIDs before truncating when
+  live Codex processes still have the DB files open. It does not delete
+  SQLite files.
 - Darwin (`pkgs.stdenv.isDarwin`): Home Manager
   `launchd.agents.codex-wal-checkpoint`. Schedule: `StartCalendarInterval` at
   minute 0 of every hour, `RunAtLoad = false`, `AbandonProcessGroup = true`.
@@ -405,7 +408,8 @@ Why this is safe to run while Codex is active:
   WAL stays its current size and no data is lost.
 - `busy=1` with `log_pages == checkpointed` means checkpointing succeeded but
   live readers blocked the final truncation step. It is the only busy shape
-  that can justify the emergency full-disk exception above.
+  that can justify pressure-relief WAL truncation or the emergency full-disk
+  exception above.
 - Logs go to journald (Linux) or `~/Library/Logs/` (Darwin). If `busy=1`
   shows up consistently, that is a signal to investigate Codex usage
   patterns or to schedule the timer at a quieter hour, not to fix the
@@ -448,7 +452,12 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 
 #### Issue and PR tracking
 
-Last checked 2026-05-07 with `gh issue view` and `gh pr view`.
+Last checked 2026-05-10 with `gh issue view`, `gh pr view`, and
+`gh release view`. Local version: `codex-cli 0.130.0`. The latest stable
+release checked was `rust-v0.130.0` (2026-05-08), and the latest prerelease
+checked was `rust-v0.131.0-alpha.4` (2026-05-09). The tracked issues below
+remain open, and the release notes checked do not claim a direct fix for
+`logs_2.sqlite-wal` growth, SQLite WAL lock contention, or idle WAL writes.
 
 | Item                                                    | Status           | Watch for                                      |
 | ------------------------------------------------------- | ---------------- | ---------------------------------------------- |
@@ -508,11 +517,12 @@ this runbook.
 - [x] WAL checkpoint timer added 2026-05-07 after `~/.codex/logs_2.sqlite-wal`
   reached 32 GB on the Linux host (root/home at 98% used). One-shot manual
   `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
-  hourly timer keeps the WAL from growing back. On 2026-05-09, a separate
-  full-disk incident showed `busy=1 log_pages=603 checkpointed=603`, where
-  frames were checkpointed but active readers prevented truncation; the
-  runbook now documents the emergency-only manual truncate exception with
-  strict preconditions. Cross-platform: `systemd.user` timer on Linux,
+  timer keeps the WAL from growing back. On 2026-05-09, a separate full-disk
+  incident showed `busy=1 log_pages=603 checkpointed=603`, where frames were
+  checkpointed but active readers prevented truncation; the runbook now
+  documents the emergency-only manual truncate exception with strict
+  preconditions. On 2026-05-10, the Linux timer cadence moved to 30 minutes.
+  Cross-platform: `systemd.user` timer on Linux,
   `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
   `isDarwin`. Symptom containment, not an upstream fix; see
   [Automated Mitigation](#automated-mitigation-this-repo) for inspection
@@ -521,9 +531,9 @@ this runbook.
   full-disk incident where `logs_2.sqlite-wal` reached about 37 GB and
   `tmux-a2a-postman` could not write state. The timer prunes disposable Codex
   temp data, prunes closed session JSONL older than 50 days while skipping
-  open files, checkpoints `logs_2.sqlite`, and logs holder PIDs when a large
-  fully-checkpointed WAL remains open. The managed policy is storage relief
-  only: process lifecycle stays outside the timer.
+  open files, checkpoints `logs_2.sqlite`, and truncates a large
+  fully-checkpointed WAL to zero after logging holder PIDs. The managed policy
+  is storage relief only: process lifecycle stays outside the timer.
 
 ### 9.2. Pending Considerations
 
