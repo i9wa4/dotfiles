@@ -1,7 +1,3 @@
-vim.cmd("filetype off")
-vim.cmd("filetype plugin indent off")
-vim.cmd("syntax off")
-
 -- --------------------------------------
 -- Helper
 --
@@ -20,24 +16,6 @@ end
 vim.api.nvim_create_user_command("R", function(opts)
   send_register(opts.args)
 end, { nargs = "?" })
-
--- Location list replacement recipes:
---   :lgrep! old **/*.lua
---   ! keeps the cursor in place instead of jumping to the first match.
---   :ldo s/old/new/ge | update
---   :lfdo %s/old/new/ge | update
--- Use :ldo for matched lines and :lfdo for matched files.
-local function lprevious()
-  if not pcall(vim.cmd.lprevious) then
-    pcall(vim.cmd.llast)
-  end
-end
-
-local function lnext()
-  if not pcall(vim.cmd.lnext) then
-    pcall(vim.cmd.lfirst)
-  end
-end
 
 local function highlight_define()
   vim.api.nvim_set_hl(0, "HlMS", { bg = "#FFB6C1", fg = "#000000" })
@@ -128,12 +106,20 @@ end, { expr = true })
 vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
-vim.keymap.set("n", "<C-n>", lnext)
-vim.keymap.set("n", "<C-p>", lprevious)
+
 vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
+
+-- Location list replacement recipes:
+--   :lgrep! old **/*.lua
+--   ! keeps the cursor in place instead of jumping to the first match.
+--   :ldo s/old/new/ge | update
+--   :lfdo %s/old/new/ge | update
+-- Use :ldo for matched lines and :lfdo for matched files.
+vim.keymap.set("n", "<C-n>", "<Cmd>silent! lnext<CR>")
+vim.keymap.set("n", "<C-p>", "<Cmd>silent! lprevious<CR>")
 
 -- --------------------------------------
 -- Autocmd
