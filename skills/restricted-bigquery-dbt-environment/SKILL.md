@@ -2,95 +2,42 @@
 name: restricted-bigquery-dbt-environment
 license: MIT
 description: |
-  BigQuery dbt safety workflow: temporarily add schema='test' to avoid production writes, run dbt, remove override before commit.
+  USE FOR: BigQuery dbt safety workflow: temporarily add schema='test' to avoid production writes, run dbt, remove override before commit. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# Restricted BigQuery dbt Environment
+# Restricted Bigquery Dbt Environment
 
-Supplements the general dbt skills for the restricted BigQuery workflow where
-local dbt runs must stay out of production schemas.
+**UTILITY SKILL:** Apply this skill to BigQuery dbt safety workflow: temporarily
+add schema='test' to avoid production writes, run dbt, remove override before
+commit. Keep the task scoped to the requested domain and preserve existing repo
+conventions.
 
-## 1. Overview
+**USE FOR:** BigQuery dbt safety workflow: temporarily add schema='test' to
+avoid production writes, run dbt, remove override before commit; related file
+edits; verification and handoff in this skill domain.
 
-To prevent accidental writes to production schemas during local development,
-temporarily add `schema='test'` to the target model config before `dbt run`.
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-## 2. Environment Setup (First Time Only)
+## Workflow
 
-Follow the repo's actual Python environment, and do NOT treat
-`pyproject.toml` as a requirements file.
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-- If `uv.lock` exists, use `<dbt-command>` = `uv run dbt`
-- If `poetry.lock` exists, create the venv with `uv` per
-  <https://i9wa4.github.io/blog/2025-06-08-create-uv-venv-with-poetry-pyproject-toml.html>,
-  activate it, then use `<dbt-command>` = `dbt`
-- If neither exists, `source .venv/bin/activate`, then use
-  `<dbt-command>` = `dbt`
+## Examples
 
-In this repo, there is no root `pyproject.toml`, `uv.lock`, or `poetry.lock`,
-so this skill must not prescribe `uv pip install --requirement pyproject.toml`.
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
 
-## 3. Add `schema='test'` to the Model
+## References
 
-Add `schema='test'` to the target model config.
+- [Preserved Guidance](references/preserved-guidance.md)
 
-Always add it at the beginning to minimize comma diff.
+## Troubleshooting
 
-```sql
-{{
-  config(
-    schema='test',  -- <- Add this
-    materialized='incremental',
-    ...
-  )
-}}
-```
-
-This writes the model to the `test` schema.
-
-## 4. Verification
-
-Verify the schema name with compile.
-
-```bash
-<dbt-command> compile --select <model_name> --profiles-dir ~/.dbt --no-use-colors
-```
-
-Confirm the output contains the `test` schema.
-
-## 5. `dbt run` Execution
-
-- YOU MUST: Get user permission before `dbt run`
-- YOU MUST: Confirm the output schema is `test`
-
-```bash
-<dbt-command> run --select <model_name> --profiles-dir ~/.dbt --no-use-colors
-```
-
-## 6. `dbt test` Execution
-
-```bash
-<dbt-command> test --select <model_name> --profiles-dir ~/.dbt --no-use-colors
-```
-
-## 7. Pre-commit Work
-
-Remove `schema='test'` before committing.
-
-```sql
-{{
-  config(
-    -- schema='test',  <- Remove
-    materialized='incremental',
-    ...
-  )
-}}
-```
-
-## 8. Cautions
-
-- NEVER: Do not commit with `schema='test'` included
-- NEVER: Do not run dbt in this restricted environment unless the model is
-  redirected away from production schemas
-- YOU MUST: Verify with `git diff` that `schema='test'` is removed before
-  commit
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
