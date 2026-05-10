@@ -17,11 +17,16 @@ Clipboard behavior should be boring:
 The target is system clipboard integration, not a full model of every selection
 buffer on every platform.
 
+The key success case is remote editing from a MacBook. When copying text on the
+Ubuntu server, the text should propagate all the way to the local macOS
+clipboard so it can be pasted into local Mac apps without an extra transfer
+step.
+
 ## 2. Configuration Surfaces
 
 | Surface                         | File                                         | Responsibility                                                      |
 | ------------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
-| Vim and Neovim editor behavior  | `config/vim/vimrc`                           | Select Vim registers and define editor clipboard providers          |
+| Vim and Neovim editor behavior  | `config/vim/vimrc`                           | Select Vim registers, define editor clipboard providers, sync yanks |
 | Neovim bootstrap                | `config/nvim/nvim/init.lua`                  | Source the shared Vim config before Neovim-only plugins             |
 | tmux behavior                   | `nix/home-manager/modules/tmux.nix`          | Pass clipboard data between panes, tmux buffers, terminal, and host |
 | Terminal behavior               | terminal config and terminal app preferences | Permit OSC 52 clipboard writes when tmux or tools emit them         |
@@ -42,7 +47,8 @@ Use these register meanings:
 The repo currently sets:
 
 - macOS: `set clipboard^=unnamed`
-- Linux and Neovim with clipboard support: `set clipboard^=unnamedplus`
+- Linux and WSL2: `set clipboard^=unnamedplus` when Neovim, native clipboard,
+  or Vim clipboard providers are available
 
 That means ordinary yanks are expected to reach the OS clipboard on the normal
 daily platforms.
@@ -75,77 +81,140 @@ The responsibilities are:
 - Prefix `Y`
   Re-sends the current tmux buffer through `load-buffer -w`, useful after tmux
   captured text but did not write it to the host clipboard yet.
+- `SendRegister()` in `vimrc`
+  Sends a Vim register to `tmux load-buffer -w -`, which is the editor-side
+  bridge into this tmux clipboard path.
+- `TextYankPost` in `vimrc`
+  Mirrors unnamed yanks to `tmux load-buffer -w -` inside tmux, so normal
+  yanks such as `yy` participate in the host clipboard path.
 
 tmux cannot guarantee host clipboard access alone. The outer terminal must also
 allow clipboard writes, usually OSC 52. If OSC 52 is blocked by the terminal,
 `load-buffer -w` still updates tmux's own buffer, but the host clipboard may not
 change.
 
-## 5. Provider Order
+## 5. Nested tmux over SSH
+
+The main remote workflow is:
+
+```text
+MacBook terminal
+  -> local macOS tmux
+    -> SSH
+      -> remote Ubuntu tmux
+        -> Vim or Neovim
+```
+
+In this shape, a yank from remote Vim reaches the Mac clipboard only if the
+clipboard payload can cross every layer:
+
+```text
+remote Vim provider
+  -> remote tmux buffer and OSC 52 write
+    -> SSH stream
+      -> local tmux accepts or forwards OSC 52
+        -> Mac terminal accepts OSC 52
+          -> macOS clipboard
+```
+
+For this use case, tmux fallback is not just a last resort. It is the most
+important portable bridge from a headless Ubuntu server back to the MacBook
+clipboard.
+
+The success condition is the Mac clipboard, not the remote clipboard. Updating
+only the remote tmux buffer is useful for remote paste, but it is not enough for
+the normal MacBook workflow.
+
+The default editor behavior should make ordinary Vim yanks participate in this
+path. For example, `yy` on the remote Ubuntu server should send the unnamed
+register through the `TextYankPost` tmux mirror so it can reach the local Mac
+clipboard.
+
+Both tmux layers should keep:
+
+```tmux
+set-option -g set-clipboard on
+set-option -g allow-passthrough on
+```
+
+The remote Ubuntu tmux needs `set-clipboard on` so `tmux load-buffer -w -` can
+emit the clipboard escape sequence toward the SSH client. The local macOS tmux
+must not block that sequence before it reaches the outer Mac terminal. The Mac
+terminal must also allow clipboard writes from terminal escape sequences.
+
+If remote Vim yanks update only the remote tmux buffer, the missing hop is
+usually outside Vim. Check in this order:
+
+1. Can the Mac terminal accept OSC 52 clipboard writes?
+2. Does local macOS tmux have `set-clipboard` enabled?
+3. Does local macOS tmux allow the incoming clipboard sequence from the SSH
+   pane?
+4. Does remote Ubuntu tmux have `set-clipboard` enabled?
+5. Is remote Vim or Neovim running the `TextYankPost` hook that mirrors unnamed
+   yanks to `tmux load-buffer -w -`?
+
+## 6. Provider Order
 
 Prefer this order for editor providers:
 
-| Platform      | Editor | Preferred provider order                                                   |
-| ------------- | ------ | -------------------------------------------------------------------------- |
-| macOS         | Neovim | Neovim default provider, or explicit `pbcopy` and `pbpaste`                |
-| macOS         | Vim    | `v:clipproviders` using `pbcopy` and `pbpaste` when needed                 |
-| Linux or WSL2 | Neovim | Neovim default provider, then tmux fallback inside tmux                    |
-| Linux or WSL2 | Vim    | `v:clipproviders` using `wl-copy`, `xclip`, `xsel`, then tmux fallback     |
+| Platform      | Editor | Preferred provider behavior                                      |
+| ------------- | ------ | ---------------------------------------------------------------- |
+| macOS         | Neovim | Neovim default provider, plus tmux mirror inside tmux            |
+| macOS         | Vim    | `v:clipproviders` with `pbcopy` and `pbpaste` when needed        |
+| Linux or WSL2 | Neovim | Neovim default provider, plus tmux mirror inside tmux            |
+| Linux or WSL2 | Vim    | `v:clipproviders` using `wl-copy`, `xclip`, `xsel`, then tmux    |
 
 This keeps Neovim simple because Neovim already knows how to auto-detect common
 clipboard tools. Vim needs more help when it is built without native clipboard
 support but with `+clipboard_provider`.
 
-## 6. Current Vim Complexity
+Inside tmux, Vim and Neovim also mirror unnamed yanks through
+`tmux load-buffer -w -`. This makes `yy` work in the MacBook to SSH to Ubuntu
+to tmux workflow even when the editor's normal provider is not the final host
+clipboard path.
 
-The current `vimrc` clipboard block is long because it handles all of these
-cases explicitly:
+## 7. Current Vim Model
 
-- macOS Vim with `v:clipproviders`
-- macOS Neovim with explicit `g:clipboard`
-- Linux Neovim with tmux fallback when `xclip`, `xsel`, and `wl-copy` are absent
-- Linux Vim with `v:clipproviders`
-- X11 `+` clipboard and `*` primary selection as separate buffers
-- Wayland clipboard and primary selection
-- tmux fallback as both copy and paste provider
+The current `vimrc` keeps the clipboard model small:
 
-That is complete, but not minimal.
+- Neovim uses its built-in provider detection.
+- Vim gets one `v:clipproviders` entry when it needs one.
+- `+` is treated as the real system clipboard target.
+- `*` mirrors `+` for custom providers.
+- Inside tmux, unnamed yanks are mirrored to `tmux load-buffer -w -`.
+- `<Space>r{register}` can push a named register manually.
 
-## 7. Minimal Strategy
-
-The preferred simplification path is:
-
-1. Let Neovim auto-detect native providers.
-2. Keep explicit provider code mainly for Vim with `v:clipproviders`.
-3. Treat `+` as the real target and allow `*` to mirror `+` when simplifying.
-4. Keep tmux fallback because it is valuable in WSL2, SSH, and headless terminal
-   sessions.
-5. Do not preserve X11 primary selection as a hard requirement unless there is
-   a real workflow depending on it.
-
-A minimal implementation can use one provider tuple:
+The Vim provider selection is one tuple:
 
 ```vim
-let s:clip = []
-if has('mac') && executable('pbcopy')
-  let s:clip = ['pb', 'pbcopy', 'pbpaste']
-elseif executable('wl-copy')
-  let s:clip = ['wl', 'wl-copy', 'wl-paste']
+let s:clip = {}
+if has('mac') && executable('pbcopy') && executable('pbpaste')
+  let s:clip = {'name': 'pb', 'copy': 'pbcopy', 'paste': 'pbpaste'}
+elseif executable('wl-copy') && executable('wl-paste')
+  let s:clip = {'name': 'wl', 'copy': 'wl-copy', 'paste': 'wl-paste'}
 elseif executable('xclip')
-  let s:clip = [
-  \ 'xclip',
-  \ 'xclip -selection clipboard',
-  \ 'xclip -selection clipboard -o',
-  \ ]
+  let s:clip = {
+  \   'name': 'xclip',
+  \   'copy': 'xclip -selection clipboard',
+  \   'paste': 'xclip -selection clipboard -o',
+  \ }
 elseif executable('xsel')
-  let s:clip = ['xsel', 'xsel --clipboard --input', 'xsel --clipboard --output']
+  let s:clip = {
+  \   'name': 'xsel',
+  \   'copy': 'xsel --clipboard --input',
+  \   'paste': 'xsel --clipboard --output',
+  \ }
 elseif executable('tmux') && !empty($TMUX)
-  let s:clip = ['tmux', 'tmux load-buffer -w -', 'tmux save-buffer -']
+  let s:clip = {
+  \   'name': 'tmux',
+  \   'copy': 'tmux load-buffer -w -',
+  \   'paste': 'tmux save-buffer -',
+  \ }
 endif
 ```
 
-Then `+` and `*` can both call the same copy and paste commands. That drops
-primary-selection precision in exchange for a much shorter config.
+This deliberately drops separate X11 primary-selection handling. The tradeoff
+is simpler config and more predictable system clipboard behavior.
 
 ## 8. Recommended Daily Flow
 
@@ -155,6 +224,10 @@ Use these rules while editing:
   the text to the host.
 - Inside tmux, prefer editor clipboard integration first. If text is only in a
   tmux buffer, press prefix `Y` to push it to the host clipboard.
+- When editing on the Ubuntu server from a MacBook tmux session, expect the
+  remote tmux provider to be the bridge back to the Mac clipboard.
+- Use normal yanks such as `yy` for the default path. Use `<Space>r{register}`
+  when a named register must be pushed manually.
 - When clipboard writes work in Neovim but not Vim, inspect Vim features first:
   `:echo has('clipboard') exists('v:clipproviders')`.
 - When clipboard writes work outside tmux but not inside tmux, inspect tmux and
@@ -189,6 +262,10 @@ tmux save-buffer -
 
 If the tmux buffer updates but the host clipboard does not, the missing part is
 usually the outer terminal's clipboard permission or OSC 52 support.
+
+For the nested MacBook-to-Ubuntu workflow, run the tmux checks on both hosts.
+The remote host proves whether Vim can reach remote tmux. The Mac host proves
+whether the SSH pane can reach the Mac terminal clipboard.
 
 ## 10. Design Decision
 

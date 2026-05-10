@@ -37,12 +37,12 @@ nnoremap <C-n> :Lnext<CR>
 nnoremap <script> <C-w>- <C-w>-<SID>ws
 nnoremap <script> <C-w>+ <C-w>+<SID>ws
 nnoremap <script> <C-w><lt> <C-w><lt><SID>ws
-nnoremap <script> <C-w>> <C-w>><SID>ws
+nnoremap <script> <C-w><gt> <C-w><gt><SID>ws
 nmap <SID>ws <Nop>
 nnoremap <script> <SID>ws- <C-w>-<SID>ws
 nnoremap <script> <SID>ws+ <C-w>+<SID>ws
 nnoremap <script> <SID>ws<lt> <C-w><lt><SID>ws
-nnoremap <script> <SID>ws> <C-w>><SID>ws
+nnoremap <script> <SID>ws<gt> <C-w><gt><SID>ws
 
 " Open parent directory
 if !has('nvim')
@@ -88,7 +88,21 @@ endfunction
 function! s:SendRegister(reg) abort
   let l:content = getreg(a:reg)
   silent! let @+ = l:content
-  call system('tmux load-buffer -w -', l:content)
+  call <SID>SendTmuxClipboard(l:content)
+endfunction
+
+
+function! s:SendTmuxClipboard(content) abort
+  if executable('tmux') && !empty($TMUX)
+    call system('tmux load-buffer -w -', a:content)
+  endif
+endfunction
+
+
+function! s:SendYankToHostClipboard() abort
+  if v:event.operator ==# 'y' && v:event.regname ==# ''
+    call <SID>SendTmuxClipboard(getreg(''))
+  endif
 endfunction
 
 
@@ -135,6 +149,7 @@ augroup MyAutocmd
 
   autocmd FileType *
   \ if &diff | setlocal nospell | else | setlocal spelllang+=cjk spell | endif
+  autocmd TextYankPost * call <SID>SendYankToHostClipboard()
 
   autocmd ColorScheme * call <SID>HighlightDefine()
   autocmd WinEnter,FileType * call <SID>HighlightMatch()
@@ -189,95 +204,50 @@ endif
 " Clipboard
 if has('mac')
   set clipboard^=unnamed
-elseif has('nvim') || has('clipboard')
+elseif has('nvim') || has('clipboard') || exists('v:clipproviders')
   set clipboard^=unnamedplus
 endif
 
-if has('mac')
-  if !has('nvim') && exists('v:clipproviders')
-    " Vim 9.1+ on macOS
-    function! s:PBAvailable() abort
-      return '+*'
-    endfunction
-    function! s:PBPaste(reg, opts) abort
-      return [systemlist('pbpaste'), 'v']
-    endfunction
-    function! s:PBCopy(reg, regtype, lines) abort
-      call system('pbcopy', join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
-    endfunction
-    let v:clipproviders.pb = {
-    \   'available': function('s:PBAvailable'),
-    \   'paste': {'+': function('s:PBPaste'), '*': function('s:PBPaste')},
-    \   'copy':  {'+': function('s:PBCopy'),  '*': function('s:PBCopy')},
-    \ }
-  else
-    " Neovim on macOS
-    let g:clipboard = {
-    \   'name': 'pbcopy',
-    \   'copy':  {'+': ['pbcopy'], '*': ['pbcopy']},
-    \   'paste': {'+': ['pbpaste'], '*': ['pbpaste']},
-    \   'cache_enabled': 0,
-    \ }
-  endif
-else
-  " Linux
-  if has('nvim')
-    " Neovim auto-detects xclip/xsel/wl-copy; add tmux fallback
-    if !executable('xclip') && !executable('xsel') && !executable('wl-copy')
-    \   && executable('tmux') && !empty($TMUX)
-      let g:clipboard = {
-      \   'name': 'tmux',
-      \   'copy':  {'+': ['tmux', 'load-buffer', '-w', '-'], '*': ['tmux', 'load-buffer', '-w', '-']},
-      \   'paste': {'+': ['tmux', 'save-buffer', '-'], '*': ['tmux', 'save-buffer', '-']},
-      \   'cache_enabled': 0,
-      \ }
-    endif
-  elseif exists('v:clipproviders')
-    " Vim 9.1+ on Linux
-    if executable('xclip')
-      let s:clip_copy_plus  = 'xclip -selection clipboard'
-      let s:clip_copy_star  = 'xclip -selection primary'
-      let s:clip_paste_plus = 'xclip -selection clipboard -o'
-      let s:clip_paste_star = 'xclip -selection primary -o'
-      let s:clip_name = 'xclip'
-    elseif executable('xsel')
-      let s:clip_copy_plus  = 'xsel --clipboard --input'
-      let s:clip_copy_star  = 'xsel --primary --input'
-      let s:clip_paste_plus = 'xsel --clipboard --output'
-      let s:clip_paste_star = 'xsel --primary --output'
-      let s:clip_name = 'xsel'
-    elseif executable('wl-copy')
-      let s:clip_copy_plus  = 'wl-copy'
-      let s:clip_copy_star  = 'wl-copy --primary'
-      let s:clip_paste_plus = 'wl-paste'
-      let s:clip_paste_star = 'wl-paste --primary'
-      let s:clip_name = 'wl'
-    elseif executable('tmux') && !empty($TMUX)
-      let s:clip_copy_plus  = 'tmux load-buffer -w -'
-      let s:clip_copy_star  = 'tmux load-buffer -w -'
-      let s:clip_paste_plus = 'tmux save-buffer -'
-      let s:clip_paste_star = 'tmux save-buffer -'
-      let s:clip_name = 'tmux'
-    endif
-    if exists('s:clip_name')
-      function! s:ClipAvailable() abort
-        return '+*'
-      endfunction
-      function! s:ClipPaste(reg, opts) abort
-        let l:cmd = a:reg ==# '+' ? s:clip_paste_plus : s:clip_paste_star
-        return [systemlist(l:cmd), 'v']
-      endfunction
-      function! s:ClipCopy(reg, regtype, lines) abort
-        let l:cmd = a:reg ==# '+' ? s:clip_copy_plus : s:clip_copy_star
-        call system(l:cmd, join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
-      endfunction
-      let v:clipproviders[s:clip_name] = {
-      \   'available': function('s:ClipAvailable'),
-      \   'paste': {'+': function('s:ClipPaste'), '*': function('s:ClipPaste')},
-      \   'copy':  {'+': function('s:ClipCopy'),  '*': function('s:ClipCopy')},
-      \ }
-    endif
-  endif
+let s:clip = {}
+if has('mac') && executable('pbcopy') && executable('pbpaste')
+  let s:clip = {'name': 'pb', 'copy': 'pbcopy', 'paste': 'pbpaste'}
+elseif executable('wl-copy') && executable('wl-paste')
+  let s:clip = {'name': 'wl', 'copy': 'wl-copy', 'paste': 'wl-paste'}
+elseif executable('xclip')
+  let s:clip = {
+  \   'name': 'xclip',
+  \   'copy': 'xclip -selection clipboard',
+  \   'paste': 'xclip -selection clipboard -o',
+  \ }
+elseif executable('xsel')
+  let s:clip = {
+  \   'name': 'xsel',
+  \   'copy': 'xsel --clipboard --input',
+  \   'paste': 'xsel --clipboard --output',
+  \ }
+elseif executable('tmux') && !empty($TMUX)
+  let s:clip = {
+  \   'name': 'tmux',
+  \   'copy': 'tmux load-buffer -w -',
+  \   'paste': 'tmux save-buffer -',
+  \ }
+endif
+
+if !has('nvim') && exists('v:clipproviders') && !empty(s:clip)
+  function! s:ClipAvailable() abort
+    return '+*'
+  endfunction
+  function! s:ClipPaste(reg, opts) abort
+    return [systemlist(s:clip.paste), 'v']
+  endfunction
+  function! s:ClipCopy(reg, regtype, lines) abort
+    call system(s:clip.copy, join(a:lines, "\n") .. (a:regtype ==# 'V' ? "\n" : ''))
+  endfunction
+  let v:clipproviders[s:clip.name] = {
+  \   'available': function('s:ClipAvailable'),
+  \   'paste': {'+': function('s:ClipPaste'), '*': function('s:ClipPaste')},
+  \   'copy':  {'+': function('s:ClipCopy'),  '*': function('s:ClipCopy')},
+  \ }
 endif
 
 
