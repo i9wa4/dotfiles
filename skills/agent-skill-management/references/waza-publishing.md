@@ -14,11 +14,14 @@ Inspect readiness fields explicitly:
 
 ```sh
 waza --no-update-check check skills/<name> --format json |
-  jq -r '.skills[] | [.name, .ready, .compliance.level, .tokenBudget.status, .eval.found] | @tsv'
+  jq -r '.skills[] | [.name, .ready, .compliance.level, .tokenBudget.status, (.evaluation != null)] | @tsv'
 ```
 
 `waza check` can exit 0 even when `.skills[].ready` is false. When making a
-blocking gate, parse JSON instead of trusting the process exit code.
+blocking gate, parse JSON instead of trusting the process exit code. The
+dotfiles pre-commit gate blocks invalid spec/frontmatter, broken links, and
+token-budget violations. In Nix build sandboxes, the hook skips the link gate
+because Waza counts external URLs and the sandbox has no network access.
 
 Prioritize Waza findings in this order:
 
@@ -63,10 +66,16 @@ For source-only skill edits:
 
 ```sh
 bash bin/validate-skill-frontmatter.sh skills
+bash bin/validate-skill-waza.sh skills/<name>/SKILL.md
 bash bin/validate-skill-description-length.sh --staged
 nix run nixpkgs#gh -- skill publish --dry-run
 git diff --check
 ```
+
+The pre-commit hook `skill-waza-check` runs
+`bin/validate-skill-waza.sh` for changed paths under `skills/`. Normal commits
+therefore check only changed skill directories; `pre-commit run --all-files` and
+`nix flake check` check every skill.
 
 Run relevant pre-commit hooks for changed skill/docs files. Run `nix flake
 check` when Nix, workflow, or shared harness files changed. `nix run '.#switch'`

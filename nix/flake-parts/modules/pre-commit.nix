@@ -55,6 +55,9 @@
       };
       actrun = inputs.actrun.packages.${system}.default;
       opensslLib = pkgs.lib.getLib pkgs.openssl;
+      waza = pkgs.callPackage ../../packages/waza.nix {
+        inherit system;
+      };
     in
     {
       packages = if hasBetterleaks then { inherit betterleaks; } else { };
@@ -147,6 +150,20 @@
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
             pass_filenames = false;
+          };
+          skill-waza-check = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-waza-check" ''
+              #!${pkgs.bash}/bin/bash
+              export WAZA_BIN=${waza}/bin/waza
+              export JQ_BIN=${pkgs.jq}/bin/jq
+              if [ -n "''${NIX_BUILD_TOP:-}" ]; then
+                export SKILL_WAZA_CHECK_LINKS=0
+              fi
+              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-waza.sh} "$@"
+            ''}";
+            files = "^skills/";
+            require_serial = true;
           };
           skill-publish-dry-run = {
             enable = true;
