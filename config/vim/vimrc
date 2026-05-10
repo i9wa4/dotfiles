@@ -1,6 +1,9 @@
 " ~/ghq/github.com/i9wa4/dotfiles/config/nvim/nvim/init.lua
 set encoding=utf-8
 
+" --------------------------------------
+" Start of settings
+"
 filetype off
 filetype plugin indent off
 syntax off
@@ -254,11 +257,11 @@ endif
 " --------------------------------------
 " End of settings
 "
-filetype plugin on
-syntax enable
-
 if has('termguicolors')
   set termguicolors
 endif
+
+filetype plugin indent on
+syntax enable
 
 execute 'colorscheme' get(g:, 'colors_name', 'habamax')
