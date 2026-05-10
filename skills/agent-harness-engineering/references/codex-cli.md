@@ -144,6 +144,17 @@ Ignore any release entries for versions newer than `codex --version`.
   rejection tells the agent what to do next, not just what was blocked
 - YOU MUST: Treat Codex write-tool control as observational until local hook
   payloads prove enough structure for reliable deny logic
+- NOTE: As of Codex CLI v0.130.0, the Codex-only
+  `PreToolUse` matcher=`apply_patch|Edit|Write` observer is a forward-looking
+  sentinel, not proven enforcement. The script is
+  `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`; it
+  appends metadata to
+  `~/.codex/hook-observations/pretooluse-write-tools.jsonl`. A restarted
+  agent pane created and removed a temporary file with the Codex `apply_patch`
+  file tool on 2026-05-11; the observer log stayed at the single manual
+  script-test entry. Keep the hook installed because it is low-risk and will
+  reveal payload shape if future Codex versions start firing write-tool hooks,
+  but do not claim it currently observes or controls real `apply_patch` writes.
 - NOTE: Official docs say `PreToolUse` can match canonical `Bash`,
   `apply_patch`, and MCP tool names; `apply_patch` also matches `Edit` and
   `Write`. This repo observes `apply_patch|Edit|Write` before adding write
