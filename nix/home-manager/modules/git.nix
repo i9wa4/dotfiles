@@ -97,7 +97,6 @@
 
       for pattern in \
         '.pre-commit-config.yaml' \
-        '.vde/' \
         '.worktrees/'
       do
         if ! grep -Fxq "$pattern" "$exclude_file"; then

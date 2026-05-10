@@ -47,8 +47,20 @@ in
         "ctx7"
         "vde-layout"
         "vde-monitor"
+      )
+      REMOVED_NPM_PACKAGES=(
         "vde-worktree"
       )
+
+      # TODO: Remove this migration block after all machines have run switch
+      # once with vde-worktree uninstalled.
+      # Remove packages that used to be managed here but are no longer needed.
+      for pkg in "''${REMOVED_NPM_PACKAGES[@]}"; do
+        if "$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+          echo "Uninstalling removed package $pkg..."
+          "$guardedNpm" --prefix ${npmPrefix} uninstall -g "$pkg"
+        fi
+      done
 
       # Install missing packages
       for pkg in "''${NPM_PACKAGES[@]}"; do
