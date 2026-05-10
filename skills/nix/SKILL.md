@@ -2,31 +2,41 @@
 name: nix
 license: MIT
 description: |
-  Nix commands and package management guide.
-  Use when:
-  - Using nurl for hash acquisition
+  USE FOR: Nix commands and package management guide. Use when: - Using nurl for hash acquisition. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
-# Nix Skill
+# Nix
 
-## 1. nurl
+**UTILITY SKILL:** Apply this skill to Nix commands and package management
+guide. Use when: - Using nurl for hash acquisition. Keep the task scoped to the
+requested domain and preserve existing repo conventions.
 
-- IMPORTANT: nurl generates Nix fetcher calls from repository URLs
+**USE FOR:** Nix commands and package management guide. Use when: - Using nurl
+for hash acquisition; related file edits; verification and handoff in this skill
+domain.
 
-  ```sh
-  nix run 'nixpkgs#nurl' -- https://github.com/rvben/rumdl v0.0.206
-  ```
+**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
+generated runtime outputs, or replacing repo-specific source of truth.
 
-- IMPORTANT: Output can be used directly in fetchFromGitHub
+## Workflow
 
-  ```nix
-  fetchFromGitHub {
-    owner = "rvben";
-    repo = "rumdl";
-    rev = "v0.0.206";
-    hash = "sha256-XXX...";
-  }
-  ```
+1. Inspect the relevant files, current repo conventions, and `git status`.
+2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+   behavior or giving detailed instructions.
+3. Make the smallest scoped change that satisfies the request.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-- IMPORTANT: For cargoHash/vendorHash, use build error method
-  (nurl does not support these)
+## Examples
+
+For a request in this domain, load preserved guidance, update the relevant
+source, run focused checks, and summarize the result.
+
+## References
+
+- [Preserved Guidance](references/preserved-guidance.md)
+
+## Troubleshooting
+
+If Waza or repo validation disagrees with preserved guidance, follow the
+stricter rule and record the exception in the handoff.
