@@ -48,16 +48,41 @@ in
         "vde-layout"
         "vde-monitor"
       )
-      REMOVED_NPM_PACKAGES=(
-        "vde-worktree"
+      RETAINED_NPM_PACKAGES=(
+        "@aikidosec/safe-chain"
+        "''${NPM_PACKAGES[@]}"
       )
 
-      # TODO: Remove this migration block after all machines have run switch
-      # once with vde-worktree uninstalled.
-      # Remove packages that used to be managed here but are no longer needed.
-      for pkg in "''${REMOVED_NPM_PACKAGES[@]}"; do
-        if "$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
-          echo "Uninstalling removed package $pkg..."
+      installedJson=$("$guardedNpm" --prefix ${npmPrefix} list -g --depth=0 --json 2>/dev/null |
+        ${pkgs.gawk}/bin/awk '
+          /^[[:space:]]*{/ && !capturing {
+            capturing = 1
+          }
+          capturing {
+            print
+            line = $0
+            opens = gsub(/\{/, "{", line)
+            closes = gsub(/\}/, "}", line)
+            depth += opens - closes
+            if (depth == 0) {
+              exit
+            }
+          }
+        ' || true)
+      installedPackages=""
+      if [ -n "$installedJson" ]; then
+        installedPackages=$(printf '%s\n' "$installedJson" | ${pkgs.jq}/bin/jq -r '.dependencies | keys[]?' || true)
+      fi
+      for pkg in $installedPackages; do
+        keep=0
+        for want in "''${RETAINED_NPM_PACKAGES[@]}"; do
+          if [ "$pkg" = "$want" ]; then
+            keep=1
+            break
+          fi
+        done
+        if [ "$keep" -eq 0 ]; then
+          echo "Uninstalling unmanaged package $pkg..."
           "$guardedNpm" --prefix ${npmPrefix} uninstall -g "$pkg"
         fi
       done
