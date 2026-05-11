@@ -2,6 +2,9 @@
   dotfilesDir,
   ...
 }:
+let
+  isSshClient = ''[ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]'';
+in
 {
   # Tmux configuration
   # cf. https://man.openbsd.org/OpenBSD-current/man1/tmux.1
@@ -35,7 +38,8 @@
 
       # Options
       # Use C-a on remote (SSH), C-b on local
-      if-shell '[ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]' \
+      set-option -ga update-environment " SSH_CLIENT SSH_TTY"
+      if-shell '${isSshClient}' \
         "set-option -g prefix C-a; unbind C-b; bind-key C-a send-prefix" \
         "set-option -g prefix C-b; unbind C-a; bind-key C-b send-prefix"
 
@@ -49,13 +53,13 @@
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
       set-option -g status-interval 6
-      if-shell '[ -n "$SSH_TTY" ]' \
+      if-shell '${isSshClient}' \
         "set-option -g status 2" \
         "set-option -g status on"
       set-option -g status-left "[#(tmux list-sessions -F '##{session_created} ##{session_id}' | awk '{ print $1, substr($2, 2), $2 }' | sort -k1,1n -k2,2n | awk -v current='#{session_id}' '$3 == current { print NR - 1; exit }')] #{=30:session_name} "
       set-option -g status-left-length 34
       set-option -g status-position top
-      if-shell '[ -n "$SSH_TTY" ]' \
+      if-shell '${isSshClient}' \
         "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\"; set-option -g status-format[1] '#[align=right]#(tmux-a2a-postman get-status-oneline 2>/dev/null)'" \
         "set-option -g status-right \"#(tmux-a2a-postman get-status-oneline 2>/dev/null) #(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\""
       set-option -g status-right-length 200
