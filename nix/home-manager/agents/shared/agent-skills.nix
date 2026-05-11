@@ -204,6 +204,12 @@ let
       path = inputs.hashicorp-agent-skills;
       subdir = "terraform/provider-development/skills";
     };
+    # Google skills for Google Cloud and Gemini API.
+    # cf. https://github.com/google/skills
+    google = {
+      path = inputs.google-skills;
+      subdir = "skills/cloud";
+    };
     # AWS Agent Toolkit skills. Install skill bodies only; plugin and MCP
     # integration remain out of scope for this Home Manager module.
     # cf. https://github.com/aws/agent-toolkit-for-aws

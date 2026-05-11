@@ -437,6 +437,22 @@
         "type": "github"
       }
     },
+    "google-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778170039,
+        "narHash": "sha256-FKTZpue6mckyGfnj7OSmJ0oV1vb57GYgKSI7kS+ncrU=",
+        "owner": "google",
+        "repo": "skills",
+        "rev": "f65ad288dedaa26da476bcf9539a2e14d8445180",
+        "type": "github"
+      },
+      "original": {
+        "owner": "google",
+        "repo": "skills",
+        "type": "github"
+      }
+    },
     "hashicorp-agent-skills": {
       "flake": false,
       "locked": {
@@ -709,6 +725,7 @@
         "flake-parts": "flake-parts",
         "gh-prism": "gh-prism",
         "git-hooks": "git-hooks_2",
+        "google-skills": "google-skills",
         "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",

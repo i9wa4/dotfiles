@@ -104,6 +104,10 @@
       url = "github:hashicorp/agent-skills";
       flake = false;
     };
+    google-skills = {
+      url = "github:google/skills";
+      flake = false;
+    };
     aws-agent-toolkit = {
       url = "github:aws/agent-toolkit-for-aws";
       flake = false;
