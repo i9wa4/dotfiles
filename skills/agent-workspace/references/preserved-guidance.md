@@ -7,7 +7,7 @@ concise skill needs domain-specific details.
 ---
 name: agent-workspace
 license: MIT
-description: Boot and manage agent tmux workspaces using vde-layout (va/vb), worktree creation and re-entry, session naming, and pane operations.
+description: Boot and manage agent tmux workspaces using the vde-layout va preset, worktree creation and re-entry, session naming, and pane operations.
 ---
 
 # Agent Workspace
@@ -22,23 +22,23 @@ creation, vde-layout preset boot, worktree lifecycle, and pane operations.
 For a `tmux-a2a-postman` agent session, the expected end-user flow is:
 
 ```text
-new tmux session -> z tmux-a2a-postman -> vb
+new tmux session -> z tmux-a2a-postman -> va
 ```
 
-When driving that flow from another agent pane, resolve `vb` from the repo's
+When driving that flow from another agent pane, resolve `va` from the repo's
 current configuration, then send the expanded vde-layout command directly. Do
 not rely on interactive snippet injection from non-interactive shells, and do
 not trust hardcoded examples in this skill over the config files.
 
-Resolution order for `vb`:
+Resolution order for `va`:
 
-1. Inspect `config/zsh/snippet.zsh` and find the snippet whose keyword is `vb`.
+1. Inspect `config/zsh/snippet.zsh` and find the snippet whose keyword is `va`.
 2. Inspect `config/vde/layout.yml` for every `vde-layout <preset>` referenced
    by that snippet.
 3. Send the snippet command exactly as resolved, unless the user requested a
    different preset.
 
-After resolving `vb`, boot the session:
+After resolving `va`, boot the session:
 
 1. Create session and capture pane id:
 
@@ -72,15 +72,12 @@ After resolving `vb`, boot the session:
    tmux display-message -t "$PANE_ID" -p '#{session_name}'
    ```
 
-7. Execute the resolved `vb` end state by sending the expanded vde-layout
+7. Execute the resolved `va` end state by sending the expanded vde-layout
    command directly. As of the current config this is:
 
    ```bash
    tmux send-keys -t "$PANE_ID" \
-     'vde-layout messenger-codex && vde-layout preset-b' Enter
-   # or for the mixed stack:
-   tmux send-keys -t "$PANE_ID" \
-     'vde-layout messenger-claude && vde-layout preset-a' Enter
+     'vde-layout messenger-codex && vde-layout preset-a' Enter
    ```
 
 8. Wait 8-12s for vde-layout to materialize all panes.
@@ -93,28 +90,28 @@ After resolving `vb`, boot the session:
 
 ### Human-Driven Boot
 
-The human types `vb` + Space in interactive zsh. `snippet-magic-space` expands
-to `vde-layout messenger-codex && vde-layout preset-b`, then Enter executes it.
+The human types `va` + Space in interactive zsh. `snippet-magic-space` expands
+to `vde-layout messenger-codex && vde-layout preset-a`, then Enter executes it.
 Both paths arrive at identical end state.
 
 Source: `config/zsh/snippet.zsh`, `config/vde/layout.yml`
 See also: `references/boot-failure-modes.md`
 
-## 2. Preset Comparison
+## 2. Current va Preset
 
-| Aspect            | va (preset-a)                                        | vb (preset-b)                                       |
-| ----------------- | ---------------------------------------------------- | --------------------------------------------------- |
-| Snippet expansion | `vde-layout messenger-claude && vde-layout preset-a` | `vde-layout messenger-codex && vde-layout preset-b` |
-| Messenger         | claude sonnet, effort medium                         | codex gpt-5.5, medium                               |
-| Grid              | 3x2, new window                                      | 3x2, new window                                     |
-| orchestrator      | claude sonnet xhigh                                  | codex gpt-5.5 xhigh                                 |
-| worker            | claude sonnet high                                   | codex gpt-5.5 xhigh                                 |
-| worker-alt        | claude sonnet high                                   | codex gpt-5.5 xhigh                                 |
-| critic            | claude sonnet xhigh                                  | codex gpt-5.5 xhigh                                 |
-| guardian          | codex gpt-5.5 high                                   | codex gpt-5.5 xhigh                                 |
-| boss              | claude opus[1m] xhigh                                | codex gpt-5.5 xhigh                                 |
-| Engine mix        | 5 claude + 1 codex (balanced)                        | all 6 codex (extreme teaming)                       |
-| Description       | "balanced use of models"                             | "codex extreme teaming"                             |
+| Aspect            | va flow                                                  |
+| ----------------- | -------------------------------------------------------- |
+| Snippet expansion | `vde-layout messenger-codex && vde-layout preset-a`      |
+| Messenger         | codex gpt-5.5, medium                                    |
+| Grid              | 3x2, new window                                          |
+| orchestrator      | codex gpt-5.5 xhigh                                      |
+| worker            | codex gpt-5.5 xhigh                                      |
+| worker-alt        | codex gpt-5.5 xhigh                                      |
+| critic            | claude sonnet xhigh                                      |
+| guardian          | codex gpt-5.5 xhigh                                      |
+| boss              | codex gpt-5.5 xhigh                                      |
+| Engine mix        | preset-a: 5 codex + 1 claude; messenger: codex           |
+| Description       | "codex-featured team"                                   |
 
 Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:
 `dotfiles/config/zsh/snippet.zsh`. See also:

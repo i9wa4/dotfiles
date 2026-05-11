@@ -17,9 +17,16 @@ presets:
             - name: tailscale
               command: sudo $(which tailscaled)
               delay: 500
-        - name: vde-monitor
-          command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
-          delay: 500
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: agent
+              title: agent
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              delay: 500
+            - name: vde-monitor
+              command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
+              delay: 500
 
   dev:
     name: dev
@@ -29,28 +36,12 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: editor
+        - name: pane
           delay: 500
           focus: true
         - name: agent
           title: agent
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
-          delay: 500
-
-  messenger-claude:
-    name: messenger-claude
-    description: messenger-claude
-    windowMode: current-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: editor
-          delay: 500
-          focus: true
-        - name: messenger
-          title: messenger
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
           delay: 500
 
   messenger-codex:
@@ -61,7 +52,7 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: editor
+        - name: pane
           delay: 500
           focus: true
         - name: messenger
@@ -71,46 +62,7 @@ presets:
 
   preset-a:
     name: preset-a
-    description: balanced use of models
-    windowMode: new-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: orchestrator
-              title: orchestrator
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
-              delay: 500
-            - name: worker
-              title: worker
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
-              delay: 500
-            - name: worker-alt
-              title: worker-alt
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
-              delay: 500
-        - type: vertical
-          ratio: [1, 1, 1]
-          panes:
-            - name: critic
-              title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
-              delay: 500
-            - name: guardian
-              title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
-              delay: 500
-            - name: boss
-              title: boss
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
-              delay: 500
-
-  preset-b:
-    name: preset-b
-    description: codex extreme teaming
+    description: codex-featured team
     windowMode: new-window
     layout:
       type: horizontal
@@ -136,7 +88,7 @@ presets:
           panes:
             - name: critic
               title: critic
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
               delay: 500
             - name: guardian
               title: guardian

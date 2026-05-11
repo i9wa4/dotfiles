@@ -13,12 +13,12 @@ Short reference for vde-layout config resolution and preset structure.
 
 ## Preset Definitions (layout.yml)
 
-| Preset           | Lines    | windowMode      | Panes                                     |
-| ---------------- | -------- | --------------- | ----------------------------------------- |
-| messenger-claude | 40-54    | current-window  | editor + messenger (claude sonnet medium) |
-| messenger-codex  | 56-70    | current-window  | editor + messenger (codex gpt-5.5 medium) |
-| preset-a         | 72-109   | new-window      | 3x2 grid: see SKILL.md Section 2          |
-| preset-b         | 111-148  | new-window      | 3x2 grid: all codex gpt-5.5 xhigh         |
+| Preset          | Lines  | windowMode     | Panes                                      |
+| --------------- | ------ | -------------- | ------------------------------------------ |
+| main            | 2-29   | current-window | postman, tailscale, agent, vde-monitor     |
+| dev             | 31-45  | current-window | pane + agent                               |
+| messenger-codex | 47-61  | current-window | pane + messenger (codex gpt-5.5 medium)    |
+| preset-a        | 63-100 | new-window     | 3x2 grid: 5 codex panes + critic in claude |
 
 ## Key Behavioral Notes
 

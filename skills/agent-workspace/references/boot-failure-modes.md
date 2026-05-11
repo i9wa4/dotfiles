@@ -1,8 +1,7 @@
 # Boot Failure Modes
 
 Failure modes, root causes, and mitigations for agent-driven workspace boot.
-Source context: `plans/vb-boot-demo-BeQB9I.md` (empirical 2026-05-08
-observation).
+Source context: empirical 2026-05-08 observation.
 
 ## 1. Timing Race: zsh Not Ready When `z` Injected
 
@@ -41,15 +40,15 @@ fire after the target pane has finished zsh initialization and is sitting at an
 interactive prompt. `tmux send-keys` injects keystrokes into a pane's input
 buffer, so snippet expansion is not a reliable automation boundary.
 
-**Symptom:** Sending `vb` then Space via `tmux send-keys` does not expand to
-`vde-layout messenger-codex && vde-layout preset-b`; the literal characters
-`vb` are sent.
+**Symptom:** Sending `va` then Space via `tmux send-keys` does not expand to
+`vde-layout messenger-codex && vde-layout preset-a`; the literal characters
+`va` are sent.
 
 **Mitigation:** Use direct vde-layout invocation for all agent-driven
 automation:
 
 ```bash
-tmux send-keys -t "$PANE_ID" 'vde-layout messenger-codex && vde-layout preset-b' Enter
+tmux send-keys -t "$PANE_ID" 'vde-layout messenger-codex && vde-layout preset-a' Enter
 ```
 
 This produces identical end state to the interactive snippet path.

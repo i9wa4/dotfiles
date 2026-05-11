@@ -2,19 +2,19 @@
 name: agent-workspace
 license: MIT
 description: |
-  USE FOR: Boot and manage agent tmux workspaces using vde-layout (va/vb), worktree creation and re-entry, session naming, and pane operations. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Boot and manage agent tmux workspaces using the vde-layout va preset, worktree creation and re-entry, session naming, and pane operations. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Agent Workspace
 
 **UTILITY SKILL:** Apply this skill to Boot and manage agent tmux workspaces
-using vde-layout (va/vb), worktree creation and re-entry, session naming, and
-pane operations. Keep the task scoped to the requested domain and preserve
+using the vde-layout va preset, worktree creation and re-entry, session naming,
+and pane operations. Keep the task scoped to the requested domain and preserve
 existing repo conventions.
 
-**USE FOR:** Boot and manage agent tmux workspaces using vde-layout (va/vb),
-worktree creation and re-entry, session naming, and pane operations; related
-file edits; verification and handoff in this skill domain.
+**USE FOR:** Boot and manage agent tmux workspaces using the vde-layout va
+preset, worktree creation and re-entry, session naming, and pane operations;
+related file edits; verification and handoff in this skill domain.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.
