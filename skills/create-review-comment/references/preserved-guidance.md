@@ -7,7 +7,9 @@ concise skill needs domain-specific details.
 ---
 name: create-review-comment
 license: MIT
-description: Create Japanese GitHub PR review comments from findings. Use for ai-create-review-comment or turning findings into Markdown drafts.
+description: |
+  Create Japanese GitHub PR review comments from findings. Use for
+  ai-create-review-comment or turning findings into Markdown drafts.
 ---
 
 # Create Review Comment
@@ -21,28 +23,24 @@ Apply these skills together when available:
 
 - `github` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
-- `subagent-review` for multi-perspective review finding extraction and draft
-  validation.
+- `subagent-review` for guardian-first, critic-final review finding extraction
+  and draft validation.
 
 ## 2. Workflow
 
 1. Confirm the target PR from local branch context or the user's prompt.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run a deep multi-perspective review via the `subagent-review` skill.
-   - REQUIRED invocation: `subagent-review cc tier1 cx tier1`. Do not
-     substitute by spawning individual `reviewer-*` agents directly — the
-     dispatcher's parallel fan-out and the dual-engine (Claude + Codex)
-     coverage are the point of this step.
-   - If you believe the prescribed invocation is too costly or unnecessary
-     for this PR, STOP and ask the user via `AskUserQuestion` before
-     deviating. Never downgrade silently.
-   - Legacy fallback: if the local command still exposes only the snippet
-     form, `/subagent-review cc cx-deep` is the equivalent invocation. The
-     prohibition on substituting `reviewer-*` agents still applies.
-4. Select only IMPORTANT findings from the merged summary produced by
-   `subagent-review` (typically under
-   `~/.local/state/mkmd/.../reviews/summary-*.md`).
+3. Run or cite a deep review through the normal guardian-first, critic-final
+   route described by the `subagent-review` skill.
+   - Guardian and critic may use only their runtime-native subagents for
+     bounded review or investigation.
+   - Do not specify subagent models or tiers.
+   - Do not use a unified `cc` / `cx` dispatcher fan-out.
+   - The active guardian and critic own synthesis and verdicts; subagents must
+     not implement or approve work.
+4. Select only IMPORTANT findings from the review artifact or critic final
+   summary produced by step 3.
    - The selection step MUST cite this summary file path in the final
      output's `Source review` line. If no such file exists, halt — step 3
      was not actually performed and you cannot proceed to drafting.
@@ -85,7 +83,7 @@ Use this shape for the final visible Markdown:
 
 - Target PR: #123
 - Source review: `~/.local/state/mkmd/.../reviews/summary-YYYYMMDD-HHMMSS.md`
-  (path to the `subagent-review` merged summary file produced in step 3)
+  (path to the review artifact or critic final summary produced in step 3)
 - Selected: 3 comments
 - Dropped: 4 findings
 

@@ -14,6 +14,31 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 ## 2. Primary Repo Flows
 
+### Issue Implementation Safety
+
+For GitHub issue implementation in this repo:
+
+- Run `issue-worktree-create <issue_number>` from the base repository.
+- Do not create issue branches or issue worktrees manually.
+- Do not use raw `git worktree add` as the issue implementation entrypoint.
+- Before editing, verify the worktree path, current branch, and status:
+
+  ```bash
+  pwd
+  git branch --show-current
+  git status --short --branch
+  ```
+
+- Check upstream before asking a human to push or before assuming a branch is
+  safe to publish:
+
+  ```bash
+  git rev-parse --abbrev-ref --symbolic-full-name @{u}
+  ```
+
+- Stop and report `BLOCKED` if an issue branch tracks `origin/main`; an issue
+  branch must not push into `main`.
+
 ### Issue Execution
 
 Run `issue-worktree-create <issue_number>` from the repo. Expect it to:

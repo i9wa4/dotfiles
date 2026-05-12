@@ -12,8 +12,8 @@ artifacts.
 | ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.17             | Delivered into every postman role on each `tmux-a2a-postman pop`                   |
 | Dotfiles-owned skill bodies   | `skills/<skill>/SKILL.md`                                                  | Installed to both engines and indexed by postman.md `skill_path`                   |
+| Native review skill           | `skills/subagent-review/SKILL.md`                                          | Documents runtime-native reviewer subagent usage without dispatcher tiers          |
 | Shared subagents              | `subagents/*.md`, `subagents/_metadata.nix`                                | Rendered into `~/.claude/agents/` and `~/.codex/agents/`                           |
-| Review dispatcher skill       | `shared/render-agents.nix`, `subagents/_metadata.nix`                      | Generated `subagent-review` skill installed into both engines                      |
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
 | Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                               | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
 | Skill description index       | `skills/skill-description-index/`                                          | Small skill installed into both engines; script scans user-level skill trees       |
@@ -34,8 +34,9 @@ artifacts.
    AGENTS.md installed at the runtime root.
 3. `subagents/_metadata.nix` defines shared Claude/Codex metadata while
    `subagents/*.md` stays the prompt-body source.
-4. `shared/render-agents.nix` renders Claude markdown agents, Codex TOML
-   agents, and the generated `subagent-review` dispatcher skill.
+4. `shared/render-agents.nix` renders Claude markdown agents and Codex TOML
+   agents. `skills/subagent-review/SKILL.md` is installed through the normal
+   local skill pipeline.
 5. `shared/install-manifest.nix` resolves the shared agent install targets and
    skill destinations that the runtime installers consume.
 6. `shared/agent-skills.nix` validates skill sources and installs them into both
@@ -56,9 +57,9 @@ artifacts.
 
 ## Authoring Notes
 
-- Keep reviewer and subagent implementation details near `subagents/`,
-  `subagents/_metadata.nix`, and `shared/render-agents.nix`, not in the
-  top-level runtime modules.
+- Keep reviewer agent implementation details near `subagents/`,
+  `subagents/_metadata.nix`, and `shared/render-agents.nix`. Keep reviewer
+  usage guidance in `skills/subagent-review/SKILL.md`.
 - After setting up Claude Code on a new machine or after adding new projects,
   use `/agent-harness-engineering` and its Claude workspace trust workflow;
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust

@@ -169,9 +169,9 @@ later work. Place before the milestones they de-risk.
 
 ## Decision Log
 
-| #   | Decision           | Why                         | Alternatives Considered |
-| --- | ------------------ | --------------------------- | ----------------------- |
-| 1   | <what was decided> | <rationale and constraints> | <what was rejected>     |
+| # | Decision | Why   | Alternatives |
+| - | -------- | ----- | ------------ |
+| 1 | <what>   | <why> | <rejected>   |
 
 ## Risks and Considerations
 
@@ -275,7 +275,8 @@ mkmd --dir reviews --label completion
 - <PR number or commit hash>
 ```
 
-NOTE: For review workflow, see subagent-review skill.
+NOTE: For review workflow, see the `subagent-review` skill. Normal review is
+guardian-first and critic-final.
 
 ## 5. PR Workflow
 

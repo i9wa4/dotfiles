@@ -1,72 +1,27 @@
-# Preserved Guidance
+# Pointer Notes
 
-Original SKILL.md guidance before Waza compaction. Use this reference when the
-concise skill needs domain-specific details.
+`repo-local` is intentionally small. It exists only to help agents find the
+focused skill or document that owns a repo-local topic.
 
-~~~~~~~~~~~~markdown
----
-name: repo-local
-license: MIT
-description: Foundational dotfiles repo rules (workflow, safety, file management, rollback) that co-load with task-specific skills intentionally.
----
+## Focused Owners
 
-# Repo-Local Operating Rules
+- `agent-workspace`: worktrees, tmux workspace boot, pane operations, and
+  issue/PR worktree safety.
+- `agent-harness-engineering`: Claude/Codex runtime config, hooks, Nix/Home
+  Manager agent modules, skill installation pipeline, and postman routing.
+- `agent-skill-management`: source-owned `skills/*` changes and validation.
+- `github`: GitHub CLI usage, comments, issues, PRs, and commit-message rules.
+- `markdown`: Markdown formatting and Japanese Markdown constraints.
 
-These are the residual repo-local runtime rules that still need to load in
-Claude and Codex sessions even when `tmux-a2a-postman` carries the common role
-contract for postman-driven work.
+## Document Owners
 
-## 1. Workflow
+- `docs/repo-ai-operating-contract.md`: durable AI operating rules, `mkmd`
+  artifacts, review routing, hooks, and installed runtime behavior.
+- `docs/dotfiles-operating-concepts.md`: high-level philosophy and background
+  for the repo harness.
+- `docs/worktree-development.md`: command-level worktree behavior.
+- `skills/agent-workspace/references/worktree-workflow.md`: focused
+  agent-facing worktree workflow.
 
-- Read a file in full at a time, not separately
-- Do not delete unmentioned handlers, functions, or sections
-- Do not add unnecessary error handling, backward compatibility, or defensive
-  code
-- Respect YAGNI and KISS principles
-- Prefer the smallest next step that produces a verifiable result; when
-  changing behavior and a cheap failing test or reproducer is possible, start
-  there
-- Propose additional changes and wait for approval
-- When explaining things to humans, use ELI5-like plain language without losing
-  accuracy
-- Verify changes took effect before reporting success; show actual output as
-  evidence
-- Verify findings against the actual repo/code before reporting. Flag confidence
-  level.
-- Follow README.md and CONTRIBUTING.md if they exist
-- For `tmux-a2a-postman` role work, follow
-  `config/tmux-a2a-postman/postman.md` and
-  `docs/repo-ai-operating-contract.md` instead of restating that node contract
-  from memory
-
-## 2. Safety
-
-- This dotfiles repo targets both Linux and macOS; prefer Nix-managed tools
-  or POSIX-compatible commands to avoid platform differences
-- Do not pollute global environment (use venv, nvm, rbenv, etc.)
-- Do not commit generated files (lock files, `node_modules/`, `.venv/`, etc.)
-- Do not use complex tooling (home-manager modules) when simple solutions
-  (symlinks, plain files) suffice for config file management in dotfiles
-- Never hardcode user-specific values (usernames, hostnames, machine names) in
-  shared Nix configs; use `config.home.username` or pass values as arguments
-- Some panes are read-only. Before attempting edits, check write
-  permissions. If blocked, delegate the edit to the appropriate agent.
-
-## 3. Files
-
-- Create working files (not tracked by git) with `mkmd` (`mkmd --help`)
-- Match comment language in target file
-- Check entire file for consistency; if unclear, check surrounding files
-- Use uppercase for annotations: NOTE:, TODO:, FIXME:, WARNING:
-
-## 4. Rollback
-
-- Do not refactor or "improve" other code during rollback
-- Revert ONLY the specified changes
-- Confirm exact files and lines before reverting
-
-## 5. Environment
-
-- Always running inside a tmux pane
-- Your role name: `tmux display-message -p '#{pane_title}'`
-~~~~~~~~~~~~
+Do not add broad workflow, safety, worktree, harness, or skill-authoring rules
+back into this reference. Move them to the focused owner instead.
