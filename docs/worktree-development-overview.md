@@ -28,7 +28,12 @@ The workflow has five recurring phases:
    directory names derived from the issue or PR.
 3. Bootstrap the task environment.
    New worktrees copy `.envrc`, run `repo-setup` when available, and register
-   the final path with `zoxide`.
+   the final path with `zoxide`. `repo-setup` attempts to install the repo
+   devshell hooks and generated per-worktree pre-commit config. If Nix or
+   devshell setup fails, it warns and continues; re-run `repo-setup` or enter
+   the devshell before pushing so `.pre-commit-config.yaml` is generated.
+   `direnv allow` stays opt-in; pass `--allow-direnv` to the creation command
+   when the worktree contents are trusted and you want setup to allow `.envrc`.
 4. Re-enter quickly.
    Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or
    worktree from normal shell use. Inside tmux, re-entry also keeps session
@@ -46,7 +51,8 @@ policy:
 - issue and PR lookup through `gh`
 - branch reuse and upstream tracking
 - cross-repository PR review support
-- `.envrc` and `repo-setup` bootstrap
+- `.envrc`, devshell hook, and `repo-setup` bootstrap with explicit direnv
+  trust
 - zoxide registration for fast re-entry
 - tmux-aware session naming
 - explicit cleanup checks before removal
