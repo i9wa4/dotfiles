@@ -4,6 +4,9 @@ This document describes the current worktree workflow in this repository.
 Recent commits and the checked-in scripts are the source of truth. If this page
 and the code disagree, fix the page to match the code.
 
+For the overall concept and day-to-day practice, see
+`docs/worktree-development-overview.md`.
+
 For the adoption decision behind the current tool stack, see
 `docs/worktree-tool-evaluation.md`.
 
@@ -184,4 +187,5 @@ For the adoption decision behind the current tool stack, see
 - `nix/home-manager/modules/zsh.nix`
 - `nix/home-manager/modules/npm.nix`
 - `docs/dotfiles-operating-concepts.md`
+- `docs/worktree-development-overview.md`
 - `docs/worktree-tool-evaluation.md`
