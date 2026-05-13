@@ -182,7 +182,8 @@ Check settings.json permissions block:
 
 - [ ] Are deny rules using modern syntax `Bash(cmd *)` not deprecated `:*`?
 - [ ] Are critical commands blocked (git push, git rebase, git reset, rm, sudo)?
-- [ ] Is `git -C *` blocked to prevent cross-repo operations?
+- [ ] Is `git -C *` blocked so agents `cd` into the target worktree and let
+  direnv load before running git?
 - [ ] Is defaultMode appropriate ("plan" or "dontAsk")?
 - [ ] Are sensitive paths blocked (secrets, .env, .ssh, keys, tokens)?
 - [ ] Are allow rules necessary or can defaultMode handle it?
