@@ -29,6 +29,8 @@ Source of truth:
 Static settings (model, analytics, features, MCP servers) are defined as Nix
 attributes in `codex/default.nix`. Trusted projects are discovered dynamically
 by `fd` at `home-manager switch` time and appended to `config.toml`.
+Existing `[hooks.state]` review entries are preserved from the local
+`config.toml` so user-approved hook hashes survive later Nix activations.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:
