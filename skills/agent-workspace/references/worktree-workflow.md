@@ -107,10 +107,9 @@ git worktree list --porcelain
 - Cleanup should be explicit: inspect current-repo worktrees with
   `worktree-remove` or `git worktree list --porcelain`, then delete confirmed
   linked worktrees with the wrapper flow.
-- `worktree-remove` categorizes fzf rows as issue-origin, PR-origin, or
-  miscellaneous. Its preview shows issue or PR status when a number is
-  detectable and `gh` can resolve it, plus local branch upstream tracking,
-  worktree status, and recent commits.
+- `worktree-remove` keeps the selector and preview focused on issue state, PR
+  state, and upstream branch state, with long branch and path fields placed
+  after those status fields.
 - `worktree-remove` treats both ancestry-merged branches and matching
   squash-merged GitHub PR branches as merged when `gh` can resolve the merged
   PR by head branch.
