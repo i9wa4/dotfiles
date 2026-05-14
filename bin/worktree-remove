@@ -116,52 +116,6 @@ github_repo_from_origin() {
   printf '%s\n' "$repo"
 }
 
-show_github_status() {
-  local repo_root="$1"
-  local origin_kind="$2"
-  local origin_number="$3"
-  local github_repo
-  local output
-
-  if [[ "$origin_kind" != "issue" && "$origin_kind" != "pr" ]]; then
-    echo "GitHub: no issue or PR number detected"
-    return 0
-  fi
-
-  if [[ "$origin_number" == "-" ]]; then
-    echo "GitHub: no issue or PR number detected"
-    return 0
-  fi
-
-  if ! command -v gh &>/dev/null; then
-    echo "GitHub: gh command unavailable"
-    return 0
-  fi
-
-  github_repo=$(github_repo_from_origin "$repo_root")
-  if [[ -z "$github_repo" ]]; then
-    echo "GitHub: origin is not a GitHub repository"
-    return 0
-  fi
-
-  case "$origin_kind" in
-    issue)
-      if output=$(gh issue view "$origin_number" --repo "$github_repo" --json number,state,title,url --jq '"Issue #\(.number): \(.state)\n\(.title)\n\(.url)"' 2>/dev/null); then
-        printf '%s\n' "$output"
-      else
-        echo "GitHub: issue status unavailable"
-      fi
-      ;;
-    pr)
-      if output=$(gh pr view "$origin_number" --repo "$github_repo" --json number,state,isDraft,mergeStateStatus,reviewDecision,title,url --jq '"PR #\(.number): \(.state)" + (if .isDraft then " draft" else "" end) + " merge=" + (.mergeStateStatus // "-") + " review=" + (.reviewDecision // "-") + "\n" + .title + "\n" + .url' 2>/dev/null); then
-        printf '%s\n' "$output"
-      else
-        echo "GitHub: PR status unavailable"
-      fi
-      ;;
-  esac
-}
-
 github_origin_status() {
   local repo_root="$1"
   local origin_kind="$2"
@@ -240,43 +194,6 @@ format_origin_status() {
   else
     printf '%s\n' "status:-"
   fi
-}
-
-show_branch_tracking() {
-  local repo_root="$1"
-  local branch="$2"
-  local upstream
-  local head
-  local counts
-  local ahead="-"
-  local behind="-"
-
-  if [[ -z "$branch" || "$branch" == "-" ]]; then
-    echo "Branch: detached or unavailable"
-    return 0
-  fi
-
-  head=$(git -C "$repo_root" rev-parse --short "refs/heads/${branch}" 2>/dev/null || true)
-  upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
-
-  echo "Branch: ${branch}"
-  if [[ -n "$head" ]]; then
-    echo "HEAD: ${head}"
-  else
-    echo "HEAD: unavailable"
-  fi
-
-  if [[ -z "$upstream" ]]; then
-    echo "Upstream: none"
-    return 0
-  fi
-
-  echo "Upstream: ${upstream}"
-  counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
-  if [[ -n "$counts" ]]; then
-    read -r ahead behind <<<"$counts"
-  fi
-  echo "Tracking: ahead=${ahead} behind=${behind}"
 }
 
 default_base_ref() {
