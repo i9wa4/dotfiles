@@ -106,7 +106,7 @@ unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' '
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="${context_prefix}${context_name} ${commit_hash}"
+output="${context_prefix}${context_name} [${commit_hash}]"
 
 if [ "${untracked}" -gt 0 ]; then
   output="${output} ?${untracked}"
@@ -124,4 +124,4 @@ if [ "${unpushed}" -gt 0 ]; then
   output="${output} >${unpushed}"
 fi
 
-echo "${output} "
+echo "${output}"
