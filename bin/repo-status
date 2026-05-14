@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 
-# Display git repository status with emoji indicators.
+# Display git repository status with ASCII indicators.
 # Designed for shell prompt integration.
 #
 # Usage:
 #   repo-status
 #
 # Output format:
-#   🌿branch 📍hash ❓N 📦N 📝N 📈N 📉N 🚀N
-#     🌿 = Branch name (with action state if any)
-#     📍 = Commit hash (8 chars)
-#     ❓ = Untracked files count
-#     📦 = Staged files count
-#     📝 = Unstaged files count
-#     📈 = Insertions count
-#     📉 = Deletions count
-#     🚀 = Unpushed commits count
+#   [branch]branch [commit]hash [worktree] ?N staged=N unstaged=N +N -N [ahead]N
+#     [branch] = Branch name (with action state if any)
+#     [commit] = Commit hash (8 chars)
+#     [worktree] = Worktree status group
+#     ?N = Untracked files count
+#     staged=N = Staged files count
+#     unstaged=N = Unstaged files count
+#     +N = Insertions count
+#     -N = Deletions count
+#     [ahead]N = Unpushed commits count
 
 # Exit if not in a git repository
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
@@ -79,25 +80,29 @@ unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' '
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="🌿${branch} 📍${commit_hash}"
+output="[branch]${branch} [commit]${commit_hash}"
+worktree_output=""
 
 if [ "${untracked}" -gt 0 ]; then
-  output="${output} ❓${untracked}"
+  worktree_output="${worktree_output} ?${untracked}"
 fi
 if [ "${staged}" -gt 0 ]; then
-  output="${output} 📦${staged}"
+  worktree_output="${worktree_output} staged=${staged}"
 fi
 if [ "${unstaged}" -gt 0 ]; then
-  output="${output} 📝${unstaged}"
+  worktree_output="${worktree_output} unstaged=${unstaged}"
 fi
 if [ "${insertions}" -gt 0 ]; then
-  output="${output} 📈${insertions}"
+  worktree_output="${worktree_output} +${insertions}"
 fi
 if [ "${deletions}" -gt 0 ]; then
-  output="${output} 📉${deletions}"
+  worktree_output="${worktree_output} -${deletions}"
+fi
+if [ -n "${worktree_output}" ]; then
+  output="${output} [worktree]${worktree_output}"
 fi
 if [ "${unpushed}" -gt 0 ]; then
-  output="${output} 🚀${unpushed}"
+  output="${output} [ahead]${unpushed}"
 fi
 
 echo "${output} "
