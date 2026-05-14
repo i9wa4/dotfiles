@@ -126,7 +126,7 @@ Ignore any release entries for versions newer than `codex --version`.
   any `hooks.json` behavior
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
-  repository-local override need
+  dotfiles-local override need
 - YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/`
   using the prefix convention from `docs/agent-hooks-architecture.md` §5:
   - `<no prefix>` for runtime-agnostic shared scripts (e.g.
@@ -177,8 +177,8 @@ Ignore any release entries for versions newer than `codex --version`.
 
 This repo does not install a root `~/.codex/AGENTS.md`; postman common blocks
 deliver persona, language, scope, and role contracts to postman-driven roles.
-Repo-local skill bodies are exposed through the generated `skill_path` catalog
-and must stay in `SKILL.md`.
+Dotfiles-owned skill bodies are exposed through the generated `skill_path`
+catalog, and procedural rules must stay in focused `SKILL.md` files.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Keep instructions compatible with both Claude Code and Codex CLI

@@ -591,7 +591,8 @@ in
     # Persona / language / scope is delivered through postman.md
     # common_template on each tmux-a2a-postman pop. Dotfiles-owned skills are
     # listed by the generated skill_path catalog; catch-all repository
-    # background intentionally lives in docs rather than a repo-local skill.
+    # background intentionally lives in docs rather than a `skills/repo-local`
+    # catch-all skill.
     # Codex CLI has no AGENTS.md generated at the runtime root anymore.
     # Exec policy rules (.rules files only; markdown instructions are delivered
     # through postman.md common_template, not auto-loaded by Codex CLI)

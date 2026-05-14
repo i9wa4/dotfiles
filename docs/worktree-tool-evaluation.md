@@ -12,7 +12,7 @@ The current repository wrappers and checked-in config are the source of truth:
 ## 1. Current Repo Constraints
 
 - Human entrypoints are issue and PR numbers, not free-form branch names.
-- Managed worktrees live under repo-local `.worktrees/`.
+- Managed worktrees live under dotfiles-local `.worktrees/`.
 - The repo already depends on wrapper behavior that generic tools do not
   provide by themselves:
   - `gh` issue and PR lookups
@@ -26,7 +26,7 @@ The current repository wrappers and checked-in config are the source of truth:
   - cleanup is explicit and requires confirmation
   - dirty, locked, and unmerged branch worktrees are refused by
     `worktree-remove`
-  - linked worktrees stay under repo-local `.worktrees/`
+  - linked worktrees stay under dotfiles-local `.worktrees/`
 
 ## 2. Evaluation
 
@@ -43,7 +43,7 @@ The current repository wrappers and checked-in config are the source of truth:
   - native `git worktree` commands as the backend
 - Do not add a generic worktree CLI as the normal human interface.
 - Keep `skills/agent-workspace/SKILL.md` as the canonical workspace skill for
-  repo-local worktree policy because it preserves the wrapper-first policy.
+  dotfiles-local worktree policy because it preserves the wrapper-first policy.
 
 ## 4. Why This Decision Is Narrow
 
