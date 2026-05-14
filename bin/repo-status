@@ -11,6 +11,7 @@
 #   w:worktree@branch hash ?N +N ~N (+N -N) >N
 #     b: = Branch context (with action state if any)
 #     w: = Linked worktree context (with @branch when different)
+#     branch/worktree names are capped at 15 characters
 #     hash = Commit hash (8 chars)
 #     ?N = Untracked files count
 #     +N = Staged files count
@@ -60,11 +61,11 @@ if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   context_prefix="w:"
   worktree_context="${worktree_name}"
   branch_context="${branch}"
-  if [ "${#worktree_context}" -gt 8 ]; then
-    worktree_context="${worktree_context:0:8}..."
+  if [ "${#worktree_context}" -gt 15 ]; then
+    worktree_context="${worktree_context:0:12}..."
   fi
-  if [ "${#branch_context}" -gt 8 ]; then
-    branch_context="${branch_context:0:8}..."
+  if [ "${#branch_context}" -gt 15 ]; then
+    branch_context="${branch_context:0:12}..."
   fi
   context_name="${worktree_context}"
   if [ -n "${branch}" ] && [ "${worktree_name}" != "${branch}" ]; then
@@ -78,8 +79,8 @@ if [ -n "${action}" ]; then
 fi
 
 # Truncate context name
-if [ "${context_prefix}" = "b:" ] && [ "${#context_name}" -gt 20 ]; then
-  context_name="${context_name:0:20}..."
+if [ "${context_prefix}" = "b:" ] && [ "${#context_name}" -gt 15 ]; then
+  context_name="${context_name:0:12}..."
 fi
 
 # Get git status counts
