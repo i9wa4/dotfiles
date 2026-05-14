@@ -102,8 +102,8 @@ reference was loaded; follow the current session's delegation policy.
 
 ## 6. Upstream CLAUDE.md Design Guidelines
 
-This section is general Claude Code guidance. This repo does not install a
-root `~/.claude/CLAUDE.md`; repo-local persona and scope are delivered through
+This section is general Claude Code guidance. This repo does not install a root
+`~/.claude/CLAUDE.md`; dotfiles-local persona and scope are delivered through
 `config/tmux-a2a-postman/postman.md` instead.
 
 - YOU MUST: Focus only on persona and core guidelines
