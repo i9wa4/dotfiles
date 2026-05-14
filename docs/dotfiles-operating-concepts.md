@@ -18,10 +18,10 @@ That is why the repo keeps:
 AI-specific operating rules live separately in
 `docs/repo-ai-operating-contract.md`.
 
-## Repo-local Guardrail Ownership
+## Dotfiles-local Guardrail Ownership
 
-Repo-local guidance should stay small. Task procedures belong to focused skills
-or durable docs, not to a generic runtime skill.
+Dotfiles-local guidance should stay small. Task procedures belong to focused
+skills or durable docs, not to a generic runtime skill.
 
 There should not be a `skills/repo-local/` entry. The postman `skill_path`
 catalog is intentionally broad, so catch-all repository guidance would be
@@ -217,7 +217,7 @@ targets.
 Even with the broader harness in place, `tmux-a2a-postman` remains central
 because it carries the workflow state between roles.
 
-The repo-local operating model is:
+The dotfiles-local operating model is:
 
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement
