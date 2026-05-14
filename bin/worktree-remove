@@ -14,8 +14,8 @@ Usage:
   worktree-remove
 
 Search the current repository's .worktrees/ directory for managed worktrees,
-select one with fzf, confirm by typing "yes", then remove it with git
-worktree remove.
+select one with fzf, validate safety gates, then remove it with git worktree
+remove.
 
 Options:
   -h, --help  Show this help.
@@ -660,7 +660,7 @@ if ! selection="$(
   exit 0
 fi
 
-IFS=$'\t' read -r _ issue_state pr_state upstream_status branch worktree_path lock_state repo_root managed_root origin_kind origin_number upstream_remote upstream_state upstream_ahead upstream_behind <<<"$selection"
+IFS=$'\t' read -r _ _ _ _ branch worktree_path lock_state repo_root managed_root origin_kind origin_number _ _ _ _ <<<"$selection"
 
 if [[ -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
@@ -690,11 +690,6 @@ fi
 dirty_state=$(worktree_dirty_state "$worktree_path")
 lock_state=$(worktree_lock_state "$repo_root" "$worktree_path")
 merge_state=$(branch_merge_state "$repo_root" "$branch" "$origin_kind" "$origin_number")
-github_record=$(github_state_columns "$repo_root" "$origin_kind" "$origin_number")
-IFS=$'\t' read -r issue_state pr_state <<<"$github_record"
-upstream_record=$(branch_upstream_status "$repo_root" "$branch")
-IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
-upstream_status=$(format_upstream_status "$upstream_state" "$upstream_ahead" "$upstream_behind")
 
 if [[ "$dirty_state" != "clean" ]]; then
   echo "Error: refusing to remove a dirty worktree: ${worktree_path}" >&2
@@ -716,23 +711,7 @@ if [[ "$branch" != "-" && "$merge_state" != "merged" ]]; then
   exit 1
 fi
 
-echo "Selected worktree:"
-echo "  Issue:           ${issue_state}"
-echo "  PR:              ${pr_state}"
-echo "  Upstream state:  ${upstream_status}"
-echo "  Branch:          ${branch}"
-echo "  Upstream branch: ${upstream_remote}"
-echo "  Path:            ${worktree_path}"
-echo ""
-echo "This will remove the linked worktree and its local branch with git worktree."
-printf 'Type yes to continue: '
-read -r answer
-
-if [[ "$answer" != "yes" ]]; then
-  echo "Cancelled."
-  exit 0
-fi
-
+echo "Removing worktree: ${branch} (${worktree_path})"
 cd "$repo_root"
 git worktree remove "$worktree_path"
 if [[ "$branch" != "-" ]]; then

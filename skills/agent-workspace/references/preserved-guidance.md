@@ -146,7 +146,7 @@ Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
 <issue_number>` and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
 interactive cleanup in the current repository, use `bin/worktree-remove` to
 choose one managed worktree under the repo's `.worktrees/` directory with
-`fzf`, confirm with `yes`, and delete through native `git worktree` cleanup.
+`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
 Both scripts:
 

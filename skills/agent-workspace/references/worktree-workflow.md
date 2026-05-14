@@ -136,7 +136,7 @@ git worktree list --porcelain
 ## 6. Repo Fit Notes
 
 - Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-remove` or `git worktree list --porcelain`, then delete confirmed
+  `worktree-remove` or `git worktree list --porcelain`, then delete selected
   linked worktrees with the wrapper flow.
 - `worktree-remove` keeps the selector focused on compact issue/PR status,
   upstream status, and branch rows. Path and upstream-branch details stay hidden
