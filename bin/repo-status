@@ -7,10 +7,10 @@
 #   repo-status
 #
 # Output format:
-#   [branch]branch hash ?N +N ~N (+N -N) >N
-#   [worktree]worktree:branch hash ?N +N ~N (+N -N) >N
-#     [branch] = Branch context (with action state if any)
-#     [worktree] = Linked worktree context (with branch when different)
+#   b:branch hash ?N +N ~N (+N -N) >N
+#   w:worktree@branch hash ?N +N ~N (+N -N) >N
+#     b: = Branch context (with action state if any)
+#     w: = Linked worktree context (with @branch when different)
 #     hash = Commit hash (8 chars)
 #     ?N = Untracked files count
 #     +N = Staged files count
@@ -52,15 +52,23 @@ fi
 
 # Build the leading context. Linked worktrees can have names that differ from
 # their branches, so include both when needed while keeping one context label.
-context_label="[branch]"
+context_prefix="b:"
 context_name="${branch}"
 if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   top_level=$(git rev-parse --show-toplevel 2>/dev/null)
   worktree_name=$(basename "${top_level}")
-  context_label="[worktree]"
-  context_name="${worktree_name}"
+  context_prefix="w:"
+  worktree_context="${worktree_name}"
+  branch_context="${branch}"
+  if [ "${#worktree_context}" -gt 8 ]; then
+    worktree_context="${worktree_context:0:8}..."
+  fi
+  if [ "${#branch_context}" -gt 8 ]; then
+    branch_context="${branch_context:0:8}..."
+  fi
+  context_name="${worktree_context}"
   if [ -n "${branch}" ] && [ "${worktree_name}" != "${branch}" ]; then
-    context_name="${worktree_name}:${branch}"
+    context_name="${worktree_context}@${branch_context}"
   fi
 fi
 
@@ -70,7 +78,7 @@ if [ -n "${action}" ]; then
 fi
 
 # Truncate context name
-if [ "${#context_name}" -gt 20 ]; then
+if [ "${context_prefix}" = "b:" ] && [ "${#context_name}" -gt 20 ]; then
   context_name="${context_name:0:20}..."
 fi
 
@@ -95,7 +103,7 @@ unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' '
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="${context_label}${context_name} ${commit_hash}"
+output="${context_prefix}${context_name} ${commit_hash}"
 
 if [ "${untracked}" -gt 0 ]; then
   output="${output} ?${untracked}"
