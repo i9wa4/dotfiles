@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Print the current tmux session's zero-based position in creation order.
+#
+# Usage:
+#   tmux-session-index [SESSION_ID]
+#
+# tmux documents a session_index format, but on tmux 3.6a it is empty in
+# status-line and list-sessions contexts. Derive the display index from the
+# same ordered session list instead.
+
+current_session_id=${1:-}
+if [ -z "${current_session_id}" ]; then
+  current_session_id=$(tmux display-message -p '#{session_id}' 2>/dev/null) || exit 0
+fi
+
+tmux list-sessions -F '#{session_created} #{session_id}' 2>/dev/null |
+  awk '{
+    session_id = $2
+    sub(/^\$/, "", session_id)
+    print $1, session_id, $2
+  }' |
+  sort -k1,1n -k2,2n |
+  awk -v current="${current_session_id}" '$3 == current { print NR - 1; exit }'
