@@ -7,16 +7,16 @@
 #   repo-status
 #
 # Output format:
-#   [branch]branch [commit]hash [worktree] ?N staged=N unstaged=N +N -N [ahead]N
-#     [branch] = Branch name (with action state if any)
-#     [commit] = Commit hash (8 chars)
-#     [worktree] = Worktree status group
+#   [branch]branch hash ?N +N ~N (+N -N) >N
+#   [worktree]worktree:branch hash ?N +N ~N (+N -N) >N
+#     [branch] = Branch context (with action state if any)
+#     [worktree] = Linked worktree context (with branch when different)
+#     hash = Commit hash (8 chars)
 #     ?N = Untracked files count
-#     staged=N = Staged files count
-#     unstaged=N = Unstaged files count
-#     +N = Insertions count
-#     -N = Deletions count
-#     [ahead]N = Unpushed commits count
+#     +N = Staged files count
+#     ~N = Unstaged files count
+#     (+N -N) = Insertions/deletions count
+#     >N = Unpushed commits count
 
 # Exit if not in a git repository
 if ! git rev-parse --git-dir >/dev/null 2>&1; then
@@ -25,6 +25,7 @@ fi
 
 # Get git directory (works with worktrees)
 git_dir=$(git rev-parse --git-dir 2>/dev/null)
+git_common_dir=$(git rev-parse --git-common-dir 2>/dev/null)
 
 # Detect action state
 action=""
@@ -49,14 +50,28 @@ if [ -z "${branch}" ]; then
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
 fi
 
-# Append action to branch name if present
-if [ -n "${action}" ]; then
-  branch="${branch}|${action}"
+# Build the leading context. Linked worktrees can have names that differ from
+# their branches, so include both when needed while keeping one context label.
+context_label="[branch]"
+context_name="${branch}"
+if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
+  top_level=$(git rev-parse --show-toplevel 2>/dev/null)
+  worktree_name=$(basename "${top_level}")
+  context_label="[worktree]"
+  context_name="${worktree_name}"
+  if [ -n "${branch}" ] && [ "${worktree_name}" != "${branch}" ]; then
+    context_name="${worktree_name}:${branch}"
+  fi
 fi
 
-# Truncate branch name to 15 characters
-if [ "${#branch}" -gt 20 ]; then
-  branch="${branch:0:20}..."
+# Append action to context name if present
+if [ -n "${action}" ]; then
+  context_name="${context_name}|${action}"
+fi
+
+# Truncate context name
+if [ "${#context_name}" -gt 20 ]; then
+  context_name="${context_name:0:20}..."
 fi
 
 # Get git status counts
@@ -80,29 +95,22 @@ unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' '
 commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="[branch]${branch} [commit]${commit_hash}"
-worktree_output=""
+output="${context_label}${context_name} ${commit_hash}"
 
 if [ "${untracked}" -gt 0 ]; then
-  worktree_output="${worktree_output} ?${untracked}"
+  output="${output} ?${untracked}"
 fi
 if [ "${staged}" -gt 0 ]; then
-  worktree_output="${worktree_output} staged=${staged}"
+  output="${output} +${staged}"
 fi
 if [ "${unstaged}" -gt 0 ]; then
-  worktree_output="${worktree_output} unstaged=${unstaged}"
+  output="${output} ~${unstaged}"
 fi
-if [ "${insertions}" -gt 0 ]; then
-  worktree_output="${worktree_output} +${insertions}"
-fi
-if [ "${deletions}" -gt 0 ]; then
-  worktree_output="${worktree_output} -${deletions}"
-fi
-if [ -n "${worktree_output}" ]; then
-  output="${output} [worktree]${worktree_output}"
+if [ "${insertions}" -gt 0 ] || [ "${deletions}" -gt 0 ]; then
+  output="${output} (+${insertions} -${deletions})"
 fi
 if [ "${unpushed}" -gt 0 ]; then
-  output="${output} [ahead]${unpushed}"
+  output="${output} >${unpushed}"
 fi
 
 echo "${output} "
