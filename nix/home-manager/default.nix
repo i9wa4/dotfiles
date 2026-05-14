@@ -47,7 +47,7 @@ in
     # home.file
     ./modules/tmux.nix
     # home.activation
-    ./modules/npm.nix
+    ./modules/pnpm.nix
     # AI agent tools
     ./agents
   ];
@@ -102,6 +102,7 @@ in
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
+      pkgs.pnpm
       pkgs.ripgrep
       pkgs.shellcheck
       pkgs.uv

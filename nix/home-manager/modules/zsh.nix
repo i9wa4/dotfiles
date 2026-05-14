@@ -141,11 +141,6 @@ in
       source "${zshDir}/snippet.zsh"
       source "${zshDir}/zoxide.zsh"
 
-      # Safe-chain
-      if [[ -f ~/.safe-chain/scripts/init-posix.sh ]]; then
-        source ~/.safe-chain/scripts/init-posix.sh
-      fi
-
       # Local config (machine-specific, not version controlled)
       if [[ -f ~/.zshrc.local ]]; then
         source ~/.zshrc.local

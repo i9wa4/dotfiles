@@ -70,5 +70,5 @@ Revisit this decision only if one of these becomes true:
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
-- `nix/home-manager/modules/npm.nix`
+- `nix/home-manager/modules/pnpm.nix`
 - `skills/agent-workspace/SKILL.md`
