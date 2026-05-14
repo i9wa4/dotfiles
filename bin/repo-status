@@ -7,10 +7,12 @@
 #   repo-status
 #
 # Output format:
-#   b:branch hash ?N +N ~N (+N -N) >N
-#   w:worktree:branch hash ?N +N ~N (+N -N) >N
-#     b: = Branch context (with action state if any)
-#     w: = Linked worktree context (with :branch when different)
+#   br:branch hash ?N +N ~N (+N -N) >N
+#   wt:worktree hash ?N +N ~N (+N -N) >N
+#   wt:worktree:br:branch hash ?N +N ~N (+N -N) >N
+#     br: = Branch context (with action state if any)
+#     wt: = Linked worktree context
+#     :br:branch = Branch name when different from worktree name
 #     branch/worktree names are capped at 15 characters
 #     hash = Commit hash (8 chars)
 #     ?N = Untracked files count
@@ -53,12 +55,12 @@ fi
 
 # Build the leading context. Linked worktrees can have names that differ from
 # their branches, so include both when needed while keeping one context label.
-context_prefix="b:"
+context_prefix="br:"
 context_name="${branch}"
 if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   top_level=$(git rev-parse --show-toplevel 2>/dev/null)
   worktree_name=$(basename "${top_level}")
-  context_prefix="w:"
+  context_prefix="wt:"
   worktree_context="${worktree_name}"
   branch_context="${branch}"
   if [ "${#worktree_context}" -gt 15 ]; then
@@ -69,7 +71,7 @@ if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   fi
   context_name="${worktree_context}"
   if [ -n "${branch}" ] && [ "${worktree_name}" != "${branch}" ]; then
-    context_name="${worktree_context}:${branch_context}"
+    context_name="${worktree_context}:br:${branch_context}"
   fi
 fi
 
@@ -79,7 +81,7 @@ if [ -n "${action}" ]; then
 fi
 
 # Truncate context name
-if [ "${context_prefix}" = "b:" ] && [ "${#context_name}" -gt 15 ]; then
+if [ "${context_prefix}" = "br:" ] && [ "${#context_name}" -gt 15 ]; then
   context_name="${context_name:0:12}..."
 fi
 
