@@ -8,9 +8,9 @@
 #
 # Output format:
 #   b:branch hash ?N +N ~N (+N -N) >N
-#   w:worktree@branch hash ?N +N ~N (+N -N) >N
+#   w:worktree:branch hash ?N +N ~N (+N -N) >N
 #     b: = Branch context (with action state if any)
-#     w: = Linked worktree context (with @branch when different)
+#     w: = Linked worktree context (with :branch when different)
 #     branch/worktree names are capped at 15 characters
 #     hash = Commit hash (8 chars)
 #     ?N = Untracked files count
@@ -69,7 +69,7 @@ if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   fi
   context_name="${worktree_context}"
   if [ -n "${branch}" ] && [ "${worktree_name}" != "${branch}" ]; then
-    context_name="${worktree_context}@${branch_context}"
+    context_name="${worktree_context}:${branch_context}"
   fi
 fi
 
