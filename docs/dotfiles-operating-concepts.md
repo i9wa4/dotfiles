@@ -23,6 +23,11 @@ AI-specific operating rules live separately in
 Repo-local guidance should stay small. Task procedures belong to focused skills
 or durable docs, not to a generic runtime skill.
 
+There should not be a `skills/repo-local/` entry. The postman `skill_path`
+catalog is intentionally broad, so catch-all repository guidance would be
+visible too often. Put durable repo background in `docs/`, and put procedural
+agent behavior in the focused skill that owns that workflow.
+
 - Workspace, tmux navigation, and issue worktree safety belong to
   `skills/agent-workspace/`.
 - Claude/Codex runtime config, hooks, skill installation, and postman routing

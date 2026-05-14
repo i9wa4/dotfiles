@@ -42,8 +42,8 @@ The current repository wrappers and checked-in config are the source of truth:
   - `z` and `zi` for human re-entry
   - native `git worktree` commands as the backend
 - Do not add a generic worktree CLI as the normal human interface.
-- Keep `skills/agent-workspace/SKILL.md` as the canonical repo-local skill
-  because it preserves the wrapper-first policy.
+- Keep `skills/agent-workspace/SKILL.md` as the canonical workspace skill for
+  repo-local worktree policy because it preserves the wrapper-first policy.
 
 ## 4. Why This Decision Is Narrow
 

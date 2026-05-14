@@ -126,7 +126,7 @@ Ignore any release entries for versions newer than `codex --version`.
   any `hooks.json` behavior
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
-  repo-local override need
+  repository-local override need
 - YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/`
   using the prefix convention from `docs/agent-hooks-architecture.md` §5:
   - `<no prefix>` for runtime-agnostic shared scripts (e.g.
@@ -498,8 +498,8 @@ this runbook.
 ### 9.1. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`; repo-local skill bodies flow through
-  the generated `skill_path` catalog
+  `config/tmux-a2a-postman/postman.md`; dotfiles-owned skills flow through the
+  generated `skill_path` catalog, while catch-all repo background lives in docs
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
 - [x] Home-level Codex hooks reduced to the load-bearing minimum:
