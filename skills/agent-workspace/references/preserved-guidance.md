@@ -178,8 +178,8 @@ inspection, cleanup, and baseline verification.
   `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
 - `zi [keywords...]` — interactive fzf version of `z`
 - `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
-  single worktree deletion, with issue, PR, miscellaneous, and upstream preview
-  context
+  single worktree deletion, with compact status, upstream status, and branch
+  rows
 
 ## 6. Common tmux Pane Operations
 
