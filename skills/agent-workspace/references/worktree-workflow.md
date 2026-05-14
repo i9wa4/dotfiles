@@ -34,6 +34,27 @@ Expect it to:
   passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
   re-run `repo-setup` or enter the devshell before pushing.
 
+For GitHub issue implementation, use this wrapper flow. Do not create issue
+branches or issue worktrees manually, and do not use raw `git worktree add` as
+the issue entrypoint.
+
+After entering the issue worktree and before editing or asking a human to push,
+verify the current branch and upstream:
+
+```bash
+pwd
+git branch --show-current
+git status --short --branch
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
+git rev-list --left-right --count HEAD...@{u}
+```
+
+For a reused remote issue branch, the upstream must be
+`origin/issue-<number>` or `origin/issue-<number>-*`. Stop if an issue branch
+tracks `origin/main` or another non-issue upstream. New local issue branches
+created by the wrapper may have no upstream until the first plain `git push`;
+verify they started from current `main` before editing.
+
 ### PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
