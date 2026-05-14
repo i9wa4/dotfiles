@@ -1,7 +1,6 @@
 ---
 skill_path:
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
-    skills: all
   - path: ~/.claude/skills
     skills:
       - postman-config-auditor
