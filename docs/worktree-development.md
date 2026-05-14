@@ -150,12 +150,12 @@ For the adoption decision behind the current tool stack, see
   `git worktree list --porcelain`.
 - For interactive deletion in the current repository, run `worktree-remove`.
   It lists only secondary managed worktrees under the repo's `.worktrees/`,
-  categorizes candidates as issue-origin, PR-origin, or miscellaneous, shows
-  fzf preview context for issue/PR status and branch upstream tracking when
-  detectable, requires typing `yes`, and removes clean, unlocked, merged branch
-  worktrees with `git worktree remove` plus local branch deletion. Squash-merged
-  GitHub PR branches count as merged when `gh` can resolve the matching merged
-  PR, even though the local branch commit is not an ancestor of `origin/main`.
+  shows compact issue, PR, and upstream-branch state before long branch and
+  path fields, requires typing `yes`, and removes clean, unlocked, merged
+  branch worktrees with `git worktree remove` plus local branch deletion.
+  Squash-merged GitHub PR branches count as merged when `gh` can resolve the
+  matching merged PR, even though the local branch commit is not an ancestor of
+  `origin/main`.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.

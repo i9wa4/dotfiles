@@ -76,7 +76,7 @@ let
       # `\s` is PCRE; bash `[[ =~ ]]` uses POSIX ERE where `\s` is just `s`.
       # Use `[[:space:]]` so the regex actually matches `git -C <path>`.
       hookRegex = "^git[[:space:]]+-C[[:space:]]";
-      justification = "cross-directory git operations are denied; cd into the target repo and run git there instead";
+      justification = "git -C is denied in agent workflows because shell cwd and direnv stay in the current workspace; cd into the target repository/worktree first so direnv loads, then run git normally";
     }
     {
       argv = [

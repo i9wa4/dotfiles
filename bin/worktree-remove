@@ -180,13 +180,13 @@ github_origin_status() {
   fi
 
   if ! command -v gh &>/dev/null; then
-    echo "gh-unavailable"
+    printf '%s:%s\n' "$origin_kind" "gh-unavailable"
     return 0
   fi
 
   github_repo=$(github_repo_from_origin "$repo_root")
   if [[ -z "$github_repo" ]]; then
-    echo "github-unavailable"
+    printf '%s:%s\n' "$origin_kind" "github-unavailable"
     return 0
   fi
 
@@ -206,6 +206,27 @@ github_origin_status() {
       fi
       ;;
   esac
+}
+
+github_state_columns() {
+  local repo_root="$1"
+  local origin_kind="$2"
+  local origin_number="$3"
+  local github_state
+  local issue_state="-"
+  local pr_state="-"
+
+  github_state=$(github_origin_status "$repo_root" "$origin_kind" "$origin_number")
+  case "$github_state" in
+    issue:*)
+      issue_state="$github_state"
+      ;;
+    pr:*)
+      pr_state="$github_state"
+      ;;
+  esac
+
+  printf '%s\t%s\n' "$issue_state" "$pr_state"
 }
 
 show_branch_tracking() {
@@ -425,6 +446,63 @@ branch_upstream_status() {
   printf '%s\t%s\t%s\t%s\n' "$upstream" "$upstream_state" "$ahead" "$behind"
 }
 
+format_upstream_status() {
+  local upstream_state="$1"
+  local ahead="$2"
+  local behind="$3"
+
+  case "$upstream_state" in
+    exists)
+      printf 'upstream:exists(+%s/-%s)\n' "$ahead" "$behind"
+      ;;
+    none)
+      printf 'upstream:none\n'
+      ;;
+    deleted)
+      printf 'upstream:deleted\n'
+      ;;
+    *)
+      printf 'upstream:-\n'
+      ;;
+  esac
+}
+
+worktree_lock_state() {
+  local repo_root="$1"
+  local worktree_path="$2"
+
+  git -C "$repo_root" worktree list --porcelain | awk \
+    -v target="$worktree_path" '
+    function flush() {
+      if (!found && path == target) {
+        print lock_state
+        found = 1
+      }
+    }
+
+    /^worktree / {
+      flush()
+      path = substr($0, 10)
+      lock_state = "unlocked"
+      next
+    }
+
+    /^locked/ {
+      if (path == target) {
+        lock_state = "locked"
+      }
+      next
+    }
+
+    END {
+      flush()
+      if (!found) {
+        print "missing"
+      }
+    }
+  '
+}
+
 list_managed_worktrees() {
   local repo_root="$1"
   local managed_root="$2"
@@ -474,60 +552,27 @@ list_managed_worktrees() {
 }
 
 preview_worktree() {
-  local repo_root="$1"
-  local worktree_path="$2"
-  local branch="$3"
-  local origin_kind="$4"
-  local origin_number="$5"
-  local category
-  local status_output
-  local log_output
+  local issue_state="$1"
+  local pr_state="$2"
+  local upstream_status="$3"
+  local branch="$4"
+  local upstream_remote="$5"
+  local worktree_path="$6"
 
-  case "$origin_kind" in
-    issue)
-      category="issue-origin"
-      ;;
-    pr)
-      category="PR-origin"
-      ;;
-    *)
-      category="miscellaneous"
-      ;;
-  esac
-
-  echo "Worktree"
-  echo "  Category: ${category}"
-  echo "  Number:   ${origin_number}"
-  echo "  Path:     ${worktree_path}"
+  echo "Status"
+  echo "  Issue:           ${issue_state}"
+  echo "  PR:              ${pr_state}"
+  echo "  Upstream state:  ${upstream_status}"
   echo ""
-  echo "GitHub"
-  show_github_status "$repo_root" "$origin_kind" "$origin_number"
-  echo ""
-  echo "Branch tracking"
-  show_branch_tracking "$repo_root" "$branch"
-  echo ""
-  echo "Worktree status"
-  if status_output=$(git -C "$worktree_path" --no-optional-locks status --short 2>/dev/null); then
-    if [[ -n "$status_output" ]]; then
-      printf '%s\n' "$status_output"
-    else
-      echo "(clean)"
-    fi
-  else
-    echo "status unavailable"
-  fi
-  echo ""
-  echo "Recent commits"
-  if log_output=$(git -C "$worktree_path" --no-optional-locks log -n 8 --oneline 2>/dev/null); then
-    printf '%s\n' "$log_output"
-  else
-    echo "log unavailable"
-  fi
+  echo "Target"
+  echo "  Branch:          ${branch}"
+  echo "  Upstream branch: ${upstream_remote}"
+  echo "  Path:            ${worktree_path}"
 }
 
 if [[ "${1:-}" == "__preview" ]]; then
   shift
-  if [[ $# -ne 5 ]]; then
+  if [[ $# -ne 6 ]]; then
     echo "preview unavailable: invalid arguments" >&2
     exit 0
   fi
@@ -573,7 +618,6 @@ case "$current_root" in
     ;;
 esac
 
-repo_name=$(path_basename "$repo_root")
 managed_root="${repo_root}/.worktrees"
 
 if ! raw_inventory=$(list_managed_worktrees "$repo_root" "$managed_root"); then
@@ -586,30 +630,29 @@ while IFS=$'\t' read -r branch lock_state worktree_path; do
     continue
   fi
 
-  dirty_state=$(worktree_dirty_state "$worktree_path")
   origin_record=$(classify_worktree "$branch" "$worktree_path")
-  IFS=$'\t' read -r origin_kind origin_number category <<<"$origin_record"
-  github_state=$(github_origin_status "$repo_root" "$origin_kind" "$origin_number")
-  merge_state=$(branch_merge_state "$repo_root" "$branch" "$origin_kind" "$origin_number")
+  IFS=$'\t' read -r origin_kind origin_number _ <<<"$origin_record"
+  github_record=$(github_state_columns "$repo_root" "$origin_kind" "$origin_number")
+  IFS=$'\t' read -r issue_state pr_state <<<"$github_record"
   upstream_record=$(branch_upstream_status "$repo_root" "$branch")
   IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
+  upstream_status=$(format_upstream_status "$upstream_state" "$upstream_ahead" "$upstream_behind")
 
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-    "$category" \
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$issue_state" \
+    "$pr_state" \
+    "$upstream_status" \
     "$branch" \
-    "$dirty_state" \
-    "$merge_state" \
-    "$lock_state" \
-    "$github_state" \
-    "$upstream_remote" \
-    "$upstream_state" \
-    "$upstream_ahead" \
-    "$upstream_behind" \
     "$worktree_path" \
+    "$lock_state" \
     "$repo_root" \
     "$managed_root" \
     "$origin_kind" \
-    "$origin_number" >>"$inventory_file"
+    "$origin_number" \
+    "$upstream_remote" \
+    "$upstream_state" \
+    "$upstream_ahead" \
+    "$upstream_behind" >>"$inventory_file"
 done <<<"$raw_inventory"
 
 inventory=$(cat "$inventory_file")
@@ -626,15 +669,15 @@ case "$script_path" in
     script_path=$(command -v "$script_path" 2>/dev/null || printf '%s\n' "$script_path")
     ;;
 esac
-preview_command=$(printf '%q __preview {12} {11} {2} {14} {15}' "$script_path")
+preview_command=$(printf '%q __preview {1} {2} {3} {4} {11} {5}' "$script_path")
 
 if ! selection="$(
   printf '%s\n' "$inventory" |
     fzf \
       --delimiter=$'\t' \
-      --with-nth=1,2,3,5,6,8,11 \
+      --with-nth=1,2,3,4,11,5 \
       --prompt='worktree-remove> ' \
-      --header='Select a worktree to remove. Columns: category branch state lock GitHub upstream-state path' \
+      --header='Select a worktree to remove. Columns: issue PR upstream branch upstream-branch path' \
       --preview="$preview_command" \
       --preview-window='down,60%'
 )"; then
@@ -642,9 +685,9 @@ if ! selection="$(
   exit 0
 fi
 
-IFS=$'\t' read -r category branch dirty_state merge_state lock_state github_state upstream_remote upstream_state upstream_ahead upstream_behind worktree_path repo_root managed_root origin_kind origin_number <<<"$selection"
+IFS=$'\t' read -r issue_state pr_state upstream_status branch worktree_path lock_state repo_root managed_root origin_kind origin_number upstream_remote upstream_state upstream_ahead upstream_behind <<<"$selection"
 
-if [[ -z "$category" || -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
+if [[ -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
   exit 1
 fi
@@ -669,8 +712,22 @@ if [[ ! -f "$worktree_path/.git" ]]; then
   exit 1
 fi
 
+dirty_state=$(worktree_dirty_state "$worktree_path")
+lock_state=$(worktree_lock_state "$repo_root" "$worktree_path")
+merge_state=$(branch_merge_state "$repo_root" "$branch" "$origin_kind" "$origin_number")
+github_record=$(github_state_columns "$repo_root" "$origin_kind" "$origin_number")
+IFS=$'\t' read -r issue_state pr_state <<<"$github_record"
+upstream_record=$(branch_upstream_status "$repo_root" "$branch")
+IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
+upstream_status=$(format_upstream_status "$upstream_state" "$upstream_ahead" "$upstream_behind")
+
 if [[ "$dirty_state" != "clean" ]]; then
   echo "Error: refusing to remove a dirty worktree: ${worktree_path}" >&2
+  exit 1
+fi
+
+if [[ "$lock_state" == "missing" ]]; then
+  echo "Error: selected worktree is no longer registered: ${worktree_path}" >&2
   exit 1
 fi
 
@@ -685,12 +742,12 @@ if [[ "$branch" != "-" && "$merge_state" != "merged" ]]; then
 fi
 
 echo "Selected worktree:"
-echo "  Repo:   ${repo_name}"
-echo "  Branch: ${branch}"
-echo "  Kind:   ${category} (${origin_number})"
-echo "  Path:   ${worktree_path}"
-echo "  State:  ${dirty_state}, ${lock_state}, GitHub=${github_state}, upstream=${upstream_remote} (${upstream_state})"
-echo "  Scope:  ${managed_root}"
+echo "  Issue:           ${issue_state}"
+echo "  PR:              ${pr_state}"
+echo "  Upstream state:  ${upstream_status}"
+echo "  Branch:          ${branch}"
+echo "  Upstream branch: ${upstream_remote}"
+echo "  Path:            ${worktree_path}"
 echo ""
 echo "This will remove the linked worktree and its local branch with git worktree."
 printf 'Type yes to continue: '
