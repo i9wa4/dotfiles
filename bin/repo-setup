@@ -5,16 +5,74 @@ set -o pipefail
 set -o posix
 
 # Set up repository environment for development.
-# Prints explicit manual trust steps when needed and runs repository-specific
-# setup based on repo name.
+# Trust changes are opt-in. Pass --allow-direnv only after reviewing the
+# repository/worktree .envrc and the code it will load.
 #
 # Usage:
-#   repo-setup
+#   repo-setup [--allow-direnv] [--skip-devshell-hooks]
 #
+allow_direnv="false"
+install_devshell_hooks="true"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --allow-direnv)
+      allow_direnv="true"
+      shift
+      ;;
+    --skip-devshell-hooks)
+      install_devshell_hooks="false"
+      shift
+      ;;
+    -h | --help)
+      echo "Usage: repo-setup [--allow-direnv] [--skip-devshell-hooks]"
+      exit 0
+      ;;
+    *)
+      echo "Error: unknown option: $1" >&2
+      echo "Usage: repo-setup [--allow-direnv] [--skip-devshell-hooks]" >&2
+      exit 1
+      ;;
+  esac
+done
+
 # Get current worktree root
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
 project_dir="$(basename "${worktree_root}")"
+envrc_path="${worktree_root}/.envrc"
 echo "* Repository: ${project_dir}"
+
+install_dotfiles_devshell_hooks() {
+  local previous_dir
+
+  if [[ ${install_devshell_hooks} != "true" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f "${worktree_root}/flake.nix" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f "${worktree_root}/nix/flake-parts/modules/pre-commit.nix" ]]; then
+    return 0
+  fi
+
+  if ! command -v nix &>/dev/null; then
+    echo "* Skipped installing devshell hooks: nix command not found"
+    return 0
+  fi
+
+  echo "-> Installing devshell hooks..."
+  previous_dir=$(pwd -P)
+  cd "${worktree_root}"
+  if ! nix develop "${worktree_root}#default" --command true; then
+    cd "${previous_dir}"
+    echo "Warning: could not install devshell hooks with nix develop; continuing without generated .pre-commit-config.yaml." >&2
+    echo "Warning: before pushing, re-run repo-setup after fixing Nix or enter the devshell to generate .pre-commit-config.yaml." >&2
+    return 0
+  fi
+  cd "${previous_dir}"
+}
 
 # Keep repository trust changes opt-in only.
 if [[ -f "mise.toml" ]]; then
@@ -23,10 +81,21 @@ if [[ -f "mise.toml" ]]; then
 fi
 
 # Keep .envrc allow changes opt-in only.
-if [[ -f ".envrc" ]]; then
-  echo "* Skipped allowing .envrc by default"
-  printf "* Optional: run '%s %s' to allow .envrc\n" "direnv" "allow"
+if [[ -f "${envrc_path}" ]]; then
+  if [[ ${allow_direnv} == "true" ]]; then
+    if ! command -v direnv &>/dev/null; then
+      echo "Error: direnv command not found, cannot allow .envrc." >&2
+      exit 1
+    fi
+    direnv allow "${envrc_path}"
+    echo "* Allowed .envrc with direnv"
+  else
+    echo "* Skipped allowing .envrc by default"
+    printf "* Optional: run '%s %s' to allow .envrc\n" "repo-setup" "--allow-direnv"
+  fi
 fi
+
+install_dotfiles_devshell_hooks
 
 # Repository-specific setup
 case "${project_dir}" in

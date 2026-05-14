@@ -16,7 +16,8 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 ### Issue Execution
 
-Run `issue-worktree-create <issue_number>` from the repo. Expect it to:
+Run `issue-worktree-create [--allow-direnv] <issue_number>` from the repo.
+Expect it to:
 
 - fetch `origin`
 - refresh `main`
@@ -27,11 +28,16 @@ Run `issue-worktree-create <issue_number>` from the repo. Expect it to:
   plain `git push` creates and records `origin/<branch>`
 - create a new linked worktree when needed
 - copy `.envrc` when available
-- run `repo-setup` when available
+- run `repo-setup` when available to attempt devshell hook installation and
+  generate per-worktree `.pre-commit-config.yaml`, or
+  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
+  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 
 ### PR Review
 
-Run `pr-worktree-create <pr_number>` from the repo. Expect it to:
+Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
+to:
 
 - fetch `origin`
 - refresh `main`
@@ -45,7 +51,11 @@ Run `pr-worktree-create <pr_number>` from the repo. Expect it to:
   from the PR source branch
 - create or reuse a linked review worktree
 - copy `.envrc` when available
-- run `repo-setup` when available
+- run `repo-setup` when available to attempt devshell hook installation and
+  generate per-worktree `.pre-commit-config.yaml`, or
+  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
+  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 - exit nonzero and avoid the all-ready success message when any requested PR is
   invalid, skipped, refused, or otherwise fails
 
@@ -117,6 +127,8 @@ git worktree list --porcelain
   worktree is a simple branch-only case.
 - If the task is about changing worktree scripts or config, read those files in
   full and treat that as a code-change task, not a normal use of this reference.
+- If a worktree has shared Git hooks but lacks `.pre-commit-config.yaml`, run
+  `repo-setup` in that worktree before pushing.
 
 ## 7. Do Not Do These By Default
 

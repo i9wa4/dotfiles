@@ -12,9 +12,10 @@ For the adoption decision behind the current tool stack, see
 
 ## 1. Stable entrypoints
 
-- Use `issue-worktree-create <issue_number> [issue_number2 ...]` to start
-  issue work.
-- Use `pr-worktree-create <pr_number> [pr_number2 ...]` to start PR review.
+- Use `issue-worktree-create [--allow-direnv] <issue_number>
+  [issue_number2 ...]` to start issue work.
+- Use `pr-worktree-create [--allow-direnv] <pr_number> [pr_number2 ...]` to
+  start PR review.
 - Use `worktree-remove` from a repository to list that repo's managed
   worktrees under `.worktrees/`, choose one with `fzf`, type `yes`, and delete
   it through `git worktree remove`.
@@ -56,7 +57,12 @@ For the adoption decision behind the current tool stack, see
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`.
 9. On a newly created worktree, it copies `.envrc` when present and runs
-   `repo-setup` when available.
+   `repo-setup` when available. `repo-setup` attempts to install the repo
+   devshell hooks and generated `.pre-commit-config.yaml` by default, but does
+   not allow `.envrc`; pass `--allow-direnv` when creating the worktree to run
+   `repo-setup --allow-direnv` in the new worktree. If Nix or devshell setup
+   fails, `repo-setup` warns and continues; re-run `repo-setup` or enter the
+   devshell before pushing so `.pre-commit-config.yaml` is generated.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
 
@@ -83,7 +89,12 @@ For the adoption decision behind the current tool stack, see
    the branch automatically.
 9. It creates the review worktree at the derived PR directory path when needed.
 10. On a newly created worktree, it copies `.envrc` when present and runs
-    `repo-setup` when available.
+    `repo-setup` when available. `repo-setup` attempts to install the repo
+    devshell hooks and generated `.pre-commit-config.yaml` by default, but does
+    not allow `.envrc`; pass `--allow-direnv` when creating the worktree to run
+    `repo-setup --allow-direnv` in the new worktree. If Nix or devshell setup
+    fails, `repo-setup` warns and continues; re-run `repo-setup` or enter the
+    devshell before pushing so `.pre-commit-config.yaml` is generated.
 11. It adds the final worktree path to the `zoxide` database when `zoxide`
     exists.
 12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
@@ -153,7 +164,14 @@ For the adoption decision behind the current tool stack, see
 - If a path was added to zoxide manually and still appears after deletion,
   remove it with `zoxide remove <path>`.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
-  backend or jump layer.
+  backend or jump layer. Keep `direnv allow` explicit because allowing a
+  worktree `.envrc` can evaluate code from that worktree; use
+  `--allow-direnv` only when the worktree contents are trusted.
+- If a linked worktree reports `No .pre-commit-config.yaml file was found`,
+  run `repo-setup` from that worktree. This attempts to install the devshell
+  hooks and the generated per-worktree pre-commit config without allowing
+  `.envrc`; if Nix or devshell setup fails, fix that failure and re-run
+  `repo-setup` or enter the devshell before pushing.
 - Notification or daemon behavior is outside this document. That belongs to
   `tmux-a2a-postman`.
 

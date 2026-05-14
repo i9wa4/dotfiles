@@ -7,7 +7,9 @@ concise skill needs domain-specific details.
 ---
 name: agent-workspace
 license: MIT
-description: Boot and manage agent tmux workspaces using the vde-layout va preset, worktree creation and re-entry, session naming, and pane operations.
+description: |
+  Boot and manage agent tmux workspaces using the vde-layout va preset,
+  worktree creation and re-entry, session naming, and pane operations.
 ---
 
 # Agent Workspace
@@ -140,16 +142,20 @@ session by name in tmux commands.
 
 ## 4. Worktree Lifecycle
 
-Primary creation entrypoints: `bin/issue-worktree-create <issue_number>` and
-`bin/pr-worktree-create <pr_number>`. For interactive cleanup in the current
-repository, use `bin/worktree-remove` to choose one managed worktree under the
-repo's `.worktrees/` directory with `fzf`, confirm with `yes`, and delete
-through native `git worktree` cleanup.
+Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
+<issue_number>` and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
+interactive cleanup in the current repository, use `bin/worktree-remove` to
+choose one managed worktree under the repo's `.worktrees/` directory with
+`fzf`, confirm with `yes`, and delete through native `git worktree` cleanup.
 
 Both scripts:
 
 - Copy `.envrc` from repo root
-- Run `repo-setup` if available
+- Run `repo-setup` if available to attempt devshell hook installation and
+  generate per-worktree `.pre-commit-config.yaml`, or
+  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
+  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.
