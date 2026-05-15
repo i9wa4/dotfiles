@@ -41,7 +41,8 @@ Use this skill when one or more apply:
 - User asks for beginner-friendly documentation or says they cannot understand
   the current plan.
 - Plan must pass explicit approval gates (guardian/critic/boss or equivalents;
-  guardian is the first review gate and critic is the final review gate).
+  guardian owns the final review verdict after considering critic's subordinate
+  recommendation).
 - If the request is still ambiguous or has multiple viable approaches, use
   `brainstorming` first and return here once the work is plan-ready.
 
@@ -157,21 +158,23 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 ### 5.4. Step 4: Review Gate Order (Strict)
 
-1. Send to guardian. Guardian reviews first, sends its review package to
-   critic for the final review verdict, and relays the critic verdict back to
-   orchestrator.
-2. If critic rejects: revise the plan artifact, resubmit to guardian. Repeat
-   until critic approves after the guardian-first pass.
+1. Send to guardian. Guardian performs the higher-level review, sends its
+   review package to critic for a subordinate final-pass recommendation, and
+   relays the guardian-owned verdict back to orchestrator.
+2. If guardian rejects, including based on critic's recommendation: revise the
+   plan artifact, resubmit to guardian. Repeat until guardian approves after
+   the critic-assisted pass.
    - Maximum 3 revision rounds per gate pass.
    - If consensus is not reached after 3 rounds: a. Record the disagreement in
-     the Decision Log. b. Notify messenger: "BLOCKED: critic deadlock
+     the Decision Log. b. Notify messenger: "BLOCKED: review deadlock
      after 3 rounds -- human decision required." c. Do not proceed to boss until
      messenger resolves the deadlock.
-3. Submit to boss only after guardian relays critic approval from the
-   guardian-first review.
+3. Submit to boss only after guardian relays a final approval that considered
+   critic's recommendation.
 4. If boss rejects: a. Record the rejection reason in the Decision Log. b.
    Revise the plan artifact per boss feedback. c. Return to step 1 of this gate
-   (re-run critic before resubmitting to boss). d. Maximum 2 boss
+   (re-run guardian-led, critic-assisted review before resubmitting to boss).
+   d. Maximum 2 boss
    rejection rounds. e. If boss rejects a second time, notify messenger:
    "BLOCKED: plan rejected twice by boss -- escalate."
 5. Do not finalize or send to messenger until boss approves.
@@ -238,7 +241,7 @@ resume without replaying the whole transcript.
   later session can resume from the evaluator output directly.
 
 `subagent-review` is the default evaluator guidance when the output needs a
-formal guardian-first, critic-final review gate.
+formal guardian-led, critic-assisted review gate.
 
 ## 7. Worker Routing Strategy (Default)
 
@@ -255,8 +258,8 @@ a beginner audience:
 
 1. Stop -- do NOT make assumptions and proceed.
 2. Flag the ambiguity explicitly in the DONE/BLOCKED report to orchestrator.
-3. Orchestrator runs the full guardian-mediated critic + boss review cycle on
-   the revised content.
+3. Orchestrator runs the full guardian-led, critic-assisted + boss review cycle
+   on the revised content.
 4. Notify messenger of the ambiguity and the review outcome before finalizing.
 
 This rule applies to all plan rewriting tasks, including glossary entries,
@@ -270,7 +273,7 @@ A plan is ready for boss review only if all are true:
 - Every phase has commands + expected outputs + done criteria.
 - Prerequisites and access requirements are explicit.
 - Placeholder decisions are resolved or converted into named decision gates.
-- Guardian-first, critic-final review approved.
+- Guardian-led, critic-assisted review approved.
 
 ## 10. Deliverables
 

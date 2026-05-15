@@ -1,17 +1,16 @@
 ---
 name: subagent-review
 license: MIT
-description: |
-  USE FOR: Native reviewer subagent usage when guardian or critic needs
-  bounded review or investigation help. DO NOT USE FOR:
-  dispatcher fan-out, model/tier selection, implementation delegation, or
-  replacing the active reviewer role's final verdict.
+description: "USE FOR: Native subagent review for substantive guardian/critic code or plan checks. DO NOT USE FOR: dispatcher fan-out, model/tier choice, implementation."
 ---
 
 # Subagent Review
 
-Use native reviewer subagents as focused helpers. The active role still owns
-the review, evidence synthesis, and final verdict.
+**UTILITY SKILL:** Use native reviewer subagents as focused helpers for
+guardian/critic review. The active role still owns synthesis and approval.
+
+No implementation, approval delegation, dispatcher fan-out, model/tier
+selection, or cross-engine reviewer pools.
 
 Normal review lane:
 
@@ -19,46 +18,39 @@ Normal review lane:
 orchestrator -> guardian -> critic -> guardian -> orchestrator
 ```
 
-Guardian runs in Codex and is the first review gate. Critic runs in Claude and
-is the final review gate. Guardian sends critic a compact review package, waits
-for critic's final verdict, and relays that verdict to orchestrator.
+Guardian is the Codex higher-level review owner. Critic is the Claude
+subordinate final-pass reviewer. Guardian sends critic a compact package, waits
+for critic's recommendation, then relays a guardian-owned verdict.
 
 ## Workflow
 
 1. Run the cheapest relevant verifier before requesting reviewer help when a
    code or config diff is present.
-2. Select only the reviewer perspectives needed for the current risk:
+2. For substantive reviews, default to native reviewer subagents. For a trivial
+   follow-up, direct review is acceptable if you state why.
+3. Select only the reviewer perspectives needed for the current risk:
    security, architecture, historian, code, data, QA, or technical research.
-3. Use the current runtime's native subagent mechanism. Do not route through a
-   generated dispatcher and do not ask for model or tier selection.
-4. Give each subagent a bounded read-only request with concrete paths,
-   issue/PR context, and expected output shape.
-5. Synthesize the evidence yourself. Suppress unverified findings, deduplicate
-   overlaps, and produce the active guardian or critic result.
+4. Use the current runtime's native subagent mechanism. No generated
+   dispatcher, model selection, tier selection, or cross-engine pool.
+5. Give each subagent a bounded read-only request with paths, issue/PR context,
+   and expected output shape.
+6. Synthesize evidence yourself. Suppress unverified findings, deduplicate
+   overlaps, and produce the active guardian verdict or critic recommendation.
 
 ## Role Rules
 
-- Guardian may use Codex native reviewer subagents for bounded review or
-  investigation.
-- Guardian sends critic a review package and later relays critic's final
-  verdict to orchestrator without changing the outcome.
-- Critic may use Claude native reviewer subagents for bounded review or
-  investigation.
-- Critic sends the final review verdict to guardian, not orchestrator.
+- Guardian uses Codex native reviewers, owns the final verdict, and treats
+  critic's recommendation as evidence.
+- Critic uses Claude native reviewers and returns a subordinate recommendation.
+- Critic sends the review recommendation to guardian, not orchestrator.
 - Reviewer subagents must not implement, edit files, commit, push, or act as
   the final approval authority.
-- If subagent evidence is incomplete or unavailable, the active role continues
-  the review directly and reports the limitation.
+- If subagent evidence is incomplete or unavailable, continue direct review and
+  report the limitation.
 
-## Output Contract
+## Output
 
-For each reviewer result, preserve:
-
-- reviewer perspective
-- target paths
-- evidence checked
-- findings with severity and confidence
-- unresolved gaps
-
-For final verdicts, use the normal guardian-mediated review surface instead of
-forwarding raw subagent output.
+Preserve reviewer perspective, target paths, checked evidence, findings with
+severity and confidence, and unresolved gaps. For final guardian verdicts or
+critic recommendations, use the normal guardian-mediated review surface instead
+of forwarding raw subagent output.

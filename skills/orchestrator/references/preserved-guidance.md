@@ -276,7 +276,7 @@ mkmd --dir reviews --label completion
 ```
 
 NOTE: For review workflow, see the `subagent-review` skill. Normal review is
-guardian-first and critic-final.
+guardian-led and critic-assisted, with guardian owning the final verdict.
 
 ## 5. PR Workflow
 

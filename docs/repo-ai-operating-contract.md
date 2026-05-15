@@ -255,12 +255,14 @@ lane:
 orchestrator -> guardian -> critic -> guardian -> orchestrator
 ```
 
-Guardian runs in Codex and may use Codex-native subagents for bounded review or
-investigation. Critic runs in Claude and may use Claude-native subagents for
-bounded review or investigation. Neither role uses a unified `cc` / `cx`
-dispatcher fan-out, and neither role assigns implementation to review
-subagents. Guardian mediates the orchestrator-facing review request: critic
-returns the final verdict to guardian, and guardian relays it to orchestrator.
+Guardian runs in Codex as the higher-level review owner and uses
+Codex-native subagents through `subagent-review` by default for substantive
+reviews. Critic runs in Claude as the subordinate final-pass reviewer and uses
+Claude-native subagents through `subagent-review` by default for substantive
+reviews. Neither role uses a unified `cc` / `cx` dispatcher fan-out, and
+neither role assigns implementation to review subagents. Guardian mediates the
+orchestrator-facing review request: critic returns a recommendation to
+guardian, and guardian synthesizes the final verdict for orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
@@ -268,9 +270,10 @@ Agent defaults live in `subagents/_metadata.nix` and are rendered into native
 agent files by `shared/render-agents.nix`.
 
 The normal guardian/critic workflow does not expose model or tier selection.
-The active role may ask bounded native subagents to investigate specific
-questions, but the active role owns synthesis, evidence quality, and the
-resulting guardian review result or critic final verdict.
+For substantive reviews, the active role defaults to `subagent-review` and may
+ask bounded native subagents to investigate specific questions, but the active
+role owns synthesis, evidence quality, and the resulting guardian verdict or
+critic recommendation.
 
 #### 5.3.4. `nix switch` materialization
 
@@ -353,7 +356,8 @@ Reachability is strict:
   `boss`, and auxiliary `agent`
 - `critic` talks only to `guardian`
 - `guardian` receives from `orchestrator`, sends review results to `critic`,
-  receives critic's final verdict, and relays that verdict to `orchestrator`
+  receives critic's recommendation, and relays the guardian-owned verdict to
+  `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
@@ -379,7 +383,7 @@ worker DONE -> orchestrator -> guardian -> critic
 
 `worker-alt` follows the same route when it is the executor.
 
-Do not collapse or bypass the guardian-first, critic-final review hop.
+Do not collapse or bypass the guardian-led, critic-assisted review hop.
 
 ### 8.2. Pass criteria
 
@@ -388,17 +392,19 @@ An approval-lane pass means all of the following are true:
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
 - guardian completed first review and sent evidence to critic
-- critic returned the final `APPROVED:` to guardian with no remaining BLOCKING
-  defects
-- guardian relayed the critic verdict to orchestrator
-- boss approves after critic approval
+- critic returned an `APPROVED:` recommendation to guardian with no remaining
+  BLOCKING defects
+- guardian relayed the guardian-owned verdict to orchestrator
+- boss approves after guardian approval with critic recommendation considered
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
 ### 8.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from critic or boss must name the concrete blocking defects
+- `NOT APPROVED:` from guardian or boss must name the concrete blocking
+  defects; guardian must include critic `NOT APPROVED:` recommendations in
+  its defect list
 - orchestrator returns that exact defect list to the worker instead of vague
   "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
@@ -410,7 +416,7 @@ The approval loop is bounded.
 
 - each artifact gets at most 3 approval attempts: the initial review plus 2
   rework attempts
-- any critic `NOT APPROVED:` or boss rejection consumes one attempt
+- any guardian `NOT APPROVED:` or boss rejection consumes one attempt
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 

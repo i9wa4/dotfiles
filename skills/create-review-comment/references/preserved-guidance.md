@@ -23,23 +23,23 @@ Apply these skills together when available:
 
 - `github` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
-- `subagent-review` for guardian-first, critic-final review finding extraction
-  and draft validation.
+- `subagent-review` for guardian-led, critic-assisted review finding
+  extraction and draft validation.
 
 ## 2. Workflow
 
 1. Confirm the target PR from local branch context or the user's prompt.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run or cite a deep review through the normal guardian-first, critic-final
+3. Run or cite a deep review through the normal guardian-led, critic-assisted
    route described by the `subagent-review` skill.
    - Guardian and critic may use only their runtime-native subagents for
      bounded review or investigation.
    - Do not specify subagent models or tiers.
    - Do not use a unified `cc` / `cx` dispatcher fan-out.
-   - The active guardian and critic own synthesis and verdicts; subagents must
-     not implement or approve work.
-4. Select only IMPORTANT findings from the review artifact or critic final
+   - The active guardian owns final synthesis and verdicts; critic provides a
+     subordinate recommendation; subagents must not implement or approve work.
+4. Select only IMPORTANT findings from the review artifact or guardian final
    summary produced by step 3.
    - The selection step MUST cite this summary file path in the final
      output's `Source review` line. If no such file exists, halt — step 3
@@ -83,7 +83,7 @@ Use this shape for the final visible Markdown:
 
 - Target PR: #123
 - Source review: `~/.local/state/mkmd/.../reviews/summary-YYYYMMDD-HHMMSS.md`
-  (path to the review artifact or critic final summary produced in step 3)
+  (path to the review artifact or guardian final summary produced in step 3)
 - Selected: 3 comments
 - Dropped: 4 findings
 

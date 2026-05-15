@@ -123,8 +123,8 @@ What this looks like in the current repo:
   installed into both engine trees.
 - Review pipelines use runtime-native reviewer agents. The
   `skills/subagent-review/SKILL.md` skill documents usage without engine or
-  tier dispatcher flags, while guardian mediates the final critic verdict back
-  to orchestrator.
+  tier dispatcher flags, while guardian owns the final verdict using critic's
+  recommendation as subordinate review evidence.
 
 When deviating from cross-engine equivalence is acceptable:
 

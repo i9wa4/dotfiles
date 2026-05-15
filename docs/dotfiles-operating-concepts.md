@@ -239,8 +239,8 @@ The dotfiles-local operating model is:
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement
 - `worker` and `worker-alt` execute
-- `guardian` is the first review gate and relays critic verdicts
-- `critic` is the final review gate behind guardian
+- `guardian` owns the final review verdict after a high-level review pass
+- `critic` provides a subordinate final-pass recommendation to guardian
 - `boss` is final approval
 
 The persistent control-plane role of `tmux-a2a-postman` matters because the
