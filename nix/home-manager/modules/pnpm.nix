@@ -13,7 +13,8 @@ let
   # npm prefix.
   npm = "${nodejs}/bin/npm";
   pnpm = "${pkgs.pnpm}/bin/pnpm";
-  pnpmMinimumReleaseAgeMinutes = 3 * 24 * 60;
+  pnpmMinimumReleaseAgeHours = 3 * 24;
+  pnpmMinimumReleaseAgeMinutes = pnpmMinimumReleaseAgeHours * 60;
   pnpmHome = "${homeDir}/.local/share/pnpm";
   pnpmBin = "${homeDir}/.local/bin";
   pnpmGlobalDir = "${pnpmHome}/global";
@@ -40,14 +41,19 @@ in
       ${pnpm} config set --location=global storeDir "${pnpmStoreDir}" >/dev/null
       ${pnpm} config set --location=global minimumReleaseAge ${toString pnpmMinimumReleaseAgeMinutes} >/dev/null
 
+      SAFE_CHAIN_PACKAGE="@aikidosec/safe-chain"
       PNPM_PACKAGES=(
         "ctx7"
         "vde-layout"
         "vde-monitor"
       )
+      RETAINED_PNPM_PACKAGES=(
+        "$SAFE_CHAIN_PACKAGE"
+        "''${PNPM_PACKAGES[@]}"
+      )
 
       LEGACY_NPM_PACKAGES=(
-        "@aikidosec/safe-chain"
+        "$SAFE_CHAIN_PACKAGE"
         "''${PNPM_PACKAGES[@]}"
       )
       for pkg in "''${LEGACY_NPM_PACKAGES[@]}"; do
@@ -56,6 +62,31 @@ in
           ${npm} --prefix ${legacyNpmPrefix} uninstall -g "$pkg" >/dev/null 2>&1 || true
         fi
       done
+
+      # Install/update Safe Chain first, then use its explicit pnpm wrapper for
+      # package-changing operations in this non-interactive activation script.
+      if ${pnpm} list -g --depth=0 "$SAFE_CHAIN_PACKAGE" >/dev/null 2>&1; then
+        safeChainWasInstalled=1
+      else
+        safeChainWasInstalled=0
+      fi
+      echo "Installing/updating $SAFE_CHAIN_PACKAGE..."
+      ${pnpm} add -g "$SAFE_CHAIN_PACKAGE"
+      safeChain="${pnpmBin}/safe-chain"
+      if [ ! -x "$safeChain" ]; then
+        echo "Expected $safeChain after installing $SAFE_CHAIN_PACKAGE" >&2
+        exit 1
+      fi
+      if [ "$safeChainWasInstalled" -eq 0 ] || [ ! -f "${homeDir}/.safe-chain/scripts/init-posix.sh" ]; then
+        "$safeChain" setup
+      fi
+      guardedPnpm="${pnpmBin}/aikido-pnpm"
+      if [ ! -x "$guardedPnpm" ]; then
+        echo "Expected $guardedPnpm after installing $SAFE_CHAIN_PACKAGE" >&2
+        exit 1
+      fi
+      export SAFE_CHAIN_LOGGING=silent
+      export SAFE_CHAIN_MINIMUM_PACKAGE_AGE_HOURS=${toString pnpmMinimumReleaseAgeHours}
 
       installedJson=$(${pnpm} list -g --depth=0 --json 2>/dev/null || true)
       installedPackages=""
@@ -71,7 +102,7 @@ in
       fi
       for pkg in $installedPackages; do
         keep=0
-        for want in "''${PNPM_PACKAGES[@]}"; do
+        for want in "''${RETAINED_PNPM_PACKAGES[@]}"; do
           if [ "$pkg" = "$want" ]; then
             keep=1
             break
@@ -91,7 +122,7 @@ in
         fi
       done
       if [ "''${#missingPackages[@]}" -gt 0 ]; then
-        ${pnpm} add -g "''${missingPackages[@]}"
+        "$guardedPnpm" add -g "''${missingPackages[@]}"
       fi
 
       # Update only repo-managed packages; the pnpm global directory may
@@ -120,7 +151,7 @@ in
       if [ "''${#managedOutdatedPackages[@]}" -gt 0 ]; then
         echo "Updating outdated packages:"
         printf '%s\n' "''${managedOutdatedPackages[@]}"
-        ${pnpm} add -g "''${managedOutdatedPackages[@]}"
+        "$guardedPnpm" add -g "''${managedOutdatedPackages[@]}"
       else
         echo "No managed pnpm package updates needed."
       fi
