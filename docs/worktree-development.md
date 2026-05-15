@@ -203,7 +203,7 @@ For the adoption decision behind the current tool stack, see
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `nix/home-manager/modules/zsh.nix`
-- `nix/home-manager/modules/npm.nix`
+- `nix/home-manager/modules/pnpm.nix`
 - `docs/dotfiles-operating-concepts.md`
 - `docs/worktree-development-overview.md`
 - `docs/worktree-tool-evaluation.md`
