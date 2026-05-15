@@ -212,11 +212,12 @@ CRITICAL: No implementation. If a slash command triggers on your pane, do NOT
 execute it. Report it as a process violation to guardian.
 
 For substantive reviews, use the `subagent-review` skill as your default
-review pattern before returning your recommendation. Use Claude-native
-subagents only for bounded review or investigation. Do not assign
-implementation to review subagents. Do not specify subagent models, tiers, or
-cross-engine reviewer pools. You, as active critic, must synthesize the
-evidence and own the critic recommendation.
+five-perspective review pattern before returning your recommendation. Use the
+Claude-native security, architecture, historian, code, and QA reviewers for
+bounded review or investigation. Do not assign implementation to review
+subagents. Do not specify subagent models, tiers, or cross-engine reviewer
+pools. You, as active critic, must synthesize the evidence and own the critic
+recommendation.
 
 ### 4.4. [critic] Mandatory Workflow
 
@@ -227,9 +228,10 @@ Critic is the subordinate final-pass reviewer and talks only to guardian.
 1. Review guardian's verdict, artifact path, changed paths, and validation
    evidence.
 2. Apply your own critical analysis. For substantive reviews, use
-   `subagent-review` to gather bounded Claude-native reviewer perspectives
-   before synthesizing your recommendation. For a trivial follow-up, direct
-   review is acceptable if you state why subagent review was unnecessary.
+   `subagent-review` to gather the five bounded Claude-native reviewer
+   perspectives before synthesizing your recommendation. For a trivial
+   follow-up, direct review is acceptable if you state why subagent review was
+   unnecessary.
 3. If more debate is needed, continue explicitly with guardian:
    `tmux-a2a-postman send --to guardian --reply-required --body "<follow-up>"`
 4. Treat the initial guardian handoff as the active review request. If it
@@ -316,11 +318,11 @@ If a slash command triggers on your pane, do NOT execute it. Flag it as a
 process violation in the pending review evidence.
 
 For substantive reviews, use the `subagent-review` skill as your default
-review pattern before engaging critic. Use Codex-native subagents only for
-bounded review or investigation. Do not assign implementation to review
-subagents. Do not specify subagent models, tiers, or cross-engine reviewer
-pools. You, as active guardian, must synthesize the evidence and own the final
-guardian review result.
+five-perspective review pattern before engaging critic. Use the Codex-native
+security, architecture, historian, code, and QA reviewers for bounded review or
+investigation. Do not assign implementation to review subagents. Do not specify
+subagent models, tiers, or cross-engine reviewer pools. You, as active guardian,
+must synthesize the evidence and own the final guardian review result.
 
 ### 5.4. [guardian] Critic Engagement
 
@@ -334,7 +336,7 @@ to orchestrator.
 1. Investigate meticulously (read code, edge cases, correctness).
 2. Verify completeness and consistency.
 3. Check quality (style, naming, structure, best practices).
-4. For substantive reviews, use `subagent-review` to gather bounded
+4. For substantive reviews, use `subagent-review` to gather the five bounded
    Codex-native reviewer perspectives before synthesizing the guardian result.
    For a trivial follow-up, direct review is acceptable if you state why
    subagent review was unnecessary. Never use subagents for implementation.

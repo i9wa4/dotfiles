@@ -121,10 +121,11 @@ What this looks like in the current repo:
 - Skills work in both engines (`/skill <name>` for Claude,
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
-- Review pipelines use runtime-native reviewer agents. The
-  `skills/subagent-review/SKILL.md` skill documents usage without engine or
-  tier dispatcher flags, while guardian owns the final verdict using critic's
-  recommendation as subordinate review evidence.
+- Review pipelines use five runtime-native reviewer perspectives by default
+  for guardian and five for critic. The `skills/subagent-review/SKILL.md`
+  skill documents usage without engine or tier dispatcher flags, while
+  guardian owns the final verdict using critic's recommendation as subordinate
+  review evidence.
 
 When deviating from cross-engine equivalence is acceptable:
 

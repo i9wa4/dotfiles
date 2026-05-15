@@ -222,8 +222,9 @@ This repo treats review as a built artifact, not ad hoc human ceremony.
 
 - reviewer agent definitions for Claude
 - reviewer agent definitions for Codex
-- no review dispatcher; `skills/subagent-review/SKILL.md` describes how the
-  active role uses native reviewer agents without model or tier flags
+- no review dispatcher; `skills/subagent-review/SKILL.md` describes how
+  guardian and critic each default to five native reviewer perspectives
+  without model or tier flags
 
 That means reviewer topology and naming stay in sync from a shared source.
 Review is therefore another example of the same repo philosophy: one concept,

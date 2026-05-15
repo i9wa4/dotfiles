@@ -255,14 +255,15 @@ lane:
 orchestrator -> guardian -> critic -> guardian -> orchestrator
 ```
 
-Guardian runs in Codex as the higher-level review owner and uses
+Guardian runs in Codex as the higher-level review owner and uses five
 Codex-native subagents through `subagent-review` by default for substantive
 reviews. Critic runs in Claude as the subordinate final-pass reviewer and uses
-Claude-native subagents through `subagent-review` by default for substantive
-reviews. Neither role uses a unified `cc` / `cx` dispatcher fan-out, and
-neither role assigns implementation to review subagents. Guardian mediates the
-orchestrator-facing review request: critic returns a recommendation to
-guardian, and guardian synthesizes the final verdict for orchestrator.
+five Claude-native subagents through `subagent-review` by default for
+substantive reviews. Neither role uses a unified `cc` / `cx` dispatcher
+fan-out, and neither role assigns implementation to review subagents. Guardian
+mediates the orchestrator-facing review request: critic returns a
+recommendation to guardian, and guardian synthesizes the final verdict for
+orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
@@ -270,10 +271,11 @@ Agent defaults live in `subagents/_metadata.nix` and are rendered into native
 agent files by `shared/render-agents.nix`.
 
 The normal guardian/critic workflow does not expose model or tier selection.
-For substantive reviews, the active role defaults to `subagent-review` and may
-ask bounded native subagents to investigate specific questions, but the active
-role owns synthesis, evidence quality, and the resulting guardian verdict or
-critic recommendation.
+For substantive reviews, the active role defaults to the five native
+perspectives documented by `subagent-review`: security, architecture,
+historian, code, and QA. Guardian uses the five in Codex; critic uses the five
+in Claude. The active role owns synthesis, evidence quality, and the resulting
+guardian verdict or critic recommendation.
 
 #### 5.3.4. `nix switch` materialization
 

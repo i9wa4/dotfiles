@@ -49,11 +49,15 @@ Apply these skills together when available:
    current review summary for the same target and diff is already available.
    - Guardian and critic may use only their runtime-native subagents for
      bounded review or investigation.
+   - For normal substantive reviews, guardian uses the five Codex-native
+     perspectives from `subagent-review` and critic uses the five
+     Claude-native perspectives from `subagent-review`: security,
+     architecture, historian, code, and QA.
    - Do not specify subagent models or tiers.
    - Do not use a unified `cc` / `cx` dispatcher fan-out.
-   - Let the active review role select the relevant reviewer perspectives for
-     the PR risk. Do not hard-code a fixed reviewer count or engine/tier
-     matrix in this skill.
+   - Treat data and technical research reviewers as explicit additions for
+     specialized questions, not replacements for the five default
+     perspectives.
    - The active guardian owns final synthesis and verdicts; critic provides a
      subordinate recommendation; subagents must not implement or approve work.
    - Keep provider/model details out of user-facing output and public GitHub
