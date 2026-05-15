@@ -34,12 +34,23 @@ in
     installPnpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       mkdir -p ${pnpmBin} ${pnpmGlobalDir} ${pnpmStoreDir}
       export PNPM_HOME="${pnpmHome}"
-      export PATH="${pnpmBin}:${nodejs}/bin:$PATH"
+      export PATH="${pnpmBin}:${pkgs.pnpm}/bin:${nodejs}/bin:$PATH"
 
       ${pnpm} config set --location=global globalBinDir "${pnpmBin}" >/dev/null
       ${pnpm} config set --location=global globalDir "${pnpmGlobalDir}" >/dev/null
       ${pnpm} config set --location=global storeDir "${pnpmStoreDir}" >/dev/null
       ${pnpm} config set --location=global minimumReleaseAge ${toString pnpmMinimumReleaseAgeMinutes} >/dev/null
+
+      pnpmPackageInstalled() {
+        ${pnpm} list -g --depth=0 --json 2>/dev/null |
+          ${pkgs.jq}/bin/jq -e --arg pkg "$1" '
+            if type == "array" then
+              (.[0].dependencies // {})
+            else
+              (.dependencies // {})
+            end | has($pkg)
+          ' >/dev/null
+      }
 
       SAFE_CHAIN_PACKAGE="@aikidosec/safe-chain"
       PNPM_PACKAGES=(
@@ -65,7 +76,7 @@ in
 
       # Install/update Safe Chain first, then use its explicit pnpm wrapper for
       # package-changing operations in this non-interactive activation script.
-      if ${pnpm} list -g --depth=0 "$SAFE_CHAIN_PACKAGE" >/dev/null 2>&1; then
+      if pnpmPackageInstalled "$SAFE_CHAIN_PACKAGE"; then
         safeChainWasInstalled=1
       else
         safeChainWasInstalled=0
@@ -116,7 +127,7 @@ in
 
       missingPackages=()
       for pkg in "''${PNPM_PACKAGES[@]}"; do
-        if ! ${pnpm} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+        if ! pnpmPackageInstalled "$pkg"; then
           echo "Installing $pkg..."
           missingPackages+=("$pkg")
         fi
