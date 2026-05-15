@@ -26,9 +26,10 @@ user approval.
    missing or ambiguous, ask only for the minimum target identifier.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
-3. For substantive review-comment drafting, default to the normal
-   `subagent-review`-backed flow internally. Do not ask the user for
-   guardian, critic, reviewer-pool, model, or provider details.
+3. For substantive review-comment drafting, use the separate
+   `subagent-review` engine internally; do not embed or redefine it. Do not
+   ask the user for guardian, critic, reviewer-pool, model, or provider
+   details.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Output draft comments visibly for user approval. Do not post them unless the
    user explicitly asks.

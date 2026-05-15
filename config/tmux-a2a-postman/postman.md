@@ -431,6 +431,10 @@ or reading files locally.
 If a slash command is invoked on this pane, do NOT execute it. Relay the command
 intent as a task to orchestrator. You are the interface, not the executor.
 
+For `$create-review-comment` or `ai-create-review-comment` requests, relay the
+terse user intent to orchestrator. Do not infer PRs, load review skills, inspect
+GitHub, or expose internal review mechanics.
+
 ### 6.5. [messenger] Mandatory Workflow
 
 1. Listen to user's request
@@ -555,15 +559,20 @@ CRITICAL: The ONLY permitted actions are:
 1. Read incoming task
 2. Decompose into atomic steps
 3. Send to worker or worker-alt — immediately, without independent investigation
-4. Wait for DONE/BLOCKED reply
-5. Relay result to messenger
+4. Wait for worker or worker-alt DONE/BLOCKED reply
+5. For worker DONE, route the artifact through guardian, critic, and boss
+   before messenger-facing DONE
+6. For unrecoverable worker BLOCKED, relay BLOCKED to messenger with evidence
 
 Do NOT research, read code, or investigate. Delegate to worker.
 
 ### 7.5. [orchestrator] Core Rules
 
 - Use skill: orchestrator for all workflows
-- After each worker reply (DONE/BLOCKED), relay to messenger immediately
+- Treat worker DONE as an internal artifact-ready signal, not final user
+  completion. Advance it through guardian, critic, and boss before messenger.
+- Relay worker BLOCKED to messenger only when orchestrator cannot re-scope or
+  return a defect-specific rework request to a worker.
 - When waiting on any node reply, follow `7.6. [orchestrator] Response
   Escalation` before notifying messenger `BLOCKED: waiting for {node}`.
 - Obtain guardian-owned APPROVED verdict, informed by critic recommendation,
@@ -640,10 +649,14 @@ crossed.
 
 Send DONE to messenger ONLY when ALL conditions met:
 
-1. All workers replied DONE or BLOCKED
+1. All in-scope worker or worker-alt executor tasks replied DONE
 2. Guardian APPROVED with critic recommendation considered
 3. Boss approved
 4. No pending review cycles
+
+Worker DONE alone is never messenger-facing DONE for artifact, review, or
+`create-review-comment` workflows. Unrecoverable worker BLOCKED is
+messenger-facing BLOCKED, not DONE.
 
 Format: DONE: (summary) / Commits: / Issues closed: / Remaining blockers:
 Do NOT send partial DONE.
@@ -659,6 +672,11 @@ messenger.
 `NOT APPROVED:` from guardian or boss must be defect-specific and counts as
 one approval attempt for that artifact. Critic `NOT APPROVED:` recommendations
 must be included in guardian's defect list.
+
+For `$create-review-comment` tasks, worker or worker-alt prepares PR context,
+diff/check evidence, and draft review-ready material. Guardian owns the review
+verdict, critic provides the subordinate recommendation, and GitHub posting
+remains gated on explicit user approval after messenger reports the result.
 
 ### 7.12. [orchestrator] Approval Iteration Cap
 
@@ -797,6 +815,11 @@ checklist and do not create a competing tracker.
 Use checkboxes as much as possible for milestones, verification steps, and
 progress entries.
 
+For review-comment tasks, gather PR context, diff, docs, check evidence, and
+draft-ready findings. Do not issue the final guardian verdict, do not expose
+internal review mechanics in user/GitHub-facing text, and do not post GitHub
+comments without explicit user approval.
+
 ### 8.11. [worker] Checklist Completion Proof
 
 Before sending `DONE:`, compare every original checklist item in the canonical
@@ -885,6 +908,11 @@ checklist and do not create a competing tracker.
 
 Use checkboxes as much as possible for milestones, verification steps, and
 progress entries.
+
+For review-comment tasks, gather PR context, diff, docs, check evidence, and
+draft-ready findings. Do not issue the final guardian verdict, do not expose
+internal review mechanics in user/GitHub-facing text, and do not post GitHub
+comments without explicit user approval.
 
 ### 9.11. [worker-alt] Checklist Completion Proof
 

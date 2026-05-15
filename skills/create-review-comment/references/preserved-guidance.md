@@ -23,6 +23,10 @@ are enough to start the normal workflow. The caller does not need to mention
 guardian, critic, `subagent-review`, reviewer pools, models, providers, or
 other review mechanics.
 
+Architecture decision: keep `subagent-review` separate as the reusable review
+engine. `create-review-comment` is the PR comment drafting entry point layered
+on top. Do not embed, copy, or redefine the `subagent-review` workflow here.
+
 ## 1. Related Skills
 
 Apply these skills together when available:
