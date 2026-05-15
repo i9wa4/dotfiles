@@ -52,6 +52,58 @@ in
           ' >/dev/null
       }
 
+      pnpmPackageReady() {
+        pnpmPackageInstalled "$1" || return 1
+        case "$1" in
+          "ctx7")
+            [ -x "${pnpmBin}/ctx7" ]
+            ;;
+          "vde-layout")
+            [ -x "${pnpmBin}/vde-layout" ]
+            ;;
+          "vde-monitor")
+            [ -x "${pnpmBin}/vde-monitor" ] &&
+              [ -x "${pnpmBin}/vde-monitor-hook" ]
+            ;;
+          *)
+            return 0
+            ;;
+        esac
+      }
+
+      removeLegacyNpmPackageDir() {
+        pkg="$1"
+        pkgDir="${legacyNpmPrefix}/lib/node_modules/$pkg"
+        if [ -e "$pkgDir" ] || [ -L "$pkgDir" ]; then
+          echo "Removing legacy npm package residue $pkg..."
+          rm -rf "$pkgDir"
+        fi
+        case "$pkg" in
+          @*/*)
+            scope="''${pkg%%/*}"
+            rmdir "${legacyNpmPrefix}/lib/node_modules/$scope" 2>/dev/null || true
+            ;;
+        esac
+      }
+
+      removeLegacyNpmShim() {
+        shim="${pnpmBin}/$1"
+        if [ -L "$shim" ]; then
+          target=$(readlink "$shim" || true)
+          case "$target" in
+            "${legacyNpmPrefix}/lib/node_modules/"* | ../lib/node_modules/*)
+              echo "Removing legacy npm shim $1..."
+              rm -f "$shim"
+              ;;
+          esac
+        elif [ -f "$shim" ] &&
+          { grep -Fq "${legacyNpmPrefix}/lib/node_modules" "$shim" ||
+            grep -Fq "../lib/node_modules" "$shim"; }; then
+          echo "Removing legacy npm shim $1..."
+          rm -f "$shim"
+        fi
+      }
+
       SAFE_CHAIN_PACKAGE="@aikidosec/safe-chain"
       PNPM_PACKAGES=(
         "ctx7"
@@ -67,12 +119,40 @@ in
         "$SAFE_CHAIN_PACKAGE"
         "''${PNPM_PACKAGES[@]}"
       )
+      LEGACY_NPM_SHIMS=(
+        "aikido-bun"
+        "aikido-bunx"
+        "aikido-npm"
+        "aikido-npx"
+        "aikido-pip"
+        "aikido-pip3"
+        "aikido-pipx"
+        "aikido-pnpm"
+        "aikido-pnpx"
+        "aikido-poetry"
+        "aikido-python"
+        "aikido-python3"
+        "aikido-uv"
+        "aikido-uvx"
+        "aikido-yarn"
+        "ctx7"
+        "safe-chain"
+        "vde-layout"
+        "vde-monitor"
+        "vde-monitor-hook"
+      )
       for pkg in "''${LEGACY_NPM_PACKAGES[@]}"; do
         if ${npm} --prefix ${legacyNpmPrefix} list -g --depth=0 "$pkg" >/dev/null 2>&1; then
           echo "Removing legacy npm-managed package $pkg..."
           ${npm} --prefix ${legacyNpmPrefix} uninstall -g "$pkg" >/dev/null 2>&1 || true
         fi
+        removeLegacyNpmPackageDir "$pkg"
       done
+      for shim in "''${LEGACY_NPM_SHIMS[@]}"; do
+        removeLegacyNpmShim "$shim"
+      done
+      rmdir "${legacyNpmPrefix}/lib/node_modules" 2>/dev/null || true
+      rmdir "${legacyNpmPrefix}/lib" 2>/dev/null || true
 
       # Install/update Safe Chain first, then use its explicit pnpm wrapper for
       # package-changing operations in this non-interactive activation script.
@@ -127,7 +207,7 @@ in
 
       missingPackages=()
       for pkg in "''${PNPM_PACKAGES[@]}"; do
-        if ! pnpmPackageInstalled "$pkg"; then
+        if ! pnpmPackageReady "$pkg"; then
           echo "Installing $pkg..."
           missingPackages+=("$pkg")
         fi
