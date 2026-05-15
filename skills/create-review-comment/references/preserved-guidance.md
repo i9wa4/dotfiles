@@ -7,13 +7,21 @@ concise skill needs domain-specific details.
 ---
 name: create-review-comment
 license: MIT
-description: Create Japanese GitHub PR review comments from findings. Use for ai-create-review-comment or turning findings into Markdown drafts.
+description: Create Japanese GitHub PR review comments from findings. Use for
+  `$create-review-comment`, ai-create-review-comment, or terse requests to
+  review a PR and draft comments.
 ---
 
 # Create Review Comment
 
 Use this skill to turn PR review findings into Japanese review comment drafts.
 The user makes the final choice about which comments to post.
+
+Terse invocations such as `$create-review-comment`,
+`$create-review-comment #123`, or `ai-create-review-comment for this branch`
+are enough to start the normal workflow. The caller does not need to mention
+guardian, critic, `subagent-review`, reviewer pools, models, providers, or
+other review mechanics.
 
 ## 1. Related Skills
 
@@ -22,36 +30,42 @@ Apply these skills together when available:
 - `github` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
 - `subagent-review` for multi-perspective review finding extraction and draft
-  validation.
+  validation. Use it as the default internal path for substantive reviews.
 
 ## 2. Workflow
 
 1. Confirm the target PR from local branch context or the user's prompt.
+   - If the prompt names a PR, branch, issue, or URL, use that target.
+   - If the prompt is only `$create-review-comment`, infer the PR from the
+     current branch with `gh`.
+   - If exactly one open PR is associated with the branch, proceed.
+   - If no target or multiple plausible targets are found, ask only for the
+     PR number, branch, or URL. Do not ask the user to choose review mechanics.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run a deep multi-perspective review via the `subagent-review` skill.
-   - REQUIRED invocation: `subagent-review cc tier1 cx tier1`. Do not
-     substitute by spawning individual `reviewer-*` agents directly — the
-     dispatcher's parallel fan-out and the dual-engine (Claude + Codex)
-     coverage are the point of this step.
-   - If you believe the prescribed invocation is too costly or unnecessary
-     for this PR, STOP and ask the user via `AskUserQuestion` before
-     deviating. Never downgrade silently.
-   - Legacy fallback: if the local command still exposes only the snippet
-     form, `/subagent-review cc cx-deep` is the equivalent invocation. The
-     prohibition on substituting `reviewer-*` agents still applies.
+3. Run a substantive multi-perspective review via the `subagent-review` skill
+   unless a current review summary for the same target and diff is already
+   available.
+   - Default to the normal review flow. Do not require the user to name
+     guardian, critic, `subagent-review`, reviewer counts, tiers, models, or
+     providers.
+   - Let the active review role select the relevant reviewer perspectives for
+     the PR risk. Do not hard-code a fixed reviewer count or engine/tier
+     matrix in this skill.
+   - Keep provider/model details out of user-facing output and public GitHub
+     surfaces.
 4. Select only IMPORTANT findings from the merged summary produced by
-   `subagent-review` (typically under
-   `~/.local/state/mkmd/.../reviews/summary-*.md`).
+   `subagent-review` or the normal review artifact.
    - The selection step MUST cite this summary file path in the final
-     output's `Source review` line. If no such file exists, halt — step 3
-     was not actually performed and you cannot proceed to drafting.
+     output's `Source review` line. If no current source review exists, halt
+     until step 3 has produced one.
    - Keep correctness, security, data loss, regression, compatibility,
      operational risk, and missing-test issues that materially affect merge
      confidence.
    - Drop purely stylistic, speculative, duplicate, or low-confidence findings.
 5. Draft Japanese Markdown review comments for the selected findings.
-6. Review the draft comments themselves with the same deep review approach.
+6. Review the draft comments themselves with the same multi-perspective review
+   approach.
    Ask reviewers to approve or reject each draft for correctness, clarity,
    severity, duplication, and whether the comment is worth posting.
 7. Adjust the draft until all material objections are resolved. If full
@@ -71,6 +85,8 @@ Apply these skills together when available:
 - Avoid before/after code blocks unless the user asks for rewrite suggestions.
 - Use repo-relative paths and line references only. Do not include local
   absolute paths.
+- Do not mention guardian, critic, models, providers, reviewer counts, or
+  internal review mechanics in comments intended for GitHub.
 - Preserve uncertainty. If evidence is incomplete, use `[ask]` or omit the
   comment.
 
@@ -84,8 +100,9 @@ Use this shape for the final visible Markdown:
 ## Summary
 
 - Target PR: #123
-- Source review: `~/.local/state/mkmd/.../reviews/summary-YYYYMMDD-HHMMSS.md`
-  (path to the `subagent-review` merged summary file produced in step 3)
+- Source review: `<internal review artifact path>`
+  (path to the current merged review summary or normal review artifact
+  produced in step 3; not part of the GitHub comment body)
 - Selected: 3 comments
 - Dropped: 4 findings
 

@@ -2,36 +2,42 @@
 name: create-review-comment
 license: MIT
 description: |
-  USE FOR: Create Japanese GitHub PR review comments from findings. Use for ai-create-review-comment or turning findings into Markdown drafts. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: `$create-review-comment`, ai-create-review-comment, or terse requests to review a PR and draft Japanese GitHub review comments. Infers the target PR when possible and starts the normal subagent-review-backed workflow without exposing guardian/critic mechanics. DO NOT USE FOR: unrelated tasks, broad rewrites, generated runtime outputs, or posting comments without explicit user approval.
 ---
 
 # Create Review Comment
 
-**UTILITY SKILL:** Apply this skill to Create Japanese GitHub PR review comments
-from findings. Use for ai-create-review-comment or turning findings into
-Markdown drafts. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+**UTILITY SKILL:** Apply this skill to `$create-review-comment`,
+ai-create-review-comment, or terse requests to review a PR and draft Japanese
+GitHub review comments. Infer the target PR when possible and start the normal
+review/comment workflow without exposing guardian or critic mechanics.
 
-**USE FOR:** Create Japanese GitHub PR review comments from findings. Use for
-ai-create-review-comment or turning findings into Markdown drafts; related file
-edits; verification and handoff in this skill domain.
+**USE FOR:** `$create-review-comment`, ai-create-review-comment, or terse
+review-comment drafting requests; Japanese GitHub PR review comment drafts;
+related file edits; verification and handoff in this skill domain.
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+**DO NOT USE FOR:** unrelated domains, broad rewrites, generated runtime
+outputs, replacing repo source of truth, or posting comments without explicit
+user approval.
 
 ## Workflow
 
-1. Inspect the relevant files, current repo conventions, and `git status`.
+1. Infer the target PR from the prompt, current branch, or GitHub context. If
+   missing or ambiguous, ask only for the minimum target identifier.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
+3. For substantive review-comment drafting, default to the normal
+   `subagent-review`-backed flow internally. Do not ask the user for
+   guardian, critic, reviewer-pool, model, or provider details.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
+5. Output draft comments visibly for user approval. Do not post them unless the
+   user explicitly asks.
 
 ## Examples
 
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+`$create-review-comment`, `$create-review-comment #123`, and
+`ai-create-review-comment for this branch` all start target inference and
+review-comment drafting.
 
 ## References
 
