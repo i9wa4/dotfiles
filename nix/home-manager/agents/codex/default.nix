@@ -589,10 +589,11 @@ in
 {
   home.file = {
     # Persona / language / scope is delivered through postman.md
-    # common_template (§2.24) on each tmux-a2a-postman pop, and the
-    # repo-local skill bodies (bash, github, markdown, python, repo-local)
-    # are inlined into the same common_template (§2.16-§2.22). Codex CLI
-    # has no AGENTS.md generated at the runtime root anymore.
+    # common_template on each tmux-a2a-postman pop. Dotfiles-owned skills are
+    # listed by the generated skill_path catalog; catch-all repository
+    # background intentionally lives in docs rather than a `skills/repo-local`
+    # catch-all skill.
+    # Codex CLI has no AGENTS.md generated at the runtime root anymore.
     # Exec policy rules (.rules files only; markdown instructions are delivered
     # through postman.md common_template, not auto-loaded by Codex CLI)
     # NOTE: default.rules remains separate for exec-policy denials
@@ -634,13 +635,14 @@ in
             printf '%s\n' "$repo"
           done; } > "$_repo_list"
 
-        # config.toml is fully owned by Nix. The only non-Nix input preserved
-        # across rebuilds is [projects."..."] trust entries, which Codex TUI
-        # writes when the user approves a new project. These are harvested from
-        # anywhere in the existing file (inside or outside the managed block)
-        # and merged back into the managed block. All other content outside the
-        # block is discarded, so legacy pre-marker Nix output cannot duplicate
-        # keys on upgrade.
+        # config.toml is fully owned by Nix. The only non-Nix inputs preserved
+        # across rebuilds are [projects."..."] trust entries and [hooks.state]
+        # review entries, which Codex TUI writes when the user approves a new
+        # project or reviews hooks. These are harvested from anywhere in the
+        # existing file (inside or outside the managed block) and merged back
+        # into the managed block. All other content outside the block is
+        # discarded, so legacy pre-marker Nix output cannot duplicate keys on
+        # upgrade.
         CODEX_BASE_CONFIG="${baseConfigFile}" \
           CODEX_GHQ_ROOT="${ghqRoot}" \
           CODEX_MANAGED_START="$_managed_start" \
@@ -655,6 +657,7 @@ in
 
     TABLE_HEADER_RE = re.compile(r"^\[[^\]]+\]\s*(?:#.*)?$")
     PROJECT_HEADER_RE = re.compile(r'^\[projects\."(?P<repo_path>[^"]+)"\]\s*(?:#.*)?$')
+    HOOK_STATE_HEADER_RE = re.compile(r'^\[hooks\.state(?:\."[^"]+")?\]\s*(?:#.*)?$')
     TRUST_LEVEL_RE = re.compile(r'^\s*trust_level\s*=')
 
 
@@ -698,6 +701,33 @@ in
         return tables
 
 
+    def collect_hook_state_tables(text):
+        lines = text.splitlines(keepends=True)
+        tables = {}
+        index = 0
+
+        while index < len(lines):
+            stripped = lines[index].strip()
+            if HOOK_STATE_HEADER_RE.match(stripped) is None:
+                index += 1
+                continue
+
+            header = stripped
+            block_lines = [lines[index]]
+            index += 1
+            while index < len(lines):
+                next_stripped = lines[index].strip()
+                if next_stripped == managed_start or next_stripped == managed_end:
+                    break
+                if TABLE_HEADER_RE.match(next_stripped):
+                    break
+                block_lines.append(lines[index])
+                index += 1
+            tables[header] = block_lines
+
+        return ["".join(block_lines) for block_lines in tables.values()]
+
+
     def render_project_table(repo_path, body_lines):
         filtered = [line for line in body_lines if not TRUST_LEVEL_RE.match(line)]
         while filtered and not filtered[-1].strip():
@@ -716,6 +746,7 @@ in
 
 
     existing_tables = collect_project_tables(existing_text)
+    existing_hook_state_tables = collect_hook_state_tables(existing_text)
     ghq_set = set(repo_paths)
     # Under-ghq paths not in the live repo list are stale (repo deleted) -> drop.
     extra_repos = sorted(
@@ -728,6 +759,8 @@ in
         managed_sections.append(rendered.rstrip("\n"))
     for repo_path in extra_repos:
         rendered = render_project_table(repo_path, existing_tables[repo_path])
+        managed_sections.append(rendered.rstrip("\n"))
+    for rendered in existing_hook_state_tables:
         managed_sections.append(rendered.rstrip("\n"))
 
     output_text = "\n".join(

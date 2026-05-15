@@ -41,7 +41,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
           delay: 500
 
   messenger-codex:
@@ -57,7 +57,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
           delay: 500
 
   preset-a:

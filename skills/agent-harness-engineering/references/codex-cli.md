@@ -29,6 +29,8 @@ Source of truth:
 Static settings (model, analytics, features, MCP servers) are defined as Nix
 attributes in `codex/default.nix`. Trusted projects are discovered dynamically
 by `fd` at `home-manager switch` time and appended to `config.toml`.
+Existing `[hooks.state]` review entries are preserved from the local
+`config.toml` so user-approved hook hashes survive later Nix activations.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:
@@ -124,7 +126,7 @@ Ignore any release entries for versions newer than `codex --version`.
   any `hooks.json` behavior
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
-  repo-local override need
+  dotfiles-local override need
 - YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/`
   using the prefix convention from `docs/agent-hooks-architecture.md` §5:
   - `<no prefix>` for runtime-agnostic shared scripts (e.g.
@@ -175,8 +177,8 @@ Ignore any release entries for versions newer than `codex --version`.
 
 This repo does not install a root `~/.codex/AGENTS.md`; postman common blocks
 deliver persona, language, scope, and role contracts to postman-driven roles.
-Repo-local skill bodies are exposed through the generated `skill_path` catalog
-and must stay in `SKILL.md`.
+Dotfiles-owned skill bodies are exposed through the generated `skill_path`
+catalog, and procedural rules must stay in focused `SKILL.md` files.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Keep instructions compatible with both Claude Code and Codex CLI
@@ -496,8 +498,8 @@ this runbook.
 ### 9.1. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`; repo-local skill bodies flow through
-  the generated `skill_path` catalog
+  `config/tmux-a2a-postman/postman.md`; dotfiles-owned skills flow through the
+  generated `skill_path` catalog, while catch-all repo background lives in docs
 - [x] skills/ symlinked to Claude Code skills
 - [x] `default.rules` generated from denied Bash policy
 - [x] Home-level Codex hooks reduced to the load-bearing minimum:

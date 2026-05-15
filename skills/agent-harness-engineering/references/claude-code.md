@@ -102,8 +102,8 @@ reference was loaded; follow the current session's delegation policy.
 
 ## 6. Upstream CLAUDE.md Design Guidelines
 
-This section is general Claude Code guidance. This repo does not install a
-root `~/.claude/CLAUDE.md`; repo-local persona and scope are delivered through
+This section is general Claude Code guidance. This repo does not install a root
+`~/.claude/CLAUDE.md`; dotfiles-local persona and scope are delivered through
 `config/tmux-a2a-postman/postman.md` instead.
 
 - YOU MUST: Focus only on persona and core guidelines
@@ -182,7 +182,8 @@ Check settings.json permissions block:
 
 - [ ] Are deny rules using modern syntax `Bash(cmd *)` not deprecated `:*`?
 - [ ] Are critical commands blocked (git push, git rebase, git reset, rm, sudo)?
-- [ ] Is `git -C *` blocked to prevent cross-repo operations?
+- [ ] Is `git -C *` blocked so agents `cd` into the target worktree and let
+  direnv load before running git?
 - [ ] Is defaultMode appropriate ("plan" or "dontAsk")?
 - [ ] Are sensitive paths blocked (secrets, .env, .ssh, keys, tokens)?
 - [ ] Are allow rules necessary or can defaultMode handle it?

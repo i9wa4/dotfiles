@@ -9,13 +9,14 @@ set -o posix
 # Falls back to title-based naming if Claude is not available.
 #
 # Usage:
-#   issue-worktree-create <issue_number> [issue_number2 ...]
+#   issue-worktree-create [--allow-direnv] <issue_number> [issue_number2 ...]
 #
 # Dependencies:
 #   - gh (GitHub CLI)
 #   - jq
 #   - claude (Anthropic CLI, optional)
 #   - repo-setup (optional)
+#   - direnv (optional; only for --allow-direnv)
 
 # Check required dependencies
 for cmd in gh jq git; do
@@ -25,10 +26,34 @@ for cmd in gh jq git; do
   fi
 done
 
+allow_direnv="false"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --allow-direnv)
+      allow_direnv="true"
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "Error: unknown option: $1" >&2
+      echo "Usage: $0 [--allow-direnv] <issue_number> [issue_number2 ...]" >&2
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 # Check arguments
 if [[ $# -eq 0 ]]; then
-  echo "Usage: $0 <issue_number> [issue_number2 ...]" >&2
+  echo "Usage: $0 [--allow-direnv] <issue_number> [issue_number2 ...]" >&2
   echo "Example: $0 123" >&2
+  echo "Example: $0 --allow-direnv 123" >&2
   echo "Example: $0 123 456 789" >&2
   exit 1
 fi
@@ -250,7 +275,11 @@ ${issue_comments}
     if command -v repo-setup &>/dev/null; then
       echo "-> Running repo-setup..."
       cd "$worktree_path"
-      repo-setup
+      if [[ ${allow_direnv} == "true" ]]; then
+        repo-setup --allow-direnv
+      else
+        repo-setup
+      fi
       cd - >/dev/null
     fi
   fi

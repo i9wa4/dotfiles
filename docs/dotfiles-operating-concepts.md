@@ -18,6 +18,37 @@ That is why the repo keeps:
 AI-specific operating rules live separately in
 `docs/repo-ai-operating-contract.md`.
 
+## Dotfiles-local Guardrail Ownership
+
+Dotfiles-local guidance should stay small. Task procedures belong to focused
+skills or durable docs, not to a generic runtime skill.
+
+There should not be a `skills/repo-local/` entry. The postman `skill_path`
+catalog is intentionally broad, so catch-all repository guidance would be
+visible too often. Put durable repo background in `docs/`, and put procedural
+agent behavior in the focused skill that owns that workflow.
+
+- Workspace, tmux navigation, and issue worktree safety belong to
+  `skills/agent-workspace/`.
+- Claude/Codex runtime config, hooks, skill installation, and postman routing
+  belong to `skills/agent-harness-engineering/` and the postman-specific
+  skills.
+- Skill authoring and validation belong to `skills/agent-skill-management/`.
+- Markdown formatting belongs to the `markdown` skill.
+- Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
+
+Shared dotfiles work still carries a few repository guardrails:
+
+- The repo targets macOS on Apple Silicon and Ubuntu 24.04, including WSL2.
+  Prefer Nix-managed tools or POSIX-compatible shell behavior for shared
+  workflows.
+- Do not commit generated outputs, dependency directories, local virtual
+  environments, or machine-specific values.
+- Prefer simple file-based dotfiles management unless a behavior genuinely
+  needs Home Manager or another heavier mechanism.
+- Keep active task edits in the task worktree. Keep the base checkout clean
+  enough to create, inspect, and maintain worktrees.
+
 ## 1. Why this repo is organized this way
 
 The repo is trying to prevent local AI operation from becoming snowflake state.
@@ -203,7 +234,7 @@ declaratively materialized into multiple runtime targets.
 Even with the broader harness in place, `tmux-a2a-postman` remains central
 because it carries the workflow state between roles.
 
-The repo-local operating model is:
+The dotfiles-local operating model is:
 
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement

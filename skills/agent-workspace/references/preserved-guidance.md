@@ -142,11 +142,11 @@ session by name in tmux commands.
 
 ## 4. Worktree Lifecycle
 
-Primary creation entrypoints: `bin/issue-worktree-create <issue_number>` and
-`bin/pr-worktree-create <pr_number>`. For interactive cleanup in the current
-repository, use `bin/worktree-remove` to choose one managed worktree under the
-repo's `.worktrees/` directory with `fzf`, confirm with `yes`, and delete
-through native `git worktree` cleanup.
+Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
+<issue_number>` and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
+interactive cleanup in the current repository, use `bin/worktree-remove` to
+choose one managed worktree under the repo's `.worktrees/` directory with
+`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
 For issue implementation, agents must use `issue-worktree-create
 <issue_number>`. Do not create issue branches or worktrees manually. Before
@@ -158,7 +158,11 @@ with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
 Both scripts:
 
 - Copy `.envrc` from repo root
-- Run `repo-setup` if available
+- Run `repo-setup` if available to attempt devshell hook installation and
+  generate per-worktree `.pre-commit-config.yaml`, or
+  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
+  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.
@@ -181,8 +185,8 @@ inspection, cleanup, and baseline verification.
   `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
 - `zi [keywords...]` — interactive fzf version of `z`
 - `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
-  single worktree deletion, with issue, PR, miscellaneous, and upstream preview
-  context
+  single worktree deletion, with compact status, upstream status, and branch
+  rows
 
 ## 6. Common tmux Pane Operations
 
