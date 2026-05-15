@@ -92,7 +92,7 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort xhigh
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
               delay: 500
             - name: boss
               title: boss
