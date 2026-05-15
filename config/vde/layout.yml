@@ -88,7 +88,7 @@ presets:
           panes:
             - name: critic
               title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model opus --effort xhigh
               delay: 500
             - name: guardian
               title: guardian
