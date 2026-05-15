@@ -21,7 +21,7 @@ Source of truth:
 | `~/.codex/rules/`        | Generated `default.rules` from denied Bash policy      | `codex/default.nix`                  |
 | `~/.codex/hooks.json`    | Generated hook config                                  | `codex/default.nix`                  |
 | `~/.codex/scripts/`      | Explicit ln list of shared scripts + deny patterns     | `codex/default.nix`                  |
-| `~/.codex/skills/`       | Multiple flake inputs + local + generated review skill | `shared/agent-skills.nix`            |
+| `~/.codex/skills/`       | Multiple flake inputs + local skills                   | `shared/agent-skills.nix`            |
 | MCP servers              | `shared/mcp-servers.nix`                               | `codex/default.nix`                  |
 
 ## 2. Config Management

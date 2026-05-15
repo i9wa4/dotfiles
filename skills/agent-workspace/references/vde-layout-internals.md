@@ -18,7 +18,7 @@ Short reference for vde-layout config resolution and preset structure.
 | main            | 2-29   | current-window | postman, tailscale, agent, vde-monitor     |
 | dev             | 31-45  | current-window | pane + agent                               |
 | messenger-codex | 47-61  | current-window | pane + messenger (codex gpt-5.5 medium)    |
-| preset-a        | 63-100 | new-window     | 3x2 grid: 5 codex panes + critic in claude |
+| preset-a        | 63-100 | new-window     | 3x2 grid: guardian before critic           |
 
 ## Key Behavioral Notes
 

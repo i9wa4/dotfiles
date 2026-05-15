@@ -86,7 +86,29 @@ For worker-style nodes inside the postman graph, two more rules matter:
 - non-user-facing nodes do not end by asking the human user a question
 - success and failure are reported as `DONE:` or `BLOCKED:`
 
-### 3.1. Durable `mkmd` handoff artifacts
+### 3.1. Repo-local execution safety
+
+These repo-local rules belong in this document rather than in a broad fallback
+skill:
+
+- read each relevant file in full before making claims about it
+- avoid unrelated refactors and do not delete unmentioned handlers, functions,
+  or sections
+- prefer the smallest verifiable step that satisfies the request
+- when changing behavior and a cheap failing reproducer is possible, start
+  there
+- verify changes with actual command output before reporting success
+- use Nix-managed or POSIX-compatible tools where possible because this repo
+  targets Linux and macOS
+- do not pollute global environments; use repo-local or temporary environments
+  when a tool needs isolation
+- do not commit generated dependency directories, virtual environments, or
+  disposable build outputs
+- never hardcode personal usernames, hostnames, or machine names in shared Nix
+  configuration
+- use uppercase annotations such as `NOTE:`, `TODO:`, `FIXME:`, and `WARNING:`
+
+### 3.2. Durable `mkmd` handoff artifacts
 
 `mkmd` is the default way to keep cross-agent context durable in this repo.
 Do not rely on chat history or short status traffic alone when later readers
@@ -113,7 +135,7 @@ Use the standard `mkmd` directories by artifact type:
 - `plans` for execution plans
 - `tmp` for disposable scratch output
 
-### 3.2. Markdown checklist workflow for task artifacts
+### 3.3. Markdown checklist workflow for task artifacts
 
 When work needs a durable task tracker, use a `mkmd` markdown artifact instead
 of ad hoc chat prose.
@@ -195,16 +217,19 @@ This file generates the installed shared agent surface from
 
 - Claude markdown agent definitions
 - Codex TOML agent definitions
-- the generated `subagent-review` dispatcher skill
 
-That is how the repo keeps reviewer agents and review dispatch synchronized
-across engines.
+The `subagent-review` skill is hand-authored under
+`skills/subagent-review/SKILL.md` and installed through the same local skill
+pipeline as other dotfiles-owned skills. That is how the repo keeps native
+reviewer agents and review guidance synchronized without a generated
+dispatcher.
 
 ### 5.3. Review-system specification
 
 This section is the canonical repo-side specification for the current review
-system. `shared/render-agents.nix` is the runtime generation SSOT, while this
-document describes the public entrypoint, tier model, and installed tree shape.
+system. `shared/render-agents.nix` is the native reviewer generation SSOT,
+while `skills/subagent-review/SKILL.md` describes the public review skill
+surface.
 
 #### 5.3.1. Canonical components
 
@@ -214,33 +239,43 @@ document describes the public entrypoint, tier model, and installed tree shape.
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/claude/default.nix`
 - `nix/home-manager/agents/codex/default.nix`
+- `skills/subagent-review/SKILL.md`
 
 #### 5.3.2. Current public state
 
-The public review skill surface is one generated dispatcher in both
+The public review skill surface is one hand-authored skill installed into both
 `~/.claude/skills` and `~/.codex/skills`:
 
 - `subagent-review`
 
-The dispatcher accepts space-separated engine and tier tokens:
+It does not accept engine or tier arguments. It documents the normal review
+lane:
 
-| Token Type | Values           | Meaning                           |
-| ---------- | ---------------- | --------------------------------- |
-| Engine     | `cc`, `cx`       | Claude or Codex reviewer pool     |
-| Tier       | `tier1`, `tier2` | Deep or shallow model assignment  |
+```text
+orchestrator -> guardian -> critic -> guardian -> orchestrator
+```
 
-With no arguments, `subagent-review` defaults to `cc tier2 cx tier2`.
-The dispatcher fans out to the five review perspectives currently named in
-the generated skill: security, architecture, historian, code, and QA.
+Guardian runs in Codex as the higher-level review owner and uses five
+Codex-native subagents through `subagent-review` by default for substantive
+reviews. Critic runs in Claude as the subordinate final-pass reviewer and uses
+five Claude-native subagents through `subagent-review` by default for
+substantive reviews. Neither role uses a unified `cc` / `cx` dispatcher
+fan-out, and neither role assigns implementation to review subagents. Guardian
+mediates the orchestrator-facing review request: critic returns a
+recommendation to guardian, and guardian synthesizes the final verdict for
+orchestrator.
 
-#### 5.3.3. Tier contract
+#### 5.3.3. Native reviewer contract
 
-Tier defaults live in `subagents/_metadata.nix` and are baked into the
-generated dispatcher skill by `shared/render-agents.nix`.
+Agent defaults live in `subagents/_metadata.nix` and are rendered into native
+agent files by `shared/render-agents.nix`.
 
-The agent files themselves carry tier 2 defaults. Tier 1 is selected at spawn
-time by the dispatcher through per-call model and effort overrides, not by
-installing a second set of agent files.
+The normal guardian/critic workflow does not expose model or tier selection.
+For substantive reviews, the active role defaults to the five native
+perspectives documented by `subagent-review`: security, architecture,
+historian, code, and QA. Guardian uses the five in Codex; critic uses the five
+in Claude. The active role owns synthesis, evidence quality, and the resulting
+guardian verdict or critic recommendation.
 
 #### 5.3.4. `nix switch` materialization
 
@@ -319,10 +354,12 @@ approval lane.
 Reachability is strict:
 
 - `messenger` talks only to `orchestrator`
-- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `critic`, and
-  `boss`
-- `critic` talks to `orchestrator` and `guardian`
-- `guardian` talks only to `critic`
+- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `guardian`,
+  `boss`, and auxiliary `agent`
+- `critic` talks only to `guardian`
+- `guardian` receives from `orchestrator`, sends review results to `critic`,
+  receives critic's recommendation, and relays the guardian-owned verdict to
+  `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
@@ -341,12 +378,14 @@ faithfully instead of drifting into separate policy variants.
 
 Artifact work is not complete until this exact Approval route succeeds:
 
-`worker DONE -> orchestrator -> critic -> guardian -> critic ->
-orchestrator -> boss -> orchestrator -> messenger`
+```text
+worker DONE -> orchestrator -> guardian -> critic
+-> guardian -> orchestrator -> boss -> orchestrator -> messenger
+```
 
 `worker-alt` follows the same route when it is the executor.
 
-Do not collapse or bypass the `critic -> guardian -> critic` hop.
+Do not collapse or bypass the guardian-led, critic-assisted review hop.
 
 ### 8.2. Pass criteria
 
@@ -354,15 +393,20 @@ An approval-lane pass means all of the following are true:
 
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
-- critic returns `APPROVED:` with no remaining BLOCKING defects
-- boss approves after critic approval
+- guardian completed first review and sent evidence to critic
+- critic returned an `APPROVED:` recommendation to guardian with no remaining
+  BLOCKING defects
+- guardian relayed the guardian-owned verdict to orchestrator
+- boss approves after guardian approval with critic recommendation considered
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
 ### 8.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from critic or boss must name the concrete blocking defects
+- `NOT APPROVED:` from guardian or boss must name the concrete blocking
+  defects; guardian must include critic `NOT APPROVED:` recommendations in
+  its defect list
 - orchestrator returns that exact defect list to the worker instead of vague
   "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
@@ -374,7 +418,7 @@ The approval loop is bounded.
 
 - each artifact gets at most 3 approval attempts: the initial review plus 2
   rework attempts
-- any critic `NOT APPROVED:` or boss rejection consumes one attempt
+- any guardian `NOT APPROVED:` or boss rejection consumes one attempt
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 
@@ -391,13 +435,16 @@ These timeout thresholds are role policy, not daemon configuration:
 
 Fallback behavior:
 
-- guardian fallback: after the existing watchdog and resend ladder, critic may
-  finish with a critic-only fallback verdict if guardian remains unavailable
-  after the 180s / 3m alert and the 1800s / 30m review-node idle boundary
-- critic fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond the
-  180s / 3m late-reply threshold, then reports `BLOCKED:` if critic still does
-  not reply once direct send failure evidence appears or the 1800s / 30m
-  review-node idle boundary is crossed; never bypass critic
+- guardian fallback: orchestrator sends one `[WATCHDOG]` prompt at or beyond
+  the 180s / 3m late-reply threshold, then reports `BLOCKED:` if guardian
+  still does not reply once direct send failure evidence appears or the
+  1800s / 30m review-node idle boundary is crossed; do not bypass guardian in
+  the normal lane
+- critic fallback: guardian owns critic watchdogs because critic is reachable
+  only through guardian; orchestrator asks guardian for review status and
+  reports `BLOCKED:` only when guardian reports critic unreachable, guardian
+  stays silent beyond the review-node idle boundary, or direct send failure
+  evidence is returned through guardian; never bypass critic
 - boss fallback: never bypass boss; late-reply alerts still fire after
   180s / 3m, and at or beyond the 3600s / 60m idle boundary report
   `BLOCKED:` waiting for boss instead of forcing completion
@@ -451,7 +498,9 @@ delivery failure. The repo's current rule is: Do NOT inspect raw wait files.
 Older retained mail may still show:
 
 - `postman` as if it were a current live recipient
-- direct `orchestrator -> guardian` traffic
+- the old `orchestrator -> critic -> guardian -> critic` review route
+- the old `orchestrator -> guardian -> critic -> orchestrator` review route
+- `guardian` as reachable only from `critic`
 - wording based on `reply_command`
 
 Treat those as historical signatures rather than the current contract.

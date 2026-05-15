@@ -23,14 +23,19 @@ are enough to start the normal workflow. The caller does not need to mention
 guardian, critic, `subagent-review`, reviewer pools, models, providers, or
 other review mechanics.
 
+Architecture decision: keep `subagent-review` separate as the reusable review
+engine. `create-review-comment` is the PR comment drafting entry point layered
+on top. Do not embed, copy, or redefine the `subagent-review` workflow here.
+
 ## 1. Related Skills
 
 Apply these skills together when available:
 
 - `github` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
-- `subagent-review` for multi-perspective review finding extraction and draft
-  validation. Use it as the default internal path for substantive reviews.
+- `subagent-review` for guardian-led, critic-assisted review finding
+  extraction and draft validation. Use it as the default internal path for
+  substantive reviews.
 
 ## 2. Workflow
 
@@ -43,19 +48,26 @@ Apply these skills together when available:
      PR number, branch, or URL. Do not ask the user to choose review mechanics.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run a substantive multi-perspective review via the `subagent-review` skill
-   unless a current review summary for the same target and diff is already
-   available.
-   - Default to the normal review flow. Do not require the user to name
-     guardian, critic, `subagent-review`, reviewer counts, tiers, models, or
-     providers.
-   - Let the active review role select the relevant reviewer perspectives for
-     the PR risk. Do not hard-code a fixed reviewer count or engine/tier
-     matrix in this skill.
+3. Run or cite a substantive review through the normal guardian-led,
+   critic-assisted route described by the `subagent-review` skill unless a
+   current review summary for the same target and diff is already available.
+   - Guardian and critic may use only their runtime-native subagents for
+     bounded review or investigation.
+   - For normal substantive reviews, guardian uses the five Codex-native
+     perspectives from `subagent-review` and critic uses the five
+     Claude-native perspectives from `subagent-review`: security,
+     architecture, historian, code, and QA.
+   - Do not specify subagent models or tiers.
+   - Do not use a unified `cc` / `cx` dispatcher fan-out.
+   - Treat data and technical research reviewers as explicit additions for
+     specialized questions, not replacements for the five default
+     perspectives.
+   - The active guardian owns final synthesis and verdicts; critic provides a
+     subordinate recommendation; subagents must not implement or approve work.
    - Keep provider/model details out of user-facing output and public GitHub
      surfaces.
-4. Select only IMPORTANT findings from the merged summary produced by
-   `subagent-review` or the normal review artifact.
+4. Select only IMPORTANT findings from the review artifact, guardian final
+   summary, or normal review artifact produced by step 3.
    - The selection step MUST cite this summary file path in the final
      output's `Source review` line. If no current source review exists, halt
      until step 3 has produced one.
@@ -101,8 +113,8 @@ Use this shape for the final visible Markdown:
 
 - Target PR: #123
 - Source review: `<internal review artifact path>`
-  (path to the current merged review summary or normal review artifact
-  produced in step 3; not part of the GitHub comment body)
+  (path to the current merged review summary, guardian final summary, or normal
+  review artifact produced in step 3; not part of the GitHub comment body)
 - Selected: 3 comments
 - Dropped: 4 findings
 

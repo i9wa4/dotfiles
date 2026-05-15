@@ -63,8 +63,9 @@ AGENTS.md at the runtime root; postman.md is the common delivery channel.
 Subagent definitions (`subagents/*.md`) and metadata
 (`subagents/_metadata.nix`) remain tool-agnostic. The shared renderer
 (`shared/render-agents.nix`) turns them into Claude markdown agents,
-Codex TOML agents, and the unified `subagent-review` dispatcher skill;
-the runtime-specific install layout is the only fork.
+Codex TOML agents; the runtime-specific install layout is the only fork.
+The `subagent-review` skill is hand-authored under `skills/subagent-review/`
+and installed through the normal skill pipeline.
 
 ### 2.3. MCP Servers — `shared/mcp-servers.nix`
 

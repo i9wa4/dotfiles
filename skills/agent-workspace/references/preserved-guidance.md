@@ -109,8 +109,8 @@ See also: `references/boot-failure-modes.md`
 | orchestrator      | codex gpt-5.5 xhigh                                      |
 | worker            | codex gpt-5.5 xhigh                                      |
 | worker-alt        | codex gpt-5.5 xhigh                                      |
-| critic            | claude sonnet xhigh                                      |
 | guardian          | codex gpt-5.5 xhigh                                      |
+| critic            | claude sonnet xhigh                                      |
 | boss              | codex gpt-5.5 xhigh                                      |
 | Engine mix        | preset-a: 5 codex + 1 claude; messenger: codex           |
 | Description       | "codex-featured team"                                   |
@@ -147,6 +147,13 @@ Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
 interactive cleanup in the current repository, use `bin/worktree-remove` to
 choose one managed worktree under the repo's `.worktrees/` directory with
 `fzf`, validate safety gates, and delete through native `git worktree` cleanup.
+
+For issue implementation, agents must use `issue-worktree-create
+<issue_number>`. Do not create issue branches or worktrees manually. Before
+editing, verify `pwd`, `git branch --show-current`, and
+`git status --short --branch`. Before asking a human to push, verify upstream
+with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
+`BLOCKED` if an issue branch tracks `origin/main`.
 
 Both scripts:
 

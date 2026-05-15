@@ -134,14 +134,31 @@ the harness from several smaller sources:
   the runtime root.
 - `shared/agent-skills.nix` installs both local and upstream skills into both
   engines
-- `shared/render-agents.nix` renders reviewer agents and the generated
-  `subagent-review` dispatcher skill from `subagents/*.md` and
-  `subagents/_metadata.nix`
+- `shared/render-agents.nix` renders native reviewer agents from
+  `subagents/*.md` and `subagents/_metadata.nix`
+- `skills/subagent-review/SKILL.md` documents native reviewer subagent usage
+  through the normal local skill pipeline
 - `shared/denied-bash-commands.nix` is the single source of truth for
   dangerous Bash denials across both engines
 
 That is the repo's harness-engineering philosophy: keep policy declarative,
 shared, inspectable, and generated from a small number of sources of truth.
+
+### 2.5. Skill responsibility boundaries
+
+Repo-local agent behavior is split by ownership instead of centralized in one
+large fallback skill:
+
+- `skills/agent-workspace/` owns tmux workspaces, issue/PR worktree creation,
+  worktree re-entry, and pane operations
+- `skills/agent-harness-engineering/` owns Claude/Codex config, hooks,
+  postman routing, and Nix/Home Manager agent harness changes
+- `skills/agent-skill-management/` owns source skill editing, validation, and
+  publish-readiness checks
+- `docs/repo-ai-operating-contract.md` owns durable operating rules and task
+  artifact workflow
+- `skills/repo-local/` is only a pointer for finding the focused owner when no
+  narrower skill is obvious
 
 ## 3. Hooks are part of the product, not optional glue
 
@@ -189,7 +206,7 @@ Parity is visible in several places:
   `config/tmux-a2a-postman/postman.md`
 - both derive policy from the same `shared/denied-bash-commands.nix`
 - both receive installed skills from the same `shared/agent-skills.nix` graph
-- both receive generated reviewer agents from `shared/render-agents.nix`
+- both receive native reviewer agents from `shared/render-agents.nix`
 - both use durable `mkmd` artifacts and postman routing for resumable handoff
 
 The result is parity of intent rather than byte-for-byte sameness. The repo is
@@ -200,17 +217,18 @@ the same local expectations.
 
 This repo treats review as a built artifact, not ad hoc human ceremony.
 
-`shared/render-agents.nix` generates two classes of review assets from
+`shared/render-agents.nix` generates native reviewer agents from
 `subagents/*.md` and `subagents/_metadata.nix`:
 
-- reviewer agent definitions for Claude and Codex
-- the unified `subagent-review` dispatcher skill, which selects engine and tier
-  at invocation time
+- reviewer agent definitions for Claude
+- reviewer agent definitions for Codex
+- no review dispatcher; `skills/subagent-review/SKILL.md` describes how
+  guardian and critic each default to five native reviewer perspectives
+  without model or tier flags
 
-That means the review topology, naming, and engine-specific variants are kept
-in sync from a shared source. Review is therefore another example of the same
-repo philosophy: one concept, declaratively materialized into multiple runtime
-targets.
+That means reviewer topology and naming stay in sync from a shared source.
+Review is therefore another example of the same repo philosophy: one concept,
+declaratively materialized into multiple runtime targets.
 
 ## 6. Why `tmux-a2a-postman` remains central
 
@@ -222,8 +240,8 @@ The dotfiles-local operating model is:
 - `messenger` is the human-facing edge
 - `orchestrator` routes and approves flow but does not implement
 - `worker` and `worker-alt` execute
-- `critic` runs the postman review pipeline
-- `guardian` is the deep review hop behind `critic`
+- `guardian` owns the final review verdict after a high-level review pass
+- `critic` provides a subordinate final-pass recommendation to guardian
 - `boss` is final approval
 
 The persistent control-plane role of `tmux-a2a-postman` matters because the

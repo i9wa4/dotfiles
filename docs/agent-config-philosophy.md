@@ -21,10 +21,10 @@ What "prompt path" means in this repo:
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
 - `nix/home-manager/agents/subagents/*.md` and
-  `nix/home-manager/agents/subagents/_metadata.nix` — agent definitions,
-  reviewer metadata, and tier defaults.
+  `nix/home-manager/agents/subagents/_metadata.nix` — native reviewer agent
+  definitions and runtime defaults.
 - `nix/home-manager/agents/shared/render-agents.nix` — renders the shared
-  subagents and the generated `subagent-review` dispatcher skill.
+  native reviewer agents.
 
 Why prompt over config:
 
@@ -81,8 +81,8 @@ Concrete examples already in the repo:
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
 - `nix/home-manager/agents/shared/render-agents.nix` with
-  `nix/home-manager/agents/subagents/_metadata.nix` — generates reviewer
-  agents and the unified `subagent-review` dispatcher skill for both engines.
+  `nix/home-manager/agents/subagents/_metadata.nix` — generates native
+  reviewer agents for both engines.
 
 Why shared beats per-tool:
 
@@ -121,9 +121,11 @@ What this looks like in the current repo:
 - Skills work in both engines (`/skill <name>` for Claude,
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
-- Review pipelines have engine-tier variants
-  (`subagent-review-cc`, `subagent-review-cx`, etc.) so the same review
-  intent runs on whichever engine is current.
+- Review pipelines use five runtime-native reviewer perspectives by default
+  for guardian and five for critic. The `skills/subagent-review/SKILL.md`
+  skill documents usage without engine or tier dispatcher flags, while
+  guardian owns the final verdict using critic's recommendation as subordinate
+  review evidence.
 
 When deviating from cross-engine equivalence is acceptable:
 
