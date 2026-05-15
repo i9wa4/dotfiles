@@ -160,9 +160,9 @@ let
       filter.nameRegex = "context7-cli";
     };
     # Streamlit official agent skills
-    streamlit = {
+    "developing-with-streamlit" = {
       path = inputs.streamlit-skills;
-      subdir = "developing-with-streamlit/skills";
+      subdir = "developing-with-streamlit";
     };
     # Databricks official agent skills (ai-dev-kit)
     # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills

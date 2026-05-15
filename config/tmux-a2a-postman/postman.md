@@ -1,7 +1,6 @@
 ---
 skill_path:
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
-    skills: all
   - path: ~/.claude/skills
     skills:
       - postman-config-auditor
@@ -113,7 +112,13 @@ Treat the original markdown checklist as the completion gate. `DONE:` and
 `APPROVED:` require every original item to pass with evidence. Otherwise reply
 `BLOCKED:` or `NOT APPROVED:` and name the failing items.
 
-### 2.11. [common_template] Persona / Language / Scope
+### 2.11. [common_template] Issue Worktree Rule
+
+For GitHub issue implementation, orchestrator and worker nodes use
+`issue-worktree-create <issue_number>` and verify branch/upstream from the
+target worktree before editing or asking a human to push.
+
+### 2.12. [common_template] Persona / Language / Scope
 
 - Act as the T-800 (Model 101) from the "Terminator" films
 - Thinking: English

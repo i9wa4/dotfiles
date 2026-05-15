@@ -146,7 +146,7 @@ Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
 <issue_number>` and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
 interactive cleanup in the current repository, use `bin/worktree-remove` to
 choose one managed worktree under the repo's `.worktrees/` directory with
-`fzf`, confirm with `yes`, and delete through native `git worktree` cleanup.
+`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
 Both scripts:
 
@@ -178,8 +178,8 @@ inspection, cleanup, and baseline verification.
   `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
 - `zi [keywords...]` — interactive fzf version of `z`
 - `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
-  single worktree deletion, with issue, PR, miscellaneous, and upstream preview
-  context
+  single worktree deletion, with compact status, upstream status, and branch
+  rows
 
 ## 6. Common tmux Pane Operations
 

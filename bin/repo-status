@@ -1,29 +1,36 @@
 #!/usr/bin/env bash
 
-# Display git repository status with emoji indicators.
+# Display git repository status with ASCII indicators.
 # Designed for shell prompt integration.
 #
 # Usage:
 #   repo-status
 #
 # Output format:
-#   🌿branch 📍hash ❓N 📦N 📝N 📈N 📉N 🚀N
-#     🌿 = Branch name (with action state if any)
-#     📍 = Commit hash (8 chars)
-#     ❓ = Untracked files count
-#     📦 = Staged files count
-#     📝 = Unstaged files count
-#     📈 = Insertions count
-#     📉 = Deletions count
-#     🚀 = Unpushed commits count
+#   br:branch [hash] ?N +N ~N (+N -N) >N
+#   wt:worktree br:branch [hash] ?N +N ~N (+N -N) >N
+#     br: = Branch context
+#     wt: = Linked worktree context (always followed by br:)
+#     branch/worktree names are capped at 15 characters
+#     hash = Commit hash (8 chars)
+#     ?N = Untracked files count
+#     +N = Staged files count
+#     ~N = Unstaged files count
+#     (+N -N) = Insertions/deletions count
+#     >N = Unpushed commits count
+
+git_readonly() {
+  GIT_OPTIONAL_LOCKS=0 git "$@"
+}
 
 # Exit if not in a git repository
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
+if ! git_readonly rev-parse --git-dir >/dev/null 2>&1; then
   exit 0
 fi
 
 # Get git directory (works with worktrees)
-git_dir=$(git rev-parse --git-dir 2>/dev/null)
+git_dir=$(git_readonly rev-parse --git-dir 2>/dev/null)
+git_common_dir=$(git_readonly rev-parse --git-common-dir 2>/dev/null)
 
 # Detect action state
 action=""
@@ -42,62 +49,71 @@ elif [ -f "${git_dir}/BISECT_LOG" ]; then
 fi
 
 # Get branch name
-branch=$(git branch --show-current 2>/dev/null)
+branch=$(git_readonly branch --show-current 2>/dev/null)
 if [ -z "${branch}" ]; then
   # Fallback for detached HEAD or worktree
-  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+  branch=$(git_readonly symbolic-ref --short HEAD 2>/dev/null || git_readonly rev-parse --short HEAD 2>/dev/null)
 fi
 
-# Append action to branch name if present
+# Build the leading context. Linked worktrees always include both worktree and
+# branch tokens so prompt readers can identify the checkout and Git branch.
+branch_context="${branch}"
+if [ "${#branch_context}" -gt 15 ]; then
+  branch_context="${branch_context:0:12}..."
+fi
+context="br:${branch_context}"
+if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
+  top_level=$(git_readonly rev-parse --show-toplevel 2>/dev/null)
+  worktree_name=$(basename "${top_level}")
+  worktree_context="${worktree_name}"
+  if [ "${#worktree_context}" -gt 15 ]; then
+    worktree_context="${worktree_context:0:12}..."
+  fi
+  context="wt:${worktree_context} br:${branch_context}"
+fi
+
+# Append action to context name if present
 if [ -n "${action}" ]; then
-  branch="${branch}|${action}"
-fi
-
-# Truncate branch name to 15 characters
-if [ "${#branch}" -gt 20 ]; then
-  branch="${branch:0:20}..."
+  context="${context}|${action}"
 fi
 
 # Get git status counts
-status_output=$(git --no-optional-locks status --porcelain 2>/dev/null)
+status_output=$(git_readonly status --porcelain 2>/dev/null)
 untracked=$(echo "${status_output}" | grep -c "^??" 2>/dev/null)
 staged=$(echo "${status_output}" | grep -c "^[MADRC]" 2>/dev/null)
 unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
 
 # Get insertions/deletions (single git diff call)
-read -r insertions deletions <<<"$(git --no-optional-locks diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
+read -r insertions deletions <<<"$(git_readonly diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
 
 # Get unpushed commits (try upstream, fall back to origin/branch)
 upstream="@{u}"
-if ! git rev-parse "${upstream}" >/dev/null 2>&1; then
+if ! git_readonly rev-parse "${upstream}" >/dev/null 2>&1; then
   upstream="origin/${branch}"
 fi
-unpushed=$(git log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' ')
+unpushed=$(git_readonly log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' ')
 [ -z "${unpushed}" ] && unpushed=0
 
 # Get commit hash (8 characters)
-commit_hash=$(git rev-parse --short=8 HEAD 2>/dev/null)
+commit_hash=$(git_readonly rev-parse --short=8 HEAD 2>/dev/null)
 
 # Build output
-output="🌿${branch} 📍${commit_hash}"
+output="${context} [${commit_hash}]"
 
 if [ "${untracked}" -gt 0 ]; then
-  output="${output} ❓${untracked}"
+  output="${output} ?${untracked}"
 fi
 if [ "${staged}" -gt 0 ]; then
-  output="${output} 📦${staged}"
+  output="${output} +${staged}"
 fi
 if [ "${unstaged}" -gt 0 ]; then
-  output="${output} 📝${unstaged}"
+  output="${output} ~${unstaged}"
 fi
-if [ "${insertions}" -gt 0 ]; then
-  output="${output} 📈${insertions}"
-fi
-if [ "${deletions}" -gt 0 ]; then
-  output="${output} 📉${deletions}"
+if [ "${insertions}" -gt 0 ] || [ "${deletions}" -gt 0 ]; then
+  output="${output} (+${insertions} -${deletions})"
 fi
 if [ "${unpushed}" -gt 0 ]; then
-  output="${output} 🚀${unpushed}"
+  output="${output} >${unpushed}"
 fi
 
-echo "${output} "
+echo "${output}"

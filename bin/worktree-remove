@@ -14,8 +14,8 @@ Usage:
   worktree-remove
 
 Search the current repository's .worktrees/ directory for managed worktrees,
-select one with fzf, confirm by typing "yes", then remove it with git
-worktree remove.
+select one with fzf, validate safety gates, then remove it with git worktree
+remove.
 
 Options:
   -h, --help  Show this help.
@@ -116,52 +116,6 @@ github_repo_from_origin() {
   printf '%s\n' "$repo"
 }
 
-show_github_status() {
-  local repo_root="$1"
-  local origin_kind="$2"
-  local origin_number="$3"
-  local github_repo
-  local output
-
-  if [[ "$origin_kind" != "issue" && "$origin_kind" != "pr" ]]; then
-    echo "GitHub: no issue or PR number detected"
-    return 0
-  fi
-
-  if [[ "$origin_number" == "-" ]]; then
-    echo "GitHub: no issue or PR number detected"
-    return 0
-  fi
-
-  if ! command -v gh &>/dev/null; then
-    echo "GitHub: gh command unavailable"
-    return 0
-  fi
-
-  github_repo=$(github_repo_from_origin "$repo_root")
-  if [[ -z "$github_repo" ]]; then
-    echo "GitHub: origin is not a GitHub repository"
-    return 0
-  fi
-
-  case "$origin_kind" in
-    issue)
-      if output=$(gh issue view "$origin_number" --repo "$github_repo" --json number,state,title,url --jq '"Issue #\(.number): \(.state)\n\(.title)\n\(.url)"' 2>/dev/null); then
-        printf '%s\n' "$output"
-      else
-        echo "GitHub: issue status unavailable"
-      fi
-      ;;
-    pr)
-      if output=$(gh pr view "$origin_number" --repo "$github_repo" --json number,state,isDraft,mergeStateStatus,reviewDecision,title,url --jq '"PR #\(.number): \(.state)" + (if .isDraft then " draft" else "" end) + " merge=" + (.mergeStateStatus // "-") + " review=" + (.reviewDecision // "-") + "\n" + .title + "\n" + .url' 2>/dev/null); then
-        printf '%s\n' "$output"
-      else
-        echo "GitHub: PR status unavailable"
-      fi
-      ;;
-  esac
-}
-
 github_origin_status() {
   local repo_root="$1"
   local origin_kind="$2"
@@ -229,41 +183,17 @@ github_state_columns() {
   printf '%s\t%s\n' "$issue_state" "$pr_state"
 }
 
-show_branch_tracking() {
-  local repo_root="$1"
-  local branch="$2"
-  local upstream
-  local head
-  local counts
-  local ahead="-"
-  local behind="-"
+format_origin_status() {
+  local issue_state="$1"
+  local pr_state="$2"
 
-  if [[ -z "$branch" || "$branch" == "-" ]]; then
-    echo "Branch: detached or unavailable"
-    return 0
-  fi
-
-  head=$(git -C "$repo_root" rev-parse --short "refs/heads/${branch}" 2>/dev/null || true)
-  upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
-
-  echo "Branch: ${branch}"
-  if [[ -n "$head" ]]; then
-    echo "HEAD: ${head}"
+  if [[ "$pr_state" != "-" ]]; then
+    printf '%s\n' "$pr_state"
+  elif [[ "$issue_state" != "-" ]]; then
+    printf '%s\n' "$issue_state"
   else
-    echo "HEAD: unavailable"
+    printf '%s\n' "status:-"
   fi
-
-  if [[ -z "$upstream" ]]; then
-    echo "Upstream: none"
-    return 0
-  fi
-
-  echo "Upstream: ${upstream}"
-  counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
-  if [[ -n "$counts" ]]; then
-    read -r ahead behind <<<"$counts"
-  fi
-  echo "Tracking: ahead=${ahead} behind=${behind}"
 }
 
 default_base_ref() {
@@ -551,35 +481,6 @@ list_managed_worktrees() {
   '
 }
 
-preview_worktree() {
-  local issue_state="$1"
-  local pr_state="$2"
-  local upstream_status="$3"
-  local branch="$4"
-  local upstream_remote="$5"
-  local worktree_path="$6"
-
-  echo "Status"
-  echo "  Issue:           ${issue_state}"
-  echo "  PR:              ${pr_state}"
-  echo "  Upstream state:  ${upstream_status}"
-  echo ""
-  echo "Target"
-  echo "  Branch:          ${branch}"
-  echo "  Upstream branch: ${upstream_remote}"
-  echo "  Path:            ${worktree_path}"
-}
-
-if [[ "${1:-}" == "__preview" ]]; then
-  shift
-  if [[ $# -ne 6 ]]; then
-    echo "preview unavailable: invalid arguments" >&2
-    exit 0
-  fi
-  preview_worktree "$@"
-  exit 0
-fi
-
 if [[ $# -gt 0 ]]; then
   case "$1" in
     -h | --help)
@@ -634,11 +535,13 @@ while IFS=$'\t' read -r branch lock_state worktree_path; do
   IFS=$'\t' read -r origin_kind origin_number _ <<<"$origin_record"
   github_record=$(github_state_columns "$repo_root" "$origin_kind" "$origin_number")
   IFS=$'\t' read -r issue_state pr_state <<<"$github_record"
+  origin_status=$(format_origin_status "$issue_state" "$pr_state")
   upstream_record=$(branch_upstream_status "$repo_root" "$branch")
   IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
   upstream_status=$(format_upstream_status "$upstream_state" "$upstream_ahead" "$upstream_behind")
 
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$origin_status" \
     "$issue_state" \
     "$pr_state" \
     "$upstream_status" \
@@ -662,30 +565,19 @@ if [[ -z "$inventory" ]]; then
   exit 0
 fi
 
-script_path="$0"
-case "$script_path" in
-  */*) ;;
-  *)
-    script_path=$(command -v "$script_path" 2>/dev/null || printf '%s\n' "$script_path")
-    ;;
-esac
-preview_command=$(printf '%q __preview {1} {2} {3} {4} {11} {5}' "$script_path")
-
 if ! selection="$(
   printf '%s\n' "$inventory" |
     fzf \
       --delimiter=$'\t' \
-      --with-nth=1,2,3,4,11,5 \
+      --with-nth=1,4,5 \
       --prompt='worktree-remove> ' \
-      --header='Select a worktree to remove. Columns: issue PR upstream branch upstream-branch path' \
-      --preview="$preview_command" \
-      --preview-window='down,60%'
+      --header='Select a worktree to remove. Columns: status upstream branch'
 )"; then
   echo "Cancelled."
   exit 0
 fi
 
-IFS=$'\t' read -r issue_state pr_state upstream_status branch worktree_path lock_state repo_root managed_root origin_kind origin_number upstream_remote upstream_state upstream_ahead upstream_behind <<<"$selection"
+IFS=$'\t' read -r _ _ _ _ branch worktree_path lock_state repo_root managed_root origin_kind origin_number _ _ _ _ <<<"$selection"
 
 if [[ -z "$branch" || -z "$worktree_path" || -z "$repo_root" || -z "$managed_root" ]]; then
   echo "Error: could not parse selected worktree." >&2
@@ -715,11 +607,6 @@ fi
 dirty_state=$(worktree_dirty_state "$worktree_path")
 lock_state=$(worktree_lock_state "$repo_root" "$worktree_path")
 merge_state=$(branch_merge_state "$repo_root" "$branch" "$origin_kind" "$origin_number")
-github_record=$(github_state_columns "$repo_root" "$origin_kind" "$origin_number")
-IFS=$'\t' read -r issue_state pr_state <<<"$github_record"
-upstream_record=$(branch_upstream_status "$repo_root" "$branch")
-IFS=$'\t' read -r upstream_remote upstream_state upstream_ahead upstream_behind <<<"$upstream_record"
-upstream_status=$(format_upstream_status "$upstream_state" "$upstream_ahead" "$upstream_behind")
 
 if [[ "$dirty_state" != "clean" ]]; then
   echo "Error: refusing to remove a dirty worktree: ${worktree_path}" >&2
@@ -741,23 +628,7 @@ if [[ "$branch" != "-" && "$merge_state" != "merged" ]]; then
   exit 1
 fi
 
-echo "Selected worktree:"
-echo "  Issue:           ${issue_state}"
-echo "  PR:              ${pr_state}"
-echo "  Upstream state:  ${upstream_status}"
-echo "  Branch:          ${branch}"
-echo "  Upstream branch: ${upstream_remote}"
-echo "  Path:            ${worktree_path}"
-echo ""
-echo "This will remove the linked worktree and its local branch with git worktree."
-printf 'Type yes to continue: '
-read -r answer
-
-if [[ "$answer" != "yes" ]]; then
-  echo "Cancelled."
-  exit 0
-fi
-
+echo "Removing worktree: ${branch} (${worktree_path})"
 cd "$repo_root"
 git worktree remove "$worktree_path"
 if [[ "$branch" != "-" ]]; then

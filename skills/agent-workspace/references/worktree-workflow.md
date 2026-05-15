@@ -34,6 +34,27 @@ Expect it to:
   passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
   re-run `repo-setup` or enter the devshell before pushing.
 
+For GitHub issue implementation, use this wrapper flow. Do not create issue
+branches or issue worktrees manually, and do not use raw `git worktree add` as
+the issue entrypoint.
+
+After entering the issue worktree and before editing or asking a human to push,
+verify the current branch and upstream:
+
+```bash
+pwd
+git branch --show-current
+git status --short --branch
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
+git rev-list --left-right --count HEAD...@{u}
+```
+
+For a reused remote issue branch, the upstream must be
+`origin/issue-<number>` or `origin/issue-<number>-*`. Stop if an issue branch
+tracks `origin/main` or another non-issue upstream. New local issue branches
+created by the wrapper may have no upstream until the first plain `git push`;
+verify they started from current `main` before editing.
+
 ### PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
@@ -115,11 +136,11 @@ git worktree list --porcelain
 ## 6. Repo Fit Notes
 
 - Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-remove` or `git worktree list --porcelain`, then delete confirmed
+  `worktree-remove` or `git worktree list --porcelain`, then delete selected
   linked worktrees with the wrapper flow.
-- `worktree-remove` keeps the selector and preview focused on issue state, PR
-  state, and upstream branch state, with long branch and path fields placed
-  after those status fields.
+- `worktree-remove` keeps the selector focused on compact issue/PR status,
+  upstream status, and branch rows. Path and upstream-branch details stay hidden
+  in selection data for safety checks.
 - `worktree-remove` treats both ancestry-merged branches and matching
   squash-merged GitHub PR branches as merged when `gh` can resolve the merged
   PR by head branch.
