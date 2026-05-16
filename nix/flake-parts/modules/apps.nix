@@ -12,6 +12,7 @@
 #   nix run '.#gc-roots-delete'
 #                             -- attempt Linux auto GC-root cleanup through the dedicated command
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
+#   nix run '.#root-lvm-extend' -- check/extend Ubuntu root LVM free space
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
 {
@@ -29,6 +30,7 @@
       nix = lib.getExe pkgs.nix;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
+      rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
       # Packages that live in the user's `nix profile` (independent of `nix run '.#switch'`).
@@ -189,6 +191,17 @@
             set -euo pipefail
             exec ${pkgs.bash}/bin/bash ${storagePressureReportScript} "$@"
           ''}/bin/storage-report";
+        };
+
+        # What: Check or extend Ubuntu root LVM free space after an installer leaves / small.
+        # When: Run --check after Ubuntu setup; run --apply only after reviewing the target VG/LV.
+        # Example: nix run '.#root-lvm-extend' -- --check
+        root-lvm-extend = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "root-lvm-extend" ''
+            set -euo pipefail
+            exec ${pkgs.bash}/bin/bash ${rootLvmExtendScript} "$@"
+          ''}/bin/root-lvm-extend";
         };
 
         apt-upgrade = {
