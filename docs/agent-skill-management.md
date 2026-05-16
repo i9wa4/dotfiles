@@ -40,8 +40,8 @@ publish a release.
 
 ## Private-Content Gate
 
-Before any skill move, rename, demotion into `references/`, or release
-publishing, scan the affected skill and referenced material for:
+Before any skill move, rename, demotion into `references/`, release automation,
+tag, or publishing step, scan the affected skill and referenced material for:
 
 - home-directory absolute paths,
 - private topology or node names that should not be public,
@@ -51,5 +51,22 @@ publishing, scan the affected skill and referenced material for:
 - copied runtime output or generated home-directory files,
 - public GitHub text that should use repo-relative paths or stable URLs.
 
-Record the result in the `personal_content_action` field for each affected
-entry in `skills/classification.yaml`.
+Use the checked-in gate:
+
+```sh
+bash bin/validate-skill-private-content.sh <path>...
+```
+
+For staged cleanup changes, use:
+
+```sh
+bash bin/validate-skill-private-content.sh --staged
+```
+
+The pre-commit hook runs this gate for staged skill and cleanup policy files.
+When the scanner reports findings, fix them before the dependent cleanup when
+possible. If a finding is intentionally retained, record the reason near the
+finding with a `private-content-scan: allow` or
+`private-content-scan: allow-next-line` annotation, and keep the
+`personal_content_action` field current for each affected entry in
+`skills/classification.yaml`.
