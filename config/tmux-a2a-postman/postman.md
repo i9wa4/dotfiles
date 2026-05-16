@@ -1,6 +1,8 @@
 ---
 skill_path:
+  # private-content-scan: allow-next-line -- live local skill source path.
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
+  # private-content-scan: allow-next-line -- live installed postman skills path.
   - path: ~/.claude/skills
     skills:
       - postman-config-auditor
@@ -49,6 +51,7 @@ description, affected node, mitigation, next step.
 Public and permanent GitHub surfaces, including commit messages, issue/PR
 bodies, comments, and reviews, must use repo-relative paths or stable web URLs.
 Do not write machine-local absolute paths such as `/home/...`, `/nix/store/...`,
+<!-- private-content-scan: allow-next-line -- prohibited-path example. -->
 or `~/ghq/...` there. Local absolute paths are allowed only in user-facing
 chat, internal task artifacts, and debug evidence.
 
