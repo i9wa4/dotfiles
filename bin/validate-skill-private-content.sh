@@ -98,6 +98,14 @@ append_scan_file() {
 append_path() {
   path=${1#./}
 
+  case "$path" in
+  skills | skills/)
+    echo "private-content scan: pass specific skill paths such as skills/<name>, not top-level skills" >&2
+    echo "Use --staged for the commit gate or scan named skill directories as cleanup reaches them." >&2
+    exit 64
+    ;;
+  esac
+
   if ! is_scan_target "$path"; then
     return 0
   fi
