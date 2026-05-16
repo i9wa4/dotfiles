@@ -1,0 +1,412 @@
+schema_version: 1
+issue: 168
+purpose: >
+  Machine-readable migration memo for checked-in Agent Skills before any skill
+  moves, renames, deletions, or release publishing.
+
+policy:
+  release_all_target: true
+  selective_release_allowlist: false
+  first_pr_scope:
+    - add classification metadata
+    - add durable docs pointer
+    - add private-content scan checklist
+  deferred_changes:
+    - skill moves
+    - skill renames
+    - skill deletions
+    - broad postman.md shrinking
+    - release workflow automation
+    - tags
+    - public releases
+
+target_groups:
+  agent-harness-engineering: >
+    Agent runtime, hooks, postman routing, workspace, prompt contracts, and
+    installed-agent engineering.
+  agent-skills-management: >
+    Agent Skills authoring, validation, Waza readiness, publish dry-runs, and
+    catalog diagnostics.
+  github: >
+    GitHub CLI mechanics, public-surface hygiene, issue and PR operations, and
+    inline comment rules.
+  create-review-comment: >
+    Thin user-facing PR review-comment drafting trigger.
+  subagent-review: >
+    Review engine for guardian-led, critic-assisted native reviewer workflows.
+  plan-design: >
+    Implementation plans, option framing, milestones, and approval-readiness
+    guidance.
+  systematic-debugging: >
+    Root-cause-first debugging workflow.
+  data-platform: >
+    BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
+  diagramming: >
+    draw.io and Mermaid authoring, export, and preview workflows.
+  programming: >
+    Shell, Python, Nix package workflow, Markdown, and implementation-loop
+    conventions.
+
+private_content_scan:
+  required_before:
+    - moving skill content
+    - renaming skills
+    - demoting skills into references
+    - publishing a release
+  checklist:
+    - home-directory absolute paths
+    - private topology or node names that should not be public
+    - account-specific authentication or organization details
+    - personal machine names or hostnames
+    - non-portable local workflow assumptions
+    - copied runtime output or generated home-directory files
+    - public GitHub surfaces that should use repo-relative paths or stable URLs
+  gate_result_field: personal_content_action
+
+postman_boundary:
+  owner_surface: config/tmux-a2a-postman/postman.md
+  keep_in_postman_md:
+    - node role identity
+    - agent-to-agent routing and reply flow
+    - approval lane and no-bypass state transitions
+    - essential review route and verdict vocabulary
+    - human approval gates for public posting
+  keep_in_skills_or_references:
+    - detailed review procedure
+    - reviewer perspectives and synthesis workflow
+    - PR review-comment drafting templates
+    - long runbooks and reusable command examples
+
+common_validation_expectations: &common_validation
+  - bash bin/validate-skill-frontmatter.sh skills
+  - bash bin/validate-skill-description-length.sh --staged
+  - bash bin/validate-skill-waza.sh --staged
+  - gh skill publish --dry-run before release
+
+skills:
+  - name: agent-harness-engineering
+    path: skills/agent-harness-engineering
+    publish: true
+    scope: repo-local-agent-harness
+    action: keep
+    target_group: agent-harness-engineering
+    target_name: agent-harness-engineering
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: agent-workspace
+    path: skills/agent-workspace
+    publish: true
+    scope: repo-local-agent-harness
+    action: merge_into_references
+    target_group: agent-harness-engineering
+    target_name: agent-harness-engineering
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: orchestrator
+    path: skills/orchestrator
+    publish: true
+    scope: postman-role-contract
+    action: move_role_contract_to_postman_md
+    target_group: agent-harness-engineering
+    target_name: orchestrator-role-contract
+    release_state: demote_or_delete_before_release
+    owner_surface: config/tmux-a2a-postman/postman.md
+    standalone_decision: do_not_keep_role_only_skill
+    personal_content_action: move_contract_then_scan_remainder
+    validation_expectations:
+      - verify postman.md owns role identity and live coordination
+      - verify detailed runbooks move to agent-harness-engineering references
+      - verify no standalone orchestrator target remains before release
+
+  - name: prompt-contracts-local
+    path: skills/prompt-contracts-local
+    publish: true
+    scope: repo-local-agent-harness
+    action: merge_into_references
+    target_group: agent-harness-engineering
+    target_name: agent-harness-engineering
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: agent-skill-management
+    path: skills/agent-skill-management
+    publish: true
+    scope: agent-skills-authoring
+    action: rename_target_later
+    target_group: agent-skills-management
+    target_name: agent-skills-management
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: skill-description-index
+    path: skills/skill-description-index
+    publish: true
+    scope: agent-skills-catalog-diagnostics
+    action: merge_into_references
+    target_group: agent-skills-management
+    target_name: agent-skills-management
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: github
+    path: skills/github
+    publish: true
+    scope: github-workflow
+    action: keep
+    target_group: github
+    target_name: github
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: create-review-comment
+    path: skills/create-review-comment
+    publish: true
+    scope: github-review-comment-drafting
+    action: keep_thin_trigger
+    target_group: create-review-comment
+    target_name: create-review-comment
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone_thin_trigger
+    personal_content_action: scan_before_publish
+    validation_expectations:
+      - bash bin/validate-skill-frontmatter.sh skills/create-review-comment
+      - bash bin/validate-skill-waza.sh skills/create-review-comment/SKILL.md
+      - verify GitHub comments never expose internal review mechanics
+
+  - name: subagent-review
+    path: skills/subagent-review
+    publish: true
+    scope: review-engine
+    action: keep
+    target_group: subagent-review
+    target_name: subagent-review
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: plan-design
+    path: skills/plan-design
+    publish: true
+    scope: planning-and-approval-readiness
+    action: keep
+    target_group: plan-design
+    target_name: plan-design
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: brainstorming
+    path: skills/brainstorming
+    publish: true
+    scope: ambiguity-reduction
+    action: merge_into_references
+    target_group: plan-design
+    target_name: plan-design
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: systematic-debugging
+    path: skills/systematic-debugging
+    publish: true
+    scope: root-cause-debugging
+    action: keep
+    target_group: systematic-debugging
+    target_name: systematic-debugging
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: tdd-tidy-first
+    path: skills/tdd-tidy-first
+    publish: true
+    scope: implementation-loop
+    action: merge_into_references
+    target_group: programming
+    target_name: programming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+    notes: >
+      May also be referenced from systematic-debugging when debugging leads to
+      an implementation loop.
+
+  - name: bash
+    path: skills/bash
+    publish: true
+    scope: shell-scripting
+    action: merge_into_references
+    target_group: programming
+    target_name: programming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: python
+    path: skills/python
+    publish: true
+    scope: python-development
+    action: merge_into_references
+    target_group: programming
+    target_name: programming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: nix
+    path: skills/nix
+    publish: true
+    scope: nix-package-workflow
+    action: merge_into_references
+    target_group: programming
+    target_name: programming
+    release_state: split_before_release
+    owner_surface: references
+    standalone_decision: merge_general_workflow_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+    notes: >
+      Agent-runtime Nix and Home Manager material belongs under
+      agent-harness-engineering references.
+
+  - name: markdown
+    path: skills/markdown
+    publish: true
+    scope: markdown-authoring
+    action: merge_into_references
+    target_group: programming
+    target_name: programming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: bigquery-local
+    path: skills/bigquery-local
+    publish: true
+    scope: bigquery-local-workflow
+    action: merge_into_references
+    target_group: data-platform
+    target_name: data-platform
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: databricks-local
+    path: skills/databricks-local
+    publish: true
+    scope: databricks-local-workflow
+    action: merge_into_references
+    target_group: data-platform
+    target_name: data-platform
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: dbt-local
+    path: skills/dbt-local
+    publish: true
+    scope: dbt-local-workflow
+    action: merge_into_references
+    target_group: data-platform
+    target_name: data-platform
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: restricted-bigquery-dbt-environment
+    path: skills/restricted-bigquery-dbt-environment
+    publish: true
+    scope: bigquery-dbt-safety
+    action: merge_into_references
+    target_group: data-platform
+    target_name: data-platform
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: aws-auth
+    path: skills/aws-auth
+    publish: true
+    scope: cloud-auth-workflow
+    action: merge_into_references
+    target_group: data-platform
+    target_name: data-platform
+    release_state: needs_classification_confirmation
+    owner_surface: references
+    standalone_decision: merge_into_target_unless_reclassified
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+    notes: >
+      Reclassify under agent-harness-engineering if later review finds this is
+      primarily a harness-operation skill.
+
+  - name: drawio-local
+    path: skills/drawio-local
+    publish: true
+    scope: drawio-diagramming
+    action: merge_into_references
+    target_group: diagramming
+    target_name: diagramming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation
+
+  - name: mermaid-local
+    path: skills/mermaid-local
+    publish: true
+    scope: mermaid-diagramming
+    action: merge_into_references
+    target_group: diagramming
+    target_name: diagramming
+    release_state: migrate_before_release
+    owner_surface: references
+    standalone_decision: merge_into_target
+    personal_content_action: scan_before_migration
+    validation_expectations: *common_validation

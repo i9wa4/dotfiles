@@ -155,6 +155,8 @@ large fallback skill:
   postman routing, and Nix/Home Manager agent harness changes
 - `skills/agent-skill-management/` owns source skill editing, validation, and
   publish-readiness checks
+- `docs/agent-skill-management.md` points to the skill-management procedure
+  and the release-all classification memo in `skills/classification.yaml`
 - `docs/repo-ai-operating-contract.md` owns durable operating rules and task
   artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
@@ -312,8 +314,10 @@ When you need to understand the operating concept, read these in order:
 ## 10. Related files
 
 - `docs/repo-ai-operating-contract.md`
+- `docs/agent-skill-management.md`
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
+- `skills/classification.yaml`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/render-agents.nix`
 - `nix/home-manager/agents/shared/denied-bash-commands.nix`
