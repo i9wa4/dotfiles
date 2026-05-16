@@ -57,6 +57,11 @@ Use the checked-in gate:
 bash bin/validate-skill-private-content.sh <path>...
 ```
 
+Pass specific files or skill directories, for example `skills/<name>`. The
+top-level `skills` directory is intentionally rejected because it includes
+deferred cleanup content; use `--staged` for the commit gate or scan named
+skills as their cleanup reaches review.
+
 For staged cleanup changes, use:
 
 ```sh
