@@ -26,7 +26,10 @@ Use this skill when the output is a plan artifact requiring:
 
 ## 1. Relationship to Existing Skills
 
-- Base orchestration mechanics: use `orchestrator` skill.
+- Shared orchestration mechanics: use `config/tmux-a2a-postman/postman.md` for
+  the live role contract and
+  `skills/agent-harness-engineering/references/orchestrator-runbook.md` for
+  durable orchestration runbooks.
 - Native guardian/critic review mechanics: reuse `subagent-review` concepts
   selectively.
 - GitHub fetch/comment commands: follow `github` rule where needed.
@@ -99,11 +102,12 @@ When activated, complete all of the following before writing the main plan:
 
 ## 5. 5-Step Workflow
 
-NOTE: This workflow departs from orchestrator base behavior by dispatching
+NOTE: This workflow departs from the base orchestrator order by dispatching
 workers (Step 2) BEFORE the annotation cycle (Step 3). This is intentional for
 plan authoring: workers provide raw investigation inputs that the annotation
-cycle then synthesizes. This overrides orchestrator section 3.2 for plan-design
-tasks only. In all other contexts, follow the base orchestrator order.
+cycle then synthesizes. This overrides the base order documented in
+`config/tmux-a2a-postman/postman.md` for plan-design tasks only. In all other
+contexts, follow the live role contract and durable runbook.
 
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
@@ -181,12 +185,12 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 ### 5.5. Step 5: Beginner-Friendly Final Plan Packaging
 
-This step augments the base orchestrator plan template. The sections below are
-ADDITIONAL to the base template defined in the orchestrator skill. Sections
-already in the base template (Purpose, Source, Context, Investigation Summary,
-Acceptance Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises)
-must still be present. The sections listed here must also be added for
-beginner-friendly plan outputs.
+This step augments the base plan sections from the live role contract in
+`config/tmux-a2a-postman/postman.md` and the durable orchestration details in
+`skills/agent-harness-engineering/references/orchestrator-runbook.md`. Keep the
+base sections (Purpose, Source, Context, Investigation Summary, Acceptance
+Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises), and add the
+sections below for beginner-friendly plan outputs.
 
 Additional required sections:
 
