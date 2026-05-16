@@ -57,6 +57,9 @@ private_content_scan:
     - publishing a release
   command: bash bin/validate-skill-private-content.sh --staged
   path_command: bash bin/validate-skill-private-content.sh <path>...
+  path_scope:
+    - scan specific files or skill directories such as skills/<name>
+    - reject bare top-level skills because the tree still contains deferred cleanup content
   checklist:
     - home-directory absolute paths
     - private topology or node names that should not be public
