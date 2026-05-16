@@ -150,11 +150,11 @@ skills:
     personal_content_action: scan_before_migration
     validation_expectations: *common_validation
 
-  - name: agent-skill-management
-    path: skills/agent-skill-management
+  - name: agent-skills-management
+    path: skills/agent-skills-management
     publish: true
     scope: agent-skills-authoring
-    action: rename_target_later
+    action: keep
     target_group: agent-skills-management
     target_name: agent-skills-management
     release_state: needs_private_content_scan
@@ -167,12 +167,12 @@ skills:
     path: skills/skill-description-index
     publish: true
     scope: agent-skills-catalog-diagnostics
-    action: merge_into_references
+    action: merge_into_agent_skills_management_references
     target_group: agent-skills-management
     target_name: agent-skills-management
     release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
+    owner_surface: skills/agent-skills-management/references
+    standalone_decision: merge_into_agent_skills_management_references
     personal_content_action: scan_before_migration
     validation_expectations: *common_validation
 
