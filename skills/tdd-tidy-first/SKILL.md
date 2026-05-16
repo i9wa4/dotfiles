@@ -2,28 +2,28 @@
 name: tdd-tidy-first
 license: MIT
 description: |
-  USE FOR: Red-Green-Refactor, Tidy First for small verifiable changes. Bug mechanism must be understood; use systematic-debugging first otherwise. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: TDD and Tidy First loops in this repo: small verifiable behavior changes, reproducer-first fixes, and structural cleanup sequencing. Detailed owner: programming. DO NOT USE FOR: unclear root-cause debugging.
 ---
 
 # Tdd Tidy First
 
-**UTILITY SKILL:** Apply this skill to Red-Green-Refactor, Tidy First for small
-verifiable changes. Bug mechanism must be understood; use systematic-debugging
-first otherwise. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+Compatibility trigger for TDD and Tidy First tasks. The durable implementation
+guidance now lives in `skills/programming/references/tdd-tidy-first.md`.
 
-**USE FOR:** Red-Green-Refactor, Tidy First for small verifiable changes. Bug
-mechanism must be understood; use systematic-debugging first otherwise; related
-file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Red-Green-Refactor and Tidy First loops for understood implementation tasks.
+- Small verifiable changes where the test surface is clear.
+
+## Do Not Use For
+
+- Unknown failure mechanisms; use `systematic-debugging` first.
+- Unrelated domains or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/programming/references/tdd-tidy-first.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,9 +35,4 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/programming/references/tdd-tidy-first.md`

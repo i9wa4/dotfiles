@@ -2,28 +2,28 @@
 name: python
 license: MIT
 description: |
-  USE FOR: Python coding rules: shebang, file permissions, venv selection (uv, poetry, venv). Use when writing or running Python code in this repo. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Python coding in this repo: utility edits, explicit python execution, venv selection, and file permission conventions. Detailed owner: programming. DO NOT USE FOR: generated runtime outputs.
 ---
 
 # Python
 
-**UTILITY SKILL:** Apply this skill to Python coding rules: shebang, file
-permissions, venv selection (uv, poetry, venv). Use when writing or running
-Python code in this repo. Keep the task scoped to the requested domain and
-preserve existing repo conventions.
+Compatibility trigger for Python-specific tasks. The durable implementation
+guidance now lives in `skills/programming/references/python-development.md`.
 
-**USE FOR:** Python coding rules: shebang, file permissions, venv selection (uv,
-poetry, venv). Use when writing or running Python code in this repo; related
-file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Python utility edits in this repo.
+- Python execution, virtual environment, and file permission conventions.
+
+## Do Not Use For
+
+- Unrelated domains, broad rewrites outside the request, or generated runtime
+  outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/programming/references/python-development.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,9 +35,4 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/programming/references/python-development.md`
