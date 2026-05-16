@@ -36,6 +36,8 @@ agent behavior in the focused skill that owns that workflow.
 - Skill authoring and validation belong to `skills/agent-skills-management/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
+- Durable orchestration runbooks belong to
+  `skills/agent-harness-engineering/references/`.
 
 Shared dotfiles work still carries a few repository guardrails:
 
@@ -321,6 +323,7 @@ When you need to understand the operating concept, read these in order:
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
 - `skills/classification.yaml`
+- `skills/agent-harness-engineering/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/render-agents.nix`
 - `nix/home-manager/agents/shared/denied-bash-commands.nix`

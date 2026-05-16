@@ -123,15 +123,16 @@ skills:
 
   - name: orchestrator
     path: skills/orchestrator
-    publish: true
+    publish: false
     scope: postman-role-contract
-    action: move_role_contract_to_postman_md
+    action: delete_role_only_skill
     target_group: agent-harness-engineering
-    target_name: orchestrator-role-contract
-    release_state: demote_or_delete_before_release
+    target_name: agent-harness-engineering
+    release_state: removed_before_release
     owner_surface: config/tmux-a2a-postman/postman.md
-    standalone_decision: do_not_keep_role_only_skill
-    personal_content_action: move_contract_then_scan_remainder
+    runbook_surface: skills/agent-harness-engineering/references/orchestrator-runbook.md
+    standalone_decision: deleted_role_only_skill
+    personal_content_action: scanned_migrated_surfaces
     validation_expectations:
       - verify postman.md owns role identity and live coordination
       - verify detailed runbooks move to agent-harness-engineering references

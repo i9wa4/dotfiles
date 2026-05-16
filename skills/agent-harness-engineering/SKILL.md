@@ -40,6 +40,7 @@ source, run focused checks, and summarize the result.
 - [Claude Workspace Trust](references/claude-workspace-trust.md)
 - [Codex CLI](references/codex-cli.md)
 - [Changelog Tracking](references/changelog-tracking.md)
+- [Orchestrator Runbook](references/orchestrator-runbook.md)
 
 ## Troubleshooting
 

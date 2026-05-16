@@ -51,12 +51,12 @@ Use this skill when one or more apply:
 Before drafting, run the following and read the results:
 
 1. List existing skills:
-   ls ~/ghq/github.com/i9wa4/dotfiles/skills/
+   ls skills/
 
 2. Read at minimum:
-   - ~/ghq/github.com/i9wa4/dotfiles/skills/orchestrator/SKILL.md
-   - ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/shared/render-agents.nix
-   - ~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/subagents/_metadata.nix
+   - skills/agent-harness-engineering/references/orchestrator-runbook.md
+   - nix/home-manager/agents/shared/render-agents.nix
+   - nix/home-manager/agents/subagents/_metadata.nix
 
 3. Read any skill whose name suggests planning, review, or session workflow.
 
