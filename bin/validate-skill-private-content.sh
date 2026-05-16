@@ -50,7 +50,16 @@ fi
 path_list=$(mktemp)
 file_list=$(mktemp)
 findings=$(mktemp)
-trap 'rm -f "$path_list" "$file_list" "$findings"' EXIT HUP INT TERM
+staged_dir=
+
+cleanup() {
+  rm -f "$path_list" "$file_list" "$findings"
+  if [ -n "$staged_dir" ]; then
+    rm -rf "$staged_dir"
+  fi
+}
+
+trap cleanup EXIT HUP INT TERM
 
 is_scan_target() {
   case "$1" in
@@ -77,6 +86,15 @@ is_text_target() {
   esac
 }
 
+append_scan_file() {
+  display_path=$1
+  scan_path=$2
+
+  if is_text_target "$display_path"; then
+    printf '%s\t%s\n' "$display_path" "$scan_path" >>"$file_list"
+  fi
+}
+
 append_path() {
   path=${1#./}
 
@@ -87,16 +105,36 @@ append_path() {
   if [ -d "$path" ]; then
     find -L "$path" -type f \
       \( -name 'SKILL.md' -o -name '*.md' -o -name '*.yaml' -o -name '*.yml' -o -name '*.sh' -o -name '*.py' -o -name '*.mjs' -o -name '*.sql' \) \
-      -print >>"$file_list"
+      -print | while IFS= read -r file; do
+      append_scan_file "$file" "$file"
+    done
     return 0
   fi
 
-  if [ -f "$path" ] && is_text_target "$path"; then
-    printf '%s\n' "$path" >>"$file_list"
+  if [ -f "$path" ]; then
+    append_scan_file "$path" "$path"
   fi
 }
 
+append_staged_path() {
+  path=${1#./}
+
+  if ! is_scan_target "$path" || ! is_text_target "$path"; then
+    return 0
+  fi
+
+  scan_path="$staged_dir/$path"
+  mkdir -p "$(dirname "$scan_path")"
+  if ! git show ":$path" >"$scan_path"; then
+    echo "private-content scan: unable to read staged content for $path" >&2
+    exit 1
+  fi
+
+  append_scan_file "$path" "$scan_path"
+}
+
 if [ "$staged" -eq 1 ]; then
+  staged_dir=$(mktemp -d)
   git diff --cached --name-only --diff-filter=ACMR >"$path_list"
 else
   printf '%s\n' "$paths" >"$path_list"
@@ -104,7 +142,11 @@ fi
 
 while IFS= read -r path; do
   [ -n "$path" ] || continue
-  append_path "$path"
+  if [ "$staged" -eq 1 ]; then
+    append_staged_path "$path"
+  else
+    append_path "$path"
+  fi
 done <"$path_list"
 
 if [ ! -s "$file_list" ]; then
@@ -114,8 +156,9 @@ fi
 
 sort -u "$file_list" -o "$file_list"
 
-while IFS= read -r file; do
-  awk -v file="$file" '
+tab=$(printf '\t')
+while IFS="$tab" read -r display_path scan_path; do
+  awk -v file="$display_path" '
     function emit(rule) {
       if (allow_current) {
         return
@@ -162,7 +205,7 @@ while IFS= read -r file; do
     END {
       exit found ? 1 : 0
     }
-  ' "$file" >>"$findings" || true
+  ' "$scan_path" >>"$findings" || true
 done <"$file_list"
 
 if [ -s "$findings" ]; then
