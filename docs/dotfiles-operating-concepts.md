@@ -33,7 +33,7 @@ agent behavior in the focused skill that owns that workflow.
 - Claude/Codex runtime config, hooks, skill installation, and postman routing
   belong to `skills/agent-harness-engineering/` and the postman-specific
   skills.
-- Skill authoring and validation belong to `skills/agent-skill-management/`.
+- Skill authoring and validation belong to `skills/agent-skills-management/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
 
@@ -155,10 +155,11 @@ large fallback skill:
   worktree re-entry, and pane operations
 - `skills/agent-harness-engineering/` owns Claude/Codex config, hooks,
   postman routing, and Nix/Home Manager agent harness changes
-- `skills/agent-skill-management/` owns source skill editing, validation, and
+- `skills/agent-skills-management/` owns source skill editing, validation, and
   publish-readiness checks
-- `docs/agent-skill-management.md` points to the skill-management procedure
-  and the release-all classification memo in `skills/classification.yaml`
+- `docs/agent-skills-management.md` points to the Agent Skills management
+  procedure and the release-all classification memo in
+  `skills/classification.yaml`
 - `docs/repo-ai-operating-contract.md` owns durable operating rules and task
   artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
@@ -316,7 +317,7 @@ When you need to understand the operating concept, read these in order:
 ## 10. Related files
 
 - `docs/repo-ai-operating-contract.md`
-- `docs/agent-skill-management.md`
+- `docs/agent-skills-management.md`
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
 - `skills/classification.yaml`

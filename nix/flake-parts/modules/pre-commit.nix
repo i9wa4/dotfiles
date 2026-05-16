@@ -178,7 +178,7 @@
               #!${pkgs.bash}/bin/bash
               exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-private-content.sh} --staged
             ''}";
-            files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skill-management\\.md|docs/dotfiles-operating-concepts\\.md)";
+            files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skills-management\\.md|docs/dotfiles-operating-concepts\\.md)";
             types = [ "file" ];
             pass_filenames = false;
           };
