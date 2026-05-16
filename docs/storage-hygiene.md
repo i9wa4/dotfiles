@@ -418,7 +418,7 @@ Managed swap reduction from 16GiB to 8GiB:
 sudo bash ./bin/ubuntu/setup-swap.sh
 ```
 
-The swap command is approved only as part of the section 3 runbook.
+The swap command is approved only as part of the section 4 runbook.
 
 ### 1.13. Durable Prevention
 
@@ -441,6 +441,9 @@ Use one-off deletion only to exit the emergency. The durable controls are:
   it.
 - Give cleanup quarantines an owner and expiration path so dated move-aside
   directories do not become permanent hidden storage.
+- Check Ubuntu root LVM allocation after install. If `/` is still a small LV
+  while the VG has free extents, extend it before treating normal usage as a
+  storage-pressure incident.
 - Use explicit Nix cleanup surfaces, such as the daily switch flow and
   `nix run '.#gc-roots-delete'`, instead of deleting Nix store paths directly.
 
@@ -487,7 +490,79 @@ links such as `profile-*` stay `KEEP`.
 - It attempts deletion as the current user and keeps going when a specific root
   cannot be removed.
 
-## 3. Managed Swapfile
+## 3. Ubuntu Root LVM Expansion
+
+Ubuntu's installer can create an LVM physical volume that spans the disk while
+leaving the root logical volume at 100G. In that state, `/` can appear under
+pressure even though the volume group still has hundreds of GiB unallocated.
+
+### 3.1. Read-Only Check
+
+Use the managed check from the dotfiles repo root:
+
+```sh
+sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
+```
+
+The equivalent raw checks are:
+
+```sh
+lsblk -o NAME,TYPE,SIZE,FSTYPE,MOUNTPOINTS
+df -hT /
+sudo vgs --units g
+sudo lvs --units g
+sudo pvs --units g
+```
+
+The expected expandable shape is:
+
+- `/` is mounted from an LVM logical volume such as
+  `/dev/mapper/ubuntu--vg-ubuntu--lv`.
+- `df -hT /` shows a root filesystem much smaller than the disk.
+- `vgs` shows non-zero `VFree`.
+
+If the physical volume or partition itself is too small, this helper is not
+the right tool. Resize the partition/PV first, then re-run the check.
+
+### 3.2. Approved Apply Path
+
+After reviewing the target VG/LV, run the managed helper:
+
+```sh
+sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+```
+
+The helper runs `lvextend -r -l +100%FREE` on the root LV. The `-r` flag grows
+the filesystem along with the logical volume.
+
+Raw fallback for an operator who has already reviewed that `/` is on LVM:
+
+```sh
+sudo lvextend -r -l +100%FREE "$(findmnt -n -o SOURCE /)"
+```
+
+### 3.3. Verification
+
+After the apply path, verify that root now consumes the expected space and the
+VG no longer has the previously unallocated extents:
+
+```sh
+df -hT /
+lsblk -o NAME,TYPE,SIZE,FSTYPE,MOUNTPOINTS
+sudo lvs --units g
+sudo vgs --units g
+```
+
+### 3.4. Guardrails
+
+- Run this only when `/` is on LVM and the root VG has free extents.
+- This does not repartition a disk, grow a PV, or move data between disks.
+- Use the managed helper for the live mutation so the filesystem resize is
+  paired with the LV resize.
+- If the host is not using LVM, resolve capacity with that host's partitioning
+  scheme instead of forcing this runbook.
+
+## 4. Managed Swapfile
 
 The managed Ubuntu swap target is `/swapfile` at `8G`. This is the default
 storage-priority setting for machines with enough RAM and no hibernation
@@ -500,7 +575,7 @@ refuses to run when more than one swap device is active. It does not disable
 duplicate swap devices, rewrite unrelated swap entries, or delete `/swap.img`
 automatically.
 
-### 3.1. Approval Gate
+### 4.1. Approval Gate
 
 Do not run the live resize path until the user has explicitly approved the
 patch and the planned host operation. The helper may run `swapoff`, recreate
@@ -515,7 +590,7 @@ shellcheck bin/ubuntu/setup-swap.sh
 git diff --check
 ```
 
-### 3.2. Duplicate Swap Consolidation
+### 4.2. Duplicate Swap Consolidation
 
 If the host has two swap devices, such as `/swapfile` and `/swap.img`, only one
 is needed. Consolidate duplicates manually before running `setup-swap.sh`.
@@ -545,7 +620,7 @@ Manual consolidation steps, all requiring root:
    sudo bash ./bin/ubuntu/setup-swap.sh
    ```
 
-### 3.3. Swap 16GiB To 8GiB Runbook
+### 4.3. Swap 16GiB To 8GiB Runbook
 
 Use this procedure when the host currently has a 16GiB `/swapfile` and the
 reviewed policy is to move to the managed 8GiB target. Run it only after patch
@@ -635,7 +710,7 @@ Risks:
 - The helper rewrites the canonical `/swapfile` fstab entry. Do not run it if a
   host intentionally uses a different swap path or mount policy.
 
-### 3.4. Rollback Considerations
+### 4.4. Rollback Considerations
 
 If the approved 8G target causes memory pressure or OOM risk, restore the
 conservative policy through a reviewed patch that sets `SWAP_SIZE_GB=16`, then

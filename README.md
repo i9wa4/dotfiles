@@ -176,13 +176,32 @@ Restart nix-daemon to apply:
 sudo systemctl restart nix-daemon
 ```
 
-### 3.3. Initial home-manager switch
+### 3.3. Expand Ubuntu LVM Root If Needed
+
+Ubuntu's installer can leave `/` as a 100G logical volume even when the disk
+and LVM physical volume are much larger. Check this before regular use:
+
+```sh
+sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
+```
+
+If the check reports free VG extents for the root logical volume, extend `/`
+with the managed helper:
+
+```sh
+sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+```
+
+The helper only handles the common case where `/` is already on LVM and the VG
+has free extents. It does not resize disk partitions or physical volumes.
+
+### 3.4. Initial home-manager switch
 
 ```sh
 nix run home-manager -- switch --flake '.#ubuntu' --impure -b backup
 ```
 
-### 3.4. Set zsh as default shell (optional)
+### 3.5. Set zsh as default shell (optional)
 
 `~/.bashrc` auto-switches to zsh, but setting the login shell
 is useful for regular SSH connections:
