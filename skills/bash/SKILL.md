@@ -2,28 +2,29 @@
 name: bash
 license: MIT
 description: |
-  USE FOR: Bash scripting for this repo: writing scripts, worker pane discipline, interactive prompt avoidance, hook denial handling, stall diagnosis. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Bash scripting in this repo: scripts, shell command design, worker pane discipline, hook denial handling, and stall diagnosis. Detailed owner: programming. DO NOT USE FOR: generated runtime outputs.
 ---
 
 # Bash
 
-**UTILITY SKILL:** Apply this skill to Bash scripting for this repo: writing
-scripts, worker pane discipline, interactive prompt avoidance, hook denial
-handling, stall diagnosis. Keep the task scoped to the requested domain and
-preserve existing repo conventions.
+Compatibility trigger for Bash-specific tasks. The durable implementation
+guidance now lives in `skills/programming/references/bash-scripting.md`.
 
-**USE FOR:** Bash scripting for this repo: writing scripts, worker pane
-discipline, interactive prompt avoidance, hook denial handling, stall diagnosis;
-related file edits; verification and handoff in this skill's domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Bash scripts and shell command design in this repo.
+- Worker pane shell discipline and hook denial handling.
+- Stall diagnosis for non-interactive agent commands.
+
+## Do Not Use For
+
+- Unrelated domains, broad rewrites outside the request, or generated runtime
+  outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/programming/references/bash-scripting.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -33,7 +34,6 @@ generated runtime outputs, or replacing repo-specific source of truth.
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## Troubleshooting
+## References
 
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/programming/references/bash-scripting.md`

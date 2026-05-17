@@ -39,14 +39,13 @@ target_groups:
     guidance.
   systematic-debugging: >
     Root-cause-first debugging workflow.
+  programming: >
+    Shell, Python, Nix package workflow, Markdown, and implementation-loop
+    conventions.
   data-platform: >
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
-  programming: >
-    Shell, Python, Nix package workflow, Markdown, and implementation-loop
-    conventions.
-
 private_content_scan:
   required_before:
     - moving skill content
@@ -258,75 +257,90 @@ skills:
     personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
+  - name: programming
+    path: skills/programming
+    publish: true
+    scope: programming-target
+    action: keep
+    target_group: programming
+    target_name: programming
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone_target
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
   - name: tdd-tidy-first
     path: skills/tdd-tidy-first
     publish: true
     scope: implementation-loop
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_programming_target
+    owner_surface: skills/programming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
     notes: >
-      May also be referenced from systematic-debugging when debugging leads to
-      an implementation loop.
+      Detailed guidance now lives in programming references and may also be
+      referenced from systematic-debugging when debugging leads to an
+      implementation loop.
 
   - name: bash
     path: skills/bash
     publish: true
     scope: shell-scripting
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_programming_target
+    owner_surface: skills/programming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: python
     path: skills/python
     publish: true
     scope: python-development
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_programming_target
+    owner_surface: skills/programming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: nix
     path: skills/nix
     publish: true
     scope: nix-package-workflow
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: split_before_release
-    owner_surface: references
-    standalone_decision: merge_general_workflow_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_programming_target
+    owner_surface: skills/programming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
     notes: >
+      General package workflow now lives in programming references.
       Agent-runtime Nix and Home Manager material belongs under
-      agent-harness-engineering references.
+      agent-harness-engineering.
 
   - name: markdown
     path: skills/markdown
     publish: true
     scope: markdown-authoring
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_programming_target
+    owner_surface: skills/programming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: bigquery-local
