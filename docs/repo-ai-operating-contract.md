@@ -451,6 +451,33 @@ Fallback behavior:
 - hook, permission, or tool-restriction blocks are immediate `BLOCKED:` states
   with no silent retry
 
+### 8.6. Review workflow ownership split
+
+`config/tmux-a2a-postman/postman.md` owns the live review contract: role
+identity, route reachability, reply-required flow, verdict vocabulary,
+approval/no-bypass state transitions, watchdog/fallback gates, and human
+approval gates for public posting.
+
+Reusable review material belongs outside the live template:
+
+- `skills/subagent-review/SKILL.md` owns the detailed review procedure,
+  reviewer perspectives, guardian/critic handoff mechanics, evidence
+  synthesis, severity handling, and review-output expectations.
+- `skills/create-review-comment/SKILL.md` owns the thin user-facing PR
+  review-comment trigger, target inference, Japanese draft-comment workflow,
+  and no-post-without-explicit-approval gate.
+- `skills/create-review-comment/references/preserved-guidance.md` owns
+  detailed review-comment drafting templates and preserved examples.
+- `skills/github/SKILL.md` and `skills/github/references/preserved-guidance.md`
+  own GitHub mechanics, issue/PR operations, inline comment mechanics,
+  commit/PR-publication rules, and public wording/path hygiene.
+
+If a review rule needs to be enforced while agents are actively routing mail,
+keep a short gate in `postman.md` and point here or to the relevant skill for
+the longer procedure. If a rule is reusable review technique, a comment
+template, or GitHub command mechanics, keep it in the owning skill or
+reference instead of expanding the live template.
+
 ## 9. Status and routing rules
 
 ### 9.1. `status request` is not `status update`
