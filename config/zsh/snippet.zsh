@@ -13,13 +13,17 @@ __snippet_add() {
   __snippet_contexts+=("$4")
 }
 
-__snippet_add "ll" "ll" "ls -aFlv" ""
-__snippet_add "ls for macOS" "llm" "ls -aFlv --color=always -D \"%Y-%m-%d %H:%M:%S\" -h" ""
-__snippet_add "ls for Ubuntu" "llu" "ls -aFlv --color=always --time-style=long-iso -h" ""
+if command ls --time-style=long-iso -d . >/dev/null 2>&1; then
+  __snippet_ll_body='ls -aFlv --color=always --time-style=long-iso -h'
+else
+  __snippet_ll_body='/bin/ls -aFlv --color=always -D "%Y-%m-%d %H:%M:%S" -h'
+fi
+__snippet_add "ll" "ll" "$__snippet_ll_body" ""
+unset __snippet_ll_body
 __snippet_add "update" "up" "ghq list | ghq get --update --parallel && ghq-repo-status" ""
-__snippet_add "(AWS) profile" "p" "--profile \$(aws configure list-profiles | fzf)" "^aws\\s"
-__snippet_add "(Git) graph" "lo" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status" "^git\\s"
-__snippet_add "(Git) graph --all" "la" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all" "^git\\s"
+__snippet_add "(AWS) profile" "p" "--profile \$(aws configure list-profiles | fzf)" "^aws[[:space:]]"
+__snippet_add "(Git) graph" "lo" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status" "^git[[:space:]]"
+__snippet_add "(Git) graph --all" "la" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all" "^git[[:space:]]"
 __snippet_add "(macOS) caffeinate" "caffeinate" "sudo pmset disablesleep" ""
 __snippet_add "(vde-layout) dev" "vd" "vde-layout dev" ""
 __snippet_add "(vde-layout) main" "vm" "vde-layout main" ""

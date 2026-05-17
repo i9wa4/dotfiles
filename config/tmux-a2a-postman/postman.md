@@ -2,8 +2,8 @@
 skill_path:
   # private-content-scan: allow-next-line -- live local skill source path.
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
-  # private-content-scan: allow-next-line -- live installed postman skills path.
-  - path: ~/.claude/skills
+  # private-content-scan: allow-next-line -- live postman skill source path.
+  - path: ~/ghq/github.com/i9wa4/tmux-a2a-postman/skills
     skills:
       - postman-config-auditor
       - postman-send-message
@@ -185,9 +185,16 @@ high-risk areas? Decision Log populated? Reference implementations cited?
 ### 3.7. [boss] Fallback: Orchestrator Absent
 
 If orchestrator is absent from talks_to_line, send BLOCKED immediately:
-tmux-a2a-postman send --to orchestrator --body "BLOCKED: orchestrator
-absent — verdict ready, awaiting delivery" Include your APPROVED/NOT APPROVED
-verdict in the message body. Do NOT hold silently.
+
+```bash
+tmux-a2a-postman send-heredoc --to orchestrator <<'POSTMAN_BODY'
+BLOCKED: orchestrator absent — verdict ready, awaiting delivery
+
+<APPROVED or NOT APPROVED verdict>
+POSTMAN_BODY
+```
+
+Do NOT hold silently.
 
 ### 3.8. [boss] Completion Signal
 
@@ -236,7 +243,13 @@ Critic is the subordinate final-pass reviewer and talks only to guardian.
    follow-up, direct review is acceptable if you state why subagent review was
    unnecessary.
 3. If more debate is needed, continue explicitly with guardian:
-   `tmux-a2a-postman send --to guardian --reply-required --body "<follow-up>"`
+
+   ```bash
+   tmux-a2a-postman send-heredoc --to guardian --reply-required <<'POSTMAN_BODY'
+   <follow-up>
+   POSTMAN_BODY
+   ```
+
 4. Treat the initial guardian handoff as the active review request. If it
    requires a reply, keep that request open until the recommendation is ready.
    If you sent a reply-required follow-up to guardian, wait for that reply or
@@ -244,7 +257,12 @@ Critic is the subordinate final-pass reviewer and talks only to guardian.
 5. Synthesize all evidence yourself. Do not outsource the recommendation.
 6. Relay final findings and your recommendation to guardian using the current
    `Reply:` footer when present, or:
-   `tmux-a2a-postman send --to guardian --body "<recommendation>"`
+
+   ```bash
+   tmux-a2a-postman send-heredoc --to guardian <<'POSTMAN_BODY'
+   <recommendation>
+   POSTMAN_BODY
+   ```
 
 Do not send review recommendations directly to orchestrator. If stale runtime
 state permits a direct orchestrator-to-critic request, reject it as
@@ -347,13 +365,25 @@ to orchestrator.
 6. Synthesize the evidence yourself and report findings
    (BLOCKING > IMPORTANT > MINOR).
 7. Send your guardian review package to critic as reply-required:
-   `tmux-a2a-postman send --to critic --reply-required --body "<findings>"`
+
+   ```bash
+   tmux-a2a-postman send-heredoc --to critic --reply-required <<'POSTMAN_BODY'
+   <findings>
+   POSTMAN_BODY
+   ```
+
 8. Wait for critic's recommendation. Reply to critic follow-ups with concrete
    evidence; do not fill the orchestrator reply before critic returns.
 9. Relay your final synthesized verdict to orchestrator using the original
    `Reply:`
    footer when present, or:
-   `tmux-a2a-postman send --to orchestrator --body "<verdict>"`
+
+   ```bash
+   tmux-a2a-postman send-heredoc --to orchestrator <<'POSTMAN_BODY'
+   <verdict>
+   POSTMAN_BODY
+   ```
+
    Include guardian findings, critic recommendation, and remaining retry work.
 
 ### 5.6. [guardian] Fallback: Critic Absent
