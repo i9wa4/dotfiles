@@ -2,27 +2,29 @@
 name: nix
 license: MIT
 description: |
-  USE FOR: Nix commands and package management guide. Use when: - Using nurl for hash acquisition. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: General Nix package workflow in this repo: fetcher hash acquisition, package edits, and focused Nix checks. Detailed owner: programming. DO NOT USE FOR: agent harness runtime config.
 ---
 
 # Nix
 
-**UTILITY SKILL:** Apply this skill to Nix commands and package management
-guide. Use when: - Using nurl for hash acquisition. Keep the task scoped to the
-requested domain and preserve existing repo conventions.
+Compatibility trigger for general Nix package workflow. The durable
+implementation guidance now lives in
+`skills/programming/references/nix-package-workflow.md`.
 
-**USE FOR:** Nix commands and package management guide. Use when: - Using nurl
-for hash acquisition; related file edits; verification and handoff in this skill
-domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Nix package workflow and fetcher hash acquisition.
+- General package-oriented Nix edits.
+
+## Do Not Use For
+
+- Agent harness runtime, Home Manager agent config, hooks, or installed outputs;
+  use `agent-harness-engineering`.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/programming/references/nix-package-workflow.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -34,9 +36,4 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/programming/references/nix-package-workflow.md`

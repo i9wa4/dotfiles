@@ -16,7 +16,7 @@ set -o posix
 #   - jq
 #   - claude (Anthropic CLI, optional)
 #   - repo-setup (optional)
-#   - direnv (optional; only for --allow-direnv)
+#   - direnv (required by repo-setup when generating or explicitly allowing .envrc)
 
 # Check required dependencies
 for cmd in gh jq git; do

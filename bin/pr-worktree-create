@@ -13,7 +13,7 @@ set -o posix
 # Dependencies:
 #   - gh (GitHub CLI)
 #   - repo-setup (optional)
-#   - direnv (optional; only for --allow-direnv)
+#   - direnv (required by repo-setup when explicitly allowing .envrc)
 
 # Check required dependencies
 for cmd in gh git; do
@@ -322,7 +322,7 @@ for pr_number in "$@"; do
       if [[ ${allow_direnv} == "true" ]]; then
         repo-setup --allow-direnv
       else
-        repo-setup
+        repo-setup --no-allow-generated-envrc
       fi
       cd - >/dev/null
     fi
