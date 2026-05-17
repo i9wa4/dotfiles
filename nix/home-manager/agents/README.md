@@ -16,7 +16,7 @@ artifacts.
 | Shared subagents              | `subagents/*.md`, `subagents/_metadata.nix`                                | Rendered into `~/.claude/agents/` and `~/.codex/agents/`                           |
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves the common Claude/Codex agent targets and skill destinations              |
 | Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                               | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
-| Skill description index       | `skills/skill-description-index/`                                          | Small skill installed into both engines; script scans user-level skill trees       |
+| Skill description index       | `skills/skill-description-index/`                                          | Reclassified for later migration into `skills/agent-skills-management/references/` |
 | Hook/runtime scripts          | `scripts/*`                                                                | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
 | Shared runtime data           | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`                | Empty MCP server set and Bash deny data emitted into both engines                  |
 | Claude runtime settings       | `claude/default.nix`                                                       | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
