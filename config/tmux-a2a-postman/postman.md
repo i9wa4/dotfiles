@@ -1,8 +1,6 @@
 ---
 skill_path:
-  # private-content-scan: allow-next-line -- live local skill source path.
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
-  # private-content-scan: allow-next-line -- live postman skill source path.
   - path: ~/ghq/github.com/i9wa4/tmux-a2a-postman/skills
     skills:
       - postman-config-auditor

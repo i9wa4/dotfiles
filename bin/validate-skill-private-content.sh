@@ -178,6 +178,11 @@ while IFS="$tab" read -r display_path scan_path; do
       allow_current = allow_next || ($0 ~ /private-content-scan:[[:space:]]*allow/)
       allow_next = 0
 
+      if (file == "config/tmux-a2a-postman/postman.md" &&
+          $0 ~ /^  - path: ~\/ghq\/github.com\/i9wa4\/(dotfiles|tmux-a2a-postman)\/skills\/?$/) {
+        next
+      }
+
       if ($0 ~ /\/home\/[[:alnum:]_.-]+\//) {
         emit("home-directory absolute path")
       }
