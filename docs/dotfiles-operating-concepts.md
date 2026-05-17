@@ -77,8 +77,10 @@ Two different delivery patterns are used on purpose:
 
 - editable repo config such as `config/tmux-a2a-postman/` is exposed through
   direct symlinks so changes reflect immediately
-- generated agent artifacts such as `~/.claude/agents/`, `~/.codex/agents/`,
-  installed skills, and hook config are produced by Nix and refreshed on rebuild
+- generated agent artifacts are produced by Nix and refreshed on rebuild:
+  - `~/.claude/agents/` (private-content-scan: allow; generic output)
+  - `~/.codex/agents/` (private-content-scan: allow; generic output)
+  - installed skills and hook config
 
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.

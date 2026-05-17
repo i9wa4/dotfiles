@@ -7,39 +7,34 @@ description: |
 
 # Agent Skill Management
 
-**UTILITY SKILL:** Manage source-owned agent skills in the top-level `skills/`
-tree. Keep runtime hooks, installed outputs, and engine config in a
-harness/config skill.
+**UTILITY SKILL:** Manage source-owned skills in `skills/`. Keep runtime hooks,
+installed outputs, and engine config in harness/config skills.
 
 **USE FOR:** add, edit, rename, or remove `skills/*/SKILL.md`; improve
 frontmatter, trigger descriptions, body structure, `references/`, `scripts/`,
 `assets/`, or eval files; run Waza readiness, `gh skill publish --dry-run`, and
 skill pre-commit/CI harnesses.
 
-**DO NOT USE FOR:** runtime hooks, generated `~/.claude/skills` or
-`~/.codex/skills`, engine config, or broad docs migrations.
+**DO NOT USE FOR:** runtime hooks, engine config, broad docs migrations, or
+generated outputs:
+`~/.claude/skills` (private-content-scan: allow; generic output)
+and `~/.codex/skills` (private-content-scan: allow; generic output).
 
 ## Workflow
 
-1. Inspect `skills/`, existing publish/pre-commit/CI harnesses, the target
-   skill, and `git status`.
+1. Inspect `skills/`, publish/pre-commit/CI harnesses, the target skill, and
+   `git status`.
 2. Edit only requested skill sources and necessary pointers. Keep `SKILL.md`
    short; move optional detail to `references/`.
 3. Run Waza before and after edits:
    `waza --no-update-check check skills/<name> --format json`. Address
-   readiness issues, trigger clarity, token budget, links, eval gaps, and
-   complexity.
+   readiness, trigger clarity, budget, links, eval gaps, and complexity.
 4. Treat Waza as quality/eval readiness. Publishability still comes from
    `gh skill publish --dry-run`.
 5. For publishing harness work, keep validation and publishing separate. Use
    dry-runs in pre-commit/CI; use `gh skill publish --tag "$TAG"` only in a
    flow that owns tag creation.
 6. Verify the changed surface, then report remaining Waza findings.
-
-## Examples
-
-For a skill edit, inspect, patch, run Waza, run the repo validators, and report
-any Waza readiness gaps left out of scope.
 
 ## Troubleshooting
 
