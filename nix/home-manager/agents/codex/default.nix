@@ -106,7 +106,7 @@ let
   # interactive session rollout JSONL files under ~/.codex/sessions/**/*.jsonl.
   # The shared storage policy keeps lightweight history separate, retains about
   # 50 days of closed rollout JSONL by file age, excludes live open session
-  # files, preserves the session data that ccusage-codex reads directly, and
+  # files, preserves the session data that ccusage codex reads directly, and
   # keeps ~/.codex/log/codex-tui.log outside that rollout-retention rule.
   codexConfig = {
     command_attribution = "disable";

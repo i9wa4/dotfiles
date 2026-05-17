@@ -110,8 +110,8 @@ in
       wazaPackage
       pkgs.zoxide
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
+      # ccusage includes Codex usage subcommands.
       llmAgents.ccusage
-      llmAgents.ccusage-codex
       llmAgents.claude-code
       llmAgents.codex
     ];
