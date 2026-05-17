@@ -40,7 +40,20 @@ done
 worktree_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
 project_dir="$(basename "${worktree_root}")"
 envrc_path="${worktree_root}/.envrc"
+generated_envrc="false"
 echo "* Repository: ${project_dir}"
+
+require_direnv() {
+  if ! command -v direnv &>/dev/null; then
+    echo "Error: direnv command not found, cannot allow .envrc." >&2
+    exit 1
+  fi
+}
+
+allow_envrc_with_direnv() {
+  require_direnv
+  direnv allow "${envrc_path}"
+}
 
 install_dotfiles_devshell_hooks() {
   local previous_dir
@@ -80,15 +93,22 @@ if [[ -f "mise.toml" ]]; then
   printf "* Optional: run '%s %s %s' to trust repository tools\n" "mise" "trust" "mise.toml"
 fi
 
-# Keep .envrc allow changes opt-in only.
-if [[ -f "${envrc_path}" ]]; then
+# Create the repository's standard direnv file when a flake checkout does not
+# already have one. Existing .envrc files remain an explicit trust decision.
+if [[ ! -f "${envrc_path}" && -f "${worktree_root}/flake.nix" ]]; then
+  require_direnv
+  printf '%s\n' "use flake" >"${envrc_path}"
+  allow_envrc_with_direnv
+  generated_envrc="true"
+  echo "* Created .envrc with use flake"
+  echo "* Allowed generated .envrc with direnv"
+fi
+
+# Keep pre-existing .envrc allow changes opt-in only.
+if [[ -f "${envrc_path}" && ${generated_envrc} != "true" ]]; then
   if [[ ${allow_direnv} == "true" ]]; then
-    if ! command -v direnv &>/dev/null; then
-      echo "Error: direnv command not found, cannot allow .envrc." >&2
-      exit 1
-    fi
-    direnv allow "${envrc_path}"
-    echo "* Allowed .envrc with direnv"
+    allow_envrc_with_direnv
+    echo "* Allowed existing .envrc with direnv"
   else
     echo "* Skipped allowing .envrc by default"
     printf "* Optional: run '%s %s' to allow .envrc\n" "repo-setup" "--allow-direnv"

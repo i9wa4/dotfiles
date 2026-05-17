@@ -6,6 +6,9 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 ## 1. Core Defaults
 
 - Prefer repo wrappers before generic `git worktree` creation flows.
+- For implementation work, follow the issue-first flow: create or choose a
+  GitHub issue, run `issue-worktree-create <issue_number>`, then develop inside
+  that issue worktree.
 - Assume the managed root is `.worktrees`, even if generic tool help mentions a
   different default.
 - Report the final worktree path and branch in handoff or status messages.
@@ -18,6 +21,8 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 For GitHub issue implementation in this repo:
 
+- Create or choose the GitHub issue first. Do not start implementation from an
+  ad hoc branch.
 - Run `issue-worktree-create <issue_number>` from the base repository.
 - Do not create issue branches or issue worktrees manually.
 - Do not use raw `git worktree add` as the issue implementation entrypoint.
@@ -54,10 +59,12 @@ Expect it to:
 - create a new linked worktree when needed
 - copy `.envrc` when available
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`, or
-  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
-  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
-  re-run `repo-setup` or enter the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
+  flake checkout, `repo-setup` creates it with `use flake` and runs
+  `direnv allow`; for pre-existing `.envrc` files, use
+  `repo-setup --allow-direnv` only after reviewing the file. If Nix or devshell
+  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
+  the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as
@@ -98,10 +105,12 @@ to:
 - create or reuse a linked review worktree
 - copy `.envrc` when available
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`, or
-  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
-  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
-  re-run `repo-setup` or enter the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
+  flake checkout, `repo-setup` creates it with `use flake` and runs
+  `direnv allow`; for pre-existing `.envrc` files, use
+  `repo-setup --allow-direnv` only after reviewing the file. If Nix or devshell
+  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
+  the devshell before pushing.
 - exit nonzero and avoid the all-ready success message when any requested PR is
   invalid, skipped, refused, or otherwise fails
 
