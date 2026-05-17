@@ -149,6 +149,39 @@ test_pr_worktree_default_preserves_generated_envrc_trust_gate() {
     fail "pr-worktree-create must keep explicit .envrc authorization path"
 }
 
+assert_worktree_wrapper_copies_envrc_before_repo_setup() {
+  local script=$1
+
+  awk '
+    /# Copy \.envrc if it exists/ {
+      copy_block = NR
+    }
+    copy_block && /cp "\$\{repo_root\}\/\.envrc" "\$\{worktree_path\}\/\.envrc"/ {
+      copy_line = NR
+    }
+    /# Run repo-setup if available/ {
+      setup_block = NR
+    }
+    setup_block && /repo-setup/ && $0 !~ /command -v/ {
+      setup_line = NR
+      exit
+    }
+    END {
+      if (!copy_line || !setup_line || copy_line > setup_line) {
+        exit 1
+      }
+    }
+  ' "${script}" ||
+    fail "${script} must copy source .envrc before repo-setup fallback generation"
+}
+
+test_worktree_wrappers_copy_source_envrc_before_fallback_generation() {
+  assert_worktree_wrapper_copies_envrc_before_repo_setup \
+    "${repo_root}/bin/issue-worktree-create"
+  assert_worktree_wrapper_copies_envrc_before_repo_setup \
+    "${repo_root}/bin/pr-worktree-create"
+}
+
 write_stub_direnv
 test_missing_envrc_created_and_allowed
 test_missing_envrc_can_skip_allow_for_untrusted_worktree
@@ -156,5 +189,6 @@ test_existing_envrc_not_overwritten_or_allowed_by_default
 test_existing_envrc_allowed_when_requested
 test_non_flake_repo_does_not_create_envrc
 test_pr_worktree_default_preserves_generated_envrc_trust_gate
+test_worktree_wrappers_copy_source_envrc_before_fallback_generation
 
 echo "PASS: repo-setup smoke checks"

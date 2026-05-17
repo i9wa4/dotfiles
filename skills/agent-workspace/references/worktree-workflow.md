@@ -57,14 +57,15 @@ Expect it to:
 - rely on `push.autoSetupRemote=true` for new local issue branches, so the first
   plain `git push` creates and records `origin/<branch>`
 - create a new linked worktree when needed
-- copy `.envrc` when available
+- copy the source checkout's `.envrc` when available, including for non-Nix
+  repositories
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
-  flake checkout, `repo-setup` creates it with `use flake` and runs
-  `direnv allow`; for pre-existing `.envrc` files, use
-  `repo-setup --allow-direnv` only after reviewing the file. If Nix or devshell
-  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
-  the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. If no `.envrc` was copied
+  and the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
+  `direnv allow`; for copied or otherwise pre-existing `.envrc` files, use
+  `repo-setup --allow-direnv` only after reviewing the file. If Nix or
+  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
+  or enter the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as
@@ -103,14 +104,15 @@ to:
 - refuse to rewrite an existing local review branch that is ahead of or diverged
   from the PR source branch
 - create or reuse a linked review worktree
-- copy `.envrc` when available
+- copy the source checkout's `.envrc` when available, including for non-Nix
+  repositories
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
-  flake checkout, default PR review setup creates it with `use flake` but does
-  not run `direnv allow`; use `pr-worktree-create --allow-direnv` only after
-  reviewing the PR branch `.envrc` and `flake.nix`. If Nix or devshell setup
-  fails, `repo-setup` warns and continues; re-run `repo-setup` or enter the
-  devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. If no `.envrc` was copied
+  and the checkout has `flake.nix`, default PR review setup creates
+  `use flake` but does not run `direnv allow`; use
+  `pr-worktree-create --allow-direnv` only after reviewing the PR branch
+  `.envrc` and `flake.nix`. If Nix or devshell setup fails, `repo-setup` warns
+  and continues; re-run `repo-setup` or enter the devshell before pushing.
 - exit nonzero and avoid the all-ready success message when any requested PR is
   invalid, skipped, refused, or otherwise fails
 
