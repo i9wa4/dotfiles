@@ -39,6 +39,10 @@ agent behavior in the focused skill that owns that workflow.
 - Durable orchestration runbooks belong to
   `skills/agent-harness-engineering/references/`.
 
+Do not leave runtime behavior that installed Agent Skills need only in docs.
+Mirror the operational part into the owning skill reference and keep docs as
+repo-facing background.
+
 Shared dotfiles work still carries a few repository guardrails:
 
 - The repo targets macOS on Apple Silicon and Ubuntu 24.04, including WSL2.
