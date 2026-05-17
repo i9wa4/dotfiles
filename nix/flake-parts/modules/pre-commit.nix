@@ -172,6 +172,16 @@
             files = "^skills/";
             require_serial = true;
           };
+          skill-private-content-scan = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-private-content-scan" ''
+              #!${pkgs.bash}/bin/bash
+              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-private-content.sh} --staged
+            ''}";
+            files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skill-management\\.md|docs/dotfiles-operating-concepts\\.md)";
+            types = [ "file" ];
+            pass_filenames = false;
+          };
           skill-publish-dry-run = {
             enable = true;
             entry = "${pkgs-unstable.gh}/bin/gh skill publish --dry-run";

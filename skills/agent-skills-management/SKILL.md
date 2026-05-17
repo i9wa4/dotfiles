@@ -1,11 +1,11 @@
 ---
-name: agent-skill-management
+name: agent-skills-management
 license: MIT
 description: |
-  USE FOR: add, edit, remove, and validate repository skills; run Waza readiness and GitHub CLI dry-runs. DO NOT USE FOR: runtime hooks, engine config, or installed outputs.
+  USE FOR: add, edit, remove, and validate Agent Skills; run Waza and gh skill dry-runs; keep naming metadata release-ready. DO NOT USE FOR: runtime hooks or engine config.
 ---
 
-# Agent Skill Management
+# Agent Skills Management
 
 **UTILITY SKILL:** Manage source-owned skills in `skills/`. Keep runtime hooks,
 installed outputs, and engine config in harness/config skills.

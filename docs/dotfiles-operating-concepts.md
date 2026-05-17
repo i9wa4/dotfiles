@@ -33,9 +33,15 @@ agent behavior in the focused skill that owns that workflow.
 - Claude/Codex runtime config, hooks, skill installation, and postman routing
   belong to `skills/agent-harness-engineering/` and the postman-specific
   skills.
-- Skill authoring and validation belong to `skills/agent-skill-management/`.
+- Skill authoring and validation belong to `skills/agent-skills-management/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
+- Durable orchestration runbooks belong to
+  `skills/agent-harness-engineering/references/`.
+
+Do not leave runtime behavior that installed Agent Skills need only in docs.
+Mirror the operational part into the owning skill reference and keep docs as
+repo-facing background.
 
 Shared dotfiles work still carries a few repository guardrails:
 
@@ -77,8 +83,10 @@ Two different delivery patterns are used on purpose:
 
 - editable repo config such as `config/tmux-a2a-postman/` is exposed through
   direct symlinks so changes reflect immediately
-- generated agent artifacts such as `~/.claude/agents/`, `~/.codex/agents/`,
-  installed skills, and hook config are produced by Nix and refreshed on rebuild
+- generated agent artifacts are produced by Nix and refreshed on rebuild:
+  - `~/.claude/agents/` (private-content-scan: allow; generic output)
+  - `~/.codex/agents/` (private-content-scan: allow; generic output)
+  - installed skills and hook config
 
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.
@@ -153,10 +161,11 @@ large fallback skill:
   worktree re-entry, and pane operations
 - `skills/agent-harness-engineering/` owns Claude/Codex config, hooks,
   postman routing, and Nix/Home Manager agent harness changes
-- `skills/agent-skill-management/` owns source skill editing, validation, and
+- `skills/agent-skills-management/` owns source skill editing, validation, and
   publish-readiness checks
-- `docs/agent-skill-management.md` points to the skill-management procedure
-  and the release-all classification memo in `skills/classification.yaml`
+- `docs/agent-skills-management.md` points to the Agent Skills management
+  procedure and the release-all classification memo in
+  `skills/classification.yaml`
 - `docs/repo-ai-operating-contract.md` owns durable operating rules and task
   artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
@@ -314,10 +323,11 @@ When you need to understand the operating concept, read these in order:
 ## 10. Related files
 
 - `docs/repo-ai-operating-contract.md`
-- `docs/agent-skill-management.md`
+- `docs/agent-skills-management.md`
 - `docs/agent-config-philosophy.md`
 - `docs/deny-bash-design.md`
 - `skills/classification.yaml`
+- `skills/agent-harness-engineering/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/render-agents.nix`
 - `nix/home-manager/agents/shared/denied-bash-commands.nix`

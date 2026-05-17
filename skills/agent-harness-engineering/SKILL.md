@@ -2,19 +2,21 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  USE FOR: Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Orchestrator runbook guidance, postman routing, and dotfiles agent harness changes: Claude/Codex config, Nix/HM settings, hooks, MCP, skill installation. DO NOT USE FOR: unrelated tasks, broad rewrites, or generated outputs.
 ---
 
 # Agent Harness Engineering
 
 **UTILITY SKILL:** Apply this skill to Dotfiles agent harness: Claude Code/Codex
 CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side),
-postman routing. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+postman routing, and the durable orchestrator runbook handoff from
+`config/tmux-a2a-postman/postman.md`. Keep the task scoped to the requested
+domain and preserve existing repo conventions.
 
 **USE FOR:** Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM
-settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing;
-related file edits; verification and handoff in this skill domain.
+settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing,
+orchestrator runbook/reference guidance; related file edits; verification and
+handoff in this skill domain.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.
@@ -40,6 +42,7 @@ source, run focused checks, and summarize the result.
 - [Claude Workspace Trust](references/claude-workspace-trust.md)
 - [Codex CLI](references/codex-cli.md)
 - [Changelog Tracking](references/changelog-tracking.md)
+- [Orchestrator Runbook](references/orchestrator-runbook.md)
 
 ## Troubleshooting
 

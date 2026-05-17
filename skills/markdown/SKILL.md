@@ -2,28 +2,28 @@
 name: markdown
 license: MIT
 description: |
-  USE FOR: Markdown authoring rules for emoji, list numbering, table alignment, and Japanese-specific constraints for this repository. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Markdown authoring in this repo: emoji rules, numbered lists, table alignment, and Japanese Markdown caveats. Detailed owner: programming. DO NOT USE FOR: generated runtime outputs.
 ---
 
 # Markdown
 
-**UTILITY SKILL:** Apply this skill to Markdown authoring rules for emoji, list
-numbering, table alignment, and Japanese-specific constraints for this
-repository. Keep the task scoped to the requested domain and preserve existing
-repo conventions.
+Compatibility trigger for Markdown-specific tasks. The durable implementation
+guidance now lives in `skills/programming/references/markdown-authoring.md`.
 
-**USE FOR:** Markdown authoring rules for emoji, list numbering, table
-alignment, and Japanese-specific constraints for this repository; related file
-edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Markdown authoring and formatting rules in this repo.
+- Japanese Markdown caveats.
+
+## Do Not Use For
+
+- Unrelated domains, broad rewrites outside the request, or generated runtime
+  outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/programming/references/markdown-authoring.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,9 +35,4 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/programming/references/markdown-authoring.md`
