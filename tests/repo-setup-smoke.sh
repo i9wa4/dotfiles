@@ -90,6 +90,18 @@ test_missing_envrc_created_and_allowed() {
   assert_direnv_allowed "${repo}/.envrc"
 }
 
+test_missing_envrc_can_skip_allow_for_untrusted_worktree() {
+  local repo="${tmp_dir}/missing-envrc-skip-allow"
+
+  new_git_repo "${repo}"
+  touch "${repo}/flake.nix"
+  reset_direnv_log
+  run_repo_setup "${repo}" --no-allow-generated-envrc
+
+  assert_file_content "${repo}/.envrc" "use flake"
+  assert_no_direnv_call
+}
+
 test_existing_envrc_not_overwritten_or_allowed_by_default() {
   local repo="${tmp_dir}/existing-envrc-default"
 
@@ -128,10 +140,21 @@ test_non_flake_repo_does_not_create_envrc() {
   assert_no_direnv_call
 }
 
+test_pr_worktree_default_preserves_generated_envrc_trust_gate() {
+  grep -F 'repo-setup --no-allow-generated-envrc' \
+    "${repo_root}/bin/pr-worktree-create" >/dev/null ||
+    fail "pr-worktree-create must not auto-allow generated .envrc by default"
+  grep -F 'repo-setup --allow-direnv' \
+    "${repo_root}/bin/pr-worktree-create" >/dev/null ||
+    fail "pr-worktree-create must keep explicit .envrc authorization path"
+}
+
 write_stub_direnv
 test_missing_envrc_created_and_allowed
+test_missing_envrc_can_skip_allow_for_untrusted_worktree
 test_existing_envrc_not_overwritten_or_allowed_by_default
 test_existing_envrc_allowed_when_requested
 test_non_flake_repo_does_not_create_envrc
+test_pr_worktree_default_preserves_generated_envrc_trust_gate
 
 echo "PASS: repo-setup smoke checks"

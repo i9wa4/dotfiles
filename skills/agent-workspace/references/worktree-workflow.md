@@ -106,11 +106,11 @@ to:
 - copy `.envrc` when available
 - run `repo-setup` when available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
-  flake checkout, `repo-setup` creates it with `use flake` and runs
-  `direnv allow`; for pre-existing `.envrc` files, use
-  `repo-setup --allow-direnv` only after reviewing the file. If Nix or devshell
-  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
-  the devshell before pushing.
+  flake checkout, default PR review setup creates it with `use flake` but does
+  not run `direnv allow`; use `pr-worktree-create --allow-direnv` only after
+  reviewing the PR branch `.envrc` and `flake.nix`. If Nix or devshell setup
+  fails, `repo-setup` warns and continues; re-run `repo-setup` or enter the
+  devshell before pushing.
 - exit nonzero and avoid the all-ready success message when any requested PR is
   invalid, skipped, refused, or otherwise fails
 

@@ -5,13 +5,14 @@ set -o pipefail
 set -o posix
 
 # Set up repository environment for development.
-# Trust changes are opt-in. Pass --allow-direnv only after reviewing the
-# repository/worktree .envrc and the code it will load.
+# Trust changes for existing .envrc files are opt-in. Pass --allow-direnv only
+# after reviewing the repository/worktree .envrc and the code it will load.
 #
 # Usage:
-#   repo-setup [--allow-direnv] [--skip-devshell-hooks]
+#   repo-setup [--allow-direnv] [--no-allow-generated-envrc] [--skip-devshell-hooks]
 #
 allow_direnv="false"
+allow_generated_envrc="true"
 install_devshell_hooks="true"
 
 while [[ $# -gt 0 ]]; do
@@ -20,17 +21,21 @@ while [[ $# -gt 0 ]]; do
       allow_direnv="true"
       shift
       ;;
+    --no-allow-generated-envrc)
+      allow_generated_envrc="false"
+      shift
+      ;;
     --skip-devshell-hooks)
       install_devshell_hooks="false"
       shift
       ;;
     -h | --help)
-      echo "Usage: repo-setup [--allow-direnv] [--skip-devshell-hooks]"
+      echo "Usage: repo-setup [--allow-direnv] [--no-allow-generated-envrc] [--skip-devshell-hooks]"
       exit 0
       ;;
     *)
       echo "Error: unknown option: $1" >&2
-      echo "Usage: repo-setup [--allow-direnv] [--skip-devshell-hooks]" >&2
+      echo "Usage: repo-setup [--allow-direnv] [--no-allow-generated-envrc] [--skip-devshell-hooks]" >&2
       exit 1
       ;;
   esac
@@ -96,12 +101,16 @@ fi
 # Create the repository's standard direnv file when a flake checkout does not
 # already have one. Existing .envrc files remain an explicit trust decision.
 if [[ ! -f "${envrc_path}" && -f "${worktree_root}/flake.nix" ]]; then
-  require_direnv
   printf '%s\n' "use flake" >"${envrc_path}"
-  allow_envrc_with_direnv
   generated_envrc="true"
   echo "* Created .envrc with use flake"
-  echo "* Allowed generated .envrc with direnv"
+  if [[ ${allow_generated_envrc} == "true" || ${allow_direnv} == "true" ]]; then
+    allow_envrc_with_direnv
+    echo "* Allowed generated .envrc with direnv"
+  else
+    echo "* Skipped allowing generated .envrc by request"
+    printf "* Optional: run '%s %s' after reviewing .envrc and flake.nix\n" "repo-setup" "--allow-direnv"
+  fi
 fi
 
 # Keep pre-existing .envrc allow changes opt-in only.

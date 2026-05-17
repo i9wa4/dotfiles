@@ -31,12 +31,13 @@ The workflow has five recurring phases:
    New worktrees copy `.envrc` when available, run `repo-setup` when available,
    and register the final path with `zoxide`. `repo-setup` attempts to install
    the repo devshell hooks and generated per-worktree pre-commit config. If
-   `.envrc` is missing in a flake checkout, `repo-setup` creates it with
-   `use flake` and runs `direnv allow`. If Nix or devshell setup fails, it
-   warns and continues; re-run `repo-setup` or enter the devshell before
-   pushing so `.pre-commit-config.yaml` is generated. Allowing a pre-existing
-   `.envrc` stays opt-in; pass `--allow-direnv` to the creation command only
-   after reviewing the file.
+   `.envrc` is missing in a trusted issue worktree, `repo-setup` creates it
+   with `use flake` and runs `direnv allow`. PR review worktrees create the
+   same generated file without allowing it by default, because the checked-out
+   PR branch controls `flake.nix`; pass `--allow-direnv` to the creation
+   command only after reviewing the file and branch. If Nix or devshell setup
+   fails, it warns and continues; re-run `repo-setup` or enter the devshell
+   before pushing so `.pre-commit-config.yaml` is generated.
 4. Re-enter quickly.
    Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or
    worktree from normal shell use. Inside tmux, re-entry also keeps session
@@ -55,8 +56,8 @@ policy:
 - branch reuse and upstream tracking
 - cross-repository PR review support
 - `.envrc`, devshell hook, and `repo-setup` bootstrap, with automatic trust only
-  for the generated `use flake` file and explicit review for pre-existing
-  `.envrc`
+  for generated `use flake` files in trusted issue worktrees and explicit
+  review for PR review worktrees or pre-existing `.envrc`
 - zoxide registration for fast re-entry
 - tmux-aware session naming
 - explicit cleanup checks before removal

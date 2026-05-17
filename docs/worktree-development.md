@@ -96,13 +96,12 @@ For the adoption decision behind the current tool stack, see
 10. On a newly created worktree, it copies `.envrc` when present and runs
     `repo-setup` when available. `repo-setup` attempts to install the repo
     devshell hooks and generated `.pre-commit-config.yaml` by default. If
-    `.envrc` is missing in a flake checkout, `repo-setup` creates it with
-    `use flake` and runs `direnv allow`; for pre-existing `.envrc` files, pass
-    `--allow-direnv` when creating the worktree to run
-    `repo-setup --allow-direnv` only after reviewing the file. If Nix or
-    devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-    or enter the devshell before pushing so `.pre-commit-config.yaml` is
-    generated.
+    `.envrc` is missing in a flake checkout, the default PR review path creates
+    it with `use flake` but does not run `direnv allow`; pass
+    `--allow-direnv` when creating the worktree only after reviewing the PR
+    branch `.envrc` and `flake.nix`. If Nix or devshell setup fails,
+    `repo-setup` warns and continues; re-run `repo-setup` or enter the
+    devshell before pushing so `.pre-commit-config.yaml` is generated.
 11. It adds the final worktree path to the `zoxide` database when `zoxide`
     exists.
 12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
@@ -172,10 +171,10 @@ For the adoption decision behind the current tool stack, see
 - If a path was added to zoxide manually and still appears after deletion,
   remove it with `zoxide remove <path>`.
 - Preserve `.envrc` copy behavior and `repo-setup` bootstrap when changing the
-  backend or jump layer. `repo-setup` may automatically allow the generated
-  `use flake` file when `.envrc` is missing, but allowing a pre-existing
-  worktree `.envrc` stays explicit because it can evaluate code from that
-  worktree; use `--allow-direnv` only when the file has been reviewed.
+  backend or jump layer. Issue worktrees may automatically allow the generated
+  `use flake` file when `.envrc` is missing. PR review worktrees must preserve
+  explicit authorization because the checked-out PR branch controls `flake.nix`;
+  use `--allow-direnv` only when the file and branch have been reviewed.
 - If a linked worktree reports `No .pre-commit-config.yaml file was found`,
   run `repo-setup` from that worktree. This attempts to install the devshell
   hooks and the generated per-worktree pre-commit config; if Nix or devshell

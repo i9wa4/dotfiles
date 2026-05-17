@@ -161,12 +161,13 @@ Both scripts:
 
 - Copy `.envrc` from repo root when available
 - Run `repo-setup` if available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If `.envrc` is missing in a
-  flake checkout, `repo-setup` creates it with `use flake` and runs
-  `direnv allow`; for pre-existing `.envrc` files, pass
-  `repo-setup --allow-direnv` only after reviewing the file. If Nix or devshell
-  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
-  the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. Issue worktrees keep the
+  trusted default: if `.envrc` is missing in a flake checkout, `repo-setup`
+  creates it with `use flake` and runs `direnv allow`. PR review worktrees
+  preserve the trust gate by creating the generated `.envrc` without allowing
+  it unless `pr-worktree-create --allow-direnv` is used after review. If Nix or
+  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
+  or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.
