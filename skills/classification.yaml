@@ -51,7 +51,14 @@ private_content_scan:
     - moving skill content
     - renaming skills
     - demoting skills into references
+    - adding release automation
+    - creating tags
     - publishing a release
+  command: bash bin/validate-skill-private-content.sh --staged
+  path_command: bash bin/validate-skill-private-content.sh <path>...
+  path_scope:
+    - scan specific files or skill directories such as skills/<name>
+    - reject bare top-level skills because the tree still contains deferred cleanup content
   checklist:
     - home-directory absolute paths
     - private topology or node names that should not be public
@@ -61,6 +68,9 @@ private_content_scan:
     - copied runtime output or generated home-directory files
     - public GitHub surfaces that should use repo-relative paths or stable URLs
   gate_result_field: personal_content_action
+  recorded_finding_annotation:
+    - 'private-content-scan: allow'
+    - 'private-content-scan: allow-next-line'
 
 postman_boundary:
   owner_surface: config/tmux-a2a-postman/postman.md
@@ -78,6 +88,7 @@ postman_boundary:
 
 common_validation_expectations: &common_validation
   - bash bin/validate-skill-frontmatter.sh skills
+  - bash bin/validate-skill-private-content.sh --staged
   - bash bin/validate-skill-description-length.sh --staged
   - bash bin/validate-skill-waza.sh --staged
   - gh skill publish --dry-run before release
