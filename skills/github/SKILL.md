@@ -2,19 +2,20 @@
 name: github
 license: MIT
 description: |
-  USE FOR: GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: GitHub: gh CLI usage, PR conflict resolution, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Github
 
-**UTILITY SKILL:** Apply this skill to GitHub: gh CLI usage, commit messages,
-issue/PR creation, inline comments, sub-issues, review style, public surface
-path hygiene rules. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+**UTILITY SKILL:** Apply this skill to GitHub: gh CLI usage, PR conflict
+resolution, commit messages, issue/PR creation, inline comments, sub-issues,
+review style, public surface path hygiene rules. Keep the task scoped to the
+requested domain and preserve existing repo conventions.
 
-**USE FOR:** GitHub: gh CLI usage, commit messages, issue/PR creation, inline
-comments, sub-issues, review style, public surface path hygiene rules; related
-file edits; verification and handoff in this skill domain.
+**USE FOR:** GitHub: gh CLI usage, PR conflict resolution, commit messages,
+issue/PR creation, inline comments, sub-issues, review style, public surface
+path hygiene rules; related file edits; verification and handoff in this skill
+domain.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.
