@@ -9,7 +9,8 @@ name: agent-workspace
 license: MIT
 description: |
   Boot and manage agent tmux workspaces using the vde-layout va preset,
-  worktree creation and re-entry, session naming, and pane operations.
+  issue-first worktree creation and re-entry, session naming, and pane
+  operations.
 ---
 
 # Agent Workspace
@@ -148,21 +149,26 @@ interactive cleanup in the current repository, use `bin/worktree-remove` to
 choose one managed worktree under the repo's `.worktrees/` directory with
 `fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
-For issue implementation, agents must use `issue-worktree-create
-<issue_number>`. Do not create issue branches or worktrees manually. Before
-editing, verify `pwd`, `git branch --show-current`, and
+For issue implementation, agents must create or choose the GitHub issue first,
+then use `issue-worktree-create <issue_number>`. Do not create issue branches
+or worktrees manually. Before editing, verify `pwd`,
+`git branch --show-current`, and
 `git status --short --branch`. Before asking a human to push, verify upstream
 with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
 `BLOCKED` if an issue branch tracks `origin/main`.
 
 Both scripts:
 
-- Copy `.envrc` from repo root
+- Copy `.envrc` from repo root when available, including for non-Nix
+  repositories
 - Run `repo-setup` if available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`, or
-  `repo-setup --allow-direnv` when the explicit `--allow-direnv` flag is
-  passed. If Nix or devshell setup fails, `repo-setup` warns and continues;
-  re-run `repo-setup` or enter the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. Issue worktrees keep the
+  trusted default: if no `.envrc` was copied and the checkout has `flake.nix`,
+  `repo-setup` creates `use flake` and runs `direnv allow`. PR review
+  worktrees preserve the trust gate by creating the generated `.envrc` without
+  allowing it unless `pr-worktree-create --allow-direnv` is used after review.
+  If Nix or devshell setup fails, `repo-setup` warns and continues; re-run
+  `repo-setup` or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.
