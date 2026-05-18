@@ -411,28 +411,44 @@ skills:
       Reclassify under agent-harness-engineering if later review finds this is
       primarily a harness-operation skill.
 
+  - name: diagramming
+    path: skills/diagramming
+    publish: true
+    scope: diagramming-target
+    action: keep
+    target_group: diagramming
+    target_name: diagramming
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone_target
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+    notes: >
+      Owns repo-local draw.io and Mermaid authoring, preview, export, layout,
+      color, and asset workflow references.
+
   - name: drawio-local
     path: skills/drawio-local
     publish: true
     scope: drawio-diagramming
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_diagramming_target
+    owner_surface: skills/diagramming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: mermaid-local
     path: skills/mermaid-local
     publish: true
     scope: mermaid-diagramming
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_diagramming_target
+    owner_surface: skills/diagramming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
