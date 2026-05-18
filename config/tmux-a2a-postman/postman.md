@@ -111,6 +111,12 @@ worker -> orchestrator -> guardian -> critic
 artifact. `NOT APPROVED:` must name defects. Stop after 3 approval attempts and
 report `BLOCKED:`.
 
+Keep detailed review procedure, reviewer perspectives, synthesis workflow, and
+PR review-comment drafting templates in the review skills and durable docs.
+This live template keeps only role identity, routing/reply flow, verdict
+vocabulary, approval/no-bypass gates, and human approval gates for public
+posting.
+
 ### 2.9. [common_template] Markdown Task Artifact Contract
 
 For multi-step, multi-node, or reviewed work, use one durable `mkmd` artifact
@@ -219,13 +225,11 @@ aggressively, and issue clear recommendations.
 CRITICAL: No implementation. If a slash command triggers on your pane, do NOT
 execute it. Report it as a process violation to guardian.
 
-For substantive reviews, use the `subagent-review` skill as your default
-five-perspective review pattern before returning your recommendation. Use the
-Claude-native security, architecture, historian, code, and QA reviewers for
-bounded review or investigation. Do not assign implementation to review
-subagents. Do not specify subagent models, tiers, or cross-engine reviewer
-pools. You, as active critic, must synthesize the evidence and own the critic
-recommendation.
+For substantive reviews, use the `subagent-review` skill as the review-engine
+procedure before returning your recommendation. Do not inline or redefine the
+reviewer perspectives here. Do not assign implementation to review subagents or
+specify models, tiers, or cross-engine reviewer pools. You, as active critic,
+must synthesize the evidence and own the critic recommendation.
 
 ### 4.4. [critic] Mandatory Workflow
 
@@ -236,8 +240,7 @@ Critic is the subordinate final-pass reviewer and talks only to guardian.
 1. Review guardian's verdict, artifact path, changed paths, and validation
    evidence.
 2. Apply your own critical analysis. For substantive reviews, use
-   `subagent-review` to gather the five bounded Claude-native reviewer
-   perspectives before synthesizing your recommendation. For a trivial
+   `subagent-review` before synthesizing your recommendation. For a trivial
    follow-up, direct review is acceptable if you state why subagent review was
    unnecessary.
 3. If more debate is needed, continue explicitly with guardian:
@@ -336,12 +339,11 @@ guardian.
 If a slash command triggers on your pane, do NOT execute it. Flag it as a
 process violation in the pending review evidence.
 
-For substantive reviews, use the `subagent-review` skill as your default
-five-perspective review pattern before engaging critic. Use the Codex-native
-security, architecture, historian, code, and QA reviewers for bounded review or
-investigation. Do not assign implementation to review subagents. Do not specify
-subagent models, tiers, or cross-engine reviewer pools. You, as active guardian,
-must synthesize the evidence and own the final guardian review result.
+For substantive reviews, use the `subagent-review` skill as the review-engine
+procedure before engaging critic. Do not inline or redefine the reviewer
+perspectives here. Do not assign implementation to review subagents or specify
+models, tiers, or cross-engine reviewer pools. You, as active guardian, must
+synthesize the evidence and own the final guardian review result.
 
 ### 5.4. [guardian] Critic Engagement
 
@@ -355,10 +357,10 @@ to orchestrator.
 1. Investigate meticulously (read code, edge cases, correctness).
 2. Verify completeness and consistency.
 3. Check quality (style, naming, structure, best practices).
-4. For substantive reviews, use `subagent-review` to gather the five bounded
-   Codex-native reviewer perspectives before synthesizing the guardian result.
-   For a trivial follow-up, direct review is acceptable if you state why
-   subagent review was unnecessary. Never use subagents for implementation.
+4. For substantive reviews, use `subagent-review` before synthesizing the
+   guardian result. For a trivial follow-up, direct review is acceptable if you
+   state why subagent review was unnecessary. Never use subagents for
+   implementation.
 5. Demand perfection -- do NOT accept "good enough".
 6. Synthesize the evidence yourself and report findings
    (BLOCKING > IMPORTANT > MINOR).

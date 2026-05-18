@@ -7,18 +7,23 @@ description: |
 
 # Create Review Comment
 
-**UTILITY SKILL:** Apply this skill to `$create-review-comment`,
-ai-create-review-comment, or terse requests to review a PR and draft Japanese
-GitHub review comments. Infer the target PR when possible and start the normal
-review/comment workflow without exposing guardian or critic mechanics.
+**UTILITY SKILL:** Draft Japanese GitHub PR review comments for
+`$create-review-comment`, ai-create-review-comment, or terse review-comment
+requests. Infer the PR and do not expose guardian or critic mechanics.
 
-**USE FOR:** `$create-review-comment`, ai-create-review-comment, or terse
-review-comment drafting requests; Japanese GitHub PR review comment drafts;
-related file edits; verification and handoff in this skill domain.
+**USE FOR:** review-comment drafting requests, Japanese GitHub PR review
+comment drafts, related edits, verification, and handoff in this domain.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated runtime
 outputs, replacing repo source of truth, or posting comments without explicit
 user approval.
+
+## Boundary
+
+This is a thin user-facing trigger. It owns target inference, Japanese draft
+output, and the no-post-without-explicit-approval gate. Review procedure
+belongs to `subagent-review`; GitHub mechanics and path hygiene belong to
+`github`.
 
 ## Workflow
 

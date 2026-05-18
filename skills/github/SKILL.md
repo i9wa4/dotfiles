@@ -20,6 +20,13 @@ domain.
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.
 
+## Boundary
+
+This skill owns GitHub mechanics: `gh` usage, issue/PR state inspection,
+commit and PR-publication rules, inline comment mechanics, and public
+wording/path hygiene. It supports review workflows but does not own the
+guardian/critic review engine or the user-facing review-comment trigger.
+
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
