@@ -250,5 +250,16 @@ require("lazy").setup({
 -- End of settings
 --
 vim.cmd("filetype plugin indent on")
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup,
+  callback = function()
+    pcall(function()
+      -- Keep literal ':' insertion from triggering insert-mode reindent,
+      -- e.g. the time separators inserted by the ",now" mapping.
+      vim.opt_local.indentkeys:remove({ ":", "<:>" })
+      vim.opt_local.cinkeys:remove({ ":", "<:>" })
+    end)
+  end,
+})
 vim.cmd("syntax enable")
 vim.cmd.colorscheme(vim.g.colors_name or "habamax")
