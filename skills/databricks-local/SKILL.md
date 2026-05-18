@@ -2,28 +2,31 @@
 name: databricks-local
 license: MIT
 description: |
-  USE FOR: Databricks local: Queries API, VARIANT/JSON, Dashboard API, dbt integration (target setup, SQL dialect), Jupyter kernel. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Databricks compatibility trigger for Queries API, VARIANT/JSON, dashboards, dbt, and Jupyter. Detailed owner: data-platform. DO NOT USE FOR: generated outputs.
 ---
 
 # Databricks Local
 
-**UTILITY SKILL:** Apply this skill to Databricks local: Queries API,
-VARIANT/JSON, Dashboard API, dbt integration (target setup, SQL dialect),
-Jupyter kernel. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+Compatibility trigger for Databricks-specific tasks. The durable
+implementation guidance now lives in
+`skills/data-platform/references/databricks.md`.
 
-**USE FOR:** Databricks local: Queries API, VARIANT/JSON, Dashboard API, dbt
-integration (target setup, SQL dialect), Jupyter kernel; related file edits;
-verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Databricks Queries API object management.
+- VARIANT/JSON usage patterns.
+- AI/BI dashboard API notes.
+- Databricks/dbt integration and Jupyter kernel execution.
+
+## Do Not Use For
+
+- Broad data-platform work; use `data-platform`.
+- Unrelated domains, broad rewrites, or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/data-platform/references/databricks.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,7 +38,7 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/data-platform/references/databricks.md`
 
 ## Troubleshooting
 
