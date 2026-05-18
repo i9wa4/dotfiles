@@ -42,11 +42,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1778673402,
-        "narHash": "sha256-Q9uuYq3+zCkIxeS0iKFxbRpQzo2AlFWZjQz0jlOc/XE=",
+        "lastModified": 1779108912,
+        "narHash": "sha256-PnX5PX+WchwHv1UOg1p2R+Pn/1PtJbvgpwKSSiCwItQ=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "14780bf3440aa1532eadfbb2ff547f58969fcfb2",
+        "rev": "ba1cc8ca4f063d88ca40c6acf3f670e6321b7a7f",
         "type": "github"
       },
       "original": {
@@ -529,11 +529,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778747329,
-        "narHash": "sha256-lNsNaOQi7yf56vgi6yKLFV6bT+mnZMh6GWGvhw8FN90=",
+        "lastModified": 1779106193,
+        "narHash": "sha256-/qj9q949rxpUOtl34tg5hcVz8B3PzRfRNj8aQ1VEkWw=",
         "owner": "i9wa4",
         "repo": "markdown-formatter",
-        "rev": "e458a8d1876818ac536854e93bd59e09311ac989",
+        "rev": "535c71a0c1e21f300535c47776cce5f7add63f1b",
         "type": "github"
       },
       "original": {
