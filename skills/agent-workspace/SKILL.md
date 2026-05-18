@@ -2,47 +2,46 @@
 name: agent-workspace
 license: MIT
 description: |
-  USE FOR: Agent tmux workspaces, issue-first development with issue-worktree-create, worktree lifecycle, re-entry, session naming, and pane operations. DO NOT USE FOR: unrelated tasks or generated outputs.
+  Compatibility trigger for agent tmux workspace and issue/PR worktree requests. Route discovery to agent-harness-engineering, which owns the detailed references and checks.
 ---
 
 # Agent Workspace
 
-**UTILITY SKILL:** Apply this skill to boot and manage agent tmux workspaces,
-issue-first development with `issue-worktree-create`, worktree re-entry,
-session naming, and pane operations. Keep the task scoped to the requested
-domain and preserve existing repo conventions.
+**COMPATIBILITY TRIGGER:** This standalone skill has been demoted. The detailed
+owner for agent tmux workspaces, issue/PR worktrees, re-entry, session naming,
+and pane operations is `agent-harness-engineering`.
 
-**USE FOR:** Boot and manage agent tmux workspaces using the vde-layout va
-preset, issue-first development with `issue-worktree-create`, worktree re-entry,
-session naming, and pane operations; related file edits; verification and
-handoff in this skill domain.
+**USE FOR:** Discovery compatibility when a task names `agent-workspace` or asks
+about agent tmux workspaces, issue-first development with
+`issue-worktree-create`, worktree lifecycle, re-entry, session naming, or pane
+operations.
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+**DO NOT USE FOR:** maintaining separate workspace guidance, unrelated domains,
+broad rewrites outside the request, generated runtime outputs, or replacing the
+`agent-harness-engineering` source of truth.
 
 ## Workflow
 
-1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
+1. Switch to `skills/agent-harness-engineering/SKILL.md` for the active
+   workflow.
+2. For detailed workspace guidance, read these target references:
+   `workspace-preserved-guidance.md`, `workspace-worktree-workflow.md`,
+   `workspace-tmux-pane-operations.md`, `workspace-boot-failure-modes.md`, and
+   `workspace-vde-layout-internals.md`.
+3. Follow the validation and handoff rules from `agent-harness-engineering`.
 
 ## Examples
 
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+For a request in this domain, route to `agent-harness-engineering`, load the
+workspace reference that matches the task, run focused checks, and summarize
+the result.
 
 ## References
 
-- [Boot Failure Modes](references/boot-failure-modes.md)
-- [Preserved Guidance](references/preserved-guidance.md)
-- [Tmux Pane Operations](references/tmux-pane-operations.md)
-- [Vde Layout Internals](references/vde-layout-internals.md)
-- [Worktree Workflow](references/worktree-workflow.md)
+Detailed references now live under
+`skills/agent-harness-engineering/references/`.
 
 ## Troubleshooting
 
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+If this compatibility trigger and `agent-harness-engineering` disagree, follow
+`agent-harness-engineering` and record the exception in the handoff.

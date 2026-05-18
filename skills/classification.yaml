@@ -109,15 +109,15 @@ skills:
 
   - name: agent-workspace
     path: skills/agent-workspace
-    publish: true
+    publish: false
     scope: repo-local-agent-harness
-    action: merge_into_references
+    action: demote_to_compatibility_trigger
     target_group: agent-harness-engineering
     target_name: agent-harness-engineering
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: demoted_compatibility_trigger
+    owner_surface: skills/agent-harness-engineering/references
+    standalone_decision: demoted_to_trigger
+    personal_content_action: scanned_migrated_surfaces
     validation_expectations: *common_validation
 
   - name: orchestrator
@@ -139,15 +139,15 @@ skills:
 
   - name: prompt-contracts-local
     path: skills/prompt-contracts-local
-    publish: true
+    publish: false
     scope: repo-local-agent-harness
-    action: merge_into_references
+    action: demote_to_compatibility_trigger
     target_group: agent-harness-engineering
     target_name: agent-harness-engineering
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: demoted_compatibility_trigger
+    owner_surface: skills/agent-harness-engineering/references
+    standalone_decision: demoted_to_trigger
+    personal_content_action: scanned_migrated_surfaces
     validation_expectations: *common_validation
 
   - name: agent-skills-management

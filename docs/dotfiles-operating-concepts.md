@@ -28,11 +28,11 @@ catalog is intentionally broad, so catch-all repository guidance would be
 visible too often. Put durable repo background in `docs/`, and put procedural
 agent behavior in the focused skill that owns that workflow.
 
-- Workspace, tmux navigation, and issue worktree safety belong to
-  `skills/agent-workspace/`.
-- Claude/Codex runtime config, hooks, skill installation, and postman routing
+- Workspace, tmux navigation, issue worktree safety, Claude/Codex runtime
+  config, hooks, skill installation, prompt contracts, and postman routing
   belong to `skills/agent-harness-engineering/` and the postman-specific
-  skills.
+  skills. Compatibility triggers may remain in narrower skill names during
+  migration, but their detailed guidance should point back to this owner.
 - Skill authoring and validation belong to `skills/agent-skills-management/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
@@ -157,10 +157,10 @@ shared, inspectable, and generated from a small number of sources of truth.
 Repo-local agent behavior is split by ownership instead of centralized in one
 large fallback skill:
 
-- `skills/agent-workspace/` owns tmux workspaces, issue/PR worktree creation,
-  worktree re-entry, and pane operations
 - `skills/agent-harness-engineering/` owns Claude/Codex config, hooks,
-  postman routing, and Nix/Home Manager agent harness changes
+  postman routing, Nix/Home Manager agent harness changes, tmux workspaces,
+  issue/PR worktree creation, worktree re-entry, pane operations, prompt
+  contracts, and resume handoff
 - `skills/agent-skills-management/` owns source skill editing, validation, and
   publish-readiness checks
 - `docs/agent-skills-management.md` points to the Agent Skills management

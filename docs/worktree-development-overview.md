@@ -91,4 +91,4 @@ unlocked, and merged or otherwise confirmed obsolete.
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
 - `config/zsh/zoxide.zsh`
-- `skills/agent-workspace/SKILL.md`
+- `skills/agent-harness-engineering/references/workspace-worktree-workflow.md`

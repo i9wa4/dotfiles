@@ -51,7 +51,7 @@ After resolving `va`, boot the session:
 
 2. Wait 5s minimum for zsh init, zoxide.zsh, and snippet widgets to fully
    initialize in the new pane. (Empirically confirmed: 2s is insufficient; see
-   `references/boot-failure-modes.md`)
+   `workspace-boot-failure-modes.md`)
 3. Navigate to the postman workspace, or to the target repo for non-postman
    workspaces:
 
@@ -98,7 +98,7 @@ to `vde-layout messenger-codex && vde-layout preset-a`, then Enter executes it.
 Both paths arrive at identical end state.
 
 Source: `config/zsh/snippet.zsh`, `config/vde/layout.yml`
-See also: `references/boot-failure-modes.md`
+See also: `workspace-boot-failure-modes.md`
 
 ## 2. Current va Preset
 
@@ -118,7 +118,7 @@ See also: `references/boot-failure-modes.md`
 
 Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:
 `dotfiles/config/zsh/snippet.zsh`. See also:
-`references/vde-layout-internals.md`
+`workspace-vde-layout-internals.md`
 
 ## 3. Session Naming
 
@@ -180,7 +180,7 @@ equal to the PR head branch, but use a directory name like
 
 Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).
 
-See `references/worktree-workflow.md` for full command reference including
+See `workspace-worktree-workflow.md` for full command reference including
 inspection, cleanup, and baseline verification.
 
 ## 5. Navigation Primitives
@@ -197,7 +197,7 @@ inspection, cleanup, and baseline verification.
 ## 6. Common tmux Pane Operations
 
 For pane send-keys, capture-pane, hook-bypass via load-buffer + paste-buffer,
-and monitoring patterns, see `references/tmux-pane-operations.md`.
+and monitoring patterns, see `workspace-tmux-pane-operations.md`.
 
 Key rules:
 
@@ -212,7 +212,7 @@ Key rules:
   when tmux topology is correct; wait briefly and retry status
 - `tmux list-sessions` is authoritative for session existence; postman routing
   may lag
-- WAL bloat (`~/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex
+- WAL bloat (`$HOME/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex
   sessions; see `skills/agent-harness-engineering/references/codex-cli.md` WAL
   runbook (do not duplicate here)
 ~~~~~~~~~~~~
