@@ -44,7 +44,7 @@ Recommended workflow:
 
 Open these references as needed:
 
-- [references/prompt-blocks.md](references/prompt-blocks.md)
-- [references/review-output-contract.md](references/review-output-contract.md)
-- [references/resume-handoff.md](references/resume-handoff.md)
+- [Prompt Blocks](prompt-blocks.md)
+- [Review Output Contract](review-output-contract.md)
+- [Resume Handoff](resume-handoff.md)
 ~~~~~~~~~~~~

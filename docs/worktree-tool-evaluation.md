@@ -42,8 +42,10 @@ The current repository wrappers and checked-in config are the source of truth:
   - `z` and `zi` for human re-entry
   - native `git worktree` commands as the backend
 - Do not add a generic worktree CLI as the normal human interface.
-- Keep `skills/agent-workspace/SKILL.md` as the canonical workspace skill for
-  dotfiles-local worktree policy because it preserves the wrapper-first policy.
+- Keep
+  `skills/agent-harness-engineering/references/workspace-worktree-workflow.md`
+  as the canonical workspace reference for dotfiles-local worktree policy
+  because it preserves the wrapper-first policy.
 
 ## 4. Why This Decision Is Narrow
 
@@ -71,4 +73,4 @@ Revisit this decision only if one of these becomes true:
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
 - `nix/home-manager/modules/pnpm.nix`
-- `skills/agent-workspace/SKILL.md`
+- `skills/agent-harness-engineering/references/workspace-worktree-workflow.md`

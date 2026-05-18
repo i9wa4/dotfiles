@@ -81,12 +81,14 @@ low-level checks from this workspace skill.
 
 ## 5. WAL Bloat from Codex Multi-Pane Sessions
 
-**Root cause:** Each codex pane appends to `~/.codex/logs_2.sqlite-wal`. With
+**Root cause:** Each codex pane appends to
+`$HOME/.codex/logs_2.sqlite-wal`. With
 6-7 codex panes active, WAL files grow rapidly.
 `PRAGMA wal_checkpoint(TRUNCATE)` cannot truncate while live `.codex-wr`
 processes hold the WAL open.
 
-**Symptom:** Disk space consumed by `~/.codex/logs_2.sqlite-wal`; checkpoint
+**Symptom:** Disk space consumed by `$HOME/.codex/logs_2.sqlite-wal`;
+checkpoint
 truncation fails.
 
 **Mitigation:** Cross-reference

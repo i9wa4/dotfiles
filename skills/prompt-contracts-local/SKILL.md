@@ -2,45 +2,44 @@
 name: prompt-contracts-local
 license: MIT
 description: |
-  USE FOR: Task prompts, review contracts, and resume-handoff patterns for Claude Code and Codex CLI agent workflows in this repo. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  Compatibility trigger for task prompt, review contract, prompt block, and resume-handoff requests. Route discovery to agent-harness-engineering, which owns the details.
 ---
 
 # Prompt Contracts Local
 
-**UTILITY SKILL:** Apply this skill to Task prompts, review contracts, and
-resume-handoff patterns for Claude Code and Codex CLI agent workflows in this
-repo. Keep the task scoped to the requested domain and preserve existing repo
-conventions.
+**COMPATIBILITY TRIGGER:** This standalone skill has been demoted. The detailed
+owner for task prompts, review contracts, and resume-handoff patterns for
+Claude Code and Codex CLI agent workflows is `agent-harness-engineering`.
 
-**USE FOR:** Task prompts, review contracts, and resume-handoff patterns for
-Claude Code and Codex CLI agent workflows in this repo; related file edits;
-verification and handoff in this skill domain.
+**USE FOR:** Discovery compatibility when a task names `prompt-contracts-local`
+or asks for task prompts, review contracts, prompt blocks, or resume-handoff
+patterns in this repo.
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+**DO NOT USE FOR:** maintaining separate prompt-contract guidance, unrelated
+domains, broad rewrites outside the request, generated runtime outputs, or
+replacing the `agent-harness-engineering` source of truth.
 
 ## Workflow
 
-1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
+1. Switch to `skills/agent-harness-engineering/SKILL.md` for the active
+   workflow.
+2. For detailed prompt-contract guidance, read these target references:
+   `prompt-contracts-preserved-guidance.md`, `prompt-blocks.md`,
+   `review-output-contract.md`, and `resume-handoff.md`.
+3. Follow the validation and handoff rules from `agent-harness-engineering`.
 
 ## Examples
 
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+For a request in this domain, route to `agent-harness-engineering`, load the
+prompt-contract reference that matches the task, run focused checks, and
+summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-- [Prompt Blocks](references/prompt-blocks.md)
-- [Resume Handoff](references/resume-handoff.md)
-- [Review Output Contract](references/review-output-contract.md)
+Detailed references now live under
+`skills/agent-harness-engineering/references/`.
 
 ## Troubleshooting
 
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+If this compatibility trigger and `agent-harness-engineering` disagree, follow
+`agent-harness-engineering` and record the exception in the handoff.

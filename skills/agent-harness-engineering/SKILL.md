@@ -2,49 +2,42 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  USE FOR: Orchestrator runbook guidance, postman routing, and dotfiles agent harness changes: Claude/Codex config, Nix/HM settings, hooks, MCP, skill installation. DO NOT USE FOR: unrelated tasks, broad rewrites, or generated outputs.
+  USE FOR: Dotfiles agent harness work including Claude/Codex config, Nix/HM hooks, MCP, skill installation, postman routing, workspace/worktree operations, prompt contracts, reviews, and resume handoff.
 ---
 
 # Agent Harness Engineering
 
-**UTILITY SKILL:** Apply this skill to Dotfiles agent harness: Claude Code/Codex
-CLI config, Nix/HM settings, hooks, MCP, skill installation pipeline (Nix-side),
-postman routing, and the durable orchestrator runbook handoff from
-`config/tmux-a2a-postman/postman.md`. Keep the task scoped to the requested
-domain and preserve existing repo conventions.
+**USE FOR:** Dotfiles agent harness work: Claude/Codex config, Nix/HM hooks,
+MCP, skill installation, postman routing, runbooks, tmux workspaces, issue/PR
+worktrees, pane operations, prompt/review contracts, and resume handoff.
 
-**USE FOR:** Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM
-settings, hooks, MCP, skill installation pipeline (Nix-side), postman routing,
-orchestrator runbook/reference guidance; related file edits; verification and
-handoff in this skill domain.
-
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+**DO NOT USE FOR:** unrelated domains, broad rewrites, generated outputs, or
+replacing repo source of truth.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
-
-## Examples
-
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+2. Open the owner reference for the surface:
+   [Harness](references/preserved-guidance.md),
+   [Workspace](references/workspace-preserved-guidance.md), or
+   [Prompts](references/prompt-contracts-preserved-guidance.md).
+3. Use sibling refs as needed, make the smallest scoped change, run nearest
+   checks, and report verification plus remaining risk.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-- [Claude Code](references/claude-code.md)
-- [Claude Workspace Trust](references/claude-workspace-trust.md)
-- [Codex CLI](references/codex-cli.md)
-- [Changelog Tracking](references/changelog-tracking.md)
-- [Orchestrator Runbook](references/orchestrator-runbook.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- [Harness](references/preserved-guidance.md),
+  [Claude](references/claude-code.md),
+  [Claude trust](references/claude-workspace-trust.md),
+  [Codex](references/codex-cli.md),
+  [Changelog](references/changelog-tracking.md),
+  [Runbook](references/orchestrator-runbook.md)
+- [Workspace](references/workspace-preserved-guidance.md),
+  [Worktrees](references/workspace-worktree-workflow.md),
+  [Panes](references/workspace-tmux-pane-operations.md),
+  [Boot](references/workspace-boot-failure-modes.md),
+  [VDE](references/workspace-vde-layout-internals.md)
+- [Prompts](references/prompt-contracts-preserved-guidance.md),
+  [Blocks](references/prompt-blocks.md),
+  [Review](references/review-output-contract.md),
+  [Resume](references/resume-handoff.md)

@@ -4,11 +4,11 @@ Short reference for vde-layout config resolution and preset structure.
 
 ## Config Resolution
 
-- Binary:
-  `/home/daiki.mawatari/.local/lib/node_modules/vde-layout/dist/index.mjs`
+- Binary: user-local npm/global package path, commonly
+  `$HOME/.local/lib/node_modules/vde-layout/dist/index.mjs`
 - Config loaded from `$VDE_CONFIG_PATH` env var, or default XDG path:
-  `$XDG_CONFIG_HOME/vde/layout.yml` → `~/.config/vde/layout.yml`
-- `~/.config/vde` is Home Manager-managed; the layout file resolves to
+  `$XDG_CONFIG_HOME/vde/layout.yml` or `$HOME/.config/vde/layout.yml`
+- `$XDG_CONFIG_HOME/vde` is Home Manager-managed; the layout file resolves to
   `dotfiles/config/vde/layout.yml`
 
 ## Preset Definitions (layout.yml)
