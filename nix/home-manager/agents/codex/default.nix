@@ -598,7 +598,7 @@ in
     # through postman.md common_template, not auto-loaded by Codex CLI)
     # NOTE: default.rules remains separate for exec-policy denials
     ".codex/rules".source = codexRulesDir;
-    # Subagent definitions rendered from shared metadata and prompt bodies
+    # Committed native Codex agent files (rebuild required to update)
     "${installManifest.codex.agents.target}".source = installManifest.codex.agents.source;
     # Hook scripts (Nix store, rebuild required to update)
     ".codex/scripts".source = codexScriptsDir;

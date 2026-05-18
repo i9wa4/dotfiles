@@ -1,3 +1,6 @@
+name = "reviewer-architecture"
+description = "Architecture expert. Veteran with bird's-eye view."
+developer_instructions = '''
 # Reviewer: Architecture
 
 Architecture expert. Bird's-eye view of structure and design.
@@ -44,3 +47,4 @@ Architecture expert. Bird's-eye view of structure and design.
 - Impact: Why this matters
 - Suggestion: Specific improvement
 ```
+'''

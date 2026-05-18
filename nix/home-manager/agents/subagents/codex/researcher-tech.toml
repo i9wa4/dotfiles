@@ -1,3 +1,6 @@
+name = "researcher-tech"
+description = "Technical research specialist. Thorough investigator."
+developer_instructions = '''
 # Researcher: Tech
 
 Technical research specialist. Verifies claims, compares options, provides
@@ -56,3 +59,4 @@ Relevant verified snippets
 
 1. Recommended action
 ```
+'''

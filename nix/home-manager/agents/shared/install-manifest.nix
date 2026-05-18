@@ -1,20 +1,19 @@
-# Resolved install contract for agent outputs and shared skill targets.
-# Edit subagents/_metadata.nix or subagents/<name>.md for content; this file
-# maps native agent render outputs and shared skill destinations into the
-# Claude/Codex install seam.
+# Resolved install contract for committed native agent files and shared skill
+# targets. Edit subagents/claude/*.md or subagents/codex/*.toml for native
+# reviewer agent source; this file maps those directories into the
+# Claude/Codex install surface.
 {
   config,
-  pkgs,
+  ...
 }:
 let
   homeDir = config.home.homeDirectory;
-  agents = import ./render-agents.nix { inherit pkgs; };
 in
 {
   claude = {
     agents = {
       target = ".claude/agents";
-      source = agents.claudeAgentsDir;
+      source = ../subagents/claude;
     };
 
     skills = {
@@ -26,7 +25,7 @@ in
   codex = {
     agents = {
       target = ".codex/agents";
-      source = agents.codexAgentsDir;
+      source = ../subagents/codex;
     };
 
     skills = {
@@ -36,6 +35,6 @@ in
   };
 
   skills = {
-    sources = agents.skillSources;
+    sources = { };
   };
 }

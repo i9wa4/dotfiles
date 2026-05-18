@@ -8,8 +8,8 @@ description: "USE FOR: Native five-perspective guardian/critic review. DO NOT US
 
 **UTILITY SKILL:** Use the current runtime's five native reviewer perspectives
 for guardian/critic review. The active role owns synthesis and approval. Do
-not implement, delegate approval, run dispatcher fan-out, select models/tiers,
-or build cross-engine reviewer pools.
+not implement, delegate approval, dispatch fan-out, choose models/tiers, own
+implementation, or build cross-engine reviewer pools.
 
 Normal lane: orchestrator -> guardian -> critic -> guardian -> orchestrator.
 
@@ -17,9 +17,8 @@ Guardian is the Codex review owner. Critic is the Claude subordinate reviewer.
 Guardian packages evidence for critic, waits for the recommendation, then
 returns the verdict.
 
-Default set: security, architecture, historian, code, and QA. In substantive
-reviews, guardian uses these five Codex-native perspectives and critic uses
-these five Claude-native perspectives.
+Default set: security, architecture, historian, code, and QA. Guardian uses
+Codex-native perspectives; critic uses Claude-native perspectives.
 
 ## Boundary
 

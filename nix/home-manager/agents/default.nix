@@ -3,9 +3,9 @@
 # everything else is grouped into purpose-named subdirectories:
 #   claude/       Claude Code runtime config
 #   codex/        Codex CLI runtime config
-#   shared/       cross-runtime data and builders (deny rules, MCP servers,
-#                 install manifest, render-agents, agent-skills installer)
-#   subagents/    subagent prompt bodies + _metadata.nix (single SSOT)
+#   shared/       cross-runtime data (deny rules, MCP servers, install
+#                 manifest, agent-skills installer)
+#   subagents/    committed Claude/Codex native reviewer agent files
 #   skills/       hand-authored skills (agent-harness-engineering, runtime
 #                 config optimizers, etc.)
 #   scripts/      hook + statusline scripts
