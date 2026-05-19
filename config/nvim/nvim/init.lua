@@ -235,6 +235,15 @@ vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
   {
+    "ibhagwan/fzf-lua",
+    lazy = false,
+    keys = {
+      { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
+      { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
+    },
+    opts = { { "default-title", "hide" } },
+  },
+  {
     "stevearc/oil.nvim",
     lazy = false,
     opts = {
