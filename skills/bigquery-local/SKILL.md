@@ -2,28 +2,30 @@
 name: bigquery-local
 license: MIT
 description: |
-  USE FOR: BigQuery local: cost-aware query patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table design, slot usage. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: BigQuery compatibility trigger for cost guardrails, GoogleSQL, table design, and slot checks. Detailed owner: data-platform. DO NOT USE FOR: generated outputs.
 ---
 
 # Bigquery Local
 
-**UTILITY SKILL:** Apply this skill to BigQuery local: cost-aware query
-patterns, GoogleSQL guardrails, project conventions, partitioned/clustered table
-design, slot usage. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+Compatibility trigger for BigQuery-specific tasks. The durable implementation
+guidance now lives in `skills/data-platform/references/bigquery.md`.
 
-**USE FOR:** BigQuery local: cost-aware query patterns, GoogleSQL guardrails,
-project conventions, partitioned/clustered table design, slot usage; related
-file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- BigQuery cost-aware query patterns in this repo.
+- GoogleSQL guardrails and partition/filter conventions.
+- Partitioned and clustered table design.
+- Slot usage checks.
+
+## Do Not Use For
+
+- Broad data-platform work; use `data-platform`.
+- Unrelated domains, broad rewrites, or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/data-platform/references/bigquery.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,7 +37,7 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/data-platform/references/bigquery.md`
 
 ## Troubleshooting
 
