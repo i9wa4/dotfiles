@@ -2,28 +2,30 @@
 name: mermaid-local
 license: MIT
 description: |
-  USE FOR: Mermaid diagrams in Quarto revealjs .qmd files: sequenceDiagram, flowchart, pie; mmdc preview; %%{init}%% config; CSS color overrides. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Mermaid compatibility trigger for Quarto revealjs diagrams, mmdc preview, init config, CSS overrides, and layout checks. Detailed owner: diagramming.
 ---
 
 # Mermaid Local
 
-**UTILITY SKILL:** Apply this skill to Mermaid diagrams in Quarto revealjs .qmd
-files: sequenceDiagram, flowchart, pie; mmdc preview; %%{init}%% config; CSS
-color overrides. Keep the task scoped to the requested domain and preserve
-existing repo conventions.
+Compatibility trigger for Mermaid-specific diagram tasks. The durable
+implementation guidance now lives in
+`skills/diagramming/references/mermaid.md`.
 
-**USE FOR:** Mermaid diagrams in Quarto revealjs .qmd files: sequenceDiagram,
-flowchart, pie; mmdc preview; %%{init}%% config; CSS color overrides; related
-file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Mermaid diagrams in Quarto revealjs `.qmd` files.
+- `mmdc` preview and rendered dimension checks.
+- `%%{init}%%` configuration and revealjs CSS overrides.
+
+## Do Not Use For
+
+- Broad diagramming work; use `diagramming`.
+- Unrelated domains, broad rewrites, or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/diagramming/references/mermaid.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,7 +37,7 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/diagramming/references/mermaid.md`
 
 ## Troubleshooting
 
