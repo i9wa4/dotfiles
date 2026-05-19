@@ -2,28 +2,30 @@
 name: dbt-local
 license: MIT
 description: |
-  USE FOR: Local dbt additions - Issue-specific target setup and Databricks SQL dialect notes. Supplements the official dbt and running-dbt-commands skills. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: dbt compatibility trigger for issue targets, Databricks SQL dialect notes, and local examples. Detailed owner: data-platform. DO NOT USE FOR: generated outputs.
 ---
 
 # Dbt Local
 
-**UTILITY SKILL:** Apply this skill to Local dbt additions - Issue-specific
-target setup and Databricks SQL dialect notes. Supplements the official dbt and
-running-dbt-commands skills. Keep the task scoped to the requested domain and
-preserve existing repo conventions.
+Compatibility trigger for dbt-specific repo additions. The durable
+implementation guidance now lives in `skills/data-platform/references/dbt.md`.
 
-**USE FOR:** Local dbt additions - Issue-specific target setup and Databricks
-SQL dialect notes. Supplements the official dbt and running-dbt-commands skills;
-related file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Issue-specific local dbt target setup.
+- Databricks SQL dialect caveats for dbt work.
+- Repo-local dbt examples.
+
+## Do Not Use For
+
+- Broad data-platform work; use `data-platform`.
+- General dbt command basics; use official dbt skills when available.
+- Unrelated domains, broad rewrites, or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/data-platform/references/dbt.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,7 +37,7 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/data-platform/references/dbt.md`
 
 ## Troubleshooting
 

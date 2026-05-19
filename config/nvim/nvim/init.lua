@@ -18,7 +18,7 @@ vim.api.nvim_create_user_command("R", function(opts)
 end, { nargs = "?" })
 
 local function highlight_define()
-  vim.api.nvim_set_hl(0, "HlMS", { bg = "#FFB6C1", fg = "#000000" })
+  vim.api.nvim_set_hl(0, "Hl01", { bg = "#FFB6C1", fg = "#000000" })
   vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
   vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
@@ -52,14 +52,14 @@ local function highlight_match()
 
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
-  add("HlMS", "HlMS")
-  add("HlMS", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:]])
-  add("HlMS", [[# %%]])
-  add("HlMS", [[\[ \]])
+  add("Hl01", "Hl01")
+  add("Hl01", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:]])
+  add("Hl01", [[# %%]])
+  add("Hl01", [[\[ \]])
   local now = vim.fn.localtime()
-  add("HlMS", vim.fn.strftime("%Y%m%d", now))
-  add("HlMS", vim.fn.strftime("%Y-%m-%d", now))
-  add("HlMS", vim.fn.strftime("%Y/%m/%d", now))
+  add("Hl01", vim.fn.strftime("%Y%m%d", now))
+  add("Hl01", vim.fn.strftime("%Y-%m-%d", now))
+  add("Hl01", vim.fn.strftime("%Y/%m/%d", now))
 
   vim.w.my_highlight_match_ids = ids
 end
@@ -235,6 +235,15 @@ vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
   {
+    "ibhagwan/fzf-lua",
+    lazy = false,
+    keys = {
+      { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
+      { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
+    },
+    opts = { { "default-title", "hide" } },
+  },
+  {
     "stevearc/oil.nvim",
     lazy = false,
     opts = {
@@ -250,5 +259,16 @@ require("lazy").setup({
 -- End of settings
 --
 vim.cmd("filetype plugin indent on")
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup,
+  callback = function()
+    pcall(function()
+      -- Keep literal ':' insertion from triggering insert-mode reindent,
+      -- e.g. the time separators inserted by the ",now" mapping.
+      vim.opt_local.indentkeys:remove({ ":", "<:>" })
+      vim.opt_local.cinkeys:remove({ ":", "<:>" })
+    end)
+  end,
+})
 vim.cmd("syntax enable")
 vim.cmd.colorscheme(vim.g.colors_name or "habamax")

@@ -41,7 +41,7 @@ zi() {
   local selected_path
   selected_path="$(
     __z_query_paths |
-      fzf --layout=reverse --no-sort --query="$*"
+      fzf --layout=reverse --scheme=path --nth=2.. --query="$*"
   )" || return $?
 
   [[ -n "$selected_path" ]] || return 1
@@ -53,7 +53,7 @@ __zoxide_zi_widget() {
   local selected_path
   selected_path="$(
     __z_query_paths |
-      fzf --layout=reverse --no-sort --height='~15' --query="$BUFFER"
+      fzf --layout=reverse --scheme=path --nth=2.. --height='~15' --query="$BUFFER"
   )" || {
     zle reset-prompt
     return $?
