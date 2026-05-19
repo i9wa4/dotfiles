@@ -9,7 +9,7 @@ __history_fzf_widget() {
   selected="$(
     fc -rl 1 2>/dev/null |
       awk '{ sub(/^[[:space:]]*[0-9]+[[:space:]]*/, ""); if (length($0) && !seen[$0]++) print }' |
-      fzf --layout=reverse --height='~40%' --query="$LBUFFER"
+      fzf --no-sort --layout=reverse --height='~40%' --query="$LBUFFER"
   )"
   exit_code=$?
 
