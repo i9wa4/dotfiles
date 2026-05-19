@@ -92,7 +92,7 @@ ensure_remote_tracking_branch() {
   fi
 }
 
-# Fetch remote and update main branch
+# Fetch remote and update main branch when it is the invoking branch.
 echo "-> Fetching remote..."
 git fetch origin
 current_branch=$(git rev-parse --abbrev-ref HEAD)
@@ -236,7 +236,7 @@ ${issue_comments}
         fi
         ;;
       new)
-        if ! git worktree add -b "${branch_name}" "${desired_worktree_path}" main; then
+        if ! git worktree add -b "${branch_name}" "${desired_worktree_path}" "${current_branch}"; then
           echo "Error: Could not create worktree for '${branch_name}' at '${desired_worktree_path}'." >&2
           echo ""
           continue
@@ -261,7 +261,7 @@ ${issue_comments}
         echo "* Using existing local branch: ${branch_name}"
         ;;
       new)
-        echo "* Created local branch: ${branch_name} (from main)"
+        echo "* Created local branch: ${branch_name} (from ${current_branch})"
         ;;
     esac
 

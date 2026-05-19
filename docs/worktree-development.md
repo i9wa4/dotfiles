@@ -53,8 +53,9 @@ For the adoption decision behind the current tool stack, see
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
 7. Existing remote issue branches are configured as upstream. New local issue
-   branches rely on `push.autoSetupRemote=true`, so the first plain `git push`
-   creates `origin/<branch>` and records upstream.
+   branches are created from the currently checked-out branch in the invoking
+   checkout. They rely on `push.autoSetupRemote=true`, so the first plain
+   `git push` creates `origin/<branch>` and records upstream.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`.
