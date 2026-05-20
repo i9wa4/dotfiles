@@ -5,7 +5,7 @@
 #   codex/        Codex CLI runtime config
 #   shared/       cross-runtime data (deny rules, MCP servers, install
 #                 manifest, agent-skills installer)
-#   subagents/    committed Claude/Codex native reviewer agent files
+#   subagents/    committed Markdown reviewer agent source
 #   skills/       hand-authored skills (agent-harness-engineering, runtime
 #                 config optimizers, etc.)
 #   scripts/      hook + statusline scripts

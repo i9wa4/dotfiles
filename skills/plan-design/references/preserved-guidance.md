@@ -58,8 +58,8 @@ Before drafting, run the following and read the results:
 
 2. Read at minimum:
    - skills/agent-harness-engineering/references/orchestrator-runbook.md
-   - nix/home-manager/agents/shared/render-agents.nix
-   - nix/home-manager/agents/subagents/_metadata.nix
+   - nix/home-manager/agents/shared/install-manifest.nix
+   - nix/home-manager/agents/subagents/claude/
 
 3. Read any skill whose name suggests planning, review, or session workflow.
 

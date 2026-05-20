@@ -210,13 +210,13 @@ This file defines the dangerous Bash patterns once and then emits:
 
 If the repo changes a Bash safety policy, this is where it should happen.
 
-### 5.2. `shared/render-agents.nix`
+### 5.2. `shared/install-manifest.nix`
 
-This file generates the installed shared agent surface from
-`subagents/_metadata.nix` and `subagents/*.md`:
+This file maps the installed shared agent surface from
+`subagents/claude/*.md`:
 
-- Claude markdown agent definitions
-- Codex TOML agent definitions
+- Claude installs the committed Markdown files directly
+- Codex receives generated TOML files under `~/.codex/agents/`
 
 The `subagent-review` skill is hand-authored under
 `skills/subagent-review/SKILL.md` and installed through the same local skill
@@ -227,15 +227,14 @@ dispatcher.
 ### 5.3. Review-system specification
 
 This section is the canonical repo-side specification for the current review
-system. `shared/render-agents.nix` is the native reviewer generation SSOT,
+system. `subagents/claude/*.md` is the native reviewer prompt source of truth,
 while `skills/subagent-review/SKILL.md` describes the public review skill
 surface.
 
 #### 5.3.1. Canonical components
 
-- `nix/home-manager/agents/shared/render-agents.nix`
-- `nix/home-manager/agents/subagents/_metadata.nix`
-- `nix/home-manager/agents/subagents/*.md`
+- `nix/home-manager/agents/shared/install-manifest.nix`
+- `nix/home-manager/agents/subagents/claude/*.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/claude/default.nix`
 - `nix/home-manager/agents/codex/default.nix`
@@ -267,8 +266,9 @@ orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
-Agent defaults live in `subagents/_metadata.nix` and are rendered into native
-agent files by `shared/render-agents.nix`.
+Agent prompt defaults live in `subagents/claude/*.md`. Claude installs those
+Markdown files directly. Codex TOML is generated from the same Markdown source
+by `shared/install-manifest.nix` and installed into `~/.codex/agents/`.
 
 The normal guardian/critic workflow does not expose model or tier selection.
 For substantive reviews, the active role defaults to the five native
@@ -287,15 +287,15 @@ Current materialization:
 ~/.codex/skills/
   subagent-review/
 ~/.claude/agents/
-  <metadata agent name>.md
+  <agent name>.md
 ~/.codex/agents/
-  <metadata agent name>.toml
+  <agent name>.toml
 ```
 
 `shared/agent-skills.nix` owns the skill-tree materialization into both
 engines. `claude/default.nix` installs the Claude agent directory under
-`~/.claude/agents`. `codex/default.nix` installs the Codex agent directory
-under `~/.codex/agents`.
+`~/.claude/agents`. `codex/default.nix` installs generated Codex TOML under
+`~/.codex/agents`.
 
 ## 6. Claude/Codex parity contract
 

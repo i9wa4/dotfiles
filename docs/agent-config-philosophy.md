@@ -20,11 +20,10 @@ What "prompt path" means in this repo:
   delivered into every postman session as the live operating contract.
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
-- `nix/home-manager/agents/subagents/*.md` and
-  `nix/home-manager/agents/subagents/_metadata.nix` — native reviewer agent
-  definitions and runtime defaults.
-- `nix/home-manager/agents/shared/render-agents.nix` — renders the shared
-  native reviewer agents.
+- `nix/home-manager/agents/subagents/claude/*.md` — native reviewer agent
+  Markdown definitions and runtime defaults.
+- `nix/home-manager/agents/shared/install-manifest.nix` — installs Claude
+  Markdown directly and generates Codex TOML from the same Markdown source.
 
 Why prompt over config:
 
@@ -80,9 +79,10 @@ Concrete examples already in the repo:
   codex AGENTS.md installed at the runtime root.
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
-- `nix/home-manager/agents/shared/render-agents.nix` with
-  `nix/home-manager/agents/subagents/_metadata.nix` — generates native
-  reviewer agents for both engines.
+- `nix/home-manager/agents/subagents/claude/*.md` with
+  `nix/home-manager/agents/shared/install-manifest.nix` — uses Markdown as the
+  reviewer source of truth, installs Claude agents directly, and generates the
+  Codex TOML runtime files.
 
 Why shared beats per-tool:
 
