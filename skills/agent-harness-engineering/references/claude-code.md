@@ -19,7 +19,7 @@ Source of truth:
 | ------------------------ | --------------------------------------------------------- | ------------------------------------ |
 | Claude settings file     | Generated from Nix attributes                             | `claude/default.nix`                 |
 | no root instruction file | Persona / language / scope from postman common blocks     | `config/tmux-a2a-postman/postman.md` |
-| Claude agents directory  | `nix/home-manager/agents/subagents/claude/*.md` Markdown  | `shared/install-manifest.nix`        |
+| Claude agents directory  | `nix/home-manager/agents/subagents/*.md` Markdown         | `shared/install-manifest.nix`        |
 | Claude scripts directory | `nix/home-manager/agents/scripts/`                        | `claude/default.nix`                 |
 | Claude skills directory  | Multiple flake inputs + local skills                      | `shared/agent-skills.nix`            |
 | MCP servers              | `shared/mcp-servers.nix`                                  | `claude/default.nix`                 |
@@ -241,7 +241,7 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
   `config/tmux-a2a-postman/postman.md`
 - [x] Skills installed through `shared/agent-skills.nix`
 - [x] Claude agents installed from
-  `nix/home-manager/agents/subagents/claude/*.md`; Codex TOML agents generated
+  `nix/home-manager/agents/subagents/*.md`; Codex TOML agents generated
   from the same Markdown source by `shared/install-manifest.nix`
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills

@@ -213,7 +213,7 @@ If the repo changes a Bash safety policy, this is where it should happen.
 ### 5.2. `shared/install-manifest.nix`
 
 This file maps the installed shared agent surface from
-`subagents/claude/*.md`:
+`subagents/*.md`:
 
 - Claude installs the committed Markdown files directly
 - Codex receives generated TOML files under `~/.codex/agents/`
@@ -227,14 +227,14 @@ dispatcher.
 ### 5.3. Review-system specification
 
 This section is the canonical repo-side specification for the current review
-system. `subagents/claude/*.md` is the native reviewer prompt source of truth,
+system. `subagents/*.md` is the native reviewer prompt source of truth,
 while `skills/subagent-review/SKILL.md` describes the public review skill
 surface.
 
 #### 5.3.1. Canonical components
 
 - `nix/home-manager/agents/shared/install-manifest.nix`
-- `nix/home-manager/agents/subagents/claude/*.md`
+- `nix/home-manager/agents/subagents/*.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/claude/default.nix`
 - `nix/home-manager/agents/codex/default.nix`
@@ -266,7 +266,7 @@ orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
-Agent prompt defaults live in `subagents/claude/*.md`. Claude installs those
+Agent prompt defaults live in `subagents/*.md`. Claude installs those
 Markdown files directly. Codex TOML is generated from the same Markdown source
 by `shared/install-manifest.nix` and installed into `~/.codex/agents/`.
 

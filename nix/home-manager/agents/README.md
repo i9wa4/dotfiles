@@ -13,7 +13,7 @@ artifacts.
 | Persona / language / scope    | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.17             | Delivered into every postman role on each `tmux-a2a-postman pop`                   |
 | Dotfiles-owned skill bodies   | `skills/<skill>/SKILL.md`                                                  | Installed to both engines and indexed by postman.md `skill_path`                   |
 | Native review skill           | `skills/subagent-review/SKILL.md`                                          | Documents runtime-native reviewer subagent usage without dispatcher tiers          |
-| Native reviewer agents        | `subagents/claude/*.md`                                                    | Installed into `~/.claude/agents/` and converted into `~/.codex/agents/*.toml`     |
+| Native reviewer agents        | `subagents/*.md`                                                           | Installed into `~/.claude/agents/` and converted into `~/.codex/agents/*.toml`     |
 | Shared install targets        | `shared/install-manifest.nix`                                              | Resolves Claude agent install and Codex TOML generation from Markdown source       |
 | Local reusable skills         | `skills/<skill>/`, `shared/agent-skills.nix`                               | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
 | Skill description index       | `skills/skill-description-index/`                                          | Reclassified for later migration into `skills/agent-skills-management/references/` |
@@ -32,7 +32,7 @@ artifacts.
    `skills/<skill>/SKILL.md`; postman traffic gets only the generated
    `skill_path` catalog. There is no longer a generated CLAUDE.md or codex
    AGENTS.md installed at the runtime root.
-3. `subagents/claude/*.md` is the committed Markdown source of truth for native
+3. `subagents/*.md` is the committed Markdown source of truth for native
    reviewer agent files. Claude installs the Markdown directly. Codex TOML is
    generated from that Markdown by `shared/install-manifest.nix` and installed
    into `~/.codex/agents/`. The generated runtime files intentionally omit model
@@ -60,7 +60,7 @@ artifacts.
 
 ## Authoring Notes
 
-- Keep reviewer agent implementation details in `subagents/claude/`. Do not
+- Keep reviewer agent implementation details in `subagents/`. Do not
   hand-author or track Codex TOML copies; they are generated from the Markdown
   source. Keep reviewer usage guidance in `skills/subagent-review/SKILL.md`.
 - After setting up Claude Code on a new machine or after adding new projects,

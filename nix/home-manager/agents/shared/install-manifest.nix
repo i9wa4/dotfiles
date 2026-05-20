@@ -1,5 +1,5 @@
 # Resolved install contract for native agent files and shared skill targets.
-# Edit subagents/claude/*.md for reviewer agent source. Claude installs those
+# Edit subagents/*.md for reviewer agent source. Claude installs those
 # Markdown files directly; Codex gets generated runtime TOML from the same
 # Markdown source.
 {
@@ -9,7 +9,7 @@
 }:
 let
   homeDir = config.home.homeDirectory;
-  claudeAgentsSource = ../subagents/claude;
+  claudeAgentsSource = ../subagents;
   codexAgentConverter = pkgs.writeText "codex-agent-md-to-toml.py" ''
     import json
     import sys
@@ -77,7 +77,7 @@ let
             encoding="utf-8",
         )
   '';
-  codexAgentsSource = pkgs.runCommand "codex-agents-from-claude-markdown" { } ''
+  codexAgentsSource = pkgs.runCommand "codex-agents-from-markdown" { } ''
     set -eu
     mkdir -p "$out"
     ${pkgs.python3}/bin/python3 ${codexAgentConverter} ${claudeAgentsSource} "$out"
