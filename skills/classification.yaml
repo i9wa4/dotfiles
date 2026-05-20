@@ -235,14 +235,18 @@ skills:
     path: skills/brainstorming
     publish: true
     scope: ambiguity-reduction
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: plan-design
     target_name: plan-design
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_plan_design_target
+    owner_surface: skills/plan-design/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
+    notes: >
+      Detailed ambiguity-reduction guidance now lives in plan-design references.
+      The standalone skill remains only as a compatibility trigger until the
+      release catalog no longer needs the old entry point.
 
   - name: systematic-debugging
     path: skills/systematic-debugging
@@ -256,6 +260,9 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scan_before_publish
     validation_expectations: *common_validation
+    notes: >
+      Remains the root-cause-first owner. Once a cause is credible, narrow fix
+      loops should follow programming's TDD and Tidy First reference.
 
   - name: programming
     path: skills/programming

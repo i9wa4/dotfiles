@@ -2,29 +2,33 @@
 name: brainstorming
 license: MIT
 description: |
-  USE FOR: Ambiguity-reduction for fuzzy requirements or multiple plausible approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Ambiguity-reduction before planning: fuzzy requirements, multiple plausible approaches, and option tradeoffs. Detailed owner: plan-design. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Brainstorming
 
-**UTILITY SKILL:** Apply this skill to Ambiguity-reduction for fuzzy
-requirements or multiple plausible approaches. Pre-step to plan-design. Produces
-2-3 options with tradeoffs. Keep the task scoped to the requested domain and
-preserve existing repo conventions.
+Compatibility trigger for ambiguity-reduction tasks. The durable guidance now
+lives in `skills/plan-design/references/brainstorming.md`.
 
-**USE FOR:** Ambiguity-reduction for fuzzy requirements or multiple plausible
-approaches. Pre-step to plan-design. Produces 2-3 options with tradeoffs;
-related file edits; verification and handoff in this skill domain.
+## Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Fuzzy requirements or multiple plausible approaches before planning.
+- Option framing with 2-3 trade-off comparisons.
+- Narrowing a user-facing objective before implementation.
+
+## Do Not Use For
+
+- Clear tasks with an existing acceptance target.
+- Approved plans that already have concrete milestones.
+- Unrelated domains, broad rewrites outside the request, or generated runtime
+  outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
+2. Read `skills/plan-design/references/brainstorming.md`.
+3. Stabilize the direction enough to continue with `plan-design` or a direct
+   implementation handoff.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
@@ -35,9 +39,4 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
-
-## Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.
+- `skills/plan-design/references/brainstorming.md`
