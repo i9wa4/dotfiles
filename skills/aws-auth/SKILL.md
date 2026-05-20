@@ -2,28 +2,36 @@
 name: aws-auth
 license: MIT
 description: |
-  USE FOR: AWS authentication via tmux send-keys to user-authenticated pane. Use when AWS SSO login must happen in user pane, not agent pane. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Cloud auth compatibility trigger for user-authenticated pane workflows. Detailed owner: data-platform. DO NOT USE FOR: agent harness runtime or generated outputs.
 ---
 
 # Aws Auth
 
-**UTILITY SKILL:** Apply this skill to AWS authentication via tmux send-keys to
-user-authenticated pane. Use when AWS SSO login must happen in user pane, not
-agent pane. Keep the task scoped to the requested domain and preserve existing
-repo conventions.
+Compatibility trigger for cloud authentication workflows that must run through
+a user-authenticated pane. Classification is confirmed under `data-platform`
+because the guidance protects cloud/data operations from credential misuse; use
+`agent-harness-engineering` only for generic tmux or pane mechanics.
 
-**USE FOR:** AWS authentication via tmux send-keys to user-authenticated pane.
-Use when AWS SSO login must happen in user pane, not agent pane; related file
-edits; verification and handoff in this skill domain.
+The durable implementation guidance now lives in
+`skills/data-platform/references/cloud-auth.md`.
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+## Use For
+
+- Cloud authentication workflows where the user has already authenticated in a
+  shell pane.
+- Sending read-only credential confirmation commands to that pane.
+- Preserving the boundary that agents do not run interactive login flows.
+
+## Do Not Use For
+
+- Generic tmux pane operation guidance; use `agent-harness-engineering`.
+- Broad data-platform work; use `data-platform`.
+- Unrelated domains, broad rewrites, or generated runtime outputs.
 
 ## Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
+2. Read `skills/data-platform/references/cloud-auth.md`.
 3. Make the smallest scoped change that satisfies the request.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
@@ -35,7 +43,7 @@ source, run focused checks, and summarize the result.
 
 ## References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/data-platform/references/cloud-auth.md`
 
 ## Troubleshooting
 

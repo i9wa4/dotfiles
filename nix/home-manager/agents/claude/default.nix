@@ -133,7 +133,7 @@ in
       # common_template (§2.24) on each tmux-a2a-postman pop. Skill bodies
       # are loaded from ~/.claude/skills/ at session start. No CLAUDE.md
       # is installed at the runtime root anymore.
-      # Nix store directory symlinks (rebuild required to update)
+      # Committed native Claude agent files (rebuild required to update)
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };

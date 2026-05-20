@@ -60,10 +60,10 @@ daemon delivers this common contract into every role pane on each
 `tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or codex
 AGENTS.md at the runtime root; postman.md is the common delivery channel.
 
-Subagent definitions (`subagents/*.md`) and metadata
-(`subagents/_metadata.nix`) remain tool-agnostic. The shared renderer
-(`shared/render-agents.nix`) turns them into Claude markdown agents,
-Codex TOML agents; the runtime-specific install layout is the only fork.
+Subagent definitions in `subagents/*.md` remain the tool-agnostic
+Markdown source. Claude installs that Markdown directly. Codex gets generated
+TOML from the same Markdown source through `shared/install-manifest.nix`; the
+runtime-specific install layout is the only fork.
 The `subagent-review` skill is hand-authored under `skills/subagent-review/`
 and installed through the normal skill pipeline.
 

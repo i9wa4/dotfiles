@@ -24,9 +24,11 @@ generated runtime outputs, or replacing repo-specific source of truth.
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
+3. When the cause is credible and the next step is an implementation loop, use
+   `skills/programming/references/tdd-tidy-first.md` for the narrow fix.
+4. Make the smallest scoped change that satisfies the request.
+5. Run the checks named in the preserved guidance or the nearest repo harness.
+6. Report verification results and any remaining risk.
 
 ## Examples
 
@@ -36,6 +38,7 @@ source, run focused checks, and summarize the result.
 ## References
 
 - [Preserved Guidance](references/preserved-guidance.md)
+- `skills/programming/references/tdd-tidy-first.md`
 
 ## Troubleshooting
 

@@ -235,14 +235,18 @@ skills:
     path: skills/brainstorming
     publish: true
     scope: ambiguity-reduction
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: plan-design
     target_name: plan-design
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_plan_design_target
+    owner_surface: skills/plan-design/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
+    notes: >
+      Detailed ambiguity-reduction guidance now lives in plan-design references.
+      The standalone skill remains only as a compatibility trigger until the
+      release catalog no longer needs the old entry point.
 
   - name: systematic-debugging
     path: skills/systematic-debugging
@@ -256,6 +260,9 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scan_before_publish
     validation_expectations: *common_validation
+    notes: >
+      Remains the root-cause-first owner. Once a cause is credible, narrow fix
+      loops should follow programming's TDD and Tidy First reference.
 
   - name: programming
     path: skills/programming
@@ -343,96 +350,130 @@ skills:
     personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
+  - name: data-platform
+    path: skills/data-platform
+    publish: true
+    scope: data-platform-target
+    action: keep
+    target_group: data-platform
+    target_name: data-platform
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone_target
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+    notes: >
+      Owns repo-local BigQuery, Databricks, dbt, restricted BigQuery/dbt safety,
+      and cloud-auth workflow references.
+
   - name: bigquery-local
     path: skills/bigquery-local
     publish: true
     scope: bigquery-local-workflow
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_data_platform_target
+    owner_surface: skills/data-platform/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: databricks-local
     path: skills/databricks-local
     publish: true
     scope: databricks-local-workflow
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_data_platform_target
+    owner_surface: skills/data-platform/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: dbt-local
     path: skills/dbt-local
     publish: true
     scope: dbt-local-workflow
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_data_platform_target
+    owner_surface: skills/data-platform/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: restricted-bigquery-dbt-environment
     path: skills/restricted-bigquery-dbt-environment
     publish: true
     scope: bigquery-dbt-safety
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_data_platform_target
+    owner_surface: skills/data-platform/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: aws-auth
     path: skills/aws-auth
     publish: true
     scope: cloud-auth-workflow
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: needs_classification_confirmation
-    owner_surface: references
-    standalone_decision: merge_into_target_unless_reclassified
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_data_platform_target
+    owner_surface: skills/data-platform/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
     notes: >
-      Reclassify under agent-harness-engineering if later review finds this is
-      primarily a harness-operation skill.
+      Classification confirmed under data-platform: the pane mechanics are
+      incidental; the safety boundary protects cloud/data authentication and
+      write operations. Use agent-harness-engineering only for generic tmux pane
+      operation guidance.
+
+  - name: diagramming
+    path: skills/diagramming
+    publish: true
+    scope: diagramming-target
+    action: keep
+    target_group: diagramming
+    target_name: diagramming
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone_target
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+    notes: >
+      Owns repo-local draw.io and Mermaid authoring, preview, export, layout,
+      color, and asset workflow references.
 
   - name: drawio-local
     path: skills/drawio-local
     publish: true
     scope: drawio-diagramming
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_diagramming_target
+    owner_surface: skills/diagramming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
 
   - name: mermaid-local
     path: skills/mermaid-local
     publish: true
     scope: mermaid-diagramming
-    action: merge_into_references
+    action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrate_before_release
-    owner_surface: references
-    standalone_decision: merge_into_target
-    personal_content_action: scan_before_migration
+    release_state: migrated_to_diagramming_target
+    owner_surface: skills/diagramming/references
+    standalone_decision: compatibility_trigger_until_release
+    personal_content_action: scan_before_publish
     validation_expectations: *common_validation
