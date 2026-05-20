@@ -155,7 +155,12 @@ or worktrees manually. Before editing, verify `pwd`,
 `git branch --show-current`, and
 `git status --short --branch`. Before asking a human to push, verify upstream
 with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
-`BLOCKED` if an issue branch tracks `origin/main`.
+`BLOCKED` if an issue branch tracks `origin/main`, `origin/dev`, or another
+non-issue upstream. First publication must use the explicit same-name
+destination refspec:
+`git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`. Do not use
+shorter ambiguous forms such as `git push`, `git push origin <branch>`,
+`git push --set-upstream origin <branch>`, or `git push origin HEAD`.
 
 Both scripts:
 
@@ -172,10 +177,10 @@ Both scripts:
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.
-Existing remote issue branches are configured as upstream; new local issue
-branches rely on `push.autoSetupRemote=true` so the first plain `git push`
-creates and records `origin/<branch>`. PR worktrees keep the local branch name
-equal to the PR head branch, but use a directory name like
+Existing remote issue branches are configured as upstream. New local issue
+branches intentionally have no upstream until explicit same-name publication.
+PR worktrees keep the local branch name equal to the PR head branch, but use a
+directory name like
 `.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`.
 
 Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).

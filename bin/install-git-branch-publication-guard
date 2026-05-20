@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# Install the repo-managed pre-push guard into the current Git repository.
+
+repo_root="$(git rev-parse --show-toplevel)"
+guard_path="${repo_root}/bin/git-branch-publication-guard"
+hook_path="$(git rev-parse --git-path hooks/pre-push)"
+managed_marker="# dotfiles managed branch publication guard"
+
+if [[ ! -x ${guard_path} ]]; then
+  echo "Warning: branch publication guard is not executable: ${guard_path}" >&2
+  exit 0
+fi
+
+mkdir -p "$(dirname "${hook_path}")"
+
+if [[ -e ${hook_path} ]] && ! grep -Fq "${managed_marker}" "${hook_path}"; then
+  echo "Warning: existing pre-push hook is not managed; branch publication guard was not installed: ${hook_path}" >&2
+  echo "Warning: chain ${guard_path} from that hook before branch publication." >&2
+  exit 0
+fi
+
+tmp_hook="${hook_path}.tmp.$$"
+cat >"${tmp_hook}" <<'HOOK'
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# dotfiles managed branch publication guard
+repo_root="$(git rev-parse --show-toplevel)"
+exec "${repo_root}/bin/git-branch-publication-guard" "$@"
+HOOK
+
+chmod 0755 "${tmp_hook}"
+mv "${tmp_hook}" "${hook_path}"
+echo "* Installed branch publication guard: ${hook_path}"

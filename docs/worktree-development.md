@@ -53,8 +53,12 @@ For the adoption decision behind the current tool stack, see
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
 7. Existing remote issue branches are configured as upstream. New local issue
-   branches rely on `push.autoSetupRemote=true`, so the first plain `git push`
-   creates `origin/<branch>` and records upstream.
+   branches intentionally start without an upstream. First publication must use
+   an explicit destination refspec:
+   `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
+   Do not use shorter ambiguous forms such as `git push`,
+   `git push origin <branch>`, `git push --set-upstream origin <branch>`, or
+   `git push origin HEAD`.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`.
@@ -71,6 +75,15 @@ For the adoption decision behind the current tool stack, see
    generated.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
+
+Before asking a human to publish an issue branch, verify that the current
+branch is the intended feature branch, that any existing upstream is
+`origin/<same-branch-name>`, and that the remote destination is neither
+`refs/heads/main` nor `refs/heads/dev`.
+
+Before creating a PR, verify that `origin/<feature-branch>` exists, the PR base
+is the intended base branch, and the PR head is the feature branch. Do not
+create a PR from an unverified local-only branch or mismatched base/head pair.
 
 ## 4. Current PR review workflow
 

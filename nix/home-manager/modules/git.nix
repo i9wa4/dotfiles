@@ -71,8 +71,8 @@
         vimdiff.path = "vim";
       };
       push = {
-        autoSetupRemote = true;
-        default = "upstream";
+        autoSetupRemote = false;
+        default = "simple";
       };
       pull.ff = "only";
       rebase.autoStash = true;
@@ -103,6 +103,15 @@
           printf '%s\n' "$pattern" >> "$exclude_file"
         fi
       done
+    fi
+  '';
+
+  home.activation.dotfilesGitBranchPublicationGuard = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -e "${dotfilesDir}/.git" ] && [ -x "${dotfilesDir}/bin/install-git-branch-publication-guard" ]; then
+      (
+        cd "${dotfilesDir}"
+        "${dotfilesDir}/bin/install-git-branch-publication-guard"
+      )
     fi
   '';
 }

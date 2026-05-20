@@ -92,6 +92,20 @@ install_dotfiles_devshell_hooks() {
   cd "${previous_dir}"
 }
 
+install_branch_publication_guard() {
+  local installer="${worktree_root}/bin/install-git-branch-publication-guard"
+
+  if [[ ! -x ${installer} ]]; then
+    return 0
+  fi
+
+  echo "-> Installing branch publication guard..."
+  if ! "${installer}"; then
+    echo "Warning: could not install branch publication guard; continuing." >&2
+    echo "Warning: before publishing branches, re-run repo-setup after fixing the hook installation." >&2
+  fi
+}
+
 # Keep repository trust changes opt-in only.
 if [[ -f "mise.toml" ]]; then
   echo "* Skipped trusting repository tools by default"
@@ -125,6 +139,7 @@ if [[ -f "${envrc_path}" && ${generated_envrc} != "true" ]]; then
 fi
 
 install_dotfiles_devshell_hooks
+install_branch_publication_guard
 
 # Repository-specific setup
 case "${project_dir}" in
