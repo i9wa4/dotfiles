@@ -11,18 +11,18 @@ module).
 
 Source of truth:
 
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/claude/default.nix
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/shared/
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
+- `nix/home-manager/agents/claude/default.nix`
+- `nix/home-manager/agents/shared/`
+- `nix/home-manager/agents/`
 
-| Destination                | Source                                                 | Managed by                           |
-| -------------------------- | ------------------------------------------------------ | ------------------------------------ |
-| `~/.claude/settings.json`  | Generated from Nix attributes                          | `claude/default.nix`                 |
-| no root instruction file   | Persona / language / scope from postman common blocks  | `config/tmux-a2a-postman/postman.md` |
-| `~/.claude/agents/`        | Rendered from `subagents/`                             | `shared/render-agents.nix`           |
-| `~/.claude/scripts/`       | `nix/home-manager/agents/scripts/`                     | `claude/default.nix`                 |
-| `~/.claude/skills/`        | Multiple flake inputs + local skills                   | `shared/agent-skills.nix`            |
-| MCP servers                | `shared/mcp-servers.nix`                               | `claude/default.nix`                 |
+| Destination              | Source                                                    | Managed by                           |
+| ------------------------ | --------------------------------------------------------- | ------------------------------------ |
+| Claude settings file     | Generated from Nix attributes                             | `claude/default.nix`                 |
+| no root instruction file | Persona / language / scope from postman common blocks     | `config/tmux-a2a-postman/postman.md` |
+| Claude agents directory  | `nix/home-manager/agents/subagents/claude/*.md` Markdown  | `shared/install-manifest.nix`        |
+| Claude scripts directory | `nix/home-manager/agents/scripts/`                        | `claude/default.nix`                 |
+| Claude skills directory  | Multiple flake inputs + local skills                      | `shared/agent-skills.nix`            |
+| MCP servers              | `shared/mcp-servers.nix`                                  | `claude/default.nix`                 |
 
 ## 2. Fetch CHANGELOG
 
@@ -103,8 +103,8 @@ reference was loaded; follow the current session's delegation policy.
 ## 6. Upstream CLAUDE.md Design Guidelines
 
 This section is general Claude Code guidance. This repo does not install a root
-`~/.claude/CLAUDE.md`; dotfiles-local persona and scope are delivered through
-`config/tmux-a2a-postman/postman.md` instead.
+Claude global instruction file; dotfiles-local persona and scope are delivered
+through `config/tmux-a2a-postman/postman.md` instead.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`
@@ -137,18 +137,18 @@ commands.
 # Additional Instructions
 
 - Git workflow: @docs/git-instructions.md
-- Personal overrides: @~/.claude/my-project-instructions.md
+- Personal overrides: @CLAUDE.local.md
 ```
 
 ### 6.3. CLAUDE.md Locations
 
-| Location              | Scope                                                   |
-| --------------------- | ------------------------------------------------------- |
-| `~/.claude/CLAUDE.md` | All Claude sessions (global)                            |
-| `./CLAUDE.md`         | Project root — check into git to share with team        |
-| `./CLAUDE.local.md`   | Project root — add to .gitignore for personal overrides |
-| Parent directories    | Useful for monorepos (auto-loaded)                      |
-| Child directories     | Loaded on demand when working with files there          |
+| Location            | Scope                                                   |
+| ------------------- | ------------------------------------------------------- |
+| Global Claude file  | All Claude sessions                                     |
+| `./CLAUDE.md`       | Project root — check into git to share with team        |
+| `./CLAUDE.local.md` | Project root — add to .gitignore for personal overrides |
+| Parent directories  | Useful for monorepos (auto-loaded)                      |
+| Child directories   | Loaded on demand when working with files there          |
 
 ## 7. Configuration Usage
 
@@ -240,7 +240,9 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
 - [x] Runtime-root instruction file removed; persona and scope now flow through
   `config/tmux-a2a-postman/postman.md`
 - [x] Skills installed through `shared/agent-skills.nix`
-- [x] Agents rendered through `shared/render-agents.nix`
+- [x] Claude agents installed from
+  `nix/home-manager/agents/subagents/claude/*.md`; Codex TOML agents generated
+  from the same Markdown source by `shared/install-manifest.nix`
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"
@@ -326,7 +328,7 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
   deny-list even when broader allow wildcards apply
 - [ ] `refreshInterval` for status line (v2.1.97) - auto re-run
   `claude-statusline.sh` every N seconds
-- [ ] `cleanupPeriodDays` now also covers `~/.claude/tasks/`,
+- [ ] `cleanupPeriodDays` now also covers Claude task cache,
   `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
   set; new dirs swept automatically
 
@@ -428,12 +430,12 @@ NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
 
 ### 15.4. Read/Edit Path Patterns
 
-| Pattern  | Meaning                       | Example                  |
-| -------- | ----------------------------- | ------------------------ |
-| `//path` | Absolute path from root       | `Read(//Users/alice/**)` |
-| `~/path` | Path from home directory      | `Read(~/.zshrc)`         |
-| `/path`  | Relative to settings file     | `Edit(/src/**/*.ts)`     |
-| `path`   | Relative to current directory | `Read(*.env)`            |
+| Pattern  | Meaning                       | Example              |
+| -------- | ----------------------------- | -------------------- |
+| `//path` | Absolute path from root       | `Read(//var/log/**)` |
+| `~/path` | Path from home directory      | `Read(~/notes.md)`   |
+| `/path`  | Relative to settings file     | `Edit(/src/**/*.ts)` |
+| `path`   | Relative to current directory | `Read(*.env)`        |
 
 NOTE: `*` matches single directory, `**` matches recursively.
 
