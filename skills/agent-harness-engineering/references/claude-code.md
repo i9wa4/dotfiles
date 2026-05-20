@@ -233,7 +233,7 @@ When adding/removing files in skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.121 (2026-04-29)
+Last reviewed Claude Code version: v2.1.145 (2026-05-21)
 
 ### 11.1. Applied Optimizations
 
@@ -249,7 +249,14 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
 - [x] `ENABLE_TOOL_SEARCH` env - set to "auto:3"
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
-- [x] Fast mode - available for Opus 4.6 (v2.1.36)
+- [x] Fast mode - hard-disabled via `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`.
+      Available for Opus 4.6 since v2.1.36 and defaults to Opus 4.7 since
+      v2.1.142; we opt out entirely so `/fast` is rejected regardless of model.
+      Adaptive thinking is already off (`DISABLE_ADAPTIVE_THINKING = "1"`) and
+      effort is pinned at launch, so the latency/cost win from fast mode is
+      duplicative while its model swap reintroduces variance we explicitly
+      removed. Re-enable only if a future fast-mode flavor is independent of
+      effort pinning.
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
@@ -331,6 +338,64 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
 - [ ] `cleanupPeriodDays` now also covers Claude task cache,
   `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
   set; new dirs swept automatically
+
+#### v2.1.122 → v2.1.145 candidates (added 2026-05-21)
+
+- [ ] `worktree.baseRef: "head"` setting (v2.1.133) - default reverted to
+  `fresh` (origin/<default>). With our `.worktrees/issue-*` workflow we usually
+  want unpushed commits carried into new worktrees; revisit once we've
+  confirmed which branches `--worktree` / `EnterWorktree` currently spawn
+  against
+- [ ] `worktree.bgIsolation: "none"` (v2.1.143) - skip background-session
+  worktree isolation in repos where worktrees are impractical; we DO want
+  isolation here, so this stays off but is documented for awareness
+- [ ] Hook `args: string[]` exec form (v2.1.139) - spawns command directly
+  without a shell so path placeholders never need quoting. Migration candidate
+  for the three PreToolUse/UserPromptSubmit hooks in `claude/default.nix` once
+  we audit each script's argv expectations
+- [ ] Hook `continueOnBlock: true` on PostToolUse (v2.1.139) - feed the hook's
+  rejection back to Claude and continue the turn. Useful for the
+  pretooluse-deny-write hook if we ever want soft "warn-and-redo" semantics
+  instead of hard deny
+- [ ] `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (v2.1.143) - bounds runaway Stop
+  hooks at 8 consecutive blocks. We have no Stop hooks yet; track for future
+- [ ] `terminalSequence` field on hook JSON output (v2.1.141) - hooks can emit
+  desktop notifications / window titles / bells without a controlling
+  terminal. Possible future use for tmux pane title updates from
+  `common-userpromptsubmit.sh`
+- [ ] `settings.autoMode.hard_deny` rules (v2.1.136) - auto-mode classifier
+  hard deny that cannot be allow-overridden. We don't use auto mode, but
+  worth tracking if we ever migrate away from `dontAsk`
+- [ ] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` env (v2.1.132) - keep the
+  conversation in the terminal's native scrollback instead of the fullscreen
+  alt-screen renderer. Quality-of-life tradeoff with mouse support and
+  auto-copy; defer until measured
+- [ ] `CLAUDE_CODE_SESSION_ID` in Bash tool subprocess env (v2.1.132) -
+  enables session-aware Bash scripts. No current consumer in
+  `scripts/`; flag for future hook design
+- [ ] `$CLAUDE_EFFORT` env in Bash subprocess + `effort.level` hook input
+  (v2.1.133) - hooks can branch on current effort level. Possible use:
+  conditional deny patterns at low effort
+- [ ] MCP stdio servers now receive `CLAUDE_PROJECT_DIR` (v2.1.139) -
+  matches hook env; review `shared/mcp-servers.nix` once any server needs
+  the cwd
+- [ ] `Skill(name *)` permission rules now match as prefix (v2.1.139 fix) -
+  informational; current deny list does not use Skill() patterns
+- [ ] `/goal` command (v2.1.139) - completion-condition driven, multi-turn.
+  User-invokable, no config; flag for orchestrator-runbook awareness
+- [ ] `claude agents --json` (v2.1.145) - script-friendly session list for
+  tmux statusline / postman dashboards. Possible integration with our
+  postman session operator
+- [ ] Stop / SubagentStop hook input now includes `background_tasks` and
+  `session_crons` (v2.1.145) - useful if we ever wire up Stop hooks
+- [x] Bare-variable-assignment permission bypass fix (v2.1.145, security) -
+  `FOO=bar somecmd` style invocations are now correctly subject to deny
+  rules. No config change needed; deny-bash patterns gain coverage
+  automatically
+- [x] Managed-settings `sandbox` block fallthrough fix (v2.1.126, security) -
+  `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` now applied even
+  when a higher-priority source lacks a `sandbox` block. We're solo-user
+  so this is informational
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Changelog Tracking](changelog-tracking.md).
