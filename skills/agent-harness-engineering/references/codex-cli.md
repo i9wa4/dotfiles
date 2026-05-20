@@ -203,7 +203,7 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.130.0 (2026-05-11)
+Last reviewed Codex CLI version: v0.132.0 (2026-05-21)
 
 ### Temporary WAL Bloat Runbook (2026-05)
 
@@ -582,9 +582,16 @@ this runbook.
 - [x] Subagent support - multi-agent feature stabilized (v0.115.0); TOML agents
   are generated from `nix/home-manager/agents/subagents/*.md` by
   `shared/install-manifest.nix` and installed by `codex/default.nix`
+- [x] Status line permission/approval indicators - adopted after v0.131.0 added
+  native TUI status items; generated `config.toml` now renders `permissions`
+  and `approval-mode` next to model/context/version so `--yolo` and sandbox
+  state stay visible in every pane.
 - [ ] `openai_base_url` config override - custom API endpoint (v0.115.0)
 - [ ] Smart Approvals guardian - route review requests through guardian
   subagent for reduced approval friction (v0.115.0)
+- [ ] `codex exec resume --output-schema` - useful for future structured
+  automation, but no current tmux-a2a-postman consumer needs resumed
+  non-interactive JSON output.
 - [ ] Optional: re-introduce a `Stop` handoff script if multi-day Codex
   resume becomes a regular workflow. Currently dropped because the
   Claude-side equivalent (`PreCompact` snapshot) was also dropped and
@@ -609,9 +616,36 @@ this runbook.
   decoration. Keep the slot empty unless a load-bearing case appears.
 - `AfterToolUse` hook - superseded by documented hooks engine
 - `smart_approvals` - keep default behavior (v0.93.0)
+- Plugin marketplace/share workflow - not used by this dotfiles-managed local
+  harness; keep skills and agents installed through `shared/agent-skills.nix`
+  and `shared/install-manifest.nix`
+- Python SDK package/auth/turn APIs - useful for app-server automation, but no
+  local harness script currently imports `openai_codex`
+- `remote-control` / remote environments - no current daemon-managed remote
+  executor workflow; keep local tmux-pane orchestration as the active surface
+- `profile-v2` layered configs - generated Codex config remains the single
+  managed base plus preserved project trust/hook state
 
 ### 9.4. Version Notes
 
+- v0.132.0 (2026-05-21): Reviewed local release notes via GitHub releases
+  after local `codex --version` reported `codex-cli 0.132.0`; npm `latest`
+  also resolved to `0.132.0`. Relevant items: `codex exec resume
+  --output-schema` for structured resumed automations, faster TUI startup,
+  standard Codex auth for remote executor registration, original-resolution
+  image fidelity in app-server turns, safer goal continuation stops, session
+  picker paste/renamed-thread fixes, remote websocket keepalives, and versioned
+  memory summaries. No additional config was adopted; the automation-specific
+  `exec resume --output-schema`, remote executor registration, and Python SDK
+  improvements are tracked as non-current harness surfaces.
+- v0.131.0 (2026-05-21): Reviewed release notes while moving from the previous
+  v0.130.0 review window. Adopted the new native TUI status-line `permissions`
+  and `approval-mode` items in generated Codex config. Accepted `codex doctor`
+  as a manual diagnostic command for support-ready config, auth, and runtime
+  checks; no timer or activation hook was added. Other notable items were
+  unified `@` mentions, plugin marketplace/share flow, remote-control daemon
+  APIs, `openai-codex` Python SDK work, strict config parsing, and safer SQLite
+  startup/recovery; these do not require additional local config today.
 - v0.130.0 (2026-05-11): Reviewed local release notes via GitHub releases
   after local `codex --version` reported `codex-cli 0.130.0`. Relevant
   follow-up: v0.129.0 included `#20522 Alias codex_hooks feature as hooks`;

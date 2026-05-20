@@ -136,6 +136,8 @@ let
       status_line = [
         "context-remaining"
         "model-with-reasoning"
+        "permissions"
+        "approval-mode"
         "codex-version"
       ];
       # Keep tmux pane_title reserved for role identity, not Codex TUI chrome.

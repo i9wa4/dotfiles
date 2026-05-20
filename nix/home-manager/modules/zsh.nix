@@ -84,10 +84,6 @@ in
         # Codex
         export CODEX_HOME="''${HOME}"/.codex
 
-        # Deno
-        export DENO_NO_PROMPT=1
-        export DENO_NO_UPDATE_CHECK=1
-
         # fzf
         export FZF_DEFAULT_OPTS="--reverse --bind 'ctrl-y:accept'"
 
@@ -96,9 +92,6 @@ in
 
         # Nix
         export NIXPKGS_ALLOW_UNFREE=1
-
-        # Node.js
-        export NODE_OPTIONS="--max-old-space-size=16384"
 
         # Python
         export PIP_REQUIRE_VIRTUALENV=1

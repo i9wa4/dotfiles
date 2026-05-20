@@ -154,7 +154,13 @@ Codex's status line is configured as:
 
 ```toml
 [tui]
-status_line = ["context-remaining", "model-with-reasoning", "codex-version"]
+status_line = [
+  "context-remaining",
+  "model-with-reasoning",
+  "permissions",
+  "approval-mode",
+  "codex-version",
+]
 ```
 
 Codex never invokes a script. It composes the status line from
