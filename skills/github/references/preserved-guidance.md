@@ -69,6 +69,10 @@ Check org membership:
 - The local branch name and remote destination branch name must match.
   Destinations `refs/heads/main` and `refs/heads/dev` are protected shared
   branch destinations, not feature branch publication targets.
+- Local hooks are bypassable. Repositories must rely on GitHub rulesets or
+  branch protection for shared branches such as `main` and `dev`, so direct
+  pushes to protected refs are blocked or require the reviewed path even when a
+  caller bypasses local hooks or supplies an explicit protected destination.
 - Before PR creation, verify that `origin/<feature-branch>` exists, the PR base
   is the intended base branch, the PR head is the feature branch, and the
   working tree is clean. Do not create a PR from an unverified local-only branch

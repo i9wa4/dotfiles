@@ -97,6 +97,13 @@ explicit publication; verify they started from current `main` before editing.
 Before creating a PR, verify `origin/<feature-branch>` exists, the PR base is
 the intended base branch, and the PR head is the feature branch.
 
+Local Git config and pre-push hooks are preflight safeguards, not a remote trust
+boundary. Protect shared remote branches such as `main` and `dev` with GitHub
+rulesets or branch protection so direct pushes to those refs are blocked or
+require the normal reviewed path. This is the enforcement layer for deliberate
+hook bypasses, explicit refspecs that target protected refs, or clients that do
+not run the local hooks.
+
 ### PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it

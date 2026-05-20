@@ -161,6 +161,10 @@ destination refspec:
 `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`. Do not use
 shorter ambiguous forms such as `git push`, `git push origin <branch>`,
 `git push --set-upstream origin <branch>`, or `git push origin HEAD`.
+Local hooks are bypassable, so GitHub rulesets or branch protection must
+protect shared remote branches such as `main` and `dev`. Treat those remote
+controls as the enforcement layer for direct pushes to protected refs, including
+explicit refspecs and clients that do not run local hooks.
 
 Both scripts:
 
