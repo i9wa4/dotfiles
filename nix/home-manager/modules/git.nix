@@ -71,8 +71,8 @@
         vimdiff.path = "vim";
       };
       push = {
-        autoSetupRemote = true;
-        default = "upstream";
+        autoSetupRemote = false;
+        default = "simple";
       };
       pull.ff = "only";
       rebase.autoStash = true;

@@ -8,7 +8,8 @@ concise skill needs domain-specific details.
 name: github
 license: MIT
 description: |
-  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules.
+  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments,
+  sub-issues, review style, public surface path hygiene rules.
 ---
 
 # GitHub Rules
@@ -54,7 +55,26 @@ Check org membership:
 - If push or publication is denied, report the branch, local commit, checks,
   and denial so a human can publish the prepared commit.
 
-## 5. Commit Messages
+## 5. Branch Publication And PR Creation
+
+- First-time branch publication must use an explicit destination refspec:
+  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
+- Before publication, verify:
+  `git branch --show-current`,
+  `git status --short --branch`, and
+  `git rev-parse --abbrev-ref --symbolic-full-name @{u}` when an upstream
+  already exists.
+- The local branch name and remote destination branch name must match.
+  Destinations `refs/heads/main` and `refs/heads/dev` are protected shared
+  branch destinations, not feature branch publication targets.
+- Local Git defaults are only safety defaults. Repositories must rely on GitHub
+  rulesets or branch protection for shared branches such as `main` and `dev`.
+- Before PR creation, verify that `origin/<feature-branch>` exists, the PR base
+  is the intended base branch, the PR head is the feature branch, and the
+  working tree is clean. Do not create a PR from an unverified local-only branch
+  or a mismatched base/head pair.
+
+## 6. Commit Messages
 
 - YOU MUST: Match language of recent commits (English or Japanese)
 - YOU MUST: Use Conventional Commits:
@@ -68,11 +88,11 @@ Check org membership:
 - NEVER: Co-Authored-By, AI tool notices
 - NEVER: `.i9wa4/` files, `/tmp/` files, machine-local absolute paths
 
-## 6. Sub-issues
+## 7. Sub-issues
 
 - YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
 
-## 7. PR Inline Comments
+## 8. PR Inline Comments
 
 - `gh pr comment` = PR-wide only; inline requires `gh api`
 - `commit_id`: `gh pr view NUMBER --json commits --jq '.commits[-1].oid'`
@@ -80,14 +100,14 @@ Check org membership:
   `commit_id`, `path`, `line`(absolute), `side`(RIGHT/LEFT)
 - Reply: `gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies`
 
-## 8. TodoWrite (Claude Code)
+## 9. TodoWrite (Claude Code)
 
 ```text
 - [ ] Commit changes (requires permission)
 - [ ] Push to remote (requires permission)
 ```
 
-## 9. PR Review Comments
+## 10. PR Review Comments
 
 Tags (required at start of every comment):
 
