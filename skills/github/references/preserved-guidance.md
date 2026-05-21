@@ -8,7 +8,8 @@ concise skill needs domain-specific details.
 name: github
 license: MIT
 description: |
-  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments, sub-issues, review style, public surface path hygiene rules.
+  GitHub: gh CLI usage, commit messages, issue/PR creation, inline comments,
+  sub-issues, review style, public surface path hygiene rules.
 ---
 
 # GitHub Rules
@@ -58,9 +59,6 @@ Check org membership:
 
 - First-time branch publication must use an explicit destination refspec:
   `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
-- Do not use shorter ambiguous forms such as `git push`, `git push origin
-  <branch>`, `git push --set-upstream origin <branch>`, or
-  `git push origin HEAD` for first publication.
 - Before publication, verify:
   `git branch --show-current`,
   `git status --short --branch`, and
@@ -69,10 +67,8 @@ Check org membership:
 - The local branch name and remote destination branch name must match.
   Destinations `refs/heads/main` and `refs/heads/dev` are protected shared
   branch destinations, not feature branch publication targets.
-- Local hooks are bypassable. Repositories must rely on GitHub rulesets or
-  branch protection for shared branches such as `main` and `dev`, so direct
-  pushes to protected refs are blocked or require the reviewed path even when a
-  caller bypasses local hooks or supplies an explicit protected destination.
+- Local Git defaults are only safety defaults. Repositories must rely on GitHub
+  rulesets or branch protection for shared branches such as `main` and `dev`.
 - Before PR creation, verify that `origin/<feature-branch>` exists, the PR base
   is the intended base branch, the PR head is the feature branch, and the
   working tree is clean. Do not create a PR from an unverified local-only branch

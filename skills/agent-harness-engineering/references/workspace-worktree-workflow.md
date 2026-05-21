@@ -45,9 +45,7 @@ For GitHub issue implementation in this repo:
   `origin/dev`, or another non-issue upstream; an issue branch must not push
   into shared base branches.
 - First publication must use the explicit same-name destination refspec:
-  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`. Do not
-  use shorter ambiguous forms such as `git push`, `git push origin <branch>`,
-  `git push --set-upstream origin <branch>`, or `git push origin HEAD`.
+  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 
 ### Issue Execution
 
@@ -97,12 +95,10 @@ explicit publication; verify they started from current `main` before editing.
 Before creating a PR, verify `origin/<feature-branch>` exists, the PR base is
 the intended base branch, and the PR head is the feature branch.
 
-Local Git config and pre-push hooks are preflight safeguards, not a remote trust
-boundary. Protect shared remote branches such as `main` and `dev` with GitHub
-rulesets or branch protection so direct pushes to those refs are blocked or
-require the normal reviewed path. This is the enforcement layer for deliberate
-hook bypasses, explicit refspecs that target protected refs, or clients that do
-not run the local hooks.
+Local Git config is only a safety default, not a remote trust boundary. Protect
+shared remote branches such as `main` and `dev` with GitHub rulesets or branch
+protection so direct pushes to those refs are blocked or require the normal
+reviewed path.
 
 ### PR Review
 

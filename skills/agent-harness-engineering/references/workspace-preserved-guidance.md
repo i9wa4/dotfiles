@@ -158,13 +158,9 @@ with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
 `BLOCKED` if an issue branch tracks `origin/main`, `origin/dev`, or another
 non-issue upstream. First publication must use the explicit same-name
 destination refspec:
-`git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`. Do not use
-shorter ambiguous forms such as `git push`, `git push origin <branch>`,
-`git push --set-upstream origin <branch>`, or `git push origin HEAD`.
-Local hooks are bypassable, so GitHub rulesets or branch protection must
-protect shared remote branches such as `main` and `dev`. Treat those remote
-controls as the enforcement layer for direct pushes to protected refs, including
-explicit refspecs and clients that do not run local hooks.
+`git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
+GitHub rulesets or branch protection must protect shared remote branches such
+as `main` and `dev`.
 
 Both scripts:
 

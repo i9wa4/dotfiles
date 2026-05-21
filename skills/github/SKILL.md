@@ -32,9 +32,12 @@ guardian/critic review engine or the user-facing review-comment trigger.
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
-3. Make the smallest scoped change that satisfies the request.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
-5. Report verification results and any remaining risk.
+3. Before branch publication or PR creation, verify branch, upstream, base,
+   head, and clean status; use the explicit same-name remote destination
+   workflow described in the preserved guidance.
+4. Make the smallest scoped change that satisfies the request.
+5. Run the checks named in the preserved guidance or the nearest repo harness.
+6. Report verification results and any remaining risk.
 
 ## Examples
 

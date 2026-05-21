@@ -53,12 +53,10 @@ For the adoption decision behind the current tool stack, see
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
 7. Existing remote issue branches are configured as upstream. New local issue
-   branches intentionally start without an upstream. First publication must use
-   an explicit destination refspec:
+   branches intentionally start without an upstream because Git defaults do not
+   auto-create one. First publication should use an explicit same-name
+   destination refspec:
    `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
-   Do not use shorter ambiguous forms such as `git push`,
-   `git push origin <branch>`, `git push --set-upstream origin <branch>`, or
-   `git push origin HEAD`.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`.
@@ -81,12 +79,10 @@ branch is the intended feature branch, that any existing upstream is
 `origin/<same-branch-name>`, and that the remote destination is neither
 `refs/heads/main` nor `refs/heads/dev`.
 
-Local Git config and pre-push hooks are preflight safeguards, not a remote trust
-boundary. Protect shared remote branches such as `main` and `dev` with GitHub
-rulesets or branch protection so direct pushes to those refs are blocked or
-require the normal reviewed path. This is the enforcement layer for deliberate
-hook bypasses, explicit refspecs that target protected refs, or clients that do
-not run the local hooks.
+Local Git config is only a safety default, not a remote trust boundary. Protect
+shared remote branches such as `main` and `dev` with GitHub rulesets or branch
+protection so direct pushes to those refs are blocked or require the reviewed
+path.
 
 Before creating a PR, verify that `origin/<feature-branch>` exists, the PR base
 is the intended base branch, and the PR head is the feature branch. Do not

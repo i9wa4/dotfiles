@@ -84,60 +84,11 @@ find_worktree_for_branch() {
 ensure_remote_tracking_branch() {
   local branch=$1
   local upstream="origin/${branch}"
-  local actual_upstream
 
   if git show-ref --verify --quiet "refs/heads/${branch}"; then
     git branch --set-upstream-to="${upstream}" "${branch}"
   else
     git branch --track "${branch}" "${upstream}"
-  fi
-
-  actual_upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/${branch}")
-  if [[ ${actual_upstream} != "${upstream}" ]]; then
-    echo "Error: local issue branch upstream is '${actual_upstream}', expected '${upstream}'." >&2
-    return 1
-  fi
-}
-
-is_shared_base_branch() {
-  case "$1" in
-    main | dev | origin/main | origin/dev)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
-  esac
-}
-
-branch_upstream() {
-  local branch=$1
-
-  git for-each-ref --format='%(upstream:short)' "refs/heads/${branch}"
-}
-
-verify_issue_branch_publication_safety() {
-  local branch=$1
-  local upstream
-
-  if is_shared_base_branch "${branch}"; then
-    echo "Error: issue branch '${branch}' is a protected shared branch name." >&2
-    return 1
-  fi
-
-  upstream=$(branch_upstream "${branch}")
-  if [[ -z ${upstream} ]]; then
-    return 0
-  fi
-
-  if is_shared_base_branch "${upstream}"; then
-    echo "Error: issue branch '${branch}' tracks protected shared upstream '${upstream}'." >&2
-    return 1
-  fi
-
-  if [[ ${upstream} != "origin/${branch}" ]]; then
-    echo "Error: issue branch '${branch}' tracks '${upstream}', expected 'origin/${branch}' or no upstream." >&2
-    return 1
   fi
 }
 
@@ -266,14 +217,6 @@ ${issue_comments}
     branch_origin="new"
   fi
 
-  if git show-ref --verify --quiet "refs/heads/${branch_name}"; then
-    if ! verify_issue_branch_publication_safety "${branch_name}"; then
-      echo "Error: Unsafe issue branch publication state for '${branch_name}'. Skipping." >&2
-      echo ""
-      continue
-    fi
-  fi
-
   if [[ -n $existing_worktree_path ]]; then
     worktree_path=$existing_worktree_path
   else
@@ -304,12 +247,6 @@ ${issue_comments}
     worktree_path=$desired_worktree_path
   fi
 
-  if ! verify_issue_branch_publication_safety "${branch_name}"; then
-    echo "Error: Unsafe issue branch publication state for '${branch_name}'. Skipping." >&2
-    echo ""
-    continue
-  fi
-
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
     echo "* Branch: ${branch_name}"
@@ -324,7 +261,7 @@ ${issue_comments}
         echo "* Using existing local branch: ${branch_name}"
         ;;
       new)
-        echo "* Created local branch: ${branch_name} (from main, no upstream until explicit publication)"
+        echo "* Created local branch: ${branch_name} (from main)"
         ;;
     esac
 
