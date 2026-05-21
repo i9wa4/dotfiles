@@ -63,7 +63,13 @@ trap cleanup EXIT HUP INT TERM
 
 is_scan_target() {
   case "$1" in
-  skills/* | config/tmux-a2a-postman/postman.md | docs/agent-skill-management.md | docs/dotfiles-operating-concepts.md)
+  skills/* | config/tmux-a2a-postman/postman.md | .github/workflows/agent-skills-release-all.yaml)
+    return 0
+    ;;
+  bin/validate-skill-private-content.sh | bin/validate-skill-release-readiness.sh)
+    return 0
+    ;;
+  docs/agent-skill-management.md | docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)
     return 0
     ;;
   *)

@@ -16,7 +16,6 @@ policy:
     - skill renames
     - skill deletions
     - broad postman.md shrinking
-    - release workflow automation
     - tags
     - public releases
 
@@ -71,6 +70,19 @@ private_content_scan:
   recorded_finding_annotation:
     - 'private-content-scan: allow'
     - 'private-content-scan: allow-next-line'
+
+release_readiness:
+  workflow: .github/workflows/agent-skills-release-all.yaml
+  command: bash bin/validate-skill-release-readiness.sh --strict
+  dry_run_command: gh skill publish --dry-run
+  publish_true_requires:
+    release_state: release_ready
+    personal_content_action: scanned_release_ready
+  publish_false_allowed_release_states:
+    - demoted_compatibility_trigger
+    - removed_before_release
+    - release_excluded
+  tag_prefix: agent-skills-v
 
 postman_boundary:
   owner_surface: config/tmux-a2a-postman/postman.md

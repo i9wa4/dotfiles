@@ -127,6 +127,7 @@
               else
                 "";
             files = ghWorkflowFiles;
+            excludes = [ "^\\.github/workflows/agent-skills-release-all\\.yaml$" ];
           };
 
           # === Nix linter ===
@@ -178,7 +179,7 @@
               #!${pkgs.bash}/bin/bash
               exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-private-content.sh} --staged
             ''}";
-            files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skill-management\\.md|docs/dotfiles-operating-concepts\\.md)";
+            files = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/agent-skills-release-all\\.yaml)|(bin/(validate-skill-private-content|validate-skill-release-readiness)\\.sh)|(docs/(agent-skill-management|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md))$";
             types = [ "file" ];
             pass_filenames = false;
           };
