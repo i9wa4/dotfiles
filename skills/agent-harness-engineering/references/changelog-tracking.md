@@ -84,9 +84,156 @@ This reference preserves older review notes that support current
 - `CLAUDE_CODE_NO_FLICKER=1` (v2.1.89) - consider later if rendering
   glitches observed; see pending considerations in SKILL.md section 11.2
 - `MCP_CONNECTION_NONBLOCKING=true` (v2.1.89) - not running `-p` mode
+- `CLAUDE_CODE_FORCE_SYNC_OUTPUT=1` (v2.1.129) - terminal auto-detection works
+  for our Alacritty/tmux setup; only needed on Emacs `eat` and similar
+- `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE` (v2.1.129) - claude-code binary
+  is Nix-managed via `inputs.llm-agents`; package-manager auto-update would
+  fight the flake pin
+- `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1` (v2.1.129) - using direct
+  Anthropic, no gateway
+- `--plugin-url <url>` (v2.1.129) - no plugins in use
+- `skillOverrides` setting (v2.1.129) - all skills are intentionally
+  installed via `shared/agent-skills.nix`
+- `themes`/`monitors` under plugin `experimental` (v2.1.129) - not authoring
+  plugins
+- PowerShell tool features and `CLAUDE_CODE_USE_POWERSHELL_TOOL` /
+  `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY` (v2.1.126, v2.1.142,
+  v2.1.143) - Linux-only host
+- `CLAUDE_CODE_PLUGIN_PREFER_HTTPS` (v2.1.141) - no plugins
+- `ANTHROPIC_WORKSPACE_ID` (v2.1.141) - not using workload identity
+  federation
+- `terminalSequence` hook output (v2.1.141) - no use case yet for desktop
+  notifications / bells from hooks
+- `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` (v2.1.136) - feedback survey
+  already disabled globally via `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=true`
+- `settings.autoMode.hard_deny` (v2.1.136) - not using auto mode; deny-list
+  is the strict permission boundary
+- `sandbox.bwrapPath` / `sandbox.socatPath` managed settings (v2.1.133) -
+  default bubblewrap/socat from nixpkgs are on PATH
+- `parentSettingsBehavior` (v2.1.133) - solo-user, no SDK `managedSettings`
+  tier
+- `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1` (v2.1.142) - fast mode is
+  hard-disabled, so the Opus 4.6 vs 4.7 fast-mode pin is moot
+- `worktree.bgIsolation: "none"` (v2.1.143) - worktrees ARE practical here;
+  keep default `auto` isolation
+- `claude project purge` (v2.1.126) - one-shot CLI; no config to adopt,
+  remember as a manual cleanup command
 
 ## 2. Version Notes
 
+- v2.1.145: `claude agents --json` for scriptable session listing, OTEL
+  `agent_id`/`parent_agent_id` on `claude_code.tool` spans with corrected
+  subagent span parenting, status line JSON gains GitHub repo + PR info,
+  `/plugin` Discover/Browse preview a plugin's contributed
+  commands/agents/skills/hooks/MCP/LSP, Stop/SubagentStop hook input
+  includes `background_tasks` + `session_crons`, **security fix:
+  permission-prompt bypass for bare variable assignments to
+  non-allowlisted env vars in Bash commands**, MCP prompt slash command
+  errors now name the missing argument, Read tool returns a truncated
+  "PARTIAL view" instead of a hard error on token-limit overflow
+- v2.1.144: `/resume` lists background sessions (marked `bg`),
+  background subagent completion notifications carry elapsed duration,
+  `/model` becomes session-scoped (press `d` for default), `/extra-usage`
+  renamed to `/usage-credits` (old name still works), startup hang on
+  unreachable `api.anthropic.com` cut from 75s to 15s, many background-
+  session Edit/Write/scroll/PR-state fixes, Skill tool no longer errors
+  in headless mode, MCP `tools/list` pagination fix (servers no longer
+  silently drop tools), `/branch` worktree fix
+- v2.1.143: **`worktree.bgIsolation: "none"` setting** to skip background-
+  session worktree isolation, PowerShell tool now passes `-ExecutionPolicy
+  Bypass` (opt out via `CLAUDE_CODE_POWERSHELL_RESPECT_EXECUTION_POLICY=1`),
+  `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (default 8) prevents runaway Stop
+  hooks, `claude agents` accepts `--add-dir`/`--settings`/`--mcp-config`/
+  `--plugin-dir`/`--permission-mode`/`--model`/`--effort`/
+  `--dangerously-skip-permissions`, worktree cleanup no longer falls back
+  to `rm -rf` (safety), `NO_COLOR`/`FORCE_COLOR` in `settings.json` `env`
+  applies to subprocesses only (not Claude's own UI), background sessions
+  preserve model/effort across idle wake
+- v2.1.142: **Fast mode now uses Opus 4.7 by default** (was Opus 4.6); set
+  `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE=1` to pin fast mode to Opus 4.6.
+  Plugins with a root-level `SKILL.md` and no `skills/` subdirectory are
+  now surfaced as a skill, many background-session and plugin-cache fixes
+- v2.1.141: `terminalSequence` field in hook JSON output (desktop
+  notifications/titles/bells without controlling terminal),
+  `CLAUDE_CODE_PLUGIN_PREFER_HTTPS` env, `ANTHROPIC_WORKSPACE_ID` for
+  workload identity federation, `claude agents --cwd <path>` to scope
+  session list, `/feedback` can include recent sessions, rewind menu gets
+  "Summarize up to here", background-agent stale-detection storm fix
+  after macOS App Nap
+- v2.1.140: Agent tool `subagent_type` matching is now case- and
+  separator-insensitive (e.g. `"Code Reviewer"` -> `code-reviewer`),
+  `/loop` no longer schedules redundant wakeups when background tasks
+  already notify, settings hot-reload fix for symlinked settings files
+- v2.1.139: **Agent view (Research Preview): `claude agents` lists every
+  Claude Code session**, **`/goal` command** (set completion condition,
+  Claude works across turns until met), `/scroll-speed` command,
+  `claude plugin details <name>`, transcript view nav (`?` shortcuts,
+  `{`/`}` between user prompts), **hook `args: string[]` exec form**
+  (spawns command directly without a shell), **hook `continueOnBlock`
+  for `PostToolUse`** (feed rejection reason back to Claude),
+  **MCP stdio servers receive `CLAUDE_PROJECT_DIR`**, **`Skill(name *)`
+  permission rules now match as prefix**, Remote Control / `/schedule` /
+  claude.ai MCP connectors / notification preferences are now disabled
+  when `ANTHROPIC_API_KEY` / `apiKeyHelper` / `ANTHROPIC_AUTH_TOKEN` is
+  set (even with claude.ai login)
+- v2.1.136: `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` env,
+  `settings.autoMode.hard_deny` for unconditional auto-mode classifier
+  blocks, plan mode now blocks file writes even when a matching `Edit(...)`
+  allow rule exists, MCP OAuth refresh-token concurrency fix (no more
+  daily re-auth with many remote servers)
+- v2.1.133: **`worktree.baseRef` setting (`fresh` | `head`)** for
+  `--worktree` / `EnterWorktree` / agent-isolation worktrees; **default
+  `fresh` flips `EnterWorktree` base back to `origin/<default>`** (was
+  local HEAD since v2.1.128) -- set `worktree.baseRef: "head"` to keep
+  unpushed commits in new worktrees. `sandbox.bwrapPath`,
+  `sandbox.socatPath` managed settings (Linux/WSL),
+  `parentSettingsBehavior` admin-tier key. **Hooks now receive
+  `effort.level` in JSON input and `$CLAUDE_EFFORT` env var**, Bash tool
+  commands can read `$CLAUDE_EFFORT`. Edit/Write allow-rule fix for
+  `C:\`/`/` drive-root scoping
+- v2.1.132: `CLAUDE_CODE_SESSION_ID` env in Bash tool subprocess
+  (matches hook `session_id`), `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`
+  to opt out of fullscreen alt-screen renderer, graceful shutdown on
+  external SIGINT (terminal modes restored), `--permission-mode` flag
+  fix on resumed plan-mode sessions, `/effort` picker now reflects
+  `CLAUDE_CODE_EFFORT_LEVEL` override, MCP `tools/list` failure now
+  shows "connected · tools fetch failed"
+- v2.1.131: VS Code Windows activation fix, Mantle `x-api-key` header fix
+- v2.1.129: `--plugin-url <url>` flag for one-shot plugin install from a
+  zip URL, `CLAUDE_CODE_FORCE_SYNC_OUTPUT=1` for terminals where sync-output
+  auto-detection misses, `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE` for
+  Homebrew/WinGet, plugin manifests: `themes` and `monitors` move under
+  `"experimental": { ... }`, `/v1/models` gateway discovery now opt-in via
+  `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1`, Ctrl+R searches all
+  projects by default (Ctrl+S narrows), `skillOverrides` setting now works
+  (`off` | `user-invocable-only` | `name-only`)
+- v2.1.128: `EnterWorktree` now creates from local HEAD (later reverted by
+  v2.1.133 `fresh` default), MCP `workspace` is now a reserved server name,
+  reconnecting MCP servers summarize re-announced tools by server prefix
+  (less spam), `/mcp` shows tool count and flags 0-tool servers,
+  subprocesses no longer inherit `OTEL_*` env (OTEL-instrumented Bash apps
+  no longer pick up the CLI's OTLP endpoint), parallel shell tool calls:
+  failing read-only command no longer cancels siblings
+- v2.1.126: **`claude project purge [path]`** deletes all Claude Code
+  state for a project (transcripts, tasks, file history, config entry);
+  supports `--dry-run` / `-y` / `-i` / `--all`. **Security:
+  `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` were ignored
+  when a higher-priority managed-settings source lacked a `sandbox` block
+  -- now applied correctly**. `--dangerously-skip-permissions` now bypasses
+  prompts for writes to `.claude/`, `.git/`, `.vscode/`, shell config
+  files (catastrophic removal commands still prompt). `claude auth login`
+  accepts OAuth code paste when browser callback can't reach localhost
+  (WSL2, SSH, containers). `claude_code.skill_activated` OTEL event gains
+  `invocation_trigger` attribute. **Read tool removed the per-file
+  malware-assessment reminder** that caused spurious refusals on legacy
+  models
+- v2.1.123: OAuth 401 retry-loop fix when
+  `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` is set
+- v2.1.122: `ANTHROPIC_BEDROCK_SERVICE_TIER` env (`default` | `flex` |
+  `priority`), `/resume` accepts a PR URL to find the session that created
+  it (GitHub, GHE, GitLab, Bitbucket), `/mcp` shows claude.ai connectors
+  hidden by duplicate manual servers, OTel `api_request`/`api_error`
+  numeric attributes now emitted as numbers
 - v2.1.94: **Default effort level changed from medium to high** for
   API-key/Bedrock/Vertex/Foundry/Team/Enterprise users (control via
   `/effort`), `CLAUDE_CODE_USE_MANTLE=1` for Amazon Bedrock via Mantle,
@@ -238,7 +385,8 @@ This reference preserves older review notes that support current
   `ConfigChange` hook event, Sonnet 4.5 1M context removed from Max plan,
   `disableAllHooks` managed settings hierarchy fix
 - v2.1.47: `last_assistant_message` in Stop hooks, `chat:newline` keybinding,
-  `added_dirs` in statusline JSON, config backups moved to `~/.claude/backups/`,
+  `added_dirs` in statusline JSON, config backups relocated to a dedicated
+  `backups/` directory under the Claude config root,
   **plan mode lost after compaction fix**, bash permission classifier
   hallucination fix, VS Code plan preview auto-update
 - v2.1.46: claude.ai MCP connectors support
@@ -288,4 +436,4 @@ This reference preserves older review notes that support current
 
 ---
 
-Last updated: 2026-04-09
+Last updated: 2026-05-21

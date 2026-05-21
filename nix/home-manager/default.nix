@@ -93,7 +93,6 @@ in
       pkgs-unstable.rumdl
       pkgs.awscli2
       pkgs.azure-cli
-      pkgs.deno
       pkgs.fd
       pkgs.fzf
       pkgs.ghq

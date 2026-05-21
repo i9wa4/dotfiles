@@ -58,6 +58,7 @@ let
       CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70";
       CLAUDE_CODE_DISABLE_AUTO_MEMORY = "true";
       CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
+      CLAUDE_CODE_DISABLE_FAST_MODE = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
@@ -133,7 +134,7 @@ in
       # common_template (§2.24) on each tmux-a2a-postman pop. Skill bodies
       # are loaded from ~/.claude/skills/ at session start. No CLAUDE.md
       # is installed at the runtime root anymore.
-      # Nix store directory symlinks (rebuild required to update)
+      # Committed native Claude agent files (rebuild required to update)
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };

@@ -11,18 +11,18 @@ module).
 
 Source of truth:
 
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/claude/default.nix
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/shared/
-- @~/ghq/github.com/i9wa4/dotfiles/nix/home-manager/agents/
+- `nix/home-manager/agents/claude/default.nix`
+- `nix/home-manager/agents/shared/`
+- `nix/home-manager/agents/`
 
-| Destination                | Source                                                 | Managed by                           |
-| -------------------------- | ------------------------------------------------------ | ------------------------------------ |
-| `~/.claude/settings.json`  | Generated from Nix attributes                          | `claude/default.nix`                 |
-| no root instruction file   | Persona / language / scope from postman common blocks  | `config/tmux-a2a-postman/postman.md` |
-| `~/.claude/agents/`        | Rendered from `subagents/`                             | `shared/render-agents.nix`           |
-| `~/.claude/scripts/`       | `nix/home-manager/agents/scripts/`                     | `claude/default.nix`                 |
-| `~/.claude/skills/`        | Multiple flake inputs + local skills                   | `shared/agent-skills.nix`            |
-| MCP servers                | `shared/mcp-servers.nix`                               | `claude/default.nix`                 |
+| Destination              | Source                                                    | Managed by                           |
+| ------------------------ | --------------------------------------------------------- | ------------------------------------ |
+| Claude settings file     | Generated from Nix attributes                             | `claude/default.nix`                 |
+| no root instruction file | Persona / language / scope from postman common blocks     | `config/tmux-a2a-postman/postman.md` |
+| Claude agents directory  | `nix/home-manager/agents/subagents/*.md` Markdown         | `shared/install-manifest.nix`        |
+| Claude scripts directory | `nix/home-manager/agents/scripts/`                        | `claude/default.nix`                 |
+| Claude skills directory  | Multiple flake inputs + local skills                      | `shared/agent-skills.nix`            |
+| MCP servers              | `shared/mcp-servers.nix`                                  | `claude/default.nix`                 |
 
 ## 2. Fetch CHANGELOG
 
@@ -103,8 +103,8 @@ reference was loaded; follow the current session's delegation policy.
 ## 6. Upstream CLAUDE.md Design Guidelines
 
 This section is general Claude Code guidance. This repo does not install a root
-`~/.claude/CLAUDE.md`; dotfiles-local persona and scope are delivered through
-`config/tmux-a2a-postman/postman.md` instead.
+Claude global instruction file; dotfiles-local persona and scope are delivered
+through `config/tmux-a2a-postman/postman.md` instead.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`
@@ -137,18 +137,18 @@ commands.
 # Additional Instructions
 
 - Git workflow: @docs/git-instructions.md
-- Personal overrides: @~/.claude/my-project-instructions.md
+- Personal overrides: @CLAUDE.local.md
 ```
 
 ### 6.3. CLAUDE.md Locations
 
-| Location              | Scope                                                   |
-| --------------------- | ------------------------------------------------------- |
-| `~/.claude/CLAUDE.md` | All Claude sessions (global)                            |
-| `./CLAUDE.md`         | Project root — check into git to share with team        |
-| `./CLAUDE.local.md`   | Project root — add to .gitignore for personal overrides |
-| Parent directories    | Useful for monorepos (auto-loaded)                      |
-| Child directories     | Loaded on demand when working with files there          |
+| Location            | Scope                                                   |
+| ------------------- | ------------------------------------------------------- |
+| Global Claude file  | All Claude sessions                                     |
+| `./CLAUDE.md`       | Project root — check into git to share with team        |
+| `./CLAUDE.local.md` | Project root — add to .gitignore for personal overrides |
+| Parent directories  | Useful for monorepos (auto-loaded)                      |
+| Child directories   | Loaded on demand when working with files there          |
 
 ## 7. Configuration Usage
 
@@ -233,21 +233,30 @@ When adding/removing files in skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.121 (2026-04-29)
+Last reviewed Claude Code version: v2.1.145 (2026-05-21)
 
 ### 11.1. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
   `config/tmux-a2a-postman/postman.md`
 - [x] Skills installed through `shared/agent-skills.nix`
-- [x] Agents rendered through `shared/render-agents.nix`
+- [x] Claude agents installed from
+  `nix/home-manager/agents/subagents/*.md`; Codex TOML agents generated
+  from the same Markdown source by `shared/install-manifest.nix`
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"
 - [x] `ENABLE_TOOL_SEARCH` env - set to "auto:3"
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
-- [x] Fast mode - available for Opus 4.6 (v2.1.36)
+- [x] Fast mode - hard-disabled via `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`.
+      Available for Opus 4.6 since v2.1.36 and defaults to Opus 4.7 since
+      v2.1.142; we opt out entirely so `/fast` is rejected regardless of model.
+      Adaptive thinking is already off (`DISABLE_ADAPTIVE_THINKING = "1"`) and
+      effort is pinned at launch, so the latency/cost win from fast mode is
+      duplicative while its model swap reintroduces variance we explicitly
+      removed. Re-enable only if a future fast-mode flavor is independent of
+      effort pinning.
 - [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
 - [x] Automatic memory - enabled by default (v2.1.32)
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
@@ -326,9 +335,67 @@ Last reviewed Claude Code version: v2.1.121 (2026-04-29)
   deny-list even when broader allow wildcards apply
 - [ ] `refreshInterval` for status line (v2.1.97) - auto re-run
   `claude-statusline.sh` every N seconds
-- [ ] `cleanupPeriodDays` now also covers `~/.claude/tasks/`,
+- [ ] `cleanupPeriodDays` now also covers Claude task cache,
   `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
   set; new dirs swept automatically
+
+#### v2.1.122 → v2.1.145 candidates (added 2026-05-21)
+
+- [ ] `worktree.baseRef: "head"` setting (v2.1.133) - default reverted to
+  `fresh` (origin/<default>). With our `.worktrees/issue-*` workflow we usually
+  want unpushed commits carried into new worktrees; revisit once we've
+  confirmed which branches `--worktree` / `EnterWorktree` currently spawn
+  against
+- [ ] `worktree.bgIsolation: "none"` (v2.1.143) - skip background-session
+  worktree isolation in repos where worktrees are impractical; we DO want
+  isolation here, so this stays off but is documented for awareness
+- [ ] Hook `args: string[]` exec form (v2.1.139) - spawns command directly
+  without a shell so path placeholders never need quoting. Migration candidate
+  for the three PreToolUse/UserPromptSubmit hooks in `claude/default.nix` once
+  we audit each script's argv expectations
+- [ ] Hook `continueOnBlock: true` on PostToolUse (v2.1.139) - feed the hook's
+  rejection back to Claude and continue the turn. Useful for the
+  pretooluse-deny-write hook if we ever want soft "warn-and-redo" semantics
+  instead of hard deny
+- [ ] `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (v2.1.143) - bounds runaway Stop
+  hooks at 8 consecutive blocks. We have no Stop hooks yet; track for future
+- [ ] `terminalSequence` field on hook JSON output (v2.1.141) - hooks can emit
+  desktop notifications / window titles / bells without a controlling
+  terminal. Possible future use for tmux pane title updates from
+  `common-userpromptsubmit.sh`
+- [ ] `settings.autoMode.hard_deny` rules (v2.1.136) - auto-mode classifier
+  hard deny that cannot be allow-overridden. We don't use auto mode, but
+  worth tracking if we ever migrate away from `dontAsk`
+- [ ] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` env (v2.1.132) - keep the
+  conversation in the terminal's native scrollback instead of the fullscreen
+  alt-screen renderer. Quality-of-life tradeoff with mouse support and
+  auto-copy; defer until measured
+- [ ] `CLAUDE_CODE_SESSION_ID` in Bash tool subprocess env (v2.1.132) -
+  enables session-aware Bash scripts. No current consumer in
+  `scripts/`; flag for future hook design
+- [ ] `$CLAUDE_EFFORT` env in Bash subprocess + `effort.level` hook input
+  (v2.1.133) - hooks can branch on current effort level. Possible use:
+  conditional deny patterns at low effort
+- [ ] MCP stdio servers now receive `CLAUDE_PROJECT_DIR` (v2.1.139) -
+  matches hook env; review `shared/mcp-servers.nix` once any server needs
+  the cwd
+- [ ] `Skill(name *)` permission rules now match as prefix (v2.1.139 fix) -
+  informational; current deny list does not use Skill() patterns
+- [ ] `/goal` command (v2.1.139) - completion-condition driven, multi-turn.
+  User-invokable, no config; flag for orchestrator-runbook awareness
+- [ ] `claude agents --json` (v2.1.145) - script-friendly session list for
+  tmux statusline / postman dashboards. Possible integration with our
+  postman session operator
+- [ ] Stop / SubagentStop hook input now includes `background_tasks` and
+  `session_crons` (v2.1.145) - useful if we ever wire up Stop hooks
+- [x] Bare-variable-assignment permission bypass fix (v2.1.145, security) -
+  `FOO=bar somecmd` style invocations are now correctly subject to deny
+  rules. No config change needed; deny-bash patterns gain coverage
+  automatically
+- [x] Managed-settings `sandbox` block fallthrough fix (v2.1.126, security) -
+  `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` now applied even
+  when a higher-priority source lacks a `sandbox` block. We're solo-user
+  so this is informational
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Changelog Tracking](changelog-tracking.md).
@@ -428,12 +495,12 @@ NOTE: Space before `*` matters: `Bash(ls *)` matches `ls -la` but not `lsof`.
 
 ### 15.4. Read/Edit Path Patterns
 
-| Pattern  | Meaning                       | Example                  |
-| -------- | ----------------------------- | ------------------------ |
-| `//path` | Absolute path from root       | `Read(//Users/alice/**)` |
-| `~/path` | Path from home directory      | `Read(~/.zshrc)`         |
-| `/path`  | Relative to settings file     | `Edit(/src/**/*.ts)`     |
-| `path`   | Relative to current directory | `Read(*.env)`            |
+| Pattern  | Meaning                       | Example              |
+| -------- | ----------------------------- | -------------------- |
+| `//path` | Absolute path from root       | `Read(//var/log/**)` |
+| `~/path` | Path from home directory      | `Read(~/notes.md)`   |
+| `/path`  | Relative to settings file     | `Edit(/src/**/*.ts)` |
+| `path`   | Relative to current directory | `Read(*.env)`        |
 
 NOTE: `*` matches single directory, `**` matches recursively.
 
