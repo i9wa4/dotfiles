@@ -27,6 +27,8 @@ Each target group has:
 - zero or more legacy cases for demoted, merged, duplicate, or compatibility
   triggers,
 - a `result` field for each case.
+- an `observed_skill`, `checked_at`, and `validation_method` once the case has
+  been executed or reviewed.
 
 Allowed `result` values are:
 
@@ -85,6 +87,17 @@ Compatibility-trigger cases pass when the old trigger selects the consolidated
 target skill, or when the old trigger is pointer-only and clearly routes to the
 same target.
 
+## Manual Catalog Review
+
+When a runtime selector harness is unavailable, a reviewer may record
+`validation_method: "manual_catalog_review"` after checking the current
+`SKILL.md` trigger description, compatibility-trigger body, and
+`skills/classification.yaml` target mapping for the case.
+
+Manual catalog review is acceptable only when the reviewed surfaces clearly map
+the prompt to the expected target skill. Cases that rely on another open cleanup
+PR must name that PR in `notes`.
+
 ## Release-Readiness Gate
 
 Before removing old standalone skills, declaring Agent Skills release readiness,
@@ -96,3 +109,5 @@ bash bin/validate-skill-trigger-matrix.sh --strict-results
 
 Strict mode requires every matrix case to have `result: "pass"`. A pending,
 failed, or blocked case means release readiness has not been proven.
+For each passing case, strict mode also requires a matching `observed_skill`, a
+non-empty `checked_at`, and a non-empty `validation_method`.

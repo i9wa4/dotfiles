@@ -30,7 +30,11 @@
           "kind": "target",
           "prompt": "Update the repository agent harness, issue worktree workflow, or postman routing rules.",
           "expected_skill": "agent-harness-engineering",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-harness-engineering",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "agent-workspace-compatibility",
@@ -38,7 +42,11 @@
           "legacy_skill": "agent-workspace",
           "prompt": "Use the issue worktree workflow for a GitHub issue and verify branch, upstream, and status before editing.",
           "expected_skill": "agent-harness-engineering",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-harness-engineering",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "prompt-contracts-local-compatibility",
@@ -46,7 +54,11 @@
           "legacy_skill": "prompt-contracts-local",
           "prompt": "Update a repo prompt contract, prompt block, or resume handoff reference.",
           "expected_skill": "agent-harness-engineering",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-harness-engineering",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "orchestrator-role-contract-removed",
@@ -54,7 +66,11 @@
           "legacy_skill": "orchestrator",
           "prompt": "Update orchestrator role contract and runbook guidance without creating a standalone role-only skill.",
           "expected_skill": "agent-harness-engineering",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-harness-engineering",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Removed legacy role-only prompt maps through classification metadata to the expected target skill owner surface."
         }
       ]
     },
@@ -78,7 +94,11 @@
           "kind": "target",
           "prompt": "Add, edit, remove, validate, or publish repository Agent Skills and run Waza readiness checks.",
           "expected_skill": "agent-skills-management",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-skills-management",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "skill-description-index-merge",
@@ -86,7 +106,11 @@
           "legacy_skill": "skill-description-index",
           "prompt": "Recover full skill descriptions from disk after descriptions are truncated or unclear.",
           "expected_skill": "agent-skills-management",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-skills-management",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Merged legacy prompt maps through classification metadata to the expected target skill owner surface."
         },
         {
           "id": "agent-skill-management-duplicate",
@@ -94,7 +118,11 @@
           "legacy_skill": "agent-skill-management",
           "prompt": "Manage repository-owned Agent Skills using the singular Agent Skill management trigger name.",
           "expected_skill": "agent-skills-management",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "agent-skills-management",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Validated against the accepted #206 cleanup state in PR #211, where the singular duplicate surface is removed and agent-skills-management remains canonical."
         }
       ]
     },
@@ -109,7 +137,11 @@
           "kind": "target",
           "prompt": "Create or inspect a GitHub issue or pull request while preserving public surface path hygiene.",
           "expected_skill": "github",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "github",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         }
       ]
     },
@@ -124,7 +156,11 @@
           "kind": "target",
           "prompt": "Draft concise Japanese GitHub review comments for a pull request without posting them.",
           "expected_skill": "create-review-comment",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "create-review-comment",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         }
       ]
     },
@@ -139,7 +175,11 @@
           "kind": "target",
           "prompt": "Run the native multi-perspective review workflow and synthesize blocking findings.",
           "expected_skill": "subagent-review",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "subagent-review",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         }
       ]
     },
@@ -159,7 +199,11 @@
           "kind": "target",
           "prompt": "Design an implementation plan for an ambiguous multi-step repository task.",
           "expected_skill": "plan-design",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "plan-design",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "brainstorming-compatibility",
@@ -167,7 +211,11 @@
           "legacy_skill": "brainstorming",
           "prompt": "Reduce ambiguity and compare options before writing an implementation plan.",
           "expected_skill": "plan-design",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "plan-design",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         }
       ]
     },
@@ -182,7 +230,11 @@
           "kind": "target",
           "prompt": "Find the root cause of an unknown failure by isolating a reproducer and comparing a known-good path.",
           "expected_skill": "systematic-debugging",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "systematic-debugging",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         }
       ]
     },
@@ -218,7 +270,11 @@
           "kind": "target",
           "prompt": "Work on repo-local BigQuery, Databricks, dbt, or cloud-auth workflow guidance.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "bigquery-local-compatibility",
@@ -226,7 +282,11 @@
           "legacy_skill": "bigquery-local",
           "prompt": "Answer a BigQuery local workflow question about GoogleSQL, table design, or cost guardrails.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "databricks-local-compatibility",
@@ -234,7 +294,11 @@
           "legacy_skill": "databricks-local",
           "prompt": "Update Databricks local workflow guidance for Queries API, dashboards, dbt, or Jupyter.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "dbt-local-compatibility",
@@ -242,7 +306,11 @@
           "legacy_skill": "dbt-local",
           "prompt": "Handle a dbt local issue involving Databricks SQL dialect notes and local examples.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "restricted-bigquery-dbt-environment-compatibility",
@@ -250,7 +318,11 @@
           "legacy_skill": "restricted-bigquery-dbt-environment",
           "prompt": "Apply restricted BigQuery dbt safety guidance for local schema redirection.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "aws-auth-compatibility",
@@ -258,7 +330,11 @@
           "legacy_skill": "aws-auth",
           "prompt": "Use a user-authenticated cloud auth pane workflow for AWS credentials in this repo.",
           "expected_skill": "data-platform",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "data-platform",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         }
       ]
     },
@@ -282,7 +358,11 @@
           "kind": "target",
           "prompt": "Author, preview, export, or validate repo-local draw.io and Mermaid diagrams.",
           "expected_skill": "diagramming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "diagramming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "drawio-local-compatibility",
@@ -290,7 +370,11 @@
           "legacy_skill": "drawio-local",
           "prompt": "Edit draw.io XML, export a diagram, or check AWS icon layout in this repo.",
           "expected_skill": "diagramming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "diagramming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "mermaid-local-compatibility",
@@ -298,7 +382,11 @@
           "legacy_skill": "mermaid-local",
           "prompt": "Preview or fix a Mermaid diagram used in this repo.",
           "expected_skill": "diagramming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "diagramming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         }
       ]
     },
@@ -334,7 +422,11 @@
           "kind": "target",
           "prompt": "Make a small repo-local Bash, Python, Nix, or Markdown implementation change and run focused checks.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
           "id": "tdd-tidy-first-compatibility",
@@ -342,7 +434,11 @@
           "legacy_skill": "tdd-tidy-first",
           "prompt": "Use a Red-Green-Refactor or Tidy First loop for a small behavior change.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "bash-compatibility",
@@ -350,7 +446,11 @@
           "legacy_skill": "bash",
           "prompt": "Edit a Bash validation script and check shell command design.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "python-compatibility",
@@ -358,7 +458,11 @@
           "legacy_skill": "python",
           "prompt": "Edit a Python utility in this repo and run a local focused check.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "nix-compatibility",
@@ -366,7 +470,11 @@
           "legacy_skill": "nix",
           "prompt": "Adjust a general Nix package workflow in this repo.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
           "id": "markdown-compatibility",
@@ -374,9 +482,16 @@
           "legacy_skill": "markdown",
           "prompt": "Edit repository Markdown while preserving formatting and table conventions.",
           "expected_skill": "programming",
-          "result": "pending"
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-21",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         }
       ]
     }
-  ]
+  ],
+  "validated_at": "2026-05-21",
+  "validation_method": "manual_catalog_review",
+  "validation_summary": "28 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and accepted #206 cleanup state where applicable."
 }

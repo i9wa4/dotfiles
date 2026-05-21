@@ -130,9 +130,17 @@ done <"$path_list"
 
 if [ "$strict_results" -eq 1 ]; then
   if ! jq -e '
-    all(.target_groups[].trigger_cases[]; .result == "pass")
+    all(.target_groups[].trigger_cases[];
+      .result == "pass"
+      and (.observed_skill | type == "string")
+      and (.observed_skill == .expected_skill)
+      and (.checked_at | type == "string")
+      and (.checked_at | length > 0)
+      and (.validation_method | type == "string")
+      and (.validation_method | length > 0)
+    )
   ' "$matrix" >/dev/null; then
-    echo "FAIL: strict trigger validation requires every trigger case result to be pass" >&2
+    echo "FAIL: strict trigger validation requires every case to pass with matching observed_skill, checked_at, and validation_method" >&2
     exit 1
   fi
 fi
