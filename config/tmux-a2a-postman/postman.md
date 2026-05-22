@@ -82,8 +82,9 @@ requests to orchestrator instead of checking or editing files locally.
 
 For GitHub issue implementation, orchestrator must route work to a worker that
 uses `issue-worktree-create <issue_number>`. Workers must not create issue
-branches or issue worktrees manually. Before editing, verify path, branch, and
-status. Stop and report `BLOCKED` if an issue branch tracks `origin/main`.
+branches or issue worktrees manually. Before editing, verify path, branch,
+upstream, and status. Stop and report `BLOCKED` if an issue branch tracks
+`origin/main`, `origin/dev`, or another shared base.
 
 ### 2.7. [common_template] Delegation Bias
 

@@ -41,8 +41,11 @@ For GitHub issue implementation in this repo:
   git rev-parse --abbrev-ref --symbolic-full-name @{u}
   ```
 
-- Stop and report `BLOCKED` if an issue branch tracks `origin/main`; an issue
-  branch must not push into `main`.
+- Stop and report `BLOCKED` if an issue branch tracks `origin/main`,
+  `origin/dev`, or another non-issue upstream; an issue branch must not push
+  into shared base branches.
+- First publication must use the explicit same-name destination refspec:
+  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 
 ### Issue Execution
 
@@ -54,8 +57,9 @@ Expect it to:
 - reuse `origin/issue-<number>` when present, otherwise reuse the first
   `origin/issue-<number>-*` branch when present
 - set existing remote issue branches as upstream
-- rely on `push.autoSetupRemote=true` for new local issue branches, so the first
-  plain `git push` creates and records `origin/<branch>`
+- leave new local issue branches without an upstream until explicit same-name
+  publication with:
+  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`
 - create a new linked worktree when needed
 - copy the source checkout's `.envrc` when available, including for non-Nix
   repositories
@@ -84,9 +88,17 @@ git rev-list --left-right --count HEAD...@{u}
 
 For a reused remote issue branch, the upstream must be
 `origin/issue-<number>` or `origin/issue-<number>-*`. Stop if an issue branch
-tracks `origin/main` or another non-issue upstream. New local issue branches
-created by the wrapper may have no upstream until the first plain `git push`;
-verify they started from current `main` before editing.
+tracks `origin/main`, `origin/dev`, or another non-issue upstream. New local
+issue branches created by the wrapper intentionally have no upstream until
+explicit publication; verify they started from current `main` before editing.
+
+Before creating a PR, verify `origin/<feature-branch>` exists, the PR base is
+the intended base branch, and the PR head is the feature branch.
+
+Local Git config is only a safety default, not a remote trust boundary. Protect
+shared remote branches such as `main` and `dev` with GitHub rulesets or branch
+protection so direct pushes to those refs are blocked or require the normal
+reviewed path.
 
 ### PR Review
 
