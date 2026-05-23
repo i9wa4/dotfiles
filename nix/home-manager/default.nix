@@ -1,6 +1,5 @@
 {
   pkgs,
-  pkgs-unstable,
   inputs,
   lib,
   config,
@@ -59,7 +58,7 @@ in
     inherit username;
     homeDirectory = lib.mkForce homeDir;
 
-    # Suppress version mismatch warning (HM unstable + stable nixpkgs)
+    # Suppress version mismatch warning (HM release + unstable nixpkgs)
     enableNixpkgsReleaseCheck = false;
 
     # Home Manager state version
@@ -86,11 +85,11 @@ in
       # Tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       nodejsPackage
-      pkgs-unstable.acli
-      pkgs-unstable.aws-sam-cli
-      pkgs-unstable.databricks-cli
-      pkgs-unstable.gws
-      pkgs-unstable.rumdl
+      pkgs.acli
+      pkgs.aws-sam-cli
+      pkgs.databricks-cli
+      pkgs.gws
+      pkgs.rumdl
       pkgs.awscli2
       pkgs.azure-cli
       pkgs.fd

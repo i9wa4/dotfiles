@@ -14,8 +14,7 @@
 
   inputs = {
     # No follows
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-25.11-darwin";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     # Follows nixpkgs
@@ -53,10 +52,10 @@
       };
     };
 
-    # Follows nixpkgs-unstable
+    # Follows nixpkgs
     mcp-servers-nix = {
       url = "github:natsukium/mcp-servers-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Follows nixpkgs + home-manager

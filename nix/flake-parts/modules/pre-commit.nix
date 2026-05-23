@@ -2,7 +2,6 @@
 # Run: nix flake check (or automatically on git commit in devShell)
 {
   inputs,
-  mkPkgsUnstable,
   ...
 }:
 {
@@ -13,7 +12,6 @@
       ...
     }:
     let
-      pkgs-unstable = mkPkgsUnstable system;
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
         disable = ["MD041"]
@@ -184,7 +182,7 @@
           };
           skill-publish-dry-run = {
             enable = true;
-            entry = "${pkgs-unstable.gh}/bin/gh skill publish --dry-run";
+            entry = "${pkgs.gh}/bin/gh skill publish --dry-run";
             files = "^skills/";
             pass_filenames = false;
           };
@@ -193,7 +191,7 @@
           # === Markdown linter ===
           rumdl-check = {
             enable = true;
-            entry = "${pkgs-unstable.rumdl}/bin/rumdl check --config ${rumdlConfig}";
+            entry = "${pkgs.rumdl}/bin/rumdl check --config ${rumdlConfig}";
             types = [ "markdown" ];
           };
           markdown-formatter = {
