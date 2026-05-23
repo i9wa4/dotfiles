@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - agent-skills-v*
   pull_request:
     branches:
       - main
@@ -44,15 +46,66 @@ jobs:
           github_access_token: ${{ github.token }}
 
       - name: Cache Nix store
-        uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+        if: github.event_name != 'pull_request'
+        uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2 # zizmor: ignore[cache-poisoning] PR runs skip this cache; release job does not consume CI artifacts.
         with:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
 
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
+      - name: Report Agent Skills release readiness
+        run: bash bin/validate-skill-release-readiness.sh
+
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
 
       - name: Run betterleaks history scan
         run: nix develop .#ci --command betterleaks git --verbose --redact
+
+  agent-skills-release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/agent-skills-v')
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+        with:
+          github_access_token: ${{ github.token }}
+
+      - name: Cache Nix store
+        if: github.event_name != 'pull_request'
+        uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2 # zizmor: ignore[cache-poisoning] tag-only job; untrusted PR runs cannot reach this job.
+        with:
+          primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
+
+      - name: Validate classification release readiness
+        run: bash bin/validate-skill-release-readiness.sh --strict
+
+      - name: Validate trigger results
+        run: |
+          set -eu
+          test -f bin/validate-skill-trigger-matrix.sh
+          test -f skills/trigger-validation.json
+          bash bin/validate-skill-trigger-matrix.sh --strict-results
+
+      - name: Validate skill publish dry-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run nixpkgs#gh -- skill publish --dry-run
+
+      - name: Publish Agent Skills GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: nix run nixpkgs#gh -- skill publish --tag "$TAG_NAME"

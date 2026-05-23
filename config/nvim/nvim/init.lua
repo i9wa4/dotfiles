@@ -18,7 +18,6 @@ vim.api.nvim_create_user_command("R", function(opts)
 end, { nargs = "?" })
 
 local function highlight_define()
-  vim.api.nvim_set_hl(0, "Hl01", { bg = "#FFB6C1", fg = "#000000" })
   vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
   vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
@@ -52,54 +51,22 @@ local function highlight_match()
 
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
-  add("Hl01", "Hl01")
-  add("Hl01", [[TODO:\|FIXME:\|DEBUG:\|NOTE:\|WARNING:\|HACK:]])
-  add("Hl01", [[# %%]])
-  add("Hl01", [[\[ \]])
+
+  add("WildMenu", [[# %%\|# COMMAND ----------]])
+  add("WildMenu", [[\[ \]])
+
   local now = vim.fn.localtime()
-  add("Hl01", vim.fn.strftime("%Y%m%d", now))
-  add("Hl01", vim.fn.strftime("%Y-%m-%d", now))
-  add("Hl01", vim.fn.strftime("%Y/%m/%d", now))
+  add("WildMenu", vim.fn.strftime("%Y%m%d", now))
+  add("WildMenu", vim.fn.strftime("%Y-%m-%d", now))
+  add("WildMenu", vim.fn.strftime("%Y/%m/%d", now))
 
   vim.w.my_highlight_match_ids = ids
-end
-
-local function toggle_quote(line1, line2)
-  if line2 < line1 then
-    line1, line2 = line2, line1
-  end
-
-  local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
-  local all_quoted = true
-  for _, line in ipairs(lines) do
-    if not line:match("^>") then
-      all_quoted = false
-      break
-    end
-  end
-
-  local new_lines = {}
-  for _, line in ipairs(lines) do
-    if all_quoted then
-      new_lines[#new_lines + 1] = line:gsub("^>%s?", "", 1)
-    else
-      new_lines[#new_lines + 1] = "> " .. line
-    end
-  end
-
-  vim.api.nvim_buf_set_lines(0, line1 - 1, line2, false, new_lines)
 end
 
 -- --------------------------------------
 -- Keymap
 --
 vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
-vim.keymap.set("n", "gqq", function()
-  toggle_quote(vim.fn.line("."), vim.fn.line("."))
-end)
-vim.keymap.set("v", "gqq", function()
-  toggle_quote(vim.fn.line("v"), vim.fn.line("."))
-end)
 vim.keymap.set("i", ",now", function()
   return vim.fn.strftime("%Y-%m-%d %X +0900")
 end, { expr = true })
