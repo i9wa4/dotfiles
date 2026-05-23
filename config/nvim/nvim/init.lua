@@ -20,13 +20,9 @@ local function highlight_define()
   for _, group in ipairs({
     "EndOfBuffer",
     "Folded",
-    "Identifier",
     "LineNr",
     "NonText",
     "Normal",
-    "Special",
-    "StatusLine",
-    "StatusLineNC",
     "VertSplit",
   }) do
     local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
