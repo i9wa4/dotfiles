@@ -43,7 +43,6 @@ local function highlight_match()
 
   add("CursorLine", [[# %%\|# COMMAND ----------]])
   add("CursorLine", [[\[ \]])
-  add("CursorLine", [[\t]])
   add("CursorLine", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
   add("CursorLine", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
   add("CursorLine", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
