@@ -41,14 +41,14 @@ local function highlight_match()
     ids[#ids + 1] = vim.fn.matchadd(group, pattern)
   end
 
+  add("CursorLine", [[# %%\|# COMMAND ----------]])
+  add("CursorLine", [[\[ \]])
   add("CursorLine", [[\t]])
+  add("CursorLine", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
+  add("CursorLine", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
+  add("CursorLine", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
-  add("WildMenu", [[# %%\|# COMMAND ----------]])
-  add("WildMenu", [[\[ \]])
-  add("WildMenu", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("WildMenu", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("WildMenu", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
 
   vim.w.my_highlight_match_ids = ids
 end
