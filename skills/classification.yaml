@@ -49,6 +49,20 @@ target_groups:
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
+
+retired_skill_surfaces:
+  - name: agent-skill-management
+    previous_path: skills/agent-skill-management
+    previous_docs_pointer: docs/agent-skill-management.md
+    action: removed_duplicate_surface
+    issue: 206
+    canonical_name: agent-skills-management
+    canonical_path: skills/agent-skills-management
+    canonical_docs_pointer: docs/agent-skills-management.md
+    duplicate_reference_removed: references/waza-publishing.md
+    rationale: >
+      The singular surface duplicated the plural Agent Skills management skill.
+      The plural `agent-skills-management` name is the canonical release target.
 private_content_scan:
   required_before:
     - moving skill content
