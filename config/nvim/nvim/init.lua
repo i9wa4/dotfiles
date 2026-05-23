@@ -1,4 +1,69 @@
 -- --------------------------------------
+-- Plugin
+--
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  vim.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath }):wait()
+end
+vim.opt.runtimepath:prepend(lazypath)
+
+require("lazy").setup({
+  {
+    "ibhagwan/fzf-lua",
+    lazy = false,
+    keys = {
+      { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
+      { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
+    },
+  },
+  {
+    "stevearc/oil.nvim",
+    lazy = false,
+    opts = {
+      default_file_explorer = true,
+      view_options = {
+        show_hidden = true,
+      },
+    },
+  },
+})
+
+-- --------------------------------------
+-- Option
+--
+vim.opt.nrformats = { "unsigned" }
+
+vim.opt.ignorecase = true
+if vim.fn.executable("rg") == 1 then
+  vim.opt.grepprg = "rg --vimgrep --no-heading"
+  vim.opt.grepformat = "%f:%l:%c:%m"
+end
+
+vim.opt.ambiwidth = "double"
+vim.opt.cursorline = true
+vim.opt.number = true
+
+vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
+vim.opt.autoread = true
+vim.opt.backup = false
+vim.opt.swapfile = false
+vim.opt.undofile = false
+
+vim.opt.clipboard = ""
+if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
+  vim.opt.clipboard:prepend("unnamed")
+else
+  vim.opt.clipboard:prepend("unnamedplus")
+end
+
+if vim.fn.has("termguicolors") == 1 then
+  vim.opt.termguicolors = true
+end
+
+-- --------------------------------------
 -- Helper
 --
 local function send_tmux_clipboard(content)
@@ -130,71 +195,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
   group = augroup,
   callback = highlight_match,
-})
-
--- --------------------------------------
--- Option
---
-vim.opt.nrformats = { "unsigned" }
-
-vim.opt.ignorecase = true
-if vim.fn.executable("rg") == 1 then
-  vim.opt.grepprg = "rg --vimgrep --no-heading"
-  vim.opt.grepformat = "%f:%l:%c:%m"
-end
-
-vim.opt.ambiwidth = "double"
-vim.opt.cursorline = true
-vim.opt.number = true
-
-vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
-vim.opt.autoread = true
-vim.opt.backup = false
-vim.opt.swapfile = false
-vim.opt.undofile = false
-
-vim.opt.clipboard = ""
-if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-  vim.opt.clipboard:prepend("unnamed")
-else
-  vim.opt.clipboard:prepend("unnamedplus")
-end
-
-if vim.fn.has("termguicolors") == 1 then
-  vim.opt.termguicolors = true
-end
-
--- --------------------------------------
--- Plugin
---
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-  vim.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath }):wait()
-end
-vim.opt.runtimepath:prepend(lazypath)
-
-require("lazy").setup({
-  {
-    "ibhagwan/fzf-lua",
-    lazy = false,
-    keys = {
-      { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
-      { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
-    },
-  },
-  {
-    "stevearc/oil.nvim",
-    lazy = false,
-    opts = {
-      default_file_explorer = true,
-      view_options = {
-        show_hidden = true,
-      },
-    },
-  },
 })
 
 -- --------------------------------------
