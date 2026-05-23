@@ -130,9 +130,8 @@ in
         "macskk"
         "monitorcontrol"
         "obsidian"
-        "visual-studio-code"
         "zoom"
-        # "maccy"
+        # "visual-studio-code"
       ];
     in
     {
