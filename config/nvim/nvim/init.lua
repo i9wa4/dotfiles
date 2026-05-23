@@ -132,10 +132,6 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
   callback = highlight_match,
 })
 
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
-
 -- --------------------------------------
 -- Option
 --
@@ -152,6 +148,9 @@ vim.opt.cursorline = true
 vim.opt.number = true
 
 vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
 vim.opt.autoread = true
 vim.opt.backup = false
 vim.opt.swapfile = false
