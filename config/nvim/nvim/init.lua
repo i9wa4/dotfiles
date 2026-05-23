@@ -40,13 +40,16 @@ vim.opt.cursorline = true
 vim.opt.number = true
 
 vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
 vim.opt.autoread = true
 vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.undofile = false
+
+vim.opt.termguicolors = true
+
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
 
 vim.opt.clipboard = ""
 if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
@@ -54,8 +57,6 @@ if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
 else
   vim.opt.clipboard:prepend("unnamedplus")
 end
-
-vim.opt.termguicolors = true
 
 -- --------------------------------------
 -- Helper
