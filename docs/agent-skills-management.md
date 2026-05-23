@@ -26,9 +26,6 @@ The classification memo is not a selective release allowlist. Every checked-in
 skill is tracked so a later release can either publish it after cleanup or
 remove/demote it before the release-all gate.
 
-The release readiness checks and tag-triggered publishing path are documented
-in `docs/agent-skills-release-all.md`.
-
 ## First PR Boundary
 
 The first cleanup PR is limited to metadata and reviewable policy scaffolding:
