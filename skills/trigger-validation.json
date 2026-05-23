@@ -4,7 +4,7 @@
   "source_issue": 168,
   "roadmap_issue": 182,
   "procedure_doc": "docs/agent-skill-trigger-validation.md",
-  "release_readiness_command": "bash bin/validate-skill-trigger-matrix.sh --strict-results",
+  "release_readiness_command": "bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results",
   "target_groups": [
     {
       "target_group": "agent-harness-engineering",

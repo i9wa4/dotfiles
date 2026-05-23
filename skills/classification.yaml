@@ -70,8 +70,8 @@ private_content_scan:
     - adding release automation
     - creating tags
     - publishing a release
-  command: bash bin/validate-skill-private-content.sh --staged
-  path_command: bash bin/validate-skill-private-content.sh <path>...
+  command: bash scripts/validation/validate-skill-private-content.sh --staged
+  path_command: bash scripts/validation/validate-skill-private-content.sh <path>...
   path_scope:
     - scan specific files or skill directories such as skills/<name>
     - reject bare top-level skills because the tree still contains deferred cleanup content
@@ -90,8 +90,8 @@ private_content_scan:
 
 release_readiness:
   routine_ci_workflow: .github/workflows/ci.yaml
-  report_command: bash bin/validate-skill-release-readiness.sh
-  strict_command: bash bin/validate-skill-release-readiness.sh --strict
+  report_command: bash scripts/validation/validate-skill-release-readiness.sh
+  strict_command: bash scripts/validation/validate-skill-release-readiness.sh --strict
   dry_run_command: gh skill publish --dry-run
   publish_command: gh skill publish --tag <tag>
   publish_true_requires:
@@ -119,10 +119,10 @@ postman_boundary:
     - long runbooks and reusable command examples
 
 common_validation_expectations: &common_validation
-  - bash bin/validate-skill-frontmatter.sh skills
-  - bash bin/validate-skill-private-content.sh --staged
-  - bash bin/validate-skill-description-length.sh --staged
-  - bash bin/validate-skill-waza.sh --staged
+  - bash scripts/validation/validate-skill-frontmatter.sh skills
+  - bash scripts/validation/validate-skill-private-content.sh --staged
+  - bash scripts/validation/validate-skill-description-length.sh --staged
+  - bash scripts/validation/validate-skill-waza.sh --staged
   - gh skill publish --dry-run before release
 
 skills:
@@ -246,8 +246,8 @@ skills:
     standalone_decision: keep_standalone_thin_trigger
     personal_content_action: scan_before_publish
     validation_expectations:
-      - bash bin/validate-skill-frontmatter.sh skills/create-review-comment
-      - bash bin/validate-skill-waza.sh skills/create-review-comment/SKILL.md
+      - bash scripts/validation/validate-skill-frontmatter.sh skills/create-review-comment
+      - bash scripts/validation/validate-skill-waza.sh skills/create-review-comment/SKILL.md
       - verify GitHub comments never expose internal review mechanics
 
   - name: subagent-review

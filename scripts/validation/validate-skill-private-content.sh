@@ -66,7 +66,7 @@ is_scan_target() {
   skills/* | config/tmux-a2a-postman/postman.md | .github/workflows/ci.yaml)
     return 0
     ;;
-  bin/validate-skill-private-content.sh | bin/validate-skill-release-readiness.sh)
+  scripts/validation/validate-skill-private-content.sh | scripts/validation/validate-skill-release-readiness.sh)
     return 0
     ;;
   docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)

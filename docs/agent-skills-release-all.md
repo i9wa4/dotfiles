@@ -25,13 +25,13 @@ For `publish: false` entries, release readiness requires one of these
 Run the classification gate in report mode:
 
 ```sh
-bash bin/validate-skill-release-readiness.sh
+bash scripts/validation/validate-skill-release-readiness.sh
 ```
 
 Run the blocking gate used by the release workflow:
 
 ```sh
-bash bin/validate-skill-release-readiness.sh --strict
+bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
 ## Routine CI

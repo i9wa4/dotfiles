@@ -63,7 +63,7 @@ jobs:
         run: nix flake check --print-build-logs
 
       - name: Report Agent Skills release readiness
-        run: bash bin/validate-skill-release-readiness.sh
+        run: bash scripts/validation/validate-skill-release-readiness.sh
 
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
@@ -98,14 +98,14 @@ jobs:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
 
       - name: Validate classification release readiness
-        run: bash bin/validate-skill-release-readiness.sh --strict
+        run: bash scripts/validation/validate-skill-release-readiness.sh --strict
 
       - name: Validate trigger results
         run: |
           set -eu
-          test -f bin/validate-skill-trigger-matrix.sh
+          test -f scripts/validation/validate-skill-trigger-matrix.sh
           test -f skills/trigger-validation.json
-          bash bin/validate-skill-trigger-matrix.sh --strict-results
+          bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
 
       - name: Validate skill publish dry-run
         env:

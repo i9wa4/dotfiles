@@ -50,12 +50,12 @@ in
       if-shell '${isSshClient}' \
         "set-option -g status 2" \
         "set-option -g status on"
-      set-option -g status-left "[#(${dotfilesDir}/bin/tmux-session-index '#{session_id}')] #{=30:session_name} "
+      set-option -g status-left "[#(${dotfilesDir}/scripts/tmux/tmux-session-index '#{session_id}')] #{=30:session_name} "
       set-option -g status-left-length 34
       set-option -g status-position top
       if-shell '${isSshClient}' \
-        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\"; set-option -g status-format[1] '#[align=right]#(tmux-a2a-postman get-status-oneline 2>/dev/null)'" \
-        "set-option -g status-right \"#(tmux-a2a-postman get-status-oneline 2>/dev/null) #(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/bin/system-load)\""
+        "set-option -g status-right \"#(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/scripts/tmux/system-load)\"; set-option -g status-format[1] '#[align=right]#(tmux-a2a-postman get-status-oneline 2>/dev/null)'" \
+        "set-option -g status-right \"#(tmux-a2a-postman get-status-oneline 2>/dev/null) #(cd \\\"#{pane_current_path}\\\" && ${dotfilesDir}/bin/repo-status) #(${dotfilesDir}/scripts/tmux/system-load)\""
       set-option -g status-right-length 200
       set-option -g status-style bg=default
       set-option -g window-status-bell-style 'none'
