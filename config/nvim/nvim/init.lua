@@ -7,14 +7,10 @@ local function send_tmux_clipboard(content)
   end
 end
 
-local function send_register(reg)
-  local content = vim.fn.getreg(reg)
+vim.api.nvim_create_user_command("R", function(opts)
+  local content = vim.fn.getreg(opts.args)
   pcall(vim.fn.setreg, "+", content)
   send_tmux_clipboard(content)
-end
-
-vim.api.nvim_create_user_command("R", function(opts)
-  send_register(opts.args)
 end, { nargs = "?" })
 
 local function highlight_define()
@@ -49,16 +45,14 @@ local function highlight_match()
     ids[#ids + 1] = vim.fn.matchadd(group, pattern)
   end
 
+  add("CursorLine", [[\t]])
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
-
   add("WildMenu", [[# %%\|# COMMAND ----------]])
   add("WildMenu", [[\[ \]])
-
-  local now = vim.fn.localtime()
-  add("WildMenu", vim.fn.strftime("%Y%m%d", now))
-  add("WildMenu", vim.fn.strftime("%Y-%m-%d", now))
-  add("WildMenu", vim.fn.strftime("%Y/%m/%d", now))
+  add("WildMenu", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
+  add("WildMenu", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
+  add("WildMenu", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
 
   vim.w.my_highlight_match_ids = ids
 end
@@ -227,4 +221,4 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 vim.cmd("syntax enable")
-vim.cmd.colorscheme(vim.g.colors_name or "habamax")
+vim.cmd.colorscheme(vim.g.colors_name or "retrobox")
