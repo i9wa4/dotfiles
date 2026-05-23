@@ -185,7 +185,6 @@ require("lazy").setup({
       { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
       { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
     },
-    opts = { { "default-title", "hide" } },
   },
   {
     "stevearc/oil.nvim",
