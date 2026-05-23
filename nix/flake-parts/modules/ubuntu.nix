@@ -77,7 +77,6 @@ in
             home = {
               packages = [
                 # zsh: installed by home-manager programs.zsh (zsh.nix)
-                pkgs.wslu # WSL utilities (harmless on non-WSL)
               ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";
