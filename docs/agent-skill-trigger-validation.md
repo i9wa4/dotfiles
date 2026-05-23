@@ -42,7 +42,7 @@ Allowed `result` values are:
 Run the structural validator before changing trigger cases:
 
 ```sh
-bash bin/validate-skill-trigger-matrix.sh
+bash scripts/validation/validate-skill-trigger-matrix.sh
 ```
 
 The structural validator checks that:
@@ -58,10 +58,10 @@ This validation is compatible with the existing skill validators. Use it with
 the normal skill checks for any changed target skill:
 
 ```sh
-bash bin/validate-skill-frontmatter.sh skills
-bash bin/validate-skill-description-length.sh skills
-bash bin/validate-skill-waza.sh skills/<target-skill>/SKILL.md
-bash bin/validate-skill-private-content.sh \
+bash scripts/validation/validate-skill-frontmatter.sh skills
+bash scripts/validation/validate-skill-description-length.sh skills
+bash scripts/validation/validate-skill-waza.sh skills/<target-skill>/SKILL.md
+bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
   docs/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
@@ -104,7 +104,7 @@ Before removing old standalone skills, declaring Agent Skills release readiness,
 creating a tag, or publishing a release, run:
 
 ```sh
-bash bin/validate-skill-trigger-matrix.sh --strict-results
+bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
 ```
 
 Strict mode requires every matrix case to have `result: "pass"`. A pending,

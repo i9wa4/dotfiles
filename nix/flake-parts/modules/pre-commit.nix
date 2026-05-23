@@ -140,7 +140,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-frontmatter.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-frontmatter.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -152,7 +152,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-description-length.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-description-length.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -167,7 +167,7 @@
               if [ -n "''${NIX_BUILD_TOP:-}" ]; then
                 export SKILL_WAZA_CHECK_LINKS=0
               fi
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-waza.sh} "$@"
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-waza.sh} "$@"
             ''}";
             files = "^skills/";
             require_serial = true;
@@ -176,7 +176,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-private-content-scan" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-private-content.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
             ''}";
             files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skills-management\\.md|docs/dotfiles-operating-concepts\\.md)";
             types = [ "file" ];
