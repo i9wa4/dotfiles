@@ -151,27 +151,16 @@ end, { ["repeat"] = -1 })
 -- --------------------------------------
 -- Option
 --
-vim.opt.hidden = true
 vim.opt.nrformats = { "unsigned" }
 
+vim.opt.ignorecase = true
 if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep --no-heading"
   vim.opt.grepformat = "%f:%l:%c:%m"
 end
 
-vim.opt.hlsearch = true
-vim.opt.ignorecase = true
-vim.opt.incsearch = true
-pcall(function()
-  vim.opt.shortmess:remove("S")
-end)
-vim.opt.smartcase = true
-vim.opt.wrapscan = true
-
 vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
-vim.opt.list = true
-vim.opt.listchars = { space = "␣", tab = ">-", trail = "~", nbsp = "%" }
 vim.opt.number = true
 
 vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
@@ -179,8 +168,8 @@ vim.opt.autoread = true
 vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.undofile = false
-vim.opt.clipboard = ""
 
+vim.opt.clipboard = ""
 if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
   vim.opt.clipboard:prepend("unnamed")
 else
