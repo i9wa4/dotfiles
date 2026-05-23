@@ -34,10 +34,6 @@ require("lazy").setup({
 vim.opt.nrformats = { "unsigned" }
 
 vim.opt.ignorecase = true
-if vim.fn.executable("rg") == 1 then
-  vim.opt.grepprg = "rg --vimgrep --no-heading"
-  vim.opt.grepformat = "%f:%l:%c:%m"
-end
 
 vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
