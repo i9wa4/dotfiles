@@ -88,12 +88,14 @@
   ];
 
   # Homebrew
-  # No auto-update/upgrade: frequent `nix run '.#switch'` is the cadence, and
-  # cask apps (Chrome, VSCode, Zoom, Docker Desktop, ...) have their own
-  # self-updaters. Run `brew upgrade` manually when a forced bump is needed.
+  # Allow activation-time metadata updates so Homebrew's cask API and portable
+  # Ruby stay in sync before `brew bundle` resolves casks. Keep upgrades
+  # disabled so `nix run '.#switch'` does not force app version bumps.
   homebrew = {
     enable = true;
     onActivation = {
+      autoUpdate = true;
+      upgrade = false;
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
     };

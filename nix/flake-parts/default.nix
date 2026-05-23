@@ -7,17 +7,9 @@ let
     download-buffer-size = 128 * 1024 * 1024; # 128 MiB
     tarball-ttl = 60 * 60 * 24; # 1 day
   };
-
-  # SSOT for nixpkgs-unstable instantiation (used by ubuntu.nix and darwin.nix)
-  mkPkgsUnstable =
-    system:
-    import inputs.nixpkgs-unstable {
-      localSystem = system;
-      config.allowUnfree = true;
-    };
 in
 {
-  _module.args = { inherit commonNixSettings mkPkgsUnstable; };
+  _module.args = { inherit commonNixSettings; };
 
   imports = [
     inputs.git-hooks.flakeModule
@@ -25,8 +17,15 @@ in
     ./modules/apps.nix
     ./modules/pre-commit.nix
     ./modules/treefmt.nix
-    ./modules/waza.nix
     ./modules/darwin.nix
     ./modules/ubuntu.nix
   ];
+
+  perSystem =
+    { pkgs, system, ... }:
+    {
+      packages.waza = pkgs.callPackage ../packages/waza.nix {
+        inherit system;
+      };
+    };
 }

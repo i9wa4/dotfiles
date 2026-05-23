@@ -3,7 +3,6 @@
 {
   inputs,
   commonNixSettings,
-  mkPkgsUnstable,
   ...
 }:
 let
@@ -28,7 +27,6 @@ let
     }:
     let
       username = getUsername;
-      pkgs-unstable = mkPkgsUnstable system;
     in
     nix-darwin.lib.darwinSystem {
       inherit system;
@@ -56,7 +54,7 @@ let
             useUserPackages = true;
             backupFileExtension = "backup";
             extraSpecialArgs = {
-              inherit username inputs pkgs-unstable;
+              inherit username inputs;
             };
             users.${username} =
               {
@@ -130,9 +128,8 @@ in
         "macskk"
         "monitorcontrol"
         "obsidian"
-        "visual-studio-code"
         "zoom"
-        # "maccy"
+        # "visual-studio-code"
       ];
     in
     {
