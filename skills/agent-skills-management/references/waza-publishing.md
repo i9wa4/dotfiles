@@ -76,8 +76,8 @@ git diff --check
 
 The pre-commit hook `skill-waza-check` runs
 `scripts/validation/validate-skill-waza.sh` for changed paths under `skills/`.
-Normal commits therefore check only changed skill directories; `pre-commit run
---all-files` and `nix flake check` check every skill.
+Normal commits therefore check only changed skill directories;
+`pre-commit run --all-files` and `nix flake check` check every skill.
 
 Run relevant pre-commit hooks for changed skill/docs files. Run `nix flake
 check` when Nix, workflow, or shared harness files changed. `nix run '.#switch'`

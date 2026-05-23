@@ -21,7 +21,7 @@ installed, validated, or explained.
 ## Working Rules
 
 - Treat top-level `skills/` and `nix/home-manager/agents/` as the editable
-<!-- private-content-scan: allow-next-line -->
+  <!-- private-content-scan: allow-next-line -->
   source. Do not hand-edit installed outputs under `~/.claude/` or `~/.codex/`.
 - Prefer prompt or skill guidance when a behavior can be expressed as agent
   instructions. Use config, hooks, or deny rules for hard guarantees and runtime
@@ -31,7 +31,7 @@ installed, validated, or explained.
 - Keep `SKILL.md` short. Put detailed Claude Code, Codex CLI, workspace trust,
   changelog, or release-tracking material in `references/`.
 - Treat Claude workspace trust as part of harness diagnosis. Interactive
-<!-- private-content-scan: allow-next-line -->
+  <!-- private-content-scan: allow-next-line -->
   `PreToolUse` hooks can be skipped when `~/.claude/.claude.json` project
   entries have `hasTrustDialogAccepted` set to `false`.
 - For multi-step harness work, create or update a durable `mkmd` plan and record
