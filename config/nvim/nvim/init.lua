@@ -21,6 +21,9 @@ require("lazy").setup({
     lazy = false,
     opts = {
       default_file_explorer = true,
+      win_options = {
+        statusline = "%<%{substitute(expand('%'), '^oil://\\zs.*', '\\=fnamemodify(submatch(0), \":~\")', '')}%h%m%r%=%-14.(%l,%c%V%) %P",
+      },
       view_options = {
         show_hidden = true,
       },
