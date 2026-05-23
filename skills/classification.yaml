@@ -30,6 +30,9 @@ target_groups:
   github: >
     GitHub CLI mechanics, public-surface hygiene, issue and PR operations, and
     inline comment rules.
+  atlassian: >
+    Jira and Confluence access with credential-presence checks and
+    secret-safe reporting.
   create-review-comment: >
     Thin user-facing PR review-comment drafting trigger.
   subagent-review: >
@@ -197,6 +200,19 @@ skills:
     action: keep
     target_group: github
     target_name: github
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: atlassian
+    path: skills/atlassian
+    publish: true
+    scope: atlassian-workflow
+    action: keep
+    target_group: atlassian
+    target_name: atlassian
     release_state: needs_private_content_scan
     owner_surface: skill
     standalone_decision: keep_standalone

@@ -55,6 +55,9 @@ in
       pnpmPackageReady() {
         pnpmPackageInstalled "$1" || return 1
         case "$1" in
+          "@devcontainers/cli")
+            [ -x "${pnpmBin}/devcontainer" ]
+            ;;
           "ctx7")
             [ -x "${pnpmBin}/ctx7" ]
             ;;
@@ -106,6 +109,7 @@ in
 
       SAFE_CHAIN_PACKAGE="@aikidosec/safe-chain"
       PNPM_PACKAGES=(
+        "@devcontainers/cli"
         "ctx7"
         "vde-layout"
         "vde-monitor"
@@ -136,6 +140,7 @@ in
         "aikido-uvx"
         "aikido-yarn"
         "ctx7"
+        "devcontainer"
         "safe-chain"
         "vde-layout"
         "vde-monitor"
