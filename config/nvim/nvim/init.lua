@@ -59,9 +59,7 @@ else
   vim.opt.clipboard:prepend("unnamedplus")
 end
 
-if vim.fn.has("termguicolors") == 1 then
-  vim.opt.termguicolors = true
-end
+vim.opt.termguicolors = true
 
 -- --------------------------------------
 -- Helper
