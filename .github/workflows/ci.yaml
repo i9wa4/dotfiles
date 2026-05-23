@@ -49,7 +49,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           set -eu
-          sudo sed -i.bak '/^access-tokens = github\.com=/d' /etc/nix/nix.conf
+          sudo sed -i '/^access-tokens = github\.com=/d' /etc/nix/nix.conf
+          sudo rm -f /etc/nix/nix.conf.bak
           sudo systemctl restart nix-daemon
 
       - name: Cache Nix store
