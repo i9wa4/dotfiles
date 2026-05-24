@@ -1,4 +1,34 @@
 -- --------------------------------------
+-- Option
+--
+vim.opt.nrformats = { "unsigned" }
+
+vim.opt.ignorecase = true
+
+vim.opt.ambiwidth = "double"
+vim.opt.cursorline = true
+vim.opt.number = true
+
+vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
+vim.opt.autoread = true
+vim.opt.backup = false
+vim.opt.swapfile = false
+vim.opt.undofile = false
+
+vim.opt.termguicolors = true
+
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
+
+vim.opt.clipboard = ""
+if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
+  vim.opt.clipboard:prepend("unnamed")
+else
+  vim.opt.clipboard:prepend("unnamedplus")
+end
+
+-- --------------------------------------
 -- Plugin
 --
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -30,36 +60,6 @@ require("lazy").setup({
     },
   },
 })
-
--- --------------------------------------
--- Option
---
-vim.opt.nrformats = { "unsigned" }
-
-vim.opt.ignorecase = true
-
-vim.opt.ambiwidth = "double"
-vim.opt.cursorline = true
-vim.opt.number = true
-
-vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
-vim.opt.autoread = true
-vim.opt.backup = false
-vim.opt.swapfile = false
-vim.opt.undofile = false
-
-vim.opt.termguicolors = true
-
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
-
-vim.opt.clipboard = ""
-if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-  vim.opt.clipboard:prepend("unnamed")
-else
-  vim.opt.clipboard:prepend("unnamedplus")
-end
 
 -- --------------------------------------
 -- Helper
