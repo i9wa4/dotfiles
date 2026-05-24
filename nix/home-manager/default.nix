@@ -58,9 +58,6 @@ in
     inherit username;
     homeDirectory = lib.mkForce homeDir;
 
-    # Suppress version mismatch warning (HM release + unstable nixpkgs)
-    enableNixpkgsReleaseCheck = false;
-
     # Home Manager state version
     # Set to the version of home-manager at initial installation. Do not change.
     # NOTE: This is NOT the home-manager release version. It controls internal
