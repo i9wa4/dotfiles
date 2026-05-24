@@ -3,7 +3,6 @@
 {
   inputs,
   commonNixSettings,
-  mkPkgsUnstable,
   ...
 }:
 let
@@ -28,7 +27,6 @@ let
     }:
     let
       username = getUsername;
-      pkgs-unstable = mkPkgsUnstable system;
     in
     nix-darwin.lib.darwinSystem {
       inherit system;
@@ -56,7 +54,7 @@ let
             useUserPackages = true;
             backupFileExtension = "backup";
             extraSpecialArgs = {
-              inherit username inputs pkgs-unstable;
+              inherit username inputs;
             };
             users.${username} =
               {
@@ -69,7 +67,6 @@ let
                 imports = [
                   nix-index-database.homeModules.nix-index
                   ../../home-manager
-                  ../../home-manager/modules/vscode.nix
                 ];
                 # Darwin-specific cleanup (.DS_Store, xattr)
                 home.activation.cleanDarwinFiles =
@@ -130,8 +127,8 @@ in
         "macskk"
         "monitorcontrol"
         "obsidian"
+        "visual-studio-code"
         "zoom"
-        # "visual-studio-code"
       ];
     in
     {

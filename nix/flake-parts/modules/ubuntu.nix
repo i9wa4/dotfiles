@@ -3,7 +3,6 @@
 {
   inputs,
   commonNixSettings,
-  mkPkgsUnstable,
   ...
 }:
 let
@@ -19,7 +18,6 @@ in
         localSystem = system;
         config.allowUnfree = true;
       };
-      pkgs-unstable = mkPkgsUnstable system;
       # SSM sessions set USER=root even for non-root users (EUID != 0).
       # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)
       username =
@@ -41,7 +39,7 @@ in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       extraSpecialArgs = {
-        inherit username inputs pkgs-unstable;
+        inherit username inputs;
       };
       modules = [
         nix-index-database.homeModules.nix-index
@@ -79,7 +77,6 @@ in
             home = {
               packages = [
                 # zsh: installed by home-manager programs.zsh (zsh.nix)
-                pkgs.wslu # WSL utilities (harmless on non-WSL)
               ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";

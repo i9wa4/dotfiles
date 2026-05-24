@@ -64,12 +64,21 @@ Expect it to:
 - copy the source checkout's `.envrc` when available, including for non-Nix
   repositories
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If no `.envrc` was copied
-  and the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-  `direnv allow`; for copied or otherwise pre-existing `.envrc` files, use
-  `repo-setup --allow-direnv` only after reviewing the file. If Nix or
-  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-  or enter the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. A copied source-checkout
+  `.envrc` is allowed automatically for issue worktrees only when the command
+  runs from the primary `main` checkout. Linked-worktree and non-main
+  invocations still copy `.envrc`, but do not implicitly allow it. If an issue
+  worktree already exists, re-run the command from the primary `main` checkout
+  to remediate a missing `direnv allow` only when the worktree `.envrc` still
+  matches the source checkout `.envrc`; otherwise review and run
+  `repo-setup --allow-direnv` manually. If no `.envrc` was copied and the
+  checkout has `flake.nix`, generated fallback trust is primary-main only:
+  primary-main issue creation lets `repo-setup` create `use flake` and run
+  `direnv allow`, while linked-worktree or non-main issue creation passes
+  `--no-allow-generated-envrc` so the generated file is not implicitly allowed.
+  For any other pre-existing `.envrc`, use `repo-setup --allow-direnv` only
+  after reviewing the file. If Nix or devshell setup fails, `repo-setup` warns
+  and continues; re-run `repo-setup` or enter the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as

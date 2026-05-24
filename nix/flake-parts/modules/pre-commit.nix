@@ -2,7 +2,6 @@
 # Run: nix flake check (or automatically on git commit in devShell)
 {
   inputs,
-  mkPkgsUnstable,
   ...
 }:
 {
@@ -13,7 +12,6 @@
       ...
     }:
     let
-      pkgs-unstable = mkPkgsUnstable system;
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
         disable = ["MD041"]
@@ -60,6 +58,15 @@
         inherit system;
       };
       opensslLib = pkgs.lib.getLib pkgs.openssl;
+      worktreeDirenvTestPath = pkgs.lib.makeBinPath [
+        pkgs.bash
+        pkgs.coreutils
+        pkgs.gawk
+        pkgs.git
+        pkgs.gnugrep
+        pkgs.gnused
+        pkgs.jq
+      ];
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -184,7 +191,7 @@
           };
           skill-publish-dry-run = {
             enable = true;
-            entry = "${pkgs-unstable.gh}/bin/gh skill publish --dry-run";
+            entry = "${pkgs.gh}/bin/gh skill publish --dry-run";
             files = "^skills/";
             pass_filenames = false;
           };
@@ -193,7 +200,7 @@
           # === Markdown linter ===
           rumdl-check = {
             enable = true;
-            entry = "${pkgs-unstable.rumdl}/bin/rumdl check --config ${rumdlConfig}";
+            entry = "${pkgs.rumdl}/bin/rumdl check --config ${rumdlConfig}";
             types = [ "markdown" ];
           };
           markdown-formatter = {
@@ -206,6 +213,12 @@
 
           # === Shell ===
           shellcheck.enable = true;
+          worktree-direnv-test = {
+            enable = true;
+            entry = "${pkgs.bash}/bin/bash -c 'export PATH=${worktreeDirenvTestPath}:$PATH; exec ${pkgs.bash}/bin/bash tests/worktree-direnv.sh'";
+            files = "^(bin/(issue-worktree-create|pr-worktree-create|repo-setup)|tests/worktree-direnv\\.sh)$";
+            pass_filenames = false;
+          };
 
           # === Unified formatter ===
           # Skip in sandbox (treefmt-nix already runs treefmt-check separately)
