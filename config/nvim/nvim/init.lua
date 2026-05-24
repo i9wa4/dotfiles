@@ -1,6 +1,14 @@
 -- --------------------------------------
 -- Option
 --
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+vim.opt.autoread = true
+vim.opt.backup = false
+vim.opt.swapfile = false
+vim.opt.undofile = false
+
 vim.opt.nrformats = { "unsigned" }
 
 vim.opt.ignorecase = true
@@ -8,12 +16,6 @@ vim.opt.ignorecase = true
 vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
 vim.opt.number = true
-
-vim.g.netrw_home = vim.fn.expand("$XDG_CACHE_HOME")
-vim.opt.autoread = true
-vim.opt.backup = false
-vim.opt.swapfile = false
-vim.opt.undofile = false
 
 vim.opt.termguicolors = true
 
