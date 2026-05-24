@@ -64,9 +64,10 @@ Expect it to:
 - copy the source checkout's `.envrc` when available, including for non-Nix
   repositories
 - run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If no `.envrc` was copied
-  and the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-  `direnv allow`; for copied or otherwise pre-existing `.envrc` files, use
+  generate per-worktree `.pre-commit-config.yaml`. A copied source-checkout
+  `.envrc` is allowed automatically for issue worktrees. If no `.envrc` was
+  copied and the checkout has `flake.nix`, `repo-setup` creates `use flake`
+  and runs `direnv allow`; for any other pre-existing `.envrc`, use
   `repo-setup --allow-direnv` only after reviewing the file. If Nix or
   devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
   or enter the devshell before pushing.

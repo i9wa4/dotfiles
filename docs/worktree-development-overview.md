@@ -31,14 +31,16 @@ The workflow has five recurring phases:
    New worktrees copy the source checkout's `.envrc` when available, including
    for non-Nix repositories, then run `repo-setup` when available and register
    the final path with `zoxide`. `repo-setup` attempts to install the repo
-   devshell hooks and generated per-worktree pre-commit config. If no `.envrc`
-   was copied and the checkout has `flake.nix`, a trusted issue worktree
-   creates `use flake` and runs `direnv allow`. PR review worktrees create the
-   same generated fallback file without allowing it by default, because the
-   checked-out PR branch controls `flake.nix`; pass `--allow-direnv` to the
-   creation command only after reviewing the file and branch. If Nix or
-   devshell setup fails, it warns and continues; re-run `repo-setup` or enter
-   the devshell before pushing so `.pre-commit-config.yaml` is generated.
+   devshell hooks and generated per-worktree pre-commit config. Trusted issue
+   worktrees allow a copied source-checkout `.envrc` automatically. If no
+   `.envrc` was copied and the checkout has `flake.nix`, a trusted issue
+   worktree creates `use flake` and runs `direnv allow`. PR review worktrees
+   create the same generated fallback file without allowing it by default,
+   because the checked-out PR branch controls `flake.nix`; pass
+   `--allow-direnv` to the creation command only after reviewing the file and
+   branch. If Nix or devshell setup fails, it warns and continues; re-run
+   `repo-setup` or enter the devshell before pushing so
+   `.pre-commit-config.yaml` is generated.
 4. Re-enter quickly.
    Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or
    worktree from normal shell use. Inside tmux, re-entry also keeps session
@@ -58,8 +60,9 @@ policy:
 - cross-repository PR review support
 - `.envrc`, devshell hook, and `repo-setup` bootstrap: copy source `.envrc`
   first, generate `use flake` only as the Nix flake fallback, and use automatic
-  trust only for generated fallback files in trusted issue worktrees with
-  explicit review for PR review worktrees or pre-existing `.envrc`
+  trust only for copied source `.envrc` files or generated fallback files in
+  trusted issue worktrees, with explicit review for PR review worktrees or
+  other pre-existing `.envrc`
 - zoxide registration for fast re-entry
 - tmux-aware session naming
 - explicit cleanup checks before removal

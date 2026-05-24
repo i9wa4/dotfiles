@@ -16,7 +16,7 @@ set -o posix
 #   - jq
 #   - claude (Anthropic CLI, optional)
 #   - repo-setup (optional)
-#   - direnv (required by repo-setup when generating or explicitly allowing .envrc)
+#   - direnv (required by repo-setup when allowing generated or copied .envrc)
 
 # Check required dependencies
 for cmd in gh jq git; do
@@ -265,9 +265,12 @@ ${issue_comments}
         ;;
     esac
 
+    copied_envrc="false"
+
     # Copy .envrc if it exists
     if [[ -f "${repo_root}/.envrc" ]]; then
       cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
+      copied_envrc="true"
       echo "* Copied .envrc to worktree"
     fi
 
@@ -275,7 +278,10 @@ ${issue_comments}
     if command -v repo-setup &>/dev/null; then
       echo "-> Running repo-setup..."
       cd "$worktree_path"
-      if [[ ${allow_direnv} == "true" ]]; then
+      if [[ ${allow_direnv} == "true" || ${copied_envrc} == "true" ]]; then
+        if [[ ${allow_direnv} != "true" ]]; then
+          echo "* Allowing copied source .envrc for issue worktree"
+        fi
         repo-setup --allow-direnv
       else
         repo-setup

@@ -168,7 +168,8 @@ Both scripts:
   repositories
 - Run `repo-setup` if available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. Issue worktrees keep the
-  trusted default: if no `.envrc` was copied and the checkout has `flake.nix`,
+  trusted default: a copied source-checkout `.envrc` is allowed automatically,
+  and if no `.envrc` was copied and the checkout has `flake.nix`,
   `repo-setup` creates `use flake` and runs `direnv allow`. PR review
   worktrees preserve the trust gate by creating the generated `.envrc` without
   allowing it unless `pr-worktree-create --allow-direnv` is used after review.

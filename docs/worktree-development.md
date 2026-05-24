@@ -71,10 +71,10 @@ For the adoption decision behind the current tool stack, see
 9. On a newly created worktree, it copies the source checkout's `.envrc` when
    present, including for non-Nix repositories, and runs `repo-setup` when
    available. `repo-setup` attempts to install the repo devshell hooks and
-   generated `.pre-commit-config.yaml` by default. If no `.envrc` was copied
-   and the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-   `direnv allow`; for copied or otherwise pre-existing `.envrc` files, pass
-   `--allow-direnv` when creating the worktree to run
+   generated `.pre-commit-config.yaml` by default. Issue worktrees allow a
+   copied source-checkout `.envrc` automatically. If no `.envrc` was copied and
+   the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
+   `direnv allow`; for any other pre-existing `.envrc`, run
    `repo-setup --allow-direnv` only after reviewing the file. If Nix or
    devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
    or enter the devshell before pushing so `.pre-commit-config.yaml` is
@@ -198,10 +198,10 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
   remove it with `zoxide remove <path>`.
 - Preserve copy-first `.envrc` behavior and `repo-setup` bootstrap when
   changing the backend or jump layer. Worktrees copy the source checkout's
-  `.envrc` when present. Only when no `.envrc` was copied and the checkout has
-  `flake.nix` should `repo-setup` generate `use flake`. Issue worktrees may
-  automatically allow that generated fallback file. PR review worktrees must
-  preserve explicit authorization because the checked-out PR branch controls
+  `.envrc` when present. Issue worktrees may automatically allow that copied
+  source file and may also allow a generated fallback file when no `.envrc` was
+  copied and the checkout has `flake.nix`. PR review worktrees must preserve
+  explicit authorization because the checked-out PR branch controls
   `flake.nix`; use `--allow-direnv` only when the file and branch have been
   reviewed.
 - If a linked worktree reports `No .pre-commit-config.yaml file was found`,
