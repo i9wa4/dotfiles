@@ -28,7 +28,7 @@ Run the classification gate in report mode when investigating cleanup work:
 bash scripts/validation/validate-skill-release-readiness.sh
 ```
 
-Run the blocking gate used by routine CI and release publishing:
+Run the blocking gate used by pre-commit, routine CI, and release publishing:
 
 ```sh
 bash scripts/validation/validate-skill-release-readiness.sh --strict
@@ -37,15 +37,18 @@ bash scripts/validation/validate-skill-release-readiness.sh --strict
 ## Routine CI
 
 `.github/workflows/ci.yaml` runs release-grade validation on pull requests,
-`main` pushes, manual dispatches, and `v*` tag pushes. The CI job blocks unless
-all release validations pass:
+`main` pushes, manual dispatches, and `v*` tag pushes through
+`nix flake check --print-build-logs`. That check runs the repo pre-commit suite
+over all files, including the Agent Skills release hooks:
 
+- full private-content scan over checked-in skill directories,
 - strict classification readiness from `skills/classification.yaml`,
 - consolidated trigger validation,
 - `gh skill publish --dry-run`.
 
-That makes CI the proof point for release readiness. Tagging a commit does not
-add a separate manual validation burden.
+Pre-commit is the enforcement path. CI is the remote proof that the same gates
+passed for the target commit. Tagging a commit does not add a separate manual
+validation burden.
 
 ## Tag Release
 
@@ -53,13 +56,13 @@ A tag push is the publishing trigger. There is no separate manual release-all
 workflow.
 
 Creating and pushing a `v*` tag is enough to enter the release path. When the
-tag is pushed, `.github/workflows/ci.yaml` runs the normal CI job first. If CI
-passes, the tag-only release job runs with a write-scoped token.
+tag is pushed, `.github/workflows/ci.yaml` runs the normal CI job first,
+including the pre-commit release gates. If CI passes, the tag-only release job
+runs with a write-scoped token.
 
 The release job publishes the already-validated catalog:
 
 - `gh skill publish --tag "$TAG_NAME"`.
 
-The current classification intentionally blocks routine CI and release-all
-publishing until the remaining cleanup states are changed to release-ready or
-removed from the publish set by review.
+The classification must stay release-ready before routine CI or release-all
+publishing can pass.

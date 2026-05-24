@@ -62,21 +62,6 @@ jobs:
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
-      - name: Validate Agent Skills release readiness
-        run: bash scripts/validation/validate-skill-release-readiness.sh --strict
-
-      - name: Validate Agent Skills trigger results
-        run: |
-          set -eu
-          test -f scripts/validation/validate-skill-trigger-matrix.sh
-          test -f skills/trigger-validation.json
-          bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
-
-      - name: Validate Agent Skills publish dry-run
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: nix run nixpkgs#gh -- skill publish --dry-run
-
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
 

@@ -23,11 +23,11 @@ equivalent: the script scans every user-level skill tree under
 `$HOME/.*/skills` regardless of which copy launches it.
 
 ```sh
-bash ~/.codex/skills/skill-description-index/scripts/agent-skill-description-index.sh
+bash "$HOME/.codex/skills/skill-description-index/scripts/agent-skill-description-index.sh"
 ```
 
 ```sh
-bash ~/.claude/skills/skill-description-index/scripts/agent-skill-description-index.sh
+bash "$HOME/.claude/skills/skill-description-index/scripts/agent-skill-description-index.sh"
 ```
 
 The script prints a Markdown index with skill root, skill name, home-relative

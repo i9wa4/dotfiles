@@ -69,7 +69,13 @@ is_scan_target() {
   scripts/validation/validate-skill-private-content.sh | scripts/validation/validate-skill-release-readiness.sh)
     return 0
     ;;
-  docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)
+  scripts/validation/validate-skill-trigger-matrix.sh)
+    return 0
+    ;;
+  docs/agent-skill-trigger-validation.md | docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)
+    return 0
+    ;;
+  nix/flake-parts/modules/pre-commit.nix)
     return 0
     ;;
   *)

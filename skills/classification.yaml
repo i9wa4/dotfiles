@@ -92,6 +92,11 @@ release_readiness:
   routine_ci_workflow: .github/workflows/ci.yaml
   report_command: bash scripts/validation/validate-skill-release-readiness.sh
   strict_command: bash scripts/validation/validate-skill-release-readiness.sh --strict
+  pre_commit_release_hooks:
+    - skill-release-private-content-scan
+    - skill-release-readiness
+    - skill-trigger-matrix
+    - skill-publish-dry-run
   dry_run_command: gh skill publish --dry-run
   publish_command: gh skill publish --tag <tag>
   publish_true_requires:
@@ -123,7 +128,7 @@ common_validation_expectations: &common_validation
   - bash scripts/validation/validate-skill-private-content.sh --staged
   - bash scripts/validation/validate-skill-description-length.sh --staged
   - bash scripts/validation/validate-skill-waza.sh --staged
-  - gh skill publish --dry-run in routine CI before release
+  - gh skill publish --dry-run in pre-commit and routine CI before release
 
 skills:
   - name: agent-harness-engineering
@@ -133,10 +138,10 @@ skills:
     action: keep
     target_group: agent-harness-engineering
     target_name: agent-harness-engineering
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: agent-workspace
@@ -189,23 +194,23 @@ skills:
     action: keep
     target_group: agent-skills-management
     target_name: agent-skills-management
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: skill-description-index
     path: skills/skill-description-index
     publish: true
     scope: agent-skills-catalog-diagnostics
-    action: merge_into_agent_skills_management_references
+    action: keep_catalog_diagnostics
     target_group: agent-skills-management
-    target_name: agent-skills-management
-    release_state: migrate_before_release
-    owner_surface: skills/agent-skills-management/references
-    standalone_decision: merge_into_agent_skills_management_references
-    personal_content_action: scan_before_migration
+    target_name: skill-description-index
+    release_state: release_ready
+    owner_surface: skill
+    standalone_decision: keep_standalone_catalog_diagnostics
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: github
@@ -215,10 +220,10 @@ skills:
     action: keep
     target_group: github
     target_name: github
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: atlassian
@@ -228,10 +233,10 @@ skills:
     action: keep
     target_group: atlassian
     target_name: atlassian
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: create-review-comment
@@ -241,10 +246,10 @@ skills:
     action: keep_thin_trigger
     target_group: create-review-comment
     target_name: create-review-comment
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone_thin_trigger
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations:
       - bash scripts/validation/validate-skill-frontmatter.sh skills/create-review-comment
       - bash scripts/validation/validate-skill-waza.sh skills/create-review-comment/SKILL.md
@@ -257,10 +262,10 @@ skills:
     action: keep
     target_group: subagent-review
     target_name: subagent-review
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: plan-design
@@ -270,10 +275,10 @@ skills:
     action: keep
     target_group: plan-design
     target_name: plan-design
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: brainstorming
@@ -283,15 +288,15 @@ skills:
     action: compatibility_trigger
     target_group: plan-design
     target_name: plan-design
-    release_state: migrated_to_plan_design_target
+    release_state: release_ready
     owner_surface: skills/plan-design/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Detailed ambiguity-reduction guidance now lives in plan-design references.
-      The standalone skill remains only as a compatibility trigger until the
-      release catalog no longer needs the old entry point.
+      The standalone skill remains as a release-ready compatibility trigger for
+      direct task matching.
 
   - name: systematic-debugging
     path: skills/systematic-debugging
@@ -300,10 +305,10 @@ skills:
     action: keep
     target_group: systematic-debugging
     target_name: systematic-debugging
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Remains the root-cause-first owner. Once a cause is credible, narrow fix
@@ -316,10 +321,10 @@ skills:
     action: keep
     target_group: programming
     target_name: programming
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone_target
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: tdd-tidy-first
@@ -329,10 +334,10 @@ skills:
     action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrated_to_programming_target
+    release_state: release_ready
     owner_surface: skills/programming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Detailed guidance now lives in programming references and may also be
@@ -346,10 +351,10 @@ skills:
     action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrated_to_programming_target
+    release_state: release_ready
     owner_surface: skills/programming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: python
@@ -359,10 +364,10 @@ skills:
     action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrated_to_programming_target
+    release_state: release_ready
     owner_surface: skills/programming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: nix
@@ -372,10 +377,10 @@ skills:
     action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrated_to_programming_target
+    release_state: release_ready
     owner_surface: skills/programming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       General package workflow now lives in programming references.
@@ -389,10 +394,10 @@ skills:
     action: compatibility_trigger
     target_group: programming
     target_name: programming
-    release_state: migrated_to_programming_target
+    release_state: release_ready
     owner_surface: skills/programming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: data-platform
@@ -402,10 +407,10 @@ skills:
     action: keep
     target_group: data-platform
     target_name: data-platform
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone_target
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Owns repo-local BigQuery, Databricks, dbt, restricted BigQuery/dbt safety,
@@ -418,10 +423,10 @@ skills:
     action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrated_to_data_platform_target
+    release_state: release_ready
     owner_surface: skills/data-platform/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: databricks-local
@@ -431,10 +436,10 @@ skills:
     action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrated_to_data_platform_target
+    release_state: release_ready
     owner_surface: skills/data-platform/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: dbt-local
@@ -444,10 +449,10 @@ skills:
     action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrated_to_data_platform_target
+    release_state: release_ready
     owner_surface: skills/data-platform/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: restricted-bigquery-dbt-environment
@@ -457,10 +462,10 @@ skills:
     action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrated_to_data_platform_target
+    release_state: release_ready
     owner_surface: skills/data-platform/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: aws-auth
@@ -470,10 +475,10 @@ skills:
     action: compatibility_trigger
     target_group: data-platform
     target_name: data-platform
-    release_state: migrated_to_data_platform_target
+    release_state: release_ready
     owner_surface: skills/data-platform/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Classification confirmed under data-platform: the pane mechanics are
@@ -488,10 +493,10 @@ skills:
     action: keep
     target_group: diagramming
     target_name: diagramming
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone_target
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Owns repo-local draw.io and Mermaid authoring, preview, export, layout,
@@ -504,10 +509,10 @@ skills:
     action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrated_to_diagramming_target
+    release_state: release_ready
     owner_surface: skills/diagramming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: mermaid-local
@@ -517,8 +522,8 @@ skills:
     action: compatibility_trigger
     target_group: diagramming
     target_name: diagramming
-    release_state: migrated_to_diagramming_target
+    release_state: release_ready
     owner_surface: skills/diagramming/references
-    standalone_decision: compatibility_trigger_until_release
-    personal_content_action: scan_before_publish
+    standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
