@@ -31,12 +31,18 @@ The workflow has five recurring phases:
    New worktrees copy the source checkout's `.envrc` when available, including
    for non-Nix repositories, then run `repo-setup` when available and register
    the final path with `zoxide`. `repo-setup` attempts to install the repo
-   devshell hooks and generated per-worktree pre-commit config. Trusted issue
-   worktrees allow a copied source-checkout `.envrc` automatically. If no
-   `.envrc` was copied and the checkout has `flake.nix`, a trusted issue
-   worktree creates `use flake` and runs `direnv allow`. PR review worktrees
-   create the same generated fallback file without allowing it by default,
-   because the checked-out PR branch controls `flake.nix`; pass
+   devshell hooks and generated per-worktree pre-commit config. Issue
+   worktrees allow a copied source-checkout `.envrc` automatically only when
+   the command is launched from the primary `main` checkout, where the source
+   file is the base checkout's trusted local file. Linked-worktree or non-main
+   invocations still copy `.envrc` for convenience, but they do not implicitly
+   allow it. Re-running the issue command from the primary `main` checkout
+   remediates an existing issue worktree only when that worktree `.envrc` still
+   matches the source checkout file. If no `.envrc` was copied and the
+   checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
+   `direnv allow` unless the caller disables generated-file allowance. PR
+   review worktrees create the same generated fallback file without allowing
+   it by default, because the checked-out PR branch controls `flake.nix`; pass
    `--allow-direnv` to the creation command only after reviewing the file and
    branch. If Nix or devshell setup fails, it warns and continues; re-run
    `repo-setup` or enter the devshell before pushing so
@@ -60,9 +66,10 @@ policy:
 - cross-repository PR review support
 - `.envrc`, devshell hook, and `repo-setup` bootstrap: copy source `.envrc`
   first, generate `use flake` only as the Nix flake fallback, and use automatic
-  trust only for copied source `.envrc` files or generated fallback files in
-  trusted issue worktrees, with explicit review for PR review worktrees or
-  other pre-existing `.envrc`
+  trust only for primary-main issue worktrees with copied matching source
+  `.envrc` files or generated fallback files, with explicit review for PR
+  review worktrees, linked-worktree invocations, non-main invocations, or other
+  pre-existing `.envrc`
 - zoxide registration for fast re-entry
 - tmux-aware session naming
 - explicit cleanup checks before removal

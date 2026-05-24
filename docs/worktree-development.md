@@ -67,18 +67,24 @@ For the adoption decision behind the current tool stack, see
    `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
-   with `git worktree add`.
+   with `git worktree add`. If the worktree already exists, re-running the
+   command from the primary `main` checkout can remediate a missing
+   `direnv allow` only when the existing worktree `.envrc` still matches the
+   source checkout `.envrc`; otherwise review the worktree file and run
+   `repo-setup --allow-direnv` manually.
 9. On a newly created worktree, it copies the source checkout's `.envrc` when
    present, including for non-Nix repositories, and runs `repo-setup` when
    available. `repo-setup` attempts to install the repo devshell hooks and
    generated `.pre-commit-config.yaml` by default. Issue worktrees allow a
-   copied source-checkout `.envrc` automatically. If no `.envrc` was copied and
-   the checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-   `direnv allow`; for any other pre-existing `.envrc`, run
-   `repo-setup --allow-direnv` only after reviewing the file. If Nix or
-   devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-   or enter the devshell before pushing so `.pre-commit-config.yaml` is
-   generated.
+   copied source-checkout `.envrc` automatically only when the command is run
+   from the primary `main` checkout. Running from a linked worktree or non-main
+   checkout still copies `.envrc`, but leaves `direnv allow` to explicit
+   review. If no `.envrc` was copied and the checkout has `flake.nix`,
+   `repo-setup` creates `use flake` and runs `direnv allow`; for any other
+   pre-existing `.envrc`, run `repo-setup --allow-direnv` only after reviewing
+   the file. If Nix or devshell setup fails, `repo-setup` warns and continues;
+   re-run `repo-setup` or enter the devshell before pushing so
+   `.pre-commit-config.yaml` is generated.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
 
@@ -199,11 +205,12 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
 - Preserve copy-first `.envrc` behavior and `repo-setup` bootstrap when
   changing the backend or jump layer. Worktrees copy the source checkout's
   `.envrc` when present. Issue worktrees may automatically allow that copied
-  source file and may also allow a generated fallback file when no `.envrc` was
-  copied and the checkout has `flake.nix`. PR review worktrees must preserve
-  explicit authorization because the checked-out PR branch controls
-  `flake.nix`; use `--allow-direnv` only when the file and branch have been
-  reviewed.
+  source file only from the primary `main` checkout, and may also allow a
+  generated fallback file when no `.envrc` was copied and the checkout has
+  `flake.nix`. Linked-worktree, non-main, and PR review invocations must
+  preserve explicit authorization because the checked-out branch controls
+  review-relevant code such as `flake.nix`; use `--allow-direnv` only when the
+  file and branch have been reviewed.
 - If a linked worktree reports `No .pre-commit-config.yaml file was found`,
   run `repo-setup` from that worktree. This attempts to install the devshell
   hooks and the generated per-worktree pre-commit config; if Nix or devshell

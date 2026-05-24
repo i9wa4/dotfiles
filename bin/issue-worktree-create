@@ -92,6 +92,29 @@ ensure_remote_tracking_branch() {
   fi
 }
 
+run_repo_setup_for_worktree() {
+  local worktree_path=$1
+  local allow_envrc=$2
+  local allow_message=$3
+
+  if ! command -v repo-setup &>/dev/null; then
+    return 0
+  fi
+
+  echo "-> Running repo-setup..."
+  (
+    cd "$worktree_path"
+    if [[ ${allow_envrc} == "true" ]]; then
+      if [[ -n $allow_message ]]; then
+        echo "* ${allow_message}"
+      fi
+      repo-setup --allow-direnv
+    else
+      repo-setup
+    fi
+  )
+}
+
 # Fetch remote and update main branch when it is the invoking branch.
 echo "-> Fetching remote..."
 git fetch origin
@@ -101,14 +124,22 @@ if [[ "$current_branch" == "main" ]]; then
 else
   echo "* Keeping local main unchanged while ${current_branch} is checked out"
 fi
+source_git_dir=$(git rev-parse --absolute-git-dir)
+source_common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
+trusted_source_checkout="false"
+if [[ $current_branch == "main" && $source_git_dir == "$source_common_dir" ]]; then
+  trusted_source_checkout="true"
+fi
 echo ""
 
 # Process each issue number
+had_failure="false"
 for issue_number in "$@"; do
   # Validate issue number
   if [[ ! $issue_number =~ ^[0-9]+$ ]]; then
     echo "Warning: '$issue_number' is not a valid issue number. Skipping." >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -120,6 +151,7 @@ for issue_number in "$@"; do
     echo "Error: Failed to fetch Issue #${issue_number}. Skipping." >&2
     echo "${issue_json}" >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -130,6 +162,7 @@ for issue_number in "$@"; do
   if [[ -z $issue_title ]]; then
     echo "Error: Issue #${issue_number} has no title. Skipping." >&2
     echo ""
+    had_failure="true"
     continue
   fi
 
@@ -204,11 +237,13 @@ ${issue_comments}
     if ! git fetch origin "+refs/heads/${branch_name}:refs/remotes/origin/${branch_name}"; then
       echo "Error: Could not fetch origin/${branch_name}. Skipping." >&2
       echo ""
+      had_failure="true"
       continue
     fi
     if ! ensure_remote_tracking_branch "${branch_name}"; then
       echo "Error: Could not connect local branch to origin/${branch_name}. Skipping." >&2
       echo ""
+      had_failure="true"
       continue
     fi
   elif git show-ref --verify --quiet "refs/heads/${branch_name}"; then
@@ -224,6 +259,7 @@ ${issue_comments}
     if [[ -e $desired_worktree_path ]]; then
       echo "Error: desired issue worktree path already exists: ${desired_worktree_path}" >&2
       echo ""
+      had_failure="true"
       continue
     fi
 
@@ -232,6 +268,7 @@ ${issue_comments}
         if ! git worktree add "${desired_worktree_path}" "${branch_name}"; then
           echo "Error: Could not prepare worktree for '${branch_name}' at '${desired_worktree_path}'." >&2
           echo ""
+          had_failure="true"
           continue
         fi
         ;;
@@ -239,6 +276,7 @@ ${issue_comments}
         if ! git worktree add -b "${branch_name}" "${desired_worktree_path}" "${current_branch}"; then
           echo "Error: Could not create worktree for '${branch_name}' at '${desired_worktree_path}'." >&2
           echo ""
+          had_failure="true"
           continue
         fi
         ;;
@@ -250,6 +288,19 @@ ${issue_comments}
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
     echo "* Branch: ${branch_name}"
+    if [[ ${allow_direnv} == "true" ]]; then
+      run_repo_setup_for_worktree "${worktree_path}" "true" ""
+    elif [[ ${trusted_source_checkout} == "true" ]] &&
+      [[ -f "${repo_root}/.envrc" ]] &&
+      [[ -f "${worktree_path}/.envrc" ]] &&
+      cmp -s "${repo_root}/.envrc" "${worktree_path}/.envrc"; then
+      run_repo_setup_for_worktree \
+        "${worktree_path}" \
+        "true" \
+        "Allowing existing copied source .envrc for issue worktree"
+    elif [[ -f "${worktree_path}/.envrc" ]]; then
+      echo "* Existing .envrc not auto-allowed; run repo-setup --allow-direnv after review"
+    fi
   else
     echo "* Created worktree: ${worktree_path}"
 
@@ -274,20 +325,18 @@ ${issue_comments}
       echo "* Copied .envrc to worktree"
     fi
 
-    # Run repo-setup if available
-    if command -v repo-setup &>/dev/null; then
-      echo "-> Running repo-setup..."
-      cd "$worktree_path"
-      if [[ ${allow_direnv} == "true" || ${copied_envrc} == "true" ]]; then
-        if [[ ${allow_direnv} != "true" ]]; then
-          echo "* Allowing copied source .envrc for issue worktree"
-        fi
-        repo-setup --allow-direnv
-      else
-        repo-setup
-      fi
-      cd - >/dev/null
+    allow_envrc="false"
+    allow_message=""
+    if [[ ${allow_direnv} == "true" ]]; then
+      allow_envrc="true"
+    elif [[ ${copied_envrc} == "true" && ${trusted_source_checkout} == "true" ]]; then
+      allow_envrc="true"
+      allow_message="Allowing copied source .envrc for issue worktree"
+    elif [[ ${copied_envrc} == "true" ]]; then
+      echo "* Copied .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
     fi
+
+    run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}"
   fi
 
   if command -v zoxide &>/dev/null; then
@@ -297,6 +346,12 @@ ${issue_comments}
 
   echo ""
 done
+
+if [[ $had_failure == "true" ]]; then
+  echo "Error: Some issue worktrees could not be prepared." >&2
+  echo ""
+  exit 1
+fi
 
 echo "* All issue worktrees are ready."
 echo ""

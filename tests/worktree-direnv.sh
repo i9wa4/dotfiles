@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
+tmp_root=$(mktemp -d)
+trap 'rm -rf "$tmp_root"' EXIT
+
+fail() {
+  echo "FAIL: $*" >&2
+  exit 1
+}
+
+assert_contains() {
+  local file=$1
+  local expected=$2
+
+  if ! grep -Fq -- "$expected" "$file"; then
+    echo "Expected to find: ${expected}" >&2
+    echo "--- ${file}" >&2
+    sed -n '1,200p' "$file" >&2
+    fail "missing expected text"
+  fi
+}
+
+assert_not_contains() {
+  local file=$1
+  local unexpected=$2
+
+  if grep -Fq -- "$unexpected" "$file"; then
+    echo "Did not expect to find: ${unexpected}" >&2
+    echo "--- ${file}" >&2
+    sed -n '1,200p' "$file" >&2
+    fail "found unexpected text"
+  fi
+}
+
+make_fake_tools() {
+  local fakebin=$1
+
+  mkdir -p "$fakebin"
+
+  cat >"${fakebin}/gh" <<'SH'
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+case "${1:-} ${2:-}" in
+  "issue view")
+    issue_number=${3:-}
+    if [[ $issue_number == "222" ]]; then
+      echo "missing issue" >&2
+      exit 1
+    fi
+    printf '{"title":"Direnv allow test %s","body":"body","comments":[]}\n' "$issue_number"
+    ;;
+  "pr view")
+    printf 'pr-feature\ti9wa4\tdotfiles\tfalse\n'
+    ;;
+  *)
+    echo "unexpected gh args: $*" >&2
+    exit 1
+    ;;
+esac
+SH
+
+  cat >"${fakebin}/claude" <<'SH'
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+printf '%s\n' 'direnv-allow-test'
+SH
+
+  cat >"${fakebin}/repo-setup" <<'SH'
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+printf 'pwd=%s args=%s\n' "$PWD" "$*" >>"${REPO_SETUP_LOG:?}"
+SH
+
+  cat >"${fakebin}/zoxide" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+
+  chmod +x "${fakebin}/gh" "${fakebin}/claude" "${fakebin}/repo-setup" "${fakebin}/zoxide"
+}
+
+create_fixture_repo() {
+  local name=$1
+  local fixture_dir="${tmp_root}/${name}"
+  local repo="${fixture_dir}/repo"
+  local origin="${fixture_dir}/origin.git"
+
+  mkdir -p "$fixture_dir"
+  git init --quiet -b main "$repo"
+  (
+    cd "$repo"
+    git config user.email "tests@example.invalid"
+    git config user.name "Worktree Test"
+    printf '%s\n' "# fixture" >README.md
+    git add README.md
+    git commit --quiet -m "init"
+    printf '%s\n' "use flake" >.envrc
+
+    git init --quiet --bare "$origin"
+    git remote add origin "$origin"
+    git push --quiet -u origin main
+
+    git switch --quiet -c pr-feature
+    printf '%s\n' "pr fixture" >pr.txt
+    git add pr.txt
+    git commit --quiet -m "add pr fixture"
+    git push --quiet -u origin pr-feature
+    git switch --quiet main
+  )
+
+  printf '%s\n' "$repo"
+}
+
+run_with_fake_tools() {
+  local fakebin=$1
+  local log=$2
+  local workdir=$3
+  shift 3
+
+  touch "$log"
+  (
+    export PATH="${fakebin}:${PATH}"
+    export REPO_SETUP_LOG="$log"
+    cd "$workdir"
+    "$@"
+  )
+}
+
+test_issue_from_primary_main_auto_allows() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-primary"
+  local log="${tmp_root}/primary.log"
+  local stdout="${tmp_root}/primary.out"
+  local stderr="${tmp_root}/primary.err"
+
+  repo=$(create_fixture_repo "primary")
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "${repo_root}/bin/issue-worktree-create" 101 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_contains "$log" "args=--allow-direnv"
+  assert_contains "${repo}/.worktrees/issue-101-direnv-allow-test/.envrc" "use flake"
+}
+
+test_issue_from_linked_worktree_does_not_auto_allow() {
+  local repo
+  local linked
+  local fakebin="${tmp_root}/fakebin-linked"
+  local log="${tmp_root}/linked.log"
+  local stdout="${tmp_root}/linked.out"
+  local stderr="${tmp_root}/linked.err"
+
+  repo=$(create_fixture_repo "linked")
+  linked="${repo}/.worktrees/source-feature"
+  (
+    cd "$repo"
+    git branch feature-source
+    git worktree add --quiet "$linked" feature-source
+  )
+  (
+    cd "$linked"
+    git config user.email "tests@example.invalid"
+    git config user.name "Worktree Test"
+    printf '%s\n' "use flake feature-source" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add feature envrc"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$linked" \
+    "${repo_root}/bin/issue-worktree-create" 202 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Copied .envrc not auto-allowed"
+  assert_contains "$log" "args="
+  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "${linked}/.worktrees/issue-202-direnv-allow-test/.envrc" "feature-source"
+}
+
+test_existing_matching_issue_worktree_is_remediated_from_primary_main() {
+  local repo
+  local worktree
+  local fakebin="${tmp_root}/fakebin-existing"
+  local log="${tmp_root}/existing.log"
+  local stdout="${tmp_root}/existing.out"
+  local stderr="${tmp_root}/existing.err"
+
+  repo=$(create_fixture_repo "existing")
+  worktree="${repo}/.worktrees/issue-303-direnv-allow-test"
+  (
+    cd "$repo"
+    mkdir -p .worktrees
+    git worktree add --quiet -b issue-303-direnv-allow-test "$worktree" main
+    cp .envrc "${worktree}/.envrc"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "${repo_root}/bin/issue-worktree-create" 303 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Allowing existing copied source .envrc for issue worktree"
+  assert_contains "$log" "args=--allow-direnv"
+}
+
+test_pr_default_does_not_allow_direnv() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-pr"
+  local log="${tmp_root}/pr.log"
+  local stdout="${tmp_root}/pr.out"
+  local stderr="${tmp_root}/pr.err"
+
+  repo=$(create_fixture_repo "pr")
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "${repo_root}/bin/pr-worktree-create" 55 >"$stdout" 2>"$stderr"
+
+  assert_contains "$log" "args=--no-allow-generated-envrc"
+  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "${repo}/.worktrees/pr-55-pr-feature/.envrc" "use flake"
+}
+
+test_issue_multi_failure_exits_nonzero_without_success_footer() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-failure"
+  local log="${tmp_root}/failure.log"
+  local stdout="${tmp_root}/failure.out"
+  local stderr="${tmp_root}/failure.err"
+
+  repo=$(create_fixture_repo "failure")
+  make_fake_tools "$fakebin"
+
+  if run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "${repo_root}/bin/issue-worktree-create" 111 222 >"$stdout" 2>"$stderr"; then
+    fail "issue-worktree-create succeeded despite a failed issue"
+  fi
+
+  assert_contains "$stderr" "Error: Failed to fetch Issue #222. Skipping."
+  assert_contains "$stderr" "Error: Some issue worktrees could not be prepared."
+  assert_not_contains "$stdout" "* All issue worktrees are ready."
+}
+
+test_issue_from_primary_main_auto_allows
+test_issue_from_linked_worktree_does_not_auto_allow
+test_existing_matching_issue_worktree_is_remediated_from_primary_main
+test_pr_default_does_not_allow_direnv
+test_issue_multi_failure_exits_nonzero_without_success_footer
+
+echo "worktree direnv tests passed"
