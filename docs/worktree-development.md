@@ -80,11 +80,15 @@ For the adoption decision behind the current tool stack, see
    from the primary `main` checkout. Running from a linked worktree or non-main
    checkout still copies `.envrc`, but leaves `direnv allow` to explicit
    review. If no `.envrc` was copied and the checkout has `flake.nix`,
-   `repo-setup` creates `use flake` and runs `direnv allow`; for any other
-   pre-existing `.envrc`, run `repo-setup --allow-direnv` only after reviewing
-   the file. If Nix or devshell setup fails, `repo-setup` warns and continues;
-   re-run `repo-setup` or enter the devshell before pushing so
-   `.pre-commit-config.yaml` is generated.
+   generated fallback trust is primary-main only: primary-main issue creation
+   lets `repo-setup` create `use flake` and run `direnv allow`, while
+   linked-worktree or non-main issue creation passes
+   `--no-allow-generated-envrc` so the generated file is not implicitly
+   allowed. For any other pre-existing `.envrc`, run
+   `repo-setup --allow-direnv` only after reviewing the file. If Nix or
+   devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
+   or enter the devshell before pushing so `.pre-commit-config.yaml` is
+   generated.
 10. It adds the final worktree path to the `zoxide` database when `zoxide`
    exists.
 
@@ -206,11 +210,12 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
   changing the backend or jump layer. Worktrees copy the source checkout's
   `.envrc` when present. Issue worktrees may automatically allow that copied
   source file only from the primary `main` checkout, and may also allow a
-  generated fallback file when no `.envrc` was copied and the checkout has
-  `flake.nix`. Linked-worktree, non-main, and PR review invocations must
-  preserve explicit authorization because the checked-out branch controls
-  review-relevant code such as `flake.nix`; use `--allow-direnv` only when the
-  file and branch have been reviewed.
+  generated fallback file only from the primary `main` checkout when no
+  `.envrc` was copied and the checkout has `flake.nix`. Linked-worktree,
+  non-main, and PR review invocations must preserve explicit authorization
+  because the checked-out branch controls review-relevant code such as
+  `flake.nix`; use `--allow-direnv` only when the file and branch have been
+  reviewed.
 - If a linked worktree reports `No .pre-commit-config.yaml file was found`,
   run `repo-setup` from that worktree. This attempts to install the devshell
   hooks and the generated per-worktree pre-commit config; if Nix or devshell

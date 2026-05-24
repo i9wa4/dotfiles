@@ -6,6 +6,7 @@ set -o pipefail
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)
 tmp_root=$(mktemp -d)
 trap 'rm -rf "$tmp_root"' EXIT
+unset GIT_DIR GIT_INDEX_FILE GIT_PREFIX GIT_WORK_TREE
 
 fail() {
   echo "FAIL: $*" >&2
@@ -38,11 +39,14 @@ assert_not_contains() {
 
 make_fake_tools() {
   local fakebin=$1
+  local bash_path
 
   mkdir -p "$fakebin"
+  bash_path=$(command -v bash)
 
-  cat >"${fakebin}/gh" <<'SH'
-#!/usr/bin/env bash
+  {
+    printf '#!%s\n' "$bash_path"
+    cat <<'SH'
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -65,29 +69,36 @@ case "${1:-} ${2:-}" in
     ;;
 esac
 SH
+  } >"${fakebin}/gh"
 
-  cat >"${fakebin}/claude" <<'SH'
-#!/usr/bin/env bash
+  {
+    printf '#!%s\n' "$bash_path"
+    cat <<'SH'
 set -o errexit
 set -o nounset
 set -o pipefail
 
 printf '%s\n' 'direnv-allow-test'
 SH
+  } >"${fakebin}/claude"
 
-  cat >"${fakebin}/repo-setup" <<'SH'
-#!/usr/bin/env bash
+  {
+    printf '#!%s\n' "$bash_path"
+    cat <<'SH'
 set -o errexit
 set -o nounset
 set -o pipefail
 
 printf 'pwd=%s args=%s\n' "$PWD" "$*" >>"${REPO_SETUP_LOG:?}"
 SH
+  } >"${fakebin}/repo-setup"
 
-  cat >"${fakebin}/zoxide" <<'SH'
-#!/usr/bin/env bash
+  {
+    printf '#!%s\n' "$bash_path"
+    cat <<'SH'
 exit 0
 SH
+  } >"${fakebin}/zoxide"
 
   chmod +x "${fakebin}/gh" "${fakebin}/claude" "${fakebin}/repo-setup" "${fakebin}/zoxide"
 }
@@ -150,7 +161,7 @@ test_issue_from_primary_main_auto_allows() {
   make_fake_tools "$fakebin"
 
   run_with_fake_tools "$fakebin" "$log" "$repo" \
-    "${repo_root}/bin/issue-worktree-create" 101 >"$stdout" 2>"$stderr"
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 101 >"$stdout" 2>"$stderr"
 
   assert_contains "$stdout" "Allowing copied source .envrc for issue worktree"
   assert_contains "$log" "args=--allow-direnv"
@@ -183,12 +194,49 @@ test_issue_from_linked_worktree_does_not_auto_allow() {
   make_fake_tools "$fakebin"
 
   run_with_fake_tools "$fakebin" "$log" "$linked" \
-    "${repo_root}/bin/issue-worktree-create" 202 >"$stdout" 2>"$stderr"
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 202 >"$stdout" 2>"$stderr"
 
   assert_contains "$stdout" "Copied .envrc not auto-allowed"
-  assert_contains "$log" "args="
+  assert_contains "$log" "args=--no-allow-generated-envrc"
   assert_not_contains "$log" "--allow-direnv"
   assert_contains "${linked}/.worktrees/issue-202-direnv-allow-test/.envrc" "feature-source"
+}
+
+test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc() {
+  local repo
+  local linked
+  local fakebin="${tmp_root}/fakebin-linked-flake"
+  local log="${tmp_root}/linked-flake.log"
+  local stdout="${tmp_root}/linked-flake.out"
+  local stderr="${tmp_root}/linked-flake.err"
+
+  repo=$(create_fixture_repo "linked-flake")
+  linked="${repo}/.worktrees/source-flake-feature"
+  (
+    cd "$repo"
+    git branch feature-flake
+    git worktree add --quiet "$linked" feature-flake
+  )
+  (
+    cd "$linked"
+    git config user.email "tests@example.invalid"
+    git config user.name "Worktree Test"
+    cat >flake.nix <<'NIX'
+{
+  outputs = { self }: { };
+}
+NIX
+    git add flake.nix
+    git commit --quiet -m "add feature flake"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$linked" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 404 >"$stdout" 2>"$stderr"
+
+  assert_contains "$log" "args=--no-allow-generated-envrc"
+  assert_not_contains "$log" "--allow-direnv"
+  assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
 }
 
 test_existing_matching_issue_worktree_is_remediated_from_primary_main() {
@@ -210,10 +258,35 @@ test_existing_matching_issue_worktree_is_remediated_from_primary_main() {
   make_fake_tools "$fakebin"
 
   run_with_fake_tools "$fakebin" "$log" "$repo" \
-    "${repo_root}/bin/issue-worktree-create" 303 >"$stdout" 2>"$stderr"
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 303 >"$stdout" 2>"$stderr"
 
   assert_contains "$stdout" "Allowing existing copied source .envrc for issue worktree"
   assert_contains "$log" "args=--allow-direnv"
+}
+
+test_existing_drifted_issue_worktree_is_not_auto_allowed() {
+  local repo
+  local worktree
+  local fakebin="${tmp_root}/fakebin-existing-drifted"
+  local log="${tmp_root}/existing-drifted.log"
+  local stdout="${tmp_root}/existing-drifted.out"
+  local stderr="${tmp_root}/existing-drifted.err"
+
+  repo=$(create_fixture_repo "existing-drifted")
+  worktree="${repo}/.worktrees/issue-505-direnv-allow-test"
+  (
+    cd "$repo"
+    mkdir -p .worktrees
+    git worktree add --quiet -b issue-505-direnv-allow-test "$worktree" main
+    printf '%s\n' "use flake drifted" >"${worktree}/.envrc"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 505 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Existing .envrc not auto-allowed"
+  assert_not_contains "$log" "--allow-direnv"
 }
 
 test_pr_default_does_not_allow_direnv() {
@@ -227,7 +300,7 @@ test_pr_default_does_not_allow_direnv() {
   make_fake_tools "$fakebin"
 
   run_with_fake_tools "$fakebin" "$log" "$repo" \
-    "${repo_root}/bin/pr-worktree-create" 55 >"$stdout" 2>"$stderr"
+    "$BASH" "${repo_root}/bin/pr-worktree-create" 55 >"$stdout" 2>"$stderr"
 
   assert_contains "$log" "args=--no-allow-generated-envrc"
   assert_not_contains "$log" "--allow-direnv"
@@ -245,7 +318,7 @@ test_issue_multi_failure_exits_nonzero_without_success_footer() {
   make_fake_tools "$fakebin"
 
   if run_with_fake_tools "$fakebin" "$log" "$repo" \
-    "${repo_root}/bin/issue-worktree-create" 111 222 >"$stdout" 2>"$stderr"; then
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 111 222 >"$stdout" 2>"$stderr"; then
     fail "issue-worktree-create succeeded despite a failed issue"
   fi
 
@@ -256,7 +329,9 @@ test_issue_multi_failure_exits_nonzero_without_success_footer() {
 
 test_issue_from_primary_main_auto_allows
 test_issue_from_linked_worktree_does_not_auto_allow
+test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc
 test_existing_matching_issue_worktree_is_remediated_from_primary_main
+test_existing_drifted_issue_worktree_is_not_auto_allowed
 test_pr_default_does_not_allow_direnv
 test_issue_multi_failure_exits_nonzero_without_success_footer
 

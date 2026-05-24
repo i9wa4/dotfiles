@@ -72,11 +72,13 @@ Expect it to:
   to remediate a missing `direnv allow` only when the worktree `.envrc` still
   matches the source checkout `.envrc`; otherwise review and run
   `repo-setup --allow-direnv` manually. If no `.envrc` was copied and the
-  checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-  `direnv allow`; for any other pre-existing `.envrc`, use
-  `repo-setup --allow-direnv` only after reviewing the file. If Nix or
-  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-  or enter the devshell before pushing.
+  checkout has `flake.nix`, generated fallback trust is primary-main only:
+  primary-main issue creation lets `repo-setup` create `use flake` and run
+  `direnv allow`, while linked-worktree or non-main issue creation passes
+  `--no-allow-generated-envrc` so the generated file is not implicitly allowed.
+  For any other pre-existing `.envrc`, use `repo-setup --allow-direnv` only
+  after reviewing the file. If Nix or devshell setup fails, `repo-setup` warns
+  and continues; re-run `repo-setup` or enter the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as

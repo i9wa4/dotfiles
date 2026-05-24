@@ -38,14 +38,16 @@ The workflow has five recurring phases:
    invocations still copy `.envrc` for convenience, but they do not implicitly
    allow it. Re-running the issue command from the primary `main` checkout
    remediates an existing issue worktree only when that worktree `.envrc` still
-   matches the source checkout file. If no `.envrc` was copied and the
-   checkout has `flake.nix`, `repo-setup` creates `use flake` and runs
-   `direnv allow` unless the caller disables generated-file allowance. PR
-   review worktrees create the same generated fallback file without allowing
-   it by default, because the checked-out PR branch controls `flake.nix`; pass
-   `--allow-direnv` to the creation command only after reviewing the file and
-   branch. If Nix or devshell setup fails, it warns and continues; re-run
-   `repo-setup` or enter the devshell before pushing so
+   matches the source checkout file. If no `.envrc` was copied and the checkout
+   has `flake.nix`, generated fallback trust is also primary-main only:
+   primary-main issue creation lets `repo-setup` create `use flake` and run
+   `direnv allow`, while linked-worktree or non-main issue creation passes
+   `--no-allow-generated-envrc` so the generated file is not implicitly
+   allowed. PR review worktrees create the same generated fallback file without
+   allowing it by default, because the checked-out PR branch controls
+   `flake.nix`; pass `--allow-direnv` to the creation command only after
+   reviewing the file and branch. If Nix or devshell setup fails, it warns and
+   continues; re-run `repo-setup` or enter the devshell before pushing so
    `.pre-commit-config.yaml` is generated.
 4. Re-enter quickly.
    Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or

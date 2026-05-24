@@ -96,6 +96,7 @@ run_repo_setup_for_worktree() {
   local worktree_path=$1
   local allow_envrc=$2
   local allow_message=$3
+  local allow_generated_envrc=$4
 
   if ! command -v repo-setup &>/dev/null; then
     return 0
@@ -109,6 +110,8 @@ run_repo_setup_for_worktree() {
         echo "* ${allow_message}"
       fi
       repo-setup --allow-direnv
+    elif [[ ${allow_generated_envrc} == "false" ]]; then
+      repo-setup --no-allow-generated-envrc
     else
       repo-setup
     fi
@@ -289,7 +292,7 @@ ${issue_comments}
     echo "* Worktree already exists: ${worktree_path}"
     echo "* Branch: ${branch_name}"
     if [[ ${allow_direnv} == "true" ]]; then
-      run_repo_setup_for_worktree "${worktree_path}" "true" ""
+      run_repo_setup_for_worktree "${worktree_path}" "true" "" "true"
     elif [[ ${trusted_source_checkout} == "true" ]] &&
       [[ -f "${repo_root}/.envrc" ]] &&
       [[ -f "${worktree_path}/.envrc" ]] &&
@@ -297,7 +300,8 @@ ${issue_comments}
       run_repo_setup_for_worktree \
         "${worktree_path}" \
         "true" \
-        "Allowing existing copied source .envrc for issue worktree"
+        "Allowing existing copied source .envrc for issue worktree" \
+        "true"
     elif [[ -f "${worktree_path}/.envrc" ]]; then
       echo "* Existing .envrc not auto-allowed; run repo-setup --allow-direnv after review"
     fi
@@ -326,17 +330,23 @@ ${issue_comments}
     fi
 
     allow_envrc="false"
+    allow_generated_envrc="true"
     allow_message=""
     if [[ ${allow_direnv} == "true" ]]; then
       allow_envrc="true"
     elif [[ ${copied_envrc} == "true" && ${trusted_source_checkout} == "true" ]]; then
       allow_envrc="true"
       allow_message="Allowing copied source .envrc for issue worktree"
-    elif [[ ${copied_envrc} == "true" ]]; then
-      echo "* Copied .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
+    elif [[ ${trusted_source_checkout} != "true" ]]; then
+      allow_generated_envrc="false"
+      if [[ ${copied_envrc} == "true" ]]; then
+        echo "* Copied .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
+      else
+        echo "* Generated .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
+      fi
     fi
 
-    run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}"
+    run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}" "${allow_generated_envrc}"
   fi
 
   if command -v zoxide &>/dev/null; then
