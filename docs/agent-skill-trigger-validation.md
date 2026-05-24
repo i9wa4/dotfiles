@@ -100,8 +100,9 @@ PR must name that PR in `notes`.
 
 ## Release-Readiness Gate
 
-Before removing old standalone skills, declaring Agent Skills release readiness,
-creating a tag, or publishing a release, run:
+Routine CI runs the strict trigger matrix before any release publish step can
+run. When validating locally before removing old standalone skills or declaring
+Agent Skills release readiness, run:
 
 ```sh
 bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results

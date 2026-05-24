@@ -22,13 +22,13 @@ For `publish: false` entries, release readiness requires one of these
 - `removed_before_release`
 - `release_excluded`
 
-Run the classification gate in report mode:
+Run the classification gate in report mode when investigating cleanup work:
 
 ```sh
 bash scripts/validation/validate-skill-release-readiness.sh
 ```
 
-Run the blocking gate used by the release workflow:
+Run the blocking gate used by routine CI and release publishing:
 
 ```sh
 bash scripts/validation/validate-skill-release-readiness.sh --strict
@@ -36,28 +36,30 @@ bash scripts/validation/validate-skill-release-readiness.sh --strict
 
 ## Routine CI
 
-`.github/workflows/ci.yaml` runs the release-readiness report on pull
-requests, `main` pushes, manual dispatches, and `agent-skills-v*` tag pushes.
-Report mode exits successfully when cleanup blockers remain, but still fails on
-missing or malformed release policy. That keeps readiness visible in routine CI
-without blocking unrelated cleanup work before the release catalog is ready.
+`.github/workflows/ci.yaml` runs release-grade validation on pull requests,
+`main` pushes, manual dispatches, and `v*` tag pushes. The CI job blocks unless
+all release validations pass:
+
+- strict classification readiness from `skills/classification.yaml`,
+- consolidated trigger validation,
+- `gh skill publish --dry-run`.
+
+That makes CI the proof point for release readiness. Tagging a commit does not
+add a separate manual validation burden.
 
 ## Tag Release
 
 A tag push is the publishing trigger. There is no separate manual release-all
 workflow.
 
-Before creating an `agent-skills-v*` tag, the target commit should already have
-passing regular CI. When the tag is pushed, `.github/workflows/ci.yaml` runs the
-normal CI job first and then runs the release job with a write-scoped token.
+Creating and pushing a `v*` tag is enough to enter the release path. When the
+tag is pushed, `.github/workflows/ci.yaml` runs the normal CI job first. If CI
+passes, the tag-only release job runs with a write-scoped token.
 
-The release job must pass:
+The release job publishes the already-validated catalog:
 
-- classification readiness from `skills/classification.yaml`,
-- consolidated trigger validation,
-- `gh skill publish --dry-run`,
 - `gh skill publish --tag "$TAG_NAME"`.
 
-The current classification intentionally blocks release-all publishing until the
-remaining cleanup states are changed to release-ready or removed from the
-publish set by review.
+The current classification intentionally blocks routine CI and release-all
+publishing until the remaining cleanup states are changed to release-ready or
+removed from the publish set by review.

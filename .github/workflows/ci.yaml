@@ -7,7 +7,7 @@ on:
     branches:
       - main
     tags:
-      - agent-skills-v*
+      - v*
   pull_request:
     branches:
       - main
@@ -62,8 +62,20 @@ jobs:
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
-      - name: Report Agent Skills release readiness
-        run: bash scripts/validation/validate-skill-release-readiness.sh
+      - name: Validate Agent Skills release readiness
+        run: bash scripts/validation/validate-skill-release-readiness.sh --strict
+
+      - name: Validate Agent Skills trigger results
+        run: |
+          set -eu
+          test -f scripts/validation/validate-skill-trigger-matrix.sh
+          test -f skills/trigger-validation.json
+          bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
+
+      - name: Validate Agent Skills publish dry-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run nixpkgs#gh -- skill publish --dry-run
 
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
@@ -72,7 +84,7 @@ jobs:
         run: nix develop .#ci --command betterleaks git --verbose --redact
 
   agent-skills-release:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/agent-skills-v')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -96,21 +108,6 @@ jobs:
         uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2 # zizmor: ignore[cache-poisoning] tag-only job; untrusted PR runs cannot reach this job.
         with:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
-
-      - name: Validate classification release readiness
-        run: bash scripts/validation/validate-skill-release-readiness.sh --strict
-
-      - name: Validate trigger results
-        run: |
-          set -eu
-          test -f scripts/validation/validate-skill-trigger-matrix.sh
-          test -f skills/trigger-validation.json
-          bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
-
-      - name: Validate skill publish dry-run
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: nix run nixpkgs#gh -- skill publish --dry-run
 
       - name: Publish Agent Skills GitHub Release
         env:
