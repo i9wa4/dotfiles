@@ -86,7 +86,6 @@ in
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
       nodejsPackage
       pkgs.acli
-      pkgs.aws-sam-cli
       pkgs.databricks-cli
       pkgs.gws
       pkgs.rumdl

@@ -17,16 +17,9 @@ presets:
             - name: tailscale
               command: sudo $(which tailscaled)
               delay: 500
-        - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: agent
-              title: agent
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
-              delay: 500
-            - name: vde-monitor
-              command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
-              delay: 500
+        - name: vde-monitor
+          command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
+          delay: 500
 
   dev:
     name: dev

@@ -6,7 +6,17 @@ target="${WAZA_NIX_FILE:-nix/packages/waza.nix}"
 gh_bin="${WAZA_GH:-gh}"
 nix_bin="${WAZA_NIX:-nix}"
 
-tag="$("$gh_bin" release view --repo "$repo" --json tagName --jq .tagName)"
+tag="${WAZA_TAG:-}"
+if [[ -z $tag ]]; then
+  tag="$(
+    "$gh_bin" release list --repo "$repo" --limit 100 --json tagName,isPrerelease \
+      --jq 'map(select(.isPrerelease | not) | select(.tagName | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))) | .[0].tagName // ""'
+  )"
+fi
+if [[ -z $tag ]]; then
+  echo "waza-nix-update: no stable CLI release tag found in $repo" >&2
+  exit 1
+fi
 version="${tag#v}"
 
 tmp_dir="$(mktemp -d)"
