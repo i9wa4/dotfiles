@@ -13,7 +13,6 @@
     }:
     let
       ghWorkflowFiles = "^\\.github/workflows/.*\\.(yml|yaml)$";
-      skillReleaseFiles = "^((skills/.*)|(\\.github/workflows/ci\\.yaml)|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md)|(nix/flake-parts/modules/pre-commit\\.nix))$";
       rumdlConfig = pkgs.writeText "rumdl.toml" ''
         disable = ["MD041"]
 
@@ -186,51 +185,14 @@
               #!${pkgs.bash}/bin/bash
               exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
             ''}";
-            files = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/ci\\.yaml)|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md)|(nix/flake-parts/modules/pre-commit\\.nix))$";
-            types = [ "file" ];
-            pass_filenames = false;
-          };
-          skill-release-private-content-scan = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-release-private-content-scan" ''
-              #!${pkgs.bash}/bin/bash
-              set -eu
-              mapfile -t skill_dirs < <(${pkgs.findutils}/bin/find skills -mindepth 1 -maxdepth 1 -type d | ${pkgs.coreutils}/bin/sort)
-              if [ "''${#skill_dirs[@]}" -eq 0 ]; then
-                echo "skill release private-content scan: no skill directories"
-                exit 0
-              fi
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} "''${skill_dirs[@]}"
-            ''}";
-            files = skillReleaseFiles;
-            types = [ "file" ];
-            pass_filenames = false;
-          };
-          skill-release-readiness = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-release-readiness" ''
-              #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-release-readiness.sh} --strict
-            ''}";
-            files = skillReleaseFiles;
-            types = [ "file" ];
-            pass_filenames = false;
-          };
-          skill-trigger-matrix = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-trigger-matrix" ''
-              #!${pkgs.bash}/bin/bash
-              export PATH=${pkgs.jq}/bin:$PATH
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-trigger-matrix.sh} --strict-results
-            ''}";
-            files = skillReleaseFiles;
+            files = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/ci\\.yaml)|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md))$";
             types = [ "file" ];
             pass_filenames = false;
           };
           skill-publish-dry-run = {
             enable = true;
             entry = "${pkgs.gh}/bin/gh skill publish --dry-run";
-            files = skillReleaseFiles;
+            files = "^skills/";
             pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.

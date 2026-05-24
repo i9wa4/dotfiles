@@ -92,11 +92,6 @@ release_readiness:
   routine_ci_workflow: .github/workflows/ci.yaml
   report_command: bash scripts/validation/validate-skill-release-readiness.sh
   strict_command: bash scripts/validation/validate-skill-release-readiness.sh --strict
-  pre_commit_release_hooks:
-    - skill-release-private-content-scan
-    - skill-release-readiness
-    - skill-trigger-matrix
-    - skill-publish-dry-run
   dry_run_command: gh skill publish --dry-run
   publish_command: gh skill publish --tag <tag>
   publish_true_requires:
@@ -128,7 +123,7 @@ common_validation_expectations: &common_validation
   - bash scripts/validation/validate-skill-private-content.sh --staged
   - bash scripts/validation/validate-skill-description-length.sh --staged
   - bash scripts/validation/validate-skill-waza.sh --staged
-  - gh skill publish --dry-run in pre-commit and routine CI before release
+  - gh skill publish --dry-run in routine CI before release
 
 skills:
   - name: agent-harness-engineering

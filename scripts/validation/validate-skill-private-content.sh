@@ -75,9 +75,6 @@ is_scan_target() {
   docs/agent-skill-trigger-validation.md | docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)
     return 0
     ;;
-  nix/flake-parts/modules/pre-commit.nix)
-    return 0
-    ;;
   *)
     return 1
     ;;
