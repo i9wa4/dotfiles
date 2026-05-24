@@ -28,26 +28,12 @@ let
   # Shared Bash deny surface includes aws sso login; see shared/denied-bash-commands.nix.
   deniedBash = import ../shared/denied-bash-commands.nix { inherit pkgs; };
 
-  defaultRulesContent = ''
-    # Exec policy rules for Codex CLI
-    # Generated from nix/home-manager/agents/shared/denied-bash-commands.nix
-    # File access restrictions (Read/Write patterns) have no Codex equivalent.
-
-    ${deniedBash.codexCli.rulesContent}
-  '';
-
-  generatedDefaultRules = pkgs.writeText "default.rules" defaultRulesContent;
-
-  # Exec policy rules only (.rules files); markdown instructions are delivered
-  # through postman.md common_template, not runtime-root AGENTS.md.
-  codexRulesDir = pkgs.runCommand "codex-rules" { } ''
-    mkdir -p $out
-    cp ${generatedDefaultRules} $out/default.rules
-  '';
-
   # Codex consumes runtime-agnostic shared scripts, one Codex-only observer,
-  # and generated patterns. List each script explicitly; do not use wildcards,
-  # because this makes the consumed hook surface reviewable in this file.
+  # and generated Bash deny patterns. The shared PreToolUse hook is the
+  # repo-owned command-deny authority for Codex; filesystem and network
+  # boundaries remain Codex sandbox/approval settings.
+  # List each script explicitly; do not use wildcards, because this makes the
+  # consumed hook surface reviewable in this file.
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
     mkdir -p $out
     ln -s ${../scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
@@ -596,10 +582,8 @@ in
     # background intentionally lives in docs rather than a `skills/repo-local`
     # catch-all skill.
     # Codex CLI has no AGENTS.md generated at the runtime root anymore.
-    # Exec policy rules (.rules files only; markdown instructions are delivered
-    # through postman.md common_template, not auto-loaded by Codex CLI)
-    # NOTE: default.rules remains separate for exec-policy denials
-    ".codex/rules".source = codexRulesDir;
+    # Shared Bash command-deny policy is installed through .codex/scripts and
+    # .codex/hooks.json, not duplicated into embedded Codex rules.
     # Generated Codex agent files from the Markdown source (rebuild required to update)
     "${installManifest.codex.agents.target}".source = installManifest.codex.agents.source;
     # Hook scripts (Nix store, rebuild required to update)

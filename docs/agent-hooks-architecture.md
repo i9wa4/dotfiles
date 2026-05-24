@@ -38,17 +38,19 @@ or (2).
 ### 2.1. Deny Rule Data — `denied-bash-commands.nix`
 
 Single source of truth for Bash command denies. One `entries` array
-produces three artifacts in the same Nix evaluation:
+produces the Claude built-in deny set and the shared hook pattern file in
+the same Nix evaluation:
 
-| Output                          | Consumer                                            |
-| ------------------------------- | --------------------------------------------------- |
-| `claudeCode.denyPermissions`    | `~/.claude/settings.json` `permissions.deny` globs  |
-| `claudeCode.patternsFile`       | bash regex array sourced by Claude's deny-bash hook |
-| `codexCli.rulesContent`         | `~/.codex/rules/default.rules` `prefix_rule(...)`   |
+| Output                       | Consumer                                                                     |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs                           |
+| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex    |
 
 Adding a deny rule is one nix entry, picked up by both runtimes on the
-next `nix run '.#switch'`. This is the model we want every other
-shared concept to follow.
+next `nix run '.#switch'`. Codex does not also install these shared command
+denies as embedded `prefix_rule(...)` rules; the shared PreToolUse hook is
+the repo-owned command-deny authority, while Codex sandbox/approval settings
+remain responsible for filesystem and network blast radius.
 
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 

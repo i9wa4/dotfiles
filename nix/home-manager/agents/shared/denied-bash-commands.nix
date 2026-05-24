@@ -10,7 +10,8 @@
 #   home.file."...".source = deniedBash.claudeCode.patternsFile;
 #
 #   # Codex CLI
-#   rulesContent = deniedBash.codexCli.rulesContent;
+#   # nix/home-manager/agents/codex/default.nix links patternsFile beside
+#   # pretooluse-deny-bash.sh and registers that script as a PreToolUse hook.
 #
 # ── Data Flow ──────────────────────────────────────────────────────────
 #
@@ -20,23 +21,21 @@
 #   │   (only entries with claudeSettingsJson = true)
 #   │   Format: Bash(<glob>), glob auto-derived from argv
 #   │
-#   ├── claudeCode.patternsFile ────► ~/.claude/scripts/deny-bash-patterns.sh
-#   │   (all entries, hookRegex auto-derived from argv)
-#   │   Source'd by claude-pretooluse-deny-bash.sh at runtime.
-#   │
-#   └── codexCli.rulesContent ──────► ~/.codex/rules/default.rules
-#       (all entries)                  Format: prefix_rule(...)
+#   └── claudeCode.patternsFile ────► ~/.claude/scripts/deny-bash-patterns.sh
+#                                     ~/.codex/scripts/deny-bash-patterns.sh
+#       (all entries, hookRegex auto-derived from argv)
+#       Sourced by pretooluse-deny-bash.sh at runtime.
 #
 # ── Entry Fields ───────────────────────────────────────────────────────
 #
 # argv (required)
-#   - Token array used by Codex CLI prefix_rule AND auto-derived hookRegex
+#   - Token array used to auto-derive hookRegex
 #   - hookRegex derivation:
 #       1 token  → ^token([[:space:]]|$)
 #       2+ tokens → ^token1.*token2
 #
 # justification (required)
-#   - Human-readable denial + repair hint (shared by Claude Code hook + Codex CLI)
+#   - Human-readable denial + repair hint for the shared PreToolUse hook
 #
 # claudeSettingsJson (optional, default: false)
 #   - true → also add to ~/.claude/settings.json permissions.deny
@@ -62,9 +61,9 @@
 # ── Scope ──────────────────────────────────────────────────────────────
 #
 # This file covers Bash command deny rules ONLY.
-# File access restrictions (Read/Write deny patterns) are defined
-# directly in claude/default.nix. Codex CLI has no file access deny
-# equivalent (noted in codex/default.nix).
+# File access restrictions (Read/Write deny patterns) are defined directly in
+# claude/default.nix. Codex filesystem and network blast-radius controls remain
+# sandbox/approval settings, not duplicated command-deny rules.
 { pkgs }:
 let
   entries = [
@@ -199,9 +198,8 @@ let
   # The hook still recursively checks bash -c / sh -c wrappers via
   # unwrap_shell_wrapper, so wrapping a denied command in bash -c does not
   # reach the bypass.
-  # This list is consumed only by the Claude Code regex hook; Codex CLI's
-  # argv-based prefix_rule matcher does not have the substring false-positive
-  # this guards against.
+  # This list is consumed by the shared PreToolUse hook. Codex uses that same
+  # hook so inert postman payloads are treated as data instead of as commands.
   allowPrefixBypass = [
     "tmux-a2a-postman"
   ];
@@ -213,8 +211,8 @@ let
   # message, so the rm deny does not false-positive. Meanwhile
   # `git commit -m "msg" --amend` strips the message but leaves --amend
   # intact, so the --amend deny still fires.
-  # Like allowPrefixBypass, this is Claude-only (Codex argv matching does
-  # not need it).
+  # Like allowPrefixBypass, this is consumed by the shared PreToolUse hook for
+  # both runtimes.
   stripDataArgs = [
     "-m"
   ];
@@ -250,19 +248,6 @@ let
     else
       builtins.concatStringsSep " " cmd.argv + "*";
 
-  mkPrefixRule =
-    cmd:
-    let
-      patternItems = builtins.concatStringsSep ", " (map (s: "\"${s}\"") cmd.argv);
-      escapedJustification = builtins.replaceStrings [ "\\" "\"" ] [ "\\\\" "\\\"" ] cmd.justification;
-    in
-    ''
-      prefix_rule(
-          pattern = [${patternItems}],
-          decision = "forbidden",
-          justification = "${escapedJustification}",
-      )
-    '';
 in
 {
   inherit entries;
@@ -294,8 +279,4 @@ in
     '';
   };
 
-  codexCli = {
-    # prefix_rule content for default.rules (all entries)
-    rulesContent = builtins.concatStringsSep "\n" (map mkPrefixRule entries);
-  };
 }
