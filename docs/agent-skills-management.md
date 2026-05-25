@@ -54,7 +54,7 @@ tag, or publishing step, scan the affected skill and referenced material for:
 Use the checked-in gate:
 
 ```sh
-bash bin/validate-skill-private-content.sh <path>...
+bash scripts/validation/validate-skill-private-content.sh <path>...
 ```
 
 Pass specific files or skill directories, for example `skills/<name>`. The
@@ -65,7 +65,7 @@ skills as their cleanup reaches review.
 For staged cleanup changes, use:
 
 ```sh
-bash bin/validate-skill-private-content.sh --staged
+bash scripts/validation/validate-skill-private-content.sh --staged
 ```
 
 The pre-commit hook runs this gate for staged skill and cleanup policy files.

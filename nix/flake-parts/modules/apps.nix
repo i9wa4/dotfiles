@@ -37,6 +37,7 @@
       # Most agent CLIs are installed via Home Manager (see nix/home-manager/default.nix);
       # this list is reserved for tools that do not fit cleanly into HM's package set.
       profilePackages = {
+        markdown-formatter = "github:i9wa4/markdown-formatter";
         tmux-a2a-postman = "github:i9wa4/tmux-a2a-postman";
       };
     in

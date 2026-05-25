@@ -58,6 +58,15 @@
         inherit system;
       };
       opensslLib = pkgs.lib.getLib pkgs.openssl;
+      worktreeDirenvTestPath = pkgs.lib.makeBinPath [
+        pkgs.bash
+        pkgs.coreutils
+        pkgs.gawk
+        pkgs.git
+        pkgs.gnugrep
+        pkgs.gnused
+        pkgs.jq
+      ];
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -138,7 +147,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-frontmatter.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-frontmatter.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -150,7 +159,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-description-length.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-description-length.sh} --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -165,7 +174,7 @@
               if [ -n "''${NIX_BUILD_TOP:-}" ]; then
                 export SKILL_WAZA_CHECK_LINKS=0
               fi
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-waza.sh} "$@"
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-waza.sh} "$@"
             ''}";
             files = "^skills/";
             require_serial = true;
@@ -174,7 +183,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-private-content-scan" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../bin/validate-skill-private-content.sh} --staged
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
             ''}";
             files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skills-management\\.md|docs/dotfiles-operating-concepts\\.md)";
             types = [ "file" ];
@@ -204,6 +213,12 @@
 
           # === Shell ===
           shellcheck.enable = true;
+          worktree-direnv-test = {
+            enable = true;
+            entry = "${pkgs.bash}/bin/bash -c 'export PATH=${worktreeDirenvTestPath}:$PATH; exec ${pkgs.bash}/bin/bash tests/worktree-direnv.sh'";
+            files = "^(bin/(issue-worktree-create|pr-worktree-create|repo-setup)|tests/worktree-direnv\\.sh)$";
+            pass_filenames = false;
+          };
 
           # === Unified formatter ===
           # Skip in sandbox (treefmt-nix already runs treefmt-check separately)

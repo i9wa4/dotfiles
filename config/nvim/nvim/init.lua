@@ -13,7 +13,7 @@ vim.opt.nrformats = { "unsigned" }
 
 vim.opt.ignorecase = true
 
-vim.opt.ambiwidth = "double"
+-- vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
 vim.opt.number = true
 
@@ -112,6 +112,7 @@ local function highlight_match()
   add("CursorLine", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
   add("CursorLine", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
   add("Error", [[\%u3000]])
+  add("Error", [[\s\+$]])
 
   vim.w.my_highlight_match_ids = ids
 end

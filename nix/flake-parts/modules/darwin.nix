@@ -67,7 +67,6 @@ let
                 imports = [
                   nix-index-database.homeModules.nix-index
                   ../../home-manager
-                  ../../home-manager/modules/vscode.nix
                 ];
                 # Darwin-specific cleanup (.DS_Store, xattr)
                 home.activation.cleanDarwinFiles =
@@ -128,8 +127,8 @@ in
         "macskk"
         "monitorcontrol"
         "obsidian"
+        "visual-studio-code"
         "zoom"
-        # "visual-studio-code"
       ];
     in
     {

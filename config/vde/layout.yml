@@ -30,6 +30,7 @@ presets:
       ratio: [1, 1]
       panes:
         - name: pane
+          title: editor
           delay: 500
           focus: true
         - name: agent
@@ -46,6 +47,7 @@ presets:
       ratio: [1, 1]
       panes:
         - name: pane
+          title: editor
           delay: 500
           focus: true
         - name: messenger
