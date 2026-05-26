@@ -84,6 +84,12 @@ in
   # Run the Homebrew binary from a stable path. When skhd is launched directly
   # from the Nix store, nixpkgs updates can change the executable path and make
   # macOS TCC ask for Accessibility permission again.
+  #
+  # If Accessibility must be granted manually, add the resolved Cellar binary
+  # (for example `/opt/homebrew/Cellar/skhd/<version>/bin/skhd`) instead of the
+  # `/opt/homebrew/bin/skhd` symlink. A Homebrew skhd version upgrade may still
+  # require granting the new Cellar binary once, but regular Nix updates will
+  # no longer rotate the executable path.
   environment.etc."skhdrc".text = skhdConfig;
   launchd.user.agents.skhd = {
     serviceConfig = {
