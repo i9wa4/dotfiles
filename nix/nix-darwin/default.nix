@@ -4,6 +4,14 @@
   commonNixSettings,
   ...
 }:
+let
+  skhdConfig = ''
+    # App switching: Alt + 1/2/3
+    alt - 1 : open -a "kitty"
+    alt - 2 : open -a "Google Chrome"
+    alt - 3 : open -a "Obsidian"
+  '';
+in
 {
   nixpkgs = {
     # Allow unfree packages (e.g., terraform with BSL license)
@@ -71,15 +79,26 @@
   environment.systemPackages = [
   ];
 
-  # skhd: hotkey daemon for app switching
-  services.skhd = {
-    enable = true;
-    skhdConfig = ''
-      # App switching: Alt + 1/2/3
-      alt - 1 : open -a "kitty"
-      alt - 2 : open -a "Google Chrome"
-      alt - 3 : open -a "Obsidian"
-    '';
+  # skhd: hotkey daemon for app switching.
+  #
+  # Run the Homebrew binary from a stable path. When skhd is launched directly
+  # from the Nix store, nixpkgs updates can change the executable path and make
+  # macOS TCC ask for Accessibility permission again.
+  environment.etc."skhdrc".text = skhdConfig;
+  launchd.user.agents.skhd = {
+    serviceConfig = {
+      ProgramArguments = [
+        "/opt/homebrew/bin/skhd"
+        "-c"
+        "/etc/skhdrc"
+      ];
+      KeepAlive = true;
+      RunAtLoad = true;
+      ProcessType = "Interactive";
+      EnvironmentVariables = {
+        PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+      };
+    };
   };
 
   # Fonts
@@ -93,6 +112,12 @@
   # disabled so `nix run '.#switch'` does not force app version bumps.
   homebrew = {
     enable = true;
+    taps = [
+      "asmvik/formulae"
+    ];
+    brews = [
+      "asmvik/formulae/skhd"
+    ];
     onActivation = {
       autoUpdate = true;
       upgrade = false;
