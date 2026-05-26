@@ -123,7 +123,7 @@ common_validation_expectations: &common_validation
   - bash scripts/validation/validate-skill-private-content.sh --staged
   - bash scripts/validation/validate-skill-description-length.sh --staged
   - bash scripts/validation/validate-skill-waza.sh --staged
-  - gh skill publish --dry-run in routine CI before release
+  - gh skill publish --dry-run before release
 
 skills:
   - name: agent-harness-engineering
