@@ -57,6 +57,7 @@ in
     # User info (username is passed from flake.nix via extraSpecialArgs)
     inherit username;
     homeDirectory = lib.mkForce homeDir;
+    enableNixpkgsReleaseCheck = false;
 
     # Home Manager state version
     # Set to the version of home-manager at initial installation. Do not change.
