@@ -13,7 +13,6 @@ vim.opt.nrformats = { "unsigned" }
 
 vim.opt.ignorecase = true
 
--- vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
 vim.opt.number = true
 
