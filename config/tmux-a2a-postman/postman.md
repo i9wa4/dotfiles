@@ -720,13 +720,13 @@ attempts remain under the cap.
 
 ### 7.14. [orchestrator] Signal Vocabulary Table
 
-| Signal                    | Meaning                                    |
-| ------------------------- | ------------------------------------------ |
-| DONE: (summary)           | All tasks complete, guardian approved      |
-| BLOCKED: (reason)         | Cannot proceed, needs intervention         |
-| DONE (partial): (summary) | Some tasks done, others blocked            |
-| ACK: <topic>              | Received, working on it                    |
-| HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
+| Signal                    | Meaning                                   |
+| ------------------------- | ----------------------------------------- |
+| DONE: (summary)           | All tasks complete, guardian approved     |
+| BLOCKED: (reason)         | Cannot proceed, needs intervention        |
+| DONE (partial): (summary) | Some tasks done, others blocked           |
+| ACK: <topic>              | Received, working on it                   |
+| HEARTBEAT_OK              | Nothing needs attention (heartbeat reply) |
 
 ### 7.15. [orchestrator] Markdown Task Tracker Gate
 

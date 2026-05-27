@@ -41,10 +41,10 @@ Single source of truth for Bash command denies. One `entries` array
 produces the Claude built-in deny set and the shared hook pattern file in
 the same Nix evaluation:
 
-| Output                       | Consumer                                                                     |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs                           |
-| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex    |
+| Output                       | Consumer                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs                        |
+| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex |
 
 Adding a deny rule is one nix entry, picked up by both runtimes on the
 next `nix run '.#switch'`. Codex does not also install these shared command
@@ -86,13 +86,13 @@ adopt.
 
 After the 2026-04-29 reduction, the active hook surface looks like this:
 
-| Event                                            | Claude                                  | Codex                                   | Symmetric?                        |
-| ------------------------------------------------ | --------------------------------------- | --------------------------------------- | --------------------------------- |
-| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
-| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
-| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                         | `codex-pretooluse-observe-write.sh`     | Codex-only observer               |
-| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
-| Status line                                      | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
+| Event                                            | Claude                              | Codex                                 | Symmetric?                     |
+| ------------------------------------------------ | ----------------------------------- | ------------------------------------- | ------------------------------ |
+| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`           | `pretooluse-deny-bash.sh`             | Shared script (consolidated)   |
+| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`   | (no equivalent)                       | Claude-only by design          |
+| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                     | `codex-pretooluse-observe-write.sh`   | Codex-only observer            |
+| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude` | `common-userpromptsubmit.sh codex`    | Shared script                  |
+| Status line                                      | `claude-statusline.sh`              | declarative `tui.status_line` in TOML | Different transport, justified |
 
 Removed from both sides on 2026-04-29 for symmetry:
 
@@ -191,12 +191,12 @@ why it stays forked. The same lens applies to anything new:
 
 The script directory naming convention we are converging on:
 
-| Prefix         | Meaning                                                                     |
-| -------------- | --------------------------------------------------------------------------- |
-| `claude-*.sh`  | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).             |
-| `codex-*.sh`   | Codex-only by design (none currently).                                      |
-| `common-*.sh`  | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`).   |
-| `<no prefix>`  | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                  |
+| Prefix        | Meaning                                                                   |
+| ------------- | ------------------------------------------------------------------------- |
+| `claude-*.sh` | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).           |
+| `codex-*.sh`  | Codex-only by design (none currently).                                    |
+| `common-*.sh` | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`). |
+| `<no prefix>` | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                |
 
 A script with a `claude-` or `codex-` prefix should be readable as a
 declaration: "this is intentionally not shared, here is the reason."

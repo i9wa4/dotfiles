@@ -45,10 +45,10 @@ defines three top-level lists:
 
 The Nix module exposes two outputs that consume this SSOT:
 
-| Output                       | Consumer                                                                                                                                         | Mechanism                                        |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                     | `Bash(<glob>)` glob match (Claude Code built-in) |
-| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook)    | POSIX ERE regex match                            |
+| Output                       | Consumer                                                                                                                                      | Mechanism                                        |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                  | `Bash(<glob>)` glob match (Claude Code built-in) |
+| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook) | POSIX ERE regex match                            |
 
 `allowPrefixBypass` and `stripDataArgs` are emitted into the shared
 `patternsFile`, so both Claude Code and Codex CLI inherit the same
