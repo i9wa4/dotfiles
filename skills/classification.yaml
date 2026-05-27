@@ -40,6 +40,9 @@ target_groups:
   plan-design: >
     Implementation plans, option framing, milestones, and approval-readiness
     guidance.
+  durable-task-tracking: >
+    Durable task tracking for multi-step, multi-node, or reviewed work with
+    checklist/evidence logs and handoff/resume guidance.
   systematic-debugging: >
     Root-cause-first debugging workflow.
   programming: >
@@ -255,6 +258,19 @@ skills:
     action: keep
     target_group: plan-design
     target_name: plan-design
+    release_state: needs_private_content_scan
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scan_before_publish
+    validation_expectations: *common_validation
+
+  - name: durable-task-tracking
+    path: skills/durable-task-tracking
+    publish: true
+    scope: durable-task-tracking
+    action: keep
+    target_group: durable-task-tracking
+    target_name: durable-task-tracking
     release_state: needs_private_content_scan
     owner_surface: skill
     standalone_decision: keep_standalone
