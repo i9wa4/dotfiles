@@ -1,5 +1,36 @@
 # Waza and Publishing
 
+## Validation Layers
+
+Keep Waza, prompt evals, quality checks, and GitHub CLI packaging checks as
+separate evidence layers:
+
+| Layer                        | Use For                                     | Default Gate |
+| ---------------------------- | ------------------------------------------- | ------------ |
+| `waza check`                 | Structural readiness and eval schema checks | Yes          |
+| `waza run evals/...`         | Prompt cases and skill-routing behavior     | No           |
+| `waza quality`               | LLM-judged skill clarity and anti-patterns  | No           |
+| `gh skill publish --dry-run` | GitHub CLI packaging and publish validation | Yes          |
+
+Do not treat `waza check` as the trigger-quality or eval-success gate. It
+loads `SKILL.md`, checks compliance, token budget, links, spec checks, and eval
+or task schemas when present. Eval absence can still coexist with
+`.skills[].ready == true`, so use eval coverage as advisory evidence unless a
+task explicitly adds a release or regression gate for it.
+
+Use prompt cases when changing trigger descriptions, compatibility triggers, or
+adjacent skills. Include Japanese prompt cases when real requests are Japanese.
+A Waza trigger test is not static lint: `waza run` executes prompt cases
+through the configured executor and compares recorded skill invocations. With
+the normal `copilot-sdk` executor, local runs need Copilot auth, and CI runs
+need token-based auth. `executor: mock` is local simulation and does not prove
+real routing behavior.
+
+Treat `waza quality` as optional, model-backed review. It is useful for
+clarity, completeness, trigger precision, scope coverage, and anti-pattern
+feedback, but it is not suitable for default pre-commit unless the invocation
+is deterministic, non-interactive, credential-free, and scoped.
+
 ## Waza Loop
 
 Use Waza for every skill-source change when available.
@@ -82,3 +113,9 @@ Normal commits therefore check only changed skill directories;
 Run relevant pre-commit hooks for changed skill/docs files. Run `nix flake
 check` when Nix, workflow, or shared harness files changed. `nix run '.#switch'`
 is only needed when verifying installed runtime output.
+
+Keep default pre-commit focused on deterministic, local checks: frontmatter,
+Waza readiness for changed skills, private-content scanning, publish dry-run,
+formatting, and shell checks. Put `waza run` prompt evals and `waza quality`
+in task artifacts, release-readiness procedures, or skill guidance unless a
+future eval is explicitly cheap, stable, and credential-free.
