@@ -333,8 +333,8 @@ Last reviewed Claude Code version: v2.1.145 (2026-05-21)
   (cosmetic)
 - [ ] `sandbox.network.deniedDomains` setting (v2.1.113) - opt-in domain
   deny-list even when broader allow wildcards apply
-- [ ] `refreshInterval` for status line (v2.1.97) - auto re-run
-  `claude-statusline.sh` every N seconds
+- [ ] ~~`refreshInterval` for status line (v2.1.97)~~ N/A - Claude
+  `statusLine` config and `claude-statusline.sh` were removed from this repo.
 - [ ] `cleanupPeriodDays` now also covers Claude task cache,
   `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
   set; new dirs swept automatically

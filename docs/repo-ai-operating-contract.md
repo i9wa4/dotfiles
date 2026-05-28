@@ -329,7 +329,6 @@ intentional:
 
 - Claude-only role write-deny hook
 - Codex denser installed rules artifact
-- Claude script-based status line and Codex declarative TOML status line
 
 These differences are acceptable only so long as they keep the same local
 intent: safe execution, explicit handoff, and verifiable reporting.

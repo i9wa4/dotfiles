@@ -26,9 +26,8 @@ Concretely, every behavior should land in exactly one of these tiers:
    both runtimes accept the same JSON-on-stdin / JSON-on-stdout hook
    schema for the events we use.
 3. **Per-runtime transport** — a fork only when the runtimes truly
-   disagree on transport (e.g. Claude reads a status-line script,
-   Codex builds the status from declarative TOML; no shared substrate
-   exists).
+   disagree on transport, such as Claude's role-aware write-deny hook
+   versus Codex's `apply_patch`/write-tool observer payload shape.
 
 Anything in (3) should justify itself in writing. The default is (1)
 or (2).
@@ -86,13 +85,12 @@ adopt.
 
 After the 2026-04-29 reduction, the active hook surface looks like this:
 
-| Event                                            | Claude                              | Codex                                 | Symmetric?                     |
-| ------------------------------------------------ | ----------------------------------- | ------------------------------------- | ------------------------------ |
-| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`           | `pretooluse-deny-bash.sh`             | Shared script (consolidated)   |
-| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`   | (no equivalent)                       | Claude-only by design          |
-| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                     | `codex-pretooluse-observe-write.sh`   | Codex-only observer            |
-| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude` | `common-userpromptsubmit.sh codex`    | Shared script                  |
-| Status line                                      | `claude-statusline.sh`              | declarative `tui.status_line` in TOML | Different transport, justified |
+| Event                                            | Claude                              | Codex                               | Symmetric?                   |
+| ------------------------------------------------ | ----------------------------------- | ----------------------------------- | ---------------------------- |
+| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`           | `pretooluse-deny-bash.sh`           | Shared script (consolidated) |
+| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`   | (no equivalent)                     | Claude-only by design        |
+| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                     | `codex-pretooluse-observe-write.sh` | Codex-only observer          |
+| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude` | `common-userpromptsubmit.sh codex`  | Shared script                |
 
 Removed from both sides on 2026-04-29 for symmetry:
 
@@ -138,39 +136,6 @@ metadata to `~/.codex/hook-observations/pretooluse-write-tools.jsonl`; it does
 not deny. If enforcement is added later, the matcher and patch-shaped payload
 differ enough that the script body should stay separate from Claude's
 pane-title-aware deny-write hook.
-
-### 4.2. Status Line: Two Different Transport Contracts
-
-Claude's status line is configured as:
-
-```nix
-statusLine = {
-  type = "command";
-  command = "$CLAUDE_CONFIG_DIR/scripts/claude-statusline.sh";
-};
-```
-
-Claude invokes the script and renders whatever it prints to stdout.
-
-Codex's status line is configured as:
-
-```toml
-[tui]
-status_line = [
-  "context-remaining",
-  "model-with-reasoning",
-  "permissions",
-  "approval-mode",
-  "codex-version",
-]
-```
-
-Codex never invokes a script. It composes the status line from
-declarative pieces it already knows.
-
-There is no shared substrate to share. The right answer is to keep
-each native and accept this asymmetry as a transport-level fork.
-This is the legitimate (3) tier in section 1.
 
 ## 5. Direction We Want To Keep Pulling In
 

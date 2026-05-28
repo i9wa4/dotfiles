@@ -2,8 +2,7 @@
 # common-userpromptsubmit.sh - Shared UserPromptSubmit hook entrypoint
 #
 # Mode-specific output:
-# - codex: time, role, cwd, git, launch command, add-dir path/context
-# - claude: same as codex plus usage snapshot
+# - codex/claude: time, role, cwd, git, launch command, add-dir path/context
 #
 # Hook: UserPromptSubmit
 set -o errexit
@@ -148,28 +147,17 @@ collect_userpromptsubmit_context() {
   export CURRENT_TIME ROLE CWD_DISPLAY LAUNCH_CMD GIT_INFO ADD_DIR ADD_DIR_SUMMARY
 }
 
-read_usage_info() {
-  local usage_file="${XDG_STATE_HOME:-$HOME/.local/state}/claude/usage.txt"
-  cat "$usage_file" 2>/dev/null || true
-}
-
 main() {
   local mode="${1:-codex}"
-  local usage_info=""
 
   # Consume stdin (prompt JSON)
   cat >/dev/null
   collect_userpromptsubmit_context
 
   case "$mode" in
-  codex)
+  codex | claude)
     printf 'Current time: %s | Your role: %s | CWD: %s | Git: %s | You were launched with: %s | add-dir path: %s | add-dir context: %s' \
       "$CURRENT_TIME" "$ROLE" "$CWD_DISPLAY" "${GIT_INFO:-n/a}" "${LAUNCH_CMD:-unknown}" "${ADD_DIR:-n/a}" "${ADD_DIR_SUMMARY:-n/a}"
-    ;;
-  claude)
-    usage_info=$(read_usage_info)
-    printf 'Current time: %s | Your role: %s | CWD: %s | Git: %s | Usage: %s | You were launched with: %s | add-dir path: %s | add-dir context: %s' \
-      "$CURRENT_TIME" "$ROLE" "$CWD_DISPLAY" "${GIT_INFO:-n/a}" "${usage_info:-n/a}" "${LAUNCH_CMD:-unknown}" "${ADD_DIR:-n/a}" "${ADD_DIR_SUMMARY:-n/a}"
     ;;
   *)
     printf 'unknown mode: %s\n' "$mode" >&2
