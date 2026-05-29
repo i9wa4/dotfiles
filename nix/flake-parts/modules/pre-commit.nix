@@ -189,10 +189,14 @@
             types = [ "file" ];
             pass_filenames = false;
           };
-          skill-publish-dry-run = {
+          skill-release-readiness-check = {
             enable = true;
-            entry = "${pkgs.gh}/bin/gh skill publish --dry-run";
-            files = "^skills/";
+            entry = "${pkgs.writeScript "skill-release-readiness-check" ''
+              #!${pkgs.bash}/bin/bash
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-release-readiness.sh} --strict
+            ''}";
+            files = "^((skills/.*)|(\\.github/workflows/ci\\.yaml)|(scripts/validation/validate-skill-release-readiness\\.sh)|(docs/(agent-skills-management|agent-skills-release-all)\\.md))$";
+            types = [ "file" ];
             pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.

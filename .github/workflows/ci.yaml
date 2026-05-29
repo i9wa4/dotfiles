@@ -72,11 +72,6 @@ jobs:
           test -f skills/trigger-validation.json
           bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
 
-      - name: Validate Agent Skills publish dry-run
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: nix run nixpkgs#gh -- skill publish --dry-run
-
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
 
@@ -108,6 +103,11 @@ jobs:
         uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2 # zizmor: ignore[cache-poisoning] tag-only job; untrusted PR runs cannot reach this job.
         with:
           primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', 'flake.lock') }}
+
+      - name: Validate Agent Skills publish dry-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run nixpkgs#gh -- skill publish --dry-run
 
       - name: Publish Agent Skills GitHub Release
         env:

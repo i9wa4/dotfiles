@@ -65,7 +65,7 @@ bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
   docs/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
-gh skill publish --dry-run
+bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
 ## Manual Trigger Run
