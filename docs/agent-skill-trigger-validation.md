@@ -100,9 +100,10 @@ PR must name that PR in `notes`.
 
 ## Release-Readiness Gate
 
-Routine CI runs the strict trigger matrix before any release publish step can
-run. When validating locally before removing old standalone skills or declaring
-Agent Skills release readiness, run:
+The pre-commit hook `skill-trigger-matrix-check` runs the strict trigger matrix
+when skills, this procedure, or the trigger-matrix script change. When
+validating locally before removing old standalone skills or declaring Agent
+Skills release readiness, run:
 
 ```sh
 bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results

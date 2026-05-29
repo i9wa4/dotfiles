@@ -97,7 +97,9 @@ private_content_scan:
     - 'private-content-scan: allow-next-line'
 
 release_readiness:
+  validation_owner: nix/flake-parts/modules/pre-commit.nix
   routine_ci_workflow: .github/workflows/ci.yaml
+  release_workflow: .github/workflows/agent-skills-release.yaml
   report_command: bash scripts/validation/validate-skill-release-readiness.sh
   strict_command: bash scripts/validation/validate-skill-release-readiness.sh --strict
   dry_run_command: gh skill publish --dry-run

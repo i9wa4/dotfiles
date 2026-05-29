@@ -28,40 +28,38 @@ Run the classification gate in report mode when investigating cleanup work:
 bash scripts/validation/validate-skill-release-readiness.sh
 ```
 
-Run the blocking gate used by pre-commit, routine CI, and release publishing:
+Run the blocking gate used by pre-commit and by release workflow preflight
+through `nix flake check`:
 
 ```sh
 bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
-## Pre-Commit And Routine CI
+## Pre-Commit
 
 The pre-commit hook `skill-release-readiness-check` runs the strict
-classification gate when skill sources, release policy docs, the release
-workflow, or the release-readiness script change. This keeps deterministic
-release readiness local and does not call `gh skill publish`.
+classification gate when skill sources, release policy docs, release workflows,
+or the release-readiness script change. This keeps deterministic release
+readiness local and does not call `gh skill publish`.
 
-`.github/workflows/ci.yaml` also runs release-grade validation on pull
-requests, `main` pushes, manual dispatches, and `v*` tag pushes. The CI job
-blocks unless all deterministic release validations pass:
+The pre-commit hook `skill-trigger-matrix-check` runs the strict consolidated
+trigger matrix when skills, trigger-validation docs, or the trigger-matrix
+script change.
 
-- strict classification readiness from `skills/classification.yaml`,
-- consolidated trigger validation.
-
-That makes ordinary pre-commit and CI the proof point for deterministic release
-readiness. They do not run `gh skill publish`; that command is reserved for the
-tag-push release path.
+Routine CI still runs `nix flake check`, which evaluates the pre-commit check
+set. It does not add separate Agent Skills validation steps and does not run
+`gh skill publish`; that command is reserved for the tag-push release path.
 
 ## Tag Release
 
-A tag push is the publishing trigger. There is no separate manual release-all
-workflow.
+A tag push is the publishing trigger. There is no manual release-all workflow.
 
 Creating and pushing a `v*` tag is enough to enter the release path. When the
-tag is pushed, `.github/workflows/ci.yaml` runs the normal CI job first. If CI
-passes, the tag-only release job runs with a write-scoped token.
+tag is pushed, `.github/workflows/agent-skills-release.yaml` runs the tag-only
+release job with a write-scoped token.
 
-The release job validates and publishes the already-validated catalog:
+The release job runs `nix flake check` first, so deterministic validation still
+comes from the pre-commit hook set. It then validates and publishes the catalog:
 
 - `gh skill publish --dry-run`;
 - `gh skill publish --tag "$TAG_NAME"`.
