@@ -57,41 +57,51 @@ shared command-deny set into embedded `prefix_rule(...)` rules; filesystem
 and network blast-radius controls remain the responsibility of Codex
 sandbox/approval settings.
 
-## 3. Three Permission Layers
+## 3. Permission And Hook Layers
 
-A Bash command from an AI agent passes through up to three independent gates
-before it can run.
+A Bash command from an AI agent can pass through permission checks, hook
+checks, and user confirmation prompts before it can run. These are different
+runtime surfaces. Any bypass-mode claim must name the exact layer that was
+verified.
 
-### 3.1. Layer 1 — Claude Code Built-In Safety Classifier
+### 3.1. Layer 1 — Claude Code Permission Checks
 
-Claude Code itself recognises certain dangerous patterns
+Claude Code normally recognises certain dangerous patterns
 (`rm /`, `rm $HOME`, `sudo`, env-var prefixes, compound commands containing
 dangerous primitives, redirects to `/dev/tcp/...`, `find -exec`,
-`find -delete`, etc.) and surfaces a confirmation prompt.
+`find -delete`, etc.) and surfaces permission prompts or denial behavior.
 
-`--dangerously-skip-permissions` does not bypass this layer. Recent Claude
-Code releases (v2.1.98 onward) have closed several bypass-mode loopholes that
-previously made compound commands and env-var prefixes auto-skip. See
-`docs/claude-code` updates and the deny-system commit history for details.
+Installed Claude Code 2.1.156 help describes
+`--dangerously-skip-permissions` as bypassing all permission checks. Therefore
+this design does not claim that the built-in safety classifier or
+`permissions.deny` rules remain active in bypass-launched panes without
+installed-version verification for that exact behavior.
 
-### 3.2. Layer 2 — Local `permissions.deny` and Shared PreToolUse Hook
+### 3.2. Layer 2 — Local Permission Rules And Shared PreToolUse Hook
 
-Per-repo deny rules sourced from the SSOT. Two sub-layers:
+Per-repo deny rules are sourced from the SSOT and emitted into two mechanisms
+with different bypass semantics:
 
 - Claude `permissions.deny` glob entries (only entries with
-  `claudeSettingsJson = true`). Claude Code refuses to even attempt these
-  commands. Bypass mode does not weaken this set.
-- The shared PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) reads
-  `patternsFile` in both runtimes and matches every entry's regex against
-  the issued Bash command. A match emits a deny payload with the entry's
-  `justification`.
+  `claudeSettingsJson = true`) are the configured permission policy for
+  non-bypass Claude profiles. Treat these as enforced only outside
+  `--dangerously-skip-permissions` unless a scenario on the installed Claude
+  Code version proves otherwise.
+- The shared PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) is a separate
+  hook-layer guardrail. It reads `patternsFile` in both runtimes and matches
+  every entry's regex against the issued Bash command. A match emits a deny
+  payload with the entry's `justification`. Installed help names `--bare`, not
+  `--dangerously-skip-permissions`, as hook-skipping mode, but bypass-launched
+  panes still need explicit hook-fire evidence before relying on this layer.
 
 ### 3.3. Layer 3 — Per-Command User Confirmation Prompt
 
-Standard "Allow Bash(`<command>`)?" prompts. Suppressed by
-`--dangerously-skip-permissions` for Claude commands that pass Layers 1 and 2.
-Codex confirmation and sandbox behavior is configured through Codex
-approval/sandbox settings, not through duplicated command-deny entries.
+Standard "Allow Bash(`<command>`)?" prompts. Claude suppresses these prompts
+under `--dangerously-skip-permissions`; bypass-launched panes must not treat
+permission prompts or `permissions.deny` as active guardrails without
+version-specific evidence. Codex confirmation and sandbox behavior is
+configured through Codex approval/sandbox settings, not through duplicated
+command-deny entries.
 
 ## 4. Hook Processing Pipeline
 
