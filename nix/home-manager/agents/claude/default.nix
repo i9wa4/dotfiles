@@ -119,10 +119,6 @@ let
       ];
     };
     showThinkingSummaries = true;
-    statusLine = {
-      type = "command";
-      command = "$CLAUDE_CONFIG_DIR/scripts/claude-statusline.sh";
-    };
   };
 
   settingsFile = jsonFormat.generate "claude-settings.json" claudeSettings;

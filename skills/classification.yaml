@@ -17,6 +17,7 @@ policy:
     - skill deletions
     - broad postman.md shrinking
     - tags
+    - release workflow automation
     - public releases
 
 target_groups:
@@ -39,11 +40,18 @@ target_groups:
   plan-design: >
     Implementation plans, option framing, milestones, and approval-readiness
     guidance.
+  durable-task-tracking: >
+    Durable task tracking for multi-step, multi-node, or reviewed work with
+    checklist/evidence logs and handoff/resume guidance.
   systematic-debugging: >
     Root-cause-first debugging workflow.
   programming: >
     Shell, Python, Nix package workflow, Markdown, and implementation-loop
     conventions.
+  english-writing-quality: >
+    English documentation quality checks with Vale and Harper for
+    technical-doc style, grammar, spelling, false positives, and mixed-doc
+    caveats.
   data-platform: >
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
@@ -277,6 +285,19 @@ skills:
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
+  - name: durable-task-tracking
+    path: skills/durable-task-tracking
+    publish: true
+    scope: durable-task-tracking
+    action: keep
+    target_group: durable-task-tracking
+    target_name: durable-task-tracking
+    release_state: release_ready
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+
   - name: brainstorming
     path: skills/brainstorming
     publish: true
@@ -393,6 +414,19 @@ skills:
     release_state: release_ready
     owner_surface: skills/programming/references
     standalone_decision: keep_compatibility_trigger
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+
+  - name: english-writing-quality
+    path: skills/english-writing-quality
+    publish: true
+    scope: english-doc-prose-quality
+    action: keep
+    target_group: english-writing-quality
+    target_name: english-writing-quality
+    release_state: release_ready
+    owner_surface: skill
+    standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 

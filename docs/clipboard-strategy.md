@@ -40,11 +40,11 @@ Lua.
 
 Use these register meanings:
 
-| Register         | Meaning                                             | Repo policy                                                         |
-| ---------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
-| unnamed register | Default yank, delete, and paste register            | Keep normal Vim behavior unless `clipboard` redirects it            |
-| `+`              | System clipboard                                    | Primary target on Linux, WSL2, and terminal clipboard paths         |
-| `*`              | Primary selection on X11, system clipboard on macOS | Nice to preserve when cheap, but not required for minimal strategy  |
+| Register         | Meaning                                             | Repo policy                                                        |
+| ---------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| unnamed register | Default yank, delete, and paste register            | Keep normal Vim behavior unless `clipboard` redirects it           |
+| `+`              | System clipboard                                    | Primary target on Linux, WSL2, and terminal clipboard paths        |
+| `*`              | Primary selection on X11, system clipboard on macOS | Nice to preserve when cheap, but not required for minimal strategy |
 
 The repo currently sets clipboard redirection only in Neovim:
 
@@ -160,12 +160,12 @@ usually outside the editor. Check in this order:
 
 Keep provider ownership narrow:
 
-| Platform      | Editor | Preferred provider behavior                                      |
-| ------------- | ------ | ---------------------------------------------------------------- |
-| macOS         | Neovim | Neovim default provider, plus tmux mirror inside tmux            |
-| macOS         | Vim    | No custom clipboard provider in `vimrc`                          |
-| Linux or WSL2 | Neovim | Neovim default provider, plus tmux mirror inside tmux            |
-| Linux or WSL2 | Vim    | No custom clipboard provider in `vimrc`                          |
+| Platform      | Editor | Preferred provider behavior                           |
+| ------------- | ------ | ----------------------------------------------------- |
+| macOS         | Neovim | Neovim default provider, plus tmux mirror inside tmux |
+| macOS         | Vim    | No custom clipboard provider in `vimrc`               |
+| Linux or WSL2 | Neovim | Neovim default provider, plus tmux mirror inside tmux |
+| Linux or WSL2 | Vim    | No custom clipboard provider in `vimrc`               |
 
 This keeps Neovim simple because Neovim already knows how to auto-detect common
 clipboard tools. Vim stays simple because `vimrc` does not own clipboard

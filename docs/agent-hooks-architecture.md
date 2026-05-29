@@ -26,9 +26,8 @@ Concretely, every behavior should land in exactly one of these tiers:
    both runtimes accept the same JSON-on-stdin / JSON-on-stdout hook
    schema for the events we use.
 3. **Per-runtime transport** — a fork only when the runtimes truly
-   disagree on transport (e.g. Claude reads a status-line script,
-   Codex builds the status from declarative TOML; no shared substrate
-   exists).
+   disagree on transport, such as Claude's role-aware write-deny hook
+   versus Codex's `apply_patch`/write-tool observer payload shape.
 
 Anything in (3) should justify itself in writing. The default is (1)
 or (2).
@@ -38,17 +37,19 @@ or (2).
 ### 2.1. Deny Rule Data — `denied-bash-commands.nix`
 
 Single source of truth for Bash command denies. One `entries` array
-produces three artifacts in the same Nix evaluation:
+produces the Claude built-in deny set and the shared hook pattern file in
+the same Nix evaluation:
 
-| Output                          | Consumer                                            |
-| ------------------------------- | --------------------------------------------------- |
-| `claudeCode.denyPermissions`    | `~/.claude/settings.json` `permissions.deny` globs  |
-| `claudeCode.patternsFile`       | bash regex array sourced by Claude's deny-bash hook |
-| `codexCli.rulesContent`         | `~/.codex/rules/default.rules` `prefix_rule(...)`   |
+| Output                       | Consumer                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs                        |
+| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex |
 
 Adding a deny rule is one nix entry, picked up by both runtimes on the
-next `nix run '.#switch'`. This is the model we want every other
-shared concept to follow.
+next `nix run '.#switch'`. Codex does not also install these shared command
+denies as embedded `prefix_rule(...)` rules; the shared PreToolUse hook is
+the repo-owned command-deny authority, while Codex sandbox/approval settings
+remain responsible for filesystem and network blast radius.
 
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
@@ -84,13 +85,12 @@ adopt.
 
 After the 2026-04-29 reduction, the active hook surface looks like this:
 
-| Event                                            | Claude                                  | Codex                                   | Symmetric?                        |
-| ------------------------------------------------ | --------------------------------------- | --------------------------------------- | --------------------------------- |
-| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`               | `pretooluse-deny-bash.sh`               | Shared script (consolidated)      |
-| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`       | (no equivalent)                         | Claude-only by design             |
-| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                         | `codex-pretooluse-observe-write.sh`     | Codex-only observer               |
-| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude`     | `common-userpromptsubmit.sh codex`      | Shared script                     |
-| Status line                                      | `claude-statusline.sh`                  | declarative `tui.status_line` in TOML   | Different transport, justified    |
+| Event                                            | Claude                              | Codex                               | Symmetric?                   |
+| ------------------------------------------------ | ----------------------------------- | ----------------------------------- | ---------------------------- |
+| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`           | `pretooluse-deny-bash.sh`           | Shared script (consolidated) |
+| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`   | (no equivalent)                     | Claude-only by design        |
+| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                     | `codex-pretooluse-observe-write.sh` | Codex-only observer          |
+| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude` | `common-userpromptsubmit.sh codex`  | Shared script                |
 
 Removed from both sides on 2026-04-29 for symmetry:
 
@@ -137,39 +137,6 @@ not deny. If enforcement is added later, the matcher and patch-shaped payload
 differ enough that the script body should stay separate from Claude's
 pane-title-aware deny-write hook.
 
-### 4.2. Status Line: Two Different Transport Contracts
-
-Claude's status line is configured as:
-
-```nix
-statusLine = {
-  type = "command";
-  command = "$CLAUDE_CONFIG_DIR/scripts/claude-statusline.sh";
-};
-```
-
-Claude invokes the script and renders whatever it prints to stdout.
-
-Codex's status line is configured as:
-
-```toml
-[tui]
-status_line = [
-  "context-remaining",
-  "model-with-reasoning",
-  "permissions",
-  "approval-mode",
-  "codex-version",
-]
-```
-
-Codex never invokes a script. It composes the status line from
-declarative pieces it already knows.
-
-There is no shared substrate to share. The right answer is to keep
-each native and accept this asymmetry as a transport-level fork.
-This is the legitimate (3) tier in section 1.
-
 ## 5. Direction We Want To Keep Pulling In
 
 After the deny-bash consolidation, every shared hook script either
@@ -189,12 +156,12 @@ why it stays forked. The same lens applies to anything new:
 
 The script directory naming convention we are converging on:
 
-| Prefix         | Meaning                                                                     |
-| -------------- | --------------------------------------------------------------------------- |
-| `claude-*.sh`  | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).             |
-| `codex-*.sh`   | Codex-only by design (none currently).                                      |
-| `common-*.sh`  | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`).   |
-| `<no prefix>`  | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                  |
+| Prefix        | Meaning                                                                   |
+| ------------- | ------------------------------------------------------------------------- |
+| `claude-*.sh` | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).           |
+| `codex-*.sh`  | Codex-only by design (none currently).                                    |
+| `common-*.sh` | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`). |
+| `<no prefix>` | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                |
 
 A script with a `claude-` or `codex-` prefix should be readable as a
 declaration: "this is intentionally not shared, here is the reason."

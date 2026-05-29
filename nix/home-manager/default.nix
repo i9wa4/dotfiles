@@ -57,8 +57,6 @@ in
     # User info (username is passed from flake.nix via extraSpecialArgs)
     inherit username;
     homeDirectory = lib.mkForce homeDir;
-
-    # Suppress version mismatch warning (HM release + unstable nixpkgs)
     enableNixpkgsReleaseCheck = false;
 
     # Home Manager state version
@@ -96,6 +94,7 @@ in
       pkgs.ghq
       pkgs.google-cloud-sdk
       pkgs.jq
+      pkgs.harper
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
@@ -103,6 +102,7 @@ in
       pkgs.ripgrep
       pkgs.shellcheck
       pkgs.uv
+      pkgs.vale
       pkgs.vim
       wazaPackage
       pkgs.zoxide
@@ -119,6 +119,7 @@ in
     # cf. Makefile MF_LINK_HOME_ROWS and MF_LINK_XDG_ROWS
     # ==========================================================================
     file = {
+      ".vale.ini".source = symlink "${dotfilesDir}/config/vale/.vale.ini";
     };
   };
 

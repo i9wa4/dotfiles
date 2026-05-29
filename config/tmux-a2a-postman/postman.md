@@ -120,12 +120,13 @@ posting.
 
 ### 2.9. [common_template] Markdown Task Artifact Contract
 
-For multi-step, multi-node, or reviewed work, use one durable `mkmd` artifact
-as the canonical tracker. Keep updating the provided path if one exists. Cite
-the artifact path in handoff, review, and completion traffic.
+For multi-step, multi-node, or reviewed work, use `durable-task-tracking` and
+keep one canonical task artifact. Preserve provided markdown paths as original
+checklists. Cite the artifact path in handoff, review, and completion traffic.
 
 Messenger does not create or update task artifacts. When a user request needs a
-tracker, messenger instructs orchestrator to establish or preserve the tracker.
+tracker, messenger instructs orchestrator to delegate tracker setup or
+preservation.
 
 ### 2.10. [common_template] Original Checklist Completion Gate
 
@@ -159,10 +160,9 @@ These rules apply only to `worker` and `worker-alt`.
   DROP/TRUNCATE/DELETE, git push to main/production branches, or production
   schema migrations. If required, stop and report BLOCKED.
 - Feedback severity is `BLOCKING > IMPORTANT > MINOR`.
-- For multi-step, multi-node, or reviewed work, use one durable `mkmd` artifact
-  as the canonical tracker. Preserve a provided markdown path as the original
-  checklist. Use checkboxes for milestones, verification, and progress where
-  possible.
+- For multi-step, multi-node, or reviewed work, read
+  `durable-task-tracking`, create or preserve one canonical artifact before
+  deep work, update progress/evidence there, and cite it in DONE/BLOCKED.
 - For review-comment tasks, gather PR context, diff, docs, check evidence, and
   draft-ready findings. Do not issue the final guardian verdict, expose
   internal review mechanics in user/GitHub-facing text, or post GitHub comments
@@ -536,8 +536,8 @@ constraints, and success checks in plain language.
 - if the user already named a markdown task file, treat it as the original
   checklist and pass that path through unchanged
 - if the request will span multiple steps, nodes, or review rounds and no
-  markdown tracker exists yet, tell orchestrator to establish one before
-  implementation
+  markdown tracker exists yet, tell orchestrator to delegate
+  `durable-task-tracking` tracker setup or preservation before implementation
 - express the handoff as checkbox-shaped task items as much as possible instead
   of prose-only paragraphs, using only user-provided details and current
   postman status context
@@ -720,24 +720,27 @@ attempts remain under the cap.
 
 ### 7.14. [orchestrator] Signal Vocabulary Table
 
-| Signal                    | Meaning                                    |
-| ------------------------- | ------------------------------------------ |
-| DONE: (summary)           | All tasks complete, guardian approved      |
-| BLOCKED: (reason)         | Cannot proceed, needs intervention         |
-| DONE (partial): (summary) | Some tasks done, others blocked            |
-| ACK: <topic>              | Received, working on it                    |
-| HEARTBEAT_OK              | Nothing needs attention (heartbeat reply)  |
+| Signal                    | Meaning                                   |
+| ------------------------- | ----------------------------------------- |
+| DONE: (summary)           | All tasks complete, guardian approved     |
+| BLOCKED: (reason)         | Cannot proceed, needs intervention        |
+| DONE (partial): (summary) | Some tasks done, others blocked           |
+| ACK: <topic>              | Received, working on it                   |
+| HEARTBEAT_OK              | Nothing needs attention (heartbeat reply) |
 
 ### 7.15. [orchestrator] Markdown Task Tracker Gate
 
 For any task expected to span multiple steps, nodes, or review rounds:
 
-1. make the first worker task create or update a single `mkmd` markdown
-   artifact in `plans` or `research`
+1. delegate the first worker task to read `durable-task-tracking` and create
+   or preserve one canonical task artifact before deep work
 2. preserve any user-provided markdown path as the original checklist
 3. delegate and review against that artifact instead of drifting chat prose
 4. require worker, critic-facing, and completion traffic to cite the same
    artifact path
+
+Detailed `mkmd` directory/label choices and common mistakes live in
+`durable-task-tracking`.
 
 ### 7.16. [orchestrator] Checklist Completion Gate
 

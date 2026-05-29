@@ -43,18 +43,19 @@ defines three top-level lists:
 - `stripDataArgs` — for these arg names, the quoted value following the
   arg is replaced with `""` before the regex deny check.
 
-The Nix module exposes three outputs that consume this SSOT:
+The Nix module exposes two outputs that consume this SSOT:
 
-| Output                       | Consumer                                                                   | Mechanism                                        |
-| ---------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------ |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                               | `Bash(<glob>)` glob match (Claude Code built-in) |
-| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` (sourced by the PreToolUse hook) | POSIX ERE regex match                            |
-| `codexCli.rulesContent`      | `~/.codex/rules/default.rules`                                             | argv-based prefix match (Codex CLI built-in)     |
+| Output                       | Consumer                                                                                                                                      | Mechanism                                        |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                  | `Bash(<glob>)` glob match (Claude Code built-in) |
+| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook) | POSIX ERE regex match                            |
 
-`allowPrefixBypass` and `stripDataArgs` are emitted only into
-`claudeCode.patternsFile`. Codex CLI's argv-based matcher already avoids the
-substring false-positives that make those mechanisms necessary on the Claude
-side.
+`allowPrefixBypass` and `stripDataArgs` are emitted into the shared
+`patternsFile`, so both Claude Code and Codex CLI inherit the same
+data-carrier and message-argument protections. Codex does not duplicate the
+shared command-deny set into embedded `prefix_rule(...)` rules; filesystem
+and network blast-radius controls remain the responsibility of Codex
+sandbox/approval settings.
 
 ## 3. Three Permission Layers
 
@@ -73,21 +74,24 @@ Code releases (v2.1.98 onward) have closed several bypass-mode loopholes that
 previously made compound commands and env-var prefixes auto-skip. See
 `docs/claude-code` updates and the deny-system commit history for details.
 
-### 3.2. Layer 2 — Local `permissions.deny` and PreToolUse Hook
+### 3.2. Layer 2 — Local `permissions.deny` and Shared PreToolUse Hook
 
 Per-repo deny rules sourced from the SSOT. Two sub-layers:
 
-- `permissions.deny` glob entries (only entries with
+- Claude `permissions.deny` glob entries (only entries with
   `claudeSettingsJson = true`). Claude Code refuses to even attempt these
   commands. Bypass mode does not weaken this set.
-- The PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) reads
-  `patternsFile` and matches every entry's regex against the issued Bash
-  command. A match emits a deny payload with the entry's `justification`.
+- The shared PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) reads
+  `patternsFile` in both runtimes and matches every entry's regex against
+  the issued Bash command. A match emits a deny payload with the entry's
+  `justification`.
 
 ### 3.3. Layer 3 — Per-Command User Confirmation Prompt
 
 Standard "Allow Bash(`<command>`)?" prompts. Suppressed by
-`--dangerously-skip-permissions` for commands that pass Layers 1 and 2.
+`--dangerously-skip-permissions` for Claude commands that pass Layers 1 and 2.
+Codex confirmation and sandbox behavior is configured through Codex
+approval/sandbox settings, not through duplicated command-deny entries.
 
 ## 4. Hook Processing Pipeline
 
@@ -204,7 +208,7 @@ special cases on top of regex.
   PreToolUse hook script.
 - `nix/home-manager/agents/claude/default.nix` — wires the SSOT into
   `~/.claude/settings.json` and `~/.claude/scripts/`.
-- `nix/home-manager/agents/codex/default.nix` — wires the SSOT into
-  `~/.codex/rules/default.rules`.
+- `nix/home-manager/agents/codex/default.nix` — wires the shared hook and
+  generated patterns into `~/.codex/scripts/` and `~/.codex/hooks.json`.
 - `config/tmux-a2a-postman/postman.md` section 2.16 — multi-agent
   bash discipline that complements this hook system on the agent side.

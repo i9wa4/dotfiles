@@ -16,8 +16,8 @@ auditing whether orchestration details still belong in the live template.
   `config/tmux-a2a-postman/postman.md`.
 - Keep durable design notes, historical workflow recipes, and long examples in
   `skills/agent-harness-engineering/references/`.
-- Keep task artifacts in `mkmd` plan or research files and cite the same
-  artifact in worker, review, and completion traffic.
+- Use `durable-task-tracking` for task artifact setup and preservation
+  mechanics. Cite the same artifact in worker, review, and completion traffic.
 - Do not restore a standalone role-only `skills/orchestrator/` skill unless the
   live postman role no longer carries enough contract to operate safely.
 
@@ -139,7 +139,8 @@ review routing and final messenger-facing completion.
 
 For plan-first work:
 
-1. Ask worker to establish or preserve one `mkmd` artifact.
+1. Ask worker to read `durable-task-tracking`, establish or preserve one task
+   artifact, and use the returned or provided path.
 2. Require the plan to include source, context, acceptance criteria,
    implementation milestones, verification commands, progress, and surprises.
 3. Route the plan through guardian, critic, guardian, and boss before reporting

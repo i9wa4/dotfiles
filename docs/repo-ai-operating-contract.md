@@ -205,8 +205,8 @@ consumed by both engines.
 This file defines the dangerous Bash patterns once and then emits:
 
 - Claude deny permissions
-- the generated Bash deny patterns file used by Claude hooks
-- the Codex `prefix_rule(...)` content used in `.codex/rules/default.rules`
+- the generated Bash deny patterns file used by the shared Claude/Codex
+  PreToolUse hook
 
 If the repo changes a Bash safety policy, this is where it should happen.
 
@@ -329,7 +329,6 @@ intentional:
 
 - Claude-only role write-deny hook
 - Codex denser installed rules artifact
-- Claude script-based status line and Codex declarative TOML status line
 
 These differences are acceptable only so long as they keep the same local
 intent: safe execution, explicit handoff, and verifiable reporting.

@@ -44,6 +44,7 @@ in
       # Default pane title (override hostname)
       set-option -g pane-active-border-style 'fg=red'
       set-option -g pane-border-format '> #{pane_index} #{pane_id} ✨#{pane_title} > #{pane_current_command} >'
+      set-option -g pane-border-indicators both
       set-option -g pane-border-status top
       set-option -g pane-border-style 'fg=green'
       set-option -g status-interval 1

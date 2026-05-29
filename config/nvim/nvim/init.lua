@@ -13,7 +13,6 @@ vim.opt.nrformats = { "unsigned" }
 
 vim.opt.ignorecase = true
 
--- vim.opt.ambiwidth = "double"
 vim.opt.cursorline = true
 vim.opt.number = true
 
@@ -40,14 +39,6 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
-  {
-    "ibhagwan/fzf-lua",
-    lazy = false,
-    keys = {
-      { "<Space>ff", "<Cmd>FzfLua files<CR>", desc = "Find files" },
-      { "<Space>fg", "<Cmd>FzfLua live_grep<CR>", desc = "Live grep" },
-    },
-  },
   {
     "stevearc/oil.nvim",
     lazy = false,
@@ -132,19 +123,6 @@ vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
-
--- Location list replacement recipes:
---   :lgrep! old **/*.lua
---   ! keeps the cursor in place instead of jumping to the first match.
---   :ldo s/old/new/ge | update
---   :lfdo %s/old/new/ge | update
--- Use :ldo for matched lines and :lfdo for matched files.
-vim.keymap.set("n", "<C-n>", function()
-  pcall(vim.cmd.lnext)
-end)
-vim.keymap.set("n", "<C-p>", function()
-  pcall(vim.cmd.lprevious)
-end)
 
 -- --------------------------------------
 -- Autocmd

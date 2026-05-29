@@ -15,6 +15,7 @@ let
   pnpm = "${pkgs.pnpm}/bin/pnpm";
   pnpmMinimumReleaseAgeHours = 3 * 24;
   pnpmMinimumReleaseAgeMinutes = pnpmMinimumReleaseAgeHours * 60;
+  pnpmConfigHome = "${homeDir}/.config";
   pnpmHome = "${homeDir}/.local/share/pnpm";
   pnpmBin = "${homeDir}/.local/bin";
   pnpmGlobalDir = "${pnpmHome}/global";
@@ -32,7 +33,8 @@ in
 
     # 1. Install/update pnpm packages.
     installPnpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      mkdir -p ${pnpmBin} ${pnpmGlobalDir} ${pnpmStoreDir}
+      mkdir -p ${pnpmBin} ${pnpmGlobalDir} ${pnpmStoreDir} "${pnpmConfigHome}/pnpm"
+      export XDG_CONFIG_HOME="${pnpmConfigHome}"
       export PNPM_HOME="${pnpmHome}"
       export PATH="${pnpmBin}:${pkgs.pnpm}/bin:${nodejs}/bin:$PATH"
 

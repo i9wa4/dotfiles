@@ -110,8 +110,13 @@ cat <<'EOF'
 
 Generated from installed user-level skill trees.
 
+~~~~text
 | Skill Root | Skill | SKILL.md Path | Description |
 | ---------- | ----- | ------------- | ----------- |
 EOF
 
 emit_installed_skill_roots
+
+cat <<'EOF'
+~~~~
+EOF
