@@ -303,9 +303,44 @@ gh auth login --with-token
 | Command                                          | Description                                                                                                                                                                                                                                               |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `nix run '.#switch'`                             | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate and uses 1 day on both Linux and macOS |
+| `nix run '.#switch-nh'`                          | Trial `nh` switch path with confirmation, package diff output, activation logs, and the same post-switch generation expiry as `switch`                                                                                                                    |
+| `nix run '.#cleanup-nh-preview'`                 | Dry-run `nh clean user` for comparison. It does not run store GC and does not replace `cleanup`, `gc-roots-delete`, or scheduled daemon GC                                                                                                                |
 | `nix run '.#update'`                             | Update flake inputs                                                                                                                                                                                                                                       |
 | `nix run '.#check'`                              | Check flake configuration                                                                                                                                                                                                                                 |
 | `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage                                                                                                                                                                                                                    |
+
+### 6.1. nh Evaluation
+
+`nix run '.#switch'` remains the daily fallback on macOS and Ubuntu or WSL2
+while `nh` is evaluated. `nix run '.#switch-nh'` is the trial surface.
+
+On Ubuntu or WSL2, `switch-nh` runs `nh home switch --configuration ubuntu .`
+with `--impure`, `--backup-extension backup`, confirmation, package diff
+output, and activation logs. It preserves the existing GitHub token handling by
+reading `gh auth token` and forwarding `--access-tokens` plus
+`"github.com=$access_token"` to the underlying Nix build. After a successful
+activation, it still expires Home Manager generations older than 1 day.
+
+On macOS, `switch-nh` prompts for `macos-p` or `macos-w`, then runs
+`nh darwin switch --hostname <profile> .` with `--impure`, confirmation,
+package diff output, and activation logs. After a successful activation, it
+still expires nix-darwin system generations older than 1 day.
+
+`nix run '.#cleanup-nh-preview'` evaluates `nh clean user` separately from
+switching. It runs with `--dry`, `--ask`, `--keep 1`, `--keep-since 1d`, and
+`--no-gc`, so it previews generation and GC-root candidates without changing the
+store or replacing the current explicit cleanup commands.
+
+Rollback path: return to the existing flow with `nix run '.#switch'`. If an
+`nh` activation already completed and needs to be rolled back, Ubuntu or WSL2
+can run `home-manager switch --rollback`; macOS can run
+`sudo darwin-rebuild --rollback`.
+
+Comparison status: the Ubuntu or WSL2 path has been checked locally with
+`nh home build --configuration ubuntu . --impure --backup-extension backup`
+plus forwarded `--access-tokens`. The macOS nix-darwin activation path remains
+pending until it can be run on a macOS host; Linux-side validation only checks
+the generated app and nix-darwin evaluation surfaces.
 
 ## 7. Upgrade Nix
 

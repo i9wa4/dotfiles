@@ -5,10 +5,13 @@
 #   nix run '.#switch'       -- rebuild and activate configuration
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
+#   nix run '.#switch-nh'    -- trial nh-based switch with the same post-switch generation expiry
 #   nix run '.#update'       -- update flake inputs and Waza release pins
 #   nix run '.#profile-update' -- install or upgrade entries listed in `profilePackages`
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
+#   nix run '.#cleanup-nh-preview'
+#                             -- dry-run nh cleanup without replacing the current cleanup policy
 #   nix run '.#gc-roots-delete'
 #                             -- attempt Linux auto GC-root cleanup through the dedicated command
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
@@ -61,13 +64,55 @@
               else
                 ''
                   access_token=$(${lib.getExe pkgs.gh} auth token)
-                  nix run --access-tokens "github.com=$access_token" \
+                  ${nix} run --access-tokens "github.com=$access_token" \
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
-                  nix run --access-tokens "github.com=$access_token" \
+                  ${nix} run --access-tokens "github.com=$access_token" \
                     home-manager -- expire-generations '-1 days'
                 ''
             }
           ''}/bin/switch";
+        };
+
+        # What: Trial nh switch path for comparing output, package diffs, activation logs, and confirmation UX.
+        #       The existing `switch` app remains the fallback and production daily command.
+        # When: Run only when evaluating nh behavior on the current host.
+        # Example: nix run '.#switch-nh'
+        switch-nh = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "switch-nh" ''
+            set -euo pipefail
+
+            ${
+              if isDarwin then
+                ''
+                  profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
+                  sudo -H ${lib.getExe pkgs.nh} darwin switch \
+                    --bypass-root-check \
+                    --hostname "$profile" \
+                    --ask \
+                    --diff always \
+                    --show-activation-logs \
+                    --impure \
+                    .
+                  sudo -H ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
+                ''
+              else
+                ''
+                  access_token=$(${gh} auth token)
+                  ${lib.getExe pkgs.nh} home switch \
+                    --configuration ubuntu \
+                    --backup-extension backup \
+                    --ask \
+                    --diff always \
+                    --show-activation-logs \
+                    --impure \
+                    . \
+                    -- --access-tokens "github.com=$access_token"
+                  nix run --access-tokens "github.com=$access_token" \
+                    home-manager -- expire-generations '-1 days'
+                ''
+            }
+          ''}/bin/switch-nh";
         };
 
         update = {
@@ -168,6 +213,25 @@
 
             echo "Cleanup complete."
           ''}/bin/cleanup";
+        };
+
+        # What: Preview nh cleanup candidates without changing generations, GC roots, or the store.
+        #       The existing `cleanup` app and scheduled Nix GC remain the active cleanup policy.
+        # When: Run during nh cleanup evaluation only.
+        # Example: nix run '.#cleanup-nh-preview'
+        cleanup-nh-preview = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "cleanup-nh-preview" ''
+            set -euo pipefail
+
+            exec ${lib.getExe pkgs.nh} clean user \
+              --dry \
+              --ask \
+              --keep 1 \
+              --keep-since 1d \
+              --no-gc \
+              "$@"
+          ''}/bin/cleanup-nh-preview";
         };
       }
       // lib.optionalAttrs isLinux {
