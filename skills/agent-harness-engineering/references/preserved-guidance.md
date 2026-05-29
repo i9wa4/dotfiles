@@ -108,9 +108,9 @@ Full diagnosis and commands live in
   bash scripts/validation/validate-skill-frontmatter.sh skills/agent-harness-engineering
   ```
 
-- For publishable skill changes, run `gh skill publish --dry-run` if the local
-  GitHub CLI supports it. If not, record that CLI limitation and use the repo
-  frontmatter validation as the relevant local check.
+- For publishable skill changes, run
+  `bash scripts/validation/validate-skill-release-readiness.sh --strict`.
+  `gh skill publish --dry-run` is reserved for the tag-push release flow.
 - Run `nix flake check` when feasible after changes that affect installed agent
   sources or Nix validation.
 - Run `nix run '.#switch'` only when activation output needs to be materialized

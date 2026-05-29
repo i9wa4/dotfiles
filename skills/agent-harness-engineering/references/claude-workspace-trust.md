@@ -1,9 +1,9 @@
 # Claude Workspace Trust
 
 Use this workflow when Claude Code `PreToolUse` hooks from
-`~/.claude/settings.json` are silently skipped in interactive mode.
+`$HOME/.claude/settings.json` are silently skipped in interactive mode.
 
-The known failure mode is that `~/.claude/.claude.json` can keep
+The known failure mode is that `$HOME/.claude/.claude.json` can keep
 `hasTrustDialogAccepted` set to `false` for project entries. `claude -p`
 non-interactive mode bypasses the workspace trust check, so hooks may appear to
 work in `-p` mode while interactive sessions skip them.
@@ -33,7 +33,7 @@ local Claude Code workspace trust state.
 4. Restart running Claude Code sessions.
 
 ```sh
-cp ~/.claude/.claude.json ~/.claude/.claude.json.bak
+cp "$HOME/.claude/.claude.json" "$HOME/.claude/.claude.json.bak"
 ```
 
 ```sh
@@ -78,8 +78,8 @@ Expected verification result: `false: 0`.
 
 ## Important Notes
 
-- `~/.claude/.claude.json` is local to each machine. It is not managed by this
-  dotfiles repository or Nix.
+- `$HOME/.claude/.claude.json` is local to each machine. It is not managed by
+  this dotfiles repository or Nix.
 - New Claude projects can default to `hasTrustDialogAccepted: false`, so rerun
   the fix after adding projects if interactive hooks stop firing.
 - Running Claude Code sessions must be restarted to pick up the changed trust

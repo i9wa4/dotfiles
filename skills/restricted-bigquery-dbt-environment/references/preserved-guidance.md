@@ -59,7 +59,7 @@ This writes the model to the `test` schema.
 Verify the schema name with compile.
 
 ```bash
-<dbt-command> compile --select <model_name> --profiles-dir ~/.dbt --no-use-colors
+<dbt-command> compile --select <model_name> --profiles-dir "$HOME/.dbt" --no-use-colors
 ```
 
 Confirm the output contains the `test` schema.
@@ -70,13 +70,13 @@ Confirm the output contains the `test` schema.
 - YOU MUST: Confirm the output schema is `test`
 
 ```bash
-<dbt-command> run --select <model_name> --profiles-dir ~/.dbt --no-use-colors
+<dbt-command> run --select <model_name> --profiles-dir "$HOME/.dbt" --no-use-colors
 ```
 
 ## 6. `dbt test` Execution
 
 ```bash
-<dbt-command> test --select <model_name> --profiles-dir ~/.dbt --no-use-colors
+<dbt-command> test --select <model_name> --profiles-dir "$HOME/.dbt" --no-use-colors
 ```
 
 ## 7. Pre-commit Work

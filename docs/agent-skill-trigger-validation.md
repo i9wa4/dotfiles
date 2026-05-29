@@ -65,7 +65,7 @@ bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
   docs/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
-gh skill publish --dry-run
+bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
 ## Manual Trigger Run
@@ -100,8 +100,10 @@ PR must name that PR in `notes`.
 
 ## Release-Readiness Gate
 
-Before removing old standalone skills, declaring Agent Skills release readiness,
-creating a tag, or publishing a release, run:
+The pre-commit hook `skill-trigger-matrix-check` runs the strict trigger matrix
+when skills, this procedure, or the trigger-matrix script change. When
+validating locally before removing old standalone skills or declaring Agent
+Skills release readiness, run:
 
 ```sh
 bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results

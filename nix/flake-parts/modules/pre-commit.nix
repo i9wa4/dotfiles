@@ -58,6 +58,15 @@
         inherit system;
       };
       opensslLib = pkgs.lib.getLib pkgs.openssl;
+      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md))$";
+      skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh)|(docs/(agent-skills-management|agent-skills-release-all)\\.md))$";
+      skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh)|(docs/agent-skill-trigger-validation\\.md))$";
+      skillTriggerMatrixPath = pkgs.lib.makeBinPath [
+        pkgs.coreutils
+        pkgs.gawk
+        pkgs.gnugrep
+        pkgs.jq
+      ];
       worktreeDirenvTestPath = pkgs.lib.makeBinPath [
         pkgs.bash
         pkgs.coreutils
@@ -185,14 +194,29 @@
               #!${pkgs.bash}/bin/bash
               exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
             ''}";
-            files = "^(skills/|config/tmux-a2a-postman/postman\\.md|docs/agent-skills-management\\.md|docs/dotfiles-operating-concepts\\.md)";
+            files = skillReleaseSurfaceFiles;
             types = [ "file" ];
             pass_filenames = false;
           };
-          skill-publish-dry-run = {
+          skill-release-readiness-check = {
             enable = true;
-            entry = "${pkgs.gh}/bin/gh skill publish --dry-run";
-            files = "^skills/";
+            entry = "${pkgs.writeScript "skill-release-readiness-check" ''
+              #!${pkgs.bash}/bin/bash
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-release-readiness.sh} --strict
+            ''}";
+            files = skillReleaseReadinessFiles;
+            types = [ "file" ];
+            pass_filenames = false;
+          };
+          skill-trigger-matrix-check = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-trigger-matrix-check" ''
+              #!${pkgs.bash}/bin/bash
+              export PATH=${skillTriggerMatrixPath}:$PATH
+              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-trigger-matrix.sh} --strict-results
+            ''}";
+            files = skillTriggerMatrixFiles;
+            types = [ "file" ];
             pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
