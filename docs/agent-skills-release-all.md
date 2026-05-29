@@ -1,7 +1,8 @@
-# Agent Skills Release Readiness
+# Release Readiness
 
-This release flow publishes checked-in Agent Skills as a release-all set. It is
-not a selective allowlist. Every checked-in skill must either be ready to
+The repository release flow is a normal tag-triggered release path. Its current
+release-side action publishes checked-in Agent Skills as a release-all set. It
+is not a selective allowlist. Every checked-in skill must either be ready to
 publish or be removed, demoted, or explicitly excluded before the release gate
 passes.
 
@@ -48,18 +49,20 @@ script change.
 
 Routine CI still runs `nix flake check`, which evaluates the pre-commit check
 set. It does not add separate Agent Skills validation steps and does not run
-`gh skill publish`; that command is reserved for the tag-push release path.
+`gh skill publish`; that command is reserved for the tag-triggered release
+workflow.
 
 ## Tag Release
 
 A tag push is the publishing trigger. There is no manual release-all workflow.
 
 Creating and pushing a `v*` tag is enough to enter the release path. When the
-tag is pushed, `.github/workflows/agent-skills-release.yaml` runs the tag-only
-release job with a write-scoped token.
+tag is pushed, `.github/workflows/release.yaml` runs the tag-only release job
+with a write-scoped token.
 
 The release job runs `nix flake check` first, so deterministic validation still
-comes from the pre-commit hook set. It then validates and publishes the catalog:
+comes from the pre-commit hook set. It then validates and publishes the Agent
+Skills catalog:
 
 - `gh skill publish --dry-run`;
 - `gh skill publish --tag "$TAG_NAME"`.
