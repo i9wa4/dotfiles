@@ -27,7 +27,7 @@ Always set up Issue-specific target before `dbt run` during Issue work.
 
 ### 1.1. Setup Procedure
 
-1. Read `~/.dbt/profiles.yml` and check existing settings
+1. Read `$HOME/.dbt/profiles.yml` and check existing settings
 2. Add Issue-specific target if not exists, based on existing `dev` target
 
 ```yaml
@@ -50,10 +50,10 @@ Then switch with `--target` option when executing dbt commands
 
 ```sh
 # Execute with issue_123 target
-dbt run --select +model_name --target issue_123 --profiles-dir ~/.dbt --no-use-colors
+dbt run --select +model_name --target issue_123 --profiles-dir "$HOME/.dbt" --no-use-colors
 
 # Verify connection
-dbt debug --target issue_123 --profiles-dir ~/.dbt --no-use-colors
+dbt debug --target issue_123 --profiles-dir "$HOME/.dbt" --no-use-colors
 ```
 
 ### 1.2. Notes
