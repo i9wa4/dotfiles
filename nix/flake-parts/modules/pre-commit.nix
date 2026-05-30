@@ -54,6 +54,7 @@
           install -Dm755 betterleaks $out/bin/betterleaks
         '';
       };
+      deniedBash = import ../../home-manager/agents/shared/denied-bash-commands.nix { inherit pkgs; };
       actrun = pkgs.callPackage ../../packages/actrun.nix {
         inherit system;
       };
@@ -84,6 +85,23 @@
       packages =
         (if hasBetterleaks then { inherit betterleaks; } else { })
         // (if hasActrun then { inherit actrun; } else { });
+
+      checks.codex-deny-inert-text =
+        pkgs.runCommand "codex-deny-inert-text"
+          {
+            nativeBuildInputs = [
+              pkgs.coreutils
+              pkgs.gnugrep
+              pkgs.jq
+            ];
+          }
+          ''
+            ${pkgs.bash}/bin/bash ${../../../tests/codex-deny-inert-text.sh} \
+              --hook-script ${../../home-manager/agents/scripts/pretooluse-deny-bash.sh} \
+              --patterns-file ${deniedBash.claudeCode.patternsFile} \
+              --codex-config ${../../home-manager/agents/codex/default.nix}
+            touch "$out"
+          '';
 
       pre-commit = {
         check.enable = true;
