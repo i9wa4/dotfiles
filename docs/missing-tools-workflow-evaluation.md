@@ -56,21 +56,23 @@ adding runtime behavior.
 
 ## Decision
 
-Adopt a narrow missing-command recovery policy in a follow-up change. Do not
-copy the external skill wholesale, and do not change runtime hooks, Nix
-configuration, or installed skills as part of this evaluation.
+Adopt a narrow missing-command recovery policy as a dotfiles-owned Agent Skill.
+Do not copy the external skill wholesale, and do not change runtime hooks, Nix
+configuration, or generated installed skill outputs as part of this evaluation.
 
-The best follow-up targets are:
+The adopted surfaces are:
 
-1. Add a short "Missing Commands" section to
-   `skills/programming/references/bash-scripting.md` or a small
-   dotfiles-owned `missing-tools` skill if a separate trigger is desired.
-2. Extend `skills/programming/references/nix-package-workflow.md` with the
-   `direnv`/`comma`/`nix run`/`nix shell` order and examples.
-3. Keep tool-denial handling in the existing Bash-denial guidance. A denied
-   command is not a missing command, so the correct response remains to report
-   the denial and exact operation.
+1. `skills/missing-tools/SKILL.md`: compatibility trigger for direct
+   missing-command recovery requests.
+2. `skills/programming/references/missing-tools.md`: programming-owned durable
+   procedure for the `direnv`/`comma`/`nix run`/`nix shell` order and examples.
+3. `skills/classification.yaml` and `skills/trigger-validation.json`:
+   release-readiness and trigger-matrix metadata for the new skill surface.
 
-This decision satisfies the issue without changing executable behavior. The
-next implementation should be documentation-only unless later evidence shows
+Keep tool-denial handling in the existing Bash-denial guidance. A denied command
+is not a missing command, so the correct response remains to report the denial
+and exact operation.
+
+This decision satisfies the issue without changing executable behavior. Future
+implementation work should remain documentation-only unless later evidence shows
 that a runtime hook or generated skill installation is necessary.
