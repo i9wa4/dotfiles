@@ -5,11 +5,11 @@ metadata:
   version: "0.1.0"
 description: |
   USE FOR: English-to-Japanese technical translation of Markdown articles, with
-  glossary-first terminology handling, protected-span preservation, reusable
-  translation/review prompts, and publication QA for natural Japanese technical
-  prose. DO NOT USE FOR: non-Japanese translation, generic prose editing,
-  provider/model selection, cost control, privacy policy, source chunking
-  automation, or publishing translated output without review.
+  glossary-first terminology, verbatim-token preservation, structural constraint
+  checks, reusable prompts, and publication QA for natural Japanese technical
+  prose. DO NOT USE FOR: non-Japanese translation, generic editing, provider or
+  model selection, cost control, privacy policy, source chunking automation, or
+  publishing translated output without review.
 ---
 
 # English-to-Japanese Technical Translation
@@ -23,11 +23,12 @@ and QA checklists.
 ## Workflow
 
 1. Before sending source text, drafts, glossaries, or style examples to any AI
-   provider or translation tool, confirm translation rights and project policy
-   for provider, model, network path, and data handling. If unclear, stop for
-   approval; this skill does not choose those policies.
+   provider or translation tool, confirm rights to translate, share source with
+   the tool, and publish/distribute the translated derivative. Also confirm
+   project policy for provider, model, network path, and data handling. If
+   unclear, stop for approval; this skill does not choose those policies.
 2. Stabilize the source revision, publication surface, audience, and register.
-3. Mark verbatim protected tokens separately from semantic and structural
+3. Mark verbatim tokens separately from semantic and structural
    constraints. Keep code, commands, paths, URLs, API names, identifiers,
    product names, UI labels, and versions exact; preserve warning meaning and
    table structure.
@@ -43,12 +44,11 @@ and QA checklists.
 
 Use the workflow reference prompts for style contracts, terminology extraction,
 section translation, accuracy review, editorial review, drift checks, and final
-QA. In every prompt, keep verbatim tokens exact, preserve constraints such as
-warning meaning and table layout, and ask for uncertainty markers instead of
-invented details.
+QA. Keep verbatim tokens exact, preserve constraints such as warning meaning and
+table layout, and ask for uncertainty markers instead of invented details.
 
 ## Boundaries
 
 Manual workflow only. This skill does not choose providers or models, estimate
-cost, define privacy policy, authorize external sharing, automate source
-chunking, or publish translated output.
+cost, define privacy policy, authorize external sharing or derivative
+publication, automate source chunking, or publish translated output.

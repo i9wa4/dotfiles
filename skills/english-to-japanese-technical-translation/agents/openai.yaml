@@ -1,4 +1,4 @@
 interface:
   display_name: "English-to-Japanese Technical Translation"
   short_description: "Translate technical articles into natural Japanese"
-  default_prompt: "Use $english-to-japanese-technical-translation to translate this technical article into Japanese with glossary-first QA."
+  default_prompt: "Use $english-to-japanese-technical-translation. First confirm privacy, source-rights, provider-policy, and rights to publish or distribute the translated derivative output; only then ask for article content and translate with glossary-first QA."

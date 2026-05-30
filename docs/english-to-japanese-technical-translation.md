@@ -25,7 +25,8 @@ Start by making the source article explicit and stable.
 Before pasting any source, draft, glossary, or style example into an AI tool or
 translation service, confirm that:
 
-- You have rights to translate and share the source with the selected tool.
+- You have rights to translate the source, share it with the selected tool, and
+  publish or distribute the translated derivative output on the target surface.
 - Project policy allows the selected provider, model, network path, and data
   handling for this content.
 - Confidential, credential, customer, or personal data has been removed, or the
@@ -44,20 +45,19 @@ privacy policy.
      already uses that register.
 5. Preserve the source section structure unless the target publication has a
    clear reason to reorganize it.
-6. List verbatim protected tokens and semantic or structural constraints before
+6. List verbatim tokens and semantic or structural constraints before
    translation.
 7. Build a glossary before translating body text.
 
 Do not translate the full article in one pass. Translate section by section,
 then run separate review passes over the combined result.
 
-## 2. Protect Technical Spans
+## 2. Protect Verbatim Tokens and Constraints
 
-Verbatim protected tokens are copied exactly unless a reviewer deliberately
-changes them. Semantic and structural constraints are not necessarily copied
-word for word, but their meaning, severity, condition, alignment, and Markdown
-role must stay intact. Mark both categories before translation and recheck them
-during publication QA.
+Verbatim tokens are copied exactly unless a reviewer deliberately changes them.
+Semantic and structural constraints are not copied word for word; instead, their
+meaning, severity, condition, alignment, and Markdown role must stay intact.
+Mark both categories before translation and recheck them during publication QA.
 
 | Span or constraint | Rule                                                               |
 | ------------------ | ------------------------------------------------------------------ |
@@ -71,7 +71,12 @@ during publication QA.
 | Warning meaning    | Preserve condition, severity, negation, and required action.       |
 | Table structure    | Preserve headers, row meanings, alignment intent, and code spans.  |
 
-If a verbatim protected token appears inside a sentence, translate only the
+Comments inside code fences, inline code, or copied command output are verbatim
+tokens and stay exact. Prose that merely discusses a code comment can be
+translated when doing so does not change behavior, copied output, or a
+documented API contract.
+
+If a verbatim token appears inside a sentence, translate only the
 surrounding prose. Never localize an identifier, command, path, or option to
 make the sentence read more naturally.
 
@@ -115,7 +120,7 @@ translation of the whole article.
 For each section:
 
 1. Read the section and note its purpose.
-2. Apply the glossary and protected-span list.
+2. Apply the glossary, verbatim-token list, and constraint list.
 3. Translate paragraphs in order.
 4. Preserve headings, lists, tables, notices, code fences, and link labels
    unless the target publication requires a local style adjustment.
@@ -150,8 +155,9 @@ Checklist:
 - No examples, commands, constraints, or assumptions were added.
 - No source details were dropped because they felt repetitive.
 - Ambiguous source text is preserved as ambiguity or flagged for author review.
-- Code comments are translated only when they are prose comments and doing so
-  does not change executable behavior or copied output expectations.
+- Prose about code comments is translated only when doing so does not change
+  executable behavior, copied output, or API expectations; actual comments
+  inside code fences, inline code, or copied output stay exact.
 
 ### 5.2. Terminology Consistency
 
@@ -183,7 +189,7 @@ Checklist:
 
 ### 5.4. Technical Integrity
 
-Inspect the Markdown and protected spans mechanically.
+Inspect the Markdown, verbatim tokens, and constraints mechanically.
 
 Checklist:
 
@@ -215,7 +221,8 @@ Checklist:
 ## 6. Prompt Templates
 
 Use these templates as reusable starting points. Replace bracketed placeholders
-with project-specific context. Do not ask the model to change protected spans.
+with project-specific context. Do not ask the model to change verbatim tokens or
+constraints.
 
 ### 6.1. Project Style Contract
 
@@ -232,7 +239,8 @@ Goals:
 - Preserve technical accuracy.
 - Preserve Markdown structure.
 - Preserve code fences, inline code, commands, paths, URLs, API names,
-  identifiers, product names, UI labels, and version numbers exactly.
+  identifiers, product names, UI labels, version numbers, and comment text
+  inside code fences or copied output exactly.
 - Preserve warning conditions, table structure, and other semantic or
   structural constraints.
 - Use the glossary consistently.
@@ -242,7 +250,7 @@ Non-goals:
 - Do not add examples, constraints, commands, version numbers, or product
   behavior not present in the source.
 - Do not reorganize sections unless explicitly requested.
-- Do not translate verbatim protected tokens.
+- Do not translate verbatim tokens.
 ```
 
 ### 6.2. Terminology Extraction
@@ -278,7 +286,7 @@ glossary.
 Requirements:
 - Translate only this section.
 - Preserve Markdown structure.
-- Preserve verbatim protected tokens exactly.
+- Preserve verbatim tokens exactly.
 - Preserve warning conditions, table structure, and other semantic or
   structural constraints.
 - Keep terminology consistent with the glossary.
@@ -287,11 +295,11 @@ Requirements:
 Glossary:
 [Paste relevant glossary entries.]
 
-Protected spans:
-[List verbatim protected tokens and semantic or structural constraints, or say
+Verbatim tokens and constraints:
+[List exact tokens separately from semantic or structural constraints, or say
 "all code, inline code, URLs, APIs, commands, paths, identifiers, product names,
-UI labels, and versions are verbatim; warning conditions and Markdown tables
-are constraints".]
+UI labels, versions, and comment text inside code fences or copied output are
+verbatim; warning conditions and Markdown tables are constraints".]
 
 Source section:
 [Paste section.]
@@ -392,23 +400,23 @@ Article:
 
 ## 7. Risk Mitigation
 
-| Risk                                    | Mitigation                                                           |
-| --------------------------------------- | -------------------------------------------------------------------- |
-| Mistranslated conditions or negation    | Run the technical accuracy pass against source text.                 |
-| Terminology drift across sections       | Maintain the glossary and run the drift check on the full draft.     |
-| Grammatically valid but unnatural prose | Run a separate Japanese editorial pass.                              |
-| Hallucinated commands or constraints    | Require source comparison and forbid added technical details.        |
-| Over-localized product or code terms    | Treat product, API, command, path, and identifier text as protected. |
-| Markdown or code damage                 | Run technical integrity and publication QA passes.                   |
-| Register inconsistency                  | Choose register up front and check it in final QA.                   |
-| Reader-level mismatch                   | Define audience before translation and review for that audience.     |
+| Risk                                    | Mitigation                                                          |
+| --------------------------------------- | ------------------------------------------------------------------- |
+| Mistranslated conditions or negation    | Run the technical accuracy pass against source text.                |
+| Terminology drift across sections       | Maintain the glossary and run the drift check on the full draft.    |
+| Grammatically valid but unnatural prose | Run a separate Japanese editorial pass.                             |
+| Hallucinated commands or constraints    | Require source comparison and forbid added technical details.       |
+| Over-localized product or code terms    | Treat product, API, command, path, and identifier text as verbatim. |
+| Markdown or code damage                 | Run technical integrity and publication QA passes.                  |
+| Register inconsistency                  | Choose register up front and check it in final QA.                  |
+| Reader-level mismatch                   | Define audience before translation and review for that audience.    |
 
 ## 8. When to Consider Automation
 
 Consider automation only after this workflow has been used enough to reveal
 stable repeatable boundaries. Good future automation candidates include:
 
-- Protected-span extraction and comparison.
+- Verbatim-token extraction and constraint comparison.
 - Glossary table generation from source sections.
 - Markdown structural diffing before and after translation.
 - Terminology drift checks.
@@ -416,5 +424,5 @@ stable repeatable boundaries. Good future automation candidates include:
 - Skill prompt examples or trigger checks that prove the workflow is invoked
   for the intended translation tasks.
 
-Do not automate provider selection, cost controls, privacy policy, or source
-chunking as part of this initial documentation task.
+Do not automate provider selection, cost controls, privacy policy, source
+rights decisions, or source chunking as part of this initial documentation task.
