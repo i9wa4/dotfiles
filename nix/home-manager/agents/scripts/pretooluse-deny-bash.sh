@@ -48,6 +48,127 @@ strip_one_quote_layer() {
   printf '%s' "$value"
 }
 
+# Here-doc bodies are stdin payload, not executable shell. Keep the redirecting
+# command line in the scan so command-position denials still fire.
+strip_heredoc_bodies() {
+  local command_text="$1"
+  local -a body_delimiters=()
+  local line
+  local stripped=""
+  local delimiter
+  local compare_line
+  local scan_index
+  local scan_char
+  local quote_char
+  local line_len
+  local single_quoted
+  local double_quoted
+  local escaped
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "${#body_delimiters[@]}" -gt 0 ]; then
+      delimiter="${body_delimiters[0]}"
+      compare_line="$line"
+      while [[ $compare_line == $'\t'* ]]; do
+        compare_line="${compare_line#$'\t'}"
+      done
+
+      if [[ $line == "$delimiter" || $compare_line == "$delimiter" ]]; then
+        body_delimiters=("${body_delimiters[@]:1}")
+      fi
+      continue
+    fi
+
+    stripped+="$line"$'\n'
+
+    single_quoted=0
+    double_quoted=0
+    escaped=0
+    line_len=${#line}
+    scan_index=0
+    while [ "$scan_index" -lt "$line_len" ]; do
+      scan_char="${line:scan_index:1}"
+
+      if [ "$escaped" -eq 1 ]; then
+        escaped=0
+        scan_index=$((scan_index + 1))
+        continue
+      fi
+
+      if [ "$single_quoted" -eq 0 ] && [[ $scan_char == \\ ]]; then
+        escaped=1
+        scan_index=$((scan_index + 1))
+        continue
+      fi
+
+      if [ "$double_quoted" -eq 0 ] && [ "$scan_char" = "'" ]; then
+        if [ "$single_quoted" -eq 1 ]; then
+          single_quoted=0
+        else
+          single_quoted=1
+        fi
+        scan_index=$((scan_index + 1))
+        continue
+      fi
+
+      if [ "$single_quoted" -eq 0 ] && [ "$scan_char" = '"' ]; then
+        if [ "$double_quoted" -eq 1 ]; then
+          double_quoted=0
+        else
+          double_quoted=1
+        fi
+        scan_index=$((scan_index + 1))
+        continue
+      fi
+
+      if [ "$single_quoted" -eq 0 ] && [ "$double_quoted" -eq 0 ] && [ "$scan_char" = "<" ] && [ "${line:scan_index+1:1}" = "<" ]; then
+        scan_index=$((scan_index + 2))
+        if [ "${line:scan_index:1}" = "-" ]; then
+          scan_index=$((scan_index + 1))
+        fi
+        while [ "$scan_index" -lt "$line_len" ] && [[ ${line:scan_index:1} =~ [[:space:]] ]]; do
+          scan_index=$((scan_index + 1))
+        done
+
+        delimiter=""
+        scan_char="${line:scan_index:1}"
+        if [ "$scan_char" = "'" ] || [ "$scan_char" = '"' ]; then
+          quote_char="$scan_char"
+          scan_index=$((scan_index + 1))
+          while [ "$scan_index" -lt "$line_len" ] && [ "${line:scan_index:1}" != "$quote_char" ]; do
+            delimiter+="${line:scan_index:1}"
+            scan_index=$((scan_index + 1))
+          done
+          if [ "$scan_index" -lt "$line_len" ]; then
+            scan_index=$((scan_index + 1))
+          fi
+        else
+          while [ "$scan_index" -lt "$line_len" ]; do
+            scan_char="${line:scan_index:1}"
+            case "$scan_char" in
+            [[:space:]] | ";" | "&" | "|" | "<" | ">")
+              break
+              ;;
+            esac
+            delimiter+="$scan_char"
+            scan_index=$((scan_index + 1))
+          done
+          delimiter="$(strip_one_quote_layer "$delimiter")"
+        fi
+
+        if [ -n "$delimiter" ]; then
+          body_delimiters+=("$delimiter")
+        fi
+        continue
+      fi
+
+      scan_index=$((scan_index + 1))
+    done
+  done <<<"$command_text"
+
+  printf '%s' "$stripped"
+}
+
 unwrap_shell_wrapper() {
   local fragment="$1"
   local inner_script
@@ -160,6 +281,7 @@ check_bash_command_for_denials() {
     return 1
   fi
 
+  command_text="$(strip_heredoc_bodies "$command_text")"
   fragment=""
 
   # Split only on top-level shell operators so quoted wrapper scripts stay intact.

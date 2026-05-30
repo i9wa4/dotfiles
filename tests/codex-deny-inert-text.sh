@@ -114,6 +114,34 @@ POSTMAN_BODY
 COMMAND
 )
 
+markdown_body_command=$(
+  cat <<'COMMAND'
+cat > ./example.md <<'MARKDOWN'
+This Markdown documents a denied command as inert reference text.
+
+```sh
+git push origin main
+```
+MARKDOWN
+COMMAND
+)
+
+git_push_heredoc_command=$(
+  cat <<'COMMAND'
+git push origin HEAD:refs/heads/example <<'STDIN'
+ignored input
+STDIN
+COMMAND
+)
+
+quoted_fake_heredoc_command=$(
+  cat <<'COMMAND'
+echo "<<MARKDOWN"
+git push origin HEAD:refs/heads/example
+MARKDOWN
+COMMAND
+)
+
 assert_file_not_contains "$codex_config" "prefix_rule("
 assert_file_not_contains "$codex_config" "embedded Codex rules ="
 
@@ -121,10 +149,16 @@ assert_allowed "prose in git commit message" \
   'git commit -m "document why git push is policy-denied in prose"'
 assert_allowed "postman heredoc payload with prose and fenced code" \
   "$postman_body_command"
+assert_allowed "markdown heredoc payload with fenced code" \
+  "$markdown_body_command"
 
 assert_denied "actual git push command" \
   "git push origin HEAD:refs/heads/example"
 assert_denied "wrapped git push command" \
   "bash -c 'git push origin HEAD:refs/heads/example'"
+assert_denied "actual git push command with heredoc stdin" \
+  "$git_push_heredoc_command"
+assert_denied "quoted heredoc marker cannot hide git push" \
+  "$quoted_fake_heredoc_command"
 
 echo "codex-deny-inert-text: all checks passed"
