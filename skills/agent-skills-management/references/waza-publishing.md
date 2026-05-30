@@ -10,7 +10,7 @@ separate evidence layers:
 | `waza check`                 | Structural readiness and eval schema checks | Yes          |
 | `waza run evals/...`         | Prompt cases and skill-routing behavior     | No           |
 | `waza quality`               | LLM-judged skill clarity and anti-patterns  | No           |
-| `gh skill publish --dry-run` | GitHub CLI packaging and publish validation | Yes          |
+| `gh skill publish --dry-run` | GitHub CLI packaging and publish validation | Release flow |
 
 Do not treat `waza check` as the trigger-quality or eval-success gate. It
 loads `SKILL.md`, checks compliance, token budget, links, spec checks, and eval
@@ -45,9 +45,17 @@ Inspect readiness fields explicitly:
 
 ```sh
 waza --no-update-check check skills/<name> --format json |
-  jq -r '.skills[] |
-    [.name, .ready, .compliance.level, .tokenBudget.status,
-     (.evaluation != null)] | @tsv'
+  jq -r '
+    .skills[] |
+    [
+      .name,
+      .ready,
+      .compliance.level,
+      .tokenBudget.status,
+      (.evaluation != null)
+    ] |
+    @tsv
+  '
 ```
 
 `waza check` can exit 0 even when `.skills[].ready` is false. When making a
@@ -65,11 +73,13 @@ Prioritize Waza findings in this order:
    testing.
 5. Advisory complexity or structure findings when they do not expand the task.
 
-## GitHub CLI Validation
+## GitHub CLI Release Validation
 
-Use `gh skill publish --dry-run` for publishability. In the GitHub CLI versions
-used here, validate-only behavior is exposed through `publish --dry-run`; there
-is no separate `gh skill validate` subcommand.
+Use `gh skill publish --dry-run` for release-flow publishability. In the GitHub
+CLI versions used here, validate-only behavior is exposed through
+`publish --dry-run`; there is no separate `gh skill validate` subcommand.
+Because this still uses the `skill publish` surface, keep it in the tag-push
+release flow, not ordinary pre-commit or CI validation.
 
 Check capability before relying on `gh skill`:
 
@@ -78,10 +88,9 @@ gh --version
 gh skill publish --dry-run
 ```
 
-If plain `gh` lacks `skill`, use the repo-supported newer CLI. In this dotfiles
-repo, the pre-commit hook pins an unstable `gh`; `nix run nixpkgs#gh -- skill
-publish --dry-run` is an acceptable local fallback when it resolves to a
-capable version.
+If plain `gh` lacks `skill`, use the repo-supported newer CLI. In this
+dotfiles repo, the release workflow uses `nix run nixpkgs#gh -- skill publish
+--dry-run` before the tag publish step.
 
 Keep validation and publishing separate:
 
@@ -90,8 +99,7 @@ gh skill publish --dry-run
 gh skill publish --tag "$TAG"
 ```
 
-Use `--tag` only in a release flow that owns tag creation. Tag-push CI should
-normally validate with `--dry-run`, not try to create the tag again.
+The tag-push release job validates with `--dry-run` before publishing.
 
 ## Dotfiles Checks
 
@@ -101,7 +109,7 @@ For source-only skill edits:
 bash scripts/validation/validate-skill-frontmatter.sh skills
 bash scripts/validation/validate-skill-waza.sh skills/<name>/SKILL.md
 bash scripts/validation/validate-skill-description-length.sh --staged
-nix run nixpkgs#gh -- skill publish --dry-run
+bash scripts/validation/validate-skill-release-readiness.sh --strict
 git diff --check
 ```
 
@@ -115,7 +123,8 @@ check` when Nix, workflow, or shared harness files changed. `nix run '.#switch'`
 is only needed when verifying installed runtime output.
 
 Keep default pre-commit focused on deterministic, local checks: frontmatter,
-Waza readiness for changed skills, private-content scanning, publish dry-run,
-formatting, and shell checks. Put `waza run` prompt evals and `waza quality`
-in task artifacts, release-readiness procedures, or skill guidance unless a
-future eval is explicitly cheap, stable, and credential-free.
+Waza readiness for changed skills, private-content scanning, release-readiness
+classification, formatting, and shell checks. Put `gh skill publish --dry-run`,
+`waza run` prompt evals, and `waza quality` in release-flow procedures, task
+artifacts, or skill guidance unless a future eval is explicitly cheap, stable,
+and credential-free.

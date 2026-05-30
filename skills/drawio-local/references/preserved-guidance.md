@@ -60,7 +60,7 @@ mise exec -- pre-commit run --all-files
 mise exec -- pre-commit run convert-drawio-to-png --files assets/my-diagram.drawio
 
 # Run script directly (using skill's script)
-bash ~/.claude/skills/drawio-local/scripts/convert-drawio-to-png.sh assets/diagram1.drawio
+bash "$HOME/.claude/skills/drawio-local/scripts/convert-drawio-to-png.sh" assets/diagram1.drawio
 ```
 
 NOTE: For draw.io CLI flags and export options, see the `drawio-skills` skill.
@@ -287,7 +287,7 @@ programmatically:
 
 ```sh
 drawio -x -f svg -e -b 10 -o diagram.drawio.svg diagram.drawio
-node ~/.claude/skills/drawio-local/scripts/check-drawio-svg-overlaps.mjs diagram.drawio.svg
+node "$HOME/.claude/skills/drawio-local/scripts/check-drawio-svg-overlaps.mjs" diagram.drawio.svg
 ```
 
 The lint checks:
@@ -312,7 +312,7 @@ The lint checks:
 - [SVG Lint Script](scripts/check-drawio-svg-overlaps.mjs)
 
 ```sh
-python ~/.claude/skills/drawio-local/scripts/find_aws_icon.py ec2
+python "$HOME/.claude/skills/drawio-local/scripts/find_aws_icon.py" ec2
 ```
 
 ## 12. Workflow and Checklist

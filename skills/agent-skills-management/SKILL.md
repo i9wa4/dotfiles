@@ -2,7 +2,7 @@
 name: agent-skills-management
 license: MIT
 description: |
-  USE FOR: add, edit, remove, and validate Agent Skills; run Waza and gh skill dry-runs; keep naming metadata release-ready. DO NOT USE FOR: runtime hooks or engine config.
+  USE FOR: add, edit, remove, and validate Agent Skills; run Waza, release-readiness checks, and release-flow dry-runs; keep metadata release-ready. DO NOT USE FOR: runtime hooks or engine config.
 ---
 
 # Agent Skills Management
@@ -12,8 +12,8 @@ installed outputs, and engine config in harness/config skills.
 
 **USE FOR:** add, edit, rename, or remove `skills/*/SKILL.md`; improve
 frontmatter, trigger descriptions, body structure, `references/`, `scripts/`,
-`assets/`, or eval files; run Waza readiness, `gh skill publish --dry-run`, and
-skill pre-commit/CI harnesses.
+`assets/`, or eval files; run Waza readiness, release-readiness checks, tag-only
+`gh skill publish --dry-run`, and skill pre-commit/CI harnesses.
 
 **DO NOT USE FOR:** runtime hooks, engine config, broad docs migrations, or
 generated outputs:
@@ -29,11 +29,11 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
 3. Run Waza before and after edits:
    `waza --no-update-check check skills/<name> --format json`. Address
    readiness, trigger clarity, budget, links, eval gaps, and complexity.
-4. Treat Waza as quality/eval readiness. Publishability still comes from
-   `gh skill publish --dry-run`.
+4. Treat Waza as quality/eval readiness. Deterministic release readiness comes
+   from `scripts/validation/validate-skill-release-readiness.sh --strict`.
 5. For publishing harness work, keep validation and publishing separate. Use
-   dry-runs in pre-commit/CI; use `gh skill publish --tag "$TAG"` only in a
-   flow that owns tag creation.
+   pre-commit/CI for deterministic checks; reserve `gh skill publish --dry-run`
+   and `gh skill publish --tag "$TAG"` for the tag-push release flow.
 6. Verify the changed surface, then report remaining Waza findings.
 
 ## Troubleshooting
