@@ -442,10 +442,10 @@ skills:
     action: keep
     target_group: english-to-japanese-technical-translation
     target_name: english-to-japanese-technical-translation
-    release_state: needs_private_content_scan
+    release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
-    personal_content_action: scan_before_publish
+    personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: data-platform

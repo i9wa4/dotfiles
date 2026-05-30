@@ -16,46 +16,39 @@ description: |
 
 ## Overview
 
-Translate English technical writing into natural Japanese while preserving
-technical accuracy, Markdown structure, protected spans, terminology, and
-publication quality.
-
-Read [Workflow](references/workflow.md) when translating, reviewing, or
-preparing prompts for a concrete article.
+Translate English technical writing into natural Japanese. Read
+[Workflow](references/workflow.md) for the full procedure, prompt templates,
+and QA checklists.
 
 ## Workflow
 
-1. Stabilize the source revision, publication surface, audience, and Japanese
-   register before translation.
-2. List protected spans before translating: code fences, inline code, commands,
-   paths, URLs, API names, identifiers, product names, UI labels, versions,
-   warnings, and Markdown tables.
-3. Build a glossary before translating body text. Decide whether each term
+1. Before sending source text, drafts, glossaries, or style examples to any AI
+   provider or translation tool, confirm translation rights and project policy
+   for provider, model, network path, and data handling. If unclear, stop for
+   approval; this skill does not choose those policies.
+2. Stabilize the source revision, publication surface, audience, and register.
+3. Mark verbatim protected tokens separately from semantic and structural
+   constraints. Keep code, commands, paths, URLs, API names, identifiers,
+   product names, UI labels, and versions exact; preserve warning meaning and
+   table structure.
+4. Build a glossary before translating body text. Decide whether each term
    should be translated, kept in English, written in katakana, or shown in
    bilingual first-use form.
-4. Translate section by section. Do not translate a whole technical article in
+5. Translate section by section. Do not translate a whole technical article in
    one shot.
-5. Run separate review passes for technical accuracy, terminology consistency,
+6. Run separate review passes for technical accuracy, terminology consistency,
    Japanese editorial quality, technical integrity, and final publication QA.
 
 ## Prompt Use
 
-Use the prompt templates in the workflow reference as starting points for:
-
-- Project style contracts.
-- Terminology extraction.
-- Section translation.
-- Technical accuracy review.
-- Japanese editorial review.
-- Terminology drift checks.
-- Final publication QA.
-
-Keep protected spans exact in every prompt. Ask the model to mark uncertainty
-instead of inventing details.
+Use the workflow reference prompts for style contracts, terminology extraction,
+section translation, accuracy review, editorial review, drift checks, and final
+QA. In every prompt, keep verbatim tokens exact, preserve constraints such as
+warning meaning and table layout, and ask for uncertainty markers instead of
+invented details.
 
 ## Boundaries
 
-This skill packages the manual translation and review workflow. It does not
-choose providers or models, estimate cost, define privacy policy, automate
-source chunking, or publish translated output. Treat automation as a later
-engineering task after repeated use exposes stable boundaries.
+Manual workflow only. This skill does not choose providers or models, estimate
+cost, define privacy policy, authorize external sharing, automate source
+chunking, or publish translated output.

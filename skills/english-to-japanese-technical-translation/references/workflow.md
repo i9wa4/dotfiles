@@ -1,5 +1,10 @@
 # English-to-Japanese Technical Translation Workflow
 
+This reference is a packaged copy of
+`docs/english-to-japanese-technical-translation.md`. The docs page is
+canonical; update both files in the same change so the skill can use the
+workflow without loading repository documentation context.
+
 This workflow translates English technical articles into natural Japanese while
 preserving technical accuracy, Markdown structure, code, commands, links,
 terminology, and publication quality. It is a manual review workflow. It does
@@ -16,40 +21,58 @@ boundaries that are worth implementing.
 
 Start by making the source article explicit and stable.
 
-1. Save or reference the exact source revision.
-2. Identify the target publication surface and expected audience.
-3. Decide the Japanese register before translation:
+Before pasting any source, draft, glossary, or style example into an AI tool or
+translation service, confirm that:
+
+- You have rights to translate and share the source with the selected tool.
+- Project policy allows the selected provider, model, network path, and data
+  handling for this content.
+- Confidential, credential, customer, or personal data has been removed, or the
+  approved private workflow is being used.
+
+If any of those checks is unclear, stop and get project approval before using
+an external provider. This workflow does not choose the provider or define the
+privacy policy.
+
+1. Complete the privacy, source-rights, and provider-policy preflight.
+2. Save or reference the exact source revision.
+3. Identify the target publication surface and expected audience.
+4. Decide the Japanese register before translation:
    - `desu/masu` for approachable tutorials, guides, and product articles.
    - `da/dearu` for formal essays, research notes, or documentation that
      already uses that register.
-4. Preserve the source section structure unless the target publication has a
+5. Preserve the source section structure unless the target publication has a
    clear reason to reorganize it.
-5. List protected spans before translation.
-6. Build a glossary before translating body text.
+6. List verbatim protected tokens and semantic or structural constraints before
+   translation.
+7. Build a glossary before translating body text.
 
 Do not translate the full article in one pass. Translate section by section,
 then run separate review passes over the combined result.
 
 ## 2. Protect Technical Spans
 
-Protected spans are copied exactly unless a reviewer deliberately changes them.
-Mark them before translation and recheck them during publication QA.
+Verbatim protected tokens are copied exactly unless a reviewer deliberately
+changes them. Semantic and structural constraints are not necessarily copied
+word for word, but their meaning, severity, condition, alignment, and Markdown
+role must stay intact. Mark both categories before translation and recheck them
+during publication QA.
 
-| Span type       | Rule                                                               |
-| --------------- | ------------------------------------------------------------------ |
-| Code fences     | Keep code, indentation, language tags, comments, and output exact. |
-| Inline code     | Keep commands, paths, identifiers, literals, and options exact.    |
-| URLs            | Keep link destinations exact.                                      |
-| API names       | Keep method, class, parameter, and field names exact.              |
-| Product names   | Keep official spelling and casing.                                 |
-| UI labels       | Keep labels exact unless the product has an official Japanese UI.  |
-| Version numbers | Keep exact versions, ranges, and comparison operators.             |
-| Warnings        | Preserve condition, severity, negation, and required action.       |
-| Tables          | Preserve headers, row meanings, alignment intent, and code spans.  |
+| Span or constraint | Rule                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| Code fences        | Keep code, indentation, language tags, comments, and output exact. |
+| Inline code        | Keep commands, paths, identifiers, literals, and options exact.    |
+| URLs               | Keep link destinations exact.                                      |
+| API names          | Keep method, class, parameter, and field names exact.              |
+| Product names      | Keep official spelling and casing.                                 |
+| UI labels          | Keep labels exact unless the product has an official Japanese UI.  |
+| Version numbers    | Keep exact versions, ranges, and comparison operators.             |
+| Warning meaning    | Preserve condition, severity, negation, and required action.       |
+| Table structure    | Preserve headers, row meanings, alignment intent, and code spans.  |
 
-If a protected span appears inside a sentence, translate only the surrounding
-prose. Never localize an identifier, command, path, or option to make the
-sentence read more naturally.
+If a verbatim protected token appears inside a sentence, translate only the
+surrounding prose. Never localize an identifier, command, path, or option to
+make the sentence read more naturally.
 
 ## 3. Build the Glossary First
 
@@ -209,6 +232,8 @@ Goals:
 - Preserve Markdown structure.
 - Preserve code fences, inline code, commands, paths, URLs, API names,
   identifiers, product names, UI labels, and version numbers exactly.
+- Preserve warning conditions, table structure, and other semantic or
+  structural constraints.
 - Use the glossary consistently.
 - Prefer natural Japanese technical prose over literal English word order.
 
@@ -216,7 +241,7 @@ Non-goals:
 - Do not add examples, constraints, commands, version numbers, or product
   behavior not present in the source.
 - Do not reorganize sections unless explicitly requested.
-- Do not translate protected spans.
+- Do not translate verbatim protected tokens.
 ```
 
 ### 6.2. Terminology Extraction
@@ -252,7 +277,9 @@ glossary.
 Requirements:
 - Translate only this section.
 - Preserve Markdown structure.
-- Preserve protected spans exactly.
+- Preserve verbatim protected tokens exactly.
+- Preserve warning conditions, table structure, and other semantic or
+  structural constraints.
 - Keep terminology consistent with the glossary.
 - Mark uncertainty with a short translator note instead of inventing details.
 
@@ -260,8 +287,10 @@ Glossary:
 [Paste relevant glossary entries.]
 
 Protected spans:
-[List protected spans or say "all code, inline code, URLs, APIs, commands,
-paths, identifiers, product names, UI labels, and versions".]
+[List verbatim protected tokens and semantic or structural constraints, or say
+"all code, inline code, URLs, APIs, commands, paths, identifiers, product names,
+UI labels, and versions are verbatim; warning conditions and Markdown tables
+are constraints".]
 
 Source section:
 [Paste section.]
