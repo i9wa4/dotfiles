@@ -108,6 +108,8 @@ in
       pkgs.zoxide
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
       # ccusage includes Codex usage subcommands.
+      # Antigravity exposes the `agy` command.
+      llmAgents.antigravity
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
