@@ -48,123 +48,241 @@ strip_one_quote_layer() {
   printf '%s' "$value"
 }
 
-# Here-doc bodies are stdin payload, not executable shell. Keep the redirecting
-# command line in the scan so command-position denials still fire.
-strip_heredoc_bodies() {
-  local command_text="$1"
-  local -a body_delimiters=()
-  local line
-  local stripped=""
-  local delimiter
-  local compare_line
-  local scan_index
-  local scan_char
+parse_heredoc_delimiter_word() {
+  local line="$1"
+  local word_index="$2"
+  local word_len=${#line}
+  local word_char
   local quote_char
-  local line_len
-  local single_quoted
-  local double_quoted
-  local escaped
 
-  while IFS= read -r line || [ -n "$line" ]; do
-    if [ "${#body_delimiters[@]}" -gt 0 ]; then
-      delimiter="${body_delimiters[0]}"
-      compare_line="$line"
-      while [[ $compare_line == $'\t'* ]]; do
-        compare_line="${compare_line#$'\t'}"
+  HEREDOC_DELIMITER=""
+  HEREDOC_QUOTED=0
+  HEREDOC_NEXT_INDEX="$word_index"
+
+  while [ "$word_index" -lt "$word_len" ]; do
+    word_char="${line:word_index:1}"
+    case "$word_char" in
+    [[:space:]] | ";" | "&" | "|" | "<" | ">")
+      break
+      ;;
+    "'")
+      HEREDOC_QUOTED=1
+      word_index=$((word_index + 1))
+      while [ "$word_index" -lt "$word_len" ] && [ "${line:word_index:1}" != "'" ]; do
+        HEREDOC_DELIMITER+="${line:word_index:1}"
+        word_index=$((word_index + 1))
       done
-
-      if [[ $line == "$delimiter" || $compare_line == "$delimiter" ]]; then
-        body_delimiters=("${body_delimiters[@]:1}")
+      if [ "$word_index" -ge "$word_len" ]; then
+        return 1
       fi
+      word_index=$((word_index + 1))
+      ;;
+    '"')
+      quote_char='"'
+      HEREDOC_QUOTED=1
+      word_index=$((word_index + 1))
+      while [ "$word_index" -lt "$word_len" ] && [ "${line:word_index:1}" != "$quote_char" ]; do
+        word_char="${line:word_index:1}"
+        if [[ $word_char == \\ ]]; then
+          word_index=$((word_index + 1))
+          if [ "$word_index" -ge "$word_len" ]; then
+            return 1
+          fi
+        fi
+        HEREDOC_DELIMITER+="${line:word_index:1}"
+        word_index=$((word_index + 1))
+      done
+      if [ "$word_index" -ge "$word_len" ]; then
+        return 1
+      fi
+      word_index=$((word_index + 1))
+      ;;
+    \\)
+      HEREDOC_QUOTED=1
+      word_index=$((word_index + 1))
+      if [ "$word_index" -ge "$word_len" ]; then
+        return 1
+      fi
+      HEREDOC_DELIMITER+="${line:word_index:1}"
+      word_index=$((word_index + 1))
+      ;;
+    *)
+      HEREDOC_DELIMITER+="$word_char"
+      word_index=$((word_index + 1))
+      ;;
+    esac
+  done
+
+  if [ -z "$HEREDOC_DELIMITER" ] || [ "$HEREDOC_QUOTED" -ne 1 ]; then
+    return 1
+  fi
+
+  if [[ $HEREDOC_DELIMITER =~ [[:space:]] ]]; then
+    return 1
+  fi
+
+  HEREDOC_NEXT_INDEX="$word_index"
+  return 0
+}
+
+extract_safe_data_heredoc_marker() {
+  local line="$1"
+  local trimmed
+  local scan_index=0
+  local line_len=${#line}
+  local scan_char
+  local previous_char
+  local heredoc_count=0
+  local strip_tabs=0
+
+  trimmed="$(trim_bash_fragment "$line")"
+  if [[ ! $trimmed =~ ^cat([[:space:]<>]|$) ]]; then
+    return 1
+  fi
+
+  while [ "$scan_index" -lt "$line_len" ]; do
+    scan_char="${line:scan_index:1}"
+    previous_char=""
+    if [ "$scan_index" -gt 0 ]; then
+      previous_char="${line:scan_index-1:1}"
+    fi
+
+    case "$scan_char" in
+    "'")
+      scan_index=$((scan_index + 1))
+      while [ "$scan_index" -lt "$line_len" ] && [ "${line:scan_index:1}" != "'" ]; do
+        scan_index=$((scan_index + 1))
+      done
+      if [ "$scan_index" -ge "$line_len" ]; then
+        return 1
+      fi
+      scan_index=$((scan_index + 1))
+      continue
+      ;;
+    '"')
+      scan_index=$((scan_index + 1))
+      while [ "$scan_index" -lt "$line_len" ] && [ "${line:scan_index:1}" != '"' ]; do
+        if [[ ${line:scan_index:1} == \\ ]]; then
+          scan_index=$((scan_index + 1))
+        fi
+        scan_index=$((scan_index + 1))
+      done
+      if [ "$scan_index" -ge "$line_len" ]; then
+        return 1
+      fi
+      scan_index=$((scan_index + 1))
+      continue
+      ;;
+    \\)
+      scan_index=$((scan_index + 2))
+      continue
+      ;;
+    "#")
+      if [ "$scan_index" -eq 0 ] || [[ $previous_char =~ [[:space:]] ]]; then
+        break
+      fi
+      ;;
+    ";" | "&" | "|")
+      return 1
+      ;;
+    '`')
+      return 1
+      ;;
+    '$')
+      if [ "${line:scan_index+1:1}" = "(" ]; then
+        return 1
+      fi
+      ;;
+    "<" | ">")
+      if [ "${line:scan_index+1:1}" = "(" ]; then
+        return 1
+      fi
+      ;;
+    esac
+
+    if [ "$scan_char" = "<" ] && [ "${line:scan_index+1:1}" = "<" ]; then
+      heredoc_count=$((heredoc_count + 1))
+      if [ "$heredoc_count" -gt 1 ]; then
+        return 1
+      fi
+
+      scan_index=$((scan_index + 2))
+      strip_tabs=0
+      if [ "${line:scan_index:1}" = "-" ]; then
+        strip_tabs=1
+        scan_index=$((scan_index + 1))
+      fi
+      while [ "$scan_index" -lt "$line_len" ] && [[ ${line:scan_index:1} =~ [[:space:]] ]]; do
+        scan_index=$((scan_index + 1))
+      done
+      if ! parse_heredoc_delimiter_word "$line" "$scan_index"; then
+        return 1
+      fi
+      scan_index="$HEREDOC_NEXT_INDEX"
       continue
     fi
 
+    scan_index=$((scan_index + 1))
+  done
+
+  if [ "$heredoc_count" -ne 1 ]; then
+    return 1
+  fi
+
+  printf '%s\t%s' "$HEREDOC_DELIMITER" "$strip_tabs"
+}
+
+# Only quoted here-doc bodies for simple data-carrier commands are inert enough
+# to skip. Unsupported grammar stays in the text and is scanned fail-closed.
+strip_safe_heredoc_bodies() {
+  local command_text="$1"
+  local -a lines=()
+  local line
+  local index=0
+  local stripped=""
+  local marker
+  local delimiter
+  local strip_tabs
+  local body_index
+  local terminator_index
+  local candidate
+
+  mapfile -t lines <<<"$command_text"
+
+  while [ "$index" -lt "${#lines[@]}" ]; do
+    line="${lines[index]}"
+
+    if marker="$(extract_safe_data_heredoc_marker "$line")"; then
+      delimiter="${marker%%$'\t'*}"
+      strip_tabs="${marker##*$'\t'}"
+      terminator_index=-1
+      body_index=$((index + 1))
+
+      while [ "$body_index" -lt "${#lines[@]}" ]; do
+        candidate="${lines[body_index]}"
+        if [ "$strip_tabs" -eq 1 ]; then
+          while [[ $candidate == $'\t'* ]]; do
+            candidate="${candidate#$'\t'}"
+          done
+        fi
+
+        if [ "$candidate" = "$delimiter" ]; then
+          terminator_index="$body_index"
+          break
+        fi
+        body_index=$((body_index + 1))
+      done
+
+      if [ "$terminator_index" -ge 0 ]; then
+        stripped+="$line"$'\n'
+        index=$((terminator_index + 1))
+        continue
+      fi
+    fi
+
     stripped+="$line"$'\n'
-
-    single_quoted=0
-    double_quoted=0
-    escaped=0
-    line_len=${#line}
-    scan_index=0
-    while [ "$scan_index" -lt "$line_len" ]; do
-      scan_char="${line:scan_index:1}"
-
-      if [ "$escaped" -eq 1 ]; then
-        escaped=0
-        scan_index=$((scan_index + 1))
-        continue
-      fi
-
-      if [ "$single_quoted" -eq 0 ] && [[ $scan_char == \\ ]]; then
-        escaped=1
-        scan_index=$((scan_index + 1))
-        continue
-      fi
-
-      if [ "$double_quoted" -eq 0 ] && [ "$scan_char" = "'" ]; then
-        if [ "$single_quoted" -eq 1 ]; then
-          single_quoted=0
-        else
-          single_quoted=1
-        fi
-        scan_index=$((scan_index + 1))
-        continue
-      fi
-
-      if [ "$single_quoted" -eq 0 ] && [ "$scan_char" = '"' ]; then
-        if [ "$double_quoted" -eq 1 ]; then
-          double_quoted=0
-        else
-          double_quoted=1
-        fi
-        scan_index=$((scan_index + 1))
-        continue
-      fi
-
-      if [ "$single_quoted" -eq 0 ] && [ "$double_quoted" -eq 0 ] && [ "$scan_char" = "<" ] && [ "${line:scan_index+1:1}" = "<" ]; then
-        scan_index=$((scan_index + 2))
-        if [ "${line:scan_index:1}" = "-" ]; then
-          scan_index=$((scan_index + 1))
-        fi
-        while [ "$scan_index" -lt "$line_len" ] && [[ ${line:scan_index:1} =~ [[:space:]] ]]; do
-          scan_index=$((scan_index + 1))
-        done
-
-        delimiter=""
-        scan_char="${line:scan_index:1}"
-        if [ "$scan_char" = "'" ] || [ "$scan_char" = '"' ]; then
-          quote_char="$scan_char"
-          scan_index=$((scan_index + 1))
-          while [ "$scan_index" -lt "$line_len" ] && [ "${line:scan_index:1}" != "$quote_char" ]; do
-            delimiter+="${line:scan_index:1}"
-            scan_index=$((scan_index + 1))
-          done
-          if [ "$scan_index" -lt "$line_len" ]; then
-            scan_index=$((scan_index + 1))
-          fi
-        else
-          while [ "$scan_index" -lt "$line_len" ]; do
-            scan_char="${line:scan_index:1}"
-            case "$scan_char" in
-            [[:space:]] | ";" | "&" | "|" | "<" | ">")
-              break
-              ;;
-            esac
-            delimiter+="$scan_char"
-            scan_index=$((scan_index + 1))
-          done
-          delimiter="$(strip_one_quote_layer "$delimiter")"
-        fi
-
-        if [ -n "$delimiter" ]; then
-          body_delimiters+=("$delimiter")
-        fi
-        continue
-      fi
-
-      scan_index=$((scan_index + 1))
-    done
-  done <<<"$command_text"
+    index=$((index + 1))
+  done
 
   printf '%s' "$stripped"
 }
@@ -224,6 +342,13 @@ strip_data_arg_values() {
   printf '%s' "$fragment"
 }
 
+normalize_command_substitution_boundaries() {
+  local fragment="$1"
+  fragment="${fragment//\$\(/ }"
+  fragment="${fragment//\`/ }"
+  printf '%s' "$fragment"
+}
+
 emit_bash_deny_payload() {
   local fragment="$1"
   local reason="$2"
@@ -256,6 +381,7 @@ check_bash_fragment_for_denials() {
 
   original_fragment="$fragment"
   fragment="$(strip_data_arg_values "$fragment")"
+  fragment="$(normalize_command_substitution_boundaries "$fragment")"
 
   for i in "${!DENY_PATTERNS[@]}"; do
     if [[ $fragment =~ ${DENY_PATTERNS[$i]} ]]; then
@@ -281,7 +407,7 @@ check_bash_command_for_denials() {
     return 1
   fi
 
-  command_text="$(strip_heredoc_bodies "$command_text")"
+  command_text="$(strip_safe_heredoc_bodies "$command_text")"
   fragment=""
 
   # Split only on top-level shell operators so quoted wrapper scripts stay intact.
