@@ -17,7 +17,6 @@ implementation-loop discipline.
 - Bash scripts and shell command design.
 - Python utility edits and local execution rules.
 - General Nix package workflow, especially fetcher hash acquisition.
-- Missing-command recovery with direnv, `comma`, `nix run`, and `nix shell`.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
 
@@ -43,6 +42,5 @@ implementation-loop discipline.
 - [Bash Scripting](references/bash-scripting.md)
 - [Python Development](references/python-development.md)
 - [Nix Package Workflow](references/nix-package-workflow.md)
-- [Missing Tools](references/missing-tools.md)
 - [Markdown Authoring](references/markdown-authoring.md)
 - [TDD And Tidy First](references/tdd-tidy-first.md)

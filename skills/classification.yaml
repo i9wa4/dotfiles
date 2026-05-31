@@ -410,23 +410,6 @@ skills:
       Agent-runtime Nix and Home Manager material belongs under
       agent-harness-engineering.
 
-  - name: missing-tools
-    path: skills/missing-tools
-    publish: true
-    scope: missing-command-recovery
-    action: compatibility_trigger
-    target_group: programming
-    target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
-    personal_content_action: scanned_release_ready
-    validation_expectations: *common_validation
-    notes: >
-      Keeps a direct Agent Skill trigger for missing-command recovery while the
-      durable procedure lives in programming references. Denied-command handling
-      remains in Bash guidance.
-
   - name: markdown
     path: skills/markdown
     publish: true

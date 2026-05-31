@@ -4,10 +4,6 @@ Use this reference for general Nix package workflow guidance. Agent runtime,
 Home Manager agent config, hooks, and installed outputs belong to
 `agent-harness-engineering`.
 
-For command-not-found recovery with `comma`, `nix run`, or `nix shell`, use
-`missing-tools.md`. This reference owns package edits, fetcher hashes, and
-focused Nix checks.
-
 ## Fetcher Hashes
 
 Use `nurl` when acquiring a Nix fetcher call from a repository URL.

@@ -33,7 +33,7 @@ Nix-managed hooks, and engine-specific runtime files.
 | Keep implementation simple          | `docs/repo-ai-operating-contract.md` says to prefer the smallest verifiable step. `skills/programming/references/tdd-tidy-first.md` repeats that default.             | Covered.                                                                                    |
 | Avoid speculative abstractions      | The developer contract and programming guidance already prefer existing repo patterns, scoped edits, and no unrelated abstractions.                                   | Covered.                                                                                    |
 | Keep edits surgical                 | `docs/repo-ai-operating-contract.md` says to avoid unrelated refactors and not delete unmentioned handlers, functions, or sections. Prompt blocks also require scope. | Covered.                                                                                    |
-| Clean up only introduced orphans    | Local guidance implies this through scoped edits and no unrelated deletion.                                                                                           | Covered enough; the source phrasing is a useful reminder, not a missing rule.               |
+| Clean up only introduced orphans    | Local guidance implies this through scoped edits and no unrelated deletion; this issue adds the source's sharper review heuristic to the programming skill.           | Adopted as a narrow programming-skill refinement.                                           |
 | Define success criteria and verify  | Durable task tracking, issue worktree rules, postman completion gates, and the programming skill all require evidence-based verification before reporting success.    | Strongly covered.                                                                           |
 | Use a brief plan for multistep work | Durable `mkmd` artifacts and prompt blocks already handle plans, acceptance criteria, progress, and verification loops for multistep work.                            | Strongly covered.                                                                           |
 
@@ -49,8 +49,9 @@ defaults:
 - Remove only unused code introduced by the current change.
 
 The most reusable wording is "clean up only your own mess" and the test that
-each changed line should trace to the request. Those are good review heuristics,
-but they do not require a new repo-wide instruction file.
+each changed line should trace to the request. This issue adopts those as a
+small programming-skill refinement rather than a new repo-wide instruction
+file.
 
 ## Conflicts and Non-Fit
 
@@ -69,14 +70,11 @@ The source should not be copied directly for three reasons:
 ## Decision
 
 Do not adopt the external file or create a repo-local `CLAUDE.md` equivalent
-from it. The practices worth keeping are already covered by local prompt
+from it. Most practices worth keeping are already covered by local prompt
 contracts, skill references, and durable completion gates.
 
-No immediate implementation should proceed from this issue. If future review
-defects show repeated unrelated cleanup or edits that are too broad, use one
-narrow follow-up target: `skills/programming/references/tdd-tidy-first.md`.
-
-That follow-up should add one sentence: every changed line should trace to the
-request, and cleanup should be limited to artifacts introduced by the current
-change. That would be a small programming-skill refinement, not a migration of
-the external file.
+Adopt one narrow refinement in
+`skills/programming/references/tdd-tidy-first.md`: every changed line should
+trace to the request, and cleanup should be limited to artifacts introduced or
+invalidated by the current change. This incorporates the reusable lesson while
+preserving this repository's Claude/Codex-neutral workflow model.
