@@ -111,6 +111,7 @@ let
 
     features = {
       apps = false;
+      fast_mode = false;
       hooks = true;
       multi_agent = true;
       skills = true;
