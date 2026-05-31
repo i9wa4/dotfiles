@@ -115,7 +115,7 @@ Ignore any release entries for versions newer than `codex --version`.
 | Shell     | `shell_environment_commands`                         |
 | Hooks     | `hooks.json`, `scripts/`                             |
 | History   | `history`, `project_doc_max_bytes`                   |
-| Features  | `features.apps`, `features.fast_mode`                |
+| Features  | `features.fast_mode`, `features.apps`                |
 | Skills    | `skills.bundled`, `skills.include_instructions`      |
 | Disable   | `disable_response_storage`, `hide_agent_*`           |
 | Analytics | `analytics.enabled`, `feedback.enabled`              |
@@ -544,9 +544,9 @@ this runbook.
   `codex-*` after consolidation (no codex-prefixed scripts left) and
   failed the `runCommand` build. The explicit list also documents the
   Codex consumed surface in one place.
-- [x] `features.apps = false` disables Codex Apps startup integration. Added
-  2026-05-03 after observing `codex_apps` MCP startup hangs in tmux panes.
-  Keep `plugins` enabled separately unless plugin discovery itself becomes a
+- [x] Removed `features.apps = false` on 2026-05-31 to allow Codex Apps by
+  default again. It had been added 2026-05-03 after observing `codex_apps` MCP
+  startup hangs in tmux panes; re-disable only if that hang returns as a
   measured first-display blocker.
 - [x] `features.fast_mode = false` disables Codex Fast mode in the generated
   config. Added 2026-05-31 after confirming local Codex v0.135.0 still exposes
@@ -702,8 +702,8 @@ this runbook.
 - v0.128.0 (2026-05-03): Reviewed local release notes via GitHub releases.
   Relevant items: plugin workflows expanded, MCP/plugin cleanup fixes landed,
   `apps` remains a stable feature flag and can be disabled explicitly with
-  `features.apps = false`; permission-profile work is active but this repo
-  still relies on current `--yolo`/config flow.
+  `features.apps = false` if startup hangs return; permission-profile work is
+  active but this repo still relies on current `--yolo`/config flow.
 - v0.118.0 → v0.125.0 (2026-04-29): release notes not yet reviewed; the
   local install jumped while the previous review window stayed at
   v0.117.0. Superseded by the v0.128.0 review above.

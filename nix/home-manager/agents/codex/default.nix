@@ -110,7 +110,6 @@ let
     feedback.enabled = false;
 
     features = {
-      apps = false;
       fast_mode = false;
     };
 
