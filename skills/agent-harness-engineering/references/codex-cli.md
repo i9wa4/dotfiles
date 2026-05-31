@@ -113,16 +113,18 @@ Ignore any release entries for versions newer than `codex --version`.
 | Behavior  | `approval_mode`, `sandbox`, `network_access`         |
 | Display   | `notify`, `tui.notifications_method`                 |
 | Shell     | `shell_environment_commands`                         |
-| Hooks     | `features.hooks`, `hooks.json`, `scripts/`           |
+| Hooks     | `hooks.json`, `scripts/`                             |
 | History   | `history`, `project_doc_max_bytes`                   |
-| Features  | `features.skills`, `features.web_search_request`     |
+| Features  | `features.apps`, `features.fast_mode`                |
+| Skills    | `skills.bundled`, `skills.include_instructions`      |
 | Disable   | `disable_response_storage`, `hide_agent_*`           |
 | Analytics | `analytics.enabled`, `feedback.enabled`              |
 
 ## 6. Hooks Guidance
 
-- YOU MUST: Enable hooks with `features.hooks = true` before relying on
-  any `hooks.json` behavior
+- Codex v0.135.0 defaults `features.hooks` to enabled. Keep `hooks.json`
+  configured, but do not add a `features.hooks = true` override unless a
+  future Codex default changes.
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
   dotfiles-local override need
@@ -551,6 +553,10 @@ this runbook.
   the stable `fast_mode` feature and defaults it to enabled. This keeps the
   runtime aligned with explicit launch-time model and reasoning-effort pins
   instead of allowing `/fast` to swap behavior mid-session.
+- [x] Removed redundant Codex feature overrides on 2026-05-31 after local
+  Codex v0.135.0 confirmed `features.hooks` and `features.multi_agent` default
+  to enabled. Removed stale `features.skills`; skills are configured through
+  the top-level `skills` table, not a feature flag.
 - [x] WAL checkpoint timer added 2026-05-07 after Codex logs WAL
   reached 32 GB on the Linux host (root/home at 98% used). One-shot manual
   `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
@@ -687,12 +693,12 @@ this runbook.
 - v0.130.0 (2026-05-11): Reviewed local release notes via GitHub releases
   after local `codex --version` reported `codex-cli 0.130.0`. Relevant
   follow-up: v0.129.0 included `#20522 Alias codex_hooks feature as hooks`;
-  local v0.130.0 now warns that `[features].codex_hooks` is deprecated, so
-  this repo uses `features.hooks = true` in generated `config.toml`. Other
-  notable release items were plugin sharing/details, `codex remote-control`,
-  thread pagination, selected-environment `view_image`, live app-server config
-  refresh, and improved apply-patch diff tracking; no additional harness
-  config change was adopted from those items.
+  local v0.130.0 warned that `[features].codex_hooks` was deprecated. The repo
+  used `features.hooks = true` until v0.135.0 made `hooks` default-enabled.
+  Other notable release items were plugin sharing/details, `codex
+  remote-control`, thread pagination, selected-environment `view_image`, live
+  app-server config refresh, and improved apply-patch diff tracking; no
+  additional harness config change was adopted from those items.
 - v0.128.0 (2026-05-03): Reviewed local release notes via GitHub releases.
   Relevant items: plugin workflows expanded, MCP/plugin cleanup fixes landed,
   `apps` remains a stable feature flag and can be disabled explicitly with
