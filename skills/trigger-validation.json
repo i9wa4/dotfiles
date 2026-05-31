@@ -412,6 +412,10 @@
           "status": "compatibility_trigger"
         },
         {
+          "name": "missing-tools",
+          "status": "compatibility_trigger"
+        },
+        {
           "name": "markdown",
           "status": "compatibility_trigger"
         }
@@ -477,6 +481,18 @@
           "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         },
         {
+          "id": "missing-tools-compatibility",
+          "kind": "compatibility",
+          "legacy_skill": "missing-tools",
+          "prompt": "Recover when a command is missing from the current repo shell using direnv, comma, nix run, or nix shell without installing globally.",
+          "expected_skill": "programming",
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-05-30",
+          "validation_method": "manual_catalog_review",
+          "notes": "Compatibility prompt maps through the missing-tools trigger and programming-owned reference to the expected target skill."
+        },
+        {
           "id": "markdown-compatibility",
           "kind": "compatibility",
           "legacy_skill": "markdown",
@@ -491,7 +507,7 @@
       ]
     }
   ],
-  "validated_at": "2026-05-21",
+  "validated_at": "2026-05-30",
   "validation_method": "manual_catalog_review",
-  "validation_summary": "28 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and accepted #206 cleanup state where applicable."
+  "validation_summary": "29 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and accepted #206 cleanup state where applicable."
 }

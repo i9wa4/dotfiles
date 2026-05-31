@@ -13,7 +13,8 @@ set -o posix
 INPUT=$(cat)
 [[ -z $INPUT ]] && exit 0
 
-LOG_DIR="${CODEX_HOOK_OBSERVE_DIR:-$HOME/.codex/hook-observations}"
+cache_home="${XDG_CACHE_HOME:-$HOME/.cache}"
+LOG_DIR="${CODEX_HOOK_OBSERVE_DIR:-$cache_home/codex/hook-observations}"
 LOG_FILE="$LOG_DIR/pretooluse-write-tools.jsonl"
 
 mkdir -p "$LOG_DIR"
