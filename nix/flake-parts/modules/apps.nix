@@ -38,6 +38,7 @@
       # this list is reserved for tools that do not fit cleanly into HM's package set.
       profilePackages = {
         markdown-formatter = "github:i9wa4/markdown-formatter";
+        markdown-remote-viewer = "github:i9wa4/markdown-remote-viewer";
         tmux-a2a-postman = "github:i9wa4/tmux-a2a-postman";
       };
     in
