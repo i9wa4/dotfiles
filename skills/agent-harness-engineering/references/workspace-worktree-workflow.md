@@ -66,17 +66,19 @@ Expect it to:
   repositories
 - run `repo-setup` when available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees run `repo-setup --allow-direnv` by default, so copied
-  source-checkout `.envrc` files are allowed and generated `use flake`
-  fallbacks are allowed when `repo-setup` creates them. Use
+  worktrees allow copied source-checkout `.envrc` files by default. If no
+  `.envrc` exists and the worktree has `flake.nix`, default setup lets
+  `repo-setup` create and allow the generated `use flake` fallback. Use
   `issue-worktree-create --no-allow-direnv` to create the worktree without
-  allowing `.envrc`. If an issue worktree already exists, re-run the command to
-  remediate a missing `direnv allow` only when the worktree `.envrc` still
-  matches the source checkout `.envrc`; otherwise review and run
-  `repo-setup --allow-direnv` manually, or pass `--allow-direnv` to explicitly
-  allow an existing issue worktree. If Nix or devshell setup fails,
-  `repo-setup` warns and continues; re-run `repo-setup` or enter the devshell
-  before pushing.
+  allowing `.envrc`. If the issue branch already provides `.envrc`, default
+  setup does not allow it; review the file and run
+  `repo-setup --allow-direnv` manually or pass `--allow-direnv` explicitly. If
+  an issue worktree already exists, re-run the command to remediate a missing
+  `direnv allow` only when the worktree `.envrc` still matches the source
+  checkout `.envrc`; otherwise review and run `repo-setup --allow-direnv`
+  manually, or pass `--allow-direnv` to explicitly allow an existing issue
+  worktree. If Nix or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as

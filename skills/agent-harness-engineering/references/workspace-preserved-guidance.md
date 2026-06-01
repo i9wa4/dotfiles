@@ -169,17 +169,19 @@ Both scripts:
   repositories
 - Run `repo-setup` if available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees run `repo-setup --allow-direnv` by default, so copied
-  source-checkout `.envrc` files are allowed and generated `use flake`
-  fallbacks are allowed when `repo-setup` creates them; use
-  `issue-worktree-create --no-allow-direnv` to opt out. Re-running an existing
-  issue worktree can remediate `direnv allow` only when the existing worktree
-  `.envrc` still matches the source checkout `.envrc`, unless
-  `--allow-direnv` is passed explicitly after review. PR review worktrees
-  preserve the trust gate by creating the generated `.envrc` without allowing
-  it unless `pr-worktree-create --allow-direnv` is used after review. If Nix or
-  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-  or enter the devshell before pushing.
+  worktrees allow copied source-checkout `.envrc` files by default. If no
+  `.envrc` exists and the worktree has `flake.nix`, default setup lets
+  `repo-setup` create and allow the generated `use flake` fallback; use
+  `issue-worktree-create --no-allow-direnv` to opt out. Issue-branch-provided
+  `.envrc` files are not allowed by default; review and run
+  `repo-setup --allow-direnv` manually or pass `--allow-direnv` explicitly.
+  Re-running an existing issue worktree can remediate `direnv allow` only when
+  the existing worktree `.envrc` still matches the source checkout `.envrc`,
+  unless `--allow-direnv` is passed explicitly after review. PR review
+  worktrees preserve the trust gate by creating the generated `.envrc` without
+  allowing it unless `pr-worktree-create --allow-direnv` is used after review.
+  If Nix or devshell setup fails, `repo-setup` warns and continues; re-run
+  `repo-setup` or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.

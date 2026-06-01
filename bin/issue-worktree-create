@@ -322,28 +322,38 @@ ${issue_comments}
         ;;
     esac
 
-    copied_envrc="false"
+    worktree_had_envrc="false"
+    if [[ -f "${worktree_path}/.envrc" ]]; then
+      worktree_had_envrc="true"
+    fi
 
-    # Copy .envrc if it exists
+    copied_envrc="false"
     if [[ -f "${repo_root}/.envrc" ]]; then
       cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
       copied_envrc="true"
       echo "* Copied .envrc to worktree"
     fi
 
-    allow_envrc="true"
+    allow_envrc="false"
     allow_generated_envrc="true"
     allow_message=""
-    if [[ ${direnv_mode} == "deny" ]]; then
-      allow_envrc="false"
+    if [[ ${direnv_mode} == "allow" ]]; then
+      allow_envrc="true"
+    elif [[ ${direnv_mode} == "deny" ]]; then
       allow_generated_envrc="false"
       if [[ ${copied_envrc} == "true" ]]; then
         echo "* Copied .envrc not allowed by request; run repo-setup --allow-direnv after review"
+      elif [[ ${worktree_had_envrc} == "true" ]]; then
+        echo "* Existing .envrc from issue branch not allowed by request; run repo-setup --allow-direnv after review"
       elif [[ -f "${worktree_path}/flake.nix" ]]; then
         echo "* Generated .envrc not allowed by request; run repo-setup --allow-direnv after review"
       fi
     elif [[ ${copied_envrc} == "true" ]]; then
+      allow_envrc="true"
       allow_message="Allowing copied source .envrc for issue worktree"
+    elif [[ ${worktree_had_envrc} == "true" ]]; then
+      allow_generated_envrc="false"
+      echo "* Existing .envrc from issue branch not allowed by default; run repo-setup --allow-direnv after review"
     fi
 
     run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}" "${allow_generated_envrc}"

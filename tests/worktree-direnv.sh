@@ -234,9 +234,39 @@ NIX
   run_with_fake_tools "$fakebin" "$log" "$linked" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 404 >"$stdout" 2>"$stderr"
 
-  assert_contains "$log" "args=--allow-direnv"
+  assert_contains "$log" "args="
+  assert_not_contains "$log" "--allow-direnv"
+  assert_not_contains "$log" "--no-allow-generated-envrc"
   assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
   assert_not_contains "$stdout" "not allowed"
+}
+
+test_issue_branch_provided_envrc_is_not_allowed_by_default() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-branch-envrc"
+  local log="${tmp_root}/branch-envrc.log"
+  local stdout="${tmp_root}/branch-envrc.out"
+  local stderr="${tmp_root}/branch-envrc.err"
+
+  repo=$(create_fixture_repo "branch-envrc")
+  (
+    cd "$repo"
+    rm .envrc
+    git switch --quiet -c issue-777-direnv-allow-test
+    printf '%s\n' "use flake branch-provided" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add branch envrc"
+    git switch --quiet main
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 777 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Existing .envrc from issue branch not allowed by default"
+  assert_contains "$log" "args=--no-allow-generated-envrc"
+  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "${repo}/.worktrees/issue-777-direnv-allow-test/.envrc" "branch-provided"
 }
 
 test_issue_no_allow_direnv_opt_out_skips_default_allow() {
@@ -349,6 +379,7 @@ test_issue_multi_failure_exits_nonzero_without_success_footer() {
 test_issue_from_primary_main_auto_allows
 test_issue_from_linked_worktree_auto_allows_by_default
 test_issue_from_linked_flake_without_envrc_allows_generated_envrc_by_default
+test_issue_branch_provided_envrc_is_not_allowed_by_default
 test_issue_no_allow_direnv_opt_out_skips_default_allow
 test_existing_matching_issue_worktree_is_remediated_from_primary_main
 test_existing_drifted_issue_worktree_is_not_auto_allowed
