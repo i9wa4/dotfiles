@@ -131,12 +131,13 @@ asymmetric unless Codex grows a role contract worth gating on or local payload
 observations prove that role-aware deny logic can be implemented reliably.
 
 Codex's primary file-edit primitive is `apply_patch` (a single patch-applied
-tool), not the Write/Edit/NotebookEdit triple Claude exposes. The current
-Codex hook observes `apply_patch|Edit|Write` payload shape only and writes
-metadata to `~/.codex/hook-observations/pretooluse-write-tools.jsonl`; it does
-not deny. If enforcement is added later, the matcher and patch-shaped payload
-differ enough that the script body should stay separate from Claude's
-pane-title-aware deny-write hook.
+tool), not the Write/Edit/NotebookEdit triple Claude exposes. The current Codex
+hook observes `apply_patch|Edit|Write` payload shape only and writes metadata to
+`${XDG_CACHE_HOME:-$HOME/.cache}/codex/hook-observations/pretooluse-write-tools.jsonl`
+unless `CODEX_HOOK_OBSERVE_DIR` overrides the directory; it does not deny. If
+enforcement is added later, the matcher and patch-shaped payload differ enough
+that the script body should stay separate from Claude's pane-title-aware
+deny-write hook.
 
 ## 5. Direction We Want To Keep Pulling In
 

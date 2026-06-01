@@ -113,16 +113,18 @@ Ignore any release entries for versions newer than `codex --version`.
 | Behavior  | `approval_mode`, `sandbox`, `network_access`         |
 | Display   | `notify`, `tui.notifications_method`                 |
 | Shell     | `shell_environment_commands`                         |
-| Hooks     | `features.hooks`, `hooks.json`, `scripts/`           |
+| Hooks     | `hooks.json`, `scripts/`                             |
 | History   | `history`, `project_doc_max_bytes`                   |
-| Features  | `features.skills`, `features.web_search_request`     |
+| Features  | `features.fast_mode`, `features.apps`                |
+| Skills    | `skills.bundled`, `skills.include_instructions`      |
 | Disable   | `disable_response_storage`, `hide_agent_*`           |
 | Analytics | `analytics.enabled`, `feedback.enabled`              |
 
 ## 6. Hooks Guidance
 
-- YOU MUST: Enable hooks with `features.hooks = true` before relying on
-  any `hooks.json` behavior
+- Codex v0.135.0 defaults `features.hooks` to enabled. Keep `hooks.json`
+  configured, but do not add a `features.hooks = true` override unless a
+  future Codex default changes.
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
   dotfiles-local override need
@@ -205,7 +207,7 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.132.0 (2026-05-21)
+Last reviewed Codex CLI version: v0.135.0 (2026-05-31)
 
 ### Temporary WAL Bloat Runbook (2026-05)
 
@@ -479,12 +481,15 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 
 #### Issue and PR tracking
 
-Last checked 2026-05-10 with `gh issue view`, `gh pr view`, and
-`gh release view`. Local version: `codex-cli 0.130.0`. The latest stable
-release checked was `rust-v0.130.0` (2026-05-08), and the latest prerelease
-checked was `rust-v0.131.0-alpha.4` (2026-05-09). The tracked issues below
-remain open, and the release notes checked do not claim a direct fix for
-`logs_2.sqlite-wal` growth, SQLite WAL lock contention, or idle WAL writes.
+Last checked 2026-05-31 with `gh issue view`, `gh pr view`, and
+`gh api repos/openai/codex/releases`. Local version: `codex-cli 0.135.0`.
+The latest stable release checked was `rust-v0.135.0` (2026-05-28), and the
+latest prerelease checked was `rust-v0.136.0-alpha.1` (2026-05-29). The tracked
+issues below remain open, and release notes through v0.135.0 do not claim a
+direct fix for `logs_2.sqlite-wal` growth, SQLite WAL lock contention, or idle
+WAL writes. v0.135.0 moved memory runtime state into a dedicated SQLite
+database, but no release note identifies that as a replacement for this
+runbook or a fix for the logs WAL failure mode.
 
 | Item                                                    | Status           | Watch for                                      |
 | ------------------------------------------------------- | ---------------- | ---------------------------------------------- |
@@ -539,10 +544,19 @@ this runbook.
   `codex-*` after consolidation (no codex-prefixed scripts left) and
   failed the `runCommand` build. The explicit list also documents the
   Codex consumed surface in one place.
-- [x] `features.apps = false` disables Codex Apps startup integration. Added
-  2026-05-03 after observing `codex_apps` MCP startup hangs in tmux panes.
-  Keep `plugins` enabled separately unless plugin discovery itself becomes a
+- [x] Removed `features.apps = false` on 2026-05-31 to allow Codex Apps by
+  default again. It had been added 2026-05-03 after observing `codex_apps` MCP
+  startup hangs in tmux panes; re-disable only if that hang returns as a
   measured first-display blocker.
+- [x] `features.fast_mode = false` disables Codex Fast mode in the generated
+  config. Added 2026-05-31 after confirming local Codex v0.135.0 still exposes
+  the stable `fast_mode` feature and defaults it to enabled. This keeps the
+  runtime aligned with explicit launch-time model and reasoning-effort pins
+  instead of allowing `/fast` to swap behavior mid-session.
+- [x] Removed redundant Codex feature overrides on 2026-05-31 after local
+  Codex v0.135.0 confirmed `features.hooks` and `features.multi_agent` default
+  to enabled. Removed stale `features.skills`; skills are configured through
+  the top-level `skills` table, not a feature flag.
 - [x] WAL checkpoint timer added 2026-05-07 after Codex logs WAL
   reached 32 GB on the Linux host (root/home at 98% used). One-shot manual
   `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
@@ -633,6 +647,32 @@ this runbook.
 
 ### 9.4. Version Notes
 
+- v0.135.0 (2026-05-28): Reviewed release notes on 2026-05-31 after local
+  `codex --version` reported `codex-cli 0.135.0`; upstream marked this as the
+  latest stable release, with `rust-v0.136.0-alpha.1` newer but pre-release.
+  Relevant items: richer `codex doctor` diagnostics, `/status` remote details,
+  named permission profiles in `/permissions`, Vim mode text objects and
+  configurable interruption binding, bundled patched zsh helper discovery,
+  non-interactive installer mode, TUI markdown/table/rendering fixes, resume
+  cwd fixes, and memory runtime state moved into its own SQLite database. No
+  new harness feature was adopted beyond the user-requested `fast_mode`
+  disable; the existing WAL timer remains because release notes do not claim a
+  logs WAL fix.
+- v0.134.0 (2026-05-26): Reviewed during the v0.135.0 follow-up window.
+  Relevant items: local conversation-history search, `--profile` as the
+  primary profile selector with legacy profile rejection, MCP per-server
+  environment/OAuth improvements, connector schema preservation and compaction,
+  parallel read-only MCP tools via `readOnlyHint`, richer extension/hook
+  context including subagent identity, and remote/websocket reliability fixes.
+  No local config change was needed; the generated config remains the managed
+  base profile surface.
+- v0.133.0 (2026-05-21): Reviewed during the v0.135.0 follow-up window.
+  Relevant items: goals enabled by default with dedicated storage,
+  foreground-style `codex remote-control` readiness/status behavior, permission
+  profile list/inheritance/managed requirements work, plugin discovery list
+  visibility, subagent/tool/turn lifecycle extension hooks, AGENTS loading
+  reliability fixes, code-mode raw-output preservation, and packaged Codex
+  runtime/archive work. No harness config change was adopted from this release.
 - v0.132.0 (2026-05-21): Reviewed local release notes via GitHub releases
   after local `codex --version` reported `codex-cli 0.132.0`; npm `latest`
   also resolved to `0.132.0`. Relevant items: `codex exec resume
@@ -654,17 +694,17 @@ this runbook.
 - v0.130.0 (2026-05-11): Reviewed local release notes via GitHub releases
   after local `codex --version` reported `codex-cli 0.130.0`. Relevant
   follow-up: v0.129.0 included `#20522 Alias codex_hooks feature as hooks`;
-  local v0.130.0 now warns that `[features].codex_hooks` is deprecated, so
-  this repo uses `features.hooks = true` in generated `config.toml`. Other
-  notable release items were plugin sharing/details, `codex remote-control`,
-  thread pagination, selected-environment `view_image`, live app-server config
-  refresh, and improved apply-patch diff tracking; no additional harness
-  config change was adopted from those items.
+  local v0.130.0 warned that `[features].codex_hooks` was deprecated. The repo
+  used `features.hooks = true` until v0.135.0 made `hooks` default-enabled.
+  Other notable release items were plugin sharing/details, `codex
+  remote-control`, thread pagination, selected-environment `view_image`, live
+  app-server config refresh, and improved apply-patch diff tracking; no
+  additional harness config change was adopted from those items.
 - v0.128.0 (2026-05-03): Reviewed local release notes via GitHub releases.
   Relevant items: plugin workflows expanded, MCP/plugin cleanup fixes landed,
   `apps` remains a stable feature flag and can be disabled explicitly with
-  `features.apps = false`; permission-profile work is active but this repo
-  still relies on current `--yolo`/config flow.
+  `features.apps = false` if startup hangs return; permission-profile work is
+  active but this repo still relies on current `--yolo`/config flow.
 - v0.118.0 → v0.125.0 (2026-04-29): release notes not yet reviewed; the
   local install jumped while the previous review window stayed at
   v0.117.0. Superseded by the v0.128.0 review above.
