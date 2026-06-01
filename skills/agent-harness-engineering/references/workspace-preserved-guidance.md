@@ -143,11 +143,12 @@ session by name in tmux commands.
 
 ## 4. Worktree Lifecycle
 
-Primary creation entrypoints: `bin/issue-worktree-create [--allow-direnv]
-<issue_number>` and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
-interactive cleanup in the current repository, use `bin/worktree-remove` to
-choose one managed worktree under the repo's `.worktrees/` directory with
-`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
+Primary creation entrypoints:
+`bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
+and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For interactive
+cleanup in the current repository, use `bin/worktree-remove` to choose one
+managed worktree under the repo's `.worktrees/` directory with `fzf`, validate
+safety gates, and delete through native `git worktree` cleanup.
 
 For issue implementation, agents must create or choose the GitHub issue first,
 then use `issue-worktree-create <issue_number>`. Do not create issue branches
@@ -167,21 +168,18 @@ Both scripts:
 - Copy `.envrc` from repo root when available, including for non-Nix
   repositories
 - Run `repo-setup` if available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. Issue worktrees allow a
-  copied source-checkout `.envrc` automatically only when launched from the
-  primary `main` checkout, where the copied file is the base checkout's trusted
-  local file. Linked-worktree and non-main invocations still copy `.envrc`, but
-  do not implicitly allow it. Re-running from the primary `main` checkout can
-  remediate an existing issue worktree only when the existing worktree `.envrc`
-  still matches the source checkout `.envrc`. If no `.envrc` was copied and the
-  checkout has `flake.nix`, generated fallback trust is primary-main only:
-  primary-main issue creation lets `repo-setup` create `use flake` and run
-  `direnv allow`, while linked-worktree or non-main issue creation passes
-  `--no-allow-generated-envrc` so the generated file is not implicitly allowed.
-  PR review worktrees preserve the trust gate by creating the generated
-  `.envrc` without allowing it unless `pr-worktree-create --allow-direnv` is
-  used after review. If Nix or devshell setup fails, `repo-setup` warns and
-  continues; re-run `repo-setup` or enter the devshell before pushing.
+  generate per-worktree `.pre-commit-config.yaml`. Newly created issue
+  worktrees run `repo-setup --allow-direnv` by default, so copied
+  source-checkout `.envrc` files are allowed and generated `use flake`
+  fallbacks are allowed when `repo-setup` creates them; use
+  `issue-worktree-create --no-allow-direnv` to opt out. Re-running an existing
+  issue worktree can remediate `direnv allow` only when the existing worktree
+  `.envrc` still matches the source checkout `.envrc`, unless
+  `--allow-direnv` is passed explicitly after review. PR review worktrees
+  preserve the trust gate by creating the generated `.envrc` without allowing
+  it unless `pr-worktree-create --allow-direnv` is used after review. If Nix or
+  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
+  or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.

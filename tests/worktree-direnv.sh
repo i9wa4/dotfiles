@@ -168,7 +168,7 @@ test_issue_from_primary_main_auto_allows() {
   assert_contains "${repo}/.worktrees/issue-101-direnv-allow-test/.envrc" "use flake"
 }
 
-test_issue_from_linked_worktree_does_not_auto_allow() {
+test_issue_from_linked_worktree_auto_allows_by_default() {
   local repo
   local linked
   local fakebin="${tmp_root}/fakebin-linked"
@@ -196,13 +196,13 @@ test_issue_from_linked_worktree_does_not_auto_allow() {
   run_with_fake_tools "$fakebin" "$log" "$linked" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 202 >"$stdout" 2>"$stderr"
 
-  assert_contains "$stdout" "Copied .envrc not auto-allowed"
-  assert_contains "$log" "args=--no-allow-generated-envrc"
-  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_contains "$log" "args=--allow-direnv"
+  assert_not_contains "$stdout" "not allowed"
   assert_contains "${linked}/.worktrees/issue-202-direnv-allow-test/.envrc" "feature-source"
 }
 
-test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc() {
+test_issue_from_linked_flake_without_envrc_allows_generated_envrc_by_default() {
   local repo
   local linked
   local fakebin="${tmp_root}/fakebin-linked-flake"
@@ -234,9 +234,28 @@ NIX
   run_with_fake_tools "$fakebin" "$log" "$linked" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 404 >"$stdout" 2>"$stderr"
 
+  assert_contains "$log" "args=--allow-direnv"
+  assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_not_contains "$stdout" "not allowed"
+}
+
+test_issue_no_allow_direnv_opt_out_skips_default_allow() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-no-allow"
+  local log="${tmp_root}/no-allow.log"
+  local stdout="${tmp_root}/no-allow.out"
+  local stderr="${tmp_root}/no-allow.err"
+
+  repo=$(create_fixture_repo "no-allow")
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" --no-allow-direnv 606 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Copied .envrc not allowed by request"
   assert_contains "$log" "args=--no-allow-generated-envrc"
   assert_not_contains "$log" "--allow-direnv"
-  assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_contains "${repo}/.worktrees/issue-606-direnv-allow-test/.envrc" "use flake"
 }
 
 test_existing_matching_issue_worktree_is_remediated_from_primary_main() {
@@ -285,7 +304,7 @@ test_existing_drifted_issue_worktree_is_not_auto_allowed() {
   run_with_fake_tools "$fakebin" "$log" "$repo" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 505 >"$stdout" 2>"$stderr"
 
-  assert_contains "$stdout" "Existing .envrc not auto-allowed"
+  assert_contains "$stdout" "Existing .envrc differs from source .envrc"
   assert_not_contains "$log" "--allow-direnv"
 }
 
@@ -328,8 +347,9 @@ test_issue_multi_failure_exits_nonzero_without_success_footer() {
 }
 
 test_issue_from_primary_main_auto_allows
-test_issue_from_linked_worktree_does_not_auto_allow
-test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc
+test_issue_from_linked_worktree_auto_allows_by_default
+test_issue_from_linked_flake_without_envrc_allows_generated_envrc_by_default
+test_issue_no_allow_direnv_opt_out_skips_default_allow
 test_existing_matching_issue_worktree_is_remediated_from_primary_main
 test_existing_drifted_issue_worktree_is_not_auto_allowed
 test_pr_default_does_not_allow_direnv
