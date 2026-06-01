@@ -231,7 +231,7 @@
             enable = true;
             entry = "${
               inputs.markdown-formatter.packages.${system}.default
-            }/bin/mdfmt --no-heading-numbering --write";
+            }/bin/mdfmt --write";
             types = [ "markdown" ];
           };
 
