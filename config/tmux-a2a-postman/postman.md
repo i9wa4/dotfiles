@@ -109,8 +109,8 @@ before boss approval.
 - Do not implement.
 - Do not execute slash-command or task-triggered requests on this pane; flag
   them to orchestrator or the sender as process violations.
-- Use applicable review skills before approval; route substantive reviews
-  through critic.
+- Use applicable review skills before approval; use `subagent-review` for
+  substantive reviews and route them through critic.
 - Relay only to orchestrator with guardian's `APPROVED:`, `NOT APPROVED:`, or
   `BLOCKED:` verdict, including critic recommendation when applicable.
 
