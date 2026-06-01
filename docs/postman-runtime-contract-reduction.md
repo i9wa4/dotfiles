@@ -122,20 +122,35 @@ delivered prompt size without supporting observed workflow behavior.
 
 ## 6. mdfmt And Commit Ordering
 
-The documentation belongs with the third postman-related commit because it
-explains why the postman runtime contract was reduced. It does not belong in
-the first two commits:
+The requested local history was three commits in this order:
 
 - `Use heading-numbering mdfmt hook` changes only the unified
   `markdown-formatter` hook to use `mdfmt --write`
 - `Apply repo-wide Markdown heading numbering` contains the non-postman
   Markdown fallout from that formatter behavior
-- `Reduce postman runtime contract` contains the postman contract reduction and
-  this explanatory documentation
+- `Reduce postman runtime contract` contains the postman contract reduction
 
-That ordering preserves the requested separation: hook behavior first, generic
-Markdown fallout second, postman-specific reduction third. No push is part of
-this work.
+The reduction documentation is postman-related because it explains the
+`postman.md` runtime-contract reduction. The first implementation attempt
+therefore tried to amend the third commit, `Reduce postman runtime contract`,
+so the requested three-commit order would remain exact.
+
+That amend was not applied. The local hook denied
+`git commit --amend --no-edit` because amending would create a force-push
+requirement, and the safe instruction from the hook was to create a new commit
+instead.
+
+The actual committed history therefore preserves the requested three commits
+unchanged, then adds a fourth documentation commit:
+
+- `8ab0d4b8 docs(postman): document runtime contract reduction`
+
+That fourth commit contains this documentation file. It also contains a
+formatting-only change to `nix/flake-parts/modules/pre-commit.nix`: the
+`markdown-formatter` entry was collapsed to the treefmt-required one-line
+shape. This was not part of the documentation semantics, but the normal commit
+hook required that formatting before it would accept the commit. No push was
+performed.
 
 ## 7. Verification Evidence
 
