@@ -6,7 +6,7 @@
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs and Waza release pins
-#   nix run '.#profile-update' -- install or upgrade entries listed in `profilePackages`
+#   nix run '.#nix-profile-cleanup' -- remove manual user-profile entries
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
@@ -31,16 +31,9 @@
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
       rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
+      nixProfileCleanupScript = ./../../../bin/nix-profile-cleanup;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
-      # Packages that live in the user's `nix profile` (independent of `nix run '.#switch'`).
-      # Most agent CLIs are installed via Home Manager (see nix/home-manager/default.nix);
-      # this list is reserved for tools that do not fit cleanly into HM's package set.
-      profilePackages = {
-        markdown-formatter = "github:i9wa4/markdown-formatter";
-        markdown-remote-viewer = "github:i9wa4/markdown-remote-viewer";
-        tmux-a2a-postman = "github:i9wa4/tmux-a2a-postman";
-      };
     in
     {
       apps = {
@@ -84,34 +77,18 @@
           ''}/bin/update";
         };
 
-        # What: Reconcile the user's nix profile with `profilePackages`.
-        #       Adds entries that are missing and upgrades entries that already exist.
-        # When: Run any time, independent of `nix run '.#switch'`.
-        # Example: nix run '.#profile-update'
-        profile-update = {
+        # What: Remove manually-installed user profile entries after tools move to Home Manager.
+        #       Preserves Home Manager's own `home-manager-path` by default.
+        # When: Run after `nix run '.#switch'` so moved tools are already in home.packages.
+        # Example: nix run '.#nix-profile-cleanup' -- --dry-run
+        nix-profile-cleanup = {
           type = "app";
-          program = "${pkgs.writeShellScriptBin "profile-update" ''
+          program = "${pkgs.writeShellScriptBin "nix-profile-cleanup" ''
             set -euo pipefail
-
-            declare -A packages=( ${
-              lib.concatStringsSep " " (lib.mapAttrsToList (n: u: "[${n}]='${u}'") profilePackages)
-            } )
-
-            for name in "''${!packages[@]}"; do
-              url="''${packages[$name]}"
-              if { ${nix} profile list --json | ${jq} -e --arg n "$name" '.elements | has($n)'; } >/dev/null; then
-                echo "Upgrading $name"
-                # --refresh bypasses tarball-ttl (24h) so `github:` refs without a pinned rev
-                # actually pick up new HEAD commits on every run.
-                ${nix} profile upgrade --refresh "$name"
-              else
-                echo "Installing $name ($url)"
-                ${nix} profile add "$url"
-              fi
-            done
-
-            echo "profile-update: done"
-          ''}/bin/profile-update";
+            export NIX_PROFILE_CLEANUP_NIX=${nix}
+            export NIX_PROFILE_CLEANUP_JQ=${jq}
+            exec ${pkgs.bash}/bin/bash ${nixProfileCleanupScript} "$@"
+          ''}/bin/nix-profile-cleanup";
         };
 
         check = {

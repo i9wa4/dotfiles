@@ -574,6 +574,35 @@
         "type": "github"
       }
     },
+    "markdown-remote-viewer": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "git-hooks": [
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780213811,
+        "narHash": "sha256-OezjVYKhorUgcdjKug8EBBtltfg6l5Jj6d4mLEbpBpk=",
+        "owner": "i9wa4",
+        "repo": "markdown-remote-viewer",
+        "rev": "97b31f1a209c86a7ef93aa51d069dbc62035d50e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "i9wa4",
+        "repo": "markdown-remote-viewer",
+        "type": "github"
+      }
+    },
     "mcp-servers-nix": {
       "inputs": {
         "nixpkgs": [
@@ -746,6 +775,7 @@
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "markdown-formatter": "markdown-formatter",
+        "markdown-remote-viewer": "markdown-remote-viewer",
         "mcp-servers-nix": "mcp-servers-nix",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",

@@ -19,6 +19,9 @@ let
   # AI agent CLIs from llm-agents.nix flake input
   # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
   llmAgents = inputs.llm-agents.packages.${pkgs.system};
+  markdownFormatter = inputs.markdown-formatter.packages.${pkgs.system}.default;
+  markdownRemoteViewer = inputs.markdown-remote-viewer.packages.${pkgs.system}.default;
+  tmuxA2aPostman = inputs.tmux-a2a-postman.packages.${pkgs.system}.default;
   wazaPackage = pkgs.callPackage ../packages/waza.nix {
     inherit (pkgs) system;
   };
@@ -95,12 +98,15 @@ in
       pkgs.google-cloud-sdk
       pkgs.jq
       pkgs.harper
+      markdownFormatter
+      markdownRemoteViewer
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
       pkgs.pnpm
       pkgs.ripgrep
       pkgs.shellcheck
+      tmuxA2aPostman
       pkgs.uv
       pkgs.vale
       pkgs.vim

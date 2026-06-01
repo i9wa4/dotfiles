@@ -305,6 +305,7 @@ gh auth login --with-token
 | `nix run '.#switch'`                             | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate and uses 1 day on both Linux and macOS |
 | `nix run '.#update'`                             | Update flake inputs                                                                                                                                                                                                                                       |
 | `nix run '.#check'`                              | Check flake configuration                                                                                                                                                                                                                                 |
+| `nix run '.#nix-profile-cleanup' -- --dry-run`   | Preview manual `nix profile` entries. After `switch`, run with `--apply` to remove residual mutable profile tools while preserving Home Manager's `home-manager-path`                                                                                     |
 | `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage                                                                                                                                                                                                                    |
 
 ## 7. Upgrade Nix
