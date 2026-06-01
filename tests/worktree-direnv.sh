@@ -103,6 +103,43 @@ SH
   chmod +x "${fakebin}/gh" "${fakebin}/claude" "${fakebin}/repo-setup" "${fakebin}/zoxide"
 }
 
+make_fake_direnv() {
+  local fakebin=$1
+  local bash_path
+
+  mkdir -p "$fakebin"
+  bash_path=$(command -v bash)
+
+  {
+    printf '#!%s\n' "$bash_path"
+    cat <<'SH'
+set -o errexit
+set -o nounset
+set -o pipefail
+
+printf 'direnv pwd=%s args=%s\n' "$PWD" "$*" >>"${REPO_SETUP_LOG:?}"
+
+case "${1:-}" in
+  allow)
+    test -f "${2:?}"
+    ;;
+  exec)
+    workdir=${2:?}
+    shift 2
+    cd "$workdir"
+    "$@"
+    ;;
+  *)
+    echo "unexpected direnv args: $*" >&2
+    exit 1
+    ;;
+esac
+SH
+  } >"${fakebin}/direnv"
+
+  chmod +x "${fakebin}/direnv"
+}
+
 create_fixture_repo() {
   local name=$1
   local fixture_dir="${tmp_root}/${name}"
@@ -148,6 +185,68 @@ run_with_fake_tools() {
     cd "$workdir"
     "$@"
   )
+}
+
+test_repo_setup_loads_direnv_after_allowing_existing_envrc() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-repo-setup-existing"
+  local log="${tmp_root}/repo-setup-existing.log"
+  local stdout="${tmp_root}/repo-setup-existing.out"
+  local stderr="${tmp_root}/repo-setup-existing.err"
+
+  repo=$(create_fixture_repo "repo-setup-existing")
+  make_fake_direnv "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/repo-setup" --allow-direnv --skip-devshell-hooks >"$stdout" 2>"$stderr"
+
+  assert_contains "$log" "args=allow ${repo}/.envrc"
+  assert_contains "$log" "args=exec ${repo} true"
+  assert_contains "$stdout" "* Allowed existing .envrc with direnv"
+  assert_contains "$stdout" "* Loaded .envrc with direnv"
+}
+
+test_repo_setup_loads_direnv_after_allowing_generated_envrc() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-repo-setup-generated"
+  local log="${tmp_root}/repo-setup-generated.log"
+  local stdout="${tmp_root}/repo-setup-generated.out"
+  local stderr="${tmp_root}/repo-setup-generated.err"
+
+  repo=$(create_fixture_repo "repo-setup-generated")
+  make_fake_direnv "$fakebin"
+  (
+    cd "$repo"
+    rm .envrc
+    printf '%s\n' "{ outputs = { self }: { }; }" >flake.nix
+  )
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/repo-setup" --skip-devshell-hooks >"$stdout" 2>"$stderr"
+
+  assert_contains "$log" "args=allow ${repo}/.envrc"
+  assert_contains "$log" "args=exec ${repo} true"
+  assert_contains "$stdout" "* Created .envrc with use flake"
+  assert_contains "$stdout" "* Allowed generated .envrc with direnv"
+  assert_contains "$stdout" "* Loaded .envrc with direnv"
+  assert_contains "${repo}/.envrc" "use flake"
+}
+
+test_repo_setup_does_not_load_direnv_when_envrc_is_not_allowed() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-repo-setup-no-allow"
+  local log="${tmp_root}/repo-setup-no-allow.log"
+  local stdout="${tmp_root}/repo-setup-no-allow.out"
+  local stderr="${tmp_root}/repo-setup-no-allow.err"
+
+  repo=$(create_fixture_repo "repo-setup-no-allow")
+  make_fake_direnv "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/repo-setup" --skip-devshell-hooks >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "* Skipped allowing .envrc by default"
+  assert_not_contains "$log" "direnv"
 }
 
 test_issue_from_primary_main_auto_allows() {
@@ -521,5 +620,8 @@ test_existing_self_invocation_branch_envrc_is_not_auto_allowed
 test_existing_self_invocation_branch_envrc_explicit_allow
 test_pr_default_does_not_allow_direnv
 test_issue_multi_failure_exits_nonzero_without_success_footer
+test_repo_setup_loads_direnv_after_allowing_existing_envrc
+test_repo_setup_loads_direnv_after_allowing_generated_envrc
+test_repo_setup_does_not_load_direnv_when_envrc_is_not_allowed
 
 echo "worktree direnv tests passed"
