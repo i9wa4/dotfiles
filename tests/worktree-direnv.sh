@@ -168,7 +168,7 @@ test_issue_from_primary_main_auto_allows() {
   assert_contains "${repo}/.worktrees/issue-101-direnv-allow-test/.envrc" "use flake"
 }
 
-test_issue_from_linked_worktree_does_not_auto_allow() {
+test_issue_from_linked_worktree_copied_envrc_auto_allows_by_default() {
   local repo
   local linked
   local fakebin="${tmp_root}/fakebin-linked"
@@ -185,24 +185,20 @@ test_issue_from_linked_worktree_does_not_auto_allow() {
   )
   (
     cd "$linked"
-    git config user.email "tests@example.invalid"
-    git config user.name "Worktree Test"
     printf '%s\n' "use flake feature-source" >.envrc
-    git add -f .envrc
-    git commit --quiet -m "add feature envrc"
   )
   make_fake_tools "$fakebin"
 
   run_with_fake_tools "$fakebin" "$log" "$linked" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 202 >"$stdout" 2>"$stderr"
 
-  assert_contains "$stdout" "Copied .envrc not auto-allowed"
-  assert_contains "$log" "args=--no-allow-generated-envrc"
-  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_contains "$log" "args=--allow-direnv"
+  assert_not_contains "$stdout" "not allowed"
   assert_contains "${linked}/.worktrees/issue-202-direnv-allow-test/.envrc" "feature-source"
 }
 
-test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc() {
+test_issue_from_linked_flake_without_envrc_allows_generated_envrc_by_default() {
   local repo
   local linked
   local fakebin="${tmp_root}/fakebin-linked-flake"
@@ -234,9 +230,131 @@ NIX
   run_with_fake_tools "$fakebin" "$log" "$linked" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 404 >"$stdout" 2>"$stderr"
 
+  assert_contains "$log" "args="
+  assert_not_contains "$log" "--allow-direnv"
+  assert_not_contains "$log" "--no-allow-generated-envrc"
+  assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_not_contains "$stdout" "not allowed"
+}
+
+test_issue_branch_provided_envrc_is_not_allowed_by_default() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-branch-envrc"
+  local log="${tmp_root}/branch-envrc.log"
+  local stdout="${tmp_root}/branch-envrc.out"
+  local stderr="${tmp_root}/branch-envrc.err"
+
+  repo=$(create_fixture_repo "branch-envrc")
+  (
+    cd "$repo"
+    rm .envrc
+    git switch --quiet -c issue-777-direnv-allow-test
+    printf '%s\n' "use flake branch-provided" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add branch envrc"
+    git switch --quiet main
+    printf '%s\n' "use flake source-checkout" >.envrc
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 777 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Existing .envrc from issue branch not allowed by default"
   assert_contains "$log" "args=--no-allow-generated-envrc"
   assert_not_contains "$log" "--allow-direnv"
-  assert_not_contains "$stdout" "Allowing copied source .envrc for issue worktree"
+  assert_contains "${repo}/.worktrees/issue-777-direnv-allow-test/.envrc" "branch-provided"
+}
+
+test_issue_branch_envrc_is_not_overwritten_by_source_envrc() {
+  local repo
+  local worktree
+  local status
+  local fakebin="${tmp_root}/fakebin-branch-envrc-source"
+  local log="${tmp_root}/branch-envrc-source.log"
+  local stdout="${tmp_root}/branch-envrc-source.out"
+  local stderr="${tmp_root}/branch-envrc-source.err"
+
+  repo=$(create_fixture_repo "branch-envrc-source")
+  (
+    cd "$repo"
+    printf '%s\n' "use flake source-checkout" >.envrc
+    git switch --quiet -c issue-778-direnv-allow-test
+    printf '%s\n' "use flake branch-provided" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add branch envrc"
+    git switch --quiet main
+    printf '%s\n' "use flake source-checkout" >.envrc
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 778 >"$stdout" 2>"$stderr"
+
+  worktree="${repo}/.worktrees/issue-778-direnv-allow-test"
+  status=$(cd "$worktree" && git status --short)
+
+  assert_contains "$stdout" "Existing .envrc from issue branch left unchanged"
+  assert_contains "$stdout" "Existing .envrc from issue branch not allowed by default"
+  assert_contains "$log" "args=--no-allow-generated-envrc"
+  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "${worktree}/.envrc" "branch-provided"
+  assert_not_contains "${worktree}/.envrc" "source-checkout"
+  if [[ -n $status ]]; then
+    echo "Unexpected worktree status:" >&2
+    printf '%s\n' "$status" >&2
+    fail "issue worktree was dirtied"
+  fi
+}
+
+test_issue_branch_envrc_explicit_allow_new_worktree() {
+  local repo
+  local worktree
+  local fakebin="${tmp_root}/fakebin-branch-envrc-allow"
+  local log="${tmp_root}/branch-envrc-allow.log"
+  local stdout="${tmp_root}/branch-envrc-allow.out"
+  local stderr="${tmp_root}/branch-envrc-allow.err"
+
+  repo=$(create_fixture_repo "branch-envrc-allow")
+  (
+    cd "$repo"
+    printf '%s\n' "use flake source-checkout" >.envrc
+    git switch --quiet -c issue-779-direnv-allow-test
+    printf '%s\n' "use flake branch-provided" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add branch envrc"
+    git switch --quiet main
+    printf '%s\n' "use flake source-checkout" >.envrc
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" --allow-direnv 779 >"$stdout" 2>"$stderr"
+
+  worktree="${repo}/.worktrees/issue-779-direnv-allow-test"
+
+  assert_contains "$log" "args=--allow-direnv"
+  assert_contains "${worktree}/.envrc" "branch-provided"
+  assert_not_contains "${worktree}/.envrc" "source-checkout"
+}
+
+test_issue_no_allow_direnv_opt_out_skips_default_allow() {
+  local repo
+  local fakebin="${tmp_root}/fakebin-no-allow"
+  local log="${tmp_root}/no-allow.log"
+  local stdout="${tmp_root}/no-allow.out"
+  local stderr="${tmp_root}/no-allow.err"
+
+  repo=$(create_fixture_repo "no-allow")
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$repo" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" --no-allow-direnv 606 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Copied .envrc not allowed by request"
+  assert_contains "$log" "args=--no-allow-generated-envrc"
+  assert_not_contains "$log" "--allow-direnv"
+  assert_contains "${repo}/.worktrees/issue-606-direnv-allow-test/.envrc" "use flake"
 }
 
 test_existing_matching_issue_worktree_is_remediated_from_primary_main() {
@@ -285,8 +403,71 @@ test_existing_drifted_issue_worktree_is_not_auto_allowed() {
   run_with_fake_tools "$fakebin" "$log" "$repo" \
     "$BASH" "${repo_root}/bin/issue-worktree-create" 505 >"$stdout" 2>"$stderr"
 
-  assert_contains "$stdout" "Existing .envrc not auto-allowed"
+  assert_contains "$stdout" "Existing .envrc differs from source .envrc"
   assert_not_contains "$log" "--allow-direnv"
+}
+
+test_existing_self_invocation_branch_envrc_is_not_auto_allowed() {
+  local repo
+  local worktree
+  local fakebin="${tmp_root}/fakebin-existing-self"
+  local log="${tmp_root}/existing-self.log"
+  local stdout="${tmp_root}/existing-self.out"
+  local stderr="${tmp_root}/existing-self.err"
+
+  repo=$(create_fixture_repo "existing-self")
+  worktree="${repo}/.worktrees/issue-889-direnv-allow-test"
+  (
+    cd "$repo"
+    git worktree add --quiet -b issue-889-direnv-allow-test "$worktree" main
+  )
+  (
+    cd "$worktree"
+    git config user.email "tests@example.invalid"
+    git config user.name "Worktree Test"
+    printf '%s\n' "use flake branch-only-existing" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add existing branch envrc"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$worktree" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" 889 >"$stdout" 2>"$stderr"
+
+  assert_contains "$stdout" "Existing .envrc from this issue worktree not allowed by default"
+  assert_not_contains "$stdout" "Allowing existing copied source .envrc for issue worktree"
+  assert_not_contains "$log" "--allow-direnv"
+}
+
+test_existing_self_invocation_branch_envrc_explicit_allow() {
+  local repo
+  local worktree
+  local fakebin="${tmp_root}/fakebin-existing-self-allow"
+  local log="${tmp_root}/existing-self-allow.log"
+  local stdout="${tmp_root}/existing-self-allow.out"
+  local stderr="${tmp_root}/existing-self-allow.err"
+
+  repo=$(create_fixture_repo "existing-self-allow")
+  worktree="${repo}/.worktrees/issue-890-direnv-allow-test"
+  (
+    cd "$repo"
+    git worktree add --quiet -b issue-890-direnv-allow-test "$worktree" main
+  )
+  (
+    cd "$worktree"
+    git config user.email "tests@example.invalid"
+    git config user.name "Worktree Test"
+    printf '%s\n' "use flake branch-only-existing" >.envrc
+    git add -f .envrc
+    git commit --quiet -m "add existing branch envrc"
+  )
+  make_fake_tools "$fakebin"
+
+  run_with_fake_tools "$fakebin" "$log" "$worktree" \
+    "$BASH" "${repo_root}/bin/issue-worktree-create" --allow-direnv 890 >"$stdout" 2>"$stderr"
+
+  assert_contains "$log" "args=--allow-direnv"
+  assert_contains "${worktree}/.envrc" "branch-only-existing"
 }
 
 test_pr_default_does_not_allow_direnv() {
@@ -328,10 +509,16 @@ test_issue_multi_failure_exits_nonzero_without_success_footer() {
 }
 
 test_issue_from_primary_main_auto_allows
-test_issue_from_linked_worktree_does_not_auto_allow
-test_issue_from_linked_flake_without_envrc_does_not_allow_generated_envrc
+test_issue_from_linked_worktree_copied_envrc_auto_allows_by_default
+test_issue_from_linked_flake_without_envrc_allows_generated_envrc_by_default
+test_issue_branch_provided_envrc_is_not_allowed_by_default
+test_issue_branch_envrc_is_not_overwritten_by_source_envrc
+test_issue_branch_envrc_explicit_allow_new_worktree
+test_issue_no_allow_direnv_opt_out_skips_default_allow
 test_existing_matching_issue_worktree_is_remediated_from_primary_main
 test_existing_drifted_issue_worktree_is_not_auto_allowed
+test_existing_self_invocation_branch_envrc_is_not_auto_allowed
+test_existing_self_invocation_branch_envrc_explicit_allow
 test_pr_default_does_not_allow_direnv
 test_issue_multi_failure_exits_nonzero_without_success_footer
 

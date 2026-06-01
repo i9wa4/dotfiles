@@ -51,6 +51,15 @@
         treefmt-nix.follows = "treefmt-nix";
       };
     };
+    markdown-remote-viewer = {
+      url = "github:i9wa4/markdown-remote-viewer";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        git-hooks.follows = "git-hooks";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+    };
 
     # Follows nixpkgs
     mcp-servers-nix = {
@@ -71,7 +80,7 @@
     };
 
     tmux-a2a-postman = {
-      url = "github:i9wa4/tmux-a2a-postman";
+      url = "github:i9wa4/tmux-a2a-postman/v0.8.5";
     };
 
     # Non-flake sources

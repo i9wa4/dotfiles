@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# What: remove manually-installed nix profile entries after Home Manager owns tooling.
+# When: run after `nix run '.#switch'`; dry-run first, then apply if the list is expected.
+# Example: nix run '.#nix-profile-cleanup' -- --dry-run
+
+usage() {
+  cat <<'EOF'
+Usage: nix-profile-cleanup [--dry-run|--apply] [--profile PATH] [--include-home-manager-path]
+
+Behavior:
+  Lists or removes entries from the selected nix profile.
+  By default, preserves Home Manager's home-manager-path entry because
+  standalone Home Manager uses it to expose home.packages.
+
+Modes:
+  --dry-run                    Print entries that would be removed (default)
+  --apply                      Remove the selected entries
+  --profile PATH               Operate on a specific nix profile
+  --include-home-manager-path  Also remove Home Manager's package path entry
+
+Examples:
+  nix run '.#switch'
+  nix run '.#nix-profile-cleanup' -- --dry-run
+  nix run '.#nix-profile-cleanup' -- --apply
+EOF
+}
+
+safe_text() {
+  value="$1"
+
+  if [[ -z $value ]]; then
+    return
+  fi
+
+  printf '%q' "$value"
+}
+
+mode="dry-run"
+profile=""
+include_home_manager_path=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --dry-run)
+    mode="dry-run"
+    shift
+    ;;
+  --apply)
+    mode="apply"
+    shift
+    ;;
+  --profile)
+    if [[ $# -lt 2 || -z ${2:-} ]]; then
+      echo "ERROR: --profile requires a path" >&2
+      usage >&2
+      exit 1
+    fi
+    profile="$2"
+    shift 2
+    ;;
+  --include-home-manager-path)
+    include_home_manager_path=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    echo "ERROR: Unknown argument: $1" >&2
+    usage >&2
+    exit 1
+    ;;
+  esac
+done
+
+nix_bin="${NIX_PROFILE_CLEANUP_NIX:-nix}"
+jq_bin="${NIX_PROFILE_CLEANUP_JQ:-jq}"
+
+list_args=(profile list --json)
+if [[ -n $profile ]]; then
+  list_args+=(--profile "$profile")
+fi
+
+profile_json="$("$nix_bin" "${list_args[@]}")"
+
+jq_filter='.elements | keys[]'
+if [[ $include_home_manager_path == false ]]; then
+  jq_filter='.elements | keys[] | select(. != "home-manager-path")'
+fi
+
+mapfile -t elements < <("$jq_bin" -r "$jq_filter" <<<"$profile_json")
+
+if [[ ${#elements[@]} -eq 0 ]]; then
+  echo "nix-profile-cleanup: no matching profile entries"
+  if [[ $include_home_manager_path == false ]] &&
+    "$jq_bin" -e '.elements | has("home-manager-path")' >/dev/null <<<"$profile_json"; then
+    echo "nix-profile-cleanup: preserved home-manager-path"
+  fi
+  exit 0
+fi
+
+profile_label="${profile:-default}"
+
+for element in "${elements[@]}"; do
+  # shellcheck disable=SC2016 # jq receives $element via --arg.
+  store_paths="$("$jq_bin" -r --arg element "$element" '.elements[$element].storePaths // [] | join(",")' <<<"$profile_json")"
+  if [[ $mode == "dry-run" ]]; then
+    echo "WOULD_REMOVE profile=$(safe_text "$profile_label") element=$(safe_text "$element") store_paths=$(safe_text "$store_paths")"
+  else
+    echo "REMOVE profile=$(safe_text "$profile_label") element=$(safe_text "$element") store_paths=$(safe_text "$store_paths")"
+    remove_args=(profile remove)
+    if [[ -n $profile ]]; then
+      remove_args+=(--profile "$profile")
+    fi
+    remove_args+=("$element")
+    "$nix_bin" "${remove_args[@]}"
+  fi
+done
+
+if [[ $mode == "dry-run" ]]; then
+  echo "nix-profile-cleanup: dry run only; pass --apply to remove these entries"
+else
+  echo "nix-profile-cleanup: done"
+fi
+
+if [[ $include_home_manager_path == false ]] &&
+  "$jq_bin" -e '.elements | has("home-manager-path")' >/dev/null <<<"$profile_json"; then
+  echo "nix-profile-cleanup: preserved home-manager-path"
+fi
