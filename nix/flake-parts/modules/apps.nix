@@ -5,7 +5,7 @@
 #   nix run '.#switch'       -- rebuild and activate configuration
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
-#   nix run '.#update'       -- update flake inputs and Waza release pins
+#   nix run '.#update'       -- update flake inputs, latest-tag flake refs, and Waza release pins
 #   nix run '.#nix-profile-cleanup' -- remove manual user-profile entries
 #   nix run '.#profile-update' -- compatibility alias for profile cleanup
 #   nix run '.#check'        -- check flake configuration
@@ -33,6 +33,7 @@
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
       rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
       nixProfileCleanupScript = ./../../../bin/nix-profile-cleanup;
+      tmuxA2aPostmanUpdateScript = ./../../packages/tmux-a2a-postman-nix-update.sh;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
       applyNixProfileCleanup = ''
@@ -77,6 +78,8 @@
           program = "${pkgs.writeShellScriptBin "update" ''
             set -euo pipefail
             access_token=$(${gh} auth token)
+            TMUX_A2A_POSTMAN_GH=${gh} TMUX_A2A_POSTMAN_SORT=${pkgs.coreutils}/bin/sort \
+              ${pkgs.bash}/bin/bash ${tmuxA2aPostmanUpdateScript}
             ${nix} flake update --access-tokens "github.com=$access_token"
             WAZA_GH=${gh} WAZA_NIX=${nix} \
               ${pkgs.bash}/bin/bash ${wazaUpdateScript}
