@@ -18,7 +18,7 @@ That is why the repo keeps:
 AI-specific operating rules live separately in
 `docs/repo-ai-operating-contract.md`.
 
-## Dotfiles-local Guardrail Ownership
+## 1. Dotfiles-local Guardrail Ownership
 
 Dotfiles-local guidance should stay small. Task procedures belong to focused
 skills or durable docs, not to a generic runtime skill.
@@ -55,7 +55,7 @@ Shared dotfiles work still carries a few repository guardrails:
 - Keep active task edits in the task worktree. Keep the base checkout clean
   enough to create, inspect, and maintain worktrees.
 
-## 1. Why this repo is organized this way
+## 2. Why this repo is organized this way
 
 The repo is trying to prevent local AI operation from becoming snowflake state.
 
@@ -70,9 +70,9 @@ Without a shared harness, each machine would drift:
 The repo answers that by treating configuration as code and by making Nix the
 alignment mechanism across machines and engines.
 
-## 2. The four operating layers
+## 3. The four operating layers
 
-### 2.1. Nix is the alignment layer
+### 3.1. Nix is the alignment layer
 
 `flake.nix` pins the major inputs, and `nix/home-manager/default.nix` imports
 the tmux and AI-agent modules into one Home Manager graph. The repo uses that
@@ -91,7 +91,7 @@ Two different delivery patterns are used on purpose:
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.
 
-### 2.2. tmux is the visible runtime shell
+### 3.2. tmux is the visible runtime shell
 
 The tmux module is not cosmetic here. It is the live shell around the harness.
 
@@ -108,7 +108,7 @@ Three details matter:
 So the repo is not treating agent orchestration as a hidden sidecar. It is a
 first-class part of the tmux workspace.
 
-### 2.3. `tmux-a2a-postman` is the persistent control plane
+### 3.3. `tmux-a2a-postman` is the persistent control plane
 
 In this repo, `tmux-a2a-postman` is not just a messaging utility. It is the
 control plane that connects role identity, routing, approval flow, and health
@@ -127,7 +127,7 @@ Because the config is live and the status line shows session state
 continuously, the control plane is persistent in day-to-day operation rather
 than only being consulted during failure analysis.
 
-### 2.4. `nix/home-manager/agents` is the harness-engineering layer
+### 3.4. `nix/home-manager/agents` is the harness-engineering layer
 
 The agent tree is where repo policy becomes executable behavior.
 
@@ -154,7 +154,7 @@ the harness from several smaller sources:
 That is the repo's harness-engineering philosophy: keep policy declarative,
 shared, inspectable, and generated from a small number of sources of truth.
 
-### 2.5. Skill responsibility boundaries
+### 3.5. Skill responsibility boundaries
 
 Repo-local agent behavior is split by ownership instead of centralized in one
 large fallback skill:
@@ -173,18 +173,18 @@ large fallback skill:
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
   narrower skill is obvious
 
-## 3. Hooks are part of the product, not optional glue
+## 4. Hooks are part of the product, not optional glue
 
 The repo treats hooks as part of the operating model.
 
-### 3.1. Shared intent
+### 4.1. Shared intent
 
 Across Claude and Codex, hooks currently do two load-bearing jobs:
 
 - inject local session context such as role, cwd, and git state
 - deny dangerous Bash commands before they run
 
-### 3.2. Claude shape
+### 4.2. Claude shape
 
 The Claude side has the richer hook surface, so it carries one additional
 role-readonly guard:
@@ -195,7 +195,7 @@ role-readonly guard:
 - `claude-pretooluse-deny-write.sh` prevents non-worker role panes from
   mutating files outside approved state directories
 
-### 3.3. Codex shape
+### 4.3. Codex shape
 
 The Codex side uses the hooks it has to approximate the same contract:
 
@@ -207,7 +207,7 @@ The hook surfaces are intentionally small after the 2026-04-29 reduction. The
 repo relies on durable `mkmd` artifacts and postman traffic for handoff state
 rather than separate SessionStart, Stop, or PreCompact hook scripts.
 
-## 4. Claude/Codex quality parity is a design goal
+## 5. Claude/Codex quality parity is a design goal
 
 The repo does not assume "Claude rules live over here and Codex rules live over
 there." It keeps the engines different only where the products are genuinely
@@ -228,7 +228,7 @@ The result is parity of intent rather than byte-for-byte sameness. The repo is
 trying to make a worker on Claude and a worker on Codex behave comparably under
 the same local expectations.
 
-## 5. The review stack is part of the operating concept
+## 6. The review stack is part of the operating concept
 
 This repo treats review as a built artifact, not ad hoc human ceremony.
 
@@ -247,7 +247,7 @@ That means reviewer topology and naming stay in sync from a shared source.
 Review is therefore another example of the same repo philosophy: one concept,
 declaratively materialized into multiple runtime targets.
 
-## 6. Why `tmux-a2a-postman` remains central
+## 7. Why `tmux-a2a-postman` remains central
 
 Even with the broader harness in place, `tmux-a2a-postman` remains central
 because it carries the workflow state between roles.
@@ -264,13 +264,13 @@ The dotfiles-local operating model is:
 The persistent control-plane role of `tmux-a2a-postman` matters because the
 rest of the harness assumes this graph exists and is visible from inside tmux.
 
-## 7. Current adoption direction
+## 8. Current adoption direction
 
 The next harness changes are intentionally narrow. This repo already has the
 core harness shape it wants, so the goal is to reduce drift and sharpen
 verification rather than redesign the whole system.
 
-### 7.1. Keep one root-level update surface
+### 8.1. Keep one root-level update surface
 
 The repo should keep one explicit root-level maintenance surface for flake
 updates. A dedicated `llm-agents`-only update path is not needed, because the
@@ -279,25 +279,25 @@ already covers it without adding another public maintenance command. If a
 minimum-age guard is needed, it should stay as an option on that same root
 `update` command instead of becoming a second public update app.
 
-### 7.2. Make the Claude/Codex parity boundary explicit
+### 8.2. Make the Claude/Codex parity boundary explicit
 
 The repo should document what must stay aligned across Claude and Codex and
 which differences are intentional. That reduces false drift reports and keeps
 parity focused on operating quality rather than byte-for-byte sameness.
 
-### 7.3. Prefer cheap verifier first
+### 8.3. Prefer cheap verifier first
 
 The repo should keep pushing verification earlier. The intended direction is:
 run the first cheap deterministic verifier before expensive review or approval,
 then escalate only when that cheaper gate is clean.
 
-### 7.4. Add behavior evaluation only when a real workflow needs it
+### 8.4. Add behavior evaluation only when a real workflow needs it
 
 Behavior-level verification is useful, but the repo should add it as a small
 reusable pattern only when there is a concrete app or UI workflow to verify.
 This is meant to stay a narrow pilot, not a platform rewrite.
 
-### 7.5. What this repo should not adopt next
+### 8.5. What this repo should not adopt next
 
 The repo should explicitly avoid:
 
@@ -307,13 +307,13 @@ The repo should explicitly avoid:
 - expanding top-level instructions into one giant encyclopedia
 - removing human checkpoints in favor of fully autonomous loops
 
-## 8. Philosophy in one sentence
+## 9. Philosophy in one sentence
 
 This repo is using Nix, tmux, hooks, and `tmux-a2a-postman` to turn local AI
 operation into a reproducible engineering harness instead of a pile of per-tool
 preferences.
 
-## 9. Recommended reading order
+## 10. Recommended reading order
 
 When you need to understand the operating concept, read these in order:
 
@@ -326,7 +326,7 @@ When you need to understand the operating concept, read these in order:
 7. `config/tmux-a2a-postman/postman.md`
 8. `docs/repo-ai-operating-contract.md`
 
-## 10. Related files
+## 11. Related files
 
 - `docs/repo-ai-operating-contract.md`
 - `docs/agent-skills-management.md`

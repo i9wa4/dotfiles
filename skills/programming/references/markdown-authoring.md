@@ -2,7 +2,7 @@
 
 Use this reference for Markdown authoring in this repo.
 
-## Universal Rules
+## 1. Universal Rules
 
 - Do not use emojis.
 - Do not start numbered lists from 0.
@@ -15,12 +15,12 @@ Use this reference for Markdown authoring in this repo.
 | barbaz | Bar baz     | 200   |
 ```
 
-## Japanese Markdown Rules
+## 2. Japanese Markdown Rules
 
 - Do not use bold text.
 - Do not use trailing colons in Japanese headings or labels.
 
-## Verification
+## 3. Verification
 
 - `nix run nixpkgs#rumdl -- check <file>`
 - Focused pre-commit hooks for changed Markdown files.

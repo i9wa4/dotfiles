@@ -14,7 +14,7 @@ worktrees, pane operations, prompt/review contracts, and resume handoff.
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated outputs, or
 replacing repo source of truth.
 
-## Workflow
+## 1. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Open the owner reference for the surface:
@@ -24,7 +24,7 @@ replacing repo source of truth.
 3. Use sibling refs as needed, make the smallest scoped change, run nearest
    checks, and report verification plus remaining risk.
 
-## References
+## 2. References
 
 - [Harness](references/preserved-guidance.md),
   [Claude](references/claude-code.md),

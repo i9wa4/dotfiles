@@ -6,7 +6,7 @@ Humans should edit files here, then rebuild.
 Do not hand-edit `~/.claude/` or `~/.codex/`; those are installed runtime
 artifacts.
 
-## Start Here
+## 1. Start Here
 
 | If you want to change...    | Edit here                                                      | Installed result                                                                   |
 | --------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -24,7 +24,7 @@ artifacts.
 | Codex runtime settings      | `codex/default.nix`                                            | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs          |
 | Top-level package boundary  | `default.nix`                                                  | Imports the agent modules and installs the shared CLI packages                     |
 
-## How Changes Flow
+## 2. How Changes Flow
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
 2. The persona / language / scope contract is delivered through
@@ -47,7 +47,7 @@ artifacts.
 7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
    files during activation.
 
-## Refresh And Verify
+## 3. Refresh And Verify
 
 | Goal                        | Command                                                   |
 | --------------------------- | --------------------------------------------------------- |
@@ -58,7 +58,7 @@ artifacts.
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-p' --impure` |
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-w' --impure` |
 
-## Authoring Notes
+## 4. Authoring Notes
 
 - Keep reviewer agent prompt bodies and runtime metadata in `subagents/`. Do
   not hand-author or track generated Claude Markdown or Codex TOML copies.
@@ -70,7 +70,7 @@ artifacts.
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
   is recorded.
 
-## Rule Of Thumb
+## 5. Rule Of Thumb
 
 - If you are changing prompt wording, start with the markdown source files.
 - If you are changing hook behavior, runtime settings, or install targets, edit

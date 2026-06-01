@@ -3,7 +3,7 @@
 Use this reference for Mermaid diagrams in Quarto revealjs `.qmd` files and for
 Mermaid CLI preview.
 
-## mmdc And revealjs Differences
+## 1. mmdc And revealjs Differences
 
 `%%{init}%%` `themeVariables` can work in `mmdc` output but be overridden by
 revealjs CSS at render time. Quarto revealjs injects Mermaid CSS variables
@@ -17,7 +17,7 @@ Important variables:
 | `--mermaid-label-fg-color` | actor names            | `#2a76dd`     |
 | `--mermaid-node-fg-color`  | alt/else labels        | `#000`        |
 
-## revealjs Text Color Fix
+## 2. revealjs Text Color Fix
 
 Prefer overriding the CSS variables at `:root` in the Quarto
 `include-in-header` block:
@@ -34,7 +34,7 @@ Do not rely only on `.mermaid text { fill: #000000 !important; }` for revealjs
 slides, because Mermaid is rendered client-side and CSS variables take
 precedence.
 
-## sequenceDiagram Tips
+## 3. sequenceDiagram Tips
 
 Use `mirrorActors: false` to hide duplicate bottom actors when space matters:
 
@@ -45,7 +45,7 @@ Use `mirrorActors: false` to hide duplicate bottom actors when space matters:
 About 20 content lines fit on a 1920x1080 revealjs slide with
 `scrollable: true` before readability suffers.
 
-## Mermaid CLI Preview
+## 4. Mermaid CLI Preview
 
 Run Mermaid CLI through the local Nix/comma workflow:
 
@@ -56,7 +56,7 @@ Run Mermaid CLI through the local Nix/comma workflow:
 When a system Chrome path is required, set `PUPPETEER_EXECUTABLE_PATH` for that
 command. Strip code fence markers before sending content to `mmdc`.
 
-## Layout Checks
+## 5. Layout Checks
 
 Text review of Mermaid source is not enough for layout-sensitive changes.
 Render and inspect dimensions before reporting a diagram fixed.
@@ -68,7 +68,7 @@ so they stack vertically on slides.
 For rendered SVGs, inspect the `viewBox`: a width much larger than height is a
 strong signal that the diagram will overflow or be unreadable.
 
-## revealjs Shape Coloring
+## 6. revealjs Shape Coloring
 
 Useful CSS selectors for sequence diagrams:
 

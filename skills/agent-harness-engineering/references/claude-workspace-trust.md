@@ -14,7 +14,7 @@ were closed by a stale bot without a confirmed fix:
 - `anthropics/claude-code` issue 12100
 - `anthropics/claude-code` issue 13288
 
-## When To Use
+## 1. When To Use
 
 - `PreToolUse` hooks are not firing in interactive mode.
 - Hooks work in `claude -p` mode but not in interactive sessions.
@@ -22,7 +22,7 @@ were closed by a stale bot without a confirmed fix:
 - Claude Code is being set up on a new machine.
 - New projects were added to Claude Code and hooks stopped firing there.
 
-## Fix Procedure
+## 2. Fix Procedure
 
 This mutates local runtime state. Use it only when the task is to repair the
 local Claude Code workspace trust state.
@@ -76,7 +76,7 @@ print(f"Total: {len(projects)} | true: {true_count} | false: {false_count}")
 
 Expected verification result: `false: 0`.
 
-## Important Notes
+## 3. Important Notes
 
 - `$HOME/.claude/.claude.json` is local to each machine. It is not managed by
   this dotfiles repository or Nix.
@@ -85,7 +85,7 @@ Expected verification result: `false: 0`.
 - Running Claude Code sessions must be restarted to pick up the changed trust
   state.
 
-## Diagnosis
+## 4. Diagnosis
 
 If hooks still do not fire after applying the fix:
 

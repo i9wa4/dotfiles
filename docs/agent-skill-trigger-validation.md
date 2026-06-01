@@ -4,7 +4,7 @@ This procedure validates that consolidated Agent Skills still route work to the
 right target skill after compatibility triggers are demoted, merged, or removed.
 It is the release-readiness gate for issue #178.
 
-## Trigger Matrix
+## 1. Trigger Matrix
 
 The canonical trigger cases live in `skills/trigger-validation.json`.
 
@@ -37,7 +37,7 @@ Allowed `result` values are:
 - `fail`: the observed selection did not match and needs a fix,
 - `blocked`: the case could not be executed; record the blocker in `notes`.
 
-## Structural Validation
+## 2. Structural Validation
 
 Run the structural validator before changing trigger cases:
 
@@ -68,7 +68,7 @@ bash scripts/validation/validate-skill-private-content.sh \
 bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
-## Manual Trigger Run
+## 3. Manual Trigger Run
 
 For each `trigger_cases[]` entry:
 
@@ -87,7 +87,7 @@ Compatibility-trigger cases pass when the old trigger selects the consolidated
 target skill, or when the old trigger is pointer-only and clearly routes to the
 same target.
 
-## Manual Catalog Review
+## 4. Manual Catalog Review
 
 When a runtime selector harness is unavailable, a reviewer may record
 `validation_method: "manual_catalog_review"` after checking the current
@@ -98,7 +98,7 @@ Manual catalog review is acceptable only when the reviewed surfaces clearly map
 the prompt to the expected target skill. Cases that rely on another open cleanup
 PR must name that PR in `notes`.
 
-## Release-Readiness Gate
+## 5. Release-Readiness Gate
 
 The pre-commit hook `skill-trigger-matrix-check` runs the strict trigger matrix
 when skills, this procedure, or the trigger-matrix script change. When

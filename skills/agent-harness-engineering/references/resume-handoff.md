@@ -10,7 +10,7 @@ This repo already saves lightweight handoff context through:
 
 Write results so those saved summaries stay readable and useful on reload.
 
-## Handoff Rules
+## 1. Handoff Rules
 
 - If an agent thread ID is known, surface it explicitly.
 - If no thread ID is known, do not invent one.
@@ -20,7 +20,7 @@ Write results so those saved summaries stay readable and useful on reload.
 - Prefer delta prompts for resume turns. Do not restate the full original task
   unless the direction changed materially.
 
-## Recommended Result Fields
+## 2. Recommended Result Fields
 
 - current task
 - status
@@ -29,7 +29,7 @@ Write results so those saved summaries stay readable and useful on reload.
 - verification
 - resume command, when a thread ID is known
 
-## Example Result Shape
+## 3. Example Result Shape
 
 ```text
 current task: tighten the review output contract for worker-side review runs
@@ -40,7 +40,7 @@ verification: git diff --check clean; skill files present under skills/prompt-co
 resume command: resume the saved thread context when supported
 ```
 
-## Example Resume Delta Prompt
+## 4. Example Resume Delta Prompt
 
 ```xml
 <task>
@@ -64,7 +64,7 @@ output from this run.
 </grounding_rules>
 ```
 
-## What Not To Carry Over From The Plugin
+## 5. What Not To Carry Over From The Plugin
 
 - Do not assume plugin-owned broker state
 - Do not assume slash commands or plugin environment variables

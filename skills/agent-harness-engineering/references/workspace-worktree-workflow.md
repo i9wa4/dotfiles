@@ -17,7 +17,7 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 ## 2. Primary Repo Flows
 
-### Issue Implementation Safety
+### 2.1. Issue Implementation Safety
 
 For GitHub issue implementation in this repo:
 
@@ -47,7 +47,7 @@ For GitHub issue implementation in this repo:
 - First publication must use the explicit same-name destination refspec:
   `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 
-### Issue Execution
+### 2.2. Issue Execution
 
 Run `issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
 from the repo.
@@ -111,7 +111,7 @@ shared remote branches such as `main` and `dev` with GitHub rulesets or branch
 protection so direct pushes to those refs are blocked or require the normal
 reviewed path.
 
-### PR Review
+### 2.3. PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
 to:

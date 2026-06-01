@@ -229,9 +229,7 @@
           };
           markdown-formatter = {
             enable = true;
-            entry = "${
-              inputs.markdown-formatter.packages.${system}.default
-            }/bin/mdfmt --write";
+            entry = "${inputs.markdown-formatter.packages.${system}.default}/bin/mdfmt --write";
             types = [ "markdown" ];
           };
 

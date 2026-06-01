@@ -20,7 +20,7 @@ verification and handoff in this skill domain.
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.
 
-## Workflow
+## 1. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
@@ -32,17 +32,17 @@ generated runtime outputs, or replacing repo-specific source of truth.
 5. Run the checks named in the preserved guidance or the nearest repo harness.
 6. Report verification results and any remaining risk.
 
-## Examples
+## 2. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 3. References
 
 - [Preserved Guidance](references/preserved-guidance.md)
 - [Brainstorming](references/brainstorming.md)
 
-## Troubleshooting
+## 4. Troubleshooting
 
 If Waza or repo validation disagrees with preserved guidance, follow the
 stricter rule and record the exception in the handoff.

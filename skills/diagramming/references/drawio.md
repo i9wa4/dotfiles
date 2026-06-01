@@ -3,7 +3,7 @@
 Use this reference for native draw.io diagram creation, editing, review, and
 export in this repo.
 
-## Source And Output Rules
+## 1. Source And Output Rules
 
 - Edit `.drawio` source files, not generated exports.
 - Always commit editable `.drawio` sources.
@@ -14,7 +14,7 @@ export in this repo.
 - Use descriptive lowercase filenames with hyphens, such as
   `login-flow.drawio`.
 
-## Output Formats
+## 2. Output Formats
 
 | Format        | Embedded XML | Recommended use                |
 | ------------- | ------------ | ------------------------------ |
@@ -24,7 +24,7 @@ export in this repo.
 | `.drawio.pdf` | Yes          | Review and print               |
 | `.drawio.jpg` | No           | Last-resort lossy export       |
 
-## Font And Canvas Rules
+## 3. Font And Canvas Rules
 
 - For Quarto slides, set `defaultFontFamily="Noto Sans JP"` on
   `mxGraphModel`.
@@ -33,7 +33,7 @@ export in this repo.
 - Keep slide diagrams to one to three accent colors.
 - Include a bottom takeaway bar when the diagram is explanatory.
 
-## XML Rules
+## 4. XML Rules
 
 Every diagram must use native `mxGraphModel` XML with root cells:
 
@@ -56,7 +56,7 @@ Every edge must contain geometry:
 
 Do not use self-closing edge cells.
 
-## Layout Guidance
+## 5. Layout Guidance
 
 - Choose diagram abstraction before drawing: context, system, component,
   deployment, data flow, or sequence.
@@ -68,7 +68,7 @@ Do not use self-closing edge cells.
 - Space nodes generously and prefer orthogonal edges for technical diagrams.
 - Add explicit waypoints when auto-routing overlaps labels or nodes.
 
-## Scripts And Assets
+## 6. Scripts And Assets
 
 The target skill owns the workflow and carries the reusable draw.io helper
 assets:
@@ -86,7 +86,7 @@ assets:
 - SVG overlap check:
   [scripts/check-drawio-svg-overlaps.mjs](../scripts/check-drawio-svg-overlaps.mjs)
 
-## Validation
+## 7. Validation
 
 - Run the conversion hook or script when generated PNGs are part of the target
   workflow.

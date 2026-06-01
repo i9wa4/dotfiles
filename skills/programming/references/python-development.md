@@ -2,7 +2,7 @@
 
 Use this reference for Python utility changes in this repo.
 
-## Rules
+## 1. Rules
 
 - Do not add shebang lines to Python files.
 - Do not set execute permission on Python files.
@@ -10,7 +10,7 @@ Use this reference for Python utility changes in this repo.
 - Prefer the repo's existing dependency and execution pattern over adding a new
   toolchain.
 
-## Environment Selection
+## 2. Environment Selection
 
 - If `uv.lock` exists, use `uv run <command>`.
 - If `poetry.lock` exists, create the virtual environment with `uv` according
@@ -18,7 +18,7 @@ Use this reference for Python utility changes in this repo.
 - If neither lockfile exists, use the local `.venv` when the project provides
   one.
 
-## Verification
+## 3. Verification
 
 - Run the focused unit or script-level command that exercises the changed
   behavior.

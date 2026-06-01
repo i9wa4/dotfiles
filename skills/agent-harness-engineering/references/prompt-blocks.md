@@ -4,7 +4,7 @@ Use these blocks selectively when composing prompts for agents in this repo.
 
 Wrap each block in the XML tag shown in its heading.
 
-## `task`
+## 1. `task`
 
 Use in nearly every prompt.
 
@@ -15,7 +15,7 @@ expected end state.
 </task>
 ```
 
-## `structured_output_contract`
+## 2. `structured_output_contract`
 
 Use when the response shape matters.
 
@@ -27,7 +27,7 @@ Put findings, decisions, or blockers first.
 </structured_output_contract>
 ```
 
-## `compact_output_contract`
+## 3. `compact_output_contract`
 
 Use when concise prose is enough.
 
@@ -38,7 +38,7 @@ Do not add scene-setting, repeated recap, or filler.
 </compact_output_contract>
 ```
 
-## `default_follow_through_policy`
+## 4. `default_follow_through_policy`
 
 Use when the agent should keep going without routine questions.
 
@@ -50,7 +50,7 @@ irreversible action.
 </default_follow_through_policy>
 ```
 
-## `completeness_contract`
+## 5. `completeness_contract`
 
 Use for implementation, debugging, or any task that should not stop early.
 
@@ -62,7 +62,7 @@ Check for follow-on fixes, edge cases, or cleanup needed for a correct result.
 </completeness_contract>
 ```
 
-## `verification_loop`
+## 6. `verification_loop`
 
 Use when correctness matters.
 
@@ -74,7 +74,7 @@ If a check fails, revise the answer instead of reporting the first draft.
 </verification_loop>
 ```
 
-## `missing_context_gating`
+## 7. `missing_context_gating`
 
 Use when guessing would hurt quality.
 
@@ -86,7 +86,7 @@ remains unknown.
 </missing_context_gating>
 ```
 
-## `grounding_rules`
+## 8. `grounding_rules`
 
 Use for review, research, or diagnosis.
 
@@ -98,7 +98,7 @@ If a point is a hypothesis, label it clearly.
 </grounding_rules>
 ```
 
-## `citation_rules`
+## 9. `citation_rules`
 
 Use when source traceability matters.
 
@@ -110,7 +110,7 @@ Prefer primary sources.
 </citation_rules>
 ```
 
-## `action_safety`
+## 10. `action_safety`
 
 Use for write-capable or potentially broad tasks.
 
@@ -123,7 +123,7 @@ Call out any risky or irreversible action before taking it.
 </action_safety>
 ```
 
-## `tool_persistence_rules`
+## 11. `tool_persistence_rules`
 
 Use for long-running, tool-heavy tasks.
 
@@ -135,7 +135,7 @@ would change the answer.
 </tool_persistence_rules>
 ```
 
-## `research_mode`
+## 12. `research_mode`
 
 Use for comparisons, recommendations, or exploratory work.
 
@@ -147,7 +147,7 @@ recommendation.
 </research_mode>
 ```
 
-## `dig_deeper_nudge`
+## 13. `dig_deeper_nudge`
 
 Use for review and adversarial inspection.
 
@@ -159,7 +159,7 @@ finalizing.
 </dig_deeper_nudge>
 ```
 
-## `progress_updates`
+## 14. `progress_updates`
 
 Use when the run may take a while.
 
