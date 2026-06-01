@@ -61,19 +61,6 @@ target_groups:
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
 
-retired_skill_surfaces:
-  - name: agent-skill-management
-    previous_path: skills/agent-skill-management
-    previous_docs_pointer: docs/agent-skill-management.md
-    action: removed_duplicate_surface
-    issue: 206
-    canonical_name: agent-skills-management
-    canonical_path: skills/agent-skills-management
-    canonical_docs_pointer: docs/agent-skills-management.md
-    duplicate_reference_removed: references/waza-publishing.md
-    rationale: >
-      The singular surface duplicated the plural Agent Skills management skill.
-      The plural `agent-skills-management` name is the canonical release target.
 private_content_scan:
   required_before:
     - moving skill content
@@ -166,23 +153,6 @@ skills:
     standalone_decision: demoted_to_trigger
     personal_content_action: scanned_migrated_surfaces
     validation_expectations: *common_validation
-
-  - name: orchestrator
-    path: skills/orchestrator
-    publish: false
-    scope: postman-role-contract
-    action: delete_role_only_skill
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: removed_before_release
-    owner_surface: config/tmux-a2a-postman/postman.md
-    runbook_surface: skills/agent-harness-engineering/references/orchestrator-runbook.md
-    standalone_decision: deleted_role_only_skill
-    personal_content_action: scanned_migrated_surfaces
-    validation_expectations:
-      - verify postman.md owns role identity and live coordination
-      - verify detailed runbooks move to agent-harness-engineering references
-      - verify no standalone orchestrator target remains before release
 
   - name: prompt-contracts-local
     path: skills/prompt-contracts-local

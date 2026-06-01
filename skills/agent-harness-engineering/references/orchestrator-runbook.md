@@ -18,8 +18,8 @@ auditing whether orchestration details still belong in the live template.
   `skills/agent-harness-engineering/references/`.
 - Use `durable-task-tracking` for task artifact setup and preservation
   mechanics. Cite the same artifact in worker, review, and completion traffic.
-- Do not restore a standalone role-only `skills/orchestrator/` skill unless the
-  live postman role no longer carries enough contract to operate safely.
+- Do not restore a standalone role-only orchestrator skill unless the live
+  postman role no longer carries enough contract to operate safely.
 
 ## 2. Runtime Reference Boundary
 
