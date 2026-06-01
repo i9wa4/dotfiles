@@ -55,7 +55,7 @@ Reachability is strict:
 - `critic` talks only to `guardian`.
 - `guardian` receives review requests from `orchestrator`, sends review
   packages to `critic`, receives critic recommendations, and relays the
-  guardian-owned verdict to `orchestrator`.
+  guardian verdict to `orchestrator`.
 - `worker` and `worker-alt` report to `orchestrator`.
 - `boss` gives final approval to `orchestrator`.
 
@@ -75,7 +75,7 @@ Approval requires all of these conditions:
 - guardian completed first review and sent evidence to critic;
 - critic returned an approval recommendation to guardian with no remaining
   blocking defects;
-- guardian relayed a guardian-owned verdict to orchestrator;
+- guardian relayed a guardian verdict to orchestrator;
 - boss approved after guardian approval considered critic's recommendation;
 - orchestrator has no pending review cycle before sending `DONE:` onward.
 

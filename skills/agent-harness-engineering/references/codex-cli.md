@@ -510,7 +510,7 @@ this runbook.
 ### 9.2. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`; dotfiles-owned skills flow through the
+  `config/tmux-a2a-postman/postman.md`; applicable skills flow through the
   generated `skill_path` catalog, while catch-all repo background lives in docs
 - [x] skills/ symlinked to Claude Code skills
 - [x] Shared Bash command-deny policy enforced through the Codex

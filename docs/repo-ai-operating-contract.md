@@ -222,7 +222,7 @@ This file maps the installed shared agent surface from
 
 The `subagent-review` skill is hand-authored under
 `skills/subagent-review/SKILL.md` and installed through the same local skill
-pipeline as other dotfiles-owned skills. That is how the repo keeps native
+pipeline as other applicable skills. That is how the repo keeps native
 reviewer agents and review guidance synchronized without a generated
 dispatcher.
 
@@ -365,7 +365,7 @@ Reachability is strict:
   `boss`, and auxiliary `agent`
 - `critic` talks only to `guardian`
 - `guardian` receives from `orchestrator`, sends review results to `critic`,
-  receives critic's recommendation, and relays the guardian-owned verdict to
+  receives critic's recommendation, and relays the guardian verdict to
   `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
@@ -403,7 +403,7 @@ An approval-lane pass means all of the following are true:
 - guardian completed first review and sent evidence to critic
 - critic returned an `APPROVED:` recommendation to guardian with no remaining
   BLOCKING defects
-- guardian relayed the guardian-owned verdict to orchestrator
+- guardian relayed the guardian verdict to orchestrator
 - boss approves after guardian approval with critic recommendation considered
 - orchestrator has no pending review cycle before sending `DONE:` onward
 

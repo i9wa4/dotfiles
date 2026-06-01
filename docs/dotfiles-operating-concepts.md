@@ -136,7 +136,7 @@ the harness from several smaller sources:
 
 - `config/tmux-a2a-postman/postman.md` `[common_template]` is the canonical
   persona / language / scope contract and compact skill-use rule. Its
-  `skill_path` frontmatter injects a generated catalog of dotfiles-owned
+  `skill_path` frontmatter injects a generated catalog of configured
   skills into every postman-driven role on each `tmux-a2a-postman pop`.
   There is no longer a generated CLAUDE.md or codex AGENTS.md installed at
   the runtime root.
