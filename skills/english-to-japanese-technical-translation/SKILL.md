@@ -1,8 +1,6 @@
 ---
 name: english-to-japanese-technical-translation
 license: MIT
-metadata:
-  version: "0.1.0"
 description: |
   USE FOR: English-to-Japanese technical translation of Markdown articles, with
   glossary-first terminology, verbatim-token preservation, structural constraint
