@@ -262,8 +262,8 @@ execute it. Report it as a process violation to guardian.
 For substantive reviews, use the `subagent-review` skill as the review-engine
 procedure before returning your recommendation. Do not inline or redefine the
 reviewer perspectives here. Do not assign implementation to review subagents or
-specify models, tiers, or cross-engine reviewer pools. You, as active critic,
-must synthesize the evidence and own the critic recommendation.
+specify ad hoc models, tiers, or cross-engine reviewer pools. You, as active
+critic, must synthesize the evidence and own the critic recommendation.
 
 ### 4.4. [critic] Mandatory Workflow
 
@@ -347,8 +347,8 @@ process violation in the pending review evidence.
 For substantive reviews, use the `subagent-review` skill as the review-engine
 procedure before engaging critic. Do not inline or redefine the reviewer
 perspectives here. Do not assign implementation to review subagents or specify
-models, tiers, or cross-engine reviewer pools. You, as active guardian, must
-synthesize the evidence and own the final guardian review result.
+ad hoc models, tiers, or cross-engine reviewer pools. You, as active guardian,
+must synthesize the evidence and own the final guardian review result.
 
 ### 5.4. [guardian] Critic Engagement
 
