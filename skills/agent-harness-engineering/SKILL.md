@@ -2,14 +2,15 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  USE FOR: Dotfiles agent harness work including Claude/Codex config, Nix/HM hooks, MCP, skill installation, postman routing, workspace/worktree operations, prompt contracts, reviews, and resume handoff.
+  USE FOR: Dotfiles agent harness work including Claude/Codex config, Nix/HM hooks, MCP, skill installation, postman routing, workspace/worktree operations, pane target validation, prompt contracts, reviews, and resume handoff.
 ---
 
 # Agent Harness Engineering
 
 **USE FOR:** Dotfiles agent harness work: Claude/Codex config, Nix/HM hooks,
 MCP, skill installation, postman routing, runbooks, tmux workspaces, issue/PR
-worktrees, pane operations, prompt/review contracts, and resume handoff.
+worktrees, pane operations including stale target validation, prompt/review
+contracts, and resume handoff.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated outputs, or
 replacing repo source of truth.

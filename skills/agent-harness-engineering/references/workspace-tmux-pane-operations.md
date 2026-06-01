@@ -5,7 +5,31 @@ Migrated from `skills/tmux/SKILL.md`.
 
 ## 1. Basic Commands
 
-### 1.1. Send Commands to Another Pane
+### 1.1. Validate Target Pane Before Inspection Or Control
+
+```bash
+tmux display-message -t %N -p '#{session_name}:#{window_index}.#{pane_index} #{pane_id} #{pane_title} #{pane_current_command} #{pane_current_path}'
+```
+
+If the pane id came from a user request, archived mail, status output, or any
+other prior observation, validate the exact id before interpreting content or
+sending keys.
+
+When tmux reports `can't find pane: %N`:
+
+- Record the missing pane as stale target evidence.
+- Capture the live inventory:
+
+  ```bash
+  tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index} #{pane_id} title=#{pane_title} cmd=#{pane_current_command} path=#{pane_current_path}'
+  ```
+
+- Do not substitute a same-title, same-role, or same-path pane unless the task
+  explicitly asks for the current equivalent. A missing target can prove stale
+  pane state, but it cannot prove anything about the missing pane's screen
+  contents.
+
+### 1.2. Send Commands to Another Pane
 
 ```bash
 tmux send-keys -t %N "command" Enter
@@ -22,7 +46,7 @@ IMPORTANT: When sending multiple commands consecutively,
 always add `sleep 1` between each send-keys call.
 Without the delay, commands may be dropped or concatenated.
 
-### 1.2. Capture Output from Another Pane
+### 1.3. Capture Output from Another Pane
 
 ```bash
 tmux capture-pane -t %N -p
@@ -31,7 +55,7 @@ tmux capture-pane -t %N -p
 - `-t %N`: Target pane ID
 - `-p`: Print captured content to stdout
 
-### 1.3. Capture Specific Lines
+### 1.4. Capture Specific Lines
 
 ```bash
 # Capture last N lines
