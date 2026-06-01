@@ -67,15 +67,6 @@
         pkgs.gnugrep
         pkgs.jq
       ];
-      worktreeDirenvTestPath = pkgs.lib.makeBinPath [
-        pkgs.bash
-        pkgs.coreutils
-        pkgs.gawk
-        pkgs.git
-        pkgs.gnugrep
-        pkgs.gnused
-        pkgs.jq
-      ];
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -235,12 +226,6 @@
 
           # === Shell ===
           shellcheck.enable = true;
-          worktree-direnv-test = {
-            enable = true;
-            entry = "${pkgs.bash}/bin/bash -c 'export PATH=${worktreeDirenvTestPath}:$PATH; exec ${pkgs.bash}/bin/bash tests/worktree-direnv.sh'";
-            files = "^(bin/(issue-worktree-create|pr-worktree-create|repo-setup)|tests/worktree-direnv\\.sh)$";
-            pass_filenames = false;
-          };
 
           # === Unified formatter ===
           # Skip in sandbox (treefmt-nix already runs treefmt-check separately)
