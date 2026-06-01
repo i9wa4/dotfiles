@@ -64,7 +64,7 @@ fi
 context="br:${branch_context}"
 if [ -n "${git_common_dir}" ] && [ "${git_dir}" != "${git_common_dir}" ]; then
   top_level=$(git_readonly rev-parse --show-toplevel 2>/dev/null)
-  worktree_name=$(basename "${top_level}")
+  worktree_name="${top_level##*/}"
   worktree_context="${worktree_name}"
   if [ "${#worktree_context}" -gt 15 ]; then
     worktree_context="${worktree_context:0:12}..."
@@ -79,19 +79,30 @@ fi
 
 # Get git status counts
 status_output=$(git_readonly status --porcelain 2>/dev/null)
-untracked=$(echo "${status_output}" | grep -c "^??" 2>/dev/null)
-staged=$(echo "${status_output}" | grep -c "^[MADRC]" 2>/dev/null)
-unstaged=$(echo "${status_output}" | grep -c "^.[MD]" 2>/dev/null)
+read -r untracked staged unstaged <<EOF
+$(printf '%s\n' "${status_output}" | awk '
+  /^\?\?/ { untracked++; next }
+  /^[MADRC]/ { staged++ }
+  /^.[MD]/ { unstaged++ }
+  END { print untracked + 0, staged + 0, unstaged + 0 }
+')
+EOF
 
-# Get insertions/deletions (single git diff call)
-read -r insertions deletions <<<"$(git_readonly diff --numstat 2>/dev/null | awk '{i+=$1; d+=$2} END {print i+0, d+0}')"
+# Get insertions/deletions only when unstaged modifications can affect output.
+insertions=0
+deletions=0
+if [ "${unstaged}" -gt 0 ]; then
+  read -r insertions deletions <<EOF
+$(git_readonly diff --numstat 2>/dev/null | awk '{i += $1; d += $2} END {print i + 0, d + 0}')
+EOF
+fi
 
 # Get unpushed commits (try upstream, fall back to origin/branch)
 upstream="@{u}"
 if ! git_readonly rev-parse "${upstream}" >/dev/null 2>&1; then
   upstream="origin/${branch}"
 fi
-unpushed=$(git_readonly log "${upstream}..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' ')
+unpushed=$(git_readonly rev-list --count "${upstream}..HEAD" 2>/dev/null || printf '0')
 [ -z "${unpushed}" ] && unpushed=0
 
 # Get commit hash (8 characters)

@@ -213,10 +213,12 @@ If the repo changes a Bash safety policy, this is where it should happen.
 ### 5.2. `shared/install-manifest.nix`
 
 This file maps the installed shared agent surface from
-`subagents/*.md`:
+`subagents/*.md` and `subagents/metadata.nix`:
 
-- Claude installs the committed Markdown files directly
+- Claude receives generated Markdown files under `~/.claude/agents/`
 - Codex receives generated TOML files under `~/.codex/agents/`
+- Both generated surfaces share the same prompt bodies and per-agent runtime
+  metadata
 
 The `subagent-review` skill is hand-authored under
 `skills/subagent-review/SKILL.md` and installed through the same local skill
@@ -228,13 +230,15 @@ dispatcher.
 
 This section is the canonical repo-side specification for the current review
 system. `subagents/*.md` is the native reviewer prompt source of truth,
-while `skills/subagent-review/SKILL.md` describes the public review skill
+`subagents/metadata.nix` is the per-agent runtime metadata source of truth,
+and `skills/subagent-review/SKILL.md` describes the public review skill
 surface.
 
 #### 5.3.1. Canonical components
 
 - `nix/home-manager/agents/shared/install-manifest.nix`
 - `nix/home-manager/agents/subagents/*.md`
+- `nix/home-manager/agents/subagents/metadata.nix`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/claude/default.nix`
 - `nix/home-manager/agents/codex/default.nix`
@@ -247,8 +251,8 @@ The public review skill surface is one hand-authored skill installed into both
 
 - `subagent-review`
 
-It does not accept engine or tier arguments. It documents the normal review
-lane:
+It does not accept engine, model, or tier arguments. It documents the normal
+review lane:
 
 ```text
 orchestrator -> guardian -> critic -> guardian -> orchestrator
@@ -266,11 +270,15 @@ orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
-Agent prompt defaults live in `subagents/*.md`. Claude installs those
-Markdown files directly. Codex TOML is generated from the same Markdown source
-by `shared/install-manifest.nix` and installed into `~/.codex/agents/`.
+Agent prompt bodies live in `subagents/*.md`. Runtime model and effort defaults
+live in `subagents/metadata.nix`. `shared/install-manifest.nix` generates
+Claude Markdown and Codex TOML from those shared sources.
 
-The normal guardian/critic workflow does not expose model or tier selection.
+The normal guardian/critic workflow does not expose ad hoc model or tier
+selection. To change defaults, edit `subagents/metadata.nix`: Claude `model`
+and `effort` are emitted as agent frontmatter, while Codex `model` is emitted
+only when non-null and `modelReasoningEffort` is emitted as
+`model_reasoning_effort`.
 For substantive reviews, the active role defaults to the five native
 perspectives documented by `subagent-review`: security, architecture,
 historian, code, and QA. Guardian uses the five in Codex; critic uses the five
@@ -293,7 +301,7 @@ Current materialization:
 ```
 
 `shared/agent-skills.nix` owns the skill-tree materialization into both
-engines. `claude/default.nix` installs the Claude agent directory under
+engines. `claude/default.nix` installs generated Claude agent Markdown under
 `~/.claude/agents`. `codex/default.nix` installs generated Codex TOML under
 `~/.codex/agents`.
 

@@ -9,7 +9,7 @@ set -o posix
 # Falls back to title-based naming if Claude is not available.
 #
 # Usage:
-#   issue-worktree-create [--allow-direnv] <issue_number> [issue_number2 ...]
+#   issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number> [issue_number2 ...]
 #
 # Dependencies:
 #   - gh (GitHub CLI)
@@ -26,12 +26,16 @@ for cmd in gh jq git; do
   fi
 done
 
-allow_direnv="false"
+direnv_mode="default"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --allow-direnv)
-      allow_direnv="true"
+      direnv_mode="allow"
+      shift
+      ;;
+    --no-allow-direnv)
+      direnv_mode="deny"
       shift
       ;;
     --)
@@ -40,7 +44,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -*)
       echo "Error: unknown option: $1" >&2
-      echo "Usage: $0 [--allow-direnv] <issue_number> [issue_number2 ...]" >&2
+      echo "Usage: $0 [--allow-direnv|--no-allow-direnv] <issue_number> [issue_number2 ...]" >&2
       exit 1
       ;;
     *)
@@ -51,9 +55,9 @@ done
 
 # Check arguments
 if [[ $# -eq 0 ]]; then
-  echo "Usage: $0 [--allow-direnv] <issue_number> [issue_number2 ...]" >&2
+  echo "Usage: $0 [--allow-direnv|--no-allow-direnv] <issue_number> [issue_number2 ...]" >&2
   echo "Example: $0 123" >&2
-  echo "Example: $0 --allow-direnv 123" >&2
+  echo "Example: $0 --no-allow-direnv 123" >&2
   echo "Example: $0 123 456 789" >&2
   exit 1
 fi
@@ -92,6 +96,17 @@ ensure_remote_tracking_branch() {
   fi
 }
 
+same_checkout_path() {
+  local left=$1
+  local right=$2
+  local left_physical
+  local right_physical
+
+  left_physical=$(cd "$left" && pwd -P)
+  right_physical=$(cd "$right" && pwd -P)
+  [[ $left_physical == "$right_physical" ]]
+}
+
 run_repo_setup_for_worktree() {
   local worktree_path=$1
   local allow_envrc=$2
@@ -126,12 +141,6 @@ if [[ "$current_branch" == "main" ]]; then
   git pull --ff-only origin main
 else
   echo "* Keeping local main unchanged while ${current_branch} is checked out"
-fi
-source_git_dir=$(git rev-parse --absolute-git-dir)
-source_common_dir=$(git rev-parse --path-format=absolute --git-common-dir)
-trusted_source_checkout="false"
-if [[ $current_branch == "main" && $source_git_dir == "$source_common_dir" ]]; then
-  trusted_source_checkout="true"
 fi
 echo ""
 
@@ -291,9 +300,10 @@ ${issue_comments}
   if [[ -n $existing_worktree_path ]]; then
     echo "* Worktree already exists: ${worktree_path}"
     echo "* Branch: ${branch_name}"
-    if [[ ${allow_direnv} == "true" ]]; then
+    if [[ ${direnv_mode} == "allow" ]]; then
       run_repo_setup_for_worktree "${worktree_path}" "true" "" "true"
-    elif [[ ${trusted_source_checkout} == "true" ]] &&
+    elif [[ ${direnv_mode} != "deny" ]] &&
+      ! same_checkout_path "${repo_root}" "${worktree_path}" &&
       [[ -f "${repo_root}/.envrc" ]] &&
       [[ -f "${worktree_path}/.envrc" ]] &&
       cmp -s "${repo_root}/.envrc" "${worktree_path}/.envrc"; then
@@ -303,7 +313,13 @@ ${issue_comments}
         "Allowing existing copied source .envrc for issue worktree" \
         "true"
     elif [[ -f "${worktree_path}/.envrc" ]]; then
-      echo "* Existing .envrc not auto-allowed; run repo-setup --allow-direnv after review"
+      if [[ ${direnv_mode} == "deny" ]]; then
+        echo "* Existing .envrc not allowed by request; run repo-setup --allow-direnv after review"
+      elif same_checkout_path "${repo_root}" "${worktree_path}"; then
+        echo "* Existing .envrc from this issue worktree not allowed by default; run repo-setup --allow-direnv after review"
+      else
+        echo "* Existing .envrc differs from source .envrc; run repo-setup --allow-direnv after review"
+      fi
     fi
   else
     echo "* Created worktree: ${worktree_path}"
@@ -320,30 +336,42 @@ ${issue_comments}
         ;;
     esac
 
-    copied_envrc="false"
+    worktree_had_envrc="false"
+    if [[ -f "${worktree_path}/.envrc" ]]; then
+      worktree_had_envrc="true"
+    fi
 
-    # Copy .envrc if it exists
+    copied_envrc="false"
     if [[ -f "${repo_root}/.envrc" ]]; then
-      cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
-      copied_envrc="true"
-      echo "* Copied .envrc to worktree"
+      if [[ ${worktree_had_envrc} == "true" ]]; then
+        echo "* Existing .envrc from issue branch left unchanged"
+      else
+        cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
+        copied_envrc="true"
+        echo "* Copied .envrc to worktree"
+      fi
     fi
 
     allow_envrc="false"
     allow_generated_envrc="true"
     allow_message=""
-    if [[ ${allow_direnv} == "true" ]]; then
+    if [[ ${direnv_mode} == "allow" ]]; then
       allow_envrc="true"
-    elif [[ ${copied_envrc} == "true" && ${trusted_source_checkout} == "true" ]]; then
-      allow_envrc="true"
-      allow_message="Allowing copied source .envrc for issue worktree"
-    elif [[ ${trusted_source_checkout} != "true" ]]; then
+    elif [[ ${direnv_mode} == "deny" ]]; then
       allow_generated_envrc="false"
       if [[ ${copied_envrc} == "true" ]]; then
-        echo "* Copied .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
-      else
-        echo "* Generated .envrc not auto-allowed; run from the main repository checkout or pass --allow-direnv after review"
+        echo "* Copied .envrc not allowed by request; run repo-setup --allow-direnv after review"
+      elif [[ ${worktree_had_envrc} == "true" ]]; then
+        echo "* Existing .envrc from issue branch not allowed by request; run repo-setup --allow-direnv after review"
+      elif [[ -f "${worktree_path}/flake.nix" ]]; then
+        echo "* Generated .envrc not allowed by request; run repo-setup --allow-direnv after review"
       fi
+    elif [[ ${copied_envrc} == "true" ]]; then
+      allow_envrc="true"
+      allow_message="Allowing copied source .envrc for issue worktree"
+    elif [[ ${worktree_had_envrc} == "true" ]]; then
+      allow_generated_envrc="false"
+      echo "* Existing .envrc from issue branch not allowed by default; run repo-setup --allow-direnv after review"
     fi
 
     run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}" "${allow_generated_envrc}"

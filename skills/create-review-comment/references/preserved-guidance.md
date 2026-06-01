@@ -57,7 +57,8 @@ Apply these skills together when available:
      perspectives from `subagent-review` and critic uses the five
      Claude-native perspectives from `subagent-review`: security,
      architecture, historian, code, and QA.
-   - Do not specify subagent models or tiers.
+   - Do not specify ad hoc subagent models or tiers; runtime defaults are
+     configured in `nix/home-manager/agents/subagents/metadata.nix`.
    - Do not use a unified `cc` / `cx` dispatcher fan-out.
    - Treat data and technical research reviewers as explicit additions for
      specialized questions, not replacements for the five default
