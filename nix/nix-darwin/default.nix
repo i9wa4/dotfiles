@@ -129,6 +129,9 @@ in
       upgrade = false;
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
+      extraFlags = [
+        "--force-cleanup"
+      ];
     };
   };
 
