@@ -361,14 +361,16 @@ Approved action only, after the retention policy is known:
 
 ```sh
 nix run '.#switch'
-nix run '.#nix-profile-cleanup' -- --apply
+nix run '.#profile-update'
 nix run '.#gc-roots-delete'
 ```
 
 For normal daily maintenance, prefer the repo's switch/update flow, the
 managed user-profile cleanup surface, and the explicit GC-root delete surface.
-`nix-profile-cleanup` removes manual user-profile entries and preserves Home
-Manager's `home-manager-path` by default. Do not use ad hoc `rm` under `/nix`.
+`switch` removes manual user-profile entries before Home Manager activation,
+and `profile-update` remains as a compatibility cleanup command. Both preserve
+Home Manager's `home-manager-path` by default. Do not use ad hoc `rm` under
+`/nix`.
 
 #### 1.12.7. `/home` Ownership
 

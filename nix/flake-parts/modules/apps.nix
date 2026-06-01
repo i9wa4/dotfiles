@@ -7,6 +7,7 @@
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs and Waza release pins
 #   nix run '.#nix-profile-cleanup' -- remove manual user-profile entries
+#   nix run '.#profile-update' -- compatibility alias for profile cleanup
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
@@ -34,6 +35,11 @@
       nixProfileCleanupScript = ./../../../bin/nix-profile-cleanup;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
+      applyNixProfileCleanup = ''
+        export NIX_PROFILE_CLEANUP_NIX=${nix}
+        export NIX_PROFILE_CLEANUP_JQ=${jq}
+        ${pkgs.bash}/bin/bash ${nixProfileCleanupScript} --apply
+      '';
     in
     {
       apps = {
@@ -44,6 +50,8 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "switch" ''
             set -euo pipefail
+            echo "Removing manual nix profile entries before Home Manager activation"
+            ${applyNixProfileCleanup}
 
             ${
               if isDarwin then
@@ -79,7 +87,7 @@
 
         # What: Remove manually-installed user profile entries after tools move to Home Manager.
         #       Preserves Home Manager's own `home-manager-path` by default.
-        # When: Run after `nix run '.#switch'` so moved tools are already in home.packages.
+        # When: Run directly for review/cleanup; `switch` also applies this first to prevent file conflicts.
         # Example: nix run '.#nix-profile-cleanup' -- --dry-run
         nix-profile-cleanup = {
           type = "app";
@@ -89,6 +97,21 @@
             export NIX_PROFILE_CLEANUP_JQ=${jq}
             exec ${pkgs.bash}/bin/bash ${nixProfileCleanupScript} "$@"
           ''}/bin/nix-profile-cleanup";
+        };
+
+        # What: Backward-compatible command for the old nix-profile install/update flow.
+        #       Profile-managed packages now live in Home Manager, so this applies cleanup instead.
+        # When: Keeps `nix run '.#switch' && nix run '.#profile-update'` working during migration.
+        # Example: nix run '.#profile-update'
+        profile-update = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "profile-update" ''
+            set -euo pipefail
+            echo "profile-update: profile-managed packages moved to Home Manager; cleaning manual profile entries"
+            export NIX_PROFILE_CLEANUP_NIX=${nix}
+            export NIX_PROFILE_CLEANUP_JQ=${jq}
+            exec ${pkgs.bash}/bin/bash ${nixProfileCleanupScript} --apply "$@"
+          ''}/bin/profile-update";
         };
 
         check = {

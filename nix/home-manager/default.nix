@@ -15,15 +15,16 @@ let
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
   nodejsPackage = pkgs.nodejs_24;
+  system = pkgs.stdenv.hostPlatform.system;
 
   # AI agent CLIs from llm-agents.nix flake input
   # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
-  llmAgents = inputs.llm-agents.packages.${pkgs.system};
-  markdownFormatter = inputs.markdown-formatter.packages.${pkgs.system}.default;
-  markdownRemoteViewer = inputs.markdown-remote-viewer.packages.${pkgs.system}.default;
-  tmuxA2aPostman = inputs.tmux-a2a-postman.packages.${pkgs.system}.default;
+  llmAgents = inputs.llm-agents.packages.${system};
+  markdownFormatter = inputs.markdown-formatter.packages.${system}.default;
+  markdownRemoteViewer = inputs.markdown-remote-viewer.packages.${system}.default;
+  tmuxA2aPostman = inputs.tmux-a2a-postman.packages.${system}.default;
   wazaPackage = pkgs.callPackage ../packages/waza.nix {
-    inherit (pkgs) system;
+    inherit system;
   };
 
 in
@@ -115,7 +116,7 @@ in
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
       # ccusage includes Codex usage subcommands.
       # Antigravity exposes the `agy` command.
-      llmAgents.antigravity
+      llmAgents.antigravity-cli
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
