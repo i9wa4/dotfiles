@@ -38,15 +38,13 @@ description, affected node, mitigation, and next step.
 
 Current `edges`, explicit body instructions, health output, and observed send
 results are authoritative. A `status request` requires a reply; a
-`status update` does not unless the body asks for one. For requests that need an
-answer, send with `--reply-required`. For terminal or informational messages,
-use `--no-reply` when useful.
+`status update` does not unless the body asks for one.
 
-Only use `tmux-a2a-postman pop` when you intend to read and archive unread
-mail. After every successful pop, read the complete archived Markdown body
-before handling, routing, replying, deciding status, or deciding no action.
-`messageType: ping`, `replyPolicy: none`, and truncated command output do not
-waive this requirement. Do not move runtime mailbox files manually.
+- For first-contact or initial sends, use `postman-send-message`.
+- For inbox reads, waits, exact replies, blocked/stale/dead-letter state, pane
+  hints, and post-send state, use `postman-session-operator`.
+- When sending, use `--reply-required` only when the reply needs an answer.
+- Do not move runtime mailbox files manually.
 
 ### 2.2. Authority Boundaries
 
@@ -67,21 +65,10 @@ waive this requirement. Do not move runtime mailbox files manually.
 
 Use live status plus direct send/reply evidence before declaring delivery
 blocked. Do not treat quiet panes, unread mail, `composing`, or `user_input`
-alone as failure.
-
-Timing thresholds:
-
-- shared missing-response alert: 180s / 3m
-- worker and worker-alt idle boundary: 900s / 15m
-- critic, guardian, messenger, and orchestrator idle boundary: 1800s / 30m
-- boss idle boundary: 3600s / 60m
-
-Below 180s / 3m, wait. At or after 180s / 3m with no material reply, send one
-short `[WATCHDOG]` request naming the current ask and expected responder. The
-recipient must answer immediately with compact status in the standard field
-order, naming `waiting_on` when applicable. If the watchdog is unanswered and
-the role-specific idle boundary is crossed, report `BLOCKED:` with the missing
-node and latest delivery evidence instead of bypassing the route.
+alone as failure. At the current message's watchdog boundary, use
+`postman-session-operator`; send at most one compact `[WATCHDOG]` request
+naming the current ask and expected responder. Report `BLOCKED:` only when
+route evidence and the current boundary justify it.
 
 ### 2.4. Signal Vocabulary
 
