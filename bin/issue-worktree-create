@@ -96,6 +96,17 @@ ensure_remote_tracking_branch() {
   fi
 }
 
+same_checkout_path() {
+  local left=$1
+  local right=$2
+  local left_physical
+  local right_physical
+
+  left_physical=$(cd "$left" && pwd -P)
+  right_physical=$(cd "$right" && pwd -P)
+  [[ $left_physical == "$right_physical" ]]
+}
+
 run_repo_setup_for_worktree() {
   local worktree_path=$1
   local allow_envrc=$2
@@ -292,6 +303,7 @@ ${issue_comments}
     if [[ ${direnv_mode} == "allow" ]]; then
       run_repo_setup_for_worktree "${worktree_path}" "true" "" "true"
     elif [[ ${direnv_mode} != "deny" ]] &&
+      ! same_checkout_path "${repo_root}" "${worktree_path}" &&
       [[ -f "${repo_root}/.envrc" ]] &&
       [[ -f "${worktree_path}/.envrc" ]] &&
       cmp -s "${repo_root}/.envrc" "${worktree_path}/.envrc"; then
@@ -303,6 +315,8 @@ ${issue_comments}
     elif [[ -f "${worktree_path}/.envrc" ]]; then
       if [[ ${direnv_mode} == "deny" ]]; then
         echo "* Existing .envrc not allowed by request; run repo-setup --allow-direnv after review"
+      elif same_checkout_path "${repo_root}" "${worktree_path}"; then
+        echo "* Existing .envrc from this issue worktree not allowed by default; run repo-setup --allow-direnv after review"
       else
         echo "* Existing .envrc differs from source .envrc; run repo-setup --allow-direnv after review"
       fi
@@ -329,9 +343,13 @@ ${issue_comments}
 
     copied_envrc="false"
     if [[ -f "${repo_root}/.envrc" ]]; then
-      cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
-      copied_envrc="true"
-      echo "* Copied .envrc to worktree"
+      if [[ ${worktree_had_envrc} == "true" ]]; then
+        echo "* Existing .envrc from issue branch left unchanged"
+      else
+        cp "${repo_root}/.envrc" "${worktree_path}/.envrc"
+        copied_envrc="true"
+        echo "* Copied .envrc to worktree"
+      fi
     fi
 
     allow_envrc="false"
