@@ -4,7 +4,8 @@ This document captures the design principles that govern how Codex CLI and
 Claude Code are configured in this repo. They are prescriptive — they
 describe how new agent configuration should be authored — and they
 complement, not replace, the descriptive operating model in
-`docs/dotfiles-operating-concepts.md`.
+`docs/dotfiles-operating-concepts.md`. For command approval, sandbox, and
+writable-surface boundaries, see `docs/agent-command-approval-design.md`.
 
 ## 1. The Three Principles
 
