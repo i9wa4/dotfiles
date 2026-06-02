@@ -209,7 +209,7 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 Last reviewed Codex CLI version: v0.135.0 (2026-05-31)
 
-### Temporary WAL Bloat Runbook (2026-05)
+### 9.1. Temporary WAL Bloat Runbook (2026-05)
 
 This note is temporary. Revisit it after the local Codex CLI version moves past
 v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
@@ -218,12 +218,12 @@ workaround is no longer needed.
 
 The automated mitigation in this repo is a 30-minute checkpoint timer plus a
 10-minute pressure-relief timer; see
-[Automated Mitigation](#automated-mitigation-this-repo) below. The runbook
+[Automated Mitigation](#914-automated-mitigation-this-repo) below. The runbook
 below is the manual fallback for one-time recovery (e.g. when the timer has
 been disabled or when truncate has been blocked by `busy=1` and the WAL has
 grown beyond what the pressure-relief timer can reclaim in a single pass).
 
-#### What we know so far
+#### 9.1.1. What we know so far
 
 - Codex CLI 0.128.0 appears affected by Codex logs WAL bloat.
 - Local observed symptom on 2026-05-07: root/home was 98% used,
@@ -260,7 +260,7 @@ grown beyond what the pressure-relief timer can reclaim in a single pass).
   (no data loss, just no shrink that round). The automated timer below
   relies on this property.
 
-#### Symptoms and diagnosis
+#### 9.1.2. Symptoms and diagnosis
 
 Use read-only checks first:
 
@@ -285,7 +285,7 @@ Interpretation:
 - Track Codex sessions separately; pruning sessions is not the fix for
   this WAL issue.
 
-#### Countermeasures and safe mitigation
+#### 9.1.3. Countermeasures and safe mitigation
 
 Only run SQLite writes during a coordinated quiet period when all protected
 Codex roles have stopped or released the DB. If another agent is active, ask
@@ -379,7 +379,7 @@ Rollback/testing notes:
   DB boundary; it is a poor long-term pin because of feature and model metadata
   drift. `gpt-5.5` support was first checked as stable around 0.125.0.
 
-#### Automated Mitigation (this repo)
+#### 9.1.4. Automated Mitigation (this repo)
 
 A periodic `PRAGMA wal_checkpoint(TRUNCATE)` is wired into the Nix-managed
 agent harness in `nix/home-manager/agents/codex/default.nix`. It treats the
@@ -463,7 +463,7 @@ addresses the issues tracked in the table below; the timer can stay as
 defense-in-depth even after the upstream fix lands, but its observed
 busy/checkpointed ratio is the signal for whether it remains needed.
 
-#### Things not to do
+#### 9.1.5. Things not to do
 
 - Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand for
   routine cleanup. Use `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer
@@ -479,7 +479,7 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 - Do not claim PRs are confirmed fixes unless upstream says so and local
   verification supports it.
 
-#### Issue and PR tracking
+#### 9.1.6. Issue and PR tracking
 
 Last checked 2026-05-31 with `gh issue view`, `gh pr view`, and
 `gh api repos/openai/codex/releases`. Local version: `codex-cli 0.135.0`.
@@ -507,10 +507,10 @@ When revisiting, check the local version with `codex --version`, scan release
 notes up to that version, and re-check the issue/PR statuses before changing
 this runbook.
 
-### 9.1. Applied Optimizations
+### 9.2. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`; dotfiles-owned skills flow through the
+  `config/tmux-a2a-postman/postman.md`; applicable skills flow through the
   generated `skill_path` catalog, while catch-all repo background lives in docs
 - [x] skills/ symlinked to Claude Code skills
 - [x] Shared Bash command-deny policy enforced through the Codex
@@ -568,7 +568,7 @@ this runbook.
   Cross-platform: `systemd.user` timer on Linux,
   `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
   `isDarwin`. Symptom containment, not an upstream fix; see
-  [Automated Mitigation](#automated-mitigation-this-repo) for inspection
+  [Automated Mitigation](#914-automated-mitigation-this-repo) for inspection
   commands.
 - [x] Linux `codex-storage-pressure-relief.timer` added 2026-05-09 after a
   full-disk incident where `logs_2.sqlite-wal` reached about 37 GB and
@@ -578,7 +578,7 @@ this runbook.
   fully-checkpointed WAL to zero after logging holder PIDs. The managed policy
   is storage relief only: process lifecycle stays outside the timer.
 
-### 9.2. Pending Considerations
+### 9.3. Pending Considerations
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
@@ -618,7 +618,7 @@ this runbook.
   script should land as a runtime-agnostic shared script (no prefix)
   with a runtime-arg shim, not as a fresh `codex-stop-save.sh` fork.
 
-### 9.3. Not Adopting
+### 9.4. Not Adopting
 
 - `personality` setting - keep default ("friendly"); no benefit from changing
 - `log_dir` config - default log location is fine
@@ -645,7 +645,7 @@ this runbook.
 - `profile-v2` layered configs - generated Codex config remains the single
   managed base plus preserved project trust/hook state
 
-### 9.4. Version Notes
+### 9.5. Version Notes
 
 - v0.135.0 (2026-05-28): Reviewed release notes on 2026-05-31 after local
   `codex --version` reported `codex-cli 0.135.0`; upstream marked this as the

@@ -6,7 +6,7 @@ an operational record, not a replacement for source changes or tests.
 
 Use `mkmd` as the local implementation for these artifacts.
 
-## Choosing A Directory Label
+## 1. Choosing A Directory Label
 
 Use the `--dir` value as an `mkmd` directory label. It is not a repo-local
 directory to create by hand.
@@ -23,7 +23,7 @@ Prefer the narrowest label that matches the work. For implementation tasks that
 already have a supplied markdown path, preserve that path instead of creating a
 new one.
 
-## Creating A Tracker
+## 2. Creating A Tracker
 
 Create a new artifact before deep work only when no canonical markdown path was
 provided.
@@ -41,7 +41,7 @@ Use the absolute path returned by `mkmd`. It should live under
 artifacts unless the user explicitly provided that repo path as the original
 checklist.
 
-## Preserving The Original Checklist
+## 3. Preserving The Original Checklist
 
 When a user, orchestrator, or reviewer supplies a markdown path, treat that file
 as the canonical original checklist:
@@ -55,7 +55,7 @@ as the canonical original checklist:
 If the task has no explicit checklist, create one from the assigned success
 checks before implementation begins.
 
-## Recommended Artifact Shape
+## 4. Recommended Artifact Shape
 
 Use headings like these. Keep the artifact compact, but make the evidence
 sufficient for resume and review.
@@ -101,7 +101,7 @@ One paragraph describing the requested outcome.
 - Original checklist: PASS/BLOCKED.
 ```
 
-## Progress And Evidence Logs
+## 5. Progress And Evidence Logs
 
 Log the facts another node needs to resume:
 
@@ -115,7 +115,7 @@ Log the facts another node needs to resume:
 Use checkboxes for milestones and verification items. Do not mark a checkbox
 complete until there is evidence in the artifact or source tree.
 
-## Handoff And Resume
+## 6. Handoff And Resume
 
 For handoff or compaction, add:
 
@@ -129,7 +129,7 @@ For handoff or compaction, add:
 For resumed work, read the artifact before acting. Continue the same evidence
 log rather than reconstructing history from memory.
 
-## DONE And BLOCKED Verification
+## 7. DONE And BLOCKED Verification
 
 DONE requires:
 
@@ -149,13 +149,13 @@ BLOCKED requires:
 Do not report DONE because code was edited. Report DONE only when the artifact
 proves the original checklist passed.
 
-## Public Surface Hygiene
+## 8. Public Surface Hygiene
 
 Local absolute artifact paths are fine in internal chat, mailbox traffic, and
 local task artifacts. Public GitHub surfaces such as commits, issues, PRs, and
 reviews should use repo-relative paths or stable URLs.
 
-## Common Mistakes
+## 9. Common Mistakes
 
 - Creating a repo-local `plans/` or `research/` file instead of using `mkmd`.
 - Creating multiple trackers after a markdown path was already supplied.

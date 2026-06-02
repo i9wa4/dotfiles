@@ -77,7 +77,7 @@ Concrete examples already in the repo:
   authoritative location for the persona / language / scope contract
   and the compact skill-use rule; delivered to every postman role on each
   `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
-  for dotfiles-owned skills only. There is no longer a generated CLAUDE.md or
+  for configured skills. There is no longer a generated CLAUDE.md or
   codex AGENTS.md installed at the runtime root.
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.

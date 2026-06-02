@@ -21,7 +21,7 @@ false-positive triage; and Japanese/English mixed-document caveats.
 **DO NOT USE FOR:** AI detector or humanizer workflows, content generation,
 rewriting that changes technical meaning, or replacing author judgment.
 
-## Workflow
+## 1. Workflow
 
 1. Decide which quality pass the situation needs before running tools.
 2. Use Vale for technical-document style, terminology, repeated words, and
@@ -33,12 +33,12 @@ rewriting that changes technical meaning, or replacing author judgment.
 5. Log false positives and vocabulary gaps so the repository can later tune Vale
    rules or a Harper dictionary before any CI enforcement.
 
-## Details
+## 2. Details
 
 Read [Vale And Harper](references/vale-and-harper.md) for commands, examples,
 interpretation guidance, mixed Japanese/English caveats, and non-goals.
 
-## Troubleshooting
+## 3. Troubleshooting
 
 If Vale says its configuration is missing, verify Home Manager has linked
 `~/.vale.ini` from `config/vale/.vale.ini`, or pass `--config ~/.vale.ini`.

@@ -169,9 +169,10 @@ Both scripts:
   already provide one, including for non-Nix repositories
 - Run `repo-setup` if available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees allow copied source-checkout `.envrc` files by default. If no
-  `.envrc` exists and the worktree has `flake.nix`, default setup lets
-  `repo-setup` create and allow the generated `use flake` fallback; use
+  worktrees allow copied source-checkout `.envrc` files by default and evaluate
+  them once with `direnv exec <worktree-root> true`. If no `.envrc` exists and
+  the worktree has `flake.nix`, default setup lets `repo-setup` create, allow,
+  and evaluate the generated `use flake` fallback once; use
   `issue-worktree-create --no-allow-direnv` to opt out. Issue-branch-provided
   `.envrc` files are left unchanged and not allowed by default; review and run
   `repo-setup --allow-direnv` manually or pass `--allow-direnv` explicitly.
@@ -181,9 +182,11 @@ Both scripts:
   explicitly after review. Re-running from inside the issue worktree itself does
   not make that branch-owned `.envrc` trusted. PR review worktrees preserve the
   trust gate by creating the generated `.envrc` without allowing it unless
-  `pr-worktree-create --allow-direnv` is used after review. If Nix or devshell
-  setup fails, `repo-setup` warns and continues; re-run `repo-setup` or enter
-  the devshell before pushing.
+  `pr-worktree-create --allow-direnv` is used after review. When `.envrc` is
+  explicitly allowed, `repo-setup` evaluates it once with
+  `direnv exec <worktree-root> true`. If the one-shot direnv load, Nix, or
+  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
+  or enter the devshell before pushing.
 - Register path with `zoxide add "$worktree_path"` as the last step
 
 Issue worktrees use the issue branch name as the worktree directory name.

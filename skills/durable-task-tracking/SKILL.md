@@ -22,7 +22,7 @@ notes, and verifying DONE/BLOCKED reports against actual evidence.
 **DO NOT USE FOR:** Live postman routing, mailbox operation, GitHub publication
 mechanics, or simple single-step work that has no durable tracking need.
 
-## Workflow
+## 1. Workflow
 
 1. Decide whether the situation needs durable tracking: multi-step work,
    multi-node coordination, review rounds, handoff/resume, or a completion gate
@@ -34,13 +34,13 @@ mechanics, or simple single-step work that has no durable tracking need.
 5. Before reporting DONE or BLOCKED, compare the artifact's original checklist
    with actual evidence and name the artifact path in the report.
 
-## Details
+## 2. Details
 
 Read [Task Artifact Method](references/task-artifact-method.md) for directory
 choices, `mkmd` command examples, tracker skeletons, handoff/resume fields,
 DONE/BLOCKED verification, and common mistakes.
 
-## Troubleshooting
+## 3. Troubleshooting
 
 If an existing artifact path conflicts with a newly created one, keep the
 provided path as canonical and note the duplicate as a mistake in the evidence

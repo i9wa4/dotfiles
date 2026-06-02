@@ -35,17 +35,20 @@ The workflow has five recurring phases:
    and generated per-worktree pre-commit config. Newly created issue worktrees
    allow copied source-checkout `.envrc` files by default. If no `.envrc` exists
    and the worktree has `flake.nix`, default setup lets `repo-setup` create and
-   allow the generated `use flake` fallback. Re-running the issue command
-   remediates an existing issue worktree only when invoked from a distinct
-   source checkout and that worktree `.envrc` still matches the source checkout
-   file, unless the caller explicitly passes `--allow-direnv` after review. Use
+   allow the generated `use flake` fallback. Whenever `repo-setup` allows a
+   trusted `.envrc`, it also evaluates it once with
+   `direnv exec <worktree-root> true`. Re-running the issue command remediates
+   an existing issue worktree only when invoked from a distinct source checkout
+   and that worktree `.envrc` still matches the source checkout file, unless
+   the caller explicitly passes `--allow-direnv` after review. Use
    `issue-worktree-create --no-allow-direnv` to create an issue worktree
    without allowing `.envrc`. Issue-branch-provided `.envrc` files are left
    unchanged and require explicit review, as do PR review worktrees, because the
    checked-out branch controls `flake.nix`; pass `--allow-direnv` to the
-   creation command only after reviewing the file and branch. If Nix or
-   devshell setup fails, it warns and continues; re-run `repo-setup` or enter
-   the devshell before pushing so `.pre-commit-config.yaml` is generated.
+   creation command only after reviewing the file and branch. If the one-shot
+   direnv load, Nix, or devshell setup fails, it warns and continues; re-run
+   `repo-setup` or enter the devshell before pushing so
+   `.pre-commit-config.yaml` is generated.
 4. Re-enter quickly.
    Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or
    worktree from normal shell use. Inside tmux, re-entry also keeps session
@@ -66,10 +69,10 @@ policy:
 - `.envrc`, devshell hook, and `repo-setup` bootstrap: copy source `.envrc`
   only when the new worktree does not already have one, generate `use flake`
   only as the Nix flake fallback, allow copied or generated issue worktree files
-  by default, keep existing issue worktree remediation limited to matching
-  source `.envrc` files from a distinct checkout, and require explicit review
-  for issue-branch-provided `.envrc`, PR review worktrees, or other pre-existing
-  `.envrc`
+  by default and evaluate allowed files once with `direnv exec`, keep existing
+  issue worktree remediation limited to matching source `.envrc` files from a
+  distinct checkout, and require explicit review for issue-branch-provided
+  `.envrc`, PR review worktrees, or other pre-existing `.envrc`
 - zoxide registration for fast re-entry
 - tmux-aware session naming
 - explicit cleanup checks before removal

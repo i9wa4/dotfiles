@@ -17,7 +17,7 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 
 ## 2. Primary Repo Flows
 
-### Issue Implementation Safety
+### 2.1. Issue Implementation Safety
 
 For GitHub issue implementation in this repo:
 
@@ -47,7 +47,7 @@ For GitHub issue implementation in this repo:
 - First publication must use the explicit same-name destination refspec:
   `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 
-### Issue Execution
+### 2.2. Issue Execution
 
 Run `issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
 from the repo.
@@ -66,9 +66,10 @@ Expect it to:
   did not already provide one, including for non-Nix repositories
 - run `repo-setup` when available to attempt devshell hook installation and
   generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees allow copied source-checkout `.envrc` files by default. If no
-  `.envrc` exists and the worktree has `flake.nix`, default setup lets
-  `repo-setup` create and allow the generated `use flake` fallback. Use
+  worktrees allow copied source-checkout `.envrc` files by default and evaluate
+  them once with `direnv exec <worktree-root> true`. If no `.envrc` exists and
+  the worktree has `flake.nix`, default setup lets `repo-setup` create, allow,
+  and evaluate the generated `use flake` fallback once. Use
   `issue-worktree-create --no-allow-direnv` to create the worktree without
   allowing `.envrc`. If the issue branch already provides `.envrc`, the file is
   left unchanged and default setup does not allow it; review the file and run
@@ -78,9 +79,9 @@ Expect it to:
   worktree `.envrc` still matches that source checkout `.envrc`; otherwise
   review and run `repo-setup --allow-direnv` manually, or pass `--allow-direnv`
   to explicitly allow an existing issue worktree. Re-running from inside the
-  issue worktree itself does not make that branch-owned `.envrc` trusted. If Nix
-  or devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-  or enter the devshell before pushing.
+  issue worktree itself does not make that branch-owned `.envrc` trusted. If the
+  one-shot direnv load, Nix, or devshell setup fails, `repo-setup` warns and
+  continues; re-run `repo-setup` or enter the devshell before pushing.
 
 For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as
@@ -111,7 +112,7 @@ shared remote branches such as `main` and `dev` with GitHub rulesets or branch
 protection so direct pushes to those refs are blocked or require the normal
 reviewed path.
 
-### PR Review
+### 2.3. PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
 to:
@@ -134,8 +135,10 @@ to:
   and the checkout has `flake.nix`, default PR review setup creates
   `use flake` but does not run `direnv allow`; use
   `pr-worktree-create --allow-direnv` only after reviewing the PR branch
-  `.envrc` and `flake.nix`. If Nix or devshell setup fails, `repo-setup` warns
-  and continues; re-run `repo-setup` or enter the devshell before pushing.
+  `.envrc` and `flake.nix`. When `.envrc` is explicitly allowed, `repo-setup`
+  evaluates it once with `direnv exec <worktree-root> true`. If the one-shot
+  direnv load, Nix, or devshell setup fails, `repo-setup` warns and continues;
+  re-run `repo-setup` or enter the devshell before pushing.
 - exit nonzero and avoid the all-ready success message when any requested PR is
   invalid, skipped, refused, or otherwise fails
 

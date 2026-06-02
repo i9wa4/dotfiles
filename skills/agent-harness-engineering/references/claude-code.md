@@ -315,7 +315,7 @@ Last reviewed Claude Code version: v2.1.145 (2026-05-21)
 - [ ] `CLAUDE_CODE_NO_FLICKER=1` env (v2.1.89) - flicker-free alt-screen
   rendering; revisit if rendering glitches observed
 
-#### v2.1.95 → v2.1.121 candidates (added 2026-04-29)
+#### 11.2.1. v2.1.95 → v2.1.121 candidates (added 2026-04-29)
 
 - [ ] `alwaysLoad: true` on hot MCP servers (v2.1.121) - bypass
   `ENABLE_TOOL_SEARCH=auto:3` deferral for frequently-called servers; pick
@@ -340,7 +340,7 @@ Last reviewed Claude Code version: v2.1.145 (2026-05-21)
   `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
   set; new dirs swept automatically
 
-#### v2.1.122 → v2.1.145 candidates (added 2026-05-21)
+#### 11.2.2. v2.1.122 → v2.1.145 candidates (added 2026-05-21)
 
 - [ ] `worktree.baseRef: "head"` setting (v2.1.133) - default reverted to
   `fresh` (origin/<default>). With our `.worktrees/issue-*` workflow we usually

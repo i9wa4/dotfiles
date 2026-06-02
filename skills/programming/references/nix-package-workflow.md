@@ -4,7 +4,7 @@ Use this reference for general Nix package workflow guidance. Agent runtime,
 Home Manager agent config, hooks, and installed outputs belong to
 `agent-harness-engineering`.
 
-## Fetcher Hashes
+## 1. Fetcher Hashes
 
 Use `nurl` when acquiring a Nix fetcher call from a repository URL.
 
@@ -26,7 +26,7 @@ fetchFromGitHub {
 For `cargoHash` or `vendorHash`, use the normal build-error hash replacement
 flow; `nurl` does not provide those hashes.
 
-## Verification
+## 2. Verification
 
 - `nix run nixpkgs#statix -- check <file>`
 - `nix flake check` when the change touches shared Nix modules or build graph

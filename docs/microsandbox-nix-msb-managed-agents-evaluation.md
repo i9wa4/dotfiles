@@ -24,9 +24,9 @@ Sources used:
 - GitHub-hosted runners documentation:
   <https://docs.github.com/en/actions/concepts/runners/github-hosted-runners>
 
-## Source Summary
+## 1. Source Summary
 
-### microsandbox
+### 1.1. microsandbox
 
 Repository-relevant capabilities:
 
@@ -60,7 +60,7 @@ Open questions:
 - What is the exact macOS Apple Silicon support path for this repository when
   the Nix integration below is Linux-oriented?
 
-### nix-msb
+### 1.2. nix-msb
 
 Repository-relevant capabilities:
 
@@ -94,7 +94,7 @@ Open questions:
 - Whether it should live as a direct flake input, a follow-up wrapper flake, or
   only an external command used by a manual proof of concept.
 
-### Managed Agents
+### 1.3. Managed Agents
 
 The useful idea from Anthropic's architecture is not a product dependency. It
 is the separation of responsibilities:
@@ -111,9 +111,9 @@ reviewer agents, and runtime configuration as separate surfaces. A microVM
 should be treated as an execution hand below that harness, not as a replacement
 for the harness.
 
-## Current Repo Surfaces
+## 2. Current Repo Surfaces
 
-### CI
+### 2.1. CI
 
 Current CI lives in `.github/workflows/ci.yaml`:
 
@@ -138,7 +138,7 @@ Possible sandbox insertion points:
   Wrapping the whole job in a nested microVM would add failure modes without a
   clear payoff.
 
-### Nix and Hooks
+### 2.2. Nix and Hooks
 
 Relevant local surfaces:
 
@@ -160,7 +160,7 @@ Possible sandbox insertion points:
 - A follow-up pre-commit or CI check only after startup time and KVM
   availability are measured.
 
-### Agent Harness
+### 2.3. Agent Harness
 
 Relevant local surfaces:
 
@@ -192,11 +192,11 @@ Possible sandbox insertion points:
   Those are session and harness state, and keeping them outside the microVM is
   the design feature.
 
-## Managed-Agent Design Sketch
+## 3. Managed-Agent Design Sketch
 
 The repo should model a possible sandbox integration in three layers.
 
-### Session Layer
+### 3.1. Session Layer
 
 Session state stays on the host:
 
@@ -208,7 +208,7 @@ Session state stays on the host:
 This state should not be mounted into the sandbox except as an explicit,
 read-only task input. The sandbox can be destroyed without losing the session.
 
-### Harness or Brain Layer
+### 3.2. Harness or Brain Layer
 
 The harness stays on the host:
 
@@ -223,7 +223,7 @@ The harness decides when a command is risky enough to run through a sandbox
 wrapper. It also validates the output and records evidence in the durable task
 artifact. The sandbox should not make policy decisions.
 
-### Sandbox or Hand Layer
+### 3.3. Sandbox or Hand Layer
 
 The sandbox receives only what a command needs:
 
@@ -249,7 +249,7 @@ directory and a command. Automatic transparent wrapping should be deferred until
 the explicit proof of concept proves that the boundary is usable and
 understandable.
 
-## Security and Isolation Risks
+## 4. Security and Isolation Risks
 
 | Risk                             | Mitigation or decision                                                                                                                                            |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -264,7 +264,7 @@ understandable.
 | False sense of safety from hooks | Preserve the current docs' stance: Bash denies are guardrails. The microVM is the boundary for subprocess execution, but only for commands actually routed to it. |
 | Cross-platform drift             | Gate any Nix integration by platform. Do not let Linux-only sandbox code break macOS evaluation or normal Home Manager switches.                                  |
 
-## Nix and CI Feasibility
+## 5. Nix and CI Feasibility
 
 Local Linux is the best initial target. A physical Ubuntu 24.04 host or a VM
 with nested virtualization can expose `/dev/kvm`; a proof of concept can fail
@@ -298,7 +298,7 @@ microsandbox runtime will add closure size. The current CI has a five-minute
 timeout, so a required sandbox job would need measured startup and cache-hit
 times before it can be considered.
 
-## Minimal Proof-of-Concept Plan
+## 6. Minimal Proof-of-Concept Plan
 
 Do not change production CI in the proof of concept. Start local-only on Linux.
 
@@ -347,7 +347,7 @@ print only non-secret `/dev/kvm` evidence, and skip or fail with a clear message
 when KVM is unavailable. It should not block the existing required `ci`
 workflow.
 
-## Recommendation
+## 7. Recommendation
 
 Defer production adoption.
 
