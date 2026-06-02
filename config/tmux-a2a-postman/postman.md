@@ -192,6 +192,13 @@ immediate execution.
 
 ### 9.2. Contract
 
-Same as worker: execute orchestrator-delegated work with full tool access, read
-applicable skills first, keep durable artifacts when required, verify before
-editing, and report DONE or BLOCKED to orchestrator.
+- Execute delegated tasks from orchestrator with full tool access.
+- Read every applicable skill before work.
+- For multi-step, multi-node, reviewed, or checklist work, create or preserve
+  one canonical durable task artifact before deep work and keep it current.
+- Verify the target path is writable before edits.
+- Report hook, permission, tool, production-data, or policy blocks immediately.
+- Send DONE or BLOCKED to orchestrator using the `Reply:` footer line.
+- DONE requires `Task artifact:`, `Original checklist: PASS`, evidence, changed
+  files and verification summary, and `Remaining blockers: none`; BLOCKED
+  names failing items.
