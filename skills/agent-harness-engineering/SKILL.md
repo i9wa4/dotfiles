@@ -2,7 +2,7 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  USE FOR: agent harness config/hooks, skill install, postman routing, orchestrator runbooks, worktrees, pane validation, prompt/review contracts, resumes.
+  USE FOR: agent harness config/hooks, postman routing, runbooks, worktrees, panes, prompt/review contracts, resumes; aliases: agent-workspace, prompt-contracts-local.
 ---
 
 # Agent Harness Engineering
@@ -10,7 +10,9 @@ description: |
 **USE FOR:** Dotfiles agent harness work: Claude/Codex config, Nix/HM hooks,
 MCP, skill installation, postman routing, orchestrator role/runbooks, tmux
 workspaces, issue/PR worktrees, pane operations including stale target
-validation, prompt/review contracts, and resume handoff.
+validation, prompt/review contracts, and resume handoff. This includes
+requests that name the former `agent-workspace` or `prompt-contracts-local`
+compatibility triggers.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated outputs, or
 replacing repo source of truth.

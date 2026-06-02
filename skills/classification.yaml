@@ -141,32 +141,6 @@ skills:
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
-  - name: agent-workspace
-    path: skills/agent-workspace
-    publish: false
-    scope: repo-local-agent-harness
-    action: demote_to_compatibility_trigger
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: demoted_compatibility_trigger
-    owner_surface: skills/agent-harness-engineering/references
-    standalone_decision: demoted_to_trigger
-    personal_content_action: scanned_migrated_surfaces
-    validation_expectations: *common_validation
-
-  - name: prompt-contracts-local
-    path: skills/prompt-contracts-local
-    publish: false
-    scope: repo-local-agent-harness
-    action: demote_to_compatibility_trigger
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: demoted_compatibility_trigger
-    owner_surface: skills/agent-harness-engineering/references
-    standalone_decision: demoted_to_trigger
-    personal_content_action: scanned_migrated_surfaces
-    validation_expectations: *common_validation
-
   - name: agent-skills-management
     path: skills/agent-skills-management
     publish: true
