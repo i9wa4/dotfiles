@@ -7,8 +7,8 @@ description: |
 
 # Agent Skills Management
 
-**UTILITY SKILL:** Manage source-owned skills in `skills/`. Keep runtime hooks,
-installed outputs, and engine config in harness/config skills.
+**UTILITY SKILL:** Manage source-owned skills in `skills/`. Keep runtime hooks
+and engine config in harness/config skills.
 
 **USE FOR:** add, edit, rename, or remove `skills/*/SKILL.md`; improve
 frontmatter, trigger descriptions, body structure, `references/`, `scripts/`,
@@ -20,7 +20,7 @@ generated outputs:
 `~/.claude/skills` (private-content-scan: allow; generic output)
 and `~/.codex/skills` (private-content-scan: allow; generic output).
 
-## Workflow
+## 1. Workflow
 
 1. Inspect `skills/`, publish/pre-commit/CI harnesses, the target skill, and
    `git status`.
@@ -36,10 +36,10 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
    and `gh skill publish --tag "$TAG"` for the tag-push release flow.
 6. Verify the changed surface, then report remaining Waza findings.
 
-## Troubleshooting
+## 2. Troubleshooting
 
 If `waza check` exits 0 with `.ready=false`, parse `--format json`; do not treat
 the process exit alone as readiness.
 
-Detailed commands and repo-specific fallbacks live in
+Commands and fallbacks live in
 [Waza and Publishing](references/waza-publishing.md).

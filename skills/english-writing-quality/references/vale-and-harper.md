@@ -9,7 +9,7 @@ so they are available globally after `nix run '.#switch'` or the relevant
 Home Manager/nix-darwin switch. Vale's global config is `~/.vale.ini`, managed
 as an out-of-store symlink from `config/vale/.vale.ini`.
 
-## Choose The Tool
+## 1. Choose The Tool
 
 Use Vale when the question is:
 
@@ -26,7 +26,7 @@ Use Harper when the question is:
 Run both for important README, docs, skill, or user-facing prose changes. For
 small code comments or generated snippets, use judgment and avoid noisy passes.
 
-## Vale Procedure
+## 2. Vale Procedure
 
 Vale is configured minimally in the Home Manager-managed `~/.vale.ini` with
 the built-in `Vale` style. Run it against the files you want to review:
@@ -61,7 +61,7 @@ Keep first custom rules narrow and source-backed. Good early candidates are
 product-name casing, repeated low-value phrases, and procedural wording that
 has clear replacements.
 
-## Harper Procedure
+## 3. Harper Procedure
 
 The nixpkgs package is `pkgs.harper`. It exposes `harper-cli` and `harper-ls`,
 not a `harper` binary.
@@ -93,7 +93,7 @@ harper-ls --stdio
 Start Harper as editor feedback or manual review evidence. Keep it out of
 blocking CI until technical vocabulary and false positives are understood.
 
-## Interpreting Findings
+## 4. Interpreting Findings
 
 For each finding, choose one of three outcomes:
 
@@ -107,7 +107,7 @@ Never rewrite commands, identifiers, product names, file paths, code snippets,
 or API names just to satisfy a prose checker. Prefer a short note in the task
 artifact when a tool finding is intentionally ignored.
 
-## Mixed Japanese And English Docs
+## 5. Mixed Japanese And English Docs
 
 Do not run English grammar advice over Japanese prose and expect useful output.
 For mixed documents:
@@ -122,7 +122,7 @@ For mixed documents:
 Harper has mixed-language support options, but treat them as something to test
 on a small sample before using them broadly.
 
-## AI Detector And Humanizer Non-Goals
+## 6. AI Detector And Humanizer Non-Goals
 
 Do not use AI detectors or humanizers for this workflow. They do not verify
 technical accuracy, terminology, grammar, or house style. They also create bad

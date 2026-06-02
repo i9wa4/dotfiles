@@ -164,7 +164,7 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 1. Send to guardian. Guardian performs the higher-level review, sends its
    review package to critic for a subordinate final-pass recommendation, and
-   relays the guardian-owned verdict back to orchestrator.
+   relays the guardian verdict back to orchestrator.
 2. If guardian rejects, including based on critic's recommendation: revise the
    plan artifact, resubmit to guardian. Repeat until guardian approves after
    the critic-assisted pass.

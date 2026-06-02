@@ -1,6 +1,6 @@
 # Waza and Publishing
 
-## Validation Layers
+## 1. Validation Layers
 
 Keep Waza, prompt evals, quality checks, and GitHub CLI packaging checks as
 separate evidence layers:
@@ -31,7 +31,7 @@ clarity, completeness, trigger precision, scope coverage, and anti-pattern
 feedback, but it is not suitable for default pre-commit unless the invocation
 is deterministic, non-interactive, credential-free, and scoped.
 
-## Waza Loop
+## 2. Waza Loop
 
 Use Waza for every skill-source change when available.
 
@@ -73,7 +73,7 @@ Prioritize Waza findings in this order:
    testing.
 5. Advisory complexity or structure findings when they do not expand the task.
 
-## GitHub CLI Release Validation
+## 3. GitHub CLI Release Validation
 
 Use `gh skill publish --dry-run` for release-flow publishability. In the GitHub
 CLI versions used here, validate-only behavior is exposed through
@@ -101,7 +101,7 @@ gh skill publish --tag "$TAG"
 
 The tag-push release job validates with `--dry-run` before publishing.
 
-## Dotfiles Checks
+## 4. Dotfiles Checks
 
 For source-only skill edits:
 

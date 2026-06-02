@@ -2,7 +2,7 @@
 
 Short reference for vde-layout config resolution and preset structure.
 
-## Config Resolution
+## 1. Config Resolution
 
 - Binary: user-local npm/global package path, commonly
   `$HOME/.local/lib/node_modules/vde-layout/dist/index.mjs`
@@ -11,7 +11,7 @@ Short reference for vde-layout config resolution and preset structure.
 - `$XDG_CONFIG_HOME/vde` is Home Manager-managed; the layout file resolves to
   `dotfiles/config/vde/layout.yml`
 
-## Preset Definitions (layout.yml)
+## 2. Preset Definitions (layout.yml)
 
 | Preset          | Lines  | windowMode     | Panes                                   |
 | --------------- | ------ | -------------- | --------------------------------------- |
@@ -20,7 +20,7 @@ Short reference for vde-layout config resolution and preset structure.
 | messenger-codex | 47-61  | current-window | pane + messenger (codex gpt-5.5 medium) |
 | preset-a        | 63-100 | new-window     | 3x2 grid: guardian before critic        |
 
-## Key Behavioral Notes
+## 3. Key Behavioral Notes
 
 - `${SUBDIR}` in command strings is NOT interpolated by vde-layout — it is
   passed as-is to `tmux send-keys` and expanded by the destination pane's shell

@@ -58,6 +58,12 @@ require_direnv() {
 allow_envrc_with_direnv() {
   require_direnv
   direnv allow "${envrc_path}"
+  if direnv exec "${worktree_root}" true; then
+    echo "* Loaded .envrc with direnv"
+  else
+    echo "Warning: could not load .envrc with direnv; continuing." >&2
+    echo "Warning: re-run repo-setup after fixing .envrc or the devshell." >&2
+  fi
 }
 
 install_dotfiles_devshell_hooks() {

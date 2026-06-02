@@ -10,19 +10,19 @@ description: |
 Compatibility trigger for draw.io-specific diagram tasks. The durable
 implementation guidance now lives in `skills/diagramming/references/drawio.md`.
 
-## Use For
+## 1. Use For
 
 - draw.io `.drawio` source creation, editing, and review.
 - XML layout adjustment and native `mxGraphModel` work.
 - PNG, SVG, and PDF export workflows.
 - AWS icon lookup and diagram asset references.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Broad diagramming work; use `diagramming`.
 - Unrelated domains, broad rewrites, or generated runtime outputs.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read `skills/diagramming/references/drawio.md`.
@@ -30,12 +30,12 @@ implementation guidance now lives in `skills/diagramming/references/drawio.md`.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
-## Examples
+## 4. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 5. References
 
 - `skills/diagramming/references/drawio.md`
 - [Aws Icons](references/aws-icons.md)
@@ -43,7 +43,7 @@ source, run focused checks, and summarize the result.
 - [Layout Guidelines](references/layout-guidelines.md)
 - [Preserved Guidance](references/preserved-guidance.md)
 
-## Troubleshooting
+## 6. Troubleshooting
 
 If Waza or repo validation disagrees with preserved guidance, follow the
 stricter rule and record the exception in the handoff.

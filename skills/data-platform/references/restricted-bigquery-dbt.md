@@ -3,7 +3,7 @@
 Use this workflow when local dbt runs must stay out of production BigQuery
 schemas.
 
-## Environment Selection
+## 1. Environment Selection
 
 Follow the repository's actual Python environment. Do not treat `pyproject.toml`
 as a requirements file.
@@ -16,7 +16,7 @@ as a requirements file.
 This repo has no root `pyproject.toml`, `uv.lock`, or `poetry.lock`, so do not
 prescribe `uv pip install --requirement pyproject.toml`.
 
-## Redirect Local Writes
+## 2. Redirect Local Writes
 
 Temporarily add `schema='test'` at the beginning of the target model config
 before a local run.
@@ -36,7 +36,7 @@ Compile first and confirm the rendered relation uses the `test` schema:
 <dbt-command> compile --select <model_name> --profiles-dir <profiles_dir> --no-use-colors
 ```
 
-## Running dbt
+## 3. Running dbt
 
 - Get explicit user approval before `dbt run`.
 - Confirm the output schema is redirected away from production before running.
@@ -47,7 +47,7 @@ Compile first and confirm the rendered relation uses the `test` schema:
 <dbt-command> test --select <model_name> --profiles-dir <profiles_dir> --no-use-colors
 ```
 
-## Before Commit
+## 4. Before Commit
 
 Remove the temporary `schema='test'` override before committing and verify the
 diff.

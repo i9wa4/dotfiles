@@ -15,20 +15,20 @@ because the guidance protects cloud/data operations from credential misuse; use
 The durable implementation guidance now lives in
 `skills/data-platform/references/cloud-auth.md`.
 
-## Use For
+## 1. Use For
 
 - Cloud authentication workflows where the user has already authenticated in a
   shell pane.
 - Sending read-only credential confirmation commands to that pane.
 - Preserving the boundary that agents do not run interactive login flows.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Generic tmux pane operation guidance; use `agent-harness-engineering`.
 - Broad data-platform work; use `data-platform`.
 - Unrelated domains, broad rewrites, or generated runtime outputs.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read `skills/data-platform/references/cloud-auth.md`.
@@ -36,16 +36,16 @@ The durable implementation guidance now lives in
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
-## Examples
+## 4. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 5. References
 
 - `skills/data-platform/references/cloud-auth.md`
 
-## Troubleshooting
+## 6. Troubleshooting
 
 If Waza or repo validation disagrees with preserved guidance, follow the
 stricter rule and record the exception in the handoff.

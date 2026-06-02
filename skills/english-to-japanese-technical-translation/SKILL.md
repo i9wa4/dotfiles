@@ -1,8 +1,6 @@
 ---
 name: english-to-japanese-technical-translation
 license: MIT
-metadata:
-  version: "0.1.0"
 description: |
   USE FOR: English-to-Japanese technical translation of Markdown articles, with
   glossary-first terminology, verbatim-token preservation, structural constraint
@@ -14,13 +12,13 @@ description: |
 
 # English-to-Japanese Technical Translation
 
-## Overview
+## 1. Overview
 
 Translate English technical writing into natural Japanese. Read
 [Workflow](references/workflow.md) for the full procedure, prompt templates,
 and QA checklists.
 
-## Workflow
+## 2. Workflow
 
 1. Before sending source text, drafts, glossaries, or style examples to any AI
    provider or translation tool, confirm rights to translate, share source with
@@ -40,14 +38,14 @@ and QA checklists.
 6. Run separate review passes for technical accuracy, terminology consistency,
    Japanese editorial quality, technical integrity, and final publication QA.
 
-## Prompt Use
+## 3. Prompt Use
 
 Use the workflow reference prompts for style contracts, terminology extraction,
 section translation, accuracy review, editorial review, drift checks, and final
 QA. Keep verbatim tokens exact, preserve constraints such as warning meaning and
 table layout, and ask for uncertainty markers instead of invented details.
 
-## Boundaries
+## 4. Boundaries
 
 Manual workflow only. This skill does not choose providers or models, estimate
 cost, define privacy policy, authorize external sharing or derivative

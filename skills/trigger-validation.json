@@ -10,25 +10,12 @@
       "target_group": "agent-harness-engineering",
       "target_skill": "agent-harness-engineering",
       "target_path": "skills/agent-harness-engineering/SKILL.md",
-      "legacy_skills": [
-        {
-          "name": "agent-workspace",
-          "status": "compatibility_trigger"
-        },
-        {
-          "name": "prompt-contracts-local",
-          "status": "compatibility_trigger"
-        },
-        {
-          "name": "orchestrator",
-          "status": "removed_role_only_skill"
-        }
-      ],
+      "legacy_skills": [],
       "trigger_cases": [
         {
           "id": "agent-harness-engineering-target",
           "kind": "target",
-          "prompt": "Update the repository agent harness, issue worktree workflow, or postman routing rules.",
+          "prompt": "Update the repository agent harness, orchestrator role/runbooks, issue worktree workflow, or postman routing rules.",
           "expected_skill": "agent-harness-engineering",
           "result": "pass",
           "observed_skill": "agent-harness-engineering",
@@ -37,40 +24,26 @@
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
         {
-          "id": "agent-workspace-compatibility",
-          "kind": "compatibility",
-          "legacy_skill": "agent-workspace",
-          "prompt": "Use the issue worktree workflow for a GitHub issue and verify branch, upstream, and status before editing.",
+          "id": "agent-workspace-removed-alias",
+          "kind": "removed_alias",
+          "prompt": "Use the former agent-workspace skill for an agent tmux workspace, issue worktree workflow, or pane operation.",
           "expected_skill": "agent-harness-engineering",
           "result": "pass",
           "observed_skill": "agent-harness-engineering",
-          "checked_at": "2026-05-21",
+          "checked_at": "2026-06-02",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and workspace references."
         },
         {
-          "id": "prompt-contracts-local-compatibility",
-          "kind": "compatibility",
-          "legacy_skill": "prompt-contracts-local",
-          "prompt": "Update a repo prompt contract, prompt block, or resume handoff reference.",
+          "id": "prompt-contracts-local-removed-alias",
+          "kind": "removed_alias",
+          "prompt": "Use the former prompt-contracts-local skill for task prompt, review contract, prompt block, or resume-handoff work.",
           "expected_skill": "agent-harness-engineering",
           "result": "pass",
           "observed_skill": "agent-harness-engineering",
-          "checked_at": "2026-05-21",
+          "checked_at": "2026-06-02",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
-        },
-        {
-          "id": "orchestrator-role-contract-removed",
-          "kind": "removed",
-          "legacy_skill": "orchestrator",
-          "prompt": "Update orchestrator role contract and runbook guidance without creating a standalone role-only skill.",
-          "expected_skill": "agent-harness-engineering",
-          "result": "pass",
-          "observed_skill": "agent-harness-engineering",
-          "checked_at": "2026-05-21",
-          "validation_method": "manual_catalog_review",
-          "notes": "Removed legacy role-only prompt maps through classification metadata to the expected target skill owner surface."
+          "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and prompt-contract references."
         }
       ]
     },
@@ -78,16 +51,7 @@
       "target_group": "agent-skills-management",
       "target_skill": "agent-skills-management",
       "target_path": "skills/agent-skills-management/SKILL.md",
-      "legacy_skills": [
-        {
-          "name": "skill-description-index",
-          "status": "merge_into_agent_skills_management_references"
-        },
-        {
-          "name": "agent-skill-management",
-          "status": "duplicate_surface"
-        }
-      ],
+      "legacy_skills": [],
       "trigger_cases": [
         {
           "id": "agent-skills-management-target",
@@ -99,30 +63,6 @@
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
-        },
-        {
-          "id": "skill-description-index-merge",
-          "kind": "merged",
-          "legacy_skill": "skill-description-index",
-          "prompt": "Recover full skill descriptions from disk after descriptions are truncated or unclear.",
-          "expected_skill": "agent-skills-management",
-          "result": "pass",
-          "observed_skill": "agent-skills-management",
-          "checked_at": "2026-05-21",
-          "validation_method": "manual_catalog_review",
-          "notes": "Merged legacy prompt maps through classification metadata to the expected target skill owner surface."
-        },
-        {
-          "id": "agent-skill-management-duplicate",
-          "kind": "duplicate",
-          "legacy_skill": "agent-skill-management",
-          "prompt": "Manage repository-owned Agent Skills using the singular Agent Skill management trigger name.",
-          "expected_skill": "agent-skills-management",
-          "result": "pass",
-          "observed_skill": "agent-skills-management",
-          "checked_at": "2026-05-21",
-          "validation_method": "manual_catalog_review",
-          "notes": "Validated against the accepted #206 cleanup state in PR #211, where the singular duplicate surface is removed and agent-skills-management remains canonical."
         }
       ]
     },
@@ -493,5 +433,5 @@
   ],
   "validated_at": "2026-05-21",
   "validation_method": "manual_catalog_review",
-  "validation_summary": "28 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and accepted #206 cleanup state where applicable."
+  "validation_summary": "25 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and current cleanup state where applicable."
 }

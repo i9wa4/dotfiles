@@ -351,6 +351,7 @@ Read-only checks:
 ```sh
 nix profile history \
   --profile "$HOME/.local/state/nix/profiles/profile" 2>/dev/null || true
+nix run '.#nix-profile-cleanup' -- --dry-run
 find /nix/var/nix/profiles -maxdepth 3 -type l 2>/dev/null | wc -l
 find "$HOME/.local/state/nix/profiles" -maxdepth 1 -type l 2>/dev/null | wc -l
 find /nix/var/nix/gcroots -maxdepth 3 -type l 2>/dev/null | head -50
@@ -359,11 +360,17 @@ find /nix/var/nix/gcroots -maxdepth 3 -type l 2>/dev/null | head -50
 Approved action only, after the retention policy is known:
 
 ```sh
+nix run '.#switch'
+nix run '.#profile-update'
 nix run '.#gc-roots-delete'
 ```
 
-For normal daily maintenance, prefer the repo's switch/update flow and the
-explicit GC-root delete surface. Do not use ad hoc `rm` under `/nix`.
+For normal daily maintenance, prefer the repo's switch/update flow, the
+managed user-profile cleanup surface, and the explicit GC-root delete surface.
+`switch` removes manual user-profile entries before Home Manager activation,
+and `profile-update` remains as a compatibility cleanup command. Both preserve
+Home Manager's `home-manager-path` by default. Do not use ad hoc `rm` under
+`/nix`.
 
 #### 1.12.7. `/home` Ownership
 

@@ -3,7 +3,7 @@
 Repo-specific BigQuery conventions. Standard GoogleSQL syntax, `bq` CLI usage,
 joins, window functions, BQML, and external tables are assumed knowledge.
 
-## Cost Guardrails
+## 1. Cost Guardrails
 
 - Use `--dry_run` before large queries.
 - Avoid `SELECT *`; specify columns explicitly.
@@ -25,7 +25,7 @@ Avoid this shape for partition pruning:
 WHERE DATE(created_at) = '2024-01-01'
 ```
 
-## Table Design
+## 2. Table Design
 
 - Combine date partitioning with clustering on up to four high-cardinality
   columns.
@@ -33,13 +33,13 @@ WHERE DATE(created_at) = '2024-01-01'
 - Put the smaller table on the right side of joins when broadcast optimization
   is useful.
 
-## Pricing Reference
+## 3. Pricing Reference
 
 - On-demand analysis: `$5/TB` scanned.
 - Active storage: `$0.02/GB`.
 - Long-term storage: `$0.01/GB`.
 
-## Slot Usage Check
+## 4. Slot Usage Check
 
 ```sql
 SELECT
@@ -53,7 +53,7 @@ ORDER BY total_slot_ms DESC
 LIMIT 10;
 ```
 
-## References
+## 5. References
 
 - BigQuery docs: <https://cloud.google.com/bigquery/docs>
 - BigQuery pricing: <https://cloud.google.com/bigquery/pricing>

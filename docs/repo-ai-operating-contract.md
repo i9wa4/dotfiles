@@ -213,14 +213,16 @@ If the repo changes a Bash safety policy, this is where it should happen.
 ### 5.2. `shared/install-manifest.nix`
 
 This file maps the installed shared agent surface from
-`subagents/*.md`:
+`subagents/*.md` and `subagents/metadata.nix`:
 
-- Claude installs the committed Markdown files directly
+- Claude receives generated Markdown files under `~/.claude/agents/`
 - Codex receives generated TOML files under `~/.codex/agents/`
+- Both generated surfaces share the same prompt bodies and per-agent runtime
+  metadata
 
 The `subagent-review` skill is hand-authored under
 `skills/subagent-review/SKILL.md` and installed through the same local skill
-pipeline as other dotfiles-owned skills. That is how the repo keeps native
+pipeline as other applicable skills. That is how the repo keeps native
 reviewer agents and review guidance synchronized without a generated
 dispatcher.
 
@@ -228,13 +230,15 @@ dispatcher.
 
 This section is the canonical repo-side specification for the current review
 system. `subagents/*.md` is the native reviewer prompt source of truth,
-while `skills/subagent-review/SKILL.md` describes the public review skill
+`subagents/metadata.nix` is the per-agent runtime metadata source of truth,
+and `skills/subagent-review/SKILL.md` describes the public review skill
 surface.
 
 #### 5.3.1. Canonical components
 
 - `nix/home-manager/agents/shared/install-manifest.nix`
 - `nix/home-manager/agents/subagents/*.md`
+- `nix/home-manager/agents/subagents/metadata.nix`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/claude/default.nix`
 - `nix/home-manager/agents/codex/default.nix`
@@ -247,8 +251,8 @@ The public review skill surface is one hand-authored skill installed into both
 
 - `subagent-review`
 
-It does not accept engine or tier arguments. It documents the normal review
-lane:
+It does not accept engine, model, or tier arguments. It documents the normal
+review lane:
 
 ```text
 orchestrator -> guardian -> critic -> guardian -> orchestrator
@@ -266,11 +270,15 @@ orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
-Agent prompt defaults live in `subagents/*.md`. Claude installs those
-Markdown files directly. Codex TOML is generated from the same Markdown source
-by `shared/install-manifest.nix` and installed into `~/.codex/agents/`.
+Agent prompt bodies live in `subagents/*.md`. Runtime model and effort defaults
+live in `subagents/metadata.nix`. `shared/install-manifest.nix` generates
+Claude Markdown and Codex TOML from those shared sources.
 
-The normal guardian/critic workflow does not expose model or tier selection.
+The normal guardian/critic workflow does not expose ad hoc model or tier
+selection. To change defaults, edit `subagents/metadata.nix`: Claude `model`
+and `effort` are emitted as agent frontmatter, while Codex `model` is emitted
+only when non-null and `modelReasoningEffort` is emitted as
+`model_reasoning_effort`.
 For substantive reviews, the active role defaults to the five native
 perspectives documented by `subagent-review`: security, architecture,
 historian, code, and QA. Guardian uses the five in Codex; critic uses the five
@@ -293,7 +301,7 @@ Current materialization:
 ```
 
 `shared/agent-skills.nix` owns the skill-tree materialization into both
-engines. `claude/default.nix` installs the Claude agent directory under
+engines. `claude/default.nix` installs generated Claude agent Markdown under
 `~/.claude/agents`. `codex/default.nix` installs generated Codex TOML under
 `~/.codex/agents`.
 
@@ -315,7 +323,7 @@ When an engine cannot match the other feature-for-feature, the fallback should
 still preserve the same intent: safe execution, explicit handoff, and
 verifiable reporting.
 
-## Intentional Claude/Codex Asymmetries
+## 7. Intentional Claude/Codex Asymmetries
 
 Shared policy that must stay aligned across Claude and Codex
 
@@ -333,7 +341,7 @@ intentional:
 These differences are acceptable only so long as they keep the same local
 intent: safe execution, explicit handoff, and verifiable reporting.
 
-## 7. `tmux-a2a-postman` routing contract
+## 8. `tmux-a2a-postman` routing contract
 
 The approval workflow has seven standing role nodes:
 
@@ -357,7 +365,7 @@ Reachability is strict:
   `boss`, and auxiliary `agent`
 - `critic` talks only to `guardian`
 - `guardian` receives from `orchestrator`, sends review results to `critic`,
-  receives critic's recommendation, and relays the guardian-owned verdict to
+  receives critic's recommendation, and relays the guardian verdict to
   `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
 - `boss` gives final approval to `orchestrator`
@@ -367,13 +375,13 @@ Reachability is strict:
 If footer prose conflicts with the live graph or with successful delivery in
 the same context, trust the graph and actual delivery.
 
-## 8. Bounded approval-lane contract
+## 9. Bounded approval-lane contract
 
 This section is the canonical approval-lane policy for this repo.
 `config/tmux-a2a-postman/postman.md` should point here or restate this section
 faithfully instead of drifting into separate policy variants.
 
-### 8.1. Approval route
+### 9.1. Approval route
 
 Artifact work is not complete until this exact Approval route succeeds:
 
@@ -386,7 +394,7 @@ worker DONE -> orchestrator -> guardian -> critic
 
 Do not collapse or bypass the guardian-led, critic-assisted review hop.
 
-### 8.2. Pass criteria
+### 9.2. Pass criteria
 
 An approval-lane pass means all of the following are true:
 
@@ -395,11 +403,11 @@ An approval-lane pass means all of the following are true:
 - guardian completed first review and sent evidence to critic
 - critic returned an `APPROVED:` recommendation to guardian with no remaining
   BLOCKING defects
-- guardian relayed the guardian-owned verdict to orchestrator
+- guardian relayed the guardian verdict to orchestrator
 - boss approves after guardian approval with critic recommendation considered
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
-### 8.3. Defect-specific rejection
+### 9.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
@@ -411,7 +419,7 @@ Approval failure must stay defect-specific.
 - a reopened attempt must address the cited defects or explicitly explain why
   they no longer apply
 
-### 8.4. Hard iteration cap
+### 9.4. Hard iteration cap
 
 The approval loop is bounded.
 
@@ -421,7 +429,7 @@ The approval loop is bounded.
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 
-### 8.5. Watchdog and fallback behavior
+### 9.5. Watchdog and fallback behavior
 
 Approval-lane fallback behavior uses the same shared vocabulary everywhere.
 These timeout thresholds are role policy, not daemon configuration:
@@ -450,7 +458,7 @@ Fallback behavior:
 - hook, permission, or tool-restriction blocks are immediate `BLOCKED:` states
   with no silent retry
 
-### 8.6. Review workflow ownership split
+### 9.6. Review workflow ownership split
 
 `config/tmux-a2a-postman/postman.md` owns the live review contract: role
 identity, route reachability, reply-required flow, verdict vocabulary,
@@ -477,9 +485,9 @@ the longer procedure. If a rule is reusable review technique, a comment
 template, or GitHub command mechanics, keep it in the owning skill or
 reference instead of expanding the live template.
 
-## 9. Status and routing rules
+## 10. Status and routing rules
 
-### 9.1. `status request` is not `status update`
+### 10.1. `status request` is not `status update`
 
 - `status request`: reply required
 - `status update`: informational unless the body explicitly asks for a reply
@@ -487,7 +495,7 @@ reference instead of expanding the live template.
 If explicit body instructions and generic footer text disagree, follow the body
 instruction.
 
-### 9.2. Keep recurring status compact
+### 10.2. Keep recurring status compact
 
 Use only the smallest useful delta:
 
@@ -499,13 +507,13 @@ Use only the smallest useful delta:
 
 Do not re-expand the full situation when nothing material changed.
 
-### 9.3. Footer lines are hints, not authority
+### 10.3. Footer lines are hints, not authority
 
 `You can talk to:`, `Reply:`, and `No reply needed for:` are useful routing
 hints, but they do not override the checked-in graph or a known live delivery
 result.
 
-## 10. Delivery-health rules
+## 11. Delivery-health rules
 
 Do not treat unread mail, quiet panes, or old wait terminology as proof of
 stuck delivery by themselves.
@@ -519,7 +527,7 @@ Before escalating:
 Normal `composing` and `user_input` waits are not enough on their own to claim
 delivery failure. The repo's current rule is: Do NOT inspect raw wait files.
 
-## 11. Historical-drift rules
+## 12. Historical-drift rules
 
 Older retained mail may still show:
 
@@ -531,7 +539,7 @@ Older retained mail may still show:
 
 Treat those as historical signatures rather than the current contract.
 
-## 12. Failure reporting
+## 13. Failure reporting
 
 Use concise terminal states:
 
@@ -541,7 +549,7 @@ Use concise terminal states:
 If a hook, permission rule, or tool restriction blocks the requested action, do
 not retry silently. Report the block immediately.
 
-## 13. Recommended reading order
+## 14. Recommended reading order
 
 When context is thin, read in this order:
 
