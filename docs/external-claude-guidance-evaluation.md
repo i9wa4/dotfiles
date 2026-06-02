@@ -5,7 +5,7 @@ Issue #218 evaluates the external
 from `multica-ai/andrej-karpathy-skills` against this repository's agent
 workflow, prompt-contract, and skill guidance.
 
-## Source Summary
+## 1. Source Summary
 
 The source is a compact behavioral guide for reducing common LLM coding
 mistakes. It has four main themes:
@@ -24,7 +24,7 @@ instructions as needed. That matters for this repository because local agent
 behavior is split across postman role contracts, skills, durable artifacts,
 Nix-managed hooks, and engine-specific runtime files.
 
-## Local Coverage
+## 2. Local Coverage
 
 | Source practice                     | Existing local coverage                                                                                                                                               | Assessment                                                                                  |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
@@ -37,7 +37,7 @@ Nix-managed hooks, and engine-specific runtime files.
 | Define success criteria and verify  | Durable task tracking, issue worktree rules, postman completion gates, and the programming skill all require evidence-based verification before reporting success.    | Strongly covered.                                                                           |
 | Use a brief plan for multistep work | Durable `mkmd` artifacts and prompt blocks already handle plans, acceptance criteria, progress, and verification loops for multistep work.                            | Strongly covered.                                                                           |
 
-## Useful Behavior
+## 3. Useful Behavior
 
 The source's useful behavior is not new policy. It reinforces existing local
 defaults:
@@ -53,7 +53,7 @@ each changed line should trace to the request. This issue adopts those as a
 small programming-skill refinement rather than a new repo-wide instruction
 file.
 
-## Conflicts and Non-Fit
+## 4. Conflicts and Non-Fit
 
 The source should not be copied directly for three reasons:
 
@@ -67,7 +67,7 @@ The source should not be copied directly for three reasons:
    issue worktree, or hook-denial model, all of which are central local
    constraints.
 
-## Decision
+## 5. Decision
 
 Do not adopt the external file or create a repo-local `CLAUDE.md` equivalent
 from it. Most practices worth keeping are already covered by local prompt
