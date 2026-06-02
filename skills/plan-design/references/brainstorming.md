@@ -5,7 +5,7 @@ approaches, or could fail by solving the wrong problem. The goal is to reduce
 ambiguity just enough to choose a direction, not to force every task through a
 full design exercise.
 
-## Core Defaults
+## 1. Core Defaults
 
 - Use this reference only when the task is genuinely ambiguous or
   multi-approach.
@@ -16,7 +16,7 @@ full design exercise.
 - Stop brainstorming once the direction is stable enough for planning or
   implementation.
 
-## Workflow
+## 2. Workflow
 
 1. Restate the objective in plain language, including what success looks like
    and what must not change.
@@ -30,7 +30,7 @@ full design exercise.
    benefit, main risk, and why it fits or does not fit this repo.
 6. Recommend one approach and name the next concrete step.
 
-## Repo Fit
+## 3. Repo Fit
 
 - Use `mkmd` artifacts when the brainstorming output needs to persist as
   research or plan input.
@@ -40,14 +40,14 @@ full design exercise.
 - Do not require tracked design docs or a universal approval loop for small
   settled tasks.
 
-## Good Triggers
+## 4. Good Triggers
 
 - Multiple valid implementation shapes exist.
 - The request mixes product, user experience, and technical choices.
 - The user asked for options, trade-offs, or a recommendation.
 - The task is user-facing and the largest risk is choosing the wrong objective.
 
-## Bad Triggers
+## 5. Bad Triggers
 
 - The task already has a clear acceptance target.
 - The next step is a small mechanical change.

@@ -7,7 +7,7 @@ Use that skill when adding, editing, removing, publishing, or diagnosing
 top-level `skills/` entries and their publish harness. Keep this file as a
 human-facing pointer so the docs tree does not duplicate skill operating rules.
 
-## Classification Memo
+## 1. Classification Memo
 
 The release-all cleanup tracker for checked-in skills lives in
 `skills/classification.yaml`.
@@ -29,7 +29,7 @@ remove/demote it before the release-all gate.
 The pre-commit release readiness checks and tag-triggered publishing path are
 documented in `docs/agent-skills-release-all.md`.
 
-## First PR Boundary
+## 2. First PR Boundary
 
 The first cleanup PR is limited to metadata and reviewable policy scaffolding:
 
@@ -41,7 +41,7 @@ Do not use the first PR to move, rename, or delete skills, broadly shrink
 `config/tmux-a2a-postman/postman.md`, add release automation, create tags, or
 publish a release.
 
-## Private-Content Gate
+## 3. Private-Content Gate
 
 Before any skill move, rename, demotion into `references/`, release automation,
 tag, or publishing step, scan the affected skill and referenced material for:

@@ -4,7 +4,7 @@ Repo-local dbt additions. Use official dbt skills for command basics such as
 `debug`, `compile`, `run`, `test`, `show`, selectors, verification procedures,
 and ad-hoc queries.
 
-## Issue Work Target Setup
+## 1. Issue Work Target Setup
 
 Set up an issue-specific target before local `dbt run` work.
 
@@ -41,7 +41,7 @@ dbt run --select +model_name --target issue_123 --profiles-dir <profiles_dir> --
 
 Manually delete unused issue schemas after the work is complete.
 
-## Databricks SQL Dialect
+## 2. Databricks SQL Dialect
 
 Use backticks for full-width column names and names containing hyphens.
 
@@ -50,6 +50,6 @@ SELECT * FROM `catalog-name`.schema_name.table_name;
 SELECT `full-width column` FROM table_name;
 ```
 
-## Examples
+## 3. Examples
 
 - Staging model example: `skills/dbt-local/examples/staging-model.sql`

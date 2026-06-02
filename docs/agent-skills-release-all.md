@@ -6,7 +6,7 @@ is not a selective allowlist. Every checked-in skill must either be ready to
 publish or be removed, demoted, or explicitly excluded before the release gate
 passes.
 
-## Source Of Truth
+## 1. Source Of Truth
 
 `skills/classification.yaml` is the reviewable source for release readiness.
 
@@ -36,7 +36,7 @@ through `nix flake check`:
 bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
-## Pre-Commit
+## 2. Pre-Commit
 
 The pre-commit hook `skill-release-readiness-check` runs the strict
 classification gate when skill sources, release policy docs, release workflows,
@@ -52,7 +52,7 @@ set. It does not add separate Agent Skills validation steps and does not run
 `gh skill publish`; that command is reserved for the tag-triggered release
 workflow.
 
-## Tag Release
+## 3. Tag Release
 
 A tag push is the publishing trigger. There is no manual release-all workflow.
 

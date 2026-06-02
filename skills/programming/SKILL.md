@@ -12,7 +12,7 @@ changes. Use more specific domain skills when they exist; otherwise use this
 skill for Bash, Python, general Nix package workflow, Markdown, and
 implementation-loop discipline.
 
-## Use For
+## 1. Use For
 
 - Bash scripts and shell command design.
 - Python utility edits and local execution rules.
@@ -20,14 +20,14 @@ implementation-loop discipline.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `agent-harness-engineering`.
 - GitHub issue, PR, review, or public-surface mechanics; use `github`.
 - Data-platform or diagramming workflows; use their target skills.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Select the focused reference below before changing files.
@@ -37,7 +37,7 @@ implementation-loop discipline.
 5. Report changed files, verification, residual Waza findings, and remaining
    risk.
 
-## References
+## 4. References
 
 - [Bash Scripting](references/bash-scripting.md)
 - [Python Development](references/python-development.md)

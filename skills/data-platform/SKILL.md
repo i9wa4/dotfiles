@@ -12,7 +12,7 @@ restricted BigQuery/dbt safety, and cloud authentication workflows. Use official
 provider skills for general cloud or product documentation, then apply these
 repo-specific guardrails.
 
-## Use For
+## 1. Use For
 
 - BigQuery cost-aware query patterns, GoogleSQL guardrails, table design, and
   slot usage checks.
@@ -24,7 +24,7 @@ repo-specific guardrails.
 - Cloud authentication workflows that must run through a user-authenticated
   pane instead of the agent pane.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `agent-harness-engineering`.
@@ -33,7 +33,7 @@ repo-specific guardrails.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Select the focused reference below before changing files or running data
@@ -45,7 +45,7 @@ repo-specific guardrails.
 5. Run the fastest focused check during iteration, then the nearest repo
    validation surface before reporting success.
 
-## References
+## 4. References
 
 - [BigQuery](references/bigquery.md)
 - [Databricks](references/databricks.md)

@@ -10,17 +10,17 @@ description: |
 Compatibility trigger for TDD and Tidy First tasks. The durable implementation
 guidance now lives in `skills/programming/references/tdd-tidy-first.md`.
 
-## Use For
+## 1. Use For
 
 - Red-Green-Refactor and Tidy First loops for understood implementation tasks.
 - Small verifiable changes where the test surface is clear.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Unknown failure mechanisms; use `systematic-debugging` first.
 - Unrelated domains or generated runtime outputs.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read `skills/programming/references/tdd-tidy-first.md`.
@@ -28,11 +28,11 @@ guidance now lives in `skills/programming/references/tdd-tidy-first.md`.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
-## Examples
+## 4. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 5. References
 
 - `skills/programming/references/tdd-tidy-first.md`

@@ -3,7 +3,7 @@
 Use this reference when a cloud task requires credentials that are already
 available in a user-authenticated shell pane.
 
-## Core Pattern
+## 1. Core Pattern
 
 Do not run interactive cloud login commands in the agent pane. Ask for or use
 the user-provided authenticated pane, then send commands to that pane with
@@ -15,7 +15,7 @@ sleep 2
 tmux capture-pane -t <pane_id> -p
 ```
 
-## Workflow
+## 2. Workflow
 
 1. The user authenticates in their own pane.
 2. The user provides the pane ID, or the task context already names it.
@@ -23,7 +23,7 @@ tmux capture-pane -t <pane_id> -p
 4. Send subsequent cloud commands to that pane.
 5. Capture output from that pane for evidence.
 
-## Rules
+## 3. Rules
 
 - Do not run interactive SSO login, credential discovery, or profile selection
   from the agent pane.

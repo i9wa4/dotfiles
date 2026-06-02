@@ -4,7 +4,8 @@ This document captures the design principles that govern how Codex CLI and
 Claude Code are configured in this repo. They are prescriptive — they
 describe how new agent configuration should be authored — and they
 complement, not replace, the descriptive operating model in
-`docs/dotfiles-operating-concepts.md`.
+`docs/dotfiles-operating-concepts.md`. For command approval, sandbox, and
+writable-surface boundaries, see `docs/agent-command-approval-design.md`.
 
 ## 1. The Three Principles
 
@@ -20,10 +21,11 @@ What "prompt path" means in this repo:
   delivered into every postman session as the live operating contract.
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
-- `nix/home-manager/agents/subagents/*.md` — native reviewer agent
-  Markdown definitions and runtime defaults.
-- `nix/home-manager/agents/shared/install-manifest.nix` — installs Claude
-  Markdown directly and generates Codex TOML from the same Markdown source.
+- `nix/home-manager/agents/subagents/*.md` — native reviewer prompt bodies.
+- `nix/home-manager/agents/subagents/metadata.nix` — per-agent runtime model
+  and effort defaults.
+- `nix/home-manager/agents/shared/install-manifest.nix` — generates Claude
+  Markdown and Codex TOML from the same subagent prompt and metadata sources.
 
 Why prompt over config:
 
@@ -75,14 +77,15 @@ Concrete examples already in the repo:
   authoritative location for the persona / language / scope contract
   and the compact skill-use rule; delivered to every postman role on each
   `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
-  for dotfiles-owned skills only. There is no longer a generated CLAUDE.md or
+  for configured skills. There is no longer a generated CLAUDE.md or
   codex AGENTS.md installed at the runtime root.
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
-- `nix/home-manager/agents/subagents/*.md` with
-  `nix/home-manager/agents/shared/install-manifest.nix` — uses Markdown as the
-  reviewer source of truth, installs Claude agents directly, and generates the
-  Codex TOML runtime files.
+- `nix/home-manager/agents/subagents/*.md` and
+  `nix/home-manager/agents/subagents/metadata.nix` with
+  `nix/home-manager/agents/shared/install-manifest.nix` — use Markdown for
+  reviewer prompt bodies and shared Nix metadata for runtime model/effort
+  defaults, then generate Claude Markdown and Codex TOML runtime files.
 
 Why shared beats per-tool:
 
@@ -122,9 +125,9 @@ What this looks like in the current repo:
   installed into both engine trees.
 - Review pipelines use five runtime-native reviewer perspectives by default
   for guardian and five for critic. The `skills/subagent-review/SKILL.md`
-  skill documents usage without engine or tier dispatcher flags, while
-  guardian owns the final verdict using critic's recommendation as subordinate
-  review evidence.
+  skill documents usage without ad hoc engine, model, or tier dispatcher
+  flags, while guardian owns the final verdict using critic's recommendation
+  as subordinate review evidence.
 
 When deviating from cross-engine equivalence is acceptable:
 
