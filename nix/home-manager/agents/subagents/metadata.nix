@@ -5,78 +5,78 @@
 {
   researcher-tech = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-architecture = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-code = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-data = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-historian = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-qa = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 
   reviewer-security = {
     claude = {
-      model = "inherit";
-      effort = "medium";
+      model = "sonnet";
+      effort = "high";
     };
     codex = {
       model = null;
-      modelReasoningEffort = "medium";
+      modelReasoningEffort = "high";
     };
   };
 }
