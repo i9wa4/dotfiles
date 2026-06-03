@@ -86,7 +86,6 @@ in
       pkgs.wget
       # Tools
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
-      nodejsPackage
       pkgs.acli
       pkgs.databricks-cli
       pkgs.gws
@@ -129,6 +128,9 @@ in
     # ==========================================================================
     file = {
       ".vale.ini".source = symlink "${dotfilesDir}/config/vale/.vale.ini";
+      # pnpm global shims look for ~/.local/bin/node before falling back to PATH.
+      # Expose node there without adding npm/npx from nodejsPackage to home.packages.
+      ".local/bin/node".source = "${nodejsPackage}/bin/node";
     };
   };
 
