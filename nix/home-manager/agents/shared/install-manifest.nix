@@ -61,6 +61,27 @@ let
         return json.dumps(value, ensure_ascii=False)
 
 
+    def yaml_plain_scalar(value):
+        if not value or value.strip() != value or "\n" in value:
+            return toml_string(value)
+
+        safe_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-")
+        if all(char in safe_chars for char in value):
+            return value
+
+        return toml_string(value)
+
+
+    def toml_multiline_literal(value, context):
+        delimiter = chr(39) * 3
+        if delimiter in value:
+            raise ValueError(
+                f"{context}: cannot render TOML multiline literal containing triple single quotes"
+            )
+
+        return delimiter + "\n" + value + delimiter
+
+
     def validate_mapping(mapping, *, required, allowed, context):
         missing = sorted(required - set(mapping))
         if missing:
@@ -84,9 +105,9 @@ let
             f"description: {toml_string(values['description'])}",
         ]
         if claude.get("model") is not None:
-            frontmatter.append(f"model: {toml_string(claude['model'])}")
+            frontmatter.append(f"model: {yaml_plain_scalar(claude['model'])}")
         if claude.get("effort") is not None:
-            frontmatter.append(f"effort: {toml_string(claude['effort'])}")
+            frontmatter.append(f"effort: {yaml_plain_scalar(claude['effort'])}")
         frontmatter.extend(["---", "", body])
 
         target = claude_out_dir / source.name
@@ -106,7 +127,13 @@ let
                 "model_reasoning_effort = "
                 f"{toml_string(codex['modelReasoningEffort'])}"
             )
-        lines.extend([f"developer_instructions = {toml_string(body)}", ""])
+        lines.extend(
+            [
+                "developer_instructions = "
+                f"{toml_multiline_literal(body, f'{source}: developer_instructions')}",
+                "",
+            ]
+        )
 
         target = codex_out_dir / f"{source.stem}.toml"
         target.write_text("\n".join(lines), encoding="utf-8")
