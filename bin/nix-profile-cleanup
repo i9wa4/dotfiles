@@ -4,9 +4,9 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-# What: remove manually-installed nix profile entries after Home Manager owns tooling.
-# When: run after `nix run '.#switch'`; dry-run first, then apply if the list is expected.
-# Example: nix run '.#nix-profile-cleanup' -- --dry-run
+# What: legacy helper for one-off cleanup of old manually-installed nix profile entries.
+# When: use only for manual recovery; it is not part of the flake app surface.
+# Example: bash ./bin/nix-profile-cleanup --dry-run
 
 usage() {
   cat <<'EOF'
@@ -24,9 +24,8 @@ Modes:
   --include-home-manager-path  Also remove Home Manager's package path entry
 
 Examples:
-  nix run '.#switch'
-  nix run '.#nix-profile-cleanup' -- --dry-run
-  nix run '.#nix-profile-cleanup' -- --apply
+  bash ./bin/nix-profile-cleanup --dry-run
+  bash ./bin/nix-profile-cleanup --apply
 EOF
 }
 
