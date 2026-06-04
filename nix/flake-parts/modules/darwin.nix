@@ -127,6 +127,7 @@ in
         "macskk"
         "monitorcontrol"
         "obsidian"
+        "podman-desktop"
         "visual-studio-code"
         "zoom"
       ];
