@@ -104,6 +104,8 @@ in
       pkgs.neovim
       pkgs.nixd
       pkgs.pnpm
+      pkgs.podman
+      pkgs.podman-compose
       pkgs.ripgrep
       pkgs.shellcheck
       tmuxA2aPostman
