@@ -129,6 +129,8 @@ in
       upgrade = false;
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
+      # Homebrew 4.7 requires an explicit confirmation mode with --cleanup.
+      extraFlags = [ "--force-cleanup" ];
     };
   };
 
