@@ -5,6 +5,7 @@
   lib,
   homeDir,
   nodejsPackage,
+  pnpmPackage,
   ...
 }:
 let
@@ -12,7 +13,7 @@ let
   # npm is retained only to clean packages previously managed under the old
   # npm prefix.
   npm = "${nodejs}/bin/npm";
-  pnpm = "${pkgs.pnpm}/bin/pnpm";
+  pnpm = "${pnpmPackage}/bin/pnpm";
   pnpmMinimumReleaseAgeHours = 3 * 24;
   pnpmMinimumReleaseAgeMinutes = pnpmMinimumReleaseAgeHours * 60;
   pnpmConfigHome = "${homeDir}/.config";
@@ -36,7 +37,7 @@ in
       mkdir -p ${pnpmBin} ${pnpmGlobalDir} ${pnpmStoreDir} "${pnpmConfigHome}/pnpm"
       export XDG_CONFIG_HOME="${pnpmConfigHome}"
       export PNPM_HOME="${pnpmHome}"
-      export PATH="${pnpmBin}:${pkgs.pnpm}/bin:${nodejs}/bin:$PATH"
+      export PATH="${pnpmBin}:${pnpmPackage}/bin:${nodejs}/bin:$PATH"
 
       ${pnpm} config set --location=global globalBinDir "${pnpmBin}" >/dev/null
       ${pnpm} config set --location=global globalDir "${pnpmGlobalDir}" >/dev/null
