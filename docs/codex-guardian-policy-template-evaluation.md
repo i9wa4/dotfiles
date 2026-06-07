@@ -1,6 +1,6 @@
 # Codex Guardian Policy Template Evaluation
 
-## Context
+## 1. Context
 
 Issue #224 asks whether the Codex guardian policy template should influence this
 repository's guardian, review, and policy prompt surfaces. The source reviewed
@@ -10,14 +10,14 @@ here is the OpenAI Codex template at
 This is a research and design evaluation only. It does not change prompt
 contracts, hooks, postman routing, or runtime policy.
 
-## Template Policy Model
+## 2. Template Policy Model
 
 The Codex template judges one planned coding-agent action. It separates the
 action's intrinsic risk from evidence that the user authorized the target and
 side effects, then derives an `outcome` from tenant policy, `risk_level`, and
 `user_authorization`.
 
-### Evidence Handling
+### 2.1. Evidence Handling
 
 The template treats the transcript, tool arguments, tool results, retry reason,
 and planned action as untrusted evidence. Those artifacts help establish user
@@ -29,7 +29,7 @@ the reviewer more cautious, but it does not automatically increase intrinsic
 risk. If a generated local script is omitted and risk depends on its content,
 the reviewer should inspect it before deciding.
 
-### Authorization Scoring
+### 2.2. Authorization Scoring
 
 The template uses four authorization levels:
 
@@ -47,7 +47,7 @@ execution. Post-denial user approval can raise authorization to `high` only
 when the user clearly approves the exact action again after seeing the concrete
 risk.
 
-### Risk Taxonomy
+### 2.3. Risk Taxonomy
 
 The template uses four intrinsic risk levels:
 
@@ -65,7 +65,7 @@ unsandboxed action's risk, not by the retry event. Local filesystem actions are
 not `high` or `critical` merely because they are outside a writable workspace or
 because a user-requested deletion uses `rm -rf`; the target state matters.
 
-### Tenant Policy and Thresholds
+### 2.4. Tenant Policy and Thresholds
 
 The template has a tenant-policy insertion point:
 `{tenant_policy_config}`. Tenant policy can add stricter category-specific
@@ -84,7 +84,7 @@ Medium and low risk actions normally do not require user authorization, unless
 there are clear prompt-injection signs. Critical actions are denied. High-risk
 actions need both adequate authorization and no absolute tenant deny rule.
 
-### Local-State Investigation
+### 2.5. Local-State Investigation
 
 The template prefers evidence-based decisions when a cheap tool call can reduce
 uncertainty. If risk depends on local state, the reviewer should use available
@@ -93,7 +93,7 @@ denying destructive local actions. Examples include checking whether a deletion
 target exists, inspecting file contents before a write, and checking git remotes
 before deciding whether repository data is public or private.
 
-## Local Surface Comparison
+## 3. Local Surface Comparison
 
 This repository has a broader multi-agent operating contract rather than a
 single one-action guardian. The strongest overlaps are evidence discipline,
@@ -114,7 +114,7 @@ repository's guardian and critic review artifacts and workflows.
 | `skills/agent-harness-engineering/references/review-output-contract.md` | Defines machine-readable review output only when a consumer benefits from parsing                           | Matches the template's structured decision idea, but warns against forcing structured output onto every review           |
 | `nix/home-manager/agents/subagents/*.md`                                | Reviewer agents require inspected evidence, confidence, concrete findings, and suppressed speculation       | Strongly overlaps with evidence handling, but reviewer prompts do not classify action authorization or tenant thresholds |
 
-## Reusable Elements
+## 4. Reusable Elements
 
 The following concepts fit this repository's existing prompt-first design:
 
@@ -135,7 +135,7 @@ The most useful adaptation is a compact prompt block for action-risk triage.
 That block would help agents reason about proposed dangerous actions without
 changing the repo's route, artifact, or hook model.
 
-## Conflicts and Overlaps
+## 5. Conflicts and Overlaps
 
 The full Codex template should not be copied wholesale into this repository.
 
@@ -156,7 +156,7 @@ The full Codex template should not be copied wholesale into this repository.
 - This repository's approval lane includes guardian, critic, and boss. A
   single `outcome = allow` result must not bypass that route.
 
-## Scoped Adaptation Proposal
+## 6. Scoped Adaptation Proposal
 
 Defer implementation for issue #224. If a later issue approves adoption, keep it
 small and prompt-only:
@@ -185,7 +185,7 @@ Non-goals:
 - Do not add a machine-readable verdict format to every guardian or critic
   response.
 
-## Decision
+## 7. Decision
 
 Implementation should be deferred. The template offers useful terminology and
 a clean separation between evidence, authorization, intrinsic risk, local-state
