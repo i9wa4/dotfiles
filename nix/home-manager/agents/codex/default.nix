@@ -110,7 +110,33 @@ let
     feedback.enabled = false;
 
     features = {
+      apps = true;
       fast_mode = false;
+    };
+
+    apps = {
+      _default = {
+        enabled = false;
+        destructive_enabled = false;
+        open_world_enabled = false;
+      };
+
+      slack = {
+        enabled = true;
+        default_tools_approval_mode = "prompt";
+      };
+      gmail = {
+        enabled = true;
+        default_tools_approval_mode = "prompt";
+      };
+      google_calendar = {
+        enabled = true;
+        default_tools_approval_mode = "prompt";
+      };
+      google_drive = {
+        enabled = true;
+        default_tools_approval_mode = "prompt";
+      };
     };
 
     mcp_servers = mcpServers;

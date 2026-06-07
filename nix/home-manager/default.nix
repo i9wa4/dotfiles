@@ -14,7 +14,9 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-  nodejsPackage = pkgs.nodejs_24;
+  # Keep Node and pnpm on the newest versions available in pinned nixpkgs.
+  nodejsPackage = pkgs.nodejs_26;
+  pnpmPackage = pkgs.pnpm.override { nodejs = nodejsPackage; };
   system = pkgs.stdenv.hostPlatform.system;
 
   # AI agent CLIs from llm-agents.nix flake input
@@ -35,6 +37,7 @@ in
       ghqRoot
       homeDir
       nodejsPackage
+      pnpmPackage
       ;
   };
 
@@ -103,7 +106,7 @@ in
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
-      pkgs.pnpm
+      pnpmPackage
       pkgs.podman
       pkgs.podman-compose
       pkgs.ripgrep
