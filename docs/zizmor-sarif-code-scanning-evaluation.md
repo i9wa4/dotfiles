@@ -19,14 +19,14 @@ Code Scanning upload.
 
 Current surfaces:
 
-| Surface                                  | Current state                                                                                                                   |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/ci.yaml`              | Runs on `workflow_dispatch`, `push` to `main`, and PRs to `main`; top-level `permissions: {}`; job grants only `contents: read` |
-| `.github/workflows/ci.yaml` checkout     | Uses SHA-pinned `actions/checkout` with `persist-credentials: false`                                                            |
-| `.github/workflows/ci.yaml` checks       | Runs `nix flake check`, `gitleaks detect`, and `betterleaks git`                                                                |
-| `.github/workflows/release.yaml`         | Top-level `permissions: {}`; tag-only release path; actions are SHA-pinned and checkout uses `persist-credentials: false`       |
-| `nix/flake-parts/modules/pre-commit.nix` | Enables `actionlint`, `ghalint`, `pinact`, `zizmor`, and `actrun-lint` for workflow files                                       |
-| CI SARIF upload                          | Not configured                                                                                                                  |
+| Surface                                  | Current state                                                                                                                                     |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yaml`              | Runs on `workflow_dispatch`, `push` to `main`, and PRs to `main`; top-level `permissions: {}`; job grants only `contents: read`                   |
+| `.github/workflows/ci.yaml` checkout     | Uses SHA-pinned `actions/checkout` with `persist-credentials: false`                                                                              |
+| `.github/workflows/ci.yaml` checks       | Runs `nix flake check`, `gitleaks detect`, and `betterleaks git`                                                                                  |
+| `.github/workflows/release.yaml`         | Top-level `permissions: {}`; tag-only release job grants `contents: write`; actions are SHA-pinned and checkout uses `persist-credentials: false` |
+| `nix/flake-parts/modules/pre-commit.nix` | Enables `actionlint`, `ghalint`, `pinact`, `zizmor`, and `actrun-lint` for workflow files                                                         |
+| CI SARIF upload                          | Not configured                                                                                                                                    |
 
 The existing setup is already close to the hardened baseline recommended by
 the source article and upstream docs: default token permissions are zeroed,
