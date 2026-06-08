@@ -357,9 +357,10 @@ profile as root, then reload and restart `nix-daemon`. `--remove-all` avoids a
 profile conflict with the `nix-manual` output from the original installer:
 
 ```sh
-sudo -i sh -c 'nix-channel --update && \
-  nix-env --install --remove-all --attr nixpkgs.nix nixpkgs.cacert && \
-  systemctl daemon-reload && \
+sudo -i sh -c 'nix-channel --update &&
+  nix-env --install --remove-all \
+    --attr nixpkgs.nix nixpkgs.cacert &&
+  systemctl daemon-reload &&
   systemctl restart nix-daemon'
 ```
 
