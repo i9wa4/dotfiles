@@ -361,7 +361,7 @@ Approved action only, after the retention policy is known:
 ```sh
 nix run '.#switch'
 nix run '.#gc-roots-delete' -- --dry-run
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --apply
 ```
 
 For normal daily maintenance, prefer the repo's switch/update flow and the
@@ -370,6 +370,10 @@ flake app surface because this repository no longer uses a manual user Nix
 profile for managed tools. If a legacy manual profile needs cleanup, preview
 with `bash ./bin/nix-profile-cleanup --dry-run` before using `--apply`. Do not
 use ad hoc `rm` under `/nix`.
+
+CI verifies the command wiring for generation expiry. Confirm the resulting
+Ubuntu/WSL2 Home Manager and macOS system generation state on target hosts
+after `nix run '.#switch'`.
 
 #### 1.12.7. `/home` Ownership
 
@@ -417,7 +421,7 @@ Guarded stale GC-root cleanup:
 
 ```sh
 nix run '.#gc-roots-delete' -- --dry-run
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --apply
 ```
 
 Managed swap reduction from 16GiB to 8GiB:
@@ -453,7 +457,8 @@ Use one-off deletion only to exit the emergency. The durable controls are:
   while the VG has free extents, extend it before treating normal usage as a
   storage-pressure incident.
 - Use explicit Nix cleanup surfaces, such as the daily switch flow and
-  `nix run '.#gc-roots-delete'`, instead of deleting Nix store paths directly.
+  `nix run '.#gc-roots-delete' -- --apply`, instead of deleting Nix store paths
+  directly.
 
 ## 2. Guarded GC-Root Delete
 
@@ -463,12 +468,11 @@ Use the single delete-focused command surface to remove stale auto GC roots.
 
 ```sh
 nix run '.#gc-roots-delete' -- --dry-run
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --apply
 ```
 
 The interface supports `--dry-run`, `--preview`, and `--apply`. Omitting a mode
-uses apply mode for backward compatibility. Every invocation re-classifies roots
-as:
+uses dry-run mode. Every invocation re-classifies roots as:
 
 - `KEEP`
 - `CANDIDATE`
@@ -499,8 +503,8 @@ links such as `profile-*` stay `KEEP`.
 - This delete surface is explicit and never scheduled.
 - It re-runs the classification and active-worktree checks at execution time in
   both dry-run and apply mode.
-- Use `--dry-run` or `--preview` before apply mode when investigating storage
-  pressure.
+- Bare invocation, `--dry-run`, and `--preview` do not delete roots.
+- Use `--apply` only after reviewing dry-run output during storage pressure.
 - It attempts deletion as the current user and keeps going when a specific root
   cannot be removed.
 

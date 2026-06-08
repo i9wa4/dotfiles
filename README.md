@@ -309,18 +309,20 @@ gh auth login --with-token
 | `nix run '.#cleanup' -- --dry-run`               | Preview low-risk user-cache cleanup                                                                                                                                                                                                                       |
 | `nix run '.#cleanup'`                            | Prune low-risk user caches shown by the cleanup app                                                                                                                                                                                                       |
 | `nix run '.#gc-roots-delete' -- --dry-run`       | Preview guarded stale Linux auto GC-root deletion                                                                                                                                                                                                         |
-| `nix run '.#gc-roots-delete'`                    | Delete only guarded current-user stale auto GC roots, then run Nix GC                                                                                                                                                                                     |
+| `nix run '.#gc-roots-delete' -- --apply`         | Delete only guarded current-user stale auto GC roots, then run Nix GC                                                                                                                                                                                     |
 
 Notes:
 
 - Keep `nix run '.#switch'` as the primary daily activation command. It expires
   old generations after a successful activation, but it does not run store GC.
+  CI verifies the command wiring; live Ubuntu/WSL2 and macOS expiry behavior
+  should still be checked on target hosts after switching.
 - Run `nix run '.#storage-report' -- --self --summary` before cleanup when
   investigating disk pressure.
 - `nix run '.#cleanup'` touches only the explicit low-risk cache surface. Use
   `--dry-run` or `--preview` first when you want a no-write check.
-- `nix run '.#gc-roots-delete'` is separate from `switch` and `cleanup`. Use
-  `--dry-run` first; apply mode re-classifies roots at execution time and skips
+- `nix run '.#gc-roots-delete'` is separate from `switch` and `cleanup`. It
+  defaults to dry-run; `--apply` re-classifies roots at execution time and skips
   protected Home Manager, profile, `.direnv`, `result`, `/tmp`, and active
   worktree roots.
 - `./bin/nix-profile-cleanup` is a legacy manual profile helper. Preview with

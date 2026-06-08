@@ -6,7 +6,7 @@ set -o posix
 
 # What: classify auto-generated Nix GC roots and try direct current-user unlink for CANDIDATE roots.
 # When: run through gc-roots-delete before manual Nix store cleanup to remove only guarded stale candidates.
-# Example: nix run '.#gc-roots-delete' -- --dry-run
+# Example: nix run '.#gc-roots-delete' -- --apply
 
 usage() {
   cat <<'EOF'
@@ -14,18 +14,20 @@ Usage: list-stale-nix-gcroots.sh [--dry-run|--preview|--apply]
 
 Behavior:
   Re-classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
+  By default, list candidate actions without deleting anything
   In apply mode, attempt current-user unlink of current CANDIDATE symlink roots
   Warn and continue when a specific CANDIDATE root cannot be deleted
   In apply mode, run nix-collect-garbage after candidate deletion
 
 Examples:
-  nix run '.#gc-roots-delete' -- --dry-run
   nix run '.#gc-roots-delete'
+  nix run '.#gc-roots-delete' -- --dry-run
+  nix run '.#gc-roots-delete' -- --apply
 EOF
 }
 
 REAL_USER="${SUDO_USER:-$(id -un)}"
-dry_run=false
+dry_run=true
 
 safe_text() {
   value="$1"
