@@ -407,8 +407,14 @@ An approval-lane pass means all of the following are true:
 - critic returned an `APPROVED:` recommendation to guardian with no remaining
   BLOCKING defects
 - guardian relayed the guardian verdict to orchestrator
-- boss approves after guardian approval with critic recommendation considered
+- boss role approves internal process completion after guardian approval with
+  critic recommendation considered
 - orchestrator has no pending review cycle before sending `DONE:` onward
+
+Boss approval is an internal approval-lane gate. It does not replace explicit
+human approval when the live contract, issue, or user instruction gates public
+posting, pushes, tags, releases, production-data writes, or other external side
+effects.
 
 ### 9.3. Defect-specific rejection
 
@@ -467,6 +473,10 @@ Fallback behavior:
 identity, route reachability, reply-required flow, verdict vocabulary,
 approval/no-bypass state transitions, watchdog/fallback gates, and human
 approval gates for public posting.
+
+The `boss` role is part of the internal approval lane. When a rule says
+explicit human approval is required, get approval from the human user; do not
+treat a role-node approval as a substitute.
 
 Reusable review material belongs outside the live template:
 
