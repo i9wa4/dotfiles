@@ -202,10 +202,12 @@ Ranked from most-likely-to-be-encountered to least:
 
 1. **Command substitution.** The hook normalises obvious `$(` and backtick
    boundaries before regex matching, which catches cases like `$(git push)`,
-   including inside unquoted here-doc bodies that remain scanned. Values removed
-   by `stripDataArgs` are still treated as data strings. The hook does not
-   parse nested shell syntax or distinguish every inert argument from every
-   executable substitution.
+   including inside unquoted here-doc bodies that remain scanned. Double-quoted
+   values for `stripDataArgs` stay scanned when they contain command
+   substitution, because that content is executable shell territory rather than
+   inert message text. The hook does not parse nested shell syntax or
+   distinguish every inert argument inside a substitution from every executable
+   command in that substitution.
 2. **File-write-then-execute.** `echo "git push" > /tmp/x; bash /tmp/x` is
    two separate fragments after splitting; the second runs `bash`, which is
    not a denied command, and the file content is not analysed.

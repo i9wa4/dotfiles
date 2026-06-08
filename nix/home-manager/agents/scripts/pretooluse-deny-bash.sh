@@ -321,25 +321,155 @@ is_allow_prefix_bypass() {
   return 1
 }
 
+double_quoted_value_has_command_substitution() {
+  local value="$1"
+  local index=0
+  local value_len=${#value}
+  local char
+  local escaped=0
+
+  while [ "$index" -lt "$value_len" ]; do
+    char="${value:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      index=$((index + 1))
+      continue
+    fi
+
+    if [[ $char == \\ ]]; then
+      escaped=1
+      index=$((index + 1))
+      continue
+    fi
+
+    if [ "$char" = '`' ] || { [ "$char" = '$' ] && [ "${value:index+1:1}" = "(" ]; }; then
+      return 0
+    fi
+
+    index=$((index + 1))
+  done
+
+  return 1
+}
+
+match_strip_data_arg_at() {
+  local fragment="$1"
+  local index="$2"
+  local arg
+  local next_index
+
+  STRIP_DATA_ARG_MATCH=""
+
+  for arg in "${STRIP_DATA_ARGS[@]}"; do
+    next_index=$((index + ${#arg}))
+    if [ "${fragment:index:${#arg}}" = "$arg" ] && [[ ${fragment:next_index:1} =~ [[:space:]] ]]; then
+      STRIP_DATA_ARG_MATCH="$arg"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 # Replace the quoted value following each STRIP_DATA_ARGS arg with an empty
 # string before the regex deny check. This neutralises false positives from
 # arg values that legitimately contain words like "rm" or "sudo" without
 # weakening the check on the surrounding command (e.g. --amend still trips).
-# The original fragment is preserved separately so error messages report the
+# Double-quoted values that contain command substitution are kept in the scan
+# target because that content is shell execution, not inert message data. The
+# original fragment is preserved separately so error messages report the
 # command the agent actually issued, not the stripped version.
-# NOTE: sed delimiter must NOT appear inside the regex. Using `|` collides
-# with the `|` inside `(^|[[:space:]])` and makes sed treat the regex as
-# malformed (`unknown option to 's'`), silently emptying the fragment so
-# every subsequent deny pattern matches against "" -- net effect, no denies
-# fire and the hook leaks stderr noise into the harness. Use `#` instead.
 strip_data_arg_values() {
   local fragment="$1"
+  local fragment_len=${#fragment}
+  local index=0
+  local stripped=""
+  local previous_char
+  local char
   local arg
-  for arg in "${STRIP_DATA_ARGS[@]}"; do
-    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+\"[^\"]*\"#\1${arg} \"\"#g")
-    fragment=$(printf '%s' "$fragment" | sed -E "s#(^|[[:space:]])${arg}[[:space:]]+'[^']*'#\1${arg} ''#g")
+  local quote_char
+  local value_start
+  local value=""
+  local quoted_value=""
+  local escaped=0
+  local closed=0
+
+  while [ "$index" -lt "$fragment_len" ]; do
+    previous_char=""
+    if [ "$index" -gt 0 ]; then
+      previous_char="${fragment:index-1:1}"
+    fi
+
+    if { [ "$index" -eq 0 ] || [[ $previous_char =~ [[:space:]] ]]; } && match_strip_data_arg_at "$fragment" "$index"; then
+      arg="$STRIP_DATA_ARG_MATCH"
+      stripped+="$arg"
+      index=$((index + ${#arg}))
+
+      while [ "$index" -lt "$fragment_len" ] && [[ ${fragment:index:1} =~ [[:space:]] ]]; do
+        stripped+="${fragment:index:1}"
+        index=$((index + 1))
+      done
+
+      quote_char="${fragment:index:1}"
+      if [ "$quote_char" != "'" ] && [ "$quote_char" != '"' ]; then
+        continue
+      fi
+
+      value_start="$index"
+      value=""
+      quoted_value="$quote_char"
+      escaped=0
+      closed=0
+      index=$((index + 1))
+
+      while [ "$index" -lt "$fragment_len" ]; do
+        char="${fragment:index:1}"
+        quoted_value+="$char"
+
+        if [ "$quote_char" = '"' ] && [ "$escaped" -eq 1 ]; then
+          value+="$char"
+          escaped=0
+          index=$((index + 1))
+          continue
+        fi
+
+        if [ "$quote_char" = '"' ] && [[ $char == \\ ]]; then
+          value+="$char"
+          escaped=1
+          index=$((index + 1))
+          continue
+        fi
+
+        if [ "$char" = "$quote_char" ]; then
+          closed=1
+          index=$((index + 1))
+          break
+        fi
+
+        value+="$char"
+        index=$((index + 1))
+      done
+
+      if [ "$closed" -ne 1 ]; then
+        stripped+="${fragment:value_start}"
+        break
+      fi
+
+      if [ "$quote_char" = '"' ] && double_quoted_value_has_command_substitution "$value"; then
+        stripped+="$quoted_value"
+      else
+        stripped+="${quote_char}${quote_char}"
+      fi
+
+      continue
+    fi
+
+    stripped+="${fragment:index:1}"
+    index=$((index + 1))
   done
-  printf '%s' "$fragment"
+
+  printf '%s' "$stripped"
 }
 
 normalize_command_substitution_boundaries() {

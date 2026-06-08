@@ -158,6 +158,18 @@ MARKDOWN
 COMMAND
 )
 
+stripped_arg_substitution_command=$(
+  cat <<'COMMAND'
+git commit -m "$(git push origin HEAD:refs/heads/example)"
+COMMAND
+)
+
+escaped_stripped_arg_substitution_command=$(
+  cat <<'COMMAND'
+git commit -m "\$(git push origin HEAD:refs/heads/example) is inert prose"
+COMMAND
+)
+
 mixed_quoted_heredoc_command=$(
   cat <<'COMMAND'
 cat > ./example.md <<M"A"RKDOWN
@@ -239,6 +251,8 @@ assert_file_not_contains "$codex_config" "embedded Codex rules ="
 
 assert_allowed "prose in git commit message" \
   'git commit -m "document why git push is policy-denied in prose"'
+assert_allowed "escaped command substitution text in git commit message" \
+  "$escaped_stripped_arg_substitution_command"
 assert_allowed "postman heredoc payload with prose and fenced code" \
   "$postman_body_command"
 assert_allowed "markdown heredoc payload with fenced code" \
@@ -260,6 +274,8 @@ assert_denied "interpreter heredoc stdin executes git push" \
   "$interpreter_heredoc_command"
 assert_denied "unquoted heredoc command substitution executes git push" \
   "$unquoted_heredoc_substitution_command"
+assert_denied "command substitution in stripped message executes git push" \
+  "$stripped_arg_substitution_command"
 assert_denied "mixed-quoted heredoc delimiter does not hide later git push" \
   "$mixed_quoted_heredoc_then_command"
 assert_denied "backslash-quoted heredoc delimiter does not hide later git push" \
