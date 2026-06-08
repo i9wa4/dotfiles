@@ -9,6 +9,9 @@ approval contract carried by `tmux-a2a-postman`.
 For the broader repository philosophy, read
 `docs/dotfiles-operating-concepts.md`.
 
+For review responsibility boundaries across automation, AI assistance, and
+human or owner approval, read `docs/repo-ai-review-boundaries.md`.
+
 ## 1. Scope
 
 Use this document when the question is "how should an AI agent operate inside
