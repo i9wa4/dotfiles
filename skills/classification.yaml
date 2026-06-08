@@ -52,24 +52,15 @@ target_groups:
     English documentation quality checks with Vale and Harper for
     technical-doc style, grammar, spelling, false positives, and mixed-doc
     caveats.
+  english-to-japanese-technical-translation: >
+    English-to-Japanese technical article translation workflow with glossary,
+    verbatim-token, constraint-check, prompt-template, and publication QA
+    guidance.
   data-platform: >
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
 
-retired_skill_surfaces:
-  - name: agent-skill-management
-    previous_path: skills/agent-skill-management
-    previous_docs_pointer: docs/agent-skill-management.md
-    action: removed_duplicate_surface
-    issue: 206
-    canonical_name: agent-skills-management
-    canonical_path: skills/agent-skills-management
-    canonical_docs_pointer: docs/agent-skills-management.md
-    duplicate_reference_removed: references/waza-publishing.md
-    rationale: >
-      The singular surface duplicated the plural Agent Skills management skill.
-      The plural `agent-skills-management` name is the canonical release target.
 private_content_scan:
   required_before:
     - moving skill content
@@ -148,49 +139,6 @@ skills:
     owner_surface: skill
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
-    validation_expectations: *common_validation
-
-  - name: agent-workspace
-    path: skills/agent-workspace
-    publish: false
-    scope: repo-local-agent-harness
-    action: demote_to_compatibility_trigger
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: demoted_compatibility_trigger
-    owner_surface: skills/agent-harness-engineering/references
-    standalone_decision: demoted_to_trigger
-    personal_content_action: scanned_migrated_surfaces
-    validation_expectations: *common_validation
-
-  - name: orchestrator
-    path: skills/orchestrator
-    publish: false
-    scope: postman-role-contract
-    action: delete_role_only_skill
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: removed_before_release
-    owner_surface: config/tmux-a2a-postman/postman.md
-    runbook_surface: skills/agent-harness-engineering/references/orchestrator-runbook.md
-    standalone_decision: deleted_role_only_skill
-    personal_content_action: scanned_migrated_surfaces
-    validation_expectations:
-      - verify postman.md owns role identity and live coordination
-      - verify detailed runbooks move to agent-harness-engineering references
-      - verify no standalone orchestrator target remains before release
-
-  - name: prompt-contracts-local
-    path: skills/prompt-contracts-local
-    publish: false
-    scope: repo-local-agent-harness
-    action: demote_to_compatibility_trigger
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
-    release_state: demoted_compatibility_trigger
-    owner_surface: skills/agent-harness-engineering/references
-    standalone_decision: demoted_to_trigger
-    personal_content_action: scanned_migrated_surfaces
     validation_expectations: *common_validation
 
   - name: agent-skills-management
@@ -426,6 +374,19 @@ skills:
     action: keep
     target_group: english-writing-quality
     target_name: english-writing-quality
+    release_state: release_ready
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+
+  - name: english-to-japanese-technical-translation
+    path: skills/english-to-japanese-technical-translation
+    publish: true
+    scope: english-to-japanese-technical-translation
+    action: keep
+    target_group: english-to-japanese-technical-translation
+    target_name: english-to-japanese-technical-translation
     release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone

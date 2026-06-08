@@ -125,10 +125,11 @@ in
         "google-chrome"
         "kitty"
         "macskk"
-        "monitorcontrol"
         "obsidian"
+        "podman-desktop"
         "visual-studio-code"
         "zoom"
+        # "monitorcontrol"
       ];
     in
     {

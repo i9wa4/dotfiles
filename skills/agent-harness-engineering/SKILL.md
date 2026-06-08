@@ -2,19 +2,22 @@
 name: agent-harness-engineering
 license: MIT
 description: |
-  USE FOR: Dotfiles agent harness work including Claude/Codex config, Nix/HM hooks, MCP, skill installation, postman routing, workspace/worktree operations, prompt contracts, reviews, and resume handoff.
+  USE FOR: agent harness config/hooks, postman routing, runbooks, worktrees, panes, prompt/review contracts, resumes; aliases: agent-workspace, prompt-contracts-local.
 ---
 
 # Agent Harness Engineering
 
 **USE FOR:** Dotfiles agent harness work: Claude/Codex config, Nix/HM hooks,
-MCP, skill installation, postman routing, runbooks, tmux workspaces, issue/PR
-worktrees, pane operations, prompt/review contracts, and resume handoff.
+MCP, skill installation, postman routing, orchestrator role/runbooks, tmux
+workspaces, issue/PR worktrees, pane operations including stale target
+validation, prompt/review contracts, and resume handoff. This includes
+requests that name the former `agent-workspace` or `prompt-contracts-local`
+compatibility triggers.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated outputs, or
 replacing repo source of truth.
 
-## Workflow
+## 1. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Open the owner reference for the surface:
@@ -24,7 +27,7 @@ replacing repo source of truth.
 3. Use sibling refs as needed, make the smallest scoped change, run nearest
    checks, and report verification plus remaining risk.
 
-## References
+## 2. References
 
 - [Harness](references/preserved-guidance.md),
   [Claude](references/claude-code.md),

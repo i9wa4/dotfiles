@@ -10,20 +10,20 @@ description: |
 Compatibility trigger for ambiguity-reduction tasks. The durable guidance now
 lives in `skills/plan-design/references/brainstorming.md`.
 
-## Use For
+## 1. Use For
 
 - Fuzzy requirements or multiple plausible approaches before planning.
 - Option framing with 2-3 trade-off comparisons.
 - Narrowing a user-facing objective before implementation.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Clear tasks with an existing acceptance target.
 - Approved plans that already have concrete milestones.
 - Unrelated domains, broad rewrites outside the request, or generated runtime
   outputs.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read `skills/plan-design/references/brainstorming.md`.
@@ -32,11 +32,11 @@ lives in `skills/plan-design/references/brainstorming.md`.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
-## Examples
+## 4. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 5. References
 
 - `skills/plan-design/references/brainstorming.md`

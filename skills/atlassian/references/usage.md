@@ -1,6 +1,6 @@
 # Atlassian Usage
 
-## Safe Environment Check
+## 1. Safe Environment Check
 
 Use this pattern to check variable presence without printing values:
 
@@ -16,7 +16,7 @@ PY
 Do not use commands that dump full environment values. Keep shell tracing
 disabled before authenticated commands.
 
-## Jira
+## 2. Jira
 
 - For access checks, request only the fields needed to prove readability, such
   as `summary` and `status`.
@@ -25,14 +25,14 @@ disabled before authenticated commands.
 - Avoid copying full descriptions, comments, or attachments unless the task
   explicitly requires that content.
 
-## Confluence
+## 3. Confluence
 
 - Prefer targeted reads by page id, title, or CQL search over broad exports.
 - Request only the page body representation needed for the task.
 - Avoid storing page bodies in durable artifacts unless the user asked for
   extracted content.
 
-## Cleanup
+## 4. Cleanup
 
 Temporary response files can contain private content. Remove them after
 extracting the minimal evidence needed for the task.

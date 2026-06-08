@@ -97,11 +97,11 @@ local function highlight_match()
     ids[#ids + 1] = vim.fn.matchadd(group, pattern)
   end
 
-  add("CursorLine", [[# %%\|# COMMAND ----------]])
-  add("CursorLine", [[\[ \]])
-  add("CursorLine", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("CursorLine", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("CursorLine", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
+  add("TermCursor", [[# %%\|# COMMAND ----------]])
+  add("TermCursor", [[\[ \]])
+  add("TermCursor", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
+  add("TermCursor", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
+  add("TermCursor", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
 

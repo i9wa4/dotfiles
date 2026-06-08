@@ -7,7 +7,7 @@ style is still findings first in concise prose. Use this contract only when a
 consumer benefits from structured parsing or when you are designing a new
 review-oriented prompt.
 
-## JSON Shape
+## 1. JSON Shape
 
 ```json
 {
@@ -31,7 +31,7 @@ review-oriented prompt.
 }
 ```
 
-## Required Rules
+## 2. Required Rules
 
 - `verdict` is `needs-attention` if there is any material risk worth blocking
   on.
@@ -44,14 +44,14 @@ review-oriented prompt.
 - Keep claims grounded in inspected files or tool output.
 - Prefer one strong finding over several weak ones.
 
-## Severity Guidance
+## 3. Severity Guidance
 
 - `critical`: security, data loss, or irreversible production harm
 - `high`: likely user-visible breakage or strong correctness risk
 - `medium`: real defect or regression with narrower blast radius
 - `low`: meaningful but less urgent weakness
 
-## When To Avoid This Contract
+## 4. When To Avoid This Contract
 
 - The downstream consumer expects normal prose review comments
 - The job is advisory rather than review-specific

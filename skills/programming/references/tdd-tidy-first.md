@@ -2,7 +2,7 @@
 
 Use this reference for small, verifiable implementation loops.
 
-## Core Defaults
+## 1. Core Defaults
 
 - Prefer the smallest next step that can be verified quickly.
 - For behavioral changes, start with a failing test or minimal reproducer when
@@ -10,8 +10,10 @@ Use this reference for small, verifiable implementation loops.
 - Implement only enough code to pass the new check.
 - Refactor only after the behavior is verified.
 - Keep structural and behavioral changes separate when practical.
+- Every changed line should trace directly to the current request.
+- Limit cleanup to artifacts introduced or invalidated by the current change.
 
-## Red, Green, Refactor
+## 2. Red, Green, Refactor
 
 1. Write the smallest failing test or reproducer for the next behavior.
 2. Make it pass with the minimum code change.
@@ -19,7 +21,7 @@ Use this reference for small, verifiable implementation loops.
 4. Refactor for clarity or duplication only after the check passes.
 5. Re-run verification after each refactor step.
 
-## Bug Fix Pattern
+## 3. Bug Fix Pattern
 
 - Start with a failing API-level test when one is easy to add.
 - If the failure is hard to isolate, add the smallest reproducer that exposes
@@ -27,7 +29,7 @@ Use this reference for small, verifiable implementation loops.
 - If the bug is not understood, use `systematic-debugging` before changing
   code.
 
-## Repo Fit
+## 4. Repo Fit
 
 - Use `mkmd` plan and research artifacts when planning is needed.
 - Do not run every test after every tiny edit by default; run focused checks

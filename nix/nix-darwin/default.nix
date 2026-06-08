@@ -129,6 +129,8 @@ in
       upgrade = false;
       # Remove formulae/casks not listed in configuration
       cleanup = "uninstall";
+      # Homebrew 4.7 requires an explicit confirmation mode with --cleanup.
+      extraFlags = [ "--force-cleanup" ];
     };
   };
 
@@ -438,6 +440,9 @@ in
   # ============================================================================
   # The following settings require manual configuration via System Settings:
   #
+  # - バッテリー
+  #     - 充電
+  #         - 充電上限 95%
   # - Spotlight
   #     - システムからの結果
   #         - アプリ ON

@@ -13,7 +13,7 @@ after confirming required variables are present.
 
 Read [Usage](references/usage.md) before authenticated Atlassian requests.
 
-## Required Env
+## 1. Required Env
 
 - `ATLASSIAN_SITE`: Atlassian Cloud site URL.
 - `ATLASSIAN_EMAIL`: account email for API token auth.
@@ -24,7 +24,7 @@ Check presence, not values. Use the reference command or an equivalent that
 prints only `set` or `missing`. Never print credential values, authorization
 headers, cookies, or shell traces.
 
-## Workflow
+## 2. Workflow
 
 - Confirm required env vars before access. Do not infer access from a URL.
 - Jira: use targeted REST calls for issues, searches, comments, transitions,
@@ -34,7 +34,7 @@ headers, cookies, or shell traces.
 - Prefer read-only checks first. For writes, confirm the exact issue or page
   and summarize the intended change before executing.
 
-## Reporting
+## 3. Reporting
 
 State whether access is readable, blocked by auth, blocked by permissions,
 blocked by network, or not found. Include minimal evidence only, such as Jira

@@ -9,7 +9,7 @@ as the runtime source of truth for what the orchestrator must do during a live
 session. Use this reference when maintaining the harness, writing plans, or
 auditing whether orchestration details still belong in the live template.
 
-## Ownership Boundary
+## 1. Ownership Boundary
 
 - Keep live role identity, routing, reply behavior, approval ordering,
   escalation thresholds, and completion vocabulary in
@@ -18,10 +18,10 @@ auditing whether orchestration details still belong in the live template.
   `skills/agent-harness-engineering/references/`.
 - Use `durable-task-tracking` for task artifact setup and preservation
   mechanics. Cite the same artifact in worker, review, and completion traffic.
-- Do not restore a standalone role-only `skills/orchestrator/` skill unless the
-  live postman role no longer carries enough contract to operate safely.
+- Do not restore a standalone role-only orchestrator skill unless the live
+  postman role no longer carries enough contract to operate safely.
 
-## Runtime Reference Boundary
+## 2. Runtime Reference Boundary
 
 - Treat repo `docs/` as background for people and repo readers, not as the only
   home for behavior that installed Agent Skills need at runtime.
@@ -32,7 +32,7 @@ auditing whether orchestration details still belong in the live template.
 - If this reference and `config/tmux-a2a-postman/postman.md` disagree, update
   the live role contract first, then mirror the durable invariant here.
 
-## Routing and Approval Invariants
+## 3. Routing and Approval Invariants
 
 The approval workflow has these standing role nodes:
 
@@ -55,7 +55,7 @@ Reachability is strict:
 - `critic` talks only to `guardian`.
 - `guardian` receives review requests from `orchestrator`, sends review
   packages to `critic`, receives critic recommendations, and relays the
-  guardian-owned verdict to `orchestrator`.
+  guardian verdict to `orchestrator`.
 - `worker` and `worker-alt` report to `orchestrator`.
 - `boss` gives final approval to `orchestrator`.
 
@@ -75,7 +75,7 @@ Approval requires all of these conditions:
 - guardian completed first review and sent evidence to critic;
 - critic returned an approval recommendation to guardian with no remaining
   blocking defects;
-- guardian relayed a guardian-owned verdict to orchestrator;
+- guardian relayed a guardian verdict to orchestrator;
 - boss approved after guardian approval considered critic's recommendation;
 - orchestrator has no pending review cycle before sending `DONE:` onward.
 
@@ -106,7 +106,7 @@ Historical retained mail can show old recipients, old review routes, or
 `reply_command` wording. Treat those as drift signatures, not the current
 contract.
 
-## Task Classification
+## 4. Task Classification
 
 When a user request reaches orchestrator, classify it before delegation:
 
@@ -121,7 +121,7 @@ When a user request reaches orchestrator, classify it before delegation:
 For ambiguous requests, delegate the ambiguity-reduction work to a worker with a
 compact ask and require the answer to cite the artifact or evidence used.
 
-## Delegation Shape
+## 5. Delegation Shape
 
 Normal implementation delegation should include:
 
@@ -135,7 +135,7 @@ Normal implementation delegation should include:
 Use worker DONE as an internal artifact-ready signal. Orchestrator still owns
 review routing and final messenger-facing completion.
 
-## Plan Lane
+## 6. Plan Lane
 
 For plan-first work:
 
@@ -148,7 +148,7 @@ For plan-first work:
 4. On `NOT APPROVED:`, return only the defect-specific rework request while the
    approval attempt cap allows it.
 
-## Artifact Lane
+## 7. Artifact Lane
 
 For implementation work:
 
@@ -159,7 +159,7 @@ For implementation work:
    guardian, guardian to orchestrator, then boss.
 5. Send messenger-facing DONE only after all review and boss approvals pass.
 
-## Rework Lane
+## 8. Rework Lane
 
 When review returns defects:
 
@@ -170,7 +170,7 @@ When review returns defects:
 - Count the attempt against the approval cap recorded in
   `config/tmux-a2a-postman/postman.md`.
 
-## Publication Lane
+## 9. Publication Lane
 
 Pushes, PR creation, GitHub comments, releases, and tags are separate public
 surface operations. Delegate preparation and local verification separately from

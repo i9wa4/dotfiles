@@ -10,19 +10,19 @@ description: |
 Compatibility trigger for dbt-specific repo additions. The durable
 implementation guidance now lives in `skills/data-platform/references/dbt.md`.
 
-## Use For
+## 1. Use For
 
 - Issue-specific local dbt target setup.
 - Databricks SQL dialect caveats for dbt work.
 - Repo-local dbt examples.
 
-## Do Not Use For
+## 2. Do Not Use For
 
 - Broad data-platform work; use `data-platform`.
 - General dbt command basics; use official dbt skills when available.
 - Unrelated domains, broad rewrites, or generated runtime outputs.
 
-## Workflow
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read `skills/data-platform/references/dbt.md`.
@@ -30,16 +30,16 @@ implementation guidance now lives in `skills/data-platform/references/dbt.md`.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Report verification results and any remaining risk.
 
-## Examples
+## 4. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
 source, run focused checks, and summarize the result.
 
-## References
+## 5. References
 
 - `skills/data-platform/references/dbt.md`
 
-## Troubleshooting
+## 6. Troubleshooting
 
 If Waza or repo validation disagrees with preserved guidance, follow the
 stricter rule and record the exception in the handoff.

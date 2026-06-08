@@ -76,7 +76,11 @@ in
             # Linux-specific home-manager settings
             home = {
               packages = [
-                # zsh: installed by home-manager programs.zsh (zsh.nix)
+                # pkgs.docker includes dockerd.
+                # Rootful socket setup is exposed by nix run '.#docker-socket'.
+                pkgs.docker
+                pkgs.docker-compose
+                pkgs.docker-credential-helpers
               ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";

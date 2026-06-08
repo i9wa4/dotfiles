@@ -137,6 +137,8 @@ in
       # Safe-chain
       if [[ -f ~/.safe-chain/scripts/init-posix.sh ]]; then
         source ~/.safe-chain/scripts/init-posix.sh
+        # Keep npm/npx absent while retaining Safe-chain wrappers for pnpm, uv, etc.
+        unfunction npm npx 2>/dev/null || true
       fi
 
       # Local config (machine-specific, not version controlled)

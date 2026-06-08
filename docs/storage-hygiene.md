@@ -359,11 +359,14 @@ find /nix/var/nix/gcroots -maxdepth 3 -type l 2>/dev/null | head -50
 Approved action only, after the retention policy is known:
 
 ```sh
+nix run '.#switch'
 nix run '.#gc-roots-delete'
 ```
 
 For normal daily maintenance, prefer the repo's switch/update flow and the
-explicit GC-root delete surface. Do not use ad hoc `rm` under `/nix`.
+explicit GC-root delete surface. User-profile cleanup is no longer part of the
+flake app surface because this repository no longer uses a manual user Nix
+profile for managed tools. Do not use ad hoc `rm` under `/nix`.
 
 #### 1.12.7. `/home` Ownership
 

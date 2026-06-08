@@ -58,7 +58,7 @@ Select the best-matching pattern from this catalog when creating diagrams.
 
 ### 2.1. Comparison Patterns
 
-#### A. Side-by-Side Comparison Panel
+#### 2.1.1. A. Side-by-Side Comparison Panel
 
 Compare two concepts horizontally.
 
@@ -75,7 +75,7 @@ Compare two concepts horizontally.
 - Left: Success color (positive) / Right: Danger color (negative)
 - Optional Note-colored supplementary box at the bottom
 
-#### B. Before/After (Vertical Two-Row)
+#### 2.1.2. B. Before/After (Vertical Two-Row)
 
 Show improvement over time.
 
@@ -92,7 +92,7 @@ Show improvement over time.
 - After: Success background + Success steps
 - Show total time/cost on the right edge
 
-#### C. 3-Column Comparison Table
+#### 2.1.3. C. 3-Column Comparison Table
 
 Show mappings and correspondences.
 
@@ -111,7 +111,7 @@ Show mappings and correspondences.
 
 ### 2.2. Flow / Process Patterns
 
-#### D. Horizontal Step Flow
+#### 2.2.1. D. Horizontal Step Flow
 
 Show sequential steps or processes.
 
@@ -133,7 +133,7 @@ Show sequential steps or processes.
 - Different color role per step
 - Neutral-colored code example and Note-colored takeaway at bottom
 
-#### E. Multi-Column Layout
+#### 2.2.2. E. Multi-Column Layout
 
 Expand system structure from left to right.
 
@@ -154,7 +154,7 @@ Expand system structure from left to right.
 - Thick arrows between panels (strokeWidth=4)
 - Summary bar at bottom
 
-#### F. Vertical Flow + Branching
+#### 2.2.3. F. Vertical Flow + Branching
 
 Show Git-flow-style branching and merging.
 
@@ -177,7 +177,7 @@ Show Git-flow-style branching and merging.
 
 ### 2.3. Aggregation / Decomposition Patterns
 
-#### G. Multiple → Unified Result
+#### 2.3.1. G. Multiple → Unified Result
 
 Multiple inputs converge into a single result.
 
@@ -198,7 +198,7 @@ Multiple inputs converge into a single result.
 - Result box with accent stroke
 - Internal feature cards on white background
 
-#### H. Center + Radial (Problem Statement)
+#### 2.3.2. H. Center + Radial (Problem Statement)
 
 Arrange problems/features around a central icon.
 
@@ -222,7 +222,7 @@ Arrange problems/features around a central icon.
 
 ### 2.4. Card / Metric Patterns
 
-#### I. Side-by-Side Cards (KPI / Metrics)
+#### 2.4.1. I. Side-by-Side Cards (KPI / Metrics)
 
 Display independent metrics in parallel.
 
@@ -242,7 +242,7 @@ Display independent metrics in parallel.
 
 ### 2.5. Hierarchy / Structure Patterns
 
-#### J. Multi-Layer Architecture Diagram
+#### 2.5.1. J. Multi-Layer Architecture Diagram
 
 Expand vertically from user layer to foundation layer.
 
@@ -266,7 +266,7 @@ Expand vertically from user layer to foundation layer.
 - Shared layer in Neutral color
 - Foundation in Note color (indicates importance)
 
-#### K. 3-Column Mapping
+#### 2.5.2. K. 3-Column Mapping
 
 Visualize relationships between left and right elements via center.
 
@@ -283,7 +283,7 @@ Visualize relationships between left and right elements via center.
 
 ### 2.6. Technical / AI System Patterns
 
-#### L. Agent + Tool + Memory Loop
+#### 2.6.1. L. Agent + Tool + Memory Loop
 
 Show the user request, agent core, tools, and memory as separate
 responsibilities.
@@ -305,7 +305,7 @@ responsibilities.
 - Use a curved feedback arrow only when the reasoning loop matters to the
   story
 
-#### M. Memory Tier Read / Write Split
+#### 2.6.2. M. Memory Tier Read / Write Split
 
 Separate what the runtime reads from what it writes.
 
