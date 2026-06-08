@@ -16,6 +16,7 @@ Sources checked on 2026-06-09:
 - `docs/agent-command-approval-design.md`
 - `nix/home-manager/agents/codex/default.nix`
 - `docs/codex-guardian-policy-template-evaluation.md`
+- `config/vde/layout.yml`
 - `config/tmux-a2a-postman/postman.md`
 
 ## 1. Decision
@@ -26,9 +27,9 @@ issue worktree.
 
 Do not add `danger-full-access`, `approval_policy = "never"`, or any equivalent
 full-access/no-approval setting to the default path for this issue. The current
-postman panes already use high-autonomy launcher flags, so the useful
-experiment is the opposite shape: `workspace-write`, `on-request`, and
-`auto_review` only for eligible boundary-crossing requests.
+postman pane launchers in `config/vde/layout.yml` already use high-autonomy
+flags, so the useful experiment is the opposite shape: `workspace-write`,
+`on-request`, and `auto_review` only for eligible boundary-crossing requests.
 
 ## 2. Current Local State
 
