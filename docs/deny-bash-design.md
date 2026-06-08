@@ -21,7 +21,10 @@ What it protects against:
 What it deliberately does not protect against:
 
 - File-write-then-execute patterns like `echo "git push" > /tmp/x; /tmp/x`.
-- Shell command substitution `$(...)` and process substitution `<(...)`.
+- Complete shell parsing for command substitutions and process substitutions.
+  The hook normalises obvious command-substitution boundaries for deny matching
+  and rejects supported data-only here-doc stripping when substitutions appear
+  on the redirecting command line, but it is not a shell parser.
 - Indirect execution through other languages
   (`python -c 'os.system("git push")'`).
 - An agent that explicitly intends to evade the hook.
@@ -106,27 +109,47 @@ command-deny entries.
 ## 4. Hook Processing Pipeline
 
 `check_bash_command_for_denials` and `check_bash_fragment_for_denials` in the
-hook script implement this order. Each fragment of the issued command (after
-quote-aware splitting on top-level `;`, `&`, `|` operators) is processed as
-follows:
+hook script implement this order. The full issued command first gets a narrow
+here-doc pre-pass, then each fragment of the command (after quote-aware
+splitting on top-level `;`, `&`, `|` operators) is processed as follows:
 
 1. **Trim** leading and trailing whitespace.
-2. **Bypass check** (`is_allow_prefix_bypass`). If the fragment starts with
+2. **Safe here-doc body strip** (`strip_safe_heredoc_bodies`). The hook skips a
+   here-doc body only when all of these are true:
+   - the redirecting command line is a simple `cat` data-carrier command;
+   - the command line has exactly one here-doc redirect;
+   - the delimiter word is quoted after Bash quote-removal, including mixed or
+     backslash quoting;
+   - the command line has no top-level `;`, `&`, or `|`, no process
+     substitution, no command substitution, and no unsupported fake marker;
+   - the quote-removed terminator is found, with leading tabs accepted only for
+     `<<-`.
+
+   Unsupported or malformed here-doc syntax stays in the command text and is
+   scanned fail-closed. Interpreter stdin (`bash <<'EOF'`), unquoted here-docs
+   that can expand `$(...)`, pipelines such as `cat <<'EOF' | bash`, comments,
+   arithmetic shifts, and missing terminators are not stripped.
+3. **Bypass check** (`is_allow_prefix_bypass`). If the fragment starts with
    any prefix in `ALLOW_PREFIX_BYPASS`, return success without further
    checks. Spaces inside a multi-token prefix are matched as
    `[[:space:]]+`.
-3. **Wrapper unwrap** (`unwrap_shell_wrapper`). If the fragment is
+4. **Wrapper unwrap** (`unwrap_shell_wrapper`). If the fragment is
    `bash -c "..."`, `sh -c "..."`, or `zsh -c "..."` (including the `-lc`
    and `-cl` short forms), the inner script is extracted, one quote layer
    is stripped, and the inner script is recursively passed back through
    `check_bash_command_for_denials`. This makes wrapping a denied command
    in `bash -c` ineffective at evading the deny.
-4. **Data-arg strip** (`strip_data_arg_values`). For each arg name listed
+5. **Data-arg strip** (`strip_data_arg_values`). For each arg name listed
    in `STRIP_DATA_ARGS`, the quoted value following the arg is replaced
    with an empty string. This prevents legitimate `-m "msg with rm in it"`
    style messages from triggering false positives without weakening the
    check on flags that follow the message arg.
-5. **Regex match** loop. The (possibly stripped) fragment is tested against
+6. **Command-substitution boundary normalisation**
+   (`normalize_command_substitution_boundaries`). `$(` and backtick boundaries
+   that remain after data-arg stripping are normalised to whitespace before
+   regex matching so deny rules can still match a command that starts at a
+   substitution boundary. This is a guardrail, not full shell parsing.
+7. **Regex match** loop. The (possibly stripped) fragment is tested against
    each pattern in `DENY_PATTERNS`. The first match emits a deny payload
    with the corresponding justification. The deny payload reports the
    **original fragment**, not the stripped one, so the agent sees the
@@ -187,9 +210,14 @@ trips the `--amend` deny.
 
 Ranked from most-likely-to-be-encountered to least:
 
-1. **Command substitution.** `git commit -m "$(rm -rf /)"` strips the value
-   `$(rm -rf /)` literally; the shell still executes the substitution.
-   The hook cannot inspect this without parsing shell syntax.
+1. **Command substitution.** The hook normalises obvious `$(` and backtick
+   boundaries before regex matching, which catches cases like `$(git push)`,
+   including inside unquoted here-doc bodies that remain scanned. Double-quoted
+   values for `stripDataArgs` stay scanned when they contain command
+   substitution, because that content is executable shell territory rather than
+   inert message text. The hook does not parse nested shell syntax or
+   distinguish every inert argument inside a substitution from every executable
+   command in that substitution.
 2. **File-write-then-execute.** `echo "git push" > /tmp/x; bash /tmp/x` is
    two separate fragments after splitting; the second runs `bash`, which is
    not a denied command, and the file content is not analysed.

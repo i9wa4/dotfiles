@@ -51,6 +51,13 @@ denies as embedded `prefix_rule(...)` rules; the shared PreToolUse hook is
 the repo-owned command-deny authority, while Codex sandbox/approval settings
 remain responsible for filesystem and network blast radius.
 
+The `codex-deny-inert-text` flake check keeps that boundary explicit: inert
+mentions of denied commands inside known data carriers stay allowed, while an
+actual executable `git push` still trips the shared hook. If Codex ever
+reintroduces embedded command-deny rules, the check should be expanded to prove
+those rules match only executable command position, not prose, postman message
+bodies, or Markdown fenced code.
+
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
 The persona / language / scope directives live as `[common_template]`
