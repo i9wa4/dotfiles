@@ -360,13 +360,16 @@ Approved action only, after the retention policy is known:
 
 ```sh
 nix run '.#switch'
+nix run '.#gc-roots-delete' -- --dry-run
 nix run '.#gc-roots-delete'
 ```
 
 For normal daily maintenance, prefer the repo's switch/update flow and the
 explicit GC-root delete surface. User-profile cleanup is no longer part of the
 flake app surface because this repository no longer uses a manual user Nix
-profile for managed tools. Do not use ad hoc `rm` under `/nix`.
+profile for managed tools. If a legacy manual profile needs cleanup, preview
+with `bash ./bin/nix-profile-cleanup --dry-run` before using `--apply`. Do not
+use ad hoc `rm` under `/nix`.
 
 #### 1.12.7. `/home` Ownership
 
@@ -406,12 +409,14 @@ Use these only after the user approves the exact action.
 Low-risk rebuildable cache cleanup:
 
 ```sh
+nix run '.#cleanup' -- --dry-run
 nix run '.#cleanup'
 ```
 
 Guarded stale GC-root cleanup:
 
 ```sh
+nix run '.#gc-roots-delete' -- --dry-run
 nix run '.#gc-roots-delete'
 ```
 
@@ -457,20 +462,24 @@ Use the single delete-focused command surface to remove stale auto GC roots.
 ### 2.1. Command
 
 ```sh
+nix run '.#gc-roots-delete' -- --dry-run
 nix run '.#gc-roots-delete'
 ```
 
-The interface has no flags. It attempts current-user unlink directly and never
-asks for escalation. Every invocation re-classifies roots as:
+The interface supports `--dry-run`, `--preview`, and `--apply`. Omitting a mode
+uses apply mode for backward compatibility. Every invocation re-classifies roots
+as:
 
 - `KEEP`
 - `CANDIDATE`
 - `BLOCKED`
 
 Each line includes a reason, the auto-root path, the original linked path, and
-the resolved target. The command unlinks only current `CANDIDATE` auto-root
-symlinks that the current user can delete, prints a `WARNING` for roots that
-cannot be removed, and then runs `nix-collect-garbage`.
+the resolved target. In dry-run mode, the command prints `WOULD_DELETE` for
+current `CANDIDATE` auto-root symlinks and skips `nix-collect-garbage`. In
+apply mode, it unlinks only current `CANDIDATE` auto-root symlinks that the
+current user can delete, prints a `WARNING` for roots that cannot be removed,
+and then runs `nix-collect-garbage`.
 
 ### 2.2. Protected Root Classes
 
@@ -488,8 +497,10 @@ links such as `profile-*` stay `KEEP`.
 ### 2.3. Operator Notes
 
 - This delete surface is explicit and never scheduled.
-- It re-runs the classification and active-worktree checks at execution time.
-- It has no preview mode and no flag-based delete switch.
+- It re-runs the classification and active-worktree checks at execution time in
+  both dry-run and apply mode.
+- Use `--dry-run` or `--preview` before apply mode when investigating storage
+  pressure.
 - It attempts deletion as the current user and keeps going when a specific root
   cannot be removed.
 

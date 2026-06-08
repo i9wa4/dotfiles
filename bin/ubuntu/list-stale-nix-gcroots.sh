@@ -6,24 +6,26 @@ set -o posix
 
 # What: classify auto-generated Nix GC roots and try direct current-user unlink for CANDIDATE roots.
 # When: run through gc-roots-delete before manual Nix store cleanup to remove only guarded stale candidates.
-# Example: nix run '.#gc-roots-delete'
+# Example: nix run '.#gc-roots-delete' -- --dry-run
 
 usage() {
   cat <<'EOF'
-Usage: list-stale-nix-gcroots.sh
+Usage: list-stale-nix-gcroots.sh [--dry-run|--preview|--apply]
 
 Behavior:
   Re-classify auto GC roots as KEEP, CANDIDATE, or BLOCKED
-  Attempt current-user unlink of current CANDIDATE symlink roots
+  In apply mode, attempt current-user unlink of current CANDIDATE symlink roots
   Warn and continue when a specific CANDIDATE root cannot be deleted
-  Run nix-collect-garbage after candidate deletion
+  In apply mode, run nix-collect-garbage after candidate deletion
 
 Examples:
+  nix run '.#gc-roots-delete' -- --dry-run
   nix run '.#gc-roots-delete'
 EOF
 }
 
 REAL_USER="${SUDO_USER:-$(id -un)}"
+dry_run=false
 
 safe_text() {
   value="$1"
@@ -45,6 +47,14 @@ run_as_real_user() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+  --dry-run | --preview)
+    dry_run=true
+    shift
+    ;;
+  --apply)
+    dry_run=false
+    shift
+    ;;
   -h | --help)
     usage
     exit 0
@@ -202,11 +212,15 @@ EOF
   printf '%s\t%s\t%s\t%s\t%s\n' "$state" "$reason" "$root_path" "$link_path" "$target_path" >>"$output_file"
 
   if [[ $state == CANDIDATE ]]; then
-    echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
-    if unlink "$root_path" 2>/dev/null; then
-      delete_count=$((delete_count + 1))
+    if [[ $dry_run == true ]]; then
+      echo "WOULD_DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
     else
-      echo "WARNING root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=unlink-failed"
+      echo "DELETE root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=$(safe_text "$reason")"
+      if unlink "$root_path" 2>/dev/null; then
+        delete_count=$((delete_count + 1))
+      else
+        echo "WARNING root=$(safe_text "$root_path") link=$(safe_text "$link_path") reason=unlink-failed"
+      fi
     fi
   fi
 done <"$roots_file"
@@ -222,6 +236,10 @@ while IFS=$'\t' read -r state reason root_path link_path target_path; do
 done <"$sorted_output_file"
 
 echo "SUMMARY keep=${keep_count} candidate=${candidate_count} blocked=${blocked_count}"
-echo "GC start deleted_roots=${delete_count}"
-/nix/var/nix/profiles/default/bin/nix-collect-garbage
-echo "GC done deleted_roots=${delete_count}"
+if [[ $dry_run == true ]]; then
+  echo "GC skipped dry_run=true deleted_roots=0"
+else
+  echo "GC start deleted_roots=${delete_count}"
+  /nix/var/nix/profiles/default/bin/nix-collect-garbage
+  echo "GC done deleted_roots=${delete_count}"
+fi

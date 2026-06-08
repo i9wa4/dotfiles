@@ -7,6 +7,8 @@
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs, latest-tag flake refs, and Waza release pins
 #   nix run '.#check'        -- check flake configuration
+#   nix run '.#cleanup' -- --dry-run
+#                             -- preview low-risk local cache cleanup
 #   nix run '.#cleanup'      -- prune low-risk local caches
 #   nix run '.#gc-roots-delete'
 #                             -- attempt Linux auto GC-root cleanup through the dedicated command
@@ -88,50 +90,98 @@
 
         # What: Prune only the explicit safe_cache surface for user-owned caches.
         # When: Run for low-risk reclaim without touching review_first or preserve buckets.
+        # Preview: nix run '.#cleanup' -- --dry-run
         cleanup = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "cleanup" ''
-            set -euo pipefail
+                        set -euo pipefail
 
-            remove_dir() {
-              target="$1"
-              if [ -d "$target" ]; then
-                echo "Removing $target"
-                rm -rf "$target"
-              else
-                echo "Skipping missing $target"
-              fi
-            }
+                        dry_run=false
 
-            cache_root="''${XDG_CACHE_HOME:-$HOME/.cache}"
-            uv_cache_dir="$(${lib.getExe pkgs.uv} cache dir)"
+                        usage() {
+                          cat <<'EOF'
+            Usage: cleanup [--dry-run|--preview|--apply]
 
-            if command -v pgrep >/dev/null 2>&1 && pgrep -x uv >/dev/null 2>&1; then
-              echo "Skipping uv cache prune in $uv_cache_dir (active uv process detected)"
-            else
-              echo "Pruning uv cache in $uv_cache_dir"
-              ${lib.getExe pkgs.uv} cache prune
-            fi
+            Behavior:
+              Prunes only the repo's explicit safe_cache surface for user-owned caches.
+              --dry-run and --preview list the cleanup actions without removing anything.
+              --apply is accepted for explicit apply mode; omitting a mode also applies.
+            EOF
+                        }
 
-            remove_dir "$cache_root/pre-commit"
-            remove_dir "$cache_root/ruff"
-            ${
-              if isLinux then
-                ''
-                  remove_dir "$cache_root/go-build"
-                  remove_dir "$cache_root/nix"
-                ''
-              else
-                ""
-            }
-            remove_dir "$HOME/.npm"
+                        while [ "$#" -gt 0 ]; do
+                          case "$1" in
+                            --dry-run | --preview)
+                              dry_run=true
+                              shift
+                              ;;
+                            --apply)
+                              dry_run=false
+                              shift
+                              ;;
+                            -h | --help)
+                              usage
+                              exit 0
+                              ;;
+                            *)
+                              echo "ERROR: Unknown argument: $1" >&2
+                              usage >&2
+                              exit 1
+                              ;;
+                          esac
+                        done
 
-            if [ -d "$HOME/Library/Caches" ]; then
-              remove_dir "$HOME/Library/Caches/pre-commit"
-              remove_dir "$HOME/Library/Caches/ruff"
-            fi
+                        remove_dir() {
+                          target="$1"
+                          if [ -d "$target" ]; then
+                            if [ "$dry_run" = true ]; then
+                              echo "Would remove $target"
+                            else
+                              echo "Removing $target"
+                              rm -rf "$target"
+                            fi
+                          else
+                            echo "Skipping missing $target"
+                          fi
+                        }
 
-            echo "Cleanup complete."
+                        cache_root="''${XDG_CACHE_HOME:-$HOME/.cache}"
+                        uv_cache_dir="$(${lib.getExe pkgs.uv} cache dir)"
+
+                        if command -v pgrep >/dev/null 2>&1 && pgrep -x uv >/dev/null 2>&1; then
+                          echo "Skipping uv cache prune in $uv_cache_dir (active uv process detected)"
+                        else
+                          if [ "$dry_run" = true ]; then
+                            echo "Would prune uv cache in $uv_cache_dir"
+                          else
+                            echo "Pruning uv cache in $uv_cache_dir"
+                            ${lib.getExe pkgs.uv} cache prune
+                          fi
+                        fi
+
+                        remove_dir "$cache_root/pre-commit"
+                        remove_dir "$cache_root/ruff"
+                        ${
+                          if isLinux then
+                            ''
+                              remove_dir "$cache_root/go-build"
+                              remove_dir "$cache_root/nix"
+                            ''
+                          else
+                            ""
+                        }
+                        remove_dir "$HOME/.npm"
+
+                        if [ -d "$HOME/Library/Caches" ]; then
+                          remove_dir "$HOME/Library/Caches/pre-commit"
+                          remove_dir "$HOME/Library/Caches/ruff"
+                        fi
+
+                        if [ "$dry_run" = true ]; then
+                          echo "Cleanup dry run complete; pass --apply or omit --dry-run to remove listed caches."
+                        else
+                          echo "Cleanup complete."
+                        fi
           ''}/bin/cleanup";
         };
       }
