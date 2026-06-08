@@ -164,6 +164,12 @@ git commit -m "$(git push origin HEAD:refs/heads/example)"
 COMMAND
 )
 
+backtick_stripped_arg_substitution_command=$(
+  cat <<'COMMAND'
+git commit -m "`git push origin HEAD:refs/heads/example`"
+COMMAND
+)
+
 escaped_stripped_arg_substitution_command=$(
   cat <<'COMMAND'
 git commit -m "\$(git push origin HEAD:refs/heads/example) is inert prose"
@@ -276,6 +282,8 @@ assert_denied "unquoted heredoc command substitution executes git push" \
   "$unquoted_heredoc_substitution_command"
 assert_denied "command substitution in stripped message executes git push" \
   "$stripped_arg_substitution_command"
+assert_denied "backtick command substitution in stripped message executes git push" \
+  "$backtick_stripped_arg_substitution_command"
 assert_denied "mixed-quoted heredoc delimiter does not hide later git push" \
   "$mixed_quoted_heredoc_then_command"
 assert_denied "backslash-quoted heredoc delimiter does not hide later git push" \
