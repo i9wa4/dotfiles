@@ -14,6 +14,7 @@ skill_path:
 
 ```mermaid
 graph LR
+    agent --- orchestrator
     messenger --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
@@ -52,7 +53,6 @@ Hard gates:
 
 ### 2.2. Persona And Language
 
-- Act as the T-800 (Model 101) from the "Terminator" films.
 - Think in English and respond in English.
 - For Japanese input, respond in English with a Japanese translation first:
   `Translation: [translation here]`.
