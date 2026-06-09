@@ -15,6 +15,7 @@
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#root-lvm-extend' -- check/extend Ubuntu root LVM free space
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
+#   nix run '.#docker-socket' -- --setup  -- configure Ubuntu Docker socket activation
 { lib, ... }:
 {
   perSystem =
@@ -33,6 +34,7 @@
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
       rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
+      dockerEngineSocketScript = ./../../../bin/ubuntu/docker-engine-socket.sh;
       tmuxA2aPostmanUpdateScript = ./../../packages/tmux-a2a-postman-nix-update.sh;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;
@@ -142,6 +144,18 @@
             set -euo pipefail
             sudo apt-get update && sudo apt-get upgrade -y
           ''}/bin/apt-upgrade";
+        };
+
+        # What: Configure rootful Docker on Ubuntu for socket-activated devcontainers.
+        # Keeps daemon setup as an explicit sudo operation because standalone Home Manager
+        # cannot own root systemd units, /var/run/docker.sock, or docker group state.
+        # Example: nix run '.#docker-socket' -- --setup
+        docker-socket = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "docker-socket" ''
+            set -euo pipefail
+            exec ${pkgs.bash}/bin/bash ${dockerEngineSocketScript} "$@"
+          ''}/bin/docker-socket";
         };
       };
     };
