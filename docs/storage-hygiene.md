@@ -360,13 +360,20 @@ Approved action only, after the retention policy is known:
 
 ```sh
 nix run '.#switch'
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --dry-run
+nix run '.#gc-roots-delete' -- --apply
 ```
 
 For normal daily maintenance, prefer the repo's switch/update flow and the
 explicit GC-root delete surface. User-profile cleanup is no longer part of the
 flake app surface because this repository no longer uses a manual user Nix
-profile for managed tools. Do not use ad hoc `rm` under `/nix`.
+profile for managed tools. If a legacy manual profile needs cleanup, preview
+with `bash ./bin/nix-profile-cleanup --dry-run` before using `--apply`. Do not
+use ad hoc `rm` under `/nix`.
+
+CI verifies the command wiring for generation expiry. Confirm the resulting
+Ubuntu/WSL2 Home Manager and macOS system generation state on target hosts
+after `nix run '.#switch'`.
 
 #### 1.12.7. `/home` Ownership
 
@@ -406,13 +413,15 @@ Use these only after the user approves the exact action.
 Low-risk rebuildable cache cleanup:
 
 ```sh
+nix run '.#cleanup' -- --dry-run
 nix run '.#cleanup'
 ```
 
 Guarded stale GC-root cleanup:
 
 ```sh
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --dry-run
+nix run '.#gc-roots-delete' -- --apply
 ```
 
 Managed swap reduction from 16GiB to 8GiB:
@@ -448,7 +457,8 @@ Use one-off deletion only to exit the emergency. The durable controls are:
   while the VG has free extents, extend it before treating normal usage as a
   storage-pressure incident.
 - Use explicit Nix cleanup surfaces, such as the daily switch flow and
-  `nix run '.#gc-roots-delete'`, instead of deleting Nix store paths directly.
+  `nix run '.#gc-roots-delete' -- --apply`, instead of deleting Nix store paths
+  directly.
 
 ## 2. Guarded GC-Root Delete
 
@@ -457,20 +467,23 @@ Use the single delete-focused command surface to remove stale auto GC roots.
 ### 2.1. Command
 
 ```sh
-nix run '.#gc-roots-delete'
+nix run '.#gc-roots-delete' -- --dry-run
+nix run '.#gc-roots-delete' -- --apply
 ```
 
-The interface has no flags. It attempts current-user unlink directly and never
-asks for escalation. Every invocation re-classifies roots as:
+The interface supports `--dry-run`, `--preview`, and `--apply`. Omitting a mode
+uses dry-run mode. Every invocation re-classifies roots as:
 
 - `KEEP`
 - `CANDIDATE`
 - `BLOCKED`
 
 Each line includes a reason, the auto-root path, the original linked path, and
-the resolved target. The command unlinks only current `CANDIDATE` auto-root
-symlinks that the current user can delete, prints a `WARNING` for roots that
-cannot be removed, and then runs `nix-collect-garbage`.
+the resolved target. In dry-run mode, the command prints `WOULD_DELETE` for
+current `CANDIDATE` auto-root symlinks and skips `nix-collect-garbage`. In
+apply mode, it unlinks only current `CANDIDATE` auto-root symlinks that the
+current user can delete, prints a `WARNING` for roots that cannot be removed,
+and then runs `nix-collect-garbage`.
 
 ### 2.2. Protected Root Classes
 
@@ -488,8 +501,10 @@ links such as `profile-*` stay `KEEP`.
 ### 2.3. Operator Notes
 
 - This delete surface is explicit and never scheduled.
-- It re-runs the classification and active-worktree checks at execution time.
-- It has no preview mode and no flag-based delete switch.
+- It re-runs the classification and active-worktree checks at execution time in
+  both dry-run and apply mode.
+- Bare invocation, `--dry-run`, and `--preview` do not delete roots.
+- Use `--apply` only after reviewing dry-run output during storage pressure.
 - It attempts deletion as the current user and keeps going when a specific root
   cannot be removed.
 

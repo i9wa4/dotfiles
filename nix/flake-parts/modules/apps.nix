@@ -7,8 +7,10 @@
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs, latest-tag flake refs, and Waza release pins
 #   nix run '.#check'        -- check flake configuration
+#   nix run '.#cleanup' -- --dry-run
+#                             -- preview low-risk local cache cleanup
 #   nix run '.#cleanup'      -- prune low-risk local caches
-#   nix run '.#gc-roots-delete'
+#   nix run '.#gc-roots-delete' -- --apply
 #                             -- attempt Linux auto GC-root cleanup through the dedicated command
 #   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#root-lvm-extend' -- check/extend Ubuntu root LVM free space
@@ -28,6 +30,7 @@
       gh = lib.getExe pkgs.gh;
       jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
+      cleanupScript = ./../../../bin/cleanup-safe-caches.sh;
       gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
       storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
       rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
@@ -90,57 +93,20 @@
 
         # What: Prune only the explicit safe_cache surface for user-owned caches.
         # When: Run for low-risk reclaim without touching review_first or preserve buckets.
+        # Preview: nix run '.#cleanup' -- --dry-run
         cleanup = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "cleanup" ''
             set -euo pipefail
-
-            remove_dir() {
-              target="$1"
-              if [ -d "$target" ]; then
-                echo "Removing $target"
-                rm -rf "$target"
-              else
-                echo "Skipping missing $target"
-              fi
-            }
-
-            cache_root="''${XDG_CACHE_HOME:-$HOME/.cache}"
-            uv_cache_dir="$(${lib.getExe pkgs.uv} cache dir)"
-
-            if command -v pgrep >/dev/null 2>&1 && pgrep -x uv >/dev/null 2>&1; then
-              echo "Skipping uv cache prune in $uv_cache_dir (active uv process detected)"
-            else
-              echo "Pruning uv cache in $uv_cache_dir"
-              ${lib.getExe pkgs.uv} cache prune
-            fi
-
-            remove_dir "$cache_root/pre-commit"
-            remove_dir "$cache_root/ruff"
-            ${
-              if isLinux then
-                ''
-                  remove_dir "$cache_root/go-build"
-                  remove_dir "$cache_root/nix"
-                ''
-              else
-                ""
-            }
-            remove_dir "$HOME/.npm"
-
-            if [ -d "$HOME/Library/Caches" ]; then
-              remove_dir "$HOME/Library/Caches/pre-commit"
-              remove_dir "$HOME/Library/Caches/ruff"
-            fi
-
-            echo "Cleanup complete."
+            export CLEANUP_UV=${lib.getExe pkgs.uv}
+            exec ${pkgs.bash}/bin/bash ${cleanupScript} "$@"
           ''}/bin/cleanup";
         };
       }
       // lib.optionalAttrs isLinux {
         # What: Keep Linux stale GC-root cleanup on one explicit command separate from switch.
         # When: Run it directly to attempt guarded stale-root deletion as the current user.
-        # Example: nix run '.#gc-roots-delete'
+        # Example: nix run '.#gc-roots-delete' -- --apply
         gc-roots-delete = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "gc-roots-delete" ''

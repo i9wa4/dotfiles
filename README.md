@@ -333,9 +333,45 @@ gh auth login --with-token
 | Command                                          | Description                                                                                                                                                                                                                                               |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `nix run '.#switch'`                             | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate and uses 1 day on both Linux and macOS |
-| `nix run '.#update'`                             | Update flake inputs                                                                                                                                                                                                                                       |
+| `nix run '.#update'`                             | Update flake inputs, latest-tag flake refs, and managed package pins                                                                                                                                                                                      |
 | `nix run '.#check'`                              | Check flake configuration                                                                                                                                                                                                                                 |
-| `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage                                                                                                                                                                                                                    |
+| `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage before cleanup                                                                                                                                                                                                     |
+| `nix run '.#cleanup' -- --dry-run`               | Preview low-risk user-cache cleanup                                                                                                                                                                                                                       |
+| `nix run '.#cleanup'`                            | Prune low-risk user caches shown by the cleanup app                                                                                                                                                                                                       |
+| `nix run '.#gc-roots-delete' -- --dry-run`       | Preview guarded stale Linux auto GC-root deletion                                                                                                                                                                                                         |
+| `nix run '.#gc-roots-delete' -- --apply`         | Delete only guarded current-user stale auto GC roots, then run Nix GC                                                                                                                                                                                     |
+
+Notes:
+
+- Keep `nix run '.#switch'` as the primary daily activation command. It expires
+  old generations after a successful activation, but it does not run store GC.
+  CI verifies the command wiring; live Ubuntu/WSL2 and macOS expiry behavior
+  should still be checked on target hosts after switching.
+- Run `nix run '.#storage-report' -- --self --summary` before cleanup when
+  investigating disk pressure.
+- `nix run '.#cleanup'` touches only the explicit low-risk cache surface. Use
+  `--dry-run` or `--preview` first when you want a no-write check.
+- `nix run '.#gc-roots-delete'` is separate from `switch` and `cleanup`. It
+  defaults to dry-run; `--apply` re-classifies roots at execution time and skips
+  protected Home Manager, profile, `.direnv`, `result`, `/tmp`, and active
+  worktree roots.
+- `./bin/nix-profile-cleanup` is a legacy manual profile helper. Preview with
+  `bash ./bin/nix-profile-cleanup --dry-run` before `--apply`; normal managed
+  tool updates use `nix run '.#update'` plus `nix run '.#switch'`.
+- There is no separate `profile-update` app in this repo. Managed profile-like
+  state is updated through the flake update and switch flow.
+
+Rollback and recovery:
+
+- Linux Home Manager generations can be inspected with
+  `home-manager generations` and reactivated with the generation's activation
+  package when needed.
+- macOS system generations can be inspected through the Nix system profile; use
+  the previous generation's `activate` package or re-run `darwin-rebuild` from
+  the previous flake revision.
+- Cache cleanup has no data restore step by design; the removed paths are
+  rebuildable tool caches. Re-run the relevant tool, `repo-setup`, or
+  `nix run '.#switch'` to recreate them.
 
 ## 7. Upgrade Nix
 
