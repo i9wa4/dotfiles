@@ -15,7 +15,7 @@ let
   homebrewThirdPartyTaps = [
     "asmvik/formulae"
   ];
-  homebrewTrustedFormulae = [
+  homebrewBrews = [
     "asmvik/formulae/skhd"
   ];
 in
@@ -119,24 +119,22 @@ in
     pkgs.udev-gothic
   ];
 
-  # Homebrew 5 requires explicit trust for non-official tap formulae.
+  # Homebrew 5 requires explicit trust for non-official taps.
   system.activationScripts.extraActivation.text = lib.mkAfter ''
-    if [ -x /opt/homebrew/bin/brew ] && /opt/homebrew/bin/brew help trust >/dev/null 2>&1; then
-      echo >&2 "trusting Homebrew formulae..."
+    if [ -x /opt/homebrew/bin/brew ]; then
+      echo >&2 "trusting Homebrew taps..."
       ${lib.concatMapStringsSep "\n" (tap: ''
         sudo \
           --user=${lib.escapeShellArg username} \
           --set-home \
           env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
           /opt/homebrew/bin/brew tap ${lib.escapeShellArg tap} >/dev/null
-      '') homebrewThirdPartyTaps}
-      ${lib.concatMapStringsSep "\n" (formula: ''
         sudo \
           --user=${lib.escapeShellArg username} \
           --set-home \
           env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
-          /opt/homebrew/bin/brew trust --formula ${lib.escapeShellArg formula} >/dev/null
-      '') homebrewTrustedFormulae}
+          /opt/homebrew/bin/brew trust --tap ${lib.escapeShellArg tap} >/dev/null
+      '') homebrewThirdPartyTaps}
     fi
   '';
 
@@ -147,7 +145,7 @@ in
   homebrew = {
     enable = true;
     taps = homebrewThirdPartyTaps;
-    brews = homebrewTrustedFormulae;
+    brews = homebrewBrews;
     onActivation = {
       autoUpdate = true;
       upgrade = false;
