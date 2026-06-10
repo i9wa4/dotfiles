@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   username,
   commonNixSettings,
   ...
@@ -11,6 +12,12 @@ let
     alt - 2 : open -a "Google Chrome"
     alt - 3 : open -a "Obsidian"
   '';
+  homebrewThirdPartyTaps = [
+    "asmvik/formulae"
+  ];
+  homebrewTrustedFormulae = [
+    "asmvik/formulae/skhd"
+  ];
 in
 {
   nixpkgs = {
@@ -112,18 +119,35 @@ in
     pkgs.udev-gothic
   ];
 
+  # Homebrew 5 requires explicit trust for non-official tap formulae.
+  system.activationScripts.extraActivation.text = lib.mkAfter ''
+    if [ -x /opt/homebrew/bin/brew ] && /opt/homebrew/bin/brew help trust >/dev/null 2>&1; then
+      echo >&2 "trusting Homebrew formulae..."
+      ${lib.concatMapStringsSep "\n" (tap: ''
+        sudo \
+          --user=${lib.escapeShellArg username} \
+          --set-home \
+          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+          /opt/homebrew/bin/brew tap ${lib.escapeShellArg tap} >/dev/null
+      '') homebrewThirdPartyTaps}
+      ${lib.concatMapStringsSep "\n" (formula: ''
+        sudo \
+          --user=${lib.escapeShellArg username} \
+          --set-home \
+          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+          /opt/homebrew/bin/brew trust --formula ${lib.escapeShellArg formula} >/dev/null
+      '') homebrewTrustedFormulae}
+    fi
+  '';
+
   # Homebrew
   # Allow activation-time metadata updates so Homebrew's cask API and portable
   # Ruby stay in sync before `brew bundle` resolves casks. Keep upgrades
   # disabled so `nix run '.#switch'` does not force app version bumps.
   homebrew = {
     enable = true;
-    taps = [
-      "asmvik/formulae"
-    ];
-    brews = [
-      "asmvik/formulae/skhd"
-    ];
+    taps = homebrewThirdPartyTaps;
+    brews = homebrewTrustedFormulae;
     onActivation = {
       autoUpdate = true;
       upgrade = false;
