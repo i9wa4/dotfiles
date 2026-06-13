@@ -209,9 +209,6 @@ in
         AppleShowAllExtensions = true;
         # Finder 終了メニューを表示 [default: false]
         QuitMenuItem = true;
-        # デフォルトの表示形式 (icnv=アイコン, Nlsv=リスト, clmv=カラム, glyv=ギャラリー) [default: "icnv"]
-        # FXPreferredViewStyle = "Nlsv";
-        FXPreferredViewStyle = "icnv";
       };
 
       # ------------------------------------------------------------------------
@@ -258,8 +255,8 @@ in
       # Menu Bar Clock
       # ------------------------------------------------------------------------
       menuExtraClock = {
-        # 日付を表示 (0=表示しない, 1=数字, 2=曜日と日付) [default: 0]
-        ShowDate = 1;
+        # 日付を表示 (0=空きがある時, 1=常に表示, 2=表示しない) [default: null]
+        ShowDate = 2;
         # 曜日を表示 [default: false]
         ShowDayOfWeek = true;
         # 秒を表示 [default: false]
@@ -465,9 +462,10 @@ in
         # ------------------------------------------
         # Dictation: 🌐 (Globe) キーを2回押して音声入力開始
         # Note: dict-add で key 164 のみ更新 (他のショートカットを上書きしない)
+        # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
         # ------------------------------------------
         defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "164" \
-          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>65535</integer><integer>0</integer></array><key>type</key><string>standard</string></dict></dict>'"'"'
+          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>262144</integer><integer>9223372036854775807</integer></array><key>type</key><string>modifier</string></dict></dict>'"'"'
 
         # ------------------------------------------
         # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
