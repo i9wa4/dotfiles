@@ -277,6 +277,16 @@ in
       };
 
       # ------------------------------------------------------------------------
+      # Accessibility
+      # ------------------------------------------------------------------------
+      universalaccess = {
+        # 視差効果を減らす [default: false]
+        reduceMotion = false;
+        # 透明度を下げる [default: false]
+        reduceTransparency = false;
+      };
+
+      # ------------------------------------------------------------------------
       # Custom User Preferences (settings not available as nix-darwin options)
       # ------------------------------------------------------------------------
       CustomUserPreferences = {
@@ -285,16 +295,34 @@ in
         ".GlobalPreferences" = {
           "com.apple.mouse.scaling" = 2.0;
         };
-        "com.apple.finder" = {
-          # サイドバーを表示 [default: true]
-          # ShowSidebar = true;
+        # アクセシビリティ > ディスプレイ
+        "com.apple.Accessibility" = {
+          # カラーフィルタ: グレイスケール [default: 0 (OFF)]
+          GrayscaleDisplay = 1;
+          # 色なしで区別 [default: 0 (OFF)]
+          DifferentiateWithoutColor = 1;
+          # 点滅する光を抑える [default: 0 (OFF)]
+          PhotosensitiveMitigation = 1;
+          # ボタンの形を表示 [default: 0 (OFF)]
+          ButtonShapesEnabled = 1;
         };
-        # 日本語入力 (ローマ字入力)
-        "com.apple.inputmethod.Kotoeri" = {
-          # ライブ変換 [default: 1 (ON)]
-          JIMPrefLiveConversionKey = 0;
-          # タイプミスを修正 [default: 0 (OFF)]
-          JIMPrefAutocorrectionKey = 0;
+        "com.apple.universalaccess" = {
+          # カラーフィルタ: グレイスケール [default: false]
+          grayscale = true;
+          # 色なしで区別 [default: false]
+          differentiateWithoutColor = true;
+          # コントラストを上げる [default: false]
+          increaseContrast = false;
+          # ボタンの形を表示 [default: false]
+          showToolbarButtonShapes = false;
+        };
+        "com.apple.mediaaccessibility" = {
+          # カラーフィルタを有効化 [default: 0 (OFF)]
+          "__Color__-MADisplayFilterCategoryEnabled" = 1;
+          # フィルタタイプ: グレイスケール
+          "__Color__-MADisplayFilterType" = 1;
+          # カラーフィルタの強さ (スライダー)
+          MADisplayFilterGrayscaleCorrectionIntensity = 0.5;
         };
         # Spotlight 検索結果
         # Note: アプリのみ有効、その他は OFF
