@@ -243,6 +243,15 @@ in
       };
 
       # ------------------------------------------------------------------------
+      # Keyboard Fn/Globe Key
+      # ------------------------------------------------------------------------
+      hitoolbox = {
+        # Press Fn/Globe twice to start Dictation. Nix default is null; macOS default is Show Emoji & Symbols.
+        # Note: a restart is required for this setting to take effect.
+        AppleFnUsageType = "Start Dictation";
+      };
+
+      # ------------------------------------------------------------------------
       # Trackpad
       # ------------------------------------------------------------------------
       trackpad = {
