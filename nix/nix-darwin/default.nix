@@ -412,6 +412,10 @@ in
           # Enable Dictation. macOS default is 0 (off).
           AppleDictationAutoEnable = 1;
         };
+        "com.apple.assistant.support" = {
+          # Enable Dictation in System Settings > Keyboard > Dictation. macOS default is 0 (off).
+          "Dictation Enabled" = 1;
+        };
         # Do not create .DS_Store files.
         "com.apple.desktopservices" = {
           # Network drives. macOS default is false.
@@ -451,7 +455,7 @@ in
           $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "^~,"
 
         # ------------------------------------------
-        # Dictation: press the Globe key twice to start Dictation.
+        # Dictation: press the Fn/Globe key twice to start Dictation.
         # macOS 26 user template default is enabled with this modifier entry.
         # Note: dict-add updates only key 164, preserving other shortcuts.
         # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
