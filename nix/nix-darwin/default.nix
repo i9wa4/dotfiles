@@ -158,8 +158,8 @@ in
 
   # Power management
   power.sleep = {
-    computer = "never"; # Idle time until the computer sleeps; "never" disables computer sleep.
-    display = 30; # Idle time in minutes until displays sleep.
+    computer = "never"; # Idle time until the computer sleeps; "never" disables computer sleep. Nix default is null.
+    display = 30; # Idle time in minutes until displays sleep. Nix default is null.
   };
 
   # ============================================================================
@@ -173,8 +173,9 @@ in
     # Keyboard
     # ==========================================================================
     keyboard = {
+      # Enable keyboard mappings. Nix default is false.
       enableKeyMapping = true;
-      # Remap the Caps Lock key to Control.
+      # Remap the Caps Lock key to Control. Nix default is false.
       remapCapsLockToControl = true;
     };
 
@@ -187,15 +188,15 @@ in
       # Dock
       # ------------------------------------------------------------------------
       dock = {
-        # Position of the dock on screen. The default is "bottom".
+        # Position of the dock on screen. Nix default is null; macOS default is "bottom".
         orientation = "left";
-        # Automatically hide and show the dock. The default is false.
+        # Automatically hide and show the dock. Nix default is null; macOS default is false.
         autohide = false;
-        # Show recent applications in the dock. The default is true.
+        # Show recent applications in the dock. Nix default is null; macOS default is true.
         show-recents = false;
-        # Automatically rearrange spaces based on most recent use. The default is true.
+        # Automatically rearrange spaces based on most recent use. Nix default is null; macOS default is true.
         mru-spaces = false;
-        # Size of the icons in the dock. The default is 64.
+        # Size of the icons in the dock. Nix default is null; macOS default is 64.
         tilesize = 48;
       };
 
@@ -203,11 +204,11 @@ in
       # Finder
       # ------------------------------------------------------------------------
       finder = {
-        # Show path breadcrumbs in Finder windows. The default is false.
+        # Show path breadcrumbs in Finder windows. Nix default is null; macOS default is false.
         ShowPathbar = true;
-        # Always show file extensions. The default is false.
+        # Always show file extensions. Nix default is null; macOS default is false.
         AppleShowAllExtensions = true;
-        # Allow quitting Finder. The default is false.
+        # Allow quitting Finder. Nix default is null; macOS default is false.
         QuitMenuItem = true;
       };
 
@@ -215,29 +216,29 @@ in
       # Global Domain (NSGlobalDomain)
       # ------------------------------------------------------------------------
       NSGlobalDomain = {
-        # How fast a key repeats once it starts.
+        # How fast a key repeats once it starts. Nix default is null.
         KeyRepeat = 2;
-        # How long a key must be held before it starts repeating.
+        # How long a key must be held before it starts repeating. Nix default is null.
         InitialKeyRepeat = 25;
-        # Enable "Natural" scrolling direction. The default is true.
+        # Enable "Natural" scrolling direction. Nix default is null; macOS default is true.
         # Note: macOS does not expose separate trackpad and mouse scrolling direction settings.
         # false = traditional PC-style scrolling direction.
         "com.apple.swipescrolldirection" = false;
-        # Enable automatic spelling correction. The default is true.
+        # Enable automatic spelling correction. Nix default is null; macOS default is true.
         NSAutomaticSpellingCorrectionEnabled = false;
-        # Enable automatic capitalization. The default is true.
+        # Enable automatic capitalization. Nix default is null; macOS default is true.
         NSAutomaticCapitalizationEnabled = false;
-        # Enable smart dash substitution. The default is true.
+        # Enable smart dash substitution. Nix default is null; macOS default is true.
         NSAutomaticDashSubstitutionEnabled = false;
-        # Enable smart period substitution. The default is true.
+        # Enable smart period substitution. Nix default is null; macOS default is true.
         NSAutomaticPeriodSubstitutionEnabled = false;
-        # Enable smart quote substitution. The default is true.
+        # Enable smart quote substitution. Nix default is null; macOS default is true.
         NSAutomaticQuoteSubstitutionEnabled = false;
-        # Enable inline predictive text. The default is true.
+        # Enable inline predictive text. Nix default is null; macOS default is true.
         NSAutomaticInlinePredictionEnabled = false;
-        # Animate opening and closing of windows and popovers. The default is true.
+        # Animate opening and closing of windows and popovers. Nix default is null; macOS default is true.
         NSAutomaticWindowAnimationsEnabled = false;
-        # Trackpad tracking speed (0.0-3.0).
+        # Trackpad tracking speed (0.0-3.0). macOS default is 1.0.
         "com.apple.trackpad.scaling" = 3.0;
       };
 
@@ -245,9 +246,9 @@ in
       # Trackpad
       # ------------------------------------------------------------------------
       trackpad = {
-        # Enable tap to click. The default is false.
+        # Enable tap to click. Nix default is null; macOS default is false.
         Clicking = true;
-        # Enable three-finger drag. The default is false.
+        # Enable three-finger drag. Nix default is null; macOS default is false.
         TrackpadThreeFingerDrag = true;
       };
 
@@ -255,11 +256,11 @@ in
       # Menu Bar Clock
       # ------------------------------------------------------------------------
       menuExtraClock = {
-        # Show the full date. 0 = When space allows, 1 = Always, 2 = Never. Default is null.
+        # Show the full date. Nix default is null. 0 = When space allows, 1 = Always, 2 = Never.
         ShowDate = 1;
-        # Show the day of the week. Default is null.
+        # Show the day of the week. Nix default is null.
         ShowDayOfWeek = true;
-        # Show the clock with second precision. Default is null.
+        # Show the clock with second precision. Nix default is null.
         ShowSeconds = true;
       };
 
@@ -267,9 +268,9 @@ in
       # Control Center
       # ------------------------------------------------------------------------
       controlcenter = {
-        # Show a Bluetooth control in the menu bar. Default is null.
+        # Show a Bluetooth control in the menu bar. Nix default is null.
         Bluetooth = true;
-        # Show a battery percentage in the menu bar. Default is null.
+        # Show a battery percentage in the menu bar. Nix default is null.
         BatteryShowPercentage = true;
       };
 
@@ -277,41 +278,41 @@ in
       # Custom User Preferences (settings not available as nix-darwin options)
       # ------------------------------------------------------------------------
       CustomUserPreferences = {
-        # Mouse tracking speed (0.0-3.0).
+        # Mouse tracking speed (0.0-3.0). macOS default is 1.0.
         # Note: Use CustomUserPreferences because this key does not work under NSGlobalDomain.
         ".GlobalPreferences" = {
           "com.apple.mouse.scaling" = 2.0;
         };
         # Accessibility > Display
         "com.apple.Accessibility" = {
-          # Color Filters: Grayscale.
+          # Color Filters: Grayscale. macOS default is 0 (off).
           GrayscaleDisplay = 1;
-          # Differentiate without color.
+          # Differentiate without color. macOS default is 0 (off).
           DifferentiateWithoutColor = 1;
-          # Dim flashing lights.
+          # Dim flashing lights. macOS default is 0 (off).
           PhotosensitiveMitigation = 1;
-          # Display button shapes.
+          # Display button shapes. macOS default is 0 (off).
           ButtonShapesEnabled = 1;
         };
         "com.apple.universalaccess" = {
-          # Color Filters: Grayscale.
+          # Color Filters: Grayscale. macOS default is false.
           grayscale = true;
-          # Differentiate without color.
+          # Differentiate without color. macOS default is false.
           differentiateWithoutColor = true;
-          # Increase contrast.
+          # Increase contrast. macOS default is false.
           increaseContrast = false;
-          # Show toolbar button shapes.
+          # Show toolbar button shapes. macOS default is false.
           showToolbarButtonShapes = false;
         };
         "com.apple.mediaaccessibility" = {
-          # Enable color filters.
+          # Enable color filters. macOS default is 0 (off).
           "__Color__-MADisplayFilterCategoryEnabled" = 1;
-          # Color filter type: Grayscale.
+          # Color filter type. macOS default is not set until Color Filters is configured; 1 = Grayscale.
           "__Color__-MADisplayFilterType" = 1;
-          # Color filter intensity slider.
+          # Color filter intensity slider. macOS default is not set until Color Filters is configured.
           MADisplayFilterGrayscaleCorrectionIntensity = 0.5;
         };
-        # Spotlight search results
+        # Spotlight search results. macOS default is system-managed.
         # Note: Enable only Applications; disable all other result categories.
         "com.apple.Spotlight" = {
           orderedItems = [
@@ -403,19 +404,19 @@ in
         };
         # Notification Center
         "com.apple.ncprefs" = {
-          # Show previews. 0 = Always, 1 = When unlocked, 2 = Never.
+          # Show previews. macOS default is 0. 0 = Always, 1 = When unlocked, 2 = Never.
           content_visibility = 1;
         };
         # Dictation
         "com.apple.HIToolbox" = {
-          # Enable Dictation.
+          # Enable Dictation. macOS default is 0 (off).
           AppleDictationAutoEnable = 1;
         };
         # Do not create .DS_Store files.
         "com.apple.desktopservices" = {
-          # Network drives.
+          # Network drives. macOS default is false.
           DSDontWriteNetworkStores = true;
-          # USB drives.
+          # USB drives. macOS default is false.
           DSDontWriteUSBStores = true;
         };
         # Mission Control keyboard shortcuts
@@ -451,6 +452,7 @@ in
 
         # ------------------------------------------
         # Dictation: press the Globe key twice to start Dictation.
+        # macOS 26 user template default is enabled with this modifier entry.
         # Note: dict-add updates only key 164, preserving other shortcuts.
         # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
         # ------------------------------------------
@@ -458,7 +460,7 @@ in
           '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>262144</integer><integer>9223372036854775807</integer></array><key>type</key><string>modifier</string></dict></dict>'"'"'
 
         # ------------------------------------------
-        # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
+        # Lock Screen: Screensaver idle time. macOS default is 1200 seconds.
         # Note: -currentHost required for per-machine settings
         # ------------------------------------------
         defaults -currentHost write com.apple.screensaver idleTime -int 1800
