@@ -158,8 +158,8 @@ in
 
   # Power management
   power.sleep = {
-    computer = "never"; # システムスリープ無効
-    display = 30; # ディスプレイスリープ 30分
+    computer = "never"; # Idle time until the computer sleeps; "never" disables computer sleep.
+    display = 30; # Idle time in minutes until displays sleep.
   };
 
   # ============================================================================
@@ -174,7 +174,7 @@ in
     # ==========================================================================
     keyboard = {
       enableKeyMapping = true;
-      # Caps Lock -> Control (内蔵キーボード) [default: false]
+      # Remap the Caps Lock key to Control.
       remapCapsLockToControl = true;
     };
 
@@ -187,15 +187,15 @@ in
       # Dock
       # ------------------------------------------------------------------------
       dock = {
-        # 画面上の位置 (left/bottom/right) [default: "bottom"]
+        # Position of the dock on screen. The default is "bottom".
         orientation = "left";
-        # Dock を自動的に表示/非表示 [default: false]
+        # Automatically hide and show the dock. The default is false.
         autohide = false;
-        # アプリの提案と最近使用したアプリを Dock に表示 [default: true]
+        # Show recent applications in the dock. The default is true.
         show-recents = false;
-        # 最新の使用状況に基づいて操作スペースを自動的に並べ替える [default: true]
+        # Automatically rearrange spaces based on most recent use. The default is true.
         mru-spaces = false;
-        # Dock アイコンサイズ (16-128) [default: 48]
+        # Size of the icons in the dock. The default is 64.
         tilesize = 48;
       };
 
@@ -203,11 +203,11 @@ in
       # Finder
       # ------------------------------------------------------------------------
       finder = {
-        # パスバーを表示 [default: false]
+        # Show path breadcrumbs in Finder windows. The default is false.
         ShowPathbar = true;
-        # 拡張子を表示 [default: false]
+        # Always show file extensions. The default is false.
         AppleShowAllExtensions = true;
-        # Finder 終了メニューを表示 [default: false]
+        # Allow quitting Finder. The default is false.
         QuitMenuItem = true;
       };
 
@@ -215,29 +215,29 @@ in
       # Global Domain (NSGlobalDomain)
       # ------------------------------------------------------------------------
       NSGlobalDomain = {
-        # キーリピート速度 (小さいほど速い) [default: 6]
+        # How fast a key repeats once it starts.
         KeyRepeat = 2;
-        # キーリピート開始までの時間 (小さいほど速い) [default: 25]
+        # How long a key must be held before it starts repeating.
         InitialKeyRepeat = 25;
-        # ナチュラルなスクロール [default: true]
-        # Note: macOS では trackpad と mouse のスクロール方向を別々に設定できない
-        # false = 従来の PC 方向 (マウスに合わせる)
+        # Enable "Natural" scrolling direction. The default is true.
+        # Note: macOS does not expose separate trackpad and mouse scrolling direction settings.
+        # false = traditional PC-style scrolling direction.
         "com.apple.swipescrolldirection" = false;
-        # 英字入力中にスペルを自動変換 [default: true]
+        # Enable automatic spelling correction. The default is true.
         NSAutomaticSpellingCorrectionEnabled = false;
-        # 文頭を自動的に大文字にする [default: true]
+        # Enable automatic capitalization. The default is true.
         NSAutomaticCapitalizationEnabled = false;
-        # スマートダッシュを使用 [default: true]
+        # Enable smart dash substitution. The default is true.
         NSAutomaticDashSubstitutionEnabled = false;
-        # スペースバーを2回押してピリオドを入力 [default: true]
+        # Enable smart period substitution. The default is true.
         NSAutomaticPeriodSubstitutionEnabled = false;
-        # スマート引用符を使用 [default: true]
+        # Enable smart quote substitution. The default is true.
         NSAutomaticQuoteSubstitutionEnabled = false;
-        # インライン予測テキストを表示 [default: true]
+        # Enable inline predictive text. The default is true.
         NSAutomaticInlinePredictionEnabled = false;
-        # ウィンドウ開閉アニメーション [default: true]
+        # Animate opening and closing of windows and popovers. The default is true.
         NSAutomaticWindowAnimationsEnabled = false;
-        # トラックパッド速度 (0.0-3.0) [default: 1.0]
+        # Trackpad tracking speed (0.0-3.0).
         "com.apple.trackpad.scaling" = 3.0;
       };
 
@@ -245,9 +245,9 @@ in
       # Trackpad
       # ------------------------------------------------------------------------
       trackpad = {
-        # タップでクリック [default: false]
+        # Enable tap to click. The default is false.
         Clicking = true;
-        # 3本指のドラッグ (アクセシビリティ > ポインタコントロール > トラックパッドオプション) [default: false]
+        # Enable three-finger drag. The default is false.
         TrackpadThreeFingerDrag = true;
       };
 
@@ -255,11 +255,11 @@ in
       # Menu Bar Clock
       # ------------------------------------------------------------------------
       menuExtraClock = {
-        # 日付を表示 (0=空きがある時, 1=常に表示, 2=表示しない) [default: null]
-        ShowDate = 2;
-        # 曜日を表示 [default: false]
+        # Show the full date. 0 = When space allows, 1 = Always, 2 = Never. Default is null.
+        ShowDate = 1;
+        # Show the day of the week. Default is null.
         ShowDayOfWeek = true;
-        # 秒を表示 [default: false]
+        # Show the clock with second precision. Default is null.
         ShowSeconds = true;
       };
 
@@ -267,62 +267,52 @@ in
       # Control Center
       # ------------------------------------------------------------------------
       controlcenter = {
-        # Bluetooth をメニューバーに表示 [default: false]
+        # Show a Bluetooth control in the menu bar. Default is null.
         Bluetooth = true;
-        # バッテリーの割合 (%) を表示 [default: false]
+        # Show a battery percentage in the menu bar. Default is null.
         BatteryShowPercentage = true;
-      };
-
-      # ------------------------------------------------------------------------
-      # Accessibility
-      # ------------------------------------------------------------------------
-      universalaccess = {
-        # 視差効果を減らす [default: false]
-        reduceMotion = false;
-        # 透明度を下げる [default: false]
-        reduceTransparency = false;
       };
 
       # ------------------------------------------------------------------------
       # Custom User Preferences (settings not available as nix-darwin options)
       # ------------------------------------------------------------------------
       CustomUserPreferences = {
-        # マウス速度 (0.0-3.0) [default: 1.0]
-        # Note: NSGlobalDomain では設定できないため CustomUserPreferences を使用
+        # Mouse tracking speed (0.0-3.0).
+        # Note: Use CustomUserPreferences because this key does not work under NSGlobalDomain.
         ".GlobalPreferences" = {
           "com.apple.mouse.scaling" = 2.0;
         };
-        # アクセシビリティ > ディスプレイ
+        # Accessibility > Display
         "com.apple.Accessibility" = {
-          # カラーフィルタ: グレイスケール [default: 0 (OFF)]
+          # Color Filters: Grayscale.
           GrayscaleDisplay = 1;
-          # 色なしで区別 [default: 0 (OFF)]
+          # Differentiate without color.
           DifferentiateWithoutColor = 1;
-          # 点滅する光を抑える [default: 0 (OFF)]
+          # Dim flashing lights.
           PhotosensitiveMitigation = 1;
-          # ボタンの形を表示 [default: 0 (OFF)]
+          # Display button shapes.
           ButtonShapesEnabled = 1;
         };
         "com.apple.universalaccess" = {
-          # カラーフィルタ: グレイスケール [default: false]
+          # Color Filters: Grayscale.
           grayscale = true;
-          # 色なしで区別 [default: false]
+          # Differentiate without color.
           differentiateWithoutColor = true;
-          # コントラストを上げる [default: false]
+          # Increase contrast.
           increaseContrast = false;
-          # ボタンの形を表示 [default: false]
+          # Show toolbar button shapes.
           showToolbarButtonShapes = false;
         };
         "com.apple.mediaaccessibility" = {
-          # カラーフィルタを有効化 [default: 0 (OFF)]
+          # Enable color filters.
           "__Color__-MADisplayFilterCategoryEnabled" = 1;
-          # フィルタタイプ: グレイスケール
+          # Color filter type: Grayscale.
           "__Color__-MADisplayFilterType" = 1;
-          # カラーフィルタの強さ (スライダー)
+          # Color filter intensity slider.
           MADisplayFilterGrayscaleCorrectionIntensity = 0.5;
         };
-        # Spotlight 検索結果
-        # Note: アプリのみ有効、その他は OFF
+        # Spotlight search results
+        # Note: Enable only Applications; disable all other result categories.
         "com.apple.Spotlight" = {
           orderedItems = [
             {
@@ -411,25 +401,25 @@ in
             }
           ];
         };
-        # 通知センター
+        # Notification Center
         "com.apple.ncprefs" = {
-          # プレビューを表示 (0=常に, 1=ロックされていないときのみ, 2=しない)
+          # Show previews. 0 = Always, 1 = When unlocked, 2 = Never.
           content_visibility = 1;
         };
-        # 音声入力 (Dictation)
+        # Dictation
         "com.apple.HIToolbox" = {
-          # 音声入力を有効にする [default: 0 (OFF)]
+          # Enable Dictation.
           AppleDictationAutoEnable = 1;
         };
-        # .DS_Store ファイルを作成しない
+        # Do not create .DS_Store files.
         "com.apple.desktopservices" = {
-          # ネットワークドライブ [default: false]
+          # Network drives.
           DSDontWriteNetworkStores = true;
-          # USB ドライブ [default: false]
+          # USB drives.
           DSDontWriteUSBStores = true;
         };
-        # Mission Control キーボードショートカット
-        # 118: デスクトップ1へ切り替え, 119: デスクトップ2, 120: デスクトップ3
+        # Mission Control keyboard shortcuts
+        # 118: Switch to Desktop 1, 119: Switch to Desktop 2, 120: Switch to Desktop 3
         # parameters: (ASCII code, key code, modifier) / 524288 = Option (Alt)
         # "com.apple.symbolichotkeys" = {
         #   AppleSymbolicHotKeys = {
@@ -450,8 +440,8 @@ in
       sudo -u ${username} bash -c '
         # ------------------------------------------
         # Keyboard: Custom shortcuts [default: none]
-        # ウィンドウ->移動とサイズ変更->右 Ctrl + Option + .
-        # ウィンドウ->移動とサイズ変更->左 Ctrl + Option + ,
+        # Window > Move & Resize > Right: Ctrl + Option + .
+        # Window > Move & Resize > Left: Ctrl + Option + ,
         # Note: dict-add requires activation script (cannot use CustomUserPreferences)
         # ------------------------------------------
         defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
@@ -460,8 +450,8 @@ in
           $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "^~,"
 
         # ------------------------------------------
-        # Dictation: 🌐 (Globe) キーを2回押して音声入力開始
-        # Note: dict-add で key 164 のみ更新 (他のショートカットを上書きしない)
+        # Dictation: press the Globe key twice to start Dictation.
+        # Note: dict-add updates only key 164, preserving other shortcuts.
         # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
         # ------------------------------------------
         defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "164" \
