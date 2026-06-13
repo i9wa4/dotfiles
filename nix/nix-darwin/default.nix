@@ -259,6 +259,8 @@ in
         Clicking = true;
         # Enable three-finger drag. Nix default is null; macOS default is false.
         TrackpadThreeFingerDrag = true;
+        # Disable the two-finger swipe-from-right-edge Notification Center gesture. Nix default is null; macOS default is 0 (off).
+        TrackpadTwoFingerFromRightEdgeSwipeGesture = 0;
       };
 
       # ------------------------------------------------------------------------
@@ -496,39 +498,17 @@ in
   # - バッテリー
   #     - 充電
   #         - 充電上限 95%
-  # - Spotlight
-  #     - システムからの結果
-  #         - アプリ ON
-  #     - その他の項目はすべて OFF
-  # - アクセシビリティ
-  #     - ポインタコントロール
-  #         - トラックパッドオプション
-  #             - ドラッグにトラックパッドを使用 ON
-  #             - ドラッグ方法 3本指のドラッグ
   # - ディスプレイ
   #     - True Tone OFF (内蔵ディスプレイ使用時に出現する設定項目)
   #     - Night Shift
   #         - カスタム 5:00-4:59
   #         - 色温度 中央と右端の間
-  # - デスクトップと Dock
-  #     - Dock
-  #         - 画面上の位置 任意
-  #         - Dock を自動的に表示/非表示 任意
-  #         - アプリの提案と最近使用したアプリを Dock に表示 OFF
   # - 通知
-  #     - 通知センター OFF
   #     - アプリケーションの通知 システム系以外は OFF
-  # - ロック画面
-  #     - 時間設定 30分
   # - プライバシーとセキュリティ
   #     - 画面収録とシステムオーディオ録音
   #         - Web ブラウザ
   #         - Zoom
   # - ユーザとグループ
   #     - 管理者
-  # - マウス
-  #     - ナチュラルなスクロール OFF
-  # - トラックパッド
-  #     - スクロールとズーム
-  #         - ナチュラルなスクロール OFF
 }
