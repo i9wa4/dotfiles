@@ -120,16 +120,12 @@ in
   flake.darwinConfigurations =
     let
       commonCasks = [
-        "docker-desktop"
         "drawio"
         "google-chrome"
         "kitty"
         "macskk"
         "obsidian"
-        "podman-desktop"
-        "visual-studio-code"
         "zoom"
-        # "monitorcontrol"
       ];
     in
     {
