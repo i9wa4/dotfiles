@@ -280,7 +280,7 @@ in
       # ------------------------------------------------------------------------
       controlcenter = {
         # Show a Bluetooth control in the menu bar. Nix default is null.
-        Bluetooth = true;
+        Bluetooth = false;
         # Show a battery percentage in the menu bar. Nix default is null.
         BatteryShowPercentage = true;
       };
