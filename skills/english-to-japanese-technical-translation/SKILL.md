@@ -2,12 +2,9 @@
 name: english-to-japanese-technical-translation
 license: MIT
 description: |
-  USE FOR: English-to-Japanese technical translation of Markdown articles, with
-  glossary-first terminology, verbatim-token preservation, structural constraint
-  checks, reusable prompts, and publication QA for natural Japanese technical
-  prose. DO NOT USE FOR: non-Japanese translation, generic editing, provider or
-  model selection, cost control, privacy policy, source chunking automation, or
-  publishing translated output without review.
+  USE FOR: Translate English technical articles into Japanese and review
+  Japanese technical prose with glossary and style checks. DO NOT USE FOR:
+  provider/model choice or publishing.
 ---
 
 # English-to-Japanese Technical Translation
@@ -15,16 +12,18 @@ description: |
 ## 1. Overview
 
 Translate English technical writing into natural Japanese. Read
-[Workflow](references/workflow.md) for the full procedure, prompt templates,
-and QA checklists.
+[Workflow](references/workflow.md) for the full procedure, prompt templates, and
+QA checklists. Read
+[Japanese Writing Style](references/japanese-writing-style.md) for Japanese
+prose rules and the visual style note.
 
 ## 2. Workflow
 
-1. Before sending source text, drafts, glossaries, or style examples to any AI
-   provider or translation tool, confirm rights to translate, share source with
-   the tool, and publish/distribute the translated derivative. Also confirm
-   project policy for provider, model, network path, and data handling. If
-   unclear, stop for approval; this skill does not choose those policies.
+1. Before sending source text, drafts, glossaries, style examples, or image
+   contents to any AI provider or translation tool, confirm rights to translate,
+   share the material, and publish or distribute the derivative. Confirm policy
+   for provider, model, network path, and data handling. If unclear, stop for
+   approval; this skill does not choose those policies.
 2. Stabilize the source revision, publication surface, audience, and register.
 3. Mark verbatim tokens separately from semantic and structural
    constraints. Keep code, commands, paths, URLs, API names, identifiers,
@@ -40,10 +39,10 @@ and QA checklists.
 
 ## 3. Prompt Use
 
-Use the workflow reference prompts for style contracts, terminology extraction,
-section translation, accuracy review, editorial review, drift checks, and final
-QA. Keep verbatim tokens exact, preserve constraints such as warning meaning and
-table layout, and ask for uncertainty markers instead of invented details.
+Use the reference prompts for style contracts, terminology extraction, section
+translation, accuracy review, editorial review, drift checks, and final QA. Keep
+verbatim tokens exact and ask for uncertainty markers instead of invented
+detail.
 
 ## 4. Boundaries
 
