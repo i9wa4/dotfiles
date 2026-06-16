@@ -305,16 +305,6 @@ in
           # Display button shapes. macOS default is 0 (off).
           ButtonShapesEnabled = 1;
         };
-        "com.apple.universalaccess" = {
-          # Color Filters: Grayscale. macOS default is false.
-          grayscale = true;
-          # Differentiate without color. macOS default is false.
-          differentiateWithoutColor = true;
-          # Increase contrast. macOS default is false.
-          increaseContrast = false;
-          # Show toolbar button shapes. macOS default is false.
-          showToolbarButtonShapes = false;
-        };
         "com.apple.mediaaccessibility" = {
           # Enable color filters. macOS default is 0 (off).
           "__Color__-MADisplayFilterCategoryEnabled" = 1;
