@@ -50,6 +50,19 @@
               if isDarwin then
                 ''
                   profile=$(echo -e "macos-p\nmacos-w" | ${lib.getExe pkgs.fzf} --prompt="Select profile: ")
+
+                  if [ -x /opt/homebrew/bin/brew ]; then
+                    brewfile=$(${pkgs.coreutils}/bin/mktemp)
+                    trap 'rm -f "$brewfile"' EXIT
+
+                    SUDO_USER="$(${pkgs.coreutils}/bin/id -un)" \
+                      ${pkgs.nix}/bin/nix eval --impure --raw ".#darwinConfigurations.$profile.config.homebrew.brewfile" \
+                      > "$brewfile"
+
+                    PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+                      /opt/homebrew/bin/brew bundle install --file="$brewfile" --no-upgrade --cleanup --force-cleanup
+                  fi
+
                   sudo -H darwin-rebuild switch --impure --flake ".#$profile"
                   sudo -H ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
                 ''
