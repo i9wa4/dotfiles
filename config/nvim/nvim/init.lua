@@ -69,6 +69,74 @@ vim.api.nvim_create_user_command("R", function(opts)
   send_tmux_clipboard(content)
 end, { nargs = "?" })
 
+local function url_at_column(line, column)
+  local search_start = 1
+  while search_start <= #line do
+    local start_col, raw_end_col = line:find([[https?://[^%s<>"'`]+]], search_start)
+    if not start_col then
+      return nil
+    end
+
+    local end_col = raw_end_col
+    local trim_chars = {
+      [")"] = true,
+      ["]"] = true,
+      ["}"] = true,
+      ["."] = true,
+      [","] = true,
+      [";"] = true,
+      [":"] = true,
+      ["!"] = true,
+      ["?"] = true,
+    }
+    while end_col >= start_col and trim_chars[line:sub(end_col, end_col)] do
+      end_col = end_col - 1
+    end
+
+    if column >= start_col and column <= end_col then
+      return line:sub(start_col, end_col)
+    end
+
+    search_start = raw_end_col + 1
+  end
+
+  return nil
+end
+
+local function system_open_url(url)
+  local cmd
+  if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
+    cmd = { "open", url }
+  elseif vim.fn.has("wsl") == 1 and vim.fn.executable("wslview") == 1 then
+    cmd = { "wslview", url }
+  elseif vim.fn.executable("xdg-open") == 1 then
+    cmd = { "xdg-open", url }
+  end
+
+  if not cmd then
+    vim.notify("No system URL opener found", vim.log.levels.WARN)
+    return
+  end
+
+  vim.system(cmd, {}, function(result)
+    if result.code ~= 0 then
+      vim.schedule(function()
+        vim.notify("Failed to open URL: " .. url, vim.log.levels.WARN)
+      end)
+    end
+  end)
+end
+
+local function open_url_under_cursor()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local url = url_at_column(vim.api.nvim_get_current_line(), cursor[2] + 1)
+  if url then
+    system_open_url(url)
+  end
+end
+
+vim.api.nvim_create_user_command("OpenUrlUnderCursor", open_url_under_cursor, {})
+
 local function highlight_define()
   vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
   vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
@@ -118,6 +186,11 @@ end, { expr = true })
 vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
+
+vim.keymap.set({ "n", "i" }, "<LeftMouse>", "<LeftMouse><Cmd>OpenUrlUnderCursor<CR>", {
+  desc = "Open URL under mouse",
+  silent = true,
+})
 
 vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
