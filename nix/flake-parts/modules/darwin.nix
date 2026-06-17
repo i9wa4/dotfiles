@@ -124,7 +124,6 @@ in
         "google-chrome"
         "kitty"
         "macskk"
-        "obsidian"
         "zoom"
       ];
     in
