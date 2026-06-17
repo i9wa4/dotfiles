@@ -118,7 +118,8 @@ in
     pkgs.udev-gothic
   ];
 
-  # Homebrew 5 requires explicit trust for non-official taps.
+  # Homebrew requires explicit trust for non-official taps when tap trust is
+  # enforced. Run this before nix-darwin's Homebrew Bundle activation.
   system.activationScripts.extraActivation.text = lib.mkAfter ''
     if [ -x /opt/homebrew/bin/brew ]; then
       echo >&2 "trusting Homebrew taps..."
@@ -148,10 +149,8 @@ in
     onActivation = {
       autoUpdate = true;
       upgrade = false;
-      # Remove formulae/casks not listed in configuration
-      cleanup = "uninstall";
-      # Homebrew 4.7 requires an explicit confirmation mode with --cleanup.
-      extraFlags = [ "--force-cleanup" ];
+      # Homebrew 6 deprecated `brew bundle install --cleanup`; use
+      # `brew bundle cleanup --file <Brewfile> --force` explicitly when needed.
     };
   };
 
