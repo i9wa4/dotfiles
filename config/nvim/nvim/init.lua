@@ -103,35 +103,20 @@ local function url_at_column(line, column)
   return nil
 end
 
-local function system_open_url(url)
-  local cmd
-  if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-    cmd = { "open", url }
-  elseif vim.fn.has("wsl") == 1 and vim.fn.executable("wslview") == 1 then
-    cmd = { "wslview", url }
-  elseif vim.fn.executable("xdg-open") == 1 then
-    cmd = { "xdg-open", url }
-  end
-
-  if not cmd then
-    vim.notify("No system URL opener found", vim.log.levels.WARN)
-    return
-  end
-
-  vim.system(cmd, {}, function(result)
-    if result.code ~= 0 then
-      vim.schedule(function()
-        vim.notify("Failed to open URL: " .. url, vim.log.levels.WARN)
-      end)
-    end
-  end)
-end
-
 local function open_url_under_cursor()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local url = url_at_column(vim.api.nvim_get_current_line(), cursor[2] + 1)
   if url then
-    system_open_url(url)
+    local gx = vim.fn.maparg("gx", "n", false, true)
+    if type(gx.callback) == "function" then
+      gx.callback()
+    else
+      local restore_insert = vim.fn.mode():match("^[iR]") ~= nil
+      vim.cmd.normal("gx")
+      if restore_insert then
+        vim.cmd.startinsert()
+      end
+    end
   end
 end
 
