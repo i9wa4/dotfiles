@@ -69,54 +69,9 @@ vim.api.nvim_create_user_command("R", function(opts)
   send_tmux_clipboard(content)
 end, { nargs = "?" })
 
-local function url_at_column(line, column)
-  local search_start = 1
-  while search_start <= #line do
-    local start_col, raw_end_col = line:find([[https?://[^%s<>"'`]+]], search_start)
-    if not start_col then
-      return nil
-    end
-
-    local end_col = raw_end_col
-    local trim_chars = {
-      [")"] = true,
-      ["]"] = true,
-      ["}"] = true,
-      ["."] = true,
-      [","] = true,
-      [";"] = true,
-      [":"] = true,
-      ["!"] = true,
-      ["?"] = true,
-    }
-    while end_col >= start_col and trim_chars[line:sub(end_col, end_col)] do
-      end_col = end_col - 1
-    end
-
-    if column >= start_col and column <= end_col then
-      return line:sub(start_col, end_col)
-    end
-
-    search_start = raw_end_col + 1
-  end
-
-  return nil
-end
-
 local function open_url_under_cursor()
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  local url = url_at_column(vim.api.nvim_get_current_line(), cursor[2] + 1)
-  if url then
-    local gx = vim.fn.maparg("gx", "n", false, true)
-    if type(gx.callback) == "function" then
-      gx.callback()
-    else
-      local restore_insert = vim.fn.mode():match("^[iR]") ~= nil
-      vim.cmd.normal("gx")
-      if restore_insert then
-        vim.cmd.startinsert()
-      end
-    end
+  if vim.fn.expand("<cfile>"):match("^https?://") then
+    vim.fn.maparg("gx", "n", false, true).callback()
   end
 end
 
