@@ -28,12 +28,13 @@ GitHub mechanics; `create-review-comment` owns user-facing PR comment drafts.
 1. Run the cheapest relevant verifier first.
 2. For substantive reviews, use the five defaults before synthesizing. Direct
    review is acceptable for trivial follow-ups if stated.
-3. Add data or research reviewers only for specialized questions; do not
+3. Run each wave in parallel; close it before second-wave validators.
+4. Add data or research reviewers only for specialized questions; do not
    replace the defaults.
-4. Use native subagents only. No dispatcher, model/tier overrides, or
+5. Use native subagents only. No dispatcher, model/tier overrides, or
    cross-engine pool. Per-agent defaults live in `subagents/metadata.nix`.
-5. Give each subagent bounded read-only paths, context, and output shape.
-6. Suppress unverified findings, deduplicate, and produce the verdict or
+6. Give each subagent bounded read-only paths, context, and output shape.
+7. Suppress unverified findings, deduplicate, and produce the verdict or
    recommendation.
 
 ## 3. Role Rules
