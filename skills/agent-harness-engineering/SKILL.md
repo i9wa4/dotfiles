@@ -41,6 +41,7 @@ replacing repo source of truth.
   [Boot](references/workspace-boot-failure-modes.md),
   [VDE](references/workspace-vde-layout-internals.md)
 - [Prompts](references/prompt-contracts-preserved-guidance.md),
+  [Boundaries](references/ai-human-responsibility-boundaries.md),
   [Blocks](references/prompt-blocks.md),
   [Review](references/review-output-contract.md),
   [Resume](references/resume-handoff.md)

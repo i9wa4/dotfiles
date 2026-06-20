@@ -28,9 +28,11 @@ if ! git_readonly rev-parse --git-dir >/dev/null 2>&1; then
   exit 0
 fi
 
-# Get git directory (works with worktrees)
-git_dir=$(git_readonly rev-parse --git-dir 2>/dev/null)
-git_common_dir=$(git_readonly rev-parse --git-common-dir 2>/dev/null)
+# Get git directories (works with worktrees). Use absolute paths because Git
+# can emit different relative forms for --git-dir and --git-common-dir when
+# invoked from a subdirectory.
+git_dir=$(git_readonly rev-parse --path-format=absolute --git-dir 2>/dev/null)
+git_common_dir=$(git_readonly rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
 
 # Detect action state
 action=""

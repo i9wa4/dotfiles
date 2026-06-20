@@ -20,6 +20,9 @@ Read [Usage](references/usage.md) before authenticated Atlassian requests.
 - `ATLASSIAN_API_TOKEN`: Atlassian API token.
 - `ATLASSIAN_CLOUD_ID`: optional for Confluence APIs that require cloud id.
 
+If `ATLASSIAN_API_TOKEN` is missing, follow
+[API Token](references/api-token.md).
+
 Check presence, not values. Use the reference command or an equivalent that
 prints only `set` or `missing`. Never print credential values, authorization
 headers, cookies, or shell traces.

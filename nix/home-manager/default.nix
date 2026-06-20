@@ -124,6 +124,9 @@ in
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
+    ]
+    ++ lib.optionals pkgs.stdenv.isDarwin [
+      pkgs.macmon
     ];
 
     # ==========================================================================
