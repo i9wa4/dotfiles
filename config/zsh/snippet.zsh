@@ -27,7 +27,8 @@ __snippet_add "(Git) graph --all" "la" "log --graph --format='%C(auto)%h%C(auto)
 __snippet_add "(macOS) caffeinate" "caffeinate" "sudo pmset disablesleep" ""
 __snippet_add "(vde-layout) dev" "vd" "vde-layout dev" ""
 __snippet_add "(vde-layout) main" "vm" "vde-layout main" ""
-__snippet_add "(vde-layout) preset-a" "va" "vde-layout messenger-codex && vde-layout preset-a" ""
+__snippet_add "(vde-layout) preset-p" "vp" "vde-layout messenger-codex && vde-layout preset-p" ""
+__snippet_add "(vde-layout) preset-w" "vw" "vde-layout messenger-claude && vde-layout preset-w" ""
 
 __snippet_find_index() {
   local keyword="$1"
