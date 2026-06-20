@@ -16,6 +16,9 @@ PY
 Do not use commands that dump full environment values. Keep shell tracing
 disabled before authenticated commands.
 
+If `ATLASSIAN_API_TOKEN` is missing, create one with
+[API Token](api-token.md).
+
 ## 2. Jira
 
 - For access checks, request only the fields needed to prove readability, such
