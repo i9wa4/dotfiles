@@ -14,17 +14,19 @@
 
 os_type=$(uname -s)
 
+get_darwin_macmon_metrics() {
+  macmon pipe --samples 1 -i 1000 | jq -r '
+    [
+      (.temp.cpu_temp_avg | round),
+      (((.pcpu_usage[1] + .ecpu_usage[1]) * 100) | if . > 100 then 100 else . end | round),
+      ((.memory.ram_usage / .memory.ram_total * 100) | round)
+    ] | @tsv
+  '
+}
+
 # Get total CPU usage percentage
 get_total_cpu_usage() {
   case "${os_type}" in
-    Darwin)
-      # Parse top output for CPU usage (user + sys)
-      top -l 1 -s 0 2>/dev/null | awk '/CPU usage/ {
-        gsub(/%/, "", $3)
-        gsub(/%/, "", $5)
-        printf "%.0f", $3 + $5
-      }'
-      ;;
     Linux)
       # Parse /proc/stat for CPU usage
       read -r _cpu user nice system idle rest </proc/stat
@@ -51,19 +53,6 @@ get_total_cpu_usage() {
 # Get RAM usage percentage
 get_ram_usage() {
   case "${os_type}" in
-    Darwin)
-      # vm_stat: free + inactive pages are reclaimable (= available)
-      local page_size total_mem
-      page_size=$(vm_stat | awk '/page size/ {print $8}')
-      total_mem=$(sysctl -n hw.memsize)
-      vm_stat | awk -v total="${total_mem}" -v ps="${page_size}" '
-      /Pages free:/     { gsub(/\./, "", $3); free = $3 }
-      /Pages inactive:/ { gsub(/\./, "", $3); inactive = $3 }
-      END {
-        avail = (free + inactive) * ps
-        printf "%.0f", (total - avail) * 100 / total
-      }'
-      ;;
     Linux)
       # /proc/meminfo: MemAvailable is the most accurate available memory
       awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0f", (total-avail)*100/total}' /proc/meminfo
@@ -77,13 +66,6 @@ get_ram_usage() {
 # Get CPU temperature in Celsius
 get_cpu_temp() {
   case "${os_type}" in
-    Darwin)
-      if command -v osx-cpu-temp >/dev/null 2>&1; then
-        osx-cpu-temp | grep -o '[0-9]*\.[0-9]*' | awk '{printf "%.0f", $1}'
-      else
-        echo "-"
-      fi
-      ;;
     Linux)
       for zone_type_file in /sys/class/thermal/thermal_zone*/type; do
         if [ "$(cat "${zone_type_file}")" = "x86_pkg_temp" ]; then
@@ -115,9 +97,16 @@ get_disk_usage() {
 }
 
 # Main
-temp=$(get_cpu_temp)
-total_cpu=$(get_total_cpu_usage)
-ram=$(get_ram_usage)
+case "${os_type}" in
+  Darwin)
+    read -r temp total_cpu ram <<<"$(get_darwin_macmon_metrics)"
+    ;;
+  *)
+    temp=$(get_cpu_temp)
+    total_cpu=$(get_total_cpu_usage)
+    ram=$(get_ram_usage)
+    ;;
+esac
 disk=$(get_disk_usage)
 
 printf "TEMP:%2sC CPU:%2s%% RAM:%2s%% DISK:%2s%%\n" "${temp}" "${total_cpu}" "${ram}" "${disk}"

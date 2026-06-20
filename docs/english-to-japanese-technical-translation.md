@@ -180,10 +180,19 @@ Checklist:
 
 - Sentences are natural Japanese, not English syntax with Japanese words.
 - Paragraphs have clear subjects and do not rely on ambiguous omitted subjects.
+- Each paragraph advances one topic and gives readers enough orientation in
+  the first sentence.
 - The chosen register is consistent.
 - The lead paragraph gives Japanese readers enough context.
 - Headings are concise and useful for scanning.
 - Transitions explain why each section follows the previous one.
+- Claims are concrete and supported by the examples, source facts, or stated
+  constraints.
+- Causal statements name the actor or mechanism instead of relying on vague
+  agency.
+- Headings name the topic or question without turning every H2 into a slogan.
+- Hollow LLM-like filler, overbroad generalizations, decorative punctuation,
+  and unnecessary quotation marks are removed after the argument is sound.
 - The text does not explain well-known engineering terms excessively.
 - The text does not under-explain source-specific assumptions.
 
@@ -345,7 +354,10 @@ Check:
 - natural Japanese sentence flow;
 - register consistency;
 - heading clarity;
-- paragraph transitions;
+- paragraph logic and transitions;
+- concrete author or source stance;
+- claim scope, support, and causal mechanisms;
+- unsupported generalizations and hollow LLM-like phrasing;
 - reader-level fit for Japanese engineers;
 - excessive literal translation from English.
 

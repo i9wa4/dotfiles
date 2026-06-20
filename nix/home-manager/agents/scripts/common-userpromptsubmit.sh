@@ -131,6 +131,9 @@ detect_launch_cmd() {
     if [[ -n ${launch_pid:-} ]]; then
       launch_cmd=$(ps -o command= -p "$launch_pid" 2>/dev/null) || true
     fi
+    if [[ -z ${launch_cmd:-} ]]; then
+      launch_cmd=$(ps -t "$pane_tty" -o args= 2>/dev/null | awk '$1 ~ /(^|\/)(claude|codex)$/ { print; exit }') || true
+    fi
   fi
 
   printf '%s' "$launch_cmd"

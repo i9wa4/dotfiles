@@ -79,6 +79,10 @@ Apply these skills together when available:
 5. Draft Japanese Markdown review comments for the selected findings.
 6. Review the draft comments themselves with the same multi-perspective review
    approach.
+   - Run validator reviewers in parallel when useful, but close the completed
+     finding-pass review threads before starting that next wave. If live-agent
+     budget is already tight, reduce only the validator wave or validate
+     directly rather than letting spawn failures interrupt the workflow.
    Ask reviewers to approve or reject each draft for correctness, clarity,
    severity, duplication, and whether the comment is worth posting.
 7. Adjust the draft until all material objections are resolved. If full
