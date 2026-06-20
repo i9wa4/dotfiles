@@ -7,7 +7,9 @@ concise skill needs domain-specific details.
 ---
 name: prompt-contracts-local
 license: MIT
-description: Task prompts, review contracts, and resume-handoff patterns for Claude Code and Codex CLI agent workflows in this repo.
+description: |
+  Task prompts, review contracts, and resume-handoff patterns for Claude Code
+  and Codex CLI agent workflows in this repo.
 ---
 
 # prompt-contracts-local
@@ -41,9 +43,13 @@ Recommended workflow:
    parseable output.
 4. For long-running or multi-turn work, write the result so it can be resumed
    cleanly from saved handoff context.
+5. Before adding global prompt rules, classify the rule with
+   [AI/Human Responsibility Boundaries](ai-human-responsibility-boundaries.md)
+   and prefer the narrowest owner surface.
 
 Open these references as needed:
 
+- [AI/Human Responsibility Boundaries](ai-human-responsibility-boundaries.md)
 - [Prompt Blocks](prompt-blocks.md)
 - [Review Output Contract](review-output-contract.md)
 - [Resume Handoff](resume-handoff.md)
