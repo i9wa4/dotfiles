@@ -106,14 +106,13 @@ See also: `workspace-boot-failure-modes.md`
 | ----------------- | -------------------------------------------------------- |
 | Snippet expansion | `vde-layout messenger-codex && vde-layout preset-a`      |
 | Messenger         | codex gpt-5.5, medium                                    |
-| Grid              | 3x2, new window                                          |
+| Grid              | 3+2 panes, new window                                    |
 | orchestrator      | codex gpt-5.5 xhigh                                      |
 | worker            | codex gpt-5.5 xhigh                                      |
 | worker-alt        | codex gpt-5.5 xhigh                                      |
 | guardian          | codex gpt-5.5 xhigh                                      |
-| critic            | claude sonnet xhigh                                      |
-| boss              | codex gpt-5.5 xhigh                                      |
-| Engine mix        | preset-a: 5 codex + 1 claude; messenger: codex           |
+| critic            | claude opus[1m] xhigh                                    |
+| Engine mix        | preset-a: 4 codex + 1 claude; messenger: codex           |
 | Description       | "codex-featured team"                                   |
 
 Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:

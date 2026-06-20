@@ -21,7 +21,7 @@ shortcut.
 | 6 Architecture | Long-lived direction for sandbox model, credential boundaries, postman topology, CI strategy, and worktree strategy | operating contracts, ADR-style docs, role topology, branch protection assumptions, runtime trust model           | Human/ADR-style decision before implementation       | Pre-PR decision only; AI may prepare options, risks, and evidence but does not approve architecture                          |
 
 Owner approval and human approval are separate gates. A designated owner can
-be an assigned repo role in the postman approval lane, such as `boss`, for
+be an assigned repo role in the postman approval lane, such as `guardian`, for
 internal process completion. That does not satisfy rules that require explicit
 human approval, including public posting, pushes, releases, production-data
 writes, or external side effects.

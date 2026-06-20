@@ -153,8 +153,8 @@ The full Codex template should not be copied wholesale into this repository.
   Adding mandatory JSON or numeric scoring everywhere would conflict with
   `review-output-contract.md`, which limits structured output to cases where a
   parser benefits.
-- This repository's approval lane includes guardian, critic, and boss. A
-  single `outcome = allow` result must not bypass that route.
+- This repository's approval lane includes guardian and critic. A single
+  `outcome = allow` result must not bypass that route.
 
 ## 6. Scoped Adaptation Proposal
 

@@ -96,7 +96,7 @@ presets:
               command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
               delay: 500
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1]
           panes:
             - name: guardian
               title: guardian
@@ -105,10 +105,6 @@ presets:
             - name: critic
               title: critic
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
-              delay: 500
-            - name: boss
-              title: boss
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
               delay: 500
 
   preset-w:
@@ -135,7 +131,7 @@ presets:
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
               delay: 500
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1]
           panes:
             - name: guardian
               title: guardian
@@ -144,8 +140,4 @@ presets:
             - name: critic
               title: critic
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
-              delay: 500
-            - name: boss
-              title: boss
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
               delay: 500

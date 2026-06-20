@@ -43,7 +43,7 @@ Use this skill when one or more apply:
 - Input includes large docs, predecessor notes, or investigation artifacts.
 - User asks for beginner-friendly documentation or says they cannot understand
   the current plan.
-- Plan must pass explicit approval gates (guardian/critic/boss or equivalents;
+- Plan must pass explicit approval gates (guardian/critic or equivalents;
   guardian owns the final review verdict after considering critic's subordinate
   recommendation).
 - If the request is still ambiguous or has multiple viable approaches, use
@@ -171,17 +171,10 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
    - Maximum 3 revision rounds per gate pass.
    - If consensus is not reached after 3 rounds: a. Record the disagreement in
      the Decision Log. b. Notify messenger: "BLOCKED: review deadlock
-     after 3 rounds -- human decision required." c. Do not proceed to boss until
-     messenger resolves the deadlock.
-3. Submit to boss only after guardian relays a final approval that considered
-   critic's recommendation.
-4. If boss rejects: a. Record the rejection reason in the Decision Log. b.
-   Revise the plan artifact per boss feedback. c. Return to step 1 of this gate
-   (re-run guardian-led, critic-assisted review before resubmitting to boss).
-   d. Maximum 2 boss
-   rejection rounds. e. If boss rejects a second time, notify messenger:
-   "BLOCKED: plan rejected twice by boss -- escalate."
-5. Do not finalize or send to messenger until boss approves.
+     after 3 rounds -- human decision required." c. Wait for messenger to
+     resolve the deadlock.
+3. Do not finalize or send to messenger until guardian approves after
+   considering critic's recommendation.
 
 ### 5.5. Step 5: Beginner-Friendly Final Plan Packaging
 
@@ -262,8 +255,8 @@ a beginner audience:
 
 1. Stop -- do NOT make assumptions and proceed.
 2. Flag the ambiguity explicitly in the DONE/BLOCKED report to orchestrator.
-3. Orchestrator runs the full guardian-led, critic-assisted + boss review cycle
-   on the revised content.
+3. Orchestrator runs the full guardian-led, critic-assisted review cycle on the
+   revised content.
 4. Notify messenger of the ambiguity and the review outcome before finalizing.
 
 This rule applies to all plan rewriting tasks, including glossary entries,
@@ -271,7 +264,7 @@ command templates, and decision gate prose.
 
 ## 9. Quality Checklist Before Approval
 
-A plan is ready for boss review only if all are true:
+A plan is ready for final guardian review only if all are true:
 
 - Every technical term used is defined once.
 - Every phase has commands + expected outputs + done criteria.
@@ -302,6 +295,6 @@ That verifier should be:
 - paired with an expected output or success condition
 
 Run that verifier before escalating to native subagent review, guardian,
-critic, boss, or other expensive approval paths, unless the lane is
+critic, or other expensive approval paths, unless the lane is
 documentation-only and `git diff --check` is the cheapest useful verifier.
 ~~~~~~~~~~~~

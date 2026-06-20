@@ -346,7 +346,7 @@ intent: safe execution, explicit handoff, and verifiable reporting.
 
 ## 8. `tmux-a2a-postman` routing contract
 
-The approval workflow has seven standing role nodes:
+The approval workflow has six standing role nodes:
 
 - `messenger`
 - `orchestrator`
@@ -354,24 +354,22 @@ The approval workflow has seven standing role nodes:
 - `worker-alt`
 - `critic`
 - `guardian`
-- `boss`
 
 The live postman graph also contains an auxiliary `agent` node connected to
 `orchestrator`. It is excluded from the approval-workflow count because it is
-not part of the normal human-facing, execution, review, guardian, or boss
-approval lane.
+not part of the normal human-facing, execution, review, or guardian approval
+lane.
 
 Reachability is strict:
 
 - `messenger` talks only to `orchestrator`
-- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `guardian`,
-  `boss`, and auxiliary `agent`
+- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `guardian`, and
+  auxiliary `agent`
 - `critic` talks only to `guardian`
 - `guardian` receives from `orchestrator`, sends review results to `critic`,
-  receives critic's recommendation, and relays the guardian verdict to
+  receives critic's recommendation, and relays the final guardian verdict to
   `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
-- `boss` gives final approval to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
   approval lane
 
@@ -390,7 +388,7 @@ Artifact work is not complete until this exact Approval route succeeds:
 
 ```text
 worker DONE -> orchestrator -> guardian -> critic
--> guardian -> orchestrator -> boss -> orchestrator -> messenger
+-> guardian -> orchestrator -> messenger
 ```
 
 `worker-alt` follows the same route when it is the executor.
@@ -406,23 +404,22 @@ An approval-lane pass means all of the following are true:
 - guardian completed first review and sent evidence to critic
 - critic returned an `APPROVED:` recommendation to guardian with no remaining
   BLOCKING defects
-- guardian relayed the guardian verdict to orchestrator
-- boss role approves internal process completion after guardian approval with
-  critic recommendation considered
+- guardian relayed the final guardian verdict to orchestrator after considering
+  critic's recommendation and enforcing the completion contract
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
-Boss approval is an internal approval-lane gate. It does not replace explicit
-human approval when the live contract, issue, or user instruction gates public
-posting, pushes, tags, releases, production-data writes, or other external side
-effects.
+Guardian approval is an internal approval-lane gate. It does not replace
+explicit human approval when the live contract, issue, or user instruction
+gates public posting, pushes, tags, releases, production-data writes, or other
+external side effects.
 
 ### 9.3. Defect-specific rejection
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from guardian or boss must name the concrete blocking
-  defects; guardian must include critic `NOT APPROVED:` recommendations in
-  its defect list
+- `NOT APPROVED:` from guardian must name the concrete blocking defects;
+  guardian must include critic `NOT APPROVED:` recommendations in its defect
+  list
 - orchestrator returns that exact defect list to the worker instead of vague
   "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
@@ -434,7 +431,7 @@ The approval loop is bounded.
 
 - each artifact gets at most 3 approval attempts: the initial review plus 2
   rework attempts
-- any guardian `NOT APPROVED:` or boss rejection consumes one attempt
+- any guardian `NOT APPROVED:` consumes one attempt
 - if the third attempt still fails, stop the loop and report `BLOCKED:` with
   the blocking defect list instead of restarting again
 
@@ -447,7 +444,6 @@ These timeout thresholds are role policy, not daemon configuration:
 - `worker` and `worker-alt` use 900s / 15m as the idle boundary
 - `critic`, `guardian`, `messenger`, and `orchestrator` use 1800s / 30m as
   the idle boundary
-- `boss` uses 3600s / 60m as the idle boundary
 
 Fallback behavior:
 
@@ -461,9 +457,6 @@ Fallback behavior:
   reports `BLOCKED:` only when guardian reports critic unreachable, guardian
   stays silent beyond the review-node idle boundary, or direct send failure
   evidence is returned through guardian; never bypass critic
-- boss fallback: never bypass boss; late-reply alerts still fire after
-  180s / 3m, and at or beyond the 3600s / 60m idle boundary report
-  `BLOCKED:` waiting for boss instead of forcing completion
 - hook, permission, or tool-restriction blocks are immediate `BLOCKED:` states
   with no silent retry
 
@@ -474,7 +467,7 @@ identity, route reachability, reply-required flow, verdict vocabulary,
 approval/no-bypass state transitions, watchdog/fallback gates, and human
 approval gates for public posting.
 
-The `boss` role is part of the internal approval lane. When a rule says
+The guardian verdict is part of the internal approval lane. When a rule says
 explicit human approval is required, get approval from the human user; do not
 treat a role-node approval as a substitute.
 

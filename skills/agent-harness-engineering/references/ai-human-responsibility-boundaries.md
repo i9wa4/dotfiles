@@ -22,7 +22,7 @@ policy changes as explicit human decisions.
 | 3. Style        | Clarity, naming, compactness, prompt bloat                           | Focused skills and reviewers | Shortening verbose role prose, improving trigger descriptions         |
 | 4. Logic        | Route consistency, reply gates, artifact gates, workflow correctness | Worker plus reviewer         | Verifying guardian-to-critic review is not bypassed                   |
 | 5. Design       | Which source owns a rule                                             | Human-led, agent-assisted    | Choosing `postman.md` versus a skill or reference                     |
-| 6. Architecture | Topology, trust model, approval policy, public-write gates           | Human-owned                  | Adding/removing role nodes, changing boss or public approval gates    |
+| 6. Architecture | Topology, trust model, approval policy, public-write gates           | Human-owned                  | Adding/removing role nodes, changing final or public approval gates   |
 
 ## 3. Role Guidance
 
@@ -35,11 +35,11 @@ policy changes as explicit human decisions.
 - `worker` and `worker-alt`: stage 3-4 execution. They can inspect files, use
   focused skills, create artifacts, validate, and recommend options for stage 5
   decisions.
-- `guardian` and `critic`: stage 4 review with stage 5 challenge. They check
-  evidence and boundary preservation; they do not replace final human-owned
-  policy decisions.
-- `boss` and human reviewer: stage 6 ownership for topology, trust model,
-  approval policy, and global runtime-policy changes.
+- `guardian` and `critic`: stage 4 review with stage 5 challenge. Guardian owns
+  the final internal review verdict after considering critic's subordinate
+  recommendation; neither role replaces final human-owned policy decisions.
+- Human reviewer: stage 6 ownership for topology, trust model, approval policy,
+  and global runtime-policy changes.
 
 ## 4. Change Checklist
 

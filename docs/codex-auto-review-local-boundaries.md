@@ -98,13 +98,13 @@ network/file-boundary behavior.
 
 ## 5. Interaction With Existing Repo Controls
 
-| Existing Control                  | Auto-Review Interaction                                                                                                                      |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Shared Bash deny hook             | Hook denial remains a hard local gate. Auto-review should not approve around a hook-denied command.                                          |
-| Write-tool observer               | Observation remains diagnostic only. Auto-review does not add role-aware write denial.                                                       |
-| Postman guardian/critic/boss lane | Auto-review is a Codex-local reviewer swap, not approval for DONE, public posting, pushes, or production data.                               |
-| App connector prompt defaults     | Connector prompts should remain prompt-based unless a focused test proves how Codex routes them.                                             |
-| Permission profiles               | The current docs say beta permission profiles do not compose with older sandbox settings; do not mix them with this sandbox-mode experiment. |
+| Existing Control              | Auto-Review Interaction                                                                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shared Bash deny hook         | Hook denial remains a hard local gate. Auto-review should not approve around a hook-denied command.                                          |
+| Write-tool observer           | Observation remains diagnostic only. Auto-review does not add role-aware write denial.                                                       |
+| Postman guardian/critic lane  | Auto-review is a Codex-local reviewer swap, not approval for DONE, public posting, pushes, or production data.                               |
+| App connector prompt defaults | Connector prompts should remain prompt-based unless a focused test proves how Codex routes them.                                             |
+| Permission profiles           | The current docs say beta permission profiles do not compose with older sandbox settings; do not mix them with this sandbox-mode experiment. |
 
 ## 6. Manual Verification Scenarios
 
