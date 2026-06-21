@@ -373,6 +373,15 @@ Reachability is strict:
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
   approval lane
 
+Worker selection is explicit: postman sends to the node named by `--to`, and
+orchestrator chooses `worker` or `worker-alt` before sending. Use `worker` as
+the default primary executor. Use `worker-alt` when `worker` already has active
+delegated work, an inbound required-reply item, an outbound reply/input wait, a
+long-running request, or when bounded independent research or audit can run in
+parallel without racing the primary executor. Secondary `worker-alt` work keeps
+one canonical artifact owner and reports findings through orchestrator for
+integration.
+
 If footer prose conflicts with the live graph or with successful delivery in
 the same context, trust the graph and actual delivery.
 

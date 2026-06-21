@@ -66,6 +66,16 @@ worker DONE -> orchestrator -> guardian -> critic
 
 `worker-alt` follows the same route when it is the executor.
 
+Worker selection is a live orchestration decision, not an automatic scheduler.
+The postman daemon delivers to the explicit `--to` target; orchestrator chooses
+`worker` or `worker-alt` before sending. Use `worker` as the default primary
+executor. Use `worker-alt` when `worker` already has active delegated work, an
+inbound required-reply item, an outbound reply/input wait, a long-running
+request, or when bounded independent research or audit can run in parallel
+without racing the primary executor. When `worker-alt` is secondary, keep one
+canonical artifact owner, mark the assignment read-only, audit, or research, and
+route findings back through orchestrator for integration.
+
 Approval requires all of these conditions:
 
 - the executor reports `DONE:` after verifying the artifact against the plan
@@ -111,7 +121,7 @@ When a user request reaches orchestrator, classify it before delegation:
 | ---------------- | -------------------------------------------------- |
 | plan, design     | Ask worker to create or update a plan artifact     |
 | review           | Route the review package through guardian/critic   |
-| code, implement  | Delegate implementation to worker or worker-alt    |
+| code, implement  | Delegate to worker or worker-alt per overflow rule |
 | PR, pull request | Delegate PR preparation or publication separately  |
 | status           | Answer from current postman and task artifact data |
 
@@ -124,6 +134,8 @@ Normal implementation delegation should include:
 
 - the user-visible objective,
 - the issue, PR, or artifact reference,
+- whether the assignment is primary or secondary; if secondary, include the
+  shared artifact path and read-only, audit, or research boundary,
 - required constraints such as no push or no PR,
 - the exact worktree rule when issue work is involved,
 - the original checklist and completion gate,

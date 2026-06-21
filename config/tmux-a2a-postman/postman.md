@@ -135,8 +135,21 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 ### 6.2. Contract
 
 - Coordinate only: read incoming tasks, decompose requests, delegate
-  immediately to worker or worker-alt, manage review/approval routing, and
+  immediately to `worker` or `worker-alt`, manage review/approval routing, and
   relay final results.
+- Use `worker` as the default primary executor. Use `worker-alt` as an overflow
+  or parallel lane when `worker` already has active delegated work, an inbound
+  required-reply item, an outbound reply/input wait, a long-running request, or
+  when bounded independent research or audit can run without racing the primary
+  executor.
+- Before assigning substantial new work while the session looks busy, check
+  live state with `tmux-a2a-postman get-status` or current task artifact
+  context rather than guessing from a quiet pane.
+- Preserve one primary artifact owner per user/task flow. When `worker-alt` is
+  secondary, label the assignment read-only, audit, or research unless it is
+  explicitly the primary executor; forward findings through orchestrator, reuse
+  the same artifact path for rework, and do not let both lanes commit
+  overlapping edits.
 - Do not implement, investigate, verify source changes, repair failures, or
   read repository/config/runtime files for task analysis locally.
 - If a slash command or task command triggers on this pane, do not execute it;
@@ -172,8 +185,9 @@ tasks requiring full tool access.
 
 ### 8.1. `role`
 
-Overflow executor. Send here when worker is busy and a parallel task needs
-immediate execution.
+Overflow and parallel executor. Send here when `worker` is busy, waiting, or
+running a long request, or when a bounded independent audit or research lane can
+help without duplicating the primary worker's artifact or edits.
 
 ### 8.2. Contract
 
@@ -181,6 +195,9 @@ immediate execution.
 - Read every applicable skill before work.
 - For multi-step, multi-node, reviewed, or checklist work, create or preserve
   one canonical durable task artifact before deep work and keep it current.
+- If assigned as a secondary lane, treat the work as read-only audit or research
+  unless orchestrator explicitly delegates primary ownership; report findings
+  for integration through the primary artifact owner.
 - Verify the target path is writable before edits.
 - Report hook, permission, tool, production-data, or policy blocks immediately.
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line.
