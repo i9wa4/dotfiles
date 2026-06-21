@@ -210,6 +210,36 @@ is useful for regular SSH connections:
 sudo chsh -s $(which zsh) $(id -un)
 ```
 
+### 3.6. Docker Engine And Dev Containers (optional)
+
+Home Manager installs the Docker CLI/tooling from Nix. Configure the rootful
+Ubuntu daemon/socket with the flake app:
+
+```sh
+nix run '.#docker-socket' -- --setup
+```
+
+Open a new login session after first setup. Then choose one socket mode:
+
+```sh
+nix run '.#docker-socket' -- --start
+```
+
+```sh
+nix run '.#docker-socket' -- --enable
+```
+
+Devcontainers use `/var/run/docker.sock`; `docker.service` starts only when the
+socket is used. `--start` is for the current boot, while `--enable` keeps socket
+activation available after reboot.
+
+Note: standalone Home Manager can declare `systemd.user.*`, but rootful Docker
+needs root systemd units, `/var/run/docker.sock`, and docker group state. The
+helper makes that Ubuntu root setup repeatable via `sudo systemctl`; use NixOS
+`virtualisation.docker.enable` for fully declarative root Docker. Rootless
+Docker is the user-service alternative, with devcontainer compatibility
+tradeoffs.
+
 ## 4. macOS
 
 ### 4.1. Backup Shell Configs
@@ -305,7 +335,6 @@ gh auth login --with-token
 | `nix run '.#switch'`                             | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate and uses 1 day on both Linux and macOS |
 | `nix run '.#update'`                             | Update flake inputs                                                                                                                                                                                                                                       |
 | `nix run '.#check'`                              | Check flake configuration                                                                                                                                                                                                                                 |
-| `nix run '.#nix-profile-cleanup' -- --dry-run`   | Preview manual `nix profile` entries. `switch` removes them before activation; `profile-update` remains as a compatibility cleanup alias                                                                                                                  |
 | `nix run '.#storage-report' -- --self --summary` | Summarize Linux home-directory storage                                                                                                                                                                                                                    |
 
 ## 7. Upgrade Nix
@@ -322,7 +351,11 @@ profile as root, then reload and restart `nix-daemon`. `--remove-all` avoids a
 profile conflict with the `nix-manual` output from the original installer:
 
 ```sh
-sudo -i sh -c 'nix-channel --update && nix-env --install --remove-all --attr nixpkgs.nix nixpkgs.cacert && systemctl daemon-reload && systemctl restart nix-daemon'
+sudo -i sh -c 'nix-channel --update &&
+  nix-env --install --remove-all \
+    --attr nixpkgs.nix nixpkgs.cacert &&
+  systemctl daemon-reload &&
+  systemctl restart nix-daemon'
 ```
 
 Verify:

@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   username,
   commonNixSettings,
   ...
@@ -9,8 +10,13 @@ let
     # App switching: Alt + 1/2/3
     alt - 1 : open -a "kitty"
     alt - 2 : open -a "Google Chrome"
-    alt - 3 : open -a "Obsidian"
   '';
+  homebrewThirdPartyTaps = [
+    "asmvik/formulae"
+  ];
+  homebrewBrews = [
+    "asmvik/formulae/skhd"
+  ];
 in
 {
   nixpkgs = {
@@ -112,30 +118,46 @@ in
     pkgs.udev-gothic
   ];
 
+  # Homebrew requires explicit trust for non-official taps when tap trust is
+  # enforced. Run this before nix-darwin's Homebrew Bundle activation.
+  system.activationScripts.extraActivation.text = lib.mkAfter ''
+    if [ -x /opt/homebrew/bin/brew ]; then
+      echo >&2 "trusting Homebrew taps..."
+      ${lib.concatMapStringsSep "\n" (tap: ''
+        sudo \
+          --user=${lib.escapeShellArg username} \
+          --set-home \
+          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+          /opt/homebrew/bin/brew tap ${lib.escapeShellArg tap} >/dev/null
+        sudo \
+          --user=${lib.escapeShellArg username} \
+          --set-home \
+          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+          /opt/homebrew/bin/brew trust --tap ${lib.escapeShellArg tap} >/dev/null
+      '') homebrewThirdPartyTaps}
+    fi
+  '';
+
   # Homebrew
   # Allow activation-time metadata updates so Homebrew's cask API and portable
   # Ruby stay in sync before `brew bundle` resolves casks. Keep upgrades
   # disabled so `nix run '.#switch'` does not force app version bumps.
   homebrew = {
     enable = true;
-    taps = [
-      "asmvik/formulae"
-    ];
-    brews = [
-      "asmvik/formulae/skhd"
-    ];
+    taps = homebrewThirdPartyTaps;
+    brews = homebrewBrews;
     onActivation = {
       autoUpdate = true;
       upgrade = false;
-      # Remove formulae/casks not listed in configuration
-      cleanup = "uninstall";
+      # Homebrew 6 deprecated `brew bundle install --cleanup`; use
+      # `brew bundle cleanup --file <Brewfile> --force` explicitly when needed.
     };
   };
 
   # Power management
   power.sleep = {
-    computer = "never"; # システムスリープ無効
-    display = 30; # ディスプレイスリープ 30分
+    computer = "never"; # Idle time until the computer sleeps; "never" disables computer sleep. Nix default is null.
+    display = 30; # Idle time in minutes until displays sleep. Nix default is null.
   };
 
   # ============================================================================
@@ -149,8 +171,9 @@ in
     # Keyboard
     # ==========================================================================
     keyboard = {
+      # Enable keyboard mappings. Nix default is false.
       enableKeyMapping = true;
-      # Caps Lock -> Control (内蔵キーボード) [default: false]
+      # Remap the Caps Lock key to Control. Nix default is false.
       remapCapsLockToControl = true;
     };
 
@@ -163,15 +186,15 @@ in
       # Dock
       # ------------------------------------------------------------------------
       dock = {
-        # 画面上の位置 (left/bottom/right) [default: "bottom"]
+        # Position of the dock on screen. Nix default is null; macOS default is "bottom".
         orientation = "left";
-        # Dock を自動的に表示/非表示 [default: false]
+        # Automatically hide and show the dock. Nix default is null; macOS default is false.
         autohide = false;
-        # アプリの提案と最近使用したアプリを Dock に表示 [default: true]
+        # Show recent applications in the dock. Nix default is null; macOS default is true.
         show-recents = false;
-        # 最新の使用状況に基づいて操作スペースを自動的に並べ替える [default: true]
+        # Automatically rearrange spaces based on most recent use. Nix default is null; macOS default is true.
         mru-spaces = false;
-        # Dock アイコンサイズ (16-128) [default: 48]
+        # Size of the icons in the dock. Nix default is null; macOS default is 64.
         tilesize = 48;
       };
 
@@ -179,66 +202,74 @@ in
       # Finder
       # ------------------------------------------------------------------------
       finder = {
-        # パスバーを表示 [default: false]
+        # Show path breadcrumbs in Finder windows. Nix default is null; macOS default is false.
         ShowPathbar = true;
-        # 拡張子を表示 [default: false]
+        # Always show file extensions. Nix default is null; macOS default is false.
         AppleShowAllExtensions = true;
-        # Finder 終了メニューを表示 [default: false]
+        # Allow quitting Finder. Nix default is null; macOS default is false.
         QuitMenuItem = true;
-        # デフォルトの表示形式 (icnv=アイコン, Nlsv=リスト, clmv=カラム, glyv=ギャラリー) [default: "icnv"]
-        # FXPreferredViewStyle = "Nlsv";
-        FXPreferredViewStyle = "icnv";
       };
 
       # ------------------------------------------------------------------------
       # Global Domain (NSGlobalDomain)
       # ------------------------------------------------------------------------
       NSGlobalDomain = {
-        # キーリピート速度 (小さいほど速い) [default: 6]
+        # How fast a key repeats once it starts. Nix default is null.
         KeyRepeat = 2;
-        # キーリピート開始までの時間 (小さいほど速い) [default: 25]
+        # How long a key must be held before it starts repeating. Nix default is null.
         InitialKeyRepeat = 25;
-        # ナチュラルなスクロール [default: true]
-        # Note: macOS では trackpad と mouse のスクロール方向を別々に設定できない
-        # false = 従来の PC 方向 (マウスに合わせる)
+        # Enable "Natural" scrolling direction. Nix default is null; macOS default is true.
+        # Note: macOS does not expose separate trackpad and mouse scrolling direction settings.
+        # false = traditional PC-style scrolling direction.
         "com.apple.swipescrolldirection" = false;
-        # 英字入力中にスペルを自動変換 [default: true]
+        # Enable automatic spelling correction. Nix default is null; macOS default is true.
         NSAutomaticSpellingCorrectionEnabled = false;
-        # 文頭を自動的に大文字にする [default: true]
+        # Enable automatic capitalization. Nix default is null; macOS default is true.
         NSAutomaticCapitalizationEnabled = false;
-        # スマートダッシュを使用 [default: true]
+        # Enable smart dash substitution. Nix default is null; macOS default is true.
         NSAutomaticDashSubstitutionEnabled = false;
-        # スペースバーを2回押してピリオドを入力 [default: true]
+        # Enable smart period substitution. Nix default is null; macOS default is true.
         NSAutomaticPeriodSubstitutionEnabled = false;
-        # スマート引用符を使用 [default: true]
+        # Enable smart quote substitution. Nix default is null; macOS default is true.
         NSAutomaticQuoteSubstitutionEnabled = false;
-        # インライン予測テキストを表示 [default: true]
+        # Enable inline predictive text. Nix default is null; macOS default is true.
         NSAutomaticInlinePredictionEnabled = false;
-        # ウィンドウ開閉アニメーション [default: true]
+        # Animate opening and closing of windows and popovers. Nix default is null; macOS default is true.
         NSAutomaticWindowAnimationsEnabled = false;
-        # トラックパッド速度 (0.0-3.0) [default: 1.0]
+        # Trackpad tracking speed (0.0-3.0). macOS default is 1.0.
         "com.apple.trackpad.scaling" = 3.0;
+      };
+
+      # ------------------------------------------------------------------------
+      # Keyboard Fn/Globe Key
+      # ------------------------------------------------------------------------
+      hitoolbox = {
+        # Press Fn/Globe twice to start Dictation. Nix default is null; macOS default is Show Emoji & Symbols.
+        # Note: a restart is required for this setting to take effect.
+        AppleFnUsageType = "Start Dictation";
       };
 
       # ------------------------------------------------------------------------
       # Trackpad
       # ------------------------------------------------------------------------
       trackpad = {
-        # タップでクリック [default: false]
+        # Enable tap to click. Nix default is null; macOS default is false.
         Clicking = true;
-        # 3本指のドラッグ (アクセシビリティ > ポインタコントロール > トラックパッドオプション) [default: false]
+        # Enable three-finger drag. Nix default is null; macOS default is false.
         TrackpadThreeFingerDrag = true;
+        # Disable the two-finger swipe-from-right-edge Notification Center gesture. Nix default is null; macOS default is 0 (off).
+        TrackpadTwoFingerFromRightEdgeSwipeGesture = 0;
       };
 
       # ------------------------------------------------------------------------
       # Menu Bar Clock
       # ------------------------------------------------------------------------
       menuExtraClock = {
-        # 日付を表示 (0=表示しない, 1=数字, 2=曜日と日付) [default: 0]
+        # Show the full date. Nix default is null. 0 = When space allows, 1 = Always, 2 = Never.
         ShowDate = 1;
-        # 曜日を表示 [default: false]
+        # Show the day of the week. Nix default is null.
         ShowDayOfWeek = true;
-        # 秒を表示 [default: false]
+        # Show the clock with second precision. Nix default is null.
         ShowSeconds = true;
       };
 
@@ -246,9 +277,9 @@ in
       # Control Center
       # ------------------------------------------------------------------------
       controlcenter = {
-        # Bluetooth をメニューバーに表示 [default: false]
-        Bluetooth = true;
-        # バッテリーの割合 (%) を表示 [default: false]
+        # Show a Bluetooth control in the menu bar. Nix default is null.
+        Bluetooth = false;
+        # Show a battery percentage in the menu bar. Nix default is null.
         BatteryShowPercentage = true;
       };
 
@@ -256,24 +287,32 @@ in
       # Custom User Preferences (settings not available as nix-darwin options)
       # ------------------------------------------------------------------------
       CustomUserPreferences = {
-        # マウス速度 (0.0-3.0) [default: 1.0]
-        # Note: NSGlobalDomain では設定できないため CustomUserPreferences を使用
+        # Mouse tracking speed (0.0-3.0). macOS default is 1.0.
+        # Note: Use CustomUserPreferences because this key does not work under NSGlobalDomain.
         ".GlobalPreferences" = {
           "com.apple.mouse.scaling" = 2.0;
         };
-        "com.apple.finder" = {
-          # サイドバーを表示 [default: true]
-          # ShowSidebar = true;
+        # Accessibility > Display
+        "com.apple.Accessibility" = {
+          # Color Filters: Grayscale. macOS default is 0 (off).
+          GrayscaleDisplay = 1;
+          # Differentiate without color. macOS default is 0 (off).
+          DifferentiateWithoutColor = 1;
+          # Dim flashing lights. macOS default is 0 (off).
+          PhotosensitiveMitigation = 1;
+          # Display button shapes. macOS default is 0 (off).
+          ButtonShapesEnabled = 1;
         };
-        # 日本語入力 (ローマ字入力)
-        "com.apple.inputmethod.Kotoeri" = {
-          # ライブ変換 [default: 1 (ON)]
-          JIMPrefLiveConversionKey = 0;
-          # タイプミスを修正 [default: 0 (OFF)]
-          JIMPrefAutocorrectionKey = 0;
+        "com.apple.mediaaccessibility" = {
+          # Enable color filters. macOS default is 0 (off).
+          "__Color__-MADisplayFilterCategoryEnabled" = 1;
+          # Color filter type. macOS default is not set until Color Filters is configured; 1 = Grayscale.
+          "__Color__-MADisplayFilterType" = 1;
+          # Color filter intensity slider. macOS default is not set until Color Filters is configured.
+          MADisplayFilterGrayscaleCorrectionIntensity = 0.5;
         };
-        # Spotlight 検索結果
-        # Note: アプリのみ有効、その他は OFF
+        # Spotlight search results. macOS default is system-managed.
+        # Note: Enable only Applications; disable all other result categories.
         "com.apple.Spotlight" = {
           orderedItems = [
             {
@@ -362,25 +401,29 @@ in
             }
           ];
         };
-        # 通知センター
+        # Notification Center
         "com.apple.ncprefs" = {
-          # プレビューを表示 (0=常に, 1=ロックされていないときのみ, 2=しない)
+          # Show previews. macOS default is 0. 0 = Always, 1 = When unlocked, 2 = Never.
           content_visibility = 1;
         };
-        # 音声入力 (Dictation)
+        # Dictation
         "com.apple.HIToolbox" = {
-          # 音声入力を有効にする [default: 0 (OFF)]
+          # Enable Dictation. macOS default is 0 (off).
           AppleDictationAutoEnable = 1;
         };
-        # .DS_Store ファイルを作成しない
+        "com.apple.assistant.support" = {
+          # Enable Dictation in System Settings > Keyboard > Dictation. macOS default is 0 (off).
+          "Dictation Enabled" = 1;
+        };
+        # Do not create .DS_Store files.
         "com.apple.desktopservices" = {
-          # ネットワークドライブ [default: false]
+          # Network drives. macOS default is false.
           DSDontWriteNetworkStores = true;
-          # USB ドライブ [default: false]
+          # USB drives. macOS default is false.
           DSDontWriteUSBStores = true;
         };
-        # Mission Control キーボードショートカット
-        # 118: デスクトップ1へ切り替え, 119: デスクトップ2, 120: デスクトップ3
+        # Mission Control keyboard shortcuts
+        # 118: Switch to Desktop 1, 119: Switch to Desktop 2, 120: Switch to Desktop 3
         # parameters: (ASCII code, key code, modifier) / 524288 = Option (Alt)
         # "com.apple.symbolichotkeys" = {
         #   AppleSymbolicHotKeys = {
@@ -401,8 +444,8 @@ in
       sudo -u ${username} bash -c '
         # ------------------------------------------
         # Keyboard: Custom shortcuts [default: none]
-        # ウィンドウ->移動とサイズ変更->右 Ctrl + Option + .
-        # ウィンドウ->移動とサイズ変更->左 Ctrl + Option + ,
+        # Window > Move & Resize > Right: Ctrl + Option + .
+        # Window > Move & Resize > Left: Ctrl + Option + ,
         # Note: dict-add requires activation script (cannot use CustomUserPreferences)
         # ------------------------------------------
         defaults write NSGlobalDomain NSUserKeyEquivalents -dict-add \
@@ -411,14 +454,16 @@ in
           $'"'"'\033ウィンドウ\033移動とサイズ変更\033左'"'"' "^~,"
 
         # ------------------------------------------
-        # Dictation: 🌐 (Globe) キーを2回押して音声入力開始
-        # Note: dict-add で key 164 のみ更新 (他のショートカットを上書きしない)
+        # Dictation: press the Fn/Globe key twice to start Dictation.
+        # macOS 26 user template default is enabled with this modifier entry.
+        # Note: dict-add updates only key 164, preserving other shortcuts.
+        # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
         # ------------------------------------------
         defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "164" \
-          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>65535</integer><integer>0</integer></array><key>type</key><string>standard</string></dict></dict>'"'"'
+          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>262144</integer><integer>9223372036854775807</integer></array><key>type</key><string>modifier</string></dict></dict>'"'"'
 
         # ------------------------------------------
-        # Lock Screen: Screensaver idle time 30 min (1800 sec) [default: 1200]
+        # Lock Screen: Screensaver idle time. macOS default is 1200 seconds.
         # Note: -currentHost required for per-machine settings
         # ------------------------------------------
         defaults -currentHost write com.apple.screensaver idleTime -int 1800
@@ -438,39 +483,19 @@ in
   # ============================================================================
   # The following settings require manual configuration via System Settings:
   #
-  # - Spotlight
-  #     - システムからの結果
-  #         - アプリ ON
-  #     - その他の項目はすべて OFF
-  # - アクセシビリティ
-  #     - ポインタコントロール
-  #         - トラックパッドオプション
-  #             - ドラッグにトラックパッドを使用 ON
-  #             - ドラッグ方法 3本指のドラッグ
+  # - バッテリー
+  #     - 充電
+  #         - 充電上限 95%
   # - ディスプレイ
-  #     - True Tone OFF (内蔵ディスプレイ使用時に出現する設定項目)
   #     - Night Shift
   #         - カスタム 5:00-4:59
-  #         - 色温度 中央と右端の間
-  # - デスクトップと Dock
-  #     - Dock
-  #         - 画面上の位置 任意
-  #         - Dock を自動的に表示/非表示 任意
-  #         - アプリの提案と最近使用したアプリを Dock に表示 OFF
+  #         - 色温度 MAX
   # - 通知
-  #     - 通知センター OFF
   #     - アプリケーションの通知 システム系以外は OFF
-  # - ロック画面
-  #     - 時間設定 30分
   # - プライバシーとセキュリティ
   #     - 画面収録とシステムオーディオ録音
   #         - Web ブラウザ
   #         - Zoom
   # - ユーザとグループ
   #     - 管理者
-  # - マウス
-  #     - ナチュラルなスクロール OFF
-  # - トラックパッド
-  #     - スクロールとズーム
-  #         - ナチュラルなスクロール OFF
 }

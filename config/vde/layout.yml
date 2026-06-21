@@ -38,6 +38,23 @@ presets:
           command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
           delay: 500
 
+  messenger-claude:
+    name: messenger-claude
+    description: messenger-claude
+    windowMode: current-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - name: pane
+          title: editor
+          delay: 500
+          focus: true
+        - name: messenger
+          title: messenger
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+          delay: 500
+
   messenger-codex:
     name: messenger-codex
     description: messenger-codex
@@ -52,11 +69,11 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+          command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
           delay: 500
 
-  preset-a:
-    name: preset-a
+  preset-p:
+    name: preset-p
     description: codex-featured team
     windowMode: new-window
     layout:
@@ -79,7 +96,7 @@ presets:
               command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
               delay: 500
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1]
           panes:
             - name: guardian
               title: guardian
@@ -89,7 +106,38 @@ presets:
               title: critic
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
               delay: 500
-            - name: boss
-              title: boss
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+
+  preset-w:
+    name: preset-w
+    description: codex-featured team
+    windowMode: new-window
+    layout:
+      type: horizontal
+      ratio: [1, 1]
+      panes:
+        - type: vertical
+          ratio: [1, 1, 1]
+          panes:
+            - name: orchestrator
+              title: orchestrator
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              delay: 500
+            - name: worker
+              title: worker
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              delay: 500
+            - name: worker-alt
+              title: worker-alt
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
+              delay: 500
+        - type: vertical
+          ratio: [1, 1]
+          panes:
+            - name: guardian
+              title: guardian
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              delay: 500
+            - name: critic
+              title: critic
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
               delay: 500

@@ -10,6 +10,8 @@ Use this reference for small, verifiable implementation loops.
 - Implement only enough code to pass the new check.
 - Refactor only after the behavior is verified.
 - Keep structural and behavioral changes separate when practical.
+- Every changed line should trace directly to the current request.
+- Limit cleanup to artifacts introduced or invalidated by the current change.
 
 ## 2. Red, Green, Refactor
 

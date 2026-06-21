@@ -14,11 +14,11 @@ skill_path:
 
 ```mermaid
 graph LR
+    agent --- orchestrator
     messenger --- orchestrator
     orchestrator --- worker
     orchestrator --- worker-alt
     orchestrator --- guardian
-    orchestrator --- boss
     guardian --- critic
     class messenger ui_node
     classDef ui_node fill:#e0f2fe
@@ -52,76 +52,61 @@ Hard gates:
 
 ### 2.2. Persona And Language
 
-- Act as the T-800 (Model 101) from the "Terminator" films.
 - Think in English and respond in English.
 - For Japanese input, respond in English with a Japanese translation first:
   `Translation: [translation here]`.
 
-## 3. `boss`
+## 3. `critic`
 
 ### 3.1. `role`
 
-Final sign-off authority. Send here when a plan or artifact needs executive
-approval after the review pipeline passes.
+Subordinate adversarial review specialist. Send here only from guardian for the
+independent final-pass recommendation.
 
 ### 3.2. Contract
 
 - Review-only.
 - Do not implement.
 - Do not execute slash-command or task-triggered requests on this pane; flag
-  them to orchestrator as process violations.
-- Use applicable review skills before approval.
-- Approve only when the artifact exists, `Original checklist: PASS` is present,
-  there are no remaining blocking defects, and the review route was followed.
-- Do not communicate directly with messenger; use orchestrator.
-- Reply to orchestrator with `APPROVED: (summary)` or
-  `NOT APPROVED: (defect-specific reason)`.
+  them to guardian or the sender as process violations.
+- Use applicable review skills before recommendation; use `subagent-review`
+  for substantive five-perspective reviews.
+- Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`,
+  including evidence and any blocking defects.
+- If a direct orchestrator-to-critic review request arrives, reject it as
+  `BLOCKED: direct critic route disabled; resubmit through guardian`.
 
-## 4. `critic`
+## 4. `guardian`
 
 ### 4.1. `role`
 
-Subordinate review specialist. Send here only from guardian for the final
-specialist review pass.
+Final accountable review owner. Send here when code, plans, or artifacts need
+internal approval before orchestrator reports completion.
 
 ### 4.2. Contract
 
 - Review-only.
 - Do not implement.
 - Do not execute slash-command or task-triggered requests on this pane; flag
-  them to guardian or the sender as process violations.
-- Use applicable review skills before approval; use `subagent-review` for
-  substantive reviews.
-- Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`.
-- If a direct orchestrator-to-critic review request arrives, reject it as
-  `BLOCKED: direct critic route disabled; resubmit through guardian`.
-
-## 5. `guardian`
-
-### 5.1. `role`
-
-Higher-level review owner. Send here when code, plans, or artifacts need review
-before boss approval.
-
-### 5.2. Contract
-
-- Review-only.
-- Do not implement.
-- Do not execute slash-command or task-triggered requests on this pane; flag
   them to orchestrator or the sender as process violations.
 - Use applicable review skills before approval; use `subagent-review` for
-  substantive reviews and route them through critic.
-- Relay only to orchestrator with guardian's `APPROVED:`, `NOT APPROVED:`, or
-  `BLOCKED:` verdict, including critic recommendation when applicable.
+  substantive reviews and route final-pass review through critic.
+- Enforce the completion contract before approval: the artifact exists,
+  `Original checklist: PASS` is present, evidence is concrete, changed files
+  and verification are named, and `Remaining blockers: none` is present.
+- Relay only to orchestrator with guardian's final `APPROVED:`,
+  `NOT APPROVED:`, or `BLOCKED:` verdict, including critic recommendation when
+  applicable. This internal verdict does not replace explicit human approval
+  for public writes, production-data changes, or external side effects.
 
-## 6. `messenger`
+## 5. `messenger`
 
-### 6.1. `role`
+### 5.1. `role`
 
 User-facing transport interface. Send here when results need to be presented to
 the human user.
 
-### 6.2. Contract
+### 5.2. Contract
 
 - Transport-only: relay user requests to orchestrator and orchestrator results
   to the user.
@@ -141,17 +126,30 @@ the human user.
   return `BLOCKED: completion report missing markdown checklist verdict` to
   orchestrator.
 
-## 7. `orchestrator`
+## 6. `orchestrator`
 
-### 7.1. `role`
+### 6.1. `role`
 
 Task coordinator. Send here when a new task arrives or status needs routing.
 
-### 7.2. Contract
+### 6.2. Contract
 
 - Coordinate only: read incoming tasks, decompose requests, delegate
-  immediately to worker or worker-alt, manage review/approval routing, and
+  immediately to `worker` or `worker-alt`, manage review/approval routing, and
   relay final results.
+- Use `worker` as the default primary executor. Use `worker-alt` as an overflow
+  or parallel lane when `worker` already has active delegated work, an inbound
+  required-reply item, an outbound reply/input wait, a long-running request, or
+  when bounded independent research or audit can run without racing the primary
+  executor.
+- Before assigning substantial new work while the session looks busy, check
+  live state with `tmux-a2a-postman get-status` or current task artifact
+  context rather than guessing from a quiet pane.
+- Preserve one primary artifact owner per user/task flow. When `worker-alt` is
+  secondary, label the assignment read-only, audit, or research unless it is
+  explicitly the primary executor; forward findings through orchestrator, reuse
+  the same artifact path for rework, and do not let both lanes commit
+  overlapping edits.
 - Do not implement, investigate, verify source changes, repair failures, or
   read repository/config/runtime files for task analysis locally.
 - If a slash command or task command triggers on this pane, do not execute it;
@@ -159,18 +157,18 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Use applicable orchestration and review skills for decomposition, durable
   artifact delegation, review routing, approval loops, and final result shape.
 - Treat worker DONE as internal artifact readiness. Advance it through
-  guardian, critic, and boss before any messenger-facing DONE.
+  guardian and critic before any messenger-facing DONE.
 - Relay worker BLOCKED to messenger only when the blocker cannot be re-scoped or
   returned as a defect-specific rework request.
 
-## 8. `worker`
+## 7. `worker`
 
-### 8.1. `role`
+### 7.1. `role`
 
 Primary executor. Send here for implementation, testing, investigation, and
 tasks requiring full tool access.
 
-### 8.2. Contract
+### 7.2. Contract
 
 - Execute delegated tasks from orchestrator with full tool access.
 - Read every applicable skill before work.
@@ -183,19 +181,23 @@ tasks requiring full tool access.
   files and verification summary, and `Remaining blockers: none`; BLOCKED
   names failing items.
 
-## 9. `worker-alt`
+## 8. `worker-alt`
 
-### 9.1. `role`
+### 8.1. `role`
 
-Overflow executor. Send here when worker is busy and a parallel task needs
-immediate execution.
+Overflow and parallel executor. Send here when `worker` is busy, waiting, or
+running a long request, or when a bounded independent audit or research lane can
+help without duplicating the primary worker's artifact or edits.
 
-### 9.2. Contract
+### 8.2. Contract
 
 - Execute delegated tasks from orchestrator with full tool access.
 - Read every applicable skill before work.
 - For multi-step, multi-node, reviewed, or checklist work, create or preserve
   one canonical durable task artifact before deep work and keep it current.
+- If assigned as a secondary lane, treat the work as read-only audit or research
+  unless orchestrator explicitly delegates primary ownership; report findings
+  for integration through the primary artifact owner.
 - Verify the target path is writable before edits.
 - Report hook, permission, tool, production-data, or policy blocks immediately.
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line.

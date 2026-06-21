@@ -31,7 +31,8 @@ codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effo
 It starts the Claude critic pane with:
 
 ```sh
-claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort xhigh
+claude --dangerously-skip-permissions --add-dir "${SUBDIR}" \
+  --model "opus[1m]" --effort xhigh
 ```
 
 That means current postman panes are intentionally high-autonomy sessions:
@@ -204,7 +205,7 @@ Claude profile.
 | Postman message and mailbox workflow | `config/tmux-a2a-postman/postman.md` and shared hook bypass data                     | Runtime hook registration paths differ                                                                                                                           | Keep postman state operations prompt-first plus hook-compatible. The shared deny hook must not false-positive on heredoc message bodies.                                                                 |
 | Sensitive file read/write denies     | Policy intent should be shared                                                       | Claude has direct `Read`/`Write` denies for non-bypass permission profiles today; Codex needs sandbox or permission-profile rules in a follow-up                 | Preserve Claude's configured file denies, but do not treat them as enforced for bypass-launched panes unless tested. Add equivalent Codex boundaries only through Codex-native sandbox/profile settings. |
 | Filesystem and network blast radius  | Design principle only                                                                | Codex uses sandbox modes, approval policy, writable roots, or permission profiles. Claude uses permission rules plus optional Bash sandbox or process isolation. | Keep the policy goal aligned, but implement boundaries through each runtime's native controls.                                                                                                           |
-| Human review lane                    | `postman.md` approval route and review skills                                        | Codex `approvals_reviewer = "auto_review"` is Codex-only                                                                                                         | Auto-review may assist Codex approval prompts, but it must not replace guardian/critic/boss/human approval gates.                                                                                        |
+| Human review lane                    | `postman.md` approval route and review skills                                        | Codex `approvals_reviewer = "auto_review"` is Codex-only                                                                                                         | Auto-review may assist Codex approval prompts, but it must not replace guardian/critic/human approval gates.                                                                                             |
 | Role-based write restrictions        | `postman.md` role contract                                                           | Claude has `claude-pretooluse-deny-write.sh`; Codex currently observes write payloads only                                                                       | Keep Claude enforcement. Add Codex enforcement only after the observed write payloads support a reliable rule.                                                                                           |
 
 ## 5. Follow-Up Implementation Shape

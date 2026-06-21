@@ -69,6 +69,14 @@ vim.api.nvim_create_user_command("R", function(opts)
   send_tmux_clipboard(content)
 end, { nargs = "?" })
 
+local function open_url_under_cursor()
+  if vim.fn.expand("<cfile>"):match("^https?://") then
+    vim.fn.maparg("gx", "n", false, true).callback()
+  end
+end
+
+vim.api.nvim_create_user_command("OpenUrlUnderCursor", open_url_under_cursor, {})
+
 local function highlight_define()
   vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
   vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
@@ -97,11 +105,11 @@ local function highlight_match()
     ids[#ids + 1] = vim.fn.matchadd(group, pattern)
   end
 
-  add("CursorLine", [[# %%\|# COMMAND ----------]])
-  add("CursorLine", [[\[ \]])
-  add("CursorLine", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("CursorLine", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("CursorLine", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
+  add("TermCursor", [[# %%\|# COMMAND ----------]])
+  add("TermCursor", [[\[ \]])
+  add("TermCursor", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
+  add("TermCursor", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
+  add("TermCursor", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
   add("Error", [[\%u3000]])
   add("Error", [[\s\+$]])
 
@@ -118,6 +126,11 @@ end, { expr = true })
 vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
+
+vim.keymap.set({ "n", "i" }, "<LeftMouse>", "<LeftMouse><Cmd>OpenUrlUnderCursor<CR>", {
+  desc = "Open URL under mouse",
+  silent = true,
+})
 
 vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
 vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")

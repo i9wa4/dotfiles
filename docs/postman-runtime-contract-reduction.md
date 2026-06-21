@@ -12,8 +12,8 @@ references, or runtime state.
 
 The implemented postman-related diff changed
 `config/tmux-a2a-postman/postman.md` from 829 lines to 324 lines. The commit
-diff is 205 insertions and 710 deletions. The topology now contains the seven
-active nodes used by the running session:
+diff is 205 insertions and 710 deletions. The current source topology contains
+six approval-lane nodes plus the auxiliary `agent` route:
 
 - `messenger`
 - `orchestrator`
@@ -21,10 +21,9 @@ active nodes used by the running session:
 - `worker-alt`
 - `guardian`
 - `critic`
-- `boss`
+- `agent`
 
-The old auxiliary `agent` node and edge were removed because runtime evidence
-showed no active `agent` node in the current `dotfiles` session.
+The auxiliary `agent` route is outside the normal review lane.
 
 ## 2. Evidence Used
 
@@ -40,8 +39,8 @@ worker-alt reply for this documentation task.
 
 Source evidence came from comparing the pre-reduction and post-reduction
 versions of `config/tmux-a2a-postman/postman.md`. The pre-reduction file had a
-long common template, detailed per-role fallback procedures, and a tenth
-`agent` node section. The reduced file keeps the `skill_path` declarations,
+long common template and detailed per-role fallback procedures. The reduced
+file keeps the `skill_path` declarations,
 Mermaid topology, UI node class, authority boundaries, reply semantics,
 watchdog thresholds, signal vocabulary, skill-reading requirement, durable
 artifact gate, approval route, public-surface hygiene, persona/language rules,
@@ -49,14 +48,7 @@ and compact per-node contracts.
 
 ## 3. What Was Removed
 
-The reduction removed the unused `agent` route and template:
-
-- the old Mermaid graph included `orchestrator --- agent`
-- the old file had a numbered `agent` node section
-- runtime state showed only the seven task, review, and transport nodes
-- no archived runtime mail showed active `agent` participation
-
-The reduction also removed long inline role procedures that duplicated more
+The reduction removed long inline role procedures that duplicated more
 durable sources:
 
 - repeated command recipes for live postman operation

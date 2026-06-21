@@ -125,6 +125,7 @@ postman_boundary:
     - detailed review procedure
     - reviewer perspectives and synthesis workflow
     - PR review-comment drafting templates
+    - AI/human responsibility-boundary placement guidance
     - long runbooks and reusable command examples
 
 common_validation_expectations: &common_validation

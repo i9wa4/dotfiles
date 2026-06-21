@@ -14,7 +14,9 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-  nodejsPackage = pkgs.nodejs_24;
+  # Keep Node and pnpm on the newest versions available in pinned nixpkgs.
+  nodejsPackage = pkgs.nodejs_26;
+  pnpmPackage = pkgs.pnpm.override { nodejs = nodejsPackage; };
   system = pkgs.stdenv.hostPlatform.system;
 
   # AI agent CLIs from llm-agents.nix flake input
@@ -35,6 +37,7 @@ in
       ghqRoot
       homeDir
       nodejsPackage
+      pnpmPackage
       ;
   };
 
@@ -47,8 +50,6 @@ in
     ./modules/zsh.nix
     # xdg.configFile
     ./modules/editorconfig.nix
-    # home.file
-    ./modules/tmux.nix
     # home.activation
     ./modules/pnpm.nix
     # AI agent tools
@@ -84,35 +85,38 @@ in
       pkgs.gnumake
       pkgs.tailscale
       pkgs.wget
-      # Tools
+      # nixpkgs
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))
-      nodejsPackage
       pkgs.acli
-      pkgs.databricks-cli
-      pkgs.gws
-      pkgs.rumdl
       pkgs.awscli2
       pkgs.azure-cli
+      pkgs.databricks-cli
       pkgs.fd
       pkgs.fzf
       pkgs.ghq
       pkgs.google-cloud-sdk
-      pkgs.jq
+      pkgs.gws
       pkgs.harper
-      markdownFormatter
-      markdownRemoteViewer
+      pkgs.jq
       pkgs.mise
       pkgs.neovim
       pkgs.nixd
-      pkgs.pnpm
+      pkgs.podman
+      pkgs.podman-compose
       pkgs.ripgrep
+      pkgs.rumdl
       pkgs.shellcheck
-      tmuxA2aPostman
+      pkgs.tmux
       pkgs.uv
       pkgs.vale
       pkgs.vim
-      wazaPackage
       pkgs.zoxide
+      # Other Tools
+      markdownFormatter
+      markdownRemoteViewer
+      pnpmPackage
+      tmuxA2aPostman
+      wazaPackage
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
       # ccusage includes Codex usage subcommands.
       # Antigravity exposes the `agy` command.
@@ -120,6 +124,9 @@ in
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
+    ]
+    ++ lib.optionals pkgs.stdenv.isDarwin [
+      pkgs.macmon
     ];
 
     # ==========================================================================
@@ -129,6 +136,9 @@ in
     # ==========================================================================
     file = {
       ".vale.ini".source = symlink "${dotfilesDir}/config/vale/.vale.ini";
+      # pnpm global shims look for ~/.local/bin/node before falling back to PATH.
+      # Expose node there without adding npm/npx from nodejsPackage to home.packages.
+      ".local/bin/node".source = "${nodejsPackage}/bin/node";
     };
   };
 
@@ -140,6 +150,7 @@ in
     # symlink
     "kitty".source = symlink "${dotfilesDir}/config/kitty";
     "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
+    "tmux".source = symlink "${dotfilesDir}/config/tmux";
     "tmux-a2a-postman".source = symlink "${dotfilesDir}/config/tmux-a2a-postman";
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";

@@ -125,9 +125,6 @@ in
         "google-chrome"
         "kitty"
         "macskk"
-        "monitorcontrol"
-        "obsidian"
-        "visual-studio-code"
         "zoom"
       ];
     in
