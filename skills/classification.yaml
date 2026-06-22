@@ -7,6 +7,9 @@ purpose: >
 policy:
   release_all_target: true
   selective_release_allowlist: false
+  cleanup_lane_issue: 237
+  completed_main_branch_baseline: 20e778dd
+  issue_worktree_required_for_deferred_cleanup: true
   first_pr_scope:
     - add classification metadata
     - add durable docs pointer
@@ -19,6 +22,10 @@ policy:
     - tags
     - release workflow automation
     - public releases
+  deferred_cleanup_lane: >
+    After the 20e778dd main-branch baseline, remaining Agent Skills cleanup and
+    consolidation work belongs on issue/worktree branches tracked by #237, not
+    directly on main.
 
 target_groups:
   agent-harness-engineering: >

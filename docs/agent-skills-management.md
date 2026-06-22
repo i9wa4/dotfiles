@@ -29,7 +29,20 @@ remove/demote it before the release-all gate.
 The pre-commit release readiness checks and tag-triggered publishing path are
 documented in `docs/agent-skills-release-all.md`.
 
-## 2. First PR Boundary
+## 2. Cleanup Lane
+
+After the `20e778dd` baseline cleanup, remaining Agent Skills cleanup and
+consolidation work belongs on issue/worktree branches tracked by #237. Do not
+start deferred skill moves, renames, deletions, broad `postman.md` shrinking,
+release automation, tags, or publishing directly on `main`.
+
+Create and enter an issue worktree before source edits:
+
+```sh
+issue-worktree-create <issue-number>
+```
+
+## 3. First PR Boundary
 
 The first cleanup PR is limited to metadata and reviewable policy scaffolding:
 
@@ -41,7 +54,7 @@ Do not use the first PR to move, rename, or delete skills, broadly shrink
 `config/tmux-a2a-postman/postman.md`, add release automation, create tags, or
 publish a release.
 
-## 3. Private-Content Gate
+## 4. Private-Content Gate
 
 Before any skill move, rename, demotion into `references/`, release automation,
 tag, or publishing step, scan the affected skill and referenced material for:
