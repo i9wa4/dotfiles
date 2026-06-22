@@ -85,22 +85,22 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
               delay: 500
             - name: worker
               title: worker
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
           ratio: [1, 1]
           panes:
             - name: guardian
               title: guardian
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
               delay: 500
             - name: critic
               title: critic
@@ -120,11 +120,11 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort xhigh
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort high
               delay: 500
             - name: worker
               title: worker
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
