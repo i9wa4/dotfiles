@@ -55,9 +55,11 @@ Apply these skills together when available:
    - Guardian and critic may use only their runtime-native subagents for
      bounded review or investigation.
    - For normal substantive reviews, guardian uses the five Codex-native
-     perspectives from `subagent-review` and critic uses the five
-     Claude-native perspectives from `subagent-review`: security,
-     architecture, historian, code, and QA.
+     perspectives from `subagent-review`, and critic launches the
+     Claude-native perspectives specified in the guardian request. When
+     `Required perspectives` is omitted from the guardian request, critic
+     defaults to all five: security, architecture, historian, code, and QA.
+     Guardian, not critic, decides when a narrower set applies.
    - Do not specify ad hoc subagent models or tiers; runtime defaults are
      configured in `nix/home-manager/agents/subagents/metadata.nix`.
    - Do not use a unified `cc` / `cx` dispatcher fan-out.
