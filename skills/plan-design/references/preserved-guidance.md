@@ -44,8 +44,8 @@ Use this skill when one or more apply:
 - User asks for beginner-friendly documentation or says they cannot understand
   the current plan.
 - Plan must pass explicit approval gates (guardian/critic or equivalents;
-  guardian owns the final review verdict after considering critic's subordinate
-  recommendation).
+  guardian aggregates the final review verdict after considering critic's peer
+  review evidence).
 - If the request is still ambiguous or has multiple viable approaches, use
   `brainstorming` first and return here once the work is plan-ready.
 
@@ -162,19 +162,19 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 ### 5.4. Step 4: Review Gate Order (Strict)
 
-1. Send to guardian. Guardian performs the higher-level review, sends its
-   review package to critic for a subordinate final-pass recommendation, and
-   relays the guardian verdict back to orchestrator.
-2. If guardian rejects, including based on critic's recommendation: revise the
+1. Send to guardian. Guardian performs its review, sends the review package to
+   critic for peer review evidence, aggregates the result, and relays the
+   guardian verdict back to orchestrator.
+2. If guardian rejects, including based on critic evidence: revise the
    plan artifact, resubmit to guardian. Repeat until guardian approves after
-   the critic-assisted pass.
+   aggregating critic evidence.
    - Maximum 3 revision rounds per gate pass.
    - If consensus is not reached after 3 rounds: a. Record the disagreement in
      the Decision Log. b. Notify messenger: "BLOCKED: review deadlock
      after 3 rounds -- human decision required." c. Wait for messenger to
      resolve the deadlock.
 3. Do not finalize or send to messenger until guardian approves after
-   considering critic's recommendation.
+   aggregating critic evidence.
 
 ### 5.5. Step 5: Beginner-Friendly Final Plan Packaging
 
@@ -238,7 +238,7 @@ resume without replaying the whole transcript.
   later session can resume from the evaluator output directly.
 
 `subagent-review` is the default evaluator guidance when the output needs a
-formal guardian-led, critic-assisted review gate.
+formal guardian-led aggregation of guardian and critic peer review.
 
 ## 7. Worker Routing Strategy (Default)
 
@@ -255,7 +255,7 @@ a beginner audience:
 
 1. Stop -- do NOT make assumptions and proceed.
 2. Flag the ambiguity explicitly in the DONE/BLOCKED report to orchestrator.
-3. Orchestrator runs the full guardian-led, critic-assisted review cycle on the
+3. Orchestrator runs the full guardian-led aggregation cycle on the
    revised content.
 4. Notify messenger of the ambiguity and the review outcome before finalizing.
 
@@ -270,7 +270,7 @@ A plan is ready for final guardian review only if all are true:
 - Every phase has commands + expected outputs + done criteria.
 - Prerequisites and access requirements are explicit.
 - Placeholder decisions are resolved or converted into named decision gates.
-- Guardian-led, critic-assisted review approved.
+- Guardian-led aggregation of guardian and critic review approved.
 
 ## 10. Deliverables
 

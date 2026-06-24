@@ -1,7 +1,7 @@
 ---
 name: subagent-review
 license: MIT
-description: "USE FOR: Five-perspective guardian/critic review routing. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
+description: "USE FOR: Guardian and critic peer reviews using five native reviewer perspectives, with guardian aggregation. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
 ---
 
 # Subagent Review
@@ -10,15 +10,16 @@ description: "USE FOR: Five-perspective guardian/critic review routing. DO NOT U
 for guardian/critic review. Do not implement, delegate approval, dispatch
 fan-out, override models/tiers, or build cross-engine reviewer pools.
 
-Normal lane: orchestrator -> guardian -> critic -> guardian -> orchestrator.
+Normal message lane: orchestrator -> guardian -> critic -> guardian ->
+orchestrator.
 
-Guardian is the Codex review owner. Critic is the Claude subordinate reviewer.
+Guardian and critic are peer review roles. Guardian aggregates the final result.
 
 Default set: security, architecture, historian, code, and QA.
 
 ## 1. Boundary
 
-This skill owns reviewer perspectives, guardian/critic handoff, synthesis,
+This skill owns reviewer perspectives, guardian/critic review flow, synthesis,
 severity, and output expectations. `postman.md` owns live route, reply flow,
 verdicts, no-bypass gates, and public-posting approval gates. `github` owns
 GitHub mechanics; `create-review-comment` owns user-facing PR comment drafts.
@@ -39,15 +40,14 @@ GitHub mechanics; `create-review-comment` owns user-facing PR comment drafts.
 
 ## 3. Role Rules
 
-- Guardian uses Codex reviewers, owns the final verdict, and treats the
-  critic recommendation as evidence.
-- Critic uses Claude native reviewers and returns a recommendation.
-- Critic sends the review recommendation to guardian, not orchestrator.
+- Guardian uses Codex reviewers and aggregates the final verdict.
+- Critic uses Claude native reviewers and returns independent review evidence.
+- Critic sends the review result to guardian for aggregation, not orchestrator.
 - Reviewer subagents must not edit, commit, push, or approve.
 - If evidence is incomplete, continue direct review.
 
 ## 4. Output
 
 Preserve perspective, paths, checked evidence, severity, confidence, and gaps.
-Final verdicts and recommendations use the guardian-mediated surface, not raw
-subagent output.
+Final verdicts use the guardian-mediated aggregation surface, not raw subagent
+output.

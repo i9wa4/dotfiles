@@ -33,9 +33,9 @@ Apply these skills together when available:
 
 - `github` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
-- `subagent-review` for guardian-led, critic-assisted review finding
-  extraction and draft validation. Use it as the default internal path for
-  substantive reviews.
+- `subagent-review` for guardian/critic peer-review finding extraction,
+  guardian aggregation, and draft validation. Use it as the default internal
+  path for substantive reviews.
 
 ## 2. Workflow
 
@@ -48,9 +48,10 @@ Apply these skills together when available:
      PR number, branch, or URL. Do not ask the user to choose review mechanics.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run or cite a substantive review through the normal guardian-led,
-   critic-assisted route described by the `subagent-review` skill unless a
-   current review summary for the same target and diff is already available.
+3. Run or cite a substantive review through the normal guardian-mediated
+   peer-review aggregation route described by the `subagent-review` skill
+   unless a current review summary for the same target and diff is already
+   available.
    - Guardian and critic may use only their runtime-native subagents for
      bounded review or investigation.
    - For normal substantive reviews, guardian uses the five Codex-native
@@ -63,8 +64,9 @@ Apply these skills together when available:
    - Treat data and technical research reviewers as explicit additions for
      specialized questions, not replacements for the five default
      perspectives.
-   - The active guardian owns final synthesis and verdicts; critic provides a
-     subordinate recommendation; subagents must not implement or approve work.
+   - Guardian and critic are peer review roles; critic returns independent
+     review evidence, guardian aggregates the result, and subagents must not
+     implement or approve work.
    - Keep provider/model details out of user-facing output and public GitHub
      surfaces.
 4. Select only IMPORTANT findings from the review artifact, guardian final

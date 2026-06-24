@@ -120,6 +120,17 @@
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+        },
+        {
+          "id": "subagent-review-guardian-approval",
+          "kind": "target",
+          "prompt": "Perform the guardian review for a completed worker investigation, collect peer critic review evidence, and return the aggregated guardian verdict.",
+          "expected_skill": "subagent-review",
+          "result": "pass",
+          "observed_skill": "subagent-review",
+          "checked_at": "2026-06-24",
+          "validation_method": "manual_catalog_review",
+          "notes": "Guardian approval-review wording maps directly to the updated peer-review skill frontmatter description and postman guardian aggregation contract."
         }
       ]
     },

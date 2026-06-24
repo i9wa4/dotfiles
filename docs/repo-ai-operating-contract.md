@@ -261,15 +261,14 @@ review lane:
 orchestrator -> guardian -> critic -> guardian -> orchestrator
 ```
 
-Guardian runs in Codex as the higher-level review owner and uses five
-Codex-native subagents through `subagent-review` by default for substantive
-reviews. Critic runs in Claude as the subordinate final-pass reviewer and uses
-five Claude-native subagents through `subagent-review` by default for
-substantive reviews. Neither role uses a unified `cc` / `cx` dispatcher
-fan-out, and neither role assigns implementation to review subagents. Guardian
-mediates the orchestrator-facing review request: critic returns a
-recommendation to guardian, and guardian synthesizes the final verdict for
-orchestrator.
+Guardian runs in Codex and uses five Codex-native subagents through
+`subagent-review` by default for substantive reviews. Critic runs in Claude
+and uses five Claude-native subagents through `subagent-review` by default for
+substantive reviews. These are peer review roles: neither role uses a unified
+`cc` / `cx` dispatcher fan-out, and neither role assigns implementation to
+review subagents. Guardian mediates the orchestrator-facing review request:
+critic returns independent review evidence to guardian, and guardian
+aggregates the final verdict for orchestrator.
 
 #### 5.3.3. Native reviewer contract
 
@@ -285,8 +284,8 @@ only when non-null and `modelReasoningEffort` is emitted as
 For substantive reviews, the active role defaults to the five native
 perspectives documented by `subagent-review`: security, architecture,
 historian, code, and QA. Guardian uses the five in Codex; critic uses the five
-in Claude. The active role owns synthesis, evidence quality, and the resulting
-guardian verdict or critic recommendation.
+in Claude. Each role owns its synthesis and evidence quality, while guardian
+aggregates the final verdict.
 
 #### 5.3.4. `nix switch` materialization
 
@@ -367,8 +366,8 @@ Reachability is strict:
   auxiliary `agent`
 - `critic` talks only to `guardian`
 - `guardian` receives from `orchestrator`, sends review results to `critic`,
-  receives critic's recommendation, and relays the final guardian verdict to
-  `orchestrator`
+  receives critic review evidence, aggregates the result, and relays the final
+  guardian verdict to `orchestrator`
 - `worker` and `worker-alt` report to `orchestrator`
 - `agent` is reachable from `orchestrator` for auxiliary work outside the
   approval lane
@@ -402,7 +401,8 @@ worker DONE -> orchestrator -> guardian -> critic
 
 `worker-alt` follows the same route when it is the executor.
 
-Do not collapse or bypass the guardian-led, critic-assisted review hop.
+Do not collapse or bypass the guardian-led aggregation of guardian and critic
+peer review.
 
 ### 9.2. Pass criteria
 
@@ -410,11 +410,11 @@ An approval-lane pass means all of the following are true:
 
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
-- guardian completed first review and sent evidence to critic
-- critic returned an `APPROVED:` recommendation to guardian with no remaining
+- guardian completed its review and sent evidence to critic
+- critic returned `APPROVED:` review evidence to guardian with no remaining
   BLOCKING defects
-- guardian relayed the final guardian verdict to orchestrator after considering
-  critic's recommendation and enforcing the completion contract
+- guardian relayed the final guardian verdict to orchestrator after
+  aggregating critic evidence and enforcing the completion contract
 - orchestrator has no pending review cycle before sending `DONE:` onward
 
 Guardian approval is an internal approval-lane gate. It does not replace

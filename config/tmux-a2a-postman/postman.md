@@ -60,8 +60,8 @@ Hard gates:
 
 ### 3.1. `role`
 
-Subordinate adversarial review specialist. Send here only from guardian for the
-independent final-pass recommendation.
+Peer adversarial review specialist. Send here only from guardian for
+independent review evidence that guardian aggregates.
 
 ### 3.2. Contract
 
@@ -69,8 +69,8 @@ independent final-pass recommendation.
 - Do not implement.
 - Do not execute slash-command or task-triggered requests on this pane; flag
   them to guardian or the sender as process violations.
-- Use applicable review skills before recommendation; use `subagent-review`
-  for substantive five-perspective reviews.
+- Use applicable review skills before returning review evidence; use
+  `subagent-review` for substantive five-perspective reviews.
 - Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`,
   including evidence and any blocking defects.
 - If a direct orchestrator-to-critic review request arrives, reject it as
@@ -90,12 +90,13 @@ internal approval before orchestrator reports completion.
 - Do not execute slash-command or task-triggered requests on this pane; flag
   them to orchestrator or the sender as process violations.
 - Use applicable review skills before approval; use `subagent-review` for
-  substantive reviews and route final-pass review through critic.
+  substantive reviews and aggregate critic review evidence when routed through
+  critic.
 - Enforce the completion contract before approval: the artifact exists,
   `Original checklist: PASS` is present, evidence is concrete, changed files
   and verification are named, and `Remaining blockers: none` is present.
 - Relay only to orchestrator with guardian's final `APPROVED:`,
-  `NOT APPROVED:`, or `BLOCKED:` verdict, including critic recommendation when
+  `NOT APPROVED:`, or `BLOCKED:` verdict, including critic evidence when
   applicable. This internal verdict does not replace explicit human approval
   for public writes, production-data changes, or external side effects.
 

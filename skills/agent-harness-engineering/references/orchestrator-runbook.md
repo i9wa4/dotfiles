@@ -53,8 +53,8 @@ Reachability is strict:
   and auxiliary `agent`.
 - `critic` talks only to `guardian`.
 - `guardian` receives review requests from `orchestrator`, sends review
-  packages to `critic`, receives critic recommendations, and relays the
-  final guardian verdict to `orchestrator`.
+  packages to `critic`, receives critic review evidence, aggregates the
+  result, and relays the final guardian verdict to `orchestrator`.
 - `worker` and `worker-alt` report to `orchestrator`.
 
 Artifact work is complete only after this route succeeds:
@@ -80,16 +80,16 @@ Approval requires all of these conditions:
 
 - the executor reports `DONE:` after verifying the artifact against the plan
   and intended file set;
-- guardian completed first review and sent evidence to critic;
-- critic returned an approval recommendation to guardian with no remaining
-  blocking defects;
-- guardian relayed the final guardian verdict to orchestrator after considering
-  critic's recommendation and enforcing the completion contract;
+- guardian completed its review and sent the review package to critic;
+- critic returned peer review evidence to guardian with no remaining blocking
+  defects;
+- guardian relayed the final guardian verdict to orchestrator after aggregating
+  critic evidence and enforcing the completion contract;
 - orchestrator has no pending review cycle before sending `DONE:` onward.
 
 Approval failures must stay defect-specific. `NOT APPROVED:` from guardian or
-critic-assisted guardian review names the blocking defects, and orchestrator
-returns that concrete defect list to the executor.
+critic review evidence names the blocking defects, and orchestrator returns
+that concrete defect list to the executor.
 
 The approval loop is bounded to 3 attempts: the initial review plus 2 rework
 attempts. Any guardian `NOT APPROVED:` consumes one attempt. After the third

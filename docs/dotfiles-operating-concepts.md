@@ -259,7 +259,7 @@ The dotfiles-local operating model is:
 - `worker` and `worker-alt` execute
 - `guardian` owns the final internal review verdict after a high-level review
   pass
-- `critic` provides a subordinate final-pass recommendation to guardian
+- `critic` provides peer review evidence to guardian
 
 The persistent control-plane role of `tmux-a2a-postman` matters because the
 rest of the harness assumes this graph exists and is visible from inside tmux.

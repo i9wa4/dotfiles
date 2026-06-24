@@ -126,8 +126,8 @@ What this looks like in the current repo:
 - Review pipelines use five runtime-native reviewer perspectives by default
   for guardian and five for critic. The `skills/subagent-review/SKILL.md`
   skill documents usage without ad hoc engine, model, or tier dispatcher
-  flags, while guardian owns the final verdict using critic's recommendation
-  as subordinate review evidence.
+  flags, while guardian aggregates the final verdict using critic's peer
+  review evidence.
 
 When deviating from cross-engine equivalence is acceptable:
 
