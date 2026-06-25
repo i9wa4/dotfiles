@@ -159,6 +159,22 @@ Task coordinator. Send here when a new task arrives or status needs routing.
   artifact delegation, review routing, approval loops, and final result shape.
 - Treat worker DONE as internal artifact readiness. Advance it through
   guardian and critic before any messenger-facing DONE.
+- Before advancing any final guardian verdict, run the Tier 1 structural
+  quality gate locally. This is a checklist gate, not an extra agent review:
+  use Track A for prose verdicts and Track B only when the guardian returns a
+  JSON object with a `"verdict"` key following `review-output-contract.md`.
+  Track A requires an `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:` verdict with
+  justification, representation of security, architecture, historian, code, and
+  QA perspectives unless explicitly labeled `TRIVIAL DIRECT REVIEW:`, file
+  paths for each material finding or `no file applicable`, and consolidated
+  duplicates. Track B applies those checks plus `verdict` value `approve` or
+  `needs-attention`, confidence scores from 0.0 to 1.0, and severity exactly
+  `critical`, `high`, `medium`, or `low`. For Track B, the JSON `verdict` field
+  supersedes the prose verdict phrase requirement and satisfies Track A's
+  verdict-presence check.
+- If the Tier 1 gate is flagged, return `NOT APPROVED:` to guardian with the
+  structural defects and count it against the 3-attempt approval cap. If it
+  passes, continue the approval chain.
 - Relay worker BLOCKED to messenger only when the blocker cannot be re-scoped or
   returned as a defect-specific rework request.
 
