@@ -120,6 +120,8 @@ in
   flake.darwinConfigurations =
     let
       commonCasks = [
+        "claude"
+        "codex-app"
         "docker-desktop"
         "drawio"
         "google-chrome"
