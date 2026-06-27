@@ -123,6 +123,10 @@ If the Tier 1 gate passes, continue approval routing. If it is flagged, return
 `NOT APPROVED:` to guardian with the structural defects and count that response
 against the same 3-attempt approval cap.
 
+Run Tier 2 meta-review only when explicitly requested by orchestrator: guardian
+assigns one bounded meta-reviewer, returns `Tier 2 quality audit: complete`,
+and does not start another guardian/critic loop.
+
 The approval loop is bounded to 3 attempts: the initial review plus 2 rework
 attempts. Any guardian `NOT APPROVED:` consumes one attempt. After the third
 failed attempt, stop and report `BLOCKED:` with the remaining defects.

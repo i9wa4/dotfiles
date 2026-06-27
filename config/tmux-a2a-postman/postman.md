@@ -175,6 +175,10 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - If the Tier 1 gate is flagged, return `NOT APPROVED:` to guardian with the
   structural defects and count it against the 3-attempt approval cap. If it
   passes, continue the approval chain.
+- Run Tier 2 meta-review only when explicitly requested by orchestrator:
+  guardian assigns one bounded meta-reviewer, returns
+  `Tier 2 quality audit: complete`, and does not start another guardian/critic
+  loop.
 - Relay worker BLOCKED to messenger only when the blocker cannot be re-scoped or
   returned as a defect-specific rework request.
 
