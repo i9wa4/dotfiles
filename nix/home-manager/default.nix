@@ -98,7 +98,6 @@ in
       pkgs.gws
       pkgs.harper
       pkgs.jq
-      pkgs.mise
       pkgs.neovim
       pkgs.nixd
       pkgs.podman
@@ -124,6 +123,11 @@ in
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
+    ]
+    ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+      # On macOS, Homebrew installs the prebuilt bottle to avoid rebuilding the
+      # Rust package locally when nixpkgs does not have a substitute.
+      pkgs.mise
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
       pkgs.macmon

@@ -16,6 +16,7 @@ let
   ];
   homebrewBrews = [
     "asmvik/formulae/skhd"
+    "mise"
   ];
 in
 {
