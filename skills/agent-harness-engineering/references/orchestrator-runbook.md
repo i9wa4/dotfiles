@@ -91,6 +91,42 @@ Approval failures must stay defect-specific. `NOT APPROVED:` from guardian or
 critic review evidence names the blocking defects, and orchestrator returns
 that concrete defect list to the executor.
 
+Every final guardian verdict passes through the orchestrator Tier 1 structural
+quality gate before the approval chain advances. The gate is a local checklist,
+not another agent invocation, so it cannot recurse into another
+guardian/critic cycle. Because guardian relays every final verdict to
+orchestrator, this covers all normal review workflows.
+
+Use Track A for prose/default guardian verdicts:
+
+- The verdict contains `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:` with
+  supporting justification.
+- The result represents security, architecture, historian, code, and QA
+  perspectives, unless it is explicitly labeled `TRIVIAL DIRECT REVIEW:`.
+- Each material finding names a file path or states `no file applicable` for a
+  process-level finding.
+- Duplicate findings are consolidated.
+
+Use Track B only when the guardian verdict is a JSON object with a `"verdict"`
+key following `review-output-contract.md`. Track B applies all Track A checks
+plus these structured checks:
+
+- `verdict` is exactly `approve` or `needs-attention`.
+- Each finding includes a confidence score from 0.0 to 1.0.
+- Severity is exactly `critical`, `high`, `medium`, or `low`.
+
+Track B supersedence clause: for Track B, the JSON `verdict` field value
+`approve` or `needs-attention` is the verdict signal and satisfies Track A's
+verdict-presence requirement; a prose verdict phrase is not required.
+
+If the Tier 1 gate passes, continue approval routing. If it is flagged, return
+`NOT APPROVED:` to guardian with the structural defects and count that response
+against the same 3-attempt approval cap.
+
+Run Tier 2 meta-review only when explicitly requested by orchestrator: guardian
+assigns one bounded meta-reviewer, returns `Tier 2 quality audit: complete`,
+and does not start another guardian/critic loop.
+
 The approval loop is bounded to 3 attempts: the initial review plus 2 rework
 attempts. Any guardian `NOT APPROVED:` consumes one attempt. After the third
 failed attempt, stop and report `BLOCKED:` with the remaining defects.
