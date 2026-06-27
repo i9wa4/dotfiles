@@ -69,8 +69,21 @@ independent review evidence that guardian aggregates.
 - Do not implement.
 - Do not execute slash-command or task-triggered requests on this pane; flag
   them to guardian or the sender as process violations.
-- Use applicable review skills before returning review evidence; use
-  `subagent-review` for substantive five-perspective reviews.
+- Launch guardian-specified perspectives in parallel before returning
+  substantive review evidence; default to all five perspectives when
+  `Required perspectives` is omitted. Synthesize the results into a
+  review-evidence packet for guardian aggregation.
+- A guardian-to-critic request through the postman-mediated lane constitutes
+  authorization to launch the specified perspectives. If runtime blocks
+  launch, return `BLOCKED: perspective launch not permitted`; do not use direct
+  review fallback without explicit guardian authorization.
+- For trivial follow-ups, direct review is permitted only when guardian labels
+  the request as trivial. State whether the criterion is docs-only,
+  single-line behavior-free, or no test changes.
+- If fewer than the required perspectives complete, return `BLOCKED: fewer
+  than required perspectives completed` unless guardian pre-authorized a
+  degraded path. Include `Required perspectives: [list]` and `Perspectives
+  launched: [list]` in every substantive reply.
 - Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`,
   including evidence and any blocking defects.
 - If a direct orchestrator-to-critic review request arrives, reject it as
@@ -99,6 +112,13 @@ internal approval before orchestrator reports completion.
   `NOT APPROVED:`, or `BLOCKED:` verdict, including critic evidence when
   applicable. This internal verdict does not replace explicit human approval
   for public writes, production-data changes, or external side effects.
+- Reject a critic review result lacking evidence of a complete required-set
+  launch unless the request was explicitly labeled trivial. Minimum
+  attestation: critic's substantive reply must include `Required perspectives:
+  [list]` and `Perspectives launched: [list]` lines; reject when the attested
+  perspectives do not match the required set or fall below it without a
+  pre-authorized degraded path. This is the enforcement gate: guardian is the
+  aggregator and must not pass a bypassed result through.
 
 ## 5. `messenger`
 
