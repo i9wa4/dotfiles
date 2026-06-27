@@ -440,9 +440,72 @@
           "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
         }
       ]
+    },
+    {
+      "target_group": "technical-writing",
+      "target_skill": "technical-writing",
+      "target_path": "skills/technical-writing/SKILL.md",
+      "legacy_skills": [
+        {
+          "name": "english-writing-quality",
+          "status": "compatibility_trigger"
+        },
+        {
+          "name": "english-to-japanese-technical-translation",
+          "status": "compatibility_trigger"
+        }
+      ],
+      "trigger_cases": [
+        {
+          "id": "technical-writing-target",
+          "kind": "target",
+          "prompt": "Review technical documentation prose for terminology, clarity, grammar, AI-slop, and publication quality.",
+          "expected_skill": "technical-writing",
+          "result": "pass",
+          "observed_skill": "technical-writing",
+          "checked_at": "2026-06-25",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the technical-writing frontmatter and canonical writing/prose owner surface."
+        },
+        {
+          "id": "english-writing-quality-compatibility",
+          "kind": "compatibility",
+          "legacy_skill": "english-writing-quality",
+          "prompt": "Use Vale and Harper to check English README prose, grammar, spelling, terminology, and false positives.",
+          "expected_skill": "technical-writing",
+          "result": "pass",
+          "observed_skill": "technical-writing",
+          "checked_at": "2026-06-25",
+          "validation_method": "manual_catalog_review",
+          "notes": "The legacy skill frontmatter says detailed owner is technical-writing and classification maps it to the technical-writing target group."
+        },
+        {
+          "id": "english-to-japanese-technical-translation-compatibility",
+          "kind": "compatibility",
+          "legacy_skill": "english-to-japanese-technical-translation",
+          "prompt": "Translate an English technical article into Japanese using glossary-first workflow and publication QA.",
+          "expected_skill": "technical-writing",
+          "result": "pass",
+          "observed_skill": "technical-writing",
+          "checked_at": "2026-06-25",
+          "validation_method": "manual_catalog_review",
+          "notes": "The legacy translation skill routes to the canonical technical-writing workflow and references."
+        },
+        {
+          "id": "japanese-prose-review-compatibility",
+          "kind": "target",
+          "prompt": "Review Japanese technical prose for natural style, glossary consistency, AI-slop, and publication readiness.",
+          "expected_skill": "technical-writing",
+          "result": "pass",
+          "observed_skill": "technical-writing",
+          "checked_at": "2026-06-25",
+          "validation_method": "manual_catalog_review",
+          "notes": "Japanese prose review maps to technical-writing frontmatter and references."
+        }
+      ]
     }
   ],
-  "validated_at": "2026-05-21",
+  "validated_at": "2026-06-25",
   "validation_method": "manual_catalog_review",
-  "validation_summary": "25 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and current cleanup state where applicable."
+  "validation_summary": "29 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and current cleanup state where applicable."
 }

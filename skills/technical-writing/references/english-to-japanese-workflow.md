@@ -2,8 +2,8 @@
 
 This reference is a packaged copy of
 `docs/english-to-japanese-technical-translation.md`. The docs page is
-canonical; update both files in the same change so the skill can use the
-workflow without loading repository documentation context.
+canonical; update both files in the same change so the technical-writing skill
+can use the workflow without loading repository documentation context.
 
 This workflow translates English technical articles into natural Japanese while
 preserving technical accuracy, Markdown structure, code, commands, links,
@@ -12,8 +12,8 @@ not define automation, chunking, provider selection, model selection, privacy
 policy, or Markdown AST handling.
 
 The workflow is also packaged as the
-`english-to-japanese-technical-translation` agent skill so translation tasks
-can load the same glossary-first process, prompt templates, and QA passes.
+`technical-writing` agent skill so translation tasks can load the same
+glossary-first process, prompt templates, and QA passes.
 Automation remains a future follow-up after repeated use shows stable
 boundaries that are worth implementing.
 
