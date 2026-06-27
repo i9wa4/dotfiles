@@ -2,7 +2,7 @@
 
 This docs page is the canonical source for the workflow text. The skill
 reference at
-`skills/english-to-japanese-technical-translation/references/workflow.md` is a
+`skills/technical-writing/references/english-to-japanese-workflow.md` is a
 packaged copy for agent use and must be updated in the same change when this
 page changes.
 
@@ -13,8 +13,8 @@ not define automation, chunking, provider selection, model selection, privacy
 policy, or Markdown AST handling.
 
 The workflow is also packaged as the
-`english-to-japanese-technical-translation` agent skill so translation tasks
-can load the same glossary-first process, prompt templates, and QA passes.
+`technical-writing` agent skill so translation tasks can load the same
+glossary-first process, prompt templates, and QA passes.
 Automation remains a future follow-up after repeated use shows stable
 boundaries that are worth implementing.
 

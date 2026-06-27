@@ -88,9 +88,21 @@ Check org membership:
 - NEVER: Co-Authored-By, AI tool notices
 - NEVER: `.i9wa4/` files, `/tmp/` files, machine-local absolute paths
 
-## 7. Sub-issues
+## 7. Sub-issues and Issue Types
 
-- YOU MUST: Use `gh sub-issue` extension (`add/list/remove`)
+Sub-issues are natively supported in `gh issue` since v2.94 (no extension needed):
+
+- Create a new issue as a sub-issue: `gh issue create --parent <number-or-URL>`
+- Add an existing issue as a sub-issue: `gh issue edit <number> --add-sub-issue <number-or-URL>`
+- Remove a sub-issue: `gh issue edit <number> --remove-sub-issue <number-or-URL>`
+- Set or change the parent issue: `gh issue edit <number> --parent <number-or-URL>`
+- Remove the parent relationship: `gh issue edit <number> --remove-parent`
+
+Issue types (also native since v2.94):
+
+- Set type on create: `gh issue create --type <name>`
+- Set or change type: `gh issue edit <number> --type <name>`
+- Remove type: `gh issue edit <number> --remove-type`
 
 ## 8. PR Inline Comments
 
