@@ -81,8 +81,14 @@
         settings.hooks = {
           # === General file checks ===
           end-of-file-fixer.enable = true;
-          trim-trailing-whitespace.enable = true;
-          check-added-large-files.enable = true;
+          trim-trailing-whitespace = {
+            enable = true;
+            stages = [ "pre-commit" ];
+          };
+          check-added-large-files = {
+            enable = true;
+            stages = [ "pre-commit" ];
+          };
           detect-private-keys.enable = true;
           check-merge-conflicts.enable = true;
           check-json.enable = true;
