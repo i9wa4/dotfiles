@@ -2,15 +2,15 @@
 name: programming
 license: MIT
 description: |
-  USE FOR: Repo-local programming tasks: Bash scripts, Python utilities, Nix package workflow, Markdown authoring, and TDD/Tidy First loops in this repo. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
+  USE FOR: Repo-local programming tasks and systematic debugging: Bash scripts, Python utilities, Nix package workflow, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
 ---
 
 # Programming
 
-Owns repo-local implementation guidance for small code and documentation
-changes. Use more specific domain skills when they exist; otherwise use this
-skill for Bash, Python, general Nix package workflow, Markdown, and
-implementation-loop discipline.
+Owns repo-local implementation guidance and systematic debugging. Use more
+specific domain skills when they exist; otherwise use this skill for Bash,
+Python, general Nix package workflow, Markdown, implementation-loop discipline,
+and root-cause debugging.
 
 ## 1. Use For
 
@@ -19,6 +19,7 @@ implementation-loop discipline.
 - General Nix package workflow, especially fetcher hash acquisition.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
+- Systematic debugging: reproducer isolation, working-pattern comparison, and root-cause analysis.
 
 ## 2. Do Not Use For
 

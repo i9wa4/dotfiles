@@ -2,20 +2,20 @@
 name: plan-design
 license: MIT
 description: |
-  USE FOR: Implementation plans for complex tasks. Covers parallel investigation, multi-source synthesis, and review gates. Task must be plan-ready. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Implementation plans and durable task tracking: parallel investigation, multi-source synthesis, review gates, task artifacts, evidence logs, handoff/resume, and DONE/BLOCKED verification. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Plan Design
 
-**UTILITY SKILL:** Apply this skill to Implementation plans for complex tasks,
-ambiguity reduction, option framing, multi-source synthesis, and review gates.
-Task must be plan-ready before execution planning begins. Keep the task scoped
-to the requested domain and preserve existing repo conventions.
+**UTILITY SKILL:** Apply this skill to implementation plans and durable task
+tracking: ambiguity reduction, option framing, multi-source synthesis, review
+gates, task artifacts, evidence logs, and handoff/resume. Task must be
+plan-ready. Preserve existing repo conventions.
 
-**USE FOR:** Implementation plans for complex tasks. Covers parallel
-investigation, multi-source synthesis, and review gates. Task must be
-plan-ready; ambiguity reduction before planning; related file edits;
-verification and handoff in this skill domain.
+**USE FOR:** Implementation plans and durable task tracking: parallel
+investigation, multi-source synthesis, review gates, task artifacts, evidence
+logs, handoff/resume, DONE/BLOCKED verification; ambiguity reduction before
+planning; related file edits; verification and handoff.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
 generated runtime outputs, or replacing repo-specific source of truth.

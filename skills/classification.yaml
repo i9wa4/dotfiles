@@ -204,7 +204,7 @@ skills:
   - name: github
     path: skills/github
     publish: true
-    scope: github-workflow
+    scope: github-and-atlassian-workflow
     action: keep
     target_group: github
     target_name: github
@@ -213,6 +213,10 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for github-workflow and Atlassian (Jira/Confluence) domain.
+      USE FOR description now explicitly covers Atlassian. Detailed Atlassian
+      guidance in skills/github/references/atlassian.md.
 
   - name: atlassian
     path: skills/atlassian
@@ -263,7 +267,7 @@ skills:
   - name: plan-design
     path: skills/plan-design
     publish: true
-    scope: planning-and-approval-readiness
+    scope: planning-approval-and-durable-task-tracking
     action: keep
     target_group: plan-design
     target_name: plan-design
@@ -272,6 +276,11 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for planning and durable task tracking domain. USE FOR
+      description now explicitly covers task artifacts, evidence logs,
+      handoff/resume, and DONE/BLOCKED verification. Detailed guidance in
+      skills/plan-design/references/durable-task-tracking.md.
 
   - name: durable-task-tracking
     path: skills/durable-task-tracking
@@ -329,7 +338,7 @@ skills:
   - name: programming
     path: skills/programming
     publish: true
-    scope: programming-target
+    scope: programming-and-systematic-debugging
     action: keep
     target_group: programming
     target_name: programming
@@ -338,6 +347,11 @@ skills:
     standalone_decision: keep_standalone_target
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for programming and systematic debugging domain. USE FOR
+      description now explicitly covers root-cause debugging via reproducer
+      isolation. Detailed guidance in
+      skills/programming/references/systematic-debugging.md.
 
   - name: tdd-tidy-first
     path: skills/tdd-tidy-first
