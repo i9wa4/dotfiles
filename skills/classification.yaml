@@ -7,7 +7,7 @@ purpose: >
 policy:
   release_all_target: true
   selective_release_allowlist: false
-  cleanup_lane_issue: 237
+  cleanup_lane_issue: 262
   completed_main_branch_baseline: 20e778dd
   issue_worktree_required_for_deferred_cleanup: true
   first_pr_scope:
@@ -24,7 +24,7 @@ policy:
     - public releases
   deferred_cleanup_lane: >
     After the 20e778dd main-branch baseline, remaining Agent Skills cleanup and
-    consolidation work belongs on issue/worktree branches tracked by #237, not
+    consolidation work belongs on issue/worktree branches tracked by #262, not
     directly on main.
 
 target_groups:
@@ -63,6 +63,39 @@ target_groups:
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
+
+consolidation_proposal:
+  issue: 262
+  current_group_count: 13
+  target_group_count: 10
+  rationale: >
+    Three current target_groups each contain only a single skill and are
+    conceptually subsumed by an adjacent group. Merging them reduces catalog
+    surface area without removing any skills; each migrating skill becomes a
+    compatibility_trigger under its new owner group.
+  merges:
+    - from: atlassian
+      to: github
+      rationale: >
+        Atlassian (Jira/Confluence) is a common companion to GitHub workflows;
+        folding it as a compatibility trigger under github avoids a single-skill
+        standalone group.
+    - from: durable-task-tracking
+      to: plan-design
+      rationale: >
+        Durable task tracking is a coordination and handoff capability that
+        extends the plan-design lifecycle; it shares scope with multi-step
+        planning and approval handoffs.
+    - from: systematic-debugging
+      to: programming
+      rationale: >
+        Root-cause debugging is a programming sub-workflow; once a cause is
+        credible the fix loop follows programming conventions. Consolidation
+        eliminates a one-skill standalone group.
+  implementation_notes: >
+    Actual skill moves and owner_surface updates are deferred per policy. This
+    block records the decision only. skill entries annotated with
+    proposal_target_group and proposal_action show the intended future state.
 
 private_content_scan:
   required_before:
@@ -196,6 +229,8 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    proposal_target_group: github
+    proposal_action: compatibility_trigger
 
   - name: create-review-comment
     path: skills/create-review-comment
@@ -251,6 +286,8 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    proposal_target_group: plan-design
+    proposal_action: compatibility_trigger
 
   - name: brainstorming
     path: skills/brainstorming
@@ -284,6 +321,8 @@ skills:
     notes: >
       Remains the root-cause-first owner. Once a cause is credible, narrow fix
       loops should follow programming's TDD and Tidy First reference.
+    proposal_target_group: programming
+    proposal_action: compatibility_trigger
 
   - name: programming
     path: skills/programming
