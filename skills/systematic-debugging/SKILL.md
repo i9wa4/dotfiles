@@ -2,45 +2,38 @@
 name: systematic-debugging
 license: MIT
 description: |
-  USE FOR: Root-cause-first debugging for unknown failures: reproducer isolation, working-pattern comparison. Use when mechanism is unclear. Use this skill when tasks need this repository-specific workflow. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Root-cause-first debugging for unknown failures: reproducer isolation, working-pattern comparison. Use when mechanism is unclear. Detailed owner: programming. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Systematic Debugging
 
-**UTILITY SKILL:** Apply this skill to Root-cause-first debugging for unknown
-failures: reproducer isolation, working-pattern comparison. Use when mechanism
-is unclear. Keep the task scoped to the requested domain and preserve existing
-repo conventions.
+Compatibility trigger for root-cause-first debugging. The durable guidance now
+lives in `skills/programming/references/systematic-debugging.md`.
 
-**USE FOR:** Root-cause-first debugging for unknown failures: reproducer
-isolation, working-pattern comparison. Use when mechanism is unclear; related
-file edits; verification and handoff in this skill domain.
+## 1. Use For
 
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+- Unknown failures where the mechanism is unclear.
+- Reproducer isolation and working-pattern comparison.
+- Investigation loops before committing to a fix.
 
-## 1. Workflow
+## 2. Do Not Use For
+
+- Unrelated domains, broad rewrites outside the request, or generated runtime
+  outputs.
+- Implementation: once the cause is credible, hand off to `programming` /
+  `tdd-tidy-first`.
+
+## 3. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
-   behavior or giving detailed instructions.
-3. When the cause is credible and the next step is an implementation loop, use
-   `skills/programming/references/tdd-tidy-first.md` for the narrow fix.
-4. Make the smallest scoped change that satisfies the request.
-5. Run the checks named in the preserved guidance or the nearest repo harness.
-6. Report verification results and any remaining risk.
+2. Read `skills/programming/references/systematic-debugging.md` for the
+   investigation loop, repo fit, stop conditions, and handoff guidance.
+3. When the cause is credible and the next step is a fix, use
+   `skills/programming/references/tdd-tidy-first.md`.
+4. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Report verification results and any remaining risk.
 
-## 2. Examples
+## 4. References
 
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
-
-## 3. References
-
-- [Preserved Guidance](references/preserved-guidance.md)
+- `skills/programming/references/systematic-debugging.md`
 - `skills/programming/references/tdd-tidy-first.md`
-
-## 4. Troubleshooting
-
-If Waza or repo validation disagrees with preserved guidance, follow the
-stricter rule and record the exception in the handoff.

@@ -44,3 +44,4 @@ implementation-loop discipline.
 - [Nix Package Workflow](references/nix-package-workflow.md)
 - [Markdown Authoring](references/markdown-authoring.md)
 - [TDD And Tidy First](references/tdd-tidy-first.md)
+- [Systematic Debugging](references/systematic-debugging.md)

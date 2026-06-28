@@ -41,6 +41,7 @@ source, run focused checks, and summarize the result.
 
 - [Preserved Guidance](references/preserved-guidance.md)
 - [Brainstorming](references/brainstorming.md)
+- [Durable Task Tracking](references/durable-task-tracking.md)
 
 ## 4. Troubleshooting
 

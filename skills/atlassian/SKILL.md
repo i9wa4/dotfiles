@@ -2,43 +2,37 @@
 name: atlassian
 license: MIT
 description: |
-  USE FOR: Jira and Confluence via Atlassian Cloud when env vars are present/confirmed; safely verify access and report minimal evidence. DO NOT USE FOR: guessing credentials or exposing secrets.
+  USE FOR: Jira and Confluence via Atlassian Cloud when env vars are present/confirmed; safely verify access and report minimal evidence. Detailed owner: github. DO NOT USE FOR: guessing credentials or exposing secrets.
 ---
 
 # Atlassian
 
-Use this skill when a task asks to use Jira or Confluence and the environment
-may already contain Atlassian credentials. Treat credentials as available only
-after confirming required variables are present.
+Compatibility trigger for Atlassian (Jira/Confluence) tasks. The durable
+guidance now lives in `skills/github/references/atlassian.md`.
 
-Read [Usage](references/usage.md) before authenticated Atlassian requests.
+## 1. Use For
 
-## 1. Required Env
+- Jira issue reads, searches, comments, transitions, or metadata via Atlassian
+  Cloud when `ATLASSIAN_API_TOKEN` is confirmed present.
+- Confluence page reads, searches, comments, or space queries via Atlassian
+  Cloud when env vars are confirmed.
+- Minimal safe evidence reporting for access checks.
 
-- `ATLASSIAN_SITE`: Atlassian Cloud site URL.
-- `ATLASSIAN_EMAIL`: account email for API token auth.
-- `ATLASSIAN_API_TOKEN`: Atlassian API token.
-- `ATLASSIAN_CLOUD_ID`: optional for Confluence APIs that require cloud id.
+## 2. Do Not Use For
 
-If `ATLASSIAN_API_TOKEN` is missing, follow
-[API Token](references/api-token.md).
+- Guessing or exposing credentials.
+- Tasks where Atlassian env vars are absent or unconfirmed.
 
-Check presence, not values. Use the reference command or an equivalent that
-prints only `set` or `missing`. Never print credential values, authorization
-headers, cookies, or shell traces.
+## 3. Workflow
 
-## 2. Workflow
+1. Inspect the relevant task context and `git status`.
+2. Read `skills/github/references/atlassian.md` for safe env checks, Jira,
+   Confluence, reporting, and cleanup guidance.
+3. Confirm required env vars before making any authenticated request.
+4. Prefer read-only checks first; summarize intended writes before executing.
+5. Report access state, minimal evidence, and any blocker.
 
-- Confirm required env vars before access. Do not infer access from a URL.
-- Jira: use targeted REST calls for issues, searches, comments, transitions,
-  or metadata; for access checks request minimal fields like `summary,status`.
-- Confluence: use targeted REST calls for pages, search, comments, or spaces;
-  request only the body representation required by the task.
-- Prefer read-only checks first. For writes, confirm the exact issue or page
-  and summarize the intended change before executing.
+## 4. References
 
-## 3. Reporting
-
-State whether access is readable, blocked by auth, blocked by permissions,
-blocked by network, or not found. Include minimal evidence only, such as Jira
-issue key/title/status or Confluence page id/title/status plus HTTP result.
+- `skills/github/references/atlassian.md`
+- `skills/atlassian/references/api-token.md`

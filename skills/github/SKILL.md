@@ -32,8 +32,8 @@ guardian/critic review engine or the user-facing review-comment trigger.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
 3. Before branch publication or PR creation, verify branch, upstream, base,
-   head, and clean status; use the explicit same-name remote destination
-   workflow described in the preserved guidance.
+   head, and clean status; use the same-name remote destination workflow in
+   the preserved guidance.
 4. Make the smallest scoped change that satisfies the request.
 5. Run the checks named in the preserved guidance or the nearest repo harness.
 6. Report verification results and any remaining risk.
@@ -41,11 +41,12 @@ guardian/critic review engine or the user-facing review-comment trigger.
 ## 3. Examples
 
 For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+source, run focused checks, and summarize.
 
 ## 4. References
 
 - [Preserved Guidance](references/preserved-guidance.md)
+- [Atlassian](references/atlassian.md)
 
 ## 5. Troubleshooting
 
