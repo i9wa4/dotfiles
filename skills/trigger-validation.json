@@ -51,7 +51,12 @@
       "target_group": "agent-skills-management",
       "target_skill": "agent-skills-management",
       "target_path": "skills/agent-skills-management/SKILL.md",
-      "legacy_skills": [],
+      "legacy_skills": [
+        {
+          "name": "skill-description-index",
+          "status": "removed_before_release"
+        }
+      ],
       "trigger_cases": [
         {
           "id": "agent-skills-management-target",
@@ -63,6 +68,18 @@
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+        },
+        {
+          "id": "skill-description-index-removed-alias",
+          "kind": "removed_alias",
+          "legacy_skill": "skill-description-index",
+          "prompt": "Recover full Agent Skill descriptions from disk when the active catalog is truncated or unclear.",
+          "expected_skill": "agent-skills-management",
+          "result": "pass",
+          "observed_skill": "agent-skills-management",
+          "checked_at": "2026-06-29",
+          "validation_method": "manual_catalog_review",
+          "notes": "The standalone compatibility wrapper was removed; the alias term and script now live under agent-skills-management references and scripts."
         }
       ]
     },
@@ -70,7 +87,12 @@
       "target_group": "github",
       "target_skill": "github",
       "target_path": "skills/github/SKILL.md",
-      "legacy_skills": [],
+      "legacy_skills": [
+        {
+          "name": "atlassian",
+          "status": "removed_before_release"
+        }
+      ],
       "trigger_cases": [
         {
           "id": "github-target",
@@ -82,6 +104,18 @@
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+        },
+        {
+          "id": "atlassian-removed-alias",
+          "kind": "removed_alias",
+          "legacy_skill": "atlassian",
+          "prompt": "Use Jira or Confluence via Atlassian Cloud when credentials are confirmed present.",
+          "expected_skill": "github",
+          "result": "pass",
+          "observed_skill": "github",
+          "checked_at": "2026-06-29",
+          "validation_method": "manual_catalog_review",
+          "notes": "The standalone compatibility wrapper was removed; GitHub owner frontmatter and references now cover Atlassian/Jira/Confluence."
         }
       ]
     },
@@ -141,7 +175,11 @@
       "legacy_skills": [
         {
           "name": "brainstorming",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
+        },
+        {
+          "name": "durable-task-tracking",
+          "status": "removed_before_release"
         }
       ],
       "trigger_cases": [
@@ -166,26 +204,19 @@
           "observed_skill": "plan-design",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
-        }
-      ]
-    },
-    {
-      "target_group": "systematic-debugging",
-      "target_skill": "systematic-debugging",
-      "target_path": "skills/systematic-debugging/SKILL.md",
-      "legacy_skills": [],
-      "trigger_cases": [
+          "notes": "The standalone compatibility wrapper was removed; ambiguity-reduction wording remains covered by plan-design frontmatter and references."
+        },
         {
-          "id": "systematic-debugging-target",
-          "kind": "target",
-          "prompt": "Find the root cause of an unknown failure by isolating a reproducer and comparing a known-good path.",
-          "expected_skill": "systematic-debugging",
+          "id": "durable-task-tracking-removed-alias",
+          "kind": "removed_alias",
+          "legacy_skill": "durable-task-tracking",
+          "prompt": "Preserve a durable task artifact with original checklist, evidence log, handoff/resume notes, and DONE/BLOCKED verification.",
+          "expected_skill": "plan-design",
           "result": "pass",
-          "observed_skill": "systematic-debugging",
-          "checked_at": "2026-05-21",
+          "observed_skill": "plan-design",
+          "checked_at": "2026-06-29",
           "validation_method": "manual_catalog_review",
-          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+          "notes": "The standalone compatibility wrapper was removed; durable task tracking is now explicitly part of plan-design."
         }
       ]
     },
@@ -196,23 +227,23 @@
       "legacy_skills": [
         {
           "name": "bigquery-local",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "databricks-local",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "dbt-local",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "restricted-bigquery-dbt-environment",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "aws-auth",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         }
       ],
       "trigger_cases": [
@@ -237,7 +268,7 @@
           "observed_skill": "data-platform",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; BigQuery wording remains covered by data-platform frontmatter and references."
         },
         {
           "id": "databricks-local-compatibility",
@@ -249,7 +280,7 @@
           "observed_skill": "data-platform",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Databricks wording remains covered by data-platform frontmatter and references."
         },
         {
           "id": "dbt-local-compatibility",
@@ -261,7 +292,7 @@
           "observed_skill": "data-platform",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; dbt wording remains covered by data-platform frontmatter and references."
         },
         {
           "id": "restricted-bigquery-dbt-environment-compatibility",
@@ -273,7 +304,7 @@
           "observed_skill": "data-platform",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; restricted BigQuery/dbt safety remains covered by data-platform frontmatter and references."
         },
         {
           "id": "aws-auth-compatibility",
@@ -285,7 +316,7 @@
           "observed_skill": "data-platform",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; cloud-auth pane workflow remains covered by data-platform frontmatter and references."
         }
       ]
     },
@@ -296,11 +327,11 @@
       "legacy_skills": [
         {
           "name": "drawio-local",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "mermaid-local",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         }
       ],
       "trigger_cases": [
@@ -325,7 +356,7 @@
           "observed_skill": "diagramming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; draw.io wording remains covered by diagramming frontmatter, references, and scripts."
         },
         {
           "id": "mermaid-local-compatibility",
@@ -337,7 +368,7 @@
           "observed_skill": "diagramming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Mermaid wording remains covered by diagramming frontmatter and references."
         }
       ]
     },
@@ -348,23 +379,27 @@
       "legacy_skills": [
         {
           "name": "tdd-tidy-first",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "bash",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "python",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "nix",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "markdown",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
+        },
+        {
+          "name": "systematic-debugging",
+          "status": "removed_before_release"
         }
       ],
       "trigger_cases": [
@@ -389,7 +424,7 @@
           "observed_skill": "programming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; TDD/Tidy First wording remains covered by programming frontmatter and references."
         },
         {
           "id": "bash-compatibility",
@@ -401,7 +436,7 @@
           "observed_skill": "programming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Bash wording remains covered by programming frontmatter and references."
         },
         {
           "id": "python-compatibility",
@@ -413,7 +448,7 @@
           "observed_skill": "programming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Python wording remains covered by programming frontmatter and references."
         },
         {
           "id": "nix-compatibility",
@@ -425,7 +460,7 @@
           "observed_skill": "programming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Nix wording remains covered by programming frontmatter and references."
         },
         {
           "id": "markdown-compatibility",
@@ -437,7 +472,19 @@
           "observed_skill": "programming",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Compatibility prompt maps through the legacy trigger description and classification target mapping to the expected target skill."
+          "notes": "The standalone compatibility wrapper was removed; Markdown wording remains covered by programming frontmatter and references."
+        },
+        {
+          "id": "systematic-debugging-removed-alias",
+          "kind": "removed_alias",
+          "legacy_skill": "systematic-debugging",
+          "prompt": "Find the root cause of an unknown failure by isolating a reproducer and comparing a known-good path.",
+          "expected_skill": "programming",
+          "result": "pass",
+          "observed_skill": "programming",
+          "checked_at": "2026-06-29",
+          "validation_method": "manual_catalog_review",
+          "notes": "The standalone compatibility wrapper was removed; systematic debugging is now explicitly part of programming."
         }
       ]
     },
@@ -448,11 +495,11 @@
       "legacy_skills": [
         {
           "name": "english-writing-quality",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         },
         {
           "name": "english-to-japanese-technical-translation",
-          "status": "compatibility_trigger"
+          "status": "removed_before_release"
         }
       ],
       "trigger_cases": [
@@ -477,7 +524,7 @@
           "observed_skill": "technical-writing",
           "checked_at": "2026-06-25",
           "validation_method": "manual_catalog_review",
-          "notes": "The legacy skill frontmatter says detailed owner is technical-writing and classification maps it to the technical-writing target group."
+          "notes": "The standalone compatibility wrapper was removed; English prose quality remains covered by technical-writing frontmatter and references."
         },
         {
           "id": "english-to-japanese-technical-translation-compatibility",
@@ -489,7 +536,7 @@
           "observed_skill": "technical-writing",
           "checked_at": "2026-06-25",
           "validation_method": "manual_catalog_review",
-          "notes": "The legacy translation skill routes to the canonical technical-writing workflow and references."
+          "notes": "The standalone compatibility wrapper was removed; English-to-Japanese translation remains covered by technical-writing frontmatter and references."
         },
         {
           "id": "japanese-prose-review-compatibility",
@@ -505,7 +552,7 @@
       ]
     }
   ],
-  "validated_at": "2026-06-25",
+  "validated_at": "2026-06-29",
   "validation_method": "manual_catalog_review",
-  "validation_summary": "29 trigger cases reviewed against target skill frontmatter, compatibility trigger bodies, classification target mappings, and current cleanup state where applicable."
+  "validation_summary": "31 trigger cases reviewed against the 10 owner skill frontmatter descriptions, owner references, classification target mappings, and removed-alias cleanup state."
 }

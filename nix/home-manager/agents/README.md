@@ -17,7 +17,7 @@ artifacts.
 | Native reviewer metadata    | `subagents/metadata.nix`                                       | Per-agent model and effort defaults emitted into generated runtime agent files     |
 | Shared install targets      | `shared/install-manifest.nix`                                  | Resolves generated Claude agent files and Codex TOML from shared subagent sources  |
 | Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                   | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
-| Skill description index     | `skills/skill-description-index/`                              | Reclassified for later migration into `skills/agent-skills-management/references/` |
+| Skill description index     | `skills/agent-skills-management/`                              | Folded into the Agent Skills management owner skill and reference/script directory |
 | Hook/runtime scripts        | `scripts/*`                                                    | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
 | Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`    | Empty MCP server set and shared Bash deny hook data emitted into both engines      |
 | Claude runtime settings     | `claude/default.nix`                                           | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |

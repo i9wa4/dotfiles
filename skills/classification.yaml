@@ -7,7 +7,7 @@ purpose: >
 policy:
   release_all_target: true
   selective_release_allowlist: false
-  cleanup_lane_issue: 237
+  cleanup_lane_issue: 262
   completed_main_branch_baseline: 20e778dd
   issue_worktree_required_for_deferred_cleanup: true
   first_pr_scope:
@@ -24,7 +24,7 @@ policy:
     - public releases
   deferred_cleanup_lane: >
     After the 20e778dd main-branch baseline, remaining Agent Skills cleanup and
-    consolidation work belongs on issue/worktree branches tracked by #237, not
+    consolidation work belongs on issue/worktree branches tracked by #262, not
     directly on main.
 
 target_groups:
@@ -35,26 +35,19 @@ target_groups:
     Agent Skills authoring, validation, Waza readiness, publish dry-runs, and
     catalog diagnostics.
   github: >
-    GitHub CLI mechanics, public-surface hygiene, issue and PR operations, and
-    inline comment rules.
-  atlassian: >
-    Jira and Confluence access with credential-presence checks and
-    secret-safe reporting.
+    GitHub CLI mechanics, public-surface hygiene, issue and PR operations,
+    inline comment rules, and Atlassian (Jira/Confluence) compatibility
+    guidance.
   create-review-comment: >
     Thin user-facing PR review-comment drafting trigger.
   subagent-review: >
     Review engine for guardian-led, critic-assisted native reviewer workflows.
   plan-design: >
-    Implementation plans, option framing, milestones, and approval-readiness
-    guidance.
-  durable-task-tracking: >
-    Durable task tracking for multi-step, multi-node, or reviewed work with
-    checklist/evidence logs and handoff/resume guidance.
-  systematic-debugging: >
-    Root-cause-first debugging workflow.
+    Implementation plans, option framing, milestones, approval-readiness
+    guidance, and durable task tracking.
   programming: >
-    Shell, Python, Nix package workflow, Markdown, and implementation-loop
-    conventions.
+    Shell, Python, Nix package workflow, Markdown, implementation-loop
+    conventions, and root-cause debugging.
   technical-writing: >
     Technical prose quality, terminology, Vale/Harper checks,
     English-to-Japanese translation workflow, Japanese editorial review,
@@ -63,6 +56,45 @@ target_groups:
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
+
+consolidation_proposal:
+  issue: 262
+  current_group_count: 13
+  target_group_count: 10
+  previous_checked_in_skill_count: 29
+  target_checked_in_skill_count: 10
+  rationale: >
+    Three current target_groups each contain only a single skill and are
+    conceptually subsumed by an adjacent group. Merging them reduces catalog
+    surface area without removing any skills; each migrating skill becomes a
+    compatibility_trigger under its new owner group.
+  merges:
+    - from: atlassian
+      to: github
+      rationale: >
+        Atlassian (Jira/Confluence) is a common companion to GitHub workflows;
+        folding it as a compatibility trigger under github avoids a single-skill
+        standalone group.
+    - from: durable-task-tracking
+      to: plan-design
+      rationale: >
+        Durable task tracking is a coordination and handoff capability that
+        extends the plan-design lifecycle; it shares scope with multi-step
+        planning and approval handoffs.
+    - from: systematic-debugging
+      to: programming
+      rationale: >
+        Root-cause debugging is a programming sub-workflow; once a cause is
+        credible the fix loop follows programming conventions. Consolidation
+        eliminates a one-skill standalone group.
+  implementation_notes: >
+    Consolidation implemented on branch issue-262-consolidate-agent-skills-classification
+    (#262). Guidance content was moved to the target skill's references/
+    directory, target_groups were reduced from 13 to 10, and non-owner
+    compatibility skill directories were removed before release. The remaining
+    checked-in skill directories are the 10 owner skills. Removed entries remain
+    in this classification with publish=false and release_state=removed_before_release
+    so release readiness preserves the migration record.
 
 private_content_scan:
   required_before:
@@ -160,21 +192,25 @@ skills:
 
   - name: skill-description-index
     path: skills/skill-description-index
-    publish: true
+    publish: false
     scope: agent-skills-catalog-diagnostics
-    action: keep_catalog_diagnostics
+    action: removed_before_release
     target_group: agent-skills-management
-    target_name: skill-description-index
-    release_state: release_ready
-    owner_surface: skill
-    standalone_decision: keep_standalone_catalog_diagnostics
+    target_name: agent-skills-management
+    release_state: removed_before_release
+    owner_surface: skills/agent-skills-management
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Skill description lookup guidance and script moved to
+      skills/agent-skills-management/references/skill-description-index.md and
+      skills/agent-skills-management/scripts/agent-skill-description-index.sh.
 
   - name: github
     path: skills/github
     publish: true
-    scope: github-workflow
+    scope: github-and-atlassian-workflow
     action: keep
     target_group: github
     target_name: github
@@ -183,19 +219,28 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for github-workflow and Atlassian (Jira/Confluence) domain.
+      USE FOR description now explicitly covers Atlassian. Detailed Atlassian
+      guidance in skills/github/references/atlassian.md.
 
   - name: atlassian
     path: skills/atlassian
-    publish: true
+    publish: false
     scope: atlassian-workflow
-    action: keep
-    target_group: atlassian
-    target_name: atlassian
-    release_state: release_ready
-    owner_surface: skill
-    standalone_decision: keep_standalone
+    action: removed_before_release
+    target_group: github
+    target_name: github
+    release_state: removed_before_release
+    owner_surface: skills/github
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Detailed Atlassian guidance now lives in skills/github/references/atlassian.md.
+      API-token setup guidance moved to
+      skills/github/references/atlassian-api-token.md. The standalone skill
+      directory was removed before release.
 
   - name: create-review-comment
     path: skills/create-review-comment
@@ -229,7 +274,7 @@ skills:
   - name: plan-design
     path: skills/plan-design
     publish: true
-    scope: planning-and-approval-readiness
+    scope: planning-approval-and-durable-task-tracking
     action: keep
     target_group: plan-design
     target_name: plan-design
@@ -238,57 +283,67 @@ skills:
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for planning and durable task tracking domain. USE FOR
+      description now explicitly covers task artifacts, evidence logs,
+      handoff/resume, and DONE/BLOCKED verification. Detailed guidance in
+      skills/plan-design/references/durable-task-tracking.md.
 
   - name: durable-task-tracking
     path: skills/durable-task-tracking
-    publish: true
+    publish: false
     scope: durable-task-tracking
-    action: keep
-    target_group: durable-task-tracking
-    target_name: durable-task-tracking
-    release_state: release_ready
-    owner_surface: skill
-    standalone_decision: keep_standalone
+    action: removed_before_release
+    target_group: plan-design
+    target_name: plan-design
+    release_state: removed_before_release
+    owner_surface: skills/plan-design
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Detailed durable task tracking guidance now lives in
+      skills/plan-design/references/durable-task-tracking.md. The standalone
+      skill directory was removed before release.
 
   - name: brainstorming
     path: skills/brainstorming
-    publish: true
+    publish: false
     scope: ambiguity-reduction
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: plan-design
     target_name: plan-design
-    release_state: release_ready
-    owner_surface: skills/plan-design/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/plan-design
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Detailed ambiguity-reduction guidance now lives in plan-design references.
-      The standalone skill remains as a release-ready compatibility trigger for
-      direct task matching.
+      The standalone skill directory was removed before release.
 
   - name: systematic-debugging
     path: skills/systematic-debugging
-    publish: true
+    publish: false
     scope: root-cause-debugging
-    action: keep
-    target_group: systematic-debugging
-    target_name: systematic-debugging
-    release_state: release_ready
-    owner_surface: skill
-    standalone_decision: keep_standalone
+    action: removed_before_release
+    target_group: programming
+    target_name: programming
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
-      Remains the root-cause-first owner. Once a cause is credible, narrow fix
-      loops should follow programming's TDD and Tidy First reference.
+      Detailed root-cause debugging guidance now lives in
+      skills/programming/references/systematic-debugging.md. The standalone
+      skill directory was removed before release. Once a cause is credible,
+      the fix loop uses programming's TDD/Tidy First reference.
 
   - name: programming
     path: skills/programming
     publish: true
-    scope: programming-target
+    scope: programming-and-systematic-debugging
     action: keep
     target_group: programming
     target_name: programming
@@ -297,95 +352,103 @@ skills:
     standalone_decision: keep_standalone_target
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for programming and systematic debugging domain. USE FOR
+      description now explicitly covers root-cause debugging via reproducer
+      isolation. Detailed guidance in
+      skills/programming/references/systematic-debugging.md.
 
   - name: tdd-tidy-first
     path: skills/tdd-tidy-first
-    publish: true
+    publish: false
     scope: implementation-loop
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: programming
     target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Detailed guidance now lives in programming references and may also be
       referenced from systematic-debugging when debugging leads to an
-      implementation loop.
+      implementation loop. The standalone skill directory was removed before
+      release.
 
   - name: bash
     path: skills/bash
-    publish: true
+    publish: false
     scope: shell-scripting
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: programming
     target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: python
     path: skills/python
-    publish: true
+    publish: false
     scope: python-development
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: programming
     target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: nix
     path: skills/nix
-    publish: true
+    publish: false
     scope: nix-package-workflow
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: programming
     target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       General package workflow now lives in programming references.
       Agent-runtime Nix and Home Manager material belongs under
-      agent-harness-engineering.
+      agent-harness-engineering. The standalone skill directory was removed
+      before release.
 
   - name: markdown
     path: skills/markdown
-    publish: true
+    publish: false
     scope: markdown-authoring
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: programming
     target_name: programming
-    release_state: release_ready
-    owner_surface: skills/programming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: english-writing-quality
     path: skills/english-writing-quality
-    publish: true
+    publish: false
     scope: english-doc-prose-quality
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: technical-writing
     target_name: technical-writing
-    release_state: release_ready
+    release_state: removed_before_release
     owner_surface: skills/technical-writing
-    standalone_decision: keep_compatibility_trigger
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Vale/Harper and English prose quality guidance moved to the canonical
-      technical-writing skill. This skill remains as a compatibility trigger.
+      technical-writing skill. The standalone skill directory was removed
+      before release.
 
   - name: technical-writing
     path: skills/technical-writing
@@ -406,20 +469,20 @@ skills:
 
   - name: english-to-japanese-technical-translation
     path: skills/english-to-japanese-technical-translation
-    publish: true
+    publish: false
     scope: english-to-japanese-technical-translation
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: technical-writing
     target_name: technical-writing
-    release_state: release_ready
+    release_state: removed_before_release
     owner_surface: skills/technical-writing
-    standalone_decision: keep_compatibility_trigger
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Translation workflow and Japanese prose guidance moved to the canonical
-      technical-writing skill. This skill remains as a compatibility trigger
-      for direct translation requests.
+      technical-writing skill. The standalone skill directory was removed
+      before release.
 
   - name: data-platform
     path: skills/data-platform
@@ -439,66 +502,66 @@ skills:
 
   - name: bigquery-local
     path: skills/bigquery-local
-    publish: true
+    publish: false
     scope: bigquery-local-workflow
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: data-platform
     target_name: data-platform
-    release_state: release_ready
-    owner_surface: skills/data-platform/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/data-platform
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: databricks-local
     path: skills/databricks-local
-    publish: true
+    publish: false
     scope: databricks-local-workflow
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: data-platform
     target_name: data-platform
-    release_state: release_ready
-    owner_surface: skills/data-platform/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/data-platform
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: dbt-local
     path: skills/dbt-local
-    publish: true
+    publish: false
     scope: dbt-local-workflow
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: data-platform
     target_name: data-platform
-    release_state: release_ready
-    owner_surface: skills/data-platform/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/data-platform
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: restricted-bigquery-dbt-environment
     path: skills/restricted-bigquery-dbt-environment
-    publish: true
+    publish: false
     scope: bigquery-dbt-safety
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: data-platform
     target_name: data-platform
-    release_state: release_ready
-    owner_surface: skills/data-platform/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/data-platform
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: aws-auth
     path: skills/aws-auth
-    publish: true
+    publish: false
     scope: cloud-auth-workflow
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: data-platform
     target_name: data-platform
-    release_state: release_ready
-    owner_surface: skills/data-platform/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/data-platform
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
@@ -525,26 +588,26 @@ skills:
 
   - name: drawio-local
     path: skills/drawio-local
-    publish: true
+    publish: false
     scope: drawio-diagramming
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: diagramming
     target_name: diagramming
-    release_state: release_ready
-    owner_surface: skills/diagramming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/diagramming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
 
   - name: mermaid-local
     path: skills/mermaid-local
-    publish: true
+    publish: false
     scope: mermaid-diagramming
-    action: compatibility_trigger
+    action: removed_before_release
     target_group: diagramming
     target_name: diagramming
-    release_state: release_ready
-    owner_surface: skills/diagramming/references
-    standalone_decision: keep_compatibility_trigger
+    release_state: removed_before_release
+    owner_surface: skills/diagramming
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation

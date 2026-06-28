@@ -52,4 +52,4 @@ SELECT `full-width column` FROM table_name;
 
 ## 3. Examples
 
-- Staging model example: `skills/dbt-local/examples/staging-model.sql`
+- Staging model example: `skills/data-platform/examples/staging-model.sql`

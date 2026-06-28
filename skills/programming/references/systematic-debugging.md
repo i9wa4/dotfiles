@@ -1,20 +1,7 @@
-# Preserved Guidance
-
-Original SKILL.md guidance before Waza compaction. Use this reference when the
-concise skill needs domain-specific details.
-
-~~~~~~~~~~~~markdown
----
-name: systematic-debugging
-license: MIT
-description: |
-  Root-cause-first debugging for unknown failures: reproducer isolation, working-pattern comparison. Use when mechanism is unclear.
----
-
 # Systematic Debugging
 
-Use this skill to stop guessing, gather evidence, and narrow the actual cause
-before attempting a fix.
+Use this reference to stop guessing, gather evidence, and narrow the actual
+cause before attempting a fix. Load it when the failure mechanism is unclear.
 
 ## 1. Core Defaults
 
@@ -96,4 +83,3 @@ step narrow:
 - make the smallest change that should fix the proven cause
 - run the fastest relevant verifier
 - widen verification only after the narrow slice passes
-~~~~~~~~~~~~
