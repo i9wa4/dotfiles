@@ -41,8 +41,9 @@ and PR #226: automation, provider/model choice, cost controls, privacy policy,
 external-sharing authorization, derivative publication approval, and source
 chunking remain outside this skill.
 
-## 3. Compatibility
+## 3. Folded Triggers
 
-Legacy triggers `english-writing-quality` and
-`english-to-japanese-technical-translation` remain as thin compatibility
-skills that route here.
+Former `english-writing-quality` and
+`english-to-japanese-technical-translation` requests now route directly here.
+Use the focused references for Vale/Harper checks, Japanese style, and
+translation workflow details.

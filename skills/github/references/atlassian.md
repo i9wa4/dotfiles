@@ -12,7 +12,7 @@ available only after confirming required variables are present.
 - `ATLASSIAN_CLOUD_ID`: optional for Confluence APIs that require cloud id.
 
 If `ATLASSIAN_API_TOKEN` is missing, see
-`skills/atlassian/references/api-token.md`.
+`skills/github/references/atlassian-api-token.md`.
 
 Check presence, not values. Use the reference command or an equivalent that
 prints only `set` or `missing`. Never print credential values, authorization

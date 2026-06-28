@@ -2,18 +2,18 @@
 name: agent-skills-management
 license: MIT
 description: |
-  USE FOR: add, edit, remove, and validate Agent Skills; run Waza, release-readiness checks, and release-flow dry-runs; keep metadata release-ready. DO NOT USE FOR: runtime hooks or engine config.
+  USE FOR: add, edit, remove, validate, or inspect Agent Skills; run Waza, release-readiness checks, release-flow dry-runs, and skill-description catalog diagnostics. DO NOT USE FOR: runtime hooks or engine config.
 ---
 
 # Agent Skills Management
 
-**UTILITY SKILL:** Manage source-owned skills in `skills/`. Keep runtime hooks
-and engine config in harness/config skills.
+Manage source-owned skills in `skills/`, including skill-description catalog
+diagnostics. Keep runtime hooks and engine config in harness/config skills.
 
-**USE FOR:** add, edit, rename, or remove `skills/*/SKILL.md`; improve
-frontmatter, trigger descriptions, body structure, `references/`, `scripts/`,
-`assets/`, or eval files; run Waza readiness, release-readiness checks, tag-only
-`gh skill publish --dry-run`, and skill pre-commit/CI harnesses.
+**USE FOR:** add, edit, rename, remove, inspect, validate, or publish Agent
+Skills; improve frontmatter, trigger descriptions, body structure, references,
+scripts, assets, or eval files; run Waza, release-readiness checks, tag-only
+publish dry-runs, pre-commit/CI harnesses, and catalog diagnostics.
 
 **DO NOT USE FOR:** runtime hooks, engine config, broad docs migrations, or
 generated outputs:
@@ -22,19 +22,16 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
 
 ## 1. Workflow
 
-1. Inspect `skills/`, publish/pre-commit/CI harnesses, the target skill, and
-   `git status`.
+1. Inspect `skills/`, validation harnesses, the target skill, and `git status`.
 2. Edit only requested skill sources and necessary pointers. Keep `SKILL.md`
-   short; move optional detail to `references/`.
+   short; move optional detail to references.
 3. Run Waza before and after edits:
    `waza --no-update-check check skills/<name> --format json`. Address
    readiness, trigger clarity, budget, links, eval gaps, and complexity.
-4. Treat Waza as quality/eval readiness. Deterministic release readiness comes
-   from `scripts/validation/validate-skill-release-readiness.sh --strict`.
-5. For publishing harness work, keep validation and publishing separate. Use
-   pre-commit/CI for deterministic checks; reserve `gh skill publish --dry-run`
-   and `gh skill publish --tag "$TAG"` for the tag-push release flow.
-6. Verify the changed surface, then report remaining Waza findings.
+4. Treat Waza as quality/eval readiness. Use
+   `scripts/validation/validate-skill-release-readiness.sh --strict` for the
+   deterministic release gate.
+5. Verify the changed surface, then report remaining Waza findings.
 
 ## 2. Troubleshooting
 
@@ -43,3 +40,6 @@ the process exit alone as readiness.
 
 Commands and fallbacks live in
 [Waza and Publishing](references/waza-publishing.md).
+
+Skill catalog lookup and description recovery live in
+[Skill Description Index](references/skill-description-index.md).

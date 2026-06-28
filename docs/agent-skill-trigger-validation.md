@@ -16,10 +16,10 @@ That matrix covers every final target group from #168:
 - `create-review-comment`
 - `subagent-review`
 - `plan-design`
-- `systematic-debugging`
 - `data-platform`
 - `diagramming`
 - `programming`
+- `technical-writing`
 
 Each target group has:
 
