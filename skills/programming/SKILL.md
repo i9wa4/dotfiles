@@ -19,7 +19,8 @@ and root-cause debugging.
 - General Nix package workflow, especially fetcher hash acquisition.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
-- Systematic debugging: reproducer isolation, working-pattern comparison, and root-cause analysis.
+- Systematic debugging: reproducer isolation, working-pattern comparison, and
+  root-cause analysis.
 
 ## 2. Do Not Use For
 

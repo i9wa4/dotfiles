@@ -44,8 +44,8 @@ shell tracing enabled.
 
 ## 4. Verify Presence Only
 
-Use the safe check from [Atlassian](atlassian.md) before authenticated requests. It
-prints only `set` or `missing`, never credential values.
+Use the safe check from [Atlassian](atlassian.md) before authenticated requests.
+It prints only `set` or `missing`, never credential values.
 
 ## 5. Sources
 
