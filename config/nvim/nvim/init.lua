@@ -189,6 +189,17 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
   callback = highlight_match,
 })
 
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = augroup,
+  pattern = { "*.md", "*.qmd" },
+  callback = function()
+    if vim.fn.executable("mdfmt") == 1 then
+      vim.system({ "mdfmt", "--write", vim.fn.expand("%:p") }):wait()
+      vim.cmd("silent noautocmd edit!")
+    end
+  end,
+})
+
 -- --------------------------------------
 -- End of settings
 --
