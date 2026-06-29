@@ -233,7 +233,7 @@ When adding/removing files in skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.145 (2026-05-21)
+Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 
 ### 11.1. Applied Optimizations
 
@@ -285,6 +285,11 @@ Last reviewed Claude Code version: v2.1.145 (2026-05-21)
       the v2.1.94 Team/Enterprise default by design. See
       `changelog-tracking.md` for the prior rationale around adaptive
       thinking.
+- [x] v2.1.195 catch-up review - no local config migration needed. Current
+  Claude hooks use only `Bash` and `Write|Edit|NotebookEdit`, so the
+  v2.1.195 hyphenated hook matcher exact-match fix does not affect this repo.
+  Keep plugin, auto-mode, sandbox, and Remote/agent-team additions as
+  user-invoked/product defaults unless a measured harness need appears.
 
 ### 11.2. Pending Considerations
 
@@ -397,6 +402,47 @@ Last reviewed Claude Code version: v2.1.145 (2026-05-21)
   `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` now applied even
   when a higher-priority source lacks a `sandbox` block. We're solo-user
   so this is informational
+
+#### 11.2.3. v2.1.147 -> v2.1.195 candidates (added 2026-06-29)
+
+- [x] Hyphenated hook matcher exact matching (v2.1.195) - no migration needed.
+  Current hook matchers are `Bash` and `Write|Edit|NotebookEdit`; there are no
+  hyphenated MCP or agent matchers in `claude/default.nix`.
+- [ ] `sandbox.credentials` setting (v2.1.187) - blocks sandboxed commands
+  from reading credential files and secret environment variables. Not adopted
+  yet because harness sessions currently run with bypass permissions and
+  shared deny rules; revisit with an explicit sandbox design.
+- [ ] `autoMode.classifyAllShell` (v2.1.193) and auto-mode denial transcript
+  details - useful only if we move from deterministic Bash deny rules to
+  classifier-backed auto mode.
+- [ ] `Tool(param:value)` permission-rule syntax (v2.1.178) - possible future
+  way to restrict `Agent(model:...)` or other parameterized tool use without
+  scripts; no current policy needs it.
+- [ ] `fallbackModel` setting (v2.1.166) - up to three fallback models for
+  overload/unavailable primary models. Defer while model choice is pinned at
+  launch and failures should stay visible.
+- [ ] `--safe-mode` / `CLAUDE_CODE_SAFE_MODE` (v2.1.169) - useful manual
+  troubleshooting path for bad hooks, skills, MCP, or plugins; no config
+  change.
+- [ ] `disableBundledSkills` / `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS`
+  (v2.1.169) - could slim the model surface if bundled skills start colliding
+  with repo skills; keep bundled defaults for now.
+- [ ] `respondToBashCommands: false` (v2.1.186 behavior change) - `!` Bash
+  commands now trigger an assistant response automatically. Leave default
+  unless interactive Claude users report unwanted follow-up turns.
+- [ ] `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` (v2.1.195) and
+  `wheelScrollAccelerationEnabled` (v2.1.174) - UI preference only; do not
+  encode without a measured terminal problem.
+- [ ] `OTEL_LOG_ASSISTANT_RESPONSES=0` (v2.1.193) - only needed if telemetry is
+  re-enabled while prompt logging is on. Current settings disable telemetry.
+- [x] `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE` removed/no-op (v2.1.160) -
+  already irrelevant because fast mode is hard-disabled.
+- [x] `/code-review` rename and `/simplify` behavior churn (v2.1.147,
+  v2.1.152, v2.1.154, v2.1.186) - user-invoked commands only; no harness
+  config.
+- [x] Background-agent, worktree, MCP, plugin, skill hot-reload, and
+  subagent-depth fixes through v2.1.195 - mostly product reliability. Current
+  harness should benefit automatically; no source change.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Changelog Tracking](changelog-tracking.md).

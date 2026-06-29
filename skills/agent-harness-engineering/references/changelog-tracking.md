@@ -118,9 +118,103 @@ This reference preserves older review notes that support current
   keep default `auto` isolation
 - `claude project purge` (v2.1.126) - one-shot CLI; no config to adopt,
   remember as a manual cleanup command
+- `sandbox.credentials` (v2.1.187) - promising for sandboxed sessions, but this
+  harness currently relies on bypass-permissions plus shared deny hooks. Do not
+  present it as active protection until we intentionally design a sandbox path.
+- `autoMode.classifyAllShell` and denial transcript details (v2.1.193) - not
+  using auto mode; deterministic shared Bash deny remains the policy authority.
+- `OTEL_LOG_ASSISTANT_RESPONSES` (v2.1.193) - telemetry is disabled in
+  `claude/default.nix`. If telemetry and prompt logging are re-enabled later,
+  set `OTEL_LOG_ASSISTANT_RESPONSES=0` unless response-content logging is
+  explicitly desired.
+- `respondToBashCommands: false` (v2.1.186) - possible compatibility knob for
+  the changed `!` Bash behavior, but no current harness flow uses interactive
+  `!` commands enough to force the old context-only behavior.
+- `Tool(param:value)` permission syntax (v2.1.178) - future policy option for
+  parameterized Agent/Tool restrictions; no current rule requires it.
+- `fallbackModel` (v2.1.166) - defer because launch-time model pinning should
+  make overload/model failures visible instead of silently swapping behavior.
+- `--safe-mode` / `CLAUDE_CODE_SAFE_MODE` (v2.1.169) - troubleshooting path
+  only, not a default.
+- `disableBundledSkills` / `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS` (v2.1.169) -
+  leave bundled skills visible until there is a concrete collision or context
+  pressure problem.
+- `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` (v2.1.195) and
+  `wheelScrollAccelerationEnabled` (v2.1.174) - UI preference only.
+- `enforceAvailableModels` (v2.1.175) and org model restrictions (v2.1.187) -
+  enterprise/org policy surfaces; solo local config does not manage them.
 
 ## 2. Version Notes
 
+- v2.1.195: `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` for fullscreen mouse
+  click/drag/hover opt-out; **hook matcher fix for hyphenated identifiers**
+  now exact-matches (`mcp__brave-search__.*` needed for all tools from such a
+  server); plugin consent fixes; many background-agent visibility/restart and
+  Remote startup improvements.
+- v2.1.193: `autoMode.classifyAllShell`; auto-mode denial reasons now appear in
+  transcript/toast/recent denials; `claude_code.assistant_response` OTEL log
+  event, redacted unless `OTEL_LOG_ASSISTANT_RESPONSES=1` and otherwise tied to
+  prompt logging; Bash-mode path autocomplete; MCP auth startup notice; idle
+  background shell memory-pressure reaping.
+- v2.1.187: `sandbox.credentials` setting; org model restrictions shown in
+  model picker/flags/env; remote MCP tool calls abort after idle timeout instead
+  of hanging; many background job, worktree, and Remote Control reliability
+  fixes.
+- v2.1.186: `claude mcp login/logout`; `!` Bash commands now trigger an
+  assistant response by default (`respondToBashCommands: false` restores
+  context-only behavior); background subagent permission prompts surface in the
+  main session; `/review <pr>` uses the `/code-review medium` engine.
+- v2.1.183: auto-mode safety blocks destructive git/IaC commands unless asked;
+  warnings when requested models are deprecated or remapped;
+  `attribution.sessionUrl` can omit web/Remote session links; several scheduled
+  and webhook notification and background task fixes.
+- v2.1.178: Agent teams no longer use `TeamCreate`/`TeamDelete`;
+  `Tool(param:value)` permission-rule syntax; nested `.claude/skills` loading
+  and local precedence rules; auto mode evaluates subagent spawns before launch.
+- v2.1.176: `footerLinksRegexes`; Bedrock credential cache follows expiration;
+  hook `if` path conditions for Read/Edit/Write fixed; `/cd` and background
+  session git-branch state fixes.
+- v2.1.172: subagents can spawn nested subagents up to 5 levels; many model
+  availability, 1M context, wildcard permission, Remote Control, and long
+  conversation performance fixes.
+- v2.1.169: self-hosted runner `post-session` hook; `--safe-mode` /
+  `CLAUDE_CODE_SAFE_MODE`; `/cd`; `disableBundledSkills`;
+  `claude agents --json --all` plus `id`/`state`; managed MCP policy
+  enforcement fixes and background session worktree guidance.
+- v2.1.166: `fallbackModel`; glob support in deny rule tool-name position;
+  cross-session messaging no longer carries user authority; thinking can be
+  disabled on thinking-default models; fallback retry on unexpected
+  non-retryable API errors.
+- v2.1.162: `claude agents --json` adds `waitingFor`; `/effort` persistence
+  confirmation; WebFetch deny/ask/allow precedence over preapproved domains;
+  wider `claude agents` status rendering; failed background sends are queued.
+- v2.1.160: prompts before writes to shell startup files and execution-granting
+  build config files; improved background teardown; **removed
+  `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE`**.
+- v2.1.157: plugins in `.claude/skills` auto-load; `claude plugin init`;
+  `settings.json` `agent` honored for `claude agents`; `EnterWorktree` can
+  switch between Claude-managed worktrees; tool-decision telemetry can include
+  tool parameters.
+- v2.1.154: Opus 4.8, dynamic workflows, lean system prompt default, background
+  shell sessions from `claude agents`, streaming tool execution always enabled,
+  stdio MCP subprocesses receive `CLAUDE_CODE_SESSION_ID` and `CLAUDECODE=1`;
+  several security/permission fixes including `$HOME` removal detection and
+  background subagent worktree isolation.
+- v2.1.153: status line commands receive `COLUMNS`/`LINES`; `claude agents`
+  autocomplete includes native slash commands and bundled skills; subagent MCP
+  policy fixes; background sessions avoid stale daemons; `/model` default-save
+  keybinding changed.
+- v2.1.152: `/code-review --fix`; skills and slash commands can set
+  `disallowed-tools`; `/reload-skills`; SessionStart can reload skills or set
+  title; `MessageDisplay` hook; auto mode no longer requires opt-in consent.
+- v2.1.149: `/usage` breakdown by skills/subagents/plugins/MCP; markdown task
+  checkboxes render; **PowerShell permission bypass fix**, **sandbox worktree
+  write allowlist fix**, parser stale-variable fix, and `find` macOS
+  file-table crash fix.
+- v2.1.147: pinned background sessions; `/simplify` renamed to `/code-review`
+  with bug-finding review semantics; auto-updater and diff performance
+  improvements; many PowerShell, MCP pagination, background permission, CJK,
+  paste, and plugin count fixes.
 - v2.1.145: `claude agents --json` for scriptable session listing, OTEL
   `agent_id`/`parent_agent_id` on `claude_code.tool` spans with corrected
   subagent span parenting, status line JSON gains GitHub repo + PR info,

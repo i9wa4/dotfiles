@@ -207,9 +207,67 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.135.0 (2026-05-31)
+Last reviewed Codex CLI version: v0.142.3 (2026-06-29)
 
-### 9.1. Temporary WAL Bloat Runbook (2026-05)
+### 9.1. Release Catch-up (v0.136.0 -> v0.142.3)
+
+Stable releases through the locally installed `codex-cli 0.142.3` add mostly
+product/runtime capabilities rather than required dotfiles config changes:
+
+- v0.142.3 is a maintenance-only patch with no user-facing changes after
+  v0.142.2.
+- v0.142.2 turns MCP tool search on by default when supported, adds opt-in
+  macOS system-proxy auth support, adds plugin dark-mode logos, improves
+  Bedrock credential errors, rejects uninspectable PowerShell AST regions, and
+  quiets successful formatter runs.
+- v0.142.0 adds `/usage` reset-credit redemption, remote plugin organization
+  and suggestions, configurable rollout token budgets, configurable app-server
+  multi-agent delegation, indexed web search, scheduled/current-time reminders,
+  better remote environment path/shell/sandbox preservation, plugin loading
+  fixes, parent-visible terminal subagent errors, and reduced startup/log churn.
+- v0.141.0 adds authenticated encrypted Noise relay channels for remote
+  executors, cross-platform remote execution path preservation, plugin-scoped
+  stdio MCP activation, child-thread/app-server credit APIs, input
+  auto-resolution, a bundled SQLite WAL-reset corruption fix, and large-session
+  latency/memory reductions.
+- v0.140.0 adds `/usage` activity views, permanent session deletion, `/import`
+  from Claude Code, default unified mentions, managed Bedrock auth, encrypted
+  local credential storage, SQLite state rebuild from rollouts, and the removal
+  of experimental TUI `/realtime` voice controls.
+- v0.139.0 improves code-mode web search, schema preservation, `codex doctor`,
+  plugin marketplace automation, resume/fork prompt parsing, MCP warning
+  scoping, image-edit path selection, and proxy-aware sandbox behavior.
+- v0.138.0 adds `/app` handoff to Codex Desktop, model-defined reasoning effort
+  ordering, account token usage APIs, v2 personal access tokens, richer plugin
+  JSON/detail surfaces, better goal behavior, config write diagnostics, and
+  more accurate workspace instruction loading.
+- v0.137.0 expands TUI controls, enterprise/admin cloud-managed config flows,
+  remote-control grant APIs, plugin list JSON/cache suggestions, hosted
+  web/image tool availability, and multi-agent v2 metadata/runtime handling.
+- v0.136.0 adds clickable OSC 8 markdown links, session archive/unarchive,
+  `codex app-server --stdio`, short-lived remote-control server tokens, alpha
+  elevated Windows sandbox setup, command-safety hardening, improved sandbox
+  cleanup/read-deny enforcement, and refreshed built-in OpenAI Docs skill
+  routing.
+
+Local decisions from this catch-up:
+
+- No generated `config.toml` change is needed for MCP tool search, indexed web
+  search, apps, plugins, or time reminders. Current config already keeps
+  `web_search = "live"`, enables apps globally while disabling destructive/open
+  world defaults, and keeps app tool approvals at `prompt`.
+- Keep `features.fast_mode = false`; no release in this range changes the
+  rationale that launch-time model/reasoning pins should not be swapped by
+  `/fast`.
+- Keep the Codex WAL checkpoint and storage-pressure timers. v0.142.0 reduced
+  persistent-log churn, but upstream release notes through v0.142.3 do not
+  claim a direct fix for `logs_2.sqlite-wal` growth, SQLite lock contention, or
+  idle WAL writes, and the tracked issues remain open.
+- Treat Code Mode, rollout token budgets, multi-agent delegation controls,
+  system-proxy auth, and custom API/Bedrock/admin surfaces as product features
+  until a local harness workflow needs explicit config.
+
+### 9.2. Temporary WAL Bloat Runbook (2026-05)
 
 This note is temporary. Revisit it after the local Codex CLI version moves past
 v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
@@ -218,12 +276,12 @@ workaround is no longer needed.
 
 The automated mitigation in this repo is a 30-minute checkpoint timer plus a
 10-minute pressure-relief timer; see
-[Automated Mitigation](#914-automated-mitigation-this-repo) below. The runbook
+[Automated Mitigation](#924-automated-mitigation-this-repo) below. The runbook
 below is the manual fallback for one-time recovery (e.g. when the timer has
 been disabled or when truncate has been blocked by `busy=1` and the WAL has
 grown beyond what the pressure-relief timer can reclaim in a single pass).
 
-#### 9.1.1. What we know so far
+#### 9.2.1. What we know so far
 
 - Codex CLI 0.128.0 appears affected by Codex logs WAL bloat.
 - Local observed symptom on 2026-05-07: root/home was 98% used,
@@ -259,8 +317,14 @@ grown beyond what the pressure-relief timer can reclaim in a single pass).
   best-effort truncates the WAL. On `busy=1` it returns without truncating
   (no data loss, just no shrink that round). The automated timer below
   relies on this property.
+- 2026-06-29 catch-up through local Codex CLI 0.142.3: v0.142.0 release notes
+  say persistent-log churn was reduced by removing per-event WebSocket payload
+  logging and filtering duplicated telemetry records, but they do not identify
+  this as a fix for `logs_2.sqlite-wal` growth, SQLite lock contention, or idle
+  WAL writes. Keep the timers and runbook until upstream explicitly closes the
+  failure mode and local observation supports removal.
 
-#### 9.1.2. Symptoms and diagnosis
+#### 9.2.2. Symptoms and diagnosis
 
 Use read-only checks first:
 
@@ -285,7 +349,7 @@ Interpretation:
 - Track Codex sessions separately; pruning sessions is not the fix for
   this WAL issue.
 
-#### 9.1.3. Countermeasures and safe mitigation
+#### 9.2.3. Countermeasures and safe mitigation
 
 Only run SQLite writes during a coordinated quiet period when all protected
 Codex roles have stopped or released the DB. If another agent is active, ask
@@ -379,7 +443,7 @@ Rollback/testing notes:
   DB boundary; it is a poor long-term pin because of feature and model metadata
   drift. `gpt-5.5` support was first checked as stable around 0.125.0.
 
-#### 9.1.4. Automated Mitigation (this repo)
+#### 9.2.4. Automated Mitigation (this repo)
 
 A periodic `PRAGMA wal_checkpoint(TRUNCATE)` is wired into the Nix-managed
 agent harness in `nix/home-manager/agents/codex/default.nix`. It treats the
@@ -463,7 +527,7 @@ addresses the issues tracked in the table below; the timer can stay as
 defense-in-depth even after the upstream fix lands, but its observed
 busy/checkpointed ratio is the signal for whether it remains needed.
 
-#### 9.1.5. Things not to do
+#### 9.2.5. Things not to do
 
 - Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand for
   routine cleanup. Use `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer
@@ -479,17 +543,18 @@ busy/checkpointed ratio is the signal for whether it remains needed.
 - Do not claim PRs are confirmed fixes unless upstream says so and local
   verification supports it.
 
-#### 9.1.6. Issue and PR tracking
+#### 9.2.6. Issue and PR tracking
 
-Last checked 2026-05-31 with `gh issue view`, `gh pr view`, and
-`gh api repos/openai/codex/releases`. Local version: `codex-cli 0.135.0`.
-The latest stable release checked was `rust-v0.135.0` (2026-05-28), and the
-latest prerelease checked was `rust-v0.136.0-alpha.1` (2026-05-29). The tracked
-issues below remain open, and release notes through v0.135.0 do not claim a
-direct fix for `logs_2.sqlite-wal` growth, SQLite WAL lock contention, or idle
-WAL writes. v0.135.0 moved memory runtime state into a dedicated SQLite
-database, but no release note identifies that as a replacement for this
-runbook or a fix for the logs WAL failure mode.
+Last checked 2026-06-29 with `gh issue view`, `gh pr view`, and
+`gh api repos/openai/codex/releases`. Local version: `codex-cli 0.142.3`.
+The local stable release checked was `rust-v0.142.3`; upstream also had a newer
+`rust-v0.142.4`, but this review intentionally stops at the installed version.
+The tracked issues below remain open, and release notes through v0.142.3 do not
+claim a direct fix for `logs_2.sqlite-wal` growth, SQLite WAL lock contention,
+or idle WAL writes. v0.142.0 reduced persistent-log churn, and v0.141.0 pinned
+bundled SQLite to a WAL-reset corruption fix, but no release note identifies
+either as a replacement for this runbook or a fix for the observed logs WAL
+failure mode.
 
 | Item                                                    | Status           | Watch for                                      |
 | ------------------------------------------------------- | ---------------- | ---------------------------------------------- |
@@ -507,7 +572,7 @@ When revisiting, check the local version with `codex --version`, scan release
 notes up to that version, and re-check the issue/PR statuses before changing
 this runbook.
 
-### 9.2. Applied Optimizations
+### 9.3. Applied Optimizations
 
 - [x] Runtime-root instruction file removed; persona and scope now flow through
   `config/tmux-a2a-postman/postman.md`; applicable skills flow through the
@@ -568,7 +633,7 @@ this runbook.
   Cross-platform: `systemd.user` timer on Linux,
   `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
   `isDarwin`. Symptom containment, not an upstream fix; see
-  [Automated Mitigation](#914-automated-mitigation-this-repo) for inspection
+  [Automated Mitigation](#924-automated-mitigation-this-repo) for inspection
   commands.
 - [x] Linux `codex-storage-pressure-relief.timer` added 2026-05-09 after a
   full-disk incident where `logs_2.sqlite-wal` reached about 37 GB and
@@ -578,7 +643,7 @@ this runbook.
   fully-checkpointed WAL to zero after logging holder PIDs. The managed policy
   is storage relief only: process lifecycle stays outside the timer.
 
-### 9.3. Pending Considerations
+### 9.4. Pending Considerations
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
@@ -618,7 +683,7 @@ this runbook.
   script should land as a runtime-agnostic shared script (no prefix)
   with a runtime-arg shim, not as a fresh `codex-stop-save.sh` fork.
 
-### 9.4. Not Adopting
+### 9.5. Not Adopting
 
 - `personality` setting - keep default ("friendly"); no benefit from changing
 - `log_dir` config - default log location is fine
@@ -645,7 +710,7 @@ this runbook.
 - `profile-v2` layered configs - generated Codex config remains the single
   managed base plus preserved project trust/hook state
 
-### 9.5. Version Notes
+### 9.6. Version Notes
 
 - v0.135.0 (2026-05-28): Reviewed release notes on 2026-05-31 after local
   `codex --version` reported `codex-cli 0.135.0`; upstream marked this as the
