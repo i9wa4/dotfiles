@@ -247,7 +247,9 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"
-- [x] `ENABLE_TOOL_SEARCH` env - set to "auto:3"
+- [x] `ENABLE_TOOL_SEARCH` env - removed. Claude Code's current default leaves
+  all MCP tools deferred and loaded on demand; `auto` / `auto:N` are
+  threshold-mode overrides for upfront loading.
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
 - [x] Fast mode - hard-disabled via `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`.
@@ -322,9 +324,9 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 
 #### 11.2.1. v2.1.95 → v2.1.121 candidates (added 2026-04-29)
 
-- [ ] `alwaysLoad: true` on hot MCP servers (v2.1.121) - bypass
-  `ENABLE_TOOL_SEARCH=auto:3` deferral for frequently-called servers; pick
-  based on per-session call frequency, not server count
+- [ ] `alwaysLoad: true` on hot MCP servers (v2.1.121) - bypass default
+  tool-search deferral for frequently-called servers; pick based on
+  per-session call frequency, not server count
 - [ ] ~~PostToolUse `hookSpecificOutput.updatedToolOutput`~~ N/A — observe.sh
   removed 2026-04-29.
 - [ ] ~~PreCompact hook can block compaction~~ N/A — precompact-save.sh
