@@ -2,27 +2,26 @@
 name: create-review-comment
 license: MIT
 description: |
-  USE FOR: `$create-review-comment`, ai-create-review-comment, or terse requests to review a PR and draft Japanese GitHub review comments. Infers the target PR when possible and starts the normal subagent-review-backed workflow without exposing guardian/critic mechanics. DO NOT USE FOR: unrelated tasks, broad rewrites, generated runtime outputs, or posting comments without explicit user approval.
+  USE FOR: `$create-review-comment`, ai-create-review-comment, or terse PR-review-comment requests. Infers the PR and routes postman substantive review through guardian/critic without exposing mechanics. DO NOT USE FOR: unrelated tasks, broad rewrites, generated outputs, or posting comments without explicit approval.
 ---
 
 # Create Review Comment
 
-**UTILITY SKILL:** Draft Japanese GitHub PR review comments for
-`$create-review-comment`, ai-create-review-comment, or terse review requests.
-Infer the PR and do not expose guardian or critic mechanics.
+**UTILITY SKILL:** Draft Japanese GitHub PR review comments. Infer the PR,
+route correctly, and keep guardian/critic mechanics internal.
 
-**USE FOR:** review-comment drafting, Japanese GitHub PR comment drafts,
-related edits, verification, and handoff.
+**USE FOR:** review-comment drafting, related edits, verification, and handoff.
 
 **DO NOT USE FOR:** unrelated domains, broad rewrites, generated runtime
-outputs, replacing repo source of truth, or posting comments without explicit
-user approval.
+outputs, replacing source of truth, or posting without explicit approval.
 
 ## 1. Boundary
 
-This thin user-facing trigger owns target inference, Japanese draft output, and
-the no-post-without-explicit-approval gate. Review procedure belongs to
+This user-facing trigger owns target inference, Japanese draft output, and the
+no-post-without-approval gate. Review procedure belongs to
 `subagent-review`; GitHub mechanics and path hygiene belong to `github`.
+In `tmux-a2a-postman`, orchestrator/worker only infer targets and collect PR
+context before routing substantive review to guardian.
 
 ## 2. Workflow
 
@@ -30,10 +29,10 @@ the no-post-without-explicit-approval gate. Review procedure belongs to
    missing or ambiguous, ask only for the minimum target identifier.
 2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
    behavior or giving detailed instructions.
-3. For substantive drafting, use `subagent-review` internally; do not embed or
-   redefine it. Do not
-   ask the user for guardian, critic, reviewer-pool, model, or provider
-   details.
+3. For substantive drafting, use `subagent-review` through postman: send the
+   review package to guardian, let guardian request critic, and never launch
+   reviewer subagents from orchestrator/worker. Do not ask the user for review
+   mechanics.
 4. Run the checks named in the preserved guidance or the nearest repo harness.
 5. Output draft comments visibly for user approval. Do not post them unless the
    user explicitly asks.

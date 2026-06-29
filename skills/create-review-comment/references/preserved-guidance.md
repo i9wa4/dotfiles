@@ -52,8 +52,17 @@ Apply these skills together when available:
    peer-review aggregation route described by the `subagent-review` skill
    unless a current review summary for the same target and diff is already
    available.
+   - In `tmux-a2a-postman` sessions, the route is not optional:
+     orchestrator or worker may infer the target and collect PR context, but
+     must send the substantive review package to guardian. Do not route the
+     whole `create-review-comment` workflow to worker when guardian and critic
+     panes exist, and do not launch reviewer subagents from orchestrator or
+     worker.
    - Guardian and critic may use only their runtime-native subagents for
      bounded review or investigation.
+   - Guardian sends the critic request, including `Required perspectives` when
+     narrowing is intentional. Critic returns review evidence to guardian;
+     guardian aggregates and returns the final source review to orchestrator.
    - For normal substantive reviews, guardian uses the five Codex-native
      perspectives from `subagent-review`, and critic launches the
      Claude-native perspectives specified in the guardian request. When
@@ -63,6 +72,8 @@ Apply these skills together when available:
    - Do not specify ad hoc subagent models or tiers; runtime defaults are
      configured in `nix/home-manager/agents/subagents/metadata.nix`.
    - Do not use a unified `cc` / `cx` dispatcher fan-out.
+   - Verify or fetch the PR head before starting reviewer subagents. A source
+     review based on a stale local worktree is not current for step 4.
    - Treat data and technical research reviewers as explicit additions for
      specialized questions, not replacements for the five default
      perspectives.
@@ -87,6 +98,8 @@ Apply these skills together when available:
      finding-pass review threads before starting that next wave. If live-agent
      budget is already tight, reduce only the validator wave or validate
      directly rather than letting spawn failures interrupt the workflow.
+   - In postman sessions, validator waves follow the same guardian-mediated
+     route unless guardian labels the follow-up trivial.
    Ask reviewers to approve or reject each draft for correctness, clarity,
    severity, duplication, and whether the comment is worth posting.
 7. Adjust the draft until all material objections are resolved. If full
