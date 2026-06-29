@@ -70,6 +70,7 @@ let
       # exit 126 storm we just debugged. Disable until we can declare an
       # explicit `allowedTools` set.
       CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0";
+      ENABLE_TOOL_SEARCH = "auto";
       IS_DEMO = "true";
     };
     hooks = {

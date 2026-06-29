@@ -14,9 +14,9 @@ This reference preserves older review notes that support current
   available)
 - `plansDirectory` - not needed
 - `mcpToolSearch` - setting does not exist; `ENABLE_TOOL_SEARCH` env is the
-  only override mechanism. Leave it unset so Claude Code uses the current
-  default: all MCP tools deferred and loaded on demand. Set `auto` or `auto:N`
-  only when threshold-mode upfront loading is explicitly wanted.
+  only override mechanism. Current config sets `ENABLE_TOOL_SEARCH=auto` so
+  Claude Code upfront-loads MCP tools while they fit the default threshold, then
+  defers/searches only when the tool surface grows beyond that threshold.
 - `background: true` in agent defs - UI-level background for Claude Code's own
   Agent tool; no benefit for tmux-a2a-postman (OS-level parallelism)
 - Managed settings (plist/Registry) - enterprise MDM feature; solo Ubuntu user

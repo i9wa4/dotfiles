@@ -247,9 +247,9 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"
-- [x] `ENABLE_TOOL_SEARCH` env - removed. Claude Code's current default leaves
-  all MCP tools deferred and loaded on demand; `auto` / `auto:N` are
-  threshold-mode overrides for upfront loading.
+- [x] `ENABLE_TOOL_SEARCH = "auto"` - threshold-mode MCP tool search. Current
+  tool count is small, so upfront loading is acceptable; Claude Code falls back
+  to tool search once the MCP tool surface exceeds the default threshold.
 - [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
 - [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
 - [x] Fast mode - hard-disabled via `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`.
