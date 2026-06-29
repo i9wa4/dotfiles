@@ -40,8 +40,8 @@ repo-specific guardrails.
    commands.
 3. For any command that can write cloud or warehouse state, verify the target,
    schema, and approval requirements before execution.
-4. Keep repo-local safety constraints in references and keep compatibility
-   trigger skills short.
+4. Keep repo-local safety constraints in focused references and keep the owner
+   skill as the primary trigger surface.
 5. Run the fastest focused check during iteration, then the nearest repo
    validation surface before reporting success.
 

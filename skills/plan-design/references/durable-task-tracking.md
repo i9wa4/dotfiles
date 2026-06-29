@@ -1,4 +1,4 @@
-# Task Artifact Method
+# Durable Task Tracking
 
 Durable task tracking is needed when work must survive chat compaction, node
 handoff, review loops, or original-checklist completion gates. The artifact is

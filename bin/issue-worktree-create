@@ -88,11 +88,18 @@ find_worktree_for_branch() {
 ensure_remote_tracking_branch() {
   local branch=$1
   local upstream="origin/${branch}"
+  local actual_upstream
 
   if git show-ref --verify --quiet "refs/heads/${branch}"; then
     git branch --set-upstream-to="${upstream}" "${branch}"
   else
     git branch --track "${branch}" "${upstream}"
+  fi
+
+  actual_upstream=$(branch_upstream "${branch}")
+  if [[ $actual_upstream != "$upstream" ]]; then
+    echo "Error: local issue branch upstream is '${actual_upstream}', expected '${upstream}'." >&2
+    return 1
   fi
 }
 
@@ -105,6 +112,45 @@ same_checkout_path() {
   left_physical=$(cd "$left" && pwd -P)
   right_physical=$(cd "$right" && pwd -P)
   [[ $left_physical == "$right_physical" ]]
+}
+
+branch_upstream() {
+  local branch=$1
+
+  git for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true
+}
+
+same_name_remote_exists() {
+  local branch=$1
+
+  git show-ref --verify --quiet "refs/remotes/origin/${branch}"
+}
+
+ensure_issue_branch_upstream_invariant() {
+  local branch=$1
+  local upstream
+  local expected_upstream="origin/${branch}"
+
+  upstream=$(branch_upstream "${branch}")
+
+  if [[ -z $upstream ]]; then
+    echo "* Branch upstream: none"
+    return 0
+  fi
+
+  if [[ $upstream == "$expected_upstream" ]] && same_name_remote_exists "${branch}"; then
+    echo "* Branch upstream: ${upstream}"
+    return 0
+  fi
+
+  if [[ $upstream == "$expected_upstream" ]]; then
+    echo "* Clearing stale same-name upstream without remote: ${upstream}"
+  else
+    echo "* Clearing unsafe issue branch upstream: ${upstream}"
+  fi
+
+  git branch --unset-upstream "${branch}"
+  echo "* Branch upstream: none"
 }
 
 run_repo_setup_for_worktree() {
@@ -295,6 +341,13 @@ ${issue_comments}
     esac
 
     worktree_path=$desired_worktree_path
+  fi
+
+  if ! ensure_issue_branch_upstream_invariant "${branch_name}"; then
+    echo "Error: Could not verify issue branch upstream safety for '${branch_name}'. Skipping." >&2
+    echo ""
+    had_failure="true"
+    continue
   fi
 
   if [[ -n $existing_worktree_path ]]; then

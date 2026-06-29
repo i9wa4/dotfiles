@@ -52,18 +52,23 @@ For the adoption decision behind the current tool stack, see
 6. Otherwise it tries to generate a short kebab-case slug with `claude`.
    If Claude is unavailable or returns nothing usable, it falls back to
    `issue-<number>`.
-7. Existing remote issue branches are configured as upstream. New local issue
-   branches are created from the currently checked-out branch in the invoking
-   checkout. Git resolves that invoking checkout from the current working
-   directory, so running the command from a subdirectory still uses that
-   checkout's root and current branch. Running it from inside an existing
-   linked worktree uses that linked worktree's root and current branch, and any
-   new issue worktree is created under that linked worktree's own
-   `.worktrees/` directory. Run the command from the checkout whose branch and
-   managed worktree root you intend to use. New local issue branches
-   intentionally start without an upstream because Git defaults do not
-   auto-create one. First publication should use an explicit same-name
-   destination refspec:
+7. Existing same-name remote issue branches are configured as upstream. New
+   local issue branches are created from the currently checked-out branch in the
+   invoking checkout. Git resolves that invoking checkout from the current
+   working directory, so running the command from a subdirectory still uses that
+   checkout's root and current branch. Running it from inside an existing linked
+   worktree uses that linked worktree's root and current branch, and any new
+   issue worktree is created under that linked worktree's own `.worktrees/`
+   directory. Run the command from the checkout whose branch and managed
+   worktree root you intend to use. The wrapper enforces the issue branch
+   upstream invariant after branch preparation: a branch may track
+   `origin/<same-branch-name>` only when that remote branch exists; otherwise it
+   starts without an upstream. If local Git configuration or a stale branch
+   setting makes a new or reused local issue branch track `origin/main`,
+   `origin/dev`, or another non-matching upstream, the wrapper clears that
+   upstream before reporting the worktree ready. First publication through
+   lazygit is the expected happy path when lazygit publishes to `origin` with
+   the same branch name. The equivalent command-line shape is:
    `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
@@ -95,9 +100,21 @@ For the adoption decision behind the current tool stack, see
    exists.
 
 Before asking a human to publish an issue branch, verify that the current
-branch is the intended feature branch, that any existing upstream is
-`origin/<same-branch-name>`, and that the remote destination is neither
-`refs/heads/main` nor `refs/heads/dev`.
+branch is the intended feature branch, that any existing upstream is either
+absent or `origin/<same-branch-name>`, and that the remote destination is
+neither `refs/heads/main` nor `refs/heads/dev`.
+
+```sh
+git branch --show-current
+git status --short --branch
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
+```
+
+For a brand-new local issue branch, the upstream command should fail with "no
+upstream configured" until first publication. In lazygit, check the branch panel
+or status header before publishing: the branch should show no upstream, or it
+should show `origin/<same-branch-name>` for an already existing remote issue
+branch.
 
 Local Git config is only a safety default, not a remote trust boundary. Protect
 shared remote branches such as `main` and `dev` with GitHub rulesets or branch
