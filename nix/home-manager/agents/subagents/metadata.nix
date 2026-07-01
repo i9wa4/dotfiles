@@ -5,7 +5,7 @@
 {
   researcher-tech = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -16,7 +16,7 @@
 
   reviewer-architecture = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -27,7 +27,7 @@
 
   reviewer-code = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -38,7 +38,7 @@
 
   reviewer-data = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -49,7 +49,7 @@
 
   reviewer-historian = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -60,7 +60,7 @@
 
   reviewer-qa = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
@@ -71,7 +71,7 @@
 
   reviewer-security = {
     claude = {
-      model = "sonnet";
+      model = null;
       effort = "high";
     };
     codex = {
