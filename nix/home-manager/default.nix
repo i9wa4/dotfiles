@@ -100,8 +100,6 @@ in
       pkgs.jq
       pkgs.neovim
       pkgs.nixd
-      pkgs.podman
-      pkgs.podman-compose
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
@@ -125,9 +123,9 @@ in
       llmAgents.codex
     ]
     ++ lib.optionals (!pkgs.stdenv.isDarwin) [
-      # On macOS, Homebrew installs the prebuilt bottle to avoid rebuilding the
-      # Rust package locally when nixpkgs does not have a substitute.
       pkgs.mise
+      pkgs.podman
+      pkgs.podman-compose
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
       pkgs.macmon

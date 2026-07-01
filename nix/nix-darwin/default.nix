@@ -17,6 +17,8 @@ let
   homebrewBrews = [
     "asmvik/formulae/skhd"
     "mise"
+    "podman"
+    "podman-compose"
   ];
 in
 {
