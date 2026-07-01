@@ -6,45 +6,44 @@ description: "USE FOR: Guardian/critic reviews using guardian-specified native r
 
 # Subagent Review
 
-Use runtime-native reviewer perspectives for guardian/critic review. Do not
-implement, approve, dispatch fan-out, or override models/tiers.
+Runtime-native reviewer perspectives. No implementation, approval, fan-out,
+or model/tier overrides.
 
 Defaults: security, architecture, historian, code, QA.
 
 ## 1. Workflow
 
 1. Run the cheapest relevant verifier first.
-2. For substantive reviews, both roles use subagents before synthesis.
-   Guardian uses all five Codex perspectives. Critic launches the
-   guardian-specified set; omitted `Required perspectives` means all five.
-   Guardian narrows the set; critic never self-selects.
-3. Direct review is only for guardian-labeled trivial follow-ups.
-4. Run each wave in parallel; close it before second-wave validators.
-5. Add data or research reviewers only for specialized questions.
-6. Give each subagent bounded read-only paths, context, and output shape.
-7. Suppress unverified findings, deduplicate, and produce the role output:
-   critic evidence packet or guardian final verdict.
+2. Each role: five subagent perspectives + one self-review (six inputs).
+   Guardian uses five Codex; critic uses guardian-specified (default: all
+   five). Guardian narrows; critic never self-selects.
+3. Self-review accompanies the wave, never replaces it. Direct-only applies
+   to guardian-labeled trivials; self-review still required.
+4. Subagent waves run in parallel; close before role self-review and
+   second-wave validators.
+5. Add data/research reviewers only for specialized questions; give each
+   subagent bounded read-only paths, context, and output shape.
+6. Deduplicate across six inputs per role; produce critic packet (six) or
+   guardian verdict (twelve: six guardian + six critic).
 
 ## 2. Role Rules
 
-- Guardian uses Codex reviewers and aggregates the final verdict.
-- Critic launches guardian-specified perspectives in parallel for substantive
-  reviews. Omitted `Required perspectives` means all five. Guardian, not
-  critic, decides narrower sets.
-- A guardian-to-critic postman request authorizes the specified launches. If
-  runtime policy blocks launch, return `BLOCKED:
-  perspective launch not permitted`; no implicit direct-review fallback.
-- Trivial follow-ups may use direct review only when guardian labels them
-  trivial: docs-only, single-line behavior-free, or no test changes. Critic
-  states the criterion.
-- Critic sends the review result to guardian for aggregation, not orchestrator.
+- Guardian: five Codex subagents + one self-review (six); aggregates all six
+  into the intermediary result. MUST request critic for substantive reviews.
+- Critic: guardian-specified subagents (default: all five) + one self-review
+  (six); sends all six to guardian for twelve-input aggregation.
+- Guardian aggregates twelve (six + six) into the final verdict.
+- Postman request to critic authorizes launches. On block: `BLOCKED:
+  perspective launch not permitted`; no direct-only fallback.
+- Trivials may omit subagents when guardian so labels. Self-review still
+  required. Critic states the criterion.
+- Critic sends result to guardian, not orchestrator.
 - Reviewer subagents must not edit, commit, push, or approve.
-- If fewer required perspectives complete, return `BLOCKED: fewer than
-  required perspectives completed` unless guardian pre-authorized degradation.
-  Substantive critic replies include `Required perspectives: [list]` and
-  `Perspectives launched: [list]`.
+- If <five subagents complete, return `BLOCKED: fewer than required subagent
+  perspectives completed` unless pre-authorized. Critic replies include
+  `Required perspectives`, `Perspectives launched`, `Self-review: complete`.
 
 ## 3. Output
 
-Preserve perspective, paths, evidence, severity, confidence, and gaps. Final
-verdicts use guardian aggregation.
+Perspective, paths, evidence, severity, confidence, gaps. Guardian aggregates
+final verdicts.

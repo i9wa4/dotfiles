@@ -48,40 +48,17 @@ Apply these skills together when available:
      PR number, branch, or URL. Do not ask the user to choose review mechanics.
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
-3. Run or cite a substantive review through the normal guardian-mediated
-   peer-review aggregation route described by the `subagent-review` skill
-   unless a current review summary for the same target and diff is already
-   available.
+3. For substantive drafting, route the review package through postman to
+   guardian. Guardian and critic review mechanics — subagent counts, self-review
+   steps, aggregation, and mandatory critic participation — are fully defined
+   in `subagent-review`. Do not duplicate or override those rules here.
+   Never launch reviewer subagents from orchestrator or worker.
    - In `tmux-a2a-postman` sessions, the route is not optional:
      orchestrator or worker may infer the target and collect PR context, but
      must send the substantive review package to guardian. Do not route the
      whole `create-review-comment` workflow to worker when guardian and critic
      panes exist, and do not launch reviewer subagents from orchestrator or
      worker.
-   - Guardian and critic may use only their runtime-native subagents for
-     bounded review or investigation.
-   - Guardian sends the critic request, including `Required perspectives` when
-     narrowing is intentional. Critic returns review evidence to guardian;
-     guardian aggregates and returns the final source review to orchestrator.
-   - For normal substantive reviews, guardian uses the five Codex-native
-     perspectives from `subagent-review`, and critic launches the
-     Claude-native perspectives specified in the guardian request. When
-     `Required perspectives` is omitted from the guardian request, critic
-     defaults to all five: security, architecture, historian, code, and QA.
-     Guardian, not critic, decides when a narrower set applies.
-   - Do not specify ad hoc subagent models or tiers; runtime defaults are
-     configured in `nix/home-manager/agents/subagents/metadata.nix`.
-   - Do not use a unified `cc` / `cx` dispatcher fan-out.
-   - Verify or fetch the PR head before starting reviewer subagents. A source
-     review based on a stale local worktree is not current for step 4.
-   - Treat data and technical research reviewers as explicit additions for
-     specialized questions, not replacements for the five default
-     perspectives.
-   - Guardian and critic are peer review roles; critic returns independent
-     review evidence, guardian aggregates the result, and subagents must not
-     implement or approve work.
-   - Keep provider/model details out of user-facing output and public GitHub
-     surfaces.
 4. Select only IMPORTANT findings from the review artifact, guardian final
    summary, or normal review artifact produced by step 3.
    - The selection step MUST cite this summary file path in the final
