@@ -9,7 +9,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -20,7 +20,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -31,7 +31,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -42,7 +42,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -53,7 +53,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -64,7 +64,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
@@ -75,7 +75,7 @@
       effort = "high";
     };
     codex = {
-      model = null;
+      model = "gpt-5.4";
       modelReasoningEffort = "high";
     };
   };
