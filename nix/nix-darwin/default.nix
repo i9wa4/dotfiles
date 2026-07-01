@@ -190,7 +190,7 @@ in
       # ------------------------------------------------------------------------
       dock = {
         # Position of the dock on screen. Nix default is null; macOS default is "bottom".
-        orientation = "left";
+        orientation = "bottom";
         # Automatically hide and show the dock. Nix default is null; macOS default is false.
         autohide = true;
         # Show recent applications in the dock. Nix default is null; macOS default is true.
