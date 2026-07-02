@@ -56,6 +56,9 @@ target_groups:
     BigQuery, Databricks, dbt, cloud auth, and data-platform safety guidance.
   diagramming: >
     draw.io and Mermaid authoring, export, and preview workflows.
+  technical-research: >
+    Verifying technical claims, comparing options, and evidence-based
+    investigation of unfamiliar libraries, APIs, and tools.
 
 consolidation_proposal:
   issue: 262
@@ -611,3 +614,20 @@ skills:
     standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+
+  - name: technical-research
+    path: skills/technical-research
+    publish: true
+    scope: technical-investigation
+    action: keep
+    target_group: technical-research
+    target_name: technical-research
+    release_state: release_ready
+    owner_surface: skill
+    standalone_decision: keep_standalone
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+    notes: >
+      Extracted from the researcher-tech native reviewer subagent when that
+      subagent was removed, preserving its investigation methodology as a
+      standalone skill.
