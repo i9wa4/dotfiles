@@ -132,22 +132,6 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1782385885,
-        "narHash": "sha256-15GxPa2RxnfzjvfqSgrgkOPyryd87GjAF0ao3Cg9L7I=",
-        "owner": "databricks-solutions",
-        "repo": "ai-dev-kit",
-        "rev": "c4947868f06fbfbb8cb666cbfba15888127b8a3a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "databricks-solutions",
-        "repo": "ai-dev-kit",
-        "type": "github"
-      }
-    },
-    "databricks-official-skills": {
-      "flake": false,
-      "locked": {
         "lastModified": 1782879506,
         "narHash": "sha256-XyIR4+VvrF93PWf3cFrzOpU4HWugOq3ee1Nr/wsbCgM=",
         "owner": "databricks",
@@ -765,7 +749,6 @@
         "aws-agent-toolkit": "aws-agent-toolkit",
         "context7": "context7",
         "databricks-agent-skills": "databricks-agent-skills",
-        "databricks-official-skills": "databricks-official-skills",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",
         "gh-prism": "gh-prism",

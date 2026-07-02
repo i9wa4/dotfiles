@@ -165,24 +165,11 @@ let
       path = inputs.streamlit-skills;
       subdir = "developing-with-streamlit";
     };
-    # Databricks official agent skills (ai-dev-kit)
-    # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/databricks-skills
-    databricks = {
-      path = inputs.databricks-agent-skills;
-      subdir = "databricks-skills";
-    };
-    # cf. https://github.com/databricks-solutions/ai-dev-kit/tree/main/.claude/skills
-    databricks-claude = {
-      path = inputs.databricks-agent-skills;
-      subdir = ".claude/skills";
-      filter.nameRegex = "python-dev"; # exclude databricks-python-sdk (duplicate)
-    };
-    # Databricks official agent skills (databricks org)
+    # Databricks official agent skills
     # cf. https://github.com/databricks/databricks-agent-skills
     databricks-official = {
-      path = inputs.databricks-official-skills;
+      path = inputs.databricks-agent-skills;
       subdir = "skills";
-      filter.nameRegex = "databricks(-apps|-pipelines)?"; # exclude databricks-jobs (duplicate)
     };
     # kepano/obsidian-skills: Obsidian-related skills (defuddle,
     # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
@@ -270,15 +257,7 @@ in
       sources = baseSources // cfg.extraSources // installManifest.skills.sources;
 
       # Enable all skills from all sources
-      skills = {
-        enableAll = true;
-        # Explicit skill definitions (for rename or custom config)
-        explicit.databricks-jobs-bundles = {
-          from = "databricks-official";
-          path = "databricks-jobs";
-          rename = "databricks-jobs-bundles"; # avoid duplicate with ai-dev-kit
-        };
-      };
+      skills.enableAll = true;
 
       # Target destinations (symlink-tree uses activation rsync)
       targets = {
