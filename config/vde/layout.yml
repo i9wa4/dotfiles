@@ -139,5 +139,5 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              command: codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
