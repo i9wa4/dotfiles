@@ -5,7 +5,7 @@
 {
   researcher-tech = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
@@ -16,29 +16,29 @@
 
   reviewer-architecture = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
       model = "gpt-5.4";
-      modelReasoningEffort = "high";
+      modelReasoningEffort = "medium";
     };
   };
 
   reviewer-code = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
       model = "gpt-5.4";
-      modelReasoningEffort = "high";
+      modelReasoningEffort = "medium";
     };
   };
 
   reviewer-data = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
@@ -49,34 +49,34 @@
 
   reviewer-historian = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
       model = "gpt-5.4";
-      modelReasoningEffort = "high";
+      modelReasoningEffort = "medium";
     };
   };
 
   reviewer-qa = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
       model = "gpt-5.4";
-      modelReasoningEffort = "high";
+      modelReasoningEffort = "medium";
     };
   };
 
   reviewer-security = {
     claude = {
-      model = null;
+      model = "sonnet";
       effort = "high";
     };
     codex = {
       model = "gpt-5.4";
-      modelReasoningEffort = "high";
+      modelReasoningEffort = "medium";
     };
   };
 }
