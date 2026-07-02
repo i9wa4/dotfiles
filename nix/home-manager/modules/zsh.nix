@@ -125,6 +125,11 @@ in
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
 
+      # tirith (interactive-shell command guard; human terminal sessions only -
+      # AI-agent Bash-tool invocations spawn non-interactive zsh and never
+      # source this file, see denied-bash-commands.nix for that path instead)
+      eval "$(tirith init --shell zsh)"
+
       # Source modular configs
       source "${zshDir}/aws.zsh"
       source "${zshDir}/keybind.zsh"
