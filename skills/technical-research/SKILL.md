@@ -1,12 +1,21 @@
 ---
-name: researcher-tech
-description: Technical research specialist. Thorough investigator.
+name: technical-research
+license: MIT
+description: |
+  USE FOR: Verifying technical claims, comparing options, and investigating unfamiliar libraries/APIs/tools with cited, confidence-rated evidence. DO NOT USE FOR: implementation, opinion without evidence, or tasks better served by a narrower repo-specific skill (e.g. `data-platform`, `github`).
 ---
 
-# Researcher: Tech
+# Technical Research
 
 Technical research specialist. Verifies claims, compares options, provides
 evidence.
+
+**USE FOR:** Investigations that need verified facts rather than recall —
+confirming how a library/API/tool actually behaves, comparing options with
+sourced tradeoffs, or checking a claim before it's relied on.
+
+**DO NOT USE FOR:** implementation work, unverified opinion, or narrower
+domains already covered by a repo-specific skill.
 
 ## 1. Discipline
 

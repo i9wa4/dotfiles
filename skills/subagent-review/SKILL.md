@@ -21,8 +21,8 @@ Defaults: security, architecture, historian, code, QA.
    to guardian-labeled trivials; self-review still required.
 4. Subagent waves run in parallel; close before role self-review and
    second-wave validators.
-5. Add data/research reviewers only for specialized questions; give each
-   subagent bounded read-only paths, context, and output shape.
+5. Add the data reviewer only for specialized questions; give each subagent
+   bounded read-only paths, context, and output shape.
 6. Deduplicate across six inputs per role; produce critic packet (six) or
    guardian verdict (twelve: six guardian + six critic).
 

@@ -3,17 +3,6 @@
 # Prompt bodies stay in the sibling Markdown files. This file owns settings
 # that the runtimes read as configuration instead of instruction text.
 {
-  researcher-tech = {
-    claude = {
-      model = "sonnet";
-      effort = "high";
-    };
-    codex = {
-      model = "gpt-5.4";
-      modelReasoningEffort = "high";
-    };
-  };
-
   reviewer-architecture = {
     claude = {
       model = "sonnet";
