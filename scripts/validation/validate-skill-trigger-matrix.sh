@@ -43,7 +43,7 @@ if ! jq empty "$matrix" >/dev/null; then
   exit 1
 fi
 
-required_groups='agent-harness-engineering agent-skills-management github create-review-comment subagent-review plan-design data-platform diagramming programming technical-writing'
+required_groups='agent-harness-engineering agent-skills-management github create-review-comment subagent-review plan-design data-platform diagramming programming technical-writing technical-research'
 
 if ! jq -e '
   .schema_version == 1

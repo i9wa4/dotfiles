@@ -550,9 +550,39 @@
           "notes": "Japanese prose review maps to technical-writing frontmatter and references."
         }
       ]
+    },
+    {
+      "target_group": "technical-research",
+      "target_skill": "technical-research",
+      "target_path": "skills/technical-research/SKILL.md",
+      "legacy_skills": [],
+      "trigger_cases": [
+        {
+          "id": "technical-research-target",
+          "kind": "target",
+          "prompt": "Verify a technical claim, compare library/tool options, or investigate an unfamiliar API with cited, confidence-rated evidence.",
+          "expected_skill": "technical-research",
+          "result": "pass",
+          "observed_skill": "technical-research",
+          "checked_at": "2026-07-03",
+          "validation_method": "manual_catalog_review",
+          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+        },
+        {
+          "id": "researcher-tech-removed-alias",
+          "kind": "removed_alias",
+          "prompt": "Use the former researcher-tech native reviewer subagent for technical research or claim verification.",
+          "expected_skill": "technical-research",
+          "result": "pass",
+          "observed_skill": "technical-research",
+          "checked_at": "2026-07-03",
+          "validation_method": "manual_catalog_review",
+          "notes": "The researcher-tech subagent was removed; its investigation methodology and trigger intent are covered by the technical-research skill frontmatter and body."
+        }
+      ]
     }
   ],
-  "validated_at": "2026-06-29",
+  "validated_at": "2026-07-03",
   "validation_method": "manual_catalog_review",
-  "validation_summary": "31 trigger cases reviewed against the 10 owner skill frontmatter descriptions, owner references, classification target mappings, and removed-alias cleanup state."
+  "validation_summary": "33 trigger cases reviewed against the 11 owner skill frontmatter descriptions, owner references, classification target mappings, and removed-alias cleanup state."
 }

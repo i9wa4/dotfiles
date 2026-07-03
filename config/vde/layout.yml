@@ -52,7 +52,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model haiku --effort high
           delay: 500
 
   messenger-codex:
@@ -124,7 +124,7 @@ presets:
               delay: 500
             - name: worker
               title: worker
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model haiku --effort high
               delay: 500
             - name: worker-alt
               title: worker-alt

@@ -103,6 +103,7 @@ in
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
+      pkgs.tirith
       pkgs.tmux
       pkgs.uv
       pkgs.vale
