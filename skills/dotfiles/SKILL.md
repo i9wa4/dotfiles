@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: This dotfiles environment and its agent harness: machine setup (Ubuntu, WSL2, macOS, home-manager, nix-darwin), daily Nix operations and upgrade/recovery, missing CLI tools / command not found, operating concepts, storage hygiene, clipboard (Vim, Neovim, tmux), Claude Code and Codex CLI config, hooks, MCP, skill installation, postman routing, orchestrator runbooks, tmux workspaces, issue/PR worktrees, pane operations, prompt/review contracts, resume handoff; Agent Skills authoring: add/edit/validate skills, Waza, release readiness, publishing. DO NOT USE FOR: Nix package authoring (programming).
+  USE FOR: This dotfiles environment and its agent harness: machine setup (Ubuntu, WSL2, macOS, home-manager, nix-darwin), daily Nix operations and upgrade/recovery, missing CLI tools / command not found, operating concepts, clipboard (Vim, Neovim, tmux), Claude Code and Codex CLI config, hooks, MCP, skill installation, postman routing, orchestrator runbooks, tmux workspaces, issue/PR worktrees, pane operations, prompt/review contracts, resume handoff; Agent Skills authoring: add/edit/validate skills, Waza, release readiness, publishing. DO NOT USE FOR: Nix package authoring (programming).
 ---
 
 # Dotfiles Environment
@@ -28,8 +28,6 @@ Environment:
 - [Missing Tools](references/missing-tools.md) — command not found
   workflow
 - [Operating Concepts](references/operating-concepts.md) — repo map
-- [Storage Hygiene](references/storage-hygiene.md) — reports, retention,
-  cleanup
 - [Clipboard](references/clipboard-strategy.md) — Vim/Neovim/tmux/host
 
 Agent harness (hubs link their siblings):

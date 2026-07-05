@@ -29,8 +29,8 @@ policy:
 
 target_groups:
   dotfiles: >
-    This dotfiles environment: machine setup, Nix operations, storage
-    hygiene, clipboard strategy, plus agent runtime, hooks, postman routing,
+    This dotfiles environment: machine setup, Nix operations, clipboard
+    strategy, plus agent runtime, hooks, postman routing,
     workspace, prompt contracts, and installed-agent engineering (absorbed
     from agent-harness-engineering).
   collaboration: >

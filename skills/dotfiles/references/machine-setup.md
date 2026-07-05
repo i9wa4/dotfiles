@@ -205,6 +205,14 @@ is useful for regular SSH connections:
 sudo chsh -s $(which zsh) $(id -un)
 ```
 
+### 3.6. Swap Setup (optional)
+
+If the host has little or no swap, review and apply the managed helper:
+
+```sh
+sudo bash ./scripts/ubuntu/setup-swap.sh
+```
+
 ## 4. macOS
 
 ### 4.1. Backup Shell Configs

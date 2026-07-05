@@ -34,7 +34,6 @@ macOS recovery: [Nix Operations](skills/dotfiles/references/nix-operations.md).
 | Machine setup and bootstrap                       | [skills/dotfiles/references/machine-setup.md](skills/dotfiles/references/machine-setup.md)           |
 | Daily Nix operations and upgrade                  | [skills/dotfiles/references/nix-operations.md](skills/dotfiles/references/nix-operations.md)         |
 | Repository operating concepts                     | [skills/dotfiles/references/operating-concepts.md](skills/dotfiles/references/operating-concepts.md) |
-| Storage hygiene and cleanup                       | [skills/dotfiles/references/storage-hygiene.md](skills/dotfiles/references/storage-hygiene.md)       |
 | Clipboard strategy (Vim/Neovim/tmux/host)         | [skills/dotfiles/references/clipboard-strategy.md](skills/dotfiles/references/clipboard-strategy.md) |
 | Agent harness (Claude/Codex config, hooks, panes) | [skills/dotfiles/](skills/dotfiles/SKILL.md)                                                         |
 | Agent Skills authoring and release                | [skills/dotfiles/references/skills-management.md](skills/dotfiles/references/skills-management.md)   |

@@ -26,13 +26,13 @@
         {
           "id": "dotfiles-environment-target",
           "kind": "target",
-          "prompt": "Set up a new machine, run nix run .#switch, clean up home-directory storage, or fix clipboard behavior across Vim, Neovim, and tmux.",
+          "prompt": "Set up a new machine, run nix run .#switch, resolve a missing command, or fix clipboard behavior across Vim, Neovim, and tmux.",
           "expected_skill": "dotfiles",
           "result": "pass",
           "observed_skill": "dotfiles",
           "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
-          "notes": "Environment-level scope absorbed from README and docs/ (machine setup, Nix operations, storage hygiene, clipboard strategy)."
+          "notes": "Environment-level scope absorbed from README and docs/ (machine setup, Nix operations, missing tools, clipboard strategy)."
         },
         {
           "id": "agent-skills-management-target",

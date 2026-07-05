@@ -261,318 +261,23 @@ Local decisions from this catch-up:
 - Keep `features.fast_mode = false`; no release in this range changes the
   rationale that launch-time model/reasoning pins should not be swapped by
   `/fast`.
-- Keep the Codex WAL checkpoint and storage-pressure timers. v0.142.0 reduced
-  persistent-log churn, but upstream release notes through v0.142.3 do not
-  claim a direct fix for `logs_2.sqlite-wal` growth, SQLite lock contention, or
-  idle WAL writes, and the tracked issues remain open.
+- The Codex WAL checkpoint and storage-pressure timers were removed on
+  2026-07-05 after the v0.142.0 log-write fixes (see section 9.2).
 - Treat Code Mode, rollout token budgets, multi-agent delegation controls,
   system-proxy auth, and custom API/Bedrock/admin surfaces as product features
   until a local harness workflow needs explicit config.
 
-### 9.2. Temporary WAL Bloat Runbook (2026-05)
+### 9.2. WAL Bloat (resolved upstream)
 
-This note is temporary. Revisit it after the local Codex CLI version moves past
-v0.128.0 and upstream confirms a fix for `logs_2.sqlite-wal` growth, lock
-contention, or TUI TRACE log churn. Remove or rewrite this section once the
-workaround is no longer needed.
-
-The automated mitigation in this repo is a 30-minute checkpoint timer plus a
-10-minute pressure-relief timer; see
-[Automated Mitigation](#924-automated-mitigation-this-repo) below. The runbook
-below is the manual fallback for one-time recovery (e.g. when the timer has
-been disabled or when truncate has been blocked by `busy=1` and the WAL has
-grown beyond what the pressure-relief timer can reclaim in a single pass).
-
-#### 9.2.1. What we know so far
-
-- Codex CLI 0.128.0 appears affected by Codex logs WAL bloat.
-- Local observed symptom on 2026-05-07: root/home was 98% used,
-  Codex home was 38G, `logs_2.sqlite-wal` was 32G, and `sessions` was 5.9G.
-  Manual `PRAGMA wal_checkpoint(TRUNCATE)` against an idle Codex returned
-  `busy=0 log_pages=0 checkpointed=0` and reclaimed the full 32G in 4.3s
-  (no rows needed to fold; the WAL had simply never been truncated).
-- No general maintainer-endorsed cleanup command or environment flag has been
-  found yet.
-- A user-reported workaround in
-  [openai/codex#20213](https://github.com/openai/codex/issues/20213) is:
-  stop Codex, back up `logs_2.sqlite*`, run `DELETE FROM logs`,
-  `PRAGMA wal_checkpoint(TRUNCATE)`, and `VACUUM` against the Codex logs
-  database.
-- A live cleanup attempt while Codex panes were still running failed:
-  `DELETE FROM logs` raised `OperationalError: database is locked`, and
-  `PRAGMA wal_checkpoint(TRUNCATE)` returned busy `(1, -1, -1)`.
-- 2026-05-09 full-disk incident: `/` reported size `98G`, used `93G`,
-  available `0`, use `100%`. Codex logs WAL was about `35G` while the main
-  logs database was `108M`. The `sqlite3` CLI was unavailable, so Python's
-  `sqlite3` module ran `PRAGMA wal_checkpoint(TRUNCATE)` and returned
-  `[(1, 603, 603)]`.
-  Interpretation: `busy=1`, but `log_pages == checkpointed == 603`, so the WAL
-  frames had been checkpointed into the main DB and active Codex readers were
-  preventing the final SQLite-managed truncate. Process evidence from
-  `fuser -v "$CODEX_HOME"/logs_2.sqlite*` showed many live `.codex-wrapped`
-  processes holding the DB/WAL open. The emergency action was
-  `truncate -s 0 "$CODEX_HOME"/logs_2.sqlite-wal` after the full checkpoint
-  proof; that restored `/` to size `98G`, used `58G`, available `35G`, use
-  `63%`.
-- A pure `PRAGMA wal_checkpoint(TRUNCATE)` (without `DELETE`/`VACUUM`) is
-  safe to run while Codex is active: it folds writes into the main DB and
-  best-effort truncates the WAL. On `busy=1` it returns without truncating
-  (no data loss, just no shrink that round). The automated timer below
-  relies on this property.
-- 2026-06-29 catch-up through local Codex CLI 0.142.3: v0.142.0 release notes
-  say persistent-log churn was reduced by removing per-event WebSocket payload
-  logging and filtering duplicated telemetry records, but they do not identify
-  this as a fix for `logs_2.sqlite-wal` growth, SQLite lock contention, or idle
-  WAL writes. Keep the timers and runbook until upstream explicitly closes the
-  failure mode and local observation supports removal.
-
-#### 9.2.2. Symptoms and diagnosis
-
-Use read-only checks first:
-
-```sh
-codex --version
-df -hT ~
-CODEX_HOME=${CODEX_HOME:-$HOME/.codex}
-du -sh "$CODEX_HOME" "$CODEX_HOME"/logs_2.sqlite* "$CODEX_HOME"/sessions 2>/dev/null
-ls -lh "$CODEX_HOME"/logs_2.sqlite*
-lsof "$CODEX_HOME"/logs_2.sqlite* 2>/dev/null
-fuser -v "$CODEX_HOME"/logs_2.sqlite* 2>/dev/null
-lslocks 2>/dev/null | rg 'logs_2\.sqlite|COMMAND|PID' || true
-```
-
-Interpretation:
-
-- A huge `logs_2.sqlite-wal` with a small `logs_2.sqlite` points to WAL growth,
-  not session JSONL retention.
-- Any live Codex process with the DB files open can make cleanup unsafe or
-  ineffective. Write locks on `logs_2.sqlite-shm` are a hard stop for SQLite
-  write cleanup.
-- Track Codex sessions separately; pruning sessions is not the fix for
-  this WAL issue.
-
-#### 9.2.3. Countermeasures and safe mitigation
-
-Only run SQLite writes during a coordinated quiet period when all protected
-Codex roles have stopped or released the DB. If another agent is active, ask
-for coordination instead of racing the database.
-
-Preconditions:
-
-- Preserve any current conversation/session needed for recovery.
-- Confirm no live Codex process holds `$CODEX_HOME/logs_2.sqlite*`.
-- Back up `logs_2.sqlite`, `logs_2.sqlite-wal`, and `logs_2.sqlite-shm`
-  together if space allows. If space does not allow a full triplet backup,
-  record that tradeoff and do not present a partial copy as restorable.
-- Use SQLite-native operations only.
-
-Cleanup shape, after the preconditions are met:
-
-```sh
-CODEX_HOME=${CODEX_HOME:-$HOME/.codex}
-sqlite3 "$CODEX_HOME"/logs_2.sqlite <<'SQL'
-PRAGMA busy_timeout=10000;
-SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'logs';
-DELETE FROM logs;
-PRAGMA wal_checkpoint(TRUNCATE);
-VACUUM;
-SQL
-```
-
-If `sqlite3` is unavailable, use Python's `sqlite3` module to run the same SQL
-and record `sqlite3.sqlite_version` in the handoff.
-
-For checkpoint-only emergency proof when `sqlite3` is unavailable:
-
-```sh
-python3 - <<'PY'
-import os
-import sqlite3
-
-db = os.environ.get("CODEX_HOME", os.path.join(os.environ["HOME"], ".codex"))
-db = os.path.join(db, "logs_2.sqlite")
-conn = sqlite3.connect(db, timeout=30)
-try:
-    print(conn.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchall())
-finally:
-    conn.close()
-PY
-```
-
-Emergency full-disk exception:
-
-Do not normalize manual WAL truncation as cleanup. It is an emergency-only
-last resort when the filesystem is already full or about to block the machine,
-the SQLite-managed checkpoint cannot truncate because live Codex readers are
-holding the WAL open, and stopping those processes first would lose the active
-recovery path.
-
-Strict preconditions before `truncate -s 0 "$CODEX_HOME"/logs_2.sqlite-wal`:
-
-- Capture `df -h /`, `ls -lh "$CODEX_HOME"/logs_2.sqlite*`, and
-  `fuser -v "$CODEX_HOME"/logs_2.sqlite*` or equivalent process evidence.
-- Run `PRAGMA wal_checkpoint(TRUNCATE)` against `$CODEX_HOME/logs_2.sqlite` with
-  `sqlite3` or Python's `sqlite3` module.
-- Proceed only if the returned checkpoint triple proves every WAL frame was
-  checkpointed: `log_pages >= 0` and `log_pages == checkpointed`. The observed
-  emergency shape was `busy=1 log_pages=603 checkpointed=603`.
-- Avoid manual truncation when the result is `(1, -1, -1)`,
-  `checkpointed < log_pages`, or the checkpoint command fails; in those cases
-  the WAL may still contain frames that have not been folded into the main DB.
-  The managed pressure timer is intentionally more assertive: it logs this
-  risk and truncates a large WAL whenever the pressure threshold is crossed.
-- Prefer a coordinated Codex shutdown and complete `logs_2.sqlite*` backup
-  whenever enough space and operator control exist.
-- After emergency truncation, verify disk recovery and restart affected Codex
-  panes if any session reports SQLite/logging errors.
-
-Afterward, verify:
-
-```sh
-df -hT ~
-CODEX_HOME=${CODEX_HOME:-$HOME/.codex}
-du -sh "$CODEX_HOME"/logs_2.sqlite* "$CODEX_HOME"/sessions 2>/dev/null
-ls -lh "$CODEX_HOME"/logs_2.sqlite*
-codex --version
-```
-
-Rollback/testing notes:
-
-- Restore the backup only as a complete SQLite triplet while Codex is stopped.
-- Start one Codex session after cleanup and verify it launches normally before
-  restarting many panes.
-- Downgrading to 0.120.0 can be used only as an A/B test before the TUI TRACE
-  DB boundary; it is a poor long-term pin because of feature and model metadata
-  drift. `gpt-5.5` support was first checked as stable around 0.125.0.
-
-#### 9.2.4. Automated Mitigation (this repo)
-
-A periodic `PRAGMA wal_checkpoint(TRUNCATE)` is wired into the Nix-managed
-agent harness in `nix/home-manager/agents/codex/default.nix`. It treats the
-symptom (unbounded WAL) at the harness layer because the root cause lives
-upstream in Codex CLI's logging connection lifecycle and cannot be fixed
-from config.
-
-Implementation:
-
-- `walCheckpointScript` (`pkgs.writeShellApplication`): bash + Python
-  one-shot that opens the Codex logs database with a 30-second busy
-  timeout, runs `PRAGMA wal_checkpoint(TRUNCATE)`, and logs WAL size
-  before/after plus the `(busy, log_pages, checkpointed)` triple. On
-  `busy=1` with `log_pages == checkpointed`, it also logs that all WAL
-  frames were checkpointed but active readers prevented truncate. The
-  pressure-relief service uses the same proof before truncating a large WAL.
-  On
-  `OperationalError` (lock contention at connect time) it logs and exits 0
-  -- the next timer tick retries.
-- Linux (`pkgs.stdenv.isLinux`):
-  `systemd.user.services.codex-wal-checkpoint` (oneshot) +
-  `systemd.user.timers.codex-wal-checkpoint`. Schedule:
-  `OnCalendar = "*-*-* *:0/30:00"`, `Persistent = true` (catches up missed
-  ticks after suspend/offline), `RandomizedDelaySec = "5m"`.
-- Linux also installs `codex-storage-pressure-relief` as a Home Manager
-  `systemd.user` service/timer. Schedule:
-  `OnCalendar = "*-*-* *:7/10:00"`, `Persistent = true`,
-  `RandomizedDelaySec = "1m"`. This pressure timer
-  prunes disposable Codex temp entries older than 1 hour, prunes closed
-  Codex session JSONL files older than 50 days while skipping
-  open files, runs the same SQLite checkpoint, and truncates the WAL to zero
-  when the WAL is at least 1 GiB. It logs holder PIDs whenever a large WAL
-  remains under pressure, records whether SQLite proved all WAL frames are
-  already in the main DB (`log_pages >= 0` and `log_pages == checkpointed`),
-  and loudly marks truncation without checkpoint proof when SQLite cannot prove
-  that condition. It does not delete SQLite files.
-- Darwin (`pkgs.stdenv.isDarwin`): Home Manager
-  `launchd.agents.codex-wal-checkpoint`. Schedule: `StartCalendarInterval` at
-  minute 0 of every hour, `RunAtLoad = false`, `AbandonProcessGroup = true`.
-  Logs to `~/Library/Logs/codex-wal-checkpoint.log`. launchd auto-reschedules to
-  the next wake when the Mac is asleep at trigger time.
-- Cross-platform values are gated with `lib.mkIf pkgs.stdenv.isLinux` /
-  `lib.mkIf pkgs.stdenv.isDarwin`, NOT `lib.optionalAttrs` at the
-  module-return shape: an earlier draft using `optionalAttrs` triggered an
-  infinite-recursion at Home-Manager-on-nix-darwin's entry path, because
-  `optionalAttrs` forced `pkgs.stdenv` to evaluate before `_module.args`
-  resolved. `mkIf` defers the conditional to the option-merge phase, so
-  it doesn't enter the module-shape evaluation cycle.
-
-Why this is safe to run while Codex is active:
-
-- WAL mode is designed for concurrent multi-process access. Checkpoint is a
-  cleanup operation, not a competing one.
-- `TRUNCATE` is best-effort. On `busy=1` it returns without truncating; the
-  WAL stays its current size and no data is lost.
-- `busy=1` with `log_pages == checkpointed` means checkpointing succeeded but
-  live readers blocked the final truncation step. It is the only busy shape
-  that can justify pressure-relief WAL truncation or the emergency full-disk
-  exception above.
-- Logs go to journald (Linux) or `~/Library/Logs/` (Darwin). If `busy=1`
-  shows up consistently, that is a signal to investigate Codex usage
-  patterns or to schedule the timer at a quieter hour, not to fix the
-  script.
-
-Inspecting the timer:
-
-```sh
-# Linux
-systemctl --user list-timers codex-wal-checkpoint.timer
-systemctl --user list-timers codex-storage-pressure-relief.timer
-journalctl --user -u codex-wal-checkpoint.service -n 50
-journalctl --user -u codex-storage-pressure-relief.service -n 50
-
-# Darwin
-launchctl list | grep codex-wal-checkpoint
-tail -n 50 ~/Library/Logs/codex-wal-checkpoint.log
-```
-
-This is symptom containment, not a root-cause fix. Revisit when upstream
-addresses the issues tracked in the table below; the timer can stay as
-defense-in-depth even after the upstream fix lands, but its observed
-busy/checkpointed ratio is the signal for whether it remains needed.
-
-#### 9.2.5. Things not to do
-
-- Do not delete, truncate, or move only `logs_2.sqlite-wal` by hand for
-  routine cleanup. Use `PRAGMA wal_checkpoint(TRUNCATE)` (the automated timer
-  or the manual runbook above) so the writes are folded into the main DB
-  first. The only exception is the documented full-disk emergency case after
-  a checkpoint result proves every WAL frame was already checkpointed.
-- Do not run `DELETE` or `VACUUM` while Codex holds SQLite locks. Plain
-  `PRAGMA wal_checkpoint(TRUNCATE)` is safe under contention; `DELETE`
-  and `VACUUM` are not.
-- Do not touch `state_5.sqlite*` for this issue. Session JSONL retention is a
-  separate storage-pressure control and is not a fix for WAL bloat.
-- Do not run storage-heavy builds or broad checks just to diagnose the WAL.
-- Do not claim PRs are confirmed fixes unless upstream says so and local
-  verification supports it.
-
-#### 9.2.6. Issue and PR tracking
-
-Last checked 2026-06-29 with `gh issue view`, `gh pr view`, and
-`gh api repos/openai/codex/releases`. Local version: `codex-cli 0.142.3`.
-The local stable release checked was `rust-v0.142.3`; upstream also had a newer
-`rust-v0.142.4`, but this review intentionally stops at the installed version.
-The tracked issues below remain open, and release notes through v0.142.3 do not
-claim a direct fix for `logs_2.sqlite-wal` growth, SQLite WAL lock contention,
-or idle WAL writes. v0.142.0 reduced persistent-log churn, and v0.141.0 pinned
-bundled SQLite to a WAL-reset corruption fix, but no release note identifies
-either as a replacement for this runbook or a fix for the observed logs WAL
-failure mode.
-
-| Item                                                    | Status           | Watch for                                      |
-| ------------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| [#17320](https://github.com/openai/codex/issues/17320)  | open             | TRACE logs ignoring `RUST_LOG`, WAL churn      |
-| [#20213](https://github.com/openai/codex/issues/20213)  | open             | SQLite lock contention and cleanup workaround  |
-| [#20563](https://github.com/openai/codex/issues/20563)  | open             | Heavy idle I/O reports                         |
-| [#21134](https://github.com/openai/codex/issues/21134)  | open             | Long-thread memory and TRACE log churn         |
-| [#16886](https://github.com/openai/codex/issues/16886)  | open             | TUI logs growing without rotation              |
-| [PR #16989](https://github.com/openai/codex/pull/16989) | closed, unmerged | Shutdown flushing ideas, not an adopted fix    |
-| [PR #20561](https://github.com/openai/codex/pull/20561) | merged           | State DB handle changes; not confirmed WAL fix |
-| [PR #21367](https://github.com/openai/codex/pull/21367) | merged           | Thread `updated_at` coalescing; verify impact  |
-| [PR #21107](https://github.com/openai/codex/pull/21107) | merged           | Noisy OTEL diagnostics; not confirmed WAL fix  |
-
-When revisiting, check the local version with `codex --version`, scan release
-notes up to that version, and re-check the issue/PR statuses before changing
-this runbook.
+Codex logs SQLite WAL growth (observed at 32-35 GB locally in 2026-05) was
+fixed upstream: openai/codex #29432 and #29457 landed in v0.142.0 and #29599
+lands in v0.143.0, removing ~85% of persistent log writes. The local
+checkpoint and pressure-relief timers were removed on 2026-07-05. The full
+incident runbook is archived in the private vault
+(2026-07-05-storage-hygiene-playbook-retirement). Sessions under
+<!-- private-content-scan: allow-next-line -->
+`~/.codex/sessions/` still have no upstream auto-retention
+(openai/codex #20230); use `codex delete` / archive for manual cleanup.
 
 ### 9.3. Applied Optimizations
 
@@ -634,16 +339,16 @@ this runbook.
   preconditions. On 2026-05-10, the Linux timer cadence moved to 30 minutes.
   Cross-platform: `systemd.user` timer on Linux,
   `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
-  `isDarwin`. Symptom containment, not an upstream fix; see
-  [Automated Mitigation](#924-automated-mitigation-this-repo) for inspection
-  commands.
-- [x] Linux `codex-storage-pressure-relief.timer` added 2026-05-09 after a
-  full-disk incident where `logs_2.sqlite-wal` reached about 37 GB and
-  `tmux-a2a-postman` could not write state. The timer prunes disposable Codex
-  temp data, prunes closed session JSONL older than 50 days while skipping
-  open files, checkpoints `logs_2.sqlite`, and truncates a large
-  fully-checkpointed WAL to zero after logging holder PIDs. The managed policy
-  is storage relief only: process lifecycle stays outside the timer.
+  `isDarwin`. Symptom containment, not an upstream fix; inspection
+  commands are archived with the runbook in the private vault.
+- [x] (removed 2026-07-05) Linux `codex-storage-pressure-relief.timer` added
+      2026-05-09 after a full-disk incident where `logs_2.sqlite-wal` reached
+      about 37 GB and `tmux-a2a-postman` could not write state. The timer prunes
+      disposable Codex temp data, prunes closed session JSONL older than 50 days
+      while skipping open files, checkpoints `logs_2.sqlite`, and truncates a
+      large fully-checkpointed WAL to zero after logging holder PIDs. The
+      managed policy is storage relief only: process lifecycle stays outside the
+      timer.
 
 ### 9.4. Pending Considerations
 

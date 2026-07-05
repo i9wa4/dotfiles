@@ -8,9 +8,6 @@
 #   nix run '.#update'       -- update flake inputs, latest-tag flake refs, and Waza release pins
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#cleanup'      -- prune low-risk local caches
-#   nix run '.#gc-roots-delete'
-#                             -- attempt Linux auto GC-root cleanup through the dedicated command
-#   nix run '.#storage-report' -- summarize Linux home-directory storage
 #   nix run '.#root-lvm-extend' -- check/extend Ubuntu root LVM free space
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
@@ -27,8 +24,6 @@
       gh = lib.getExe pkgs.gh;
       jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
-      gcRootsReviewScript = ./../../../scripts/ubuntu/list-stale-nix-gcroots.sh;
-      storagePressureReportScript = ./../../../scripts/ubuntu/storage-pressure-report.sh;
       rootLvmExtendScript = ./../../../scripts/ubuntu/extend-root-lvm.sh;
       tmuxA2aPostmanUpdateScript = ./../../packages/tmux-a2a-postman-nix-update.sh;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
@@ -137,29 +132,6 @@
         };
       }
       // lib.optionalAttrs isLinux {
-        # What: Keep Linux stale GC-root cleanup on one explicit command separate from switch.
-        # When: Run it directly to attempt guarded stale-root deletion as the current user.
-        # Example: nix run '.#gc-roots-delete'
-        gc-roots-delete = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "gc-roots-delete" ''
-            set -euo pipefail
-            exec ${pkgs.bash}/bin/bash ${gcRootsReviewScript} "$@"
-          ''}/bin/gc-roots-delete";
-        };
-
-        # What: Summarize Linux home-directory storage pressure for the current user or all users.
-        # Uses the shared safe_cache / review_first / preserve vocabulary from docs/storage-hygiene.md.
-        # When: Run before cleanup so you know which homes and paths are using the most space.
-        # Example: nix run '.#storage-report' -- --self --summary
-        storage-report = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "storage-report" ''
-            set -euo pipefail
-            exec ${pkgs.bash}/bin/bash ${storagePressureReportScript} "$@"
-          ''}/bin/storage-report";
-        };
-
         # What: Check or extend Ubuntu root LVM free space after an installer leaves / small.
         # When: Run --check after Ubuntu setup; run --apply only after reviewing the target VG/LV.
         # Example: nix run '.#root-lvm-extend' -- --check
