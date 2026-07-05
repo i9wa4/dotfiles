@@ -14,7 +14,7 @@ if [[ -z $tag ]]; then
   )"
 fi
 if [[ -z $tag ]]; then
-  echo "waza-nix-update: no stable CLI release tag found in $repo" >&2
+  echo "package-update-waza: no stable CLI release tag found in $repo" >&2
   exit 1
 fi
 version="${tag#v}"
@@ -30,7 +30,7 @@ hash_for() {
   local hex
   hex="$(awk -v asset="$asset" '$2 == asset { print $1 }' "$checksums")"
   if [[ -z $hex ]]; then
-    echo "waza-nix-update: checksum for $asset not found in $repo $tag" >&2
+    echo "package-update-waza: checksum for $asset not found in $repo $tag" >&2
     return 1
   fi
   "$nix_bin" hash convert --hash-algo sha256 --from base16 --to sri "$hex"

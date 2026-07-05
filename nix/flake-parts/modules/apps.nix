@@ -24,9 +24,9 @@
       jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
       rootLvmExtendScript = ./../../../scripts/ubuntu/extend-root-lvm.sh;
-      tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/tmux-a2a-postman-nix-update.sh;
-      wazaUpdateScript = ./../../../scripts/nix/waza-nix-update.sh;
-      actrunUpdateScript = ./../../../scripts/nix/actrun-nix-update.sh;
+      tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh;
+      wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
+      actrunUpdateScript = ./../../../scripts/nix/package-update-actrun.sh;
     in
     {
       apps = {

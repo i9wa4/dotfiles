@@ -10,7 +10,7 @@
 let
   pnpmMinimumReleaseAgeHours = 3 * 24;
   pnpmMinimumReleaseAgeMinutes = pnpmMinimumReleaseAgeHours * 60;
-  managePnpmGlobals = ../../../scripts/nix/manage-pnpm-globals.sh;
+  managePnpmGlobals = ../../../scripts/nix/home-manager-pnpm-globals.sh;
 in
 {
   home.activation.installPnpmPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

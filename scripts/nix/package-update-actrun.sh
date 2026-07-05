@@ -17,12 +17,12 @@ hash_for() {
   # shellcheck disable=SC2016 # jq receives $asset via --arg.
   digest="$("$jq_bin" -r --arg asset "$asset" '.assets[] | select(.name == $asset) | .digest // empty' <<<"$release_json")"
   if [[ -z $digest ]]; then
-    echo "actrun-nix-update: digest for $asset not found in $repo $tag" >&2
+    echo "package-update-actrun: digest for $asset not found in $repo $tag" >&2
     return 1
   fi
   hex="${digest#sha256:}"
   if [[ $hex == "$digest" || -z $hex ]]; then
-    echo "actrun-nix-update: unsupported digest for $asset: $digest" >&2
+    echo "package-update-actrun: unsupported digest for $asset: $digest" >&2
     return 1
   fi
   "$nix_bin" hash convert --hash-algo sha256 --from base16 --to sri "$hex"

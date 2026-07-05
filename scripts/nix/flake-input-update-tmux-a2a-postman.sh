@@ -7,7 +7,7 @@ gh_bin="${TMUX_A2A_POSTMAN_GH:-gh}"
 sort_bin="${TMUX_A2A_POSTMAN_SORT:-sort}"
 
 if [[ $repo != */* ]]; then
-  echo "tmux-a2a-postman-nix-update: expected OWNER/REPO, got: $repo" >&2
+  echo "flake-input-update-tmux-a2a-postman: expected OWNER/REPO, got: $repo" >&2
   exit 1
 fi
 
@@ -23,17 +23,17 @@ if [[ -z $tag ]]; then
 fi
 
 if [[ -z $tag ]]; then
-  echo "tmux-a2a-postman-nix-update: no stable tag found in $repo" >&2
+  echo "flake-input-update-tmux-a2a-postman: no stable tag found in $repo" >&2
   exit 1
 fi
 
 if [[ ! $tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "tmux-a2a-postman-nix-update: unsupported tag format: $tag" >&2
+  echo "flake-input-update-tmux-a2a-postman: unsupported tag format: $tag" >&2
   exit 1
 fi
 
 if [[ ! -f $target ]]; then
-  echo "tmux-a2a-postman-nix-update: target not found: $target" >&2
+  echo "flake-input-update-tmux-a2a-postman: target not found: $target" >&2
   exit 1
 fi
 
@@ -71,7 +71,7 @@ set -e
 
 if [[ $status -ne 0 ]]; then
   if [[ $status -eq 42 ]]; then
-    echo "tmux-a2a-postman-nix-update: tmux-a2a-postman input url not found in $target" >&2
+    echo "flake-input-update-tmux-a2a-postman: tmux-a2a-postman input url not found in $target" >&2
   fi
   exit "$status"
 fi

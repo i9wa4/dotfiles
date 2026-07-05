@@ -12,7 +12,7 @@ let
   subagentPromptSource = ../subagents;
   subagentMetadata = import ../subagents/metadata.nix;
   subagentMetadataJson = pkgs.writeText "subagent-metadata.json" (builtins.toJSON subagentMetadata);
-  agentRenderer = ../../../../scripts/nix/render-native-agents.py;
+  agentRenderer = ../../../../scripts/nix/agent-render-native.py;
   renderedAgentsSource = pkgs.runCommand "native-agents-from-markdown" { } ''
     set -eu
     mkdir -p "$out/claude" "$out/codex"
