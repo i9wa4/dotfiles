@@ -14,8 +14,7 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-  # Use the pinned nixpkgs defaults so Node/pnpm stay on cache-friendly builds.
-  nodejsPackage = pkgs.nodejs;
+  # Use pinned nixpkgs pnpm and its own Node runtime to avoid a separate Node package.
   pnpmPackage = pkgs.pnpm;
   system = pkgs.stdenv.hostPlatform.system;
 
@@ -36,7 +35,6 @@ in
       dotfilesDir
       ghqRoot
       homeDir
-      nodejsPackage
       pnpmPackage
       ;
   };
@@ -140,8 +138,8 @@ in
     file = {
       ".vale.ini".source = symlink "${dotfilesDir}/config/vale/.vale.ini";
       # pnpm global shims look for ~/.local/bin/node before falling back to PATH.
-      # Expose node there without adding npm/npx from nodejsPackage to home.packages.
-      ".local/bin/node".source = "${nodejsPackage}/bin/node";
+      # Expose pnpm's own Node runtime without adding a separate Node package.
+      ".local/bin/node".source = "${pnpmPackage.nodejs-slim}/bin/node";
     };
   };
 

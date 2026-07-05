@@ -3,16 +3,14 @@ set -euo pipefail
 
 : "${DOTFILES_HOME_DIR:?DOTFILES_HOME_DIR is required}"
 : "${DOTFILES_JQ:?DOTFILES_JQ is required}"
-: "${DOTFILES_NODEJS:?DOTFILES_NODEJS is required}"
-: "${DOTFILES_NPM:?DOTFILES_NPM is required}"
+: "${DOTFILES_NODE:?DOTFILES_NODE is required}"
 : "${DOTFILES_PNPM:?DOTFILES_PNPM is required}"
 : "${DOTFILES_PNPM_MINIMUM_RELEASE_AGE_HOURS:?DOTFILES_PNPM_MINIMUM_RELEASE_AGE_HOURS is required}"
 : "${DOTFILES_PNPM_MINIMUM_RELEASE_AGE_MINUTES:?DOTFILES_PNPM_MINIMUM_RELEASE_AGE_MINUTES is required}"
 
 home_dir=$DOTFILES_HOME_DIR
 jq_bin=$DOTFILES_JQ
-nodejs=$DOTFILES_NODEJS
-npm=$DOTFILES_NPM
+node=$DOTFILES_NODE
 pnpm=$DOTFILES_PNPM
 pnpm_minimum_release_age_hours=$DOTFILES_PNPM_MINIMUM_RELEASE_AGE_HOURS
 pnpm_minimum_release_age_minutes=$DOTFILES_PNPM_MINIMUM_RELEASE_AGE_MINUTES
@@ -30,7 +28,7 @@ rm -rf "${home_dir}/.npm" "${home_dir}/.cache/pnpm"
 mkdir -p "$pnpm_bin" "$pnpm_global_dir" "$pnpm_store_dir" "${pnpm_config_home}/pnpm"
 export XDG_CONFIG_HOME="$pnpm_config_home"
 export PNPM_HOME="$pnpm_home"
-export PATH="${pnpm_bin}:${pnpm%/pnpm}:${nodejs}/bin:$PATH"
+export PATH="${pnpm_bin}:${pnpm%/pnpm}:${node%/node}:$PATH"
 
 "$pnpm" config set --location=global globalBinDir "$pnpm_bin" >/dev/null
 "$pnpm" config set --location=global globalDir "$pnpm_global_dir" >/dev/null
@@ -156,10 +154,6 @@ legacy_npm_shims=(
 )
 
 for pkg in "${legacy_npm_packages[@]}"; do
-  if "$npm" --prefix "$legacy_npm_prefix" list -g --depth=0 "$pkg" >/dev/null 2>&1; then
-    echo "Removing legacy npm-managed package $pkg..."
-    "$npm" --prefix "$legacy_npm_prefix" uninstall -g "$pkg" >/dev/null 2>&1 || true
-  fi
   remove_legacy_npm_package_dir "$pkg"
 done
 for shim in "${legacy_npm_shims[@]}"; do
