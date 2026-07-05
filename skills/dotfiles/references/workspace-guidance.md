@@ -10,23 +10,26 @@ creation, vde-layout preset boot, worktree lifecycle, and pane operations.
 For a `tmux-a2a-postman` agent session, the expected end-user flow is:
 
 ```text
-new tmux session -> z tmux-a2a-postman -> va
+new tmux session -> z tmux-a2a-postman -> <boot snippet>
 ```
 
-When driving that flow from another agent pane, resolve `va` from the repo's
-current configuration, then send the expanded vde-layout command directly. Do
-not rely on interactive snippet injection from non-interactive shells, and do
-not trust hardcoded examples in this skill over the config files.
+The boot snippet is a short zsh keyword (currently `vp` for the codex-featured
+team and `vw` for the claude team). When driving that flow from another agent
+pane, resolve the snippet from the repo's current configuration, then send the
+expanded vde-layout command directly. Do not rely on interactive snippet
+injection from non-interactive shells, and do not trust hardcoded examples in
+this skill over the config files.
 
-Resolution order for `va`:
+Resolution order for the boot snippet:
 
-1. Inspect `config/zsh/snippet.zsh` and find the snippet whose keyword is `va`.
+1. Inspect `config/zsh/snippet.zsh` and find the `vde-layout` snippets
+   (keywords such as `vp` and `vw`).
 2. Inspect `config/vde/layout.yml` for every `vde-layout <preset>` referenced
-   by that snippet.
+   by the chosen snippet.
 3. Send the snippet command exactly as resolved, unless the user requested a
    different preset.
 
-After resolving `va`, boot the session:
+After resolving the snippet, boot the session:
 
 1. Create session and capture pane id:
 
@@ -60,12 +63,12 @@ After resolving `va`, boot the session:
    tmux display-message -t "$PANE_ID" -p '#{session_name}'
    ```
 
-7. Execute the resolved `va` end state by sending the expanded vde-layout
-   command directly. As of the current config this is:
+7. Execute the resolved snippet end state by sending the expanded vde-layout
+   command directly. For the codex-featured team (`vp`) this is currently:
 
    ```bash
    tmux send-keys -t "$PANE_ID" \
-     'vde-layout messenger-codex && vde-layout preset-a' Enter
+     'vde-layout messenger-codex && vde-layout preset-p' Enter
    ```
 
 8. Wait 8-12s for vde-layout to materialize all panes.
@@ -78,31 +81,24 @@ After resolving `va`, boot the session:
 
 ### 1.2. Human-Driven Boot
 
-The human types `va` + Space in interactive zsh. `snippet-magic-space` expands
-to `vde-layout messenger-codex && vde-layout preset-a`, then Enter executes it.
-Both paths arrive at identical end state.
+The human types the snippet keyword (for example `vp`) + Space in interactive
+zsh. `snippet-magic-space` expands it to the full vde-layout command, then
+Enter executes it. Both paths arrive at identical end state.
 
 Source: `config/zsh/snippet.zsh`, `config/vde/layout.yml`
 See also: `workspace-boot-failure-modes.md`
 
-## 2. Current va Preset
+## 2. Current Boot Snippets
 
-| Aspect            | va flow                                             |
-| ----------------- | --------------------------------------------------- |
-| Snippet expansion | `vde-layout messenger-codex && vde-layout preset-a` |
-| Messenger         | codex gpt-5.5, medium                               |
-| Grid              | 3+2 panes, new window                               |
-| orchestrator      | codex gpt-5.5 xhigh                                 |
-| worker            | codex gpt-5.5 xhigh                                 |
-| worker-alt        | codex gpt-5.5 xhigh                                 |
-| guardian          | codex gpt-5.5 xhigh                                 |
-| critic            | claude opus[1m] xhigh                               |
-| Engine mix        | preset-a: 4 codex + 1 claude; messenger: codex      |
-| Description       | "codex-featured team"                               |
+| Snippet | Expansion                                            | Team                |
+| ------- | ---------------------------------------------------- | ------------------- |
+| `vp`    | `vde-layout messenger-codex && vde-layout preset-p`  | codex-featured team |
+| `vw`    | `vde-layout messenger-claude && vde-layout preset-w` | claude team         |
 
-Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:
-`dotfiles/config/zsh/snippet.zsh`. See also:
-`workspace-vde-layout-internals.md`
+Per-pane models and reasoning efforts are defined in
+`config/vde/layout.yml` and change often; resolve them from the config at
+boot time instead of trusting any snapshot here. Zsh snippets:
+`config/zsh/snippet.zsh`. See also: `workspace-vde-layout-internals.md`
 
 ## 3. Session Naming
 
@@ -214,9 +210,9 @@ Key rules:
   when tmux topology is correct; wait briefly and retry status
 - `tmux list-sessions` is authoritative for session existence; postman routing
   may lag
-- WAL bloat (`$HOME/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex
-  sessions; see `skills/dotfiles/references/codex-cli.md` WAL
-  runbook (do not duplicate here)
+- Codex logs WAL bloat was fixed upstream in 0.142.0; see
+  `skills/dotfiles/references/codex-cli.md` section 9.2 for the resolution
+  note and the archived runbook pointer
 
 ## 8. Reference Index
 
