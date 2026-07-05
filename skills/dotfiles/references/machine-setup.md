@@ -174,14 +174,15 @@ sudo systemctl restart nix-daemon
 ### 3.3. Expand Ubuntu LVM Root If Needed
 
 Ubuntu's installer can leave `/` as a 100G logical volume even when the disk
-and LVM physical volume are much larger. Check this before regular use:
+and LVM physical volume are much larger. From the dotfiles repository root,
+check this before regular use:
 
 ```sh
 sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
 ```
 
-If the check reports free VG extents for the root logical volume, extend `/`
-with the managed helper:
+If the check reports free VG extents for the root logical volume, review the
+reported VG/LV target and extend `/` with the managed helper:
 
 ```sh
 sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply

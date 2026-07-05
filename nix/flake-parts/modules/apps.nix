@@ -7,7 +7,6 @@
 #                                macOS expires system generations older than 1 day)
 #   nix run '.#update'       -- update flake inputs, latest-tag flake refs, and Waza release pins
 #   nix run '.#check'        -- check flake configuration
-#   nix run '.#root-lvm-extend' -- check/extend Ubuntu root LVM free space
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
 {
@@ -23,7 +22,6 @@
       gh = lib.getExe pkgs.gh;
       jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
-      rootLvmExtendScript = ./../../../scripts/ubuntu/extend-root-lvm.sh;
       tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh;
       wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
       actrunUpdateScript = ./../../../scripts/nix/package-update-actrun.sh;
@@ -82,17 +80,6 @@
         };
       }
       // lib.optionalAttrs isLinux {
-        # What: Check or extend Ubuntu root LVM free space after an installer leaves / small.
-        # When: Run --check after Ubuntu setup; run --apply only after reviewing the target VG/LV.
-        # Example: nix run '.#root-lvm-extend' -- --check
-        root-lvm-extend = {
-          type = "app";
-          program = "${pkgs.writeShellScriptBin "root-lvm-extend" ''
-            set -euo pipefail
-            exec ${pkgs.bash}/bin/bash ${rootLvmExtendScript} "$@"
-          ''}/bin/root-lvm-extend";
-        };
-
         apt-upgrade = {
           type = "app";
           program = "${pkgs.writeShellScriptBin "apt-upgrade" ''

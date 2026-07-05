@@ -7,8 +7,8 @@ set -o posix
 # What: check or extend Ubuntu's root logical volume to consume free VG space.
 # When: run after an Ubuntu install that left / at 100G on a larger LVM disk.
 # Usage:
-#   sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
-#   sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+#   sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
+#   sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 
 usage() {
   cat <<'EOF'
@@ -19,8 +19,8 @@ Modes:
   --apply  Extend the root logical volume with all free VG extents
 
 Examples:
-  sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
-  sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+  sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
+  sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 
 This helper only handles the common Ubuntu LVM case where the disk partition
 and physical volume already contain the full disk, but the root LV is still
@@ -113,7 +113,7 @@ print_status() {
   else
     echo "=== LVM status ==="
     echo "Run with sudo to include vgs/lvs/pvs and root LV target detection:"
-    echo "  sudo bash ./bin/ubuntu/extend-root-lvm.sh --check"
+    echo "  sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check"
     echo ""
   fi
 }
@@ -175,7 +175,7 @@ if [[ $mode == check ]]; then
 
   if [[ $vg_free_extents -gt 0 ]]; then
     echo "Action available:"
-    echo "  sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply"
+    echo "  sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply"
   else
     echo "No free VG extents found. Root LV already consumes the available VG space."
   fi
@@ -183,7 +183,7 @@ if [[ $mode == check ]]; then
 fi
 
 if [[ $EUID -ne 0 ]]; then
-  echo "ERROR: Run as root, for example: sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply" >&2
+  echo "ERROR: Run as root, for example: sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply" >&2
   exit 1
 fi
 

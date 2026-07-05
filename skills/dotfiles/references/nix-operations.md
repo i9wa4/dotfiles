@@ -8,6 +8,16 @@
 | `nix run '.#update'` | Update flake inputs                                                                                                                                                                                                                                       |
 | `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                                                                 |
 
+One-off host repair helpers are kept as explicit scripts rather than flake
+apps. For Ubuntu root LVM expansion, run from the dotfiles repository root:
+
+```sh
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
+```
+
+Use `--apply` only after reviewing the VG/LV target printed by `--check`.
+
 ## 2. Manual Cache Cleanup
 
 There is no `.#cleanup` flake app. Keep cache deletion as an explicit manual
