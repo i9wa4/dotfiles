@@ -9,21 +9,12 @@ description: |
 
 # Collaboration
 
-**USE FOR:** GitHub and Atlassian: gh CLI usage, PR/commit/issue management,
-review style, public surface path hygiene; Jira and Confluence when env vars
-are confirmed; related file edits; verification and handoff.
-
-**DO NOT USE FOR:** guessing credentials, unrelated domains, broad rewrites,
-generated runtime outputs, or replacing repo-specific source of truth.
-
-## 1. Boundary
-
-This skill owns GitHub mechanics (`gh` usage, issue/PR state inspection, commit
+Owns GitHub mechanics (`gh` usage, issue/PR state inspection, commit
 rules, inline comments, public path hygiene) and Atlassian access (Jira and
-Confluence when env vars are confirmed). It does not own the guardian/critic
+Confluence when env vars are confirmed). Does not own the guardian/critic
 review engine or the user-facing review-comment trigger.
 
-## 2. Workflow
+## 1. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Read [Workflow Guide](references/github-workflow.md) before changing
@@ -35,13 +26,8 @@ review engine or the user-facing review-comment trigger.
 5. Run the checks named in the workflow guide or the nearest repo harness.
 6. Report verification results and any remaining risk.
 
-## 3. References
+## 2. References
 
 - [Workflow Guide](references/github-workflow.md)
 - [Atlassian](references/atlassian.md)
 - [Atlassian API Token](references/atlassian-api-token.md)
-
-## 4. Troubleshooting
-
-If Waza or repo validation disagrees with the workflow guide, follow the
-stricter rule and record the exception in the handoff.

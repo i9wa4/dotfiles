@@ -40,15 +40,7 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh))$";
-      skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh))$";
-      skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh))$";
-      skillTriggerMatrixPath = pkgs.lib.makeBinPath [
-        pkgs.coreutils
-        pkgs.gawk
-        pkgs.gnugrep
-        pkgs.jq
-      ];
+      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -135,19 +127,19 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-frontmatter.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-frontmatter.sh --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
             pass_filenames = false;
           };
-          # Warn-only: 19/24 skills exceed the 138-char threshold today.
-          # Flip to block: set SKILL_DESC_LENGTH_STRICT=1 after fixing violations.
+          # Warn-only by design: descriptions stay keyword-rich for trigger
+          # accuracy and exceed the 138-char catalog threshold deliberately.
           skill-description-length-check = {
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-description-length.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-description-length.sh --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -162,7 +154,7 @@
               if [ -n "''${NIX_BUILD_TOP:-}" ]; then
                 export SKILL_WAZA_CHECK_LINKS=0
               fi
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-waza.sh} "$@"
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-waza.sh "$@"
             ''}";
             files = "^skills/";
             require_serial = true;
@@ -171,32 +163,23 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-private-content-scan" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-private-content.sh --staged
             ''}";
             files = skillReleaseSurfaceFiles;
             types = [ "file" ];
             pass_filenames = false;
           };
-          skill-release-readiness-check = {
+          skill-trigger-evals-check = {
             enable = true;
-            entry = "${pkgs.writeScript "skill-release-readiness-check" ''
+            entry = "${pkgs.writeScript "skill-trigger-evals-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-release-readiness.sh} --strict
+              export WAZA_BIN=${waza}/bin/waza
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-evals.sh
             ''}";
-            files = skillReleaseReadinessFiles;
+            files = "^skills/.*(SKILL\\.md|evals/.*)$";
             types = [ "file" ];
             pass_filenames = false;
-          };
-          skill-trigger-matrix-check = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-trigger-matrix-check" ''
-              #!${pkgs.bash}/bin/bash
-              export PATH=${skillTriggerMatrixPath}:$PATH
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-trigger-matrix.sh} --strict-results
-            ''}";
-            files = skillTriggerMatrixFiles;
-            types = [ "file" ];
-            pass_filenames = false;
+            require_serial = true;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 

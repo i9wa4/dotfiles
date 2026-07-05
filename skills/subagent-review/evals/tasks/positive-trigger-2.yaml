@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Perform the guardian review for a completed worker investigation, collect peer critic review evidence, and return the aggregated guardian verdict."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/subagent-review/SKILL.md
+      mode: positive

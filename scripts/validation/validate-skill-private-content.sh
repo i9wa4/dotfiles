@@ -66,10 +66,7 @@ is_scan_target() {
   skills/* | config/tmux-a2a-postman/postman.md | .github/workflows/*.yaml | .github/workflows/*.yml)
     return 0
     ;;
-  scripts/validation/validate-skill-private-content.sh | scripts/validation/validate-skill-release-readiness.sh)
-    return 0
-    ;;
-  scripts/validation/validate-skill-trigger-matrix.sh)
+  scripts/validation/validate-skill-private-content.sh)
     return 0
     ;;
   *)

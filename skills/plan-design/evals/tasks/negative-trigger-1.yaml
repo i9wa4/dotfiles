@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Make a small repo-local Bash, Python, Nix, or Markdown implementation change and run focused checks."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/plan-design/SKILL.md
+      mode: negative

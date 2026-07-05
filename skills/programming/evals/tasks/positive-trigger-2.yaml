@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Use a Red-Green-Refactor or Tidy First loop for a small behavior change."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/programming/SKILL.md
+      mode: positive

@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Run the native multi-perspective review workflow and synthesize blocking findings."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/programming/SKILL.md
+      mode: negative

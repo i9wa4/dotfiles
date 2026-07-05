@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Edit draw.io XML, export a diagram, or check AWS icon layout in this repo."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/diagramming/SKILL.md
+      mode: positive

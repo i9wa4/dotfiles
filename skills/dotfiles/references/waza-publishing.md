@@ -109,7 +109,6 @@ For source-only skill edits:
 bash scripts/validation/validate-skill-frontmatter.sh skills
 bash scripts/validation/validate-skill-waza.sh skills/<name>/SKILL.md
 bash scripts/validation/validate-skill-description-length.sh --staged
-bash scripts/validation/validate-skill-release-readiness.sh --strict
 git diff --check
 ```
 
@@ -123,8 +122,8 @@ check` when Nix, workflow, or shared harness files changed. `nix run '.#switch'`
 is only needed when verifying installed runtime output.
 
 Keep default pre-commit focused on deterministic, local checks: frontmatter,
-Waza readiness for changed skills, private-content scanning, release-readiness
-classification, formatting, and shell checks. Put `gh skill publish --dry-run`,
+Waza readiness for changed skills, private-content scanning, formatting, and
+shell checks. Put `gh skill publish --dry-run`,
 `waza run` prompt evals, and `waza quality` in release-flow procedures, task
 artifacts, or skill guidance unless a future eval is explicitly cheap, stable,
 and credential-free.

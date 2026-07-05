@@ -3,17 +3,17 @@ name: subagent-review
 license: MIT
 metadata:
   version: "1.0.0"
-description: "USE FOR: Guardian/critic reviews using guardian-specified native reviewer perspectives. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
+description: "USE FOR: Guardian/critic reviews: native multi-perspective reviewer waves, peer critic review evidence, guardian verdict aggregation, synthesis of blocking findings. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
 ---
 
 # Subagent Review
 
-Runtime-native reviewer perspectives (defaults: security, architecture,
-historian, code, QA). No implementation, approval, fan-out, or overrides.
+Native reviewer perspectives: security, architecture, historian, code, QA.
+No implementation, approval, fan-out, or overrides.
 
 ## 1. Workflow
 
-1. Run the cheapest relevant verifier first.
+1. Run the cheapest verifier first.
 2. Each role: five subagent perspectives + one self-review (six inputs).
    Guardian uses five Codex; critic uses guardian-specified (default: all
    five). Guardian narrows; critic never self-selects.
@@ -35,8 +35,8 @@ historian, code, QA). No implementation, approval, fan-out, or overrides.
 - Guardian aggregates twelve (six + six) into the final verdict.
 - Postman request to critic authorizes launches. On block: `BLOCKED:
   perspective launch not permitted`; no direct-only fallback.
-- Trivials may omit subagents when guardian so labels. Self-review still
-  required. Critic states the criterion.
+- Trivials may omit subagents when guardian so labels; self-review still
+  required.
 - Critic sends result to guardian, not orchestrator.
 - Reviewer subagents must not edit, commit, push, or approve.
 - If <five subagents complete, return `BLOCKED: fewer than required subagent
@@ -45,4 +45,4 @@ historian, code, QA). No implementation, approval, fan-out, or overrides.
 
 ## 3. Output
 
-Perspective, paths, evidence, severity, confidence, gaps.
+Perspective, paths, evidence, severity, confidence.

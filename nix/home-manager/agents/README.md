@@ -8,23 +8,73 @@ artifacts.
 
 ## 1. Start Here
 
-| If you want to change...    | Edit here                                                      | Installed result                                                                   |
-| --------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]` §2.17 | Delivered into every postman role on each `tmux-a2a-postman pop`                   |
-| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                      | Installed to both engines and indexed by postman.md `skill_path`                   |
-| Native review skill         | `skills/subagent-review/SKILL.md`                              | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers   |
-| Native reviewer prompts     | `subagents/*.md`                                               | Prompt bodies for generated Claude Markdown and Codex TOML agent files             |
-| Native reviewer metadata    | `subagents/metadata.nix`                                       | Per-agent model and effort defaults emitted into generated runtime agent files     |
-| Shared install targets      | `shared/install-manifest.nix`                                  | Resolves generated Claude agent files and Codex TOML from shared subagent sources  |
-| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                   | Installed to `~/.claude/skills/` and `~/.codex/skills/`                            |
-| Skill description index     | `skills/dotfiles/`                                             | Folded into the Agent Skills management owner skill and reference/script directory |
-| Hook/runtime scripts        | `scripts/*`                                                    | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                       |
-| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix`    | Empty MCP server set and shared Bash deny hook data emitted into both engines      |
-| Claude runtime settings     | `claude/default.nix`                                           | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs    |
-| Codex runtime settings      | `codex/default.nix`                                            | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs          |
-| Top-level package boundary  | `default.nix`                                                  | Imports the agent modules and installs the shared CLI packages                     |
+| If you want to change...    | Edit here                                                   | Installed result                                                                  |
+| --------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
+| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                  |
+| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers  |
+| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files            |
+| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files    |
+| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources |
+| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/`                           |
+| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)      |
+| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                      |
+| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines     |
+| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs   |
+| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs         |
+| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                    |
 
-## 2. How Changes Flow
+## 2. Design Principle
+
+Author policy once, against Claude Code as the reference engine, and emit the
+same policy into Codex. Shared sources own the behavior; `claude/default.nix`
+and `codex/default.nix` are thin emitters that map those sources onto each
+product surface. A per-engine difference is allowed only with a written reason
+next to it (see `skills/dotfiles/references/agent-config-philosophy.md`).
+
+```mermaid
+graph LR
+    subgraph sources [Author here]
+        P[postman.md role contract]
+        S[skills/]
+        A[subagents/*.md + metadata.nix]
+        H[agents/scripts/ hooks]
+        D[shared/denied-bash-commands.nix]
+        M[shared/mcp-servers.nix]
+    end
+    subgraph emitters [Generators]
+        IM[shared/install-manifest.nix]
+        AS[shared/agent-skills.nix]
+        C[claude/default.nix]
+        X[codex/default.nix]
+    end
+    subgraph claude [~/.claude]
+        CA[agents/]
+        CS[skills/]
+        CJ[settings.json + .claude.json]
+        CH[scripts/]
+    end
+    subgraph codex [~/.codex]
+        XA[agents/]
+        XS[skills/]
+        XT[config.toml + hooks.json]
+        XH[scripts/]
+    end
+    A --> IM --> CA
+    IM --> XA
+    S --> AS --> CS
+    AS --> XS
+    H --> C --> CH
+    H --> X --> XH
+    D --> C --> CJ
+    D --> X --> XT
+    M --> C
+    M --> X
+    P -. delivered per postman pop .-> claude
+    P -. delivered per postman pop .-> codex
+```
+
+## 3. How Changes Flow
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
 2. The persona / language / scope contract is delivered through
@@ -47,7 +97,7 @@ artifacts.
 7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
    files during activation.
 
-## 3. Refresh And Verify
+## 4. Refresh And Verify
 
 | Goal                        | Command                                                   |
 | --------------------------- | --------------------------------------------------------- |
@@ -58,7 +108,7 @@ artifacts.
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-p' --impure` |
 | Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-w' --impure` |
 
-## 4. Authoring Notes
+## 5. Authoring Notes
 
 - Keep reviewer agent prompt bodies and runtime metadata in `subagents/`. Do
   not hand-author or track generated Claude Markdown or Codex TOML copies.
@@ -70,7 +120,7 @@ artifacts.
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
   is recorded.
 
-## 5. Rule Of Thumb
+## 6. Rule Of Thumb
 
 - If you are changing prompt wording, start with the markdown source files.
 - If you are changing hook behavior, runtime settings, or install targets, edit

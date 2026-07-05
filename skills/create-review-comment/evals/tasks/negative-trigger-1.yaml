@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Work on repo-local BigQuery, Databricks, dbt, or cloud-auth workflow guidance."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/create-review-comment/SKILL.md
+      mode: negative

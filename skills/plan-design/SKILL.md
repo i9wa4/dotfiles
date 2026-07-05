@@ -4,23 +4,14 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Implementation plans and durable task tracking: parallel investigation, multi-source synthesis, review gates, task artifacts, evidence logs, handoff/resume, and DONE/BLOCKED verification. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Implementation plans and durable task tracking: reduce ambiguity, compare options, parallel investigation, multi-source synthesis, review gates, task artifacts, evidence logs, handoff/resume, and DONE/BLOCKED verification. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Plan Design
 
-**UTILITY SKILL:** Apply this skill to implementation plans and durable task
-tracking: ambiguity reduction, option framing, multi-source synthesis, review
-gates, task artifacts, evidence logs, and handoff/resume. Task must be
-plan-ready. Preserve existing repo conventions.
-
-**USE FOR:** Implementation plans and durable task tracking: parallel
-investigation, multi-source synthesis, review gates, task artifacts, evidence
-logs, handoff/resume, DONE/BLOCKED verification; ambiguity reduction before
-planning; related file edits; verification and handoff.
-
-**DO NOT USE FOR:** unrelated domains, broad rewrites outside the request,
-generated runtime outputs, or replacing repo-specific source of truth.
+Owns implementation-plan authoring and durable task tracking for plan-ready
+tasks: ambiguity reduction, option framing, multi-source synthesis, review
+gates, task artifacts, evidence logs, and handoff/resume.
 
 ## 1. Workflow
 
@@ -35,18 +26,8 @@ generated runtime outputs, or replacing repo-specific source of truth.
    harness.
 6. Report verification results and any remaining risk.
 
-## 2. Examples
-
-For a request in this domain, load the plan authoring guide, update the
-relevant source, run focused checks, and summarize the result.
-
-## 3. References
+## 2. References
 
 - [Plan Authoring](references/plan-authoring.md)
 - [Brainstorming](references/brainstorming.md)
 - [Durable Task Tracking](references/durable-task-tracking.md)
-
-## 4. Troubleshooting
-
-If Waza or repo validation disagrees with the plan authoring guide, follow the
-stricter rule and record the exception in the handoff.

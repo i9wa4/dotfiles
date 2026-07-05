@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Verify a technical claim, compare library/tool options, or investigate an unfamiliar API with cited, confidence-rated evidence."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/subagent-review/SKILL.md
+      mode: negative
