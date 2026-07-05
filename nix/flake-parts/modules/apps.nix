@@ -28,10 +28,10 @@
       gh = lib.getExe pkgs.gh;
       jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
-      gcRootsReviewScript = ./../../../bin/ubuntu/list-stale-nix-gcroots.sh;
-      storagePressureReportScript = ./../../../bin/ubuntu/storage-pressure-report.sh;
-      rootLvmExtendScript = ./../../../bin/ubuntu/extend-root-lvm.sh;
-      dockerEngineSocketScript = ./../../../bin/ubuntu/docker-engine-socket.sh;
+      gcRootsReviewScript = ./../../../scripts/ubuntu/list-stale-nix-gcroots.sh;
+      storagePressureReportScript = ./../../../scripts/ubuntu/storage-pressure-report.sh;
+      rootLvmExtendScript = ./../../../scripts/ubuntu/extend-root-lvm.sh;
+      dockerEngineSocketScript = ./../../../scripts/ubuntu/docker-engine-socket.sh;
       tmuxA2aPostmanUpdateScript = ./../../packages/tmux-a2a-postman-nix-update.sh;
       wazaUpdateScript = ./../../packages/waza-nix-update.sh;
       actrunUpdateScript = ./../../packages/actrun-nix-update.sh;

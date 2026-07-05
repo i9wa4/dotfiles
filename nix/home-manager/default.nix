@@ -75,7 +75,7 @@ in
     # cf. https://nix-community.github.io/home-manager/options.xhtml#opt-home.sessionPath
     sessionPath = [
       "${homeDir}/.local/bin"
-      "${dotfilesDir}/bin"
+      "${dotfilesDir}/scripts/bin"
     ];
 
     # User packages (managed by home-manager)

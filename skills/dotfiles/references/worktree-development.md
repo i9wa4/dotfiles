@@ -268,9 +268,9 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
 
 ## 9. Related files
 
-- `bin/issue-worktree-create`
-- `bin/pr-worktree-create`
-- `bin/worktree-remove`
+- `scripts/bin/issue-worktree-create`
+- `scripts/bin/pr-worktree-create`
+- `scripts/bin/worktree-remove`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `nix/home-manager/modules/zsh.nix`

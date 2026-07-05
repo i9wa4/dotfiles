@@ -100,8 +100,8 @@ unlocked, and merged or otherwise confirmed obsolete.
 
 - `skills/dotfiles/references/worktree-development.md`
 - the worktree-tool evaluation decision record (private vault)
-- `bin/issue-worktree-create`
-- `bin/pr-worktree-create`
-- `bin/worktree-remove`
+- `scripts/bin/issue-worktree-create`
+- `scripts/bin/pr-worktree-create`
+- `scripts/bin/worktree-remove`
 - `config/zsh/zoxide.zsh`
 - `skills/dotfiles/references/workspace-worktree-workflow.md`

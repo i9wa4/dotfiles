@@ -54,7 +54,7 @@ in
               report_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/storage-report"
               umask 077
               mkdir -p "$report_dir"
-              exec ${pkgs.bash}/bin/bash ${./../../../bin/ubuntu/storage-pressure-report.sh} --self --summary >"$report_dir/latest.log"
+              exec ${pkgs.bash}/bin/bash ${./../../../scripts/ubuntu/storage-pressure-report.sh} --self --summary >"$report_dir/latest.log"
             '';
           in
           {

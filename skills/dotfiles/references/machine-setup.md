@@ -177,14 +177,14 @@ Ubuntu's installer can leave `/` as a 100G logical volume even when the disk
 and LVM physical volume are much larger. Check this before regular use:
 
 ```sh
-sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
 ```
 
 If the check reports free VG extents for the root logical volume, extend `/`
 with the managed helper:
 
 ```sh
-sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 ```
 
 The helper only handles the common case where `/` is already on LVM and the VG

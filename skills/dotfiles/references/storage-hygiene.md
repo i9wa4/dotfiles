@@ -426,7 +426,7 @@ nix run '.#gc-roots-delete'
 Managed swap reduction from 16GiB to 8GiB:
 
 ```sh
-sudo bash ./bin/ubuntu/setup-swap.sh
+sudo bash ./scripts/ubuntu/setup-swap.sh
 ```
 
 The swap command is approved only as part of the section 4 runbook.
@@ -513,7 +513,7 @@ pressure even though the volume group still has hundreds of GiB unallocated.
 Use the managed check from the dotfiles repo root:
 
 ```sh
-sudo bash ./bin/ubuntu/extend-root-lvm.sh --check
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --check
 ```
 
 The equivalent raw checks are:
@@ -541,7 +541,7 @@ the right tool. Resize the partition/PV first, then re-run the check.
 After reviewing the target VG/LV, run the managed helper:
 
 ```sh
-sudo bash ./bin/ubuntu/extend-root-lvm.sh --apply
+sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 ```
 
 The helper runs `lvextend -r -l +100%FREE` on the root LV. The `-r` flag grows
@@ -597,8 +597,8 @@ patch and the planned host operation. The helper may run `swapoff`, recreate
 Before approval, the safe validation surface is static only:
 
 ```sh
-bash -n bin/ubuntu/setup-swap.sh
-shellcheck bin/ubuntu/setup-swap.sh
+bash -n scripts/ubuntu/setup-swap.sh
+shellcheck scripts/ubuntu/setup-swap.sh
 git diff --check
 ```
 
@@ -629,7 +629,7 @@ Manual consolidation steps, all requiring root:
 7. After approval, run the helper from the dotfiles repo root.
 
    ```sh
-   sudo bash ./bin/ubuntu/setup-swap.sh
+   sudo bash ./scripts/ubuntu/setup-swap.sh
    ```
 
 ### 4.3. Swap 16GiB To 8GiB Runbook
@@ -662,7 +662,7 @@ metadata and live-write drift. It increases root filesystem headroom because
 3. Confirm the managed helper target before running it.
 
    ```sh
-   rg -n '^(SWAPFILE|SWAP_SIZE_GB|SWAPPINESS_TARGET)=' bin/ubuntu/setup-swap.sh
+   rg -n '^(SWAPFILE|SWAP_SIZE_GB|SWAPPINESS_TARGET)=' scripts/ubuntu/setup-swap.sh
    ```
 
    Expected policy for the default storage-priority host:
@@ -674,7 +674,7 @@ metadata and live-write drift. It increases root filesystem headroom because
 4. Approved action only: from the dotfiles repo root, run the managed helper.
 
    ```sh
-   sudo bash ./bin/ubuntu/setup-swap.sh
+   sudo bash ./scripts/ubuntu/setup-swap.sh
    ```
 
 5. Verify the live result.

@@ -152,9 +152,9 @@ session by name in tmux commands.
 ## 4. Worktree Lifecycle
 
 Primary creation entrypoints:
-`bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
-and `bin/pr-worktree-create [--allow-direnv] <pr_number>`. For interactive
-cleanup in the current repository, use `bin/worktree-remove` to choose one
+`scripts/bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
+and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For interactive
+cleanup in the current repository, use `scripts/bin/worktree-remove` to choose one
 managed worktree under the repo's `.worktrees/` directory with `fzf`, validate
 safety gates, and delete through native `git worktree` cleanup.
 
