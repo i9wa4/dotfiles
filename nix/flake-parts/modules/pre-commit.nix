@@ -40,8 +40,7 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh))$";
-      skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh))$";
+      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-trigger-matrix)\\.sh))$";
       skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh))$";
       skillTriggerMatrixPath = pkgs.lib.makeBinPath [
         pkgs.coreutils
@@ -135,7 +134,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-frontmatter-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-frontmatter.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-frontmatter.sh --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -147,7 +146,7 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-description-length.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-description-length.sh --staged
             ''}";
             files = "(^|/)SKILL\\.md$";
             types = [ "file" ];
@@ -162,7 +161,7 @@
               if [ -n "''${NIX_BUILD_TOP:-}" ]; then
                 export SKILL_WAZA_CHECK_LINKS=0
               fi
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-waza.sh} "$@"
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-waza.sh "$@"
             ''}";
             files = "^skills/";
             require_serial = true;
@@ -171,19 +170,9 @@
             enable = true;
             entry = "${pkgs.writeScript "skill-private-content-scan" ''
               #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-private-content.sh} --staged
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-private-content.sh --staged
             ''}";
             files = skillReleaseSurfaceFiles;
-            types = [ "file" ];
-            pass_filenames = false;
-          };
-          skill-release-readiness-check = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-release-readiness-check" ''
-              #!${pkgs.bash}/bin/bash
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-release-readiness.sh} --strict
-            ''}";
-            files = skillReleaseReadinessFiles;
             types = [ "file" ];
             pass_filenames = false;
           };
@@ -192,7 +181,7 @@
             entry = "${pkgs.writeScript "skill-trigger-matrix-check" ''
               #!${pkgs.bash}/bin/bash
               export PATH=${skillTriggerMatrixPath}:$PATH
-              exec ${pkgs.bash}/bin/bash ${../../../scripts/validation/validate-skill-trigger-matrix.sh} --strict-results
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
             ''}";
             files = skillTriggerMatrixFiles;
             types = [ "file" ];

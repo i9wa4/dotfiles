@@ -2,7 +2,7 @@
 
 This procedure validates that consolidated Agent Skills still route work to the
 right target skill after compatibility triggers are demoted, merged, or removed.
-It is the release-readiness gate for issue #178.
+It is the trigger-quality gate for issue #178.
 
 ## 1. Trigger Matrix
 
@@ -65,7 +65,6 @@ bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
   skills/dotfiles/references/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
-bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
 
 ## 3. Manual Trigger Run
@@ -92,7 +91,7 @@ same target.
 When a runtime selector harness is unavailable, a reviewer may record
 `validation_method: "manual_catalog_review"` after checking the current
 `SKILL.md` trigger description, compatibility-trigger body, and
-`skills/classification.yaml` target mapping for the case.
+trigger matrix target mapping for the case.
 
 Manual catalog review is acceptable only when the reviewed surfaces clearly map
 the prompt to the expected target skill. Cases that rely on another open cleanup

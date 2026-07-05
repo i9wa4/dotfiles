@@ -40,7 +40,6 @@ Current deterministic gates include:
 - `ruff` for Python utilities.
 - `gitleaks` and `betterleaks` for secret scanning.
 - `scripts/validation/validate-skill-trigger-matrix.sh --strict-results`.
-- `scripts/validation/validate-skill-release-readiness.sh --strict`.
 - `scripts/validation/validate-skill-waza.sh`.
 - `scripts/validation/validate-skill-private-content.sh`.
 - CI checks wired through `.github/workflows/ci.yaml`.

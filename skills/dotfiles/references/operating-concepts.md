@@ -193,9 +193,8 @@ large fallback skill:
   contracts, and resume handoff
 - `skills/dotfiles/` owns source skill editing, validation, and
   publish-readiness checks
-- `skills/dotfiles/references/agent-skills-management.md` points
-  to the Agent Skills management procedure and the release-all classification
-  memo in `skills/classification.yaml`
+- `skills/dotfiles/references/skills-management.md` owns the Agent Skills
+  management procedure
 - `skills/dotfiles/references/repo-ai-operating-contract.md` owns durable
   operating rules and task artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
@@ -357,10 +356,8 @@ When you need to understand the operating concept, read these in order:
 ## 11. Related files
 
 - `skills/dotfiles/references/repo-ai-operating-contract.md`
-- `skills/dotfiles/references/agent-skills-management.md`
 - `skills/dotfiles/references/agent-config-philosophy.md`
 - `skills/dotfiles/references/deny-bash-design.md`
-- `skills/classification.yaml`
 - `skills/dotfiles/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/install-manifest.nix`

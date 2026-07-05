@@ -5,8 +5,8 @@ diagnostics. Keep runtime hooks and engine config in harness/config skills.
 
 **USE FOR:** add, edit, rename, remove, inspect, validate, or publish Agent
 Skills; improve frontmatter, trigger descriptions, body structure, references,
-scripts, assets, or eval files; run Waza, release-readiness checks, tag-only
-publish dry-runs, pre-commit/CI harnesses, and catalog diagnostics.
+scripts, assets, or eval files; run Waza, tag-only publish dry-runs,
+pre-commit/CI harnesses, and catalog diagnostics.
 
 **DO NOT USE FOR:** runtime hooks, engine config, broad docs migrations, or
 generated outputs:
@@ -21,9 +21,10 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
 3. Run Waza before and after edits:
    `waza --no-update-check check skills/<name> --format json`. Address
    readiness, trigger clarity, budget, links, eval gaps, and complexity.
-4. Treat Waza as quality/eval readiness. Use
-   `scripts/validation/validate-skill-release-readiness.sh --strict` for the
-   deterministic release gate.
+4. Treat Waza as quality/eval readiness. The deterministic commit gates are
+   the frontmatter, private-content, and trigger-matrix validators wired into
+   pre-commit; a tag push publishes every checked-in skill via
+   `gh skill publish` (dry-run with `gh skill publish --dry-run`).
 5. Verify the changed surface, then report remaining Waza findings.
 
 ## 2. Troubleshooting
@@ -41,6 +42,4 @@ Skill catalog lookup and description recovery live in
 
 - [Waza and Publishing](waza-publishing.md)
 - [Skill Description Index](skill-description-index.md)
-- [Management Procedures](agent-skills-management.md)
 - [Trigger Validation](agent-skill-trigger-validation.md)
-- [Release All](agent-skills-release-all.md)
