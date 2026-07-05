@@ -13,7 +13,7 @@ Owns repo-local diagramming guidance for draw.io and Mermaid workflows. Use this
 skill for diagram source edits, preview/export decisions, layout checks,
 color/asset conventions, and diagram-focused validation.
 
-## 1. Use For
+## 1. Scope
 
 - draw.io `.drawio` source creation, editing, review, and export.
 - draw.io layout, color palette, shape vocabulary, and AWS icon usage.
@@ -22,7 +22,7 @@ color/asset conventions, and diagram-focused validation.
   validation.
 - Diagram-focused scripts and reference assets.
 
-## 2. Do Not Use For
+Out of scope:
 
 - Data-platform workflows; use `data-platform`.
 - GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
@@ -31,7 +31,7 @@ color/asset conventions, and diagram-focused validation.
 - Agent harness runtime, hooks, postman routing, or installed agent outputs;
   use `dotfiles`.
 
-## 3. Workflow
+## 2. Workflow
 
 1. Inspect the diagram source, nearby conventions, and `git status`.
 2. Choose the focused reference below before editing or validating diagrams.
@@ -41,7 +41,7 @@ color/asset conventions, and diagram-focused validation.
    changes are user-visible.
 5. Run the nearest diagram or Markdown checks before reporting success.
 
-## 4. References
+## 3. References
 
 - [draw.io](references/drawio.md)
 - [Mermaid](references/mermaid.md)

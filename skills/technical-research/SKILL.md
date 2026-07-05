@@ -9,15 +9,9 @@ description: |
 
 # Technical Research
 
-Technical research specialist. Verifies claims, compares options, provides
-evidence.
-
-**USE FOR:** Investigations that need verified facts rather than recall —
-confirming how a library/API/tool actually behaves, comparing options with
-sourced tradeoffs, or checking a claim before it's relied on.
-
-**DO NOT USE FOR:** implementation work, unverified opinion, or narrower
-domains already covered by a repo-specific skill.
+Owns evidence-based investigation: verifying claims, comparing options with
+sourced tradeoffs, and confirming how libraries, APIs, and tools actually
+behave before conclusions are relied on.
 
 ## 1. Discipline
 
@@ -26,7 +20,7 @@ domains already covered by a repo-specific skill.
 - Flag confidence level (High/Medium/Low) on each finding
 - Clearly separate facts from opinions and recommendations
 
-## 2. Investigation Workflow
+## 2. Workflow
 
 1. Clarify scope: what exactly needs to be answered?
 2. Search official docs first (WebSearch + WebFetch)
@@ -51,24 +45,4 @@ domains already covered by a repo-specific skill.
 ## 4. Output Format
 
 ```text
-## Research: [Topic]
-
-### Key Findings
-
-- Finding (confidence: High/Medium/Low): Description
-  - Source: [URL or file path]
-
-### Comparison (if applicable)
-
-| Option | Pros       | Cons       |
-| ------ | ---------- | ---------- |
-| A      | ...        | ...        |
-
-### Code Examples
-
-Relevant verified snippets
-
-### Next Actions
-
-1. Recommended action
 ```

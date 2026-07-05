@@ -1,0 +1,15 @@
+id: positive-trigger-001
+name: Positive Trigger 1
+description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Run the native multi-perspective review workflow and synthesize blocking findings."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/subagent-review/SKILL.md
+      mode: positive

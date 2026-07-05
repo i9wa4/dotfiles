@@ -9,23 +9,18 @@ description: |
 
 # Create Review Comment
 
-**UTILITY SKILL:** Draft Japanese GitHub PR review comments. Infer the PR,
-route correctly, and keep guardian/critic mechanics internal.
+User-facing trigger for drafting Japanese GitHub PR review comments.
+`$create-review-comment`, `$create-review-comment #123`, and
+`ai-create-review-comment for this branch` all start target inference and
+drafting.
 
-**USE FOR:** review-comment drafting, related edits, verification, and handoff.
-
-**DO NOT USE FOR:** unrelated domains, broad rewrites, generated runtime
-outputs, replacing source of truth, or posting without explicit approval.
-
-## 1. Boundary
-
-This user-facing trigger owns target inference, Japanese draft output, and the
+Owns target inference, Japanese draft output, and the
 no-post-without-approval gate. Review procedure belongs to
 `subagent-review`; GitHub mechanics and path hygiene belong to `collaboration`.
 In `tmux-a2a-postman`, orchestrator/worker only infer targets and collect PR
 context before routing substantive review to guardian.
 
-## 2. Workflow
+## 1. Workflow
 
 1. Infer the target PR from the prompt, current branch, or GitHub context. If
    missing or ambiguous, ask only for the minimum target identifier.
@@ -39,17 +34,6 @@ context before routing substantive review to guardian.
 5. Output draft comments visibly for user approval. Do not post them unless the
    user explicitly asks.
 
-## 3. Examples
-
-`$create-review-comment`, `$create-review-comment #123`, and
-`ai-create-review-comment for this branch` all start target inference and
-review-comment drafting.
-
-## 4. References
+## 2. References
 
 - [Workflow](references/workflow.md)
-
-## 5. Troubleshooting
-
-If Waza or repo validation disagrees with the workflow guide, follow the
-stricter rule and record the exception in the handoff.

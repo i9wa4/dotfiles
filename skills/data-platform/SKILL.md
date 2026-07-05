@@ -12,7 +12,7 @@ description: |
 Owns repo-local data-platform guardrails. Use official provider skills for
 general cloud or product documentation, then apply these rules.
 
-## 1. Use For
+## 1. Scope
 
 - BigQuery cost-aware query patterns, GoogleSQL guardrails, table design, and
   slot usage checks.
@@ -24,7 +24,7 @@ general cloud or product documentation, then apply these rules.
 - Cloud authentication workflows that must run through a user-authenticated
   pane instead of the agent pane.
 
-## 2. Do Not Use For
+Out of scope:
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `dotfiles`.
@@ -33,7 +33,7 @@ general cloud or product documentation, then apply these rules.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.
 
-## 3. Workflow
+## 2. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Select the focused reference below before changing files or running data
@@ -45,7 +45,7 @@ general cloud or product documentation, then apply these rules.
 5. Run the fastest focused check during iteration, then the nearest repo
    validation surface before reporting success.
 
-## 4. References
+## 3. References
 
 - [BigQuery](references/bigquery.md)
 - [Databricks](references/databricks.md)

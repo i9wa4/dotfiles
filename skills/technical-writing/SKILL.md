@@ -15,9 +15,9 @@ description: |
 
 # Technical Writing
 
-**UTILITY SKILL:** Apply this skill when technical prose needs quality review,
-translation workflow guidance, terminology control, Japanese editorial review,
-AI-slop cleanup, or publication QA.
+Owns technical prose quality without changing meaning: English and Japanese
+editorial review, English-to-Japanese translation workflow, terminology,
+AI-slop cleanup, and publication QA.
 
 ## 1. Workflow
 
@@ -43,9 +43,9 @@ and PR #226: automation, provider/model choice, cost controls, privacy policy,
 external-sharing authorization, derivative publication approval, and source
 chunking remain outside this skill.
 
-## 3. Folded Triggers
+## 3. References
 
-Former `english-writing-quality` and
-`english-to-japanese-technical-translation` requests now route directly here.
-Use the focused references for Vale/Harper checks, Japanese style, and
-translation workflow details.
+- [Vale And Harper](references/vale-and-harper.md)
+- [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
+- [Japanese Writing Style](references/japanese-writing-style.md)
+- [Prose Review](references/prose-review.md)

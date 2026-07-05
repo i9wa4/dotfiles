@@ -176,6 +176,18 @@
             types = [ "file" ];
             pass_filenames = false;
           };
+          skill-trigger-evals-check = {
+            enable = true;
+            entry = "${pkgs.writeScript "skill-trigger-evals-check" ''
+              #!${pkgs.bash}/bin/bash
+              export WAZA_BIN=${waza}/bin/waza
+              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-evals.sh
+            ''}";
+            files = "^skills/.*(SKILL\\.md|evals/.*)$";
+            types = [ "file" ];
+            pass_filenames = false;
+            require_serial = true;
+          };
           skill-trigger-matrix-check = {
             enable = true;
             entry = "${pkgs.writeScript "skill-trigger-matrix-check" ''

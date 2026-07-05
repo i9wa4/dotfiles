@@ -12,7 +12,7 @@ description: |
 Owns repo-local implementation guidance and systematic debugging. Prefer a
 narrower domain skill when one exists.
 
-## 1. Use For
+## 1. Scope
 
 - Bash scripts and shell command design.
 - Python utility edits, local execution rules, and general Python quality:
@@ -23,14 +23,14 @@ narrower domain skill when one exists.
 - Systematic debugging: reproducer isolation, working-pattern comparison, and
   root-cause analysis.
 
-## 2. Do Not Use For
+Out of scope:
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `dotfiles`.
 - GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
 - Data-platform or diagramming workflows; use their target skills.
 
-## 3. Workflow
+## 2. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
 2. Select the focused reference below before changing files.
@@ -40,7 +40,7 @@ narrower domain skill when one exists.
 5. Report changed files, verification, residual Waza findings, and remaining
    risk.
 
-## 4. References
+## 3. References
 
 - [Bash Scripting](references/bash-scripting.md)
 - [Python Development](references/python-development.md)

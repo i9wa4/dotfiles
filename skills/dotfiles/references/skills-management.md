@@ -18,14 +18,19 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
 1. Inspect `skills/`, validation harnesses, the target skill, and `git status`.
 2. Edit only requested skill sources and necessary pointers. Keep `SKILL.md`
    short; move optional detail to references.
-3. Run Waza before and after edits:
+3. Keep the skill's offline trigger eval in `skills/<name>/evals/` in sync:
+   update `tasks/*.yaml` prompts when USE FOR / DO NOT USE FOR triggers
+   change. For a new skill, scaffold with
+   `waza new eval <name> --output skills/<name>/evals/eval.yaml`, set
+   `executor: mock`, and use `trigger` graders (deterministic, no model).
+4. Run Waza before and after edits:
    `waza --no-update-check check skills/<name> --format json`. Address
    readiness, trigger clarity, budget, links, eval gaps, and complexity.
-4. Treat Waza as quality/eval readiness. The deterministic commit gates are
+5. Treat Waza as quality/eval readiness. The deterministic commit gates are
    the frontmatter, private-content, and trigger-matrix validators wired into
    pre-commit; a tag push publishes every checked-in skill via
    `gh skill publish` (dry-run with `gh skill publish --dry-run`).
-5. Verify the changed surface, then report remaining Waza findings.
+6. Verify the changed surface, then report remaining Waza findings.
 
 ## 2. Troubleshooting
 
@@ -53,19 +58,28 @@ dev shell.
 
 ## 4. Eval Suites
 
-Every skill has a trigger-accuracy eval under `evals/<skill>/`, seeded from
-the curated prompts in `skills/trigger-validation.json` (positives) and
-cross-skill prompts (negatives). Current state and adoption path:
+Every skill has a deterministic trigger-accuracy eval at
+`skills/<skill>/evals/eval.yaml` (mock executor, offline `trigger` graders):
+positives come from the curated trigger-matrix prompts, negatives from a
+far-domain skill's prompt. `validate-skill-trigger-evals.sh` runs all suites
+at commit time and in `nix flake check`; a failing suite means a prompt and a
+description have drifted apart, and the fix is usually description keywords,
+not the eval.
 
-- `waza coverage .` prints the eval coverage grid; suites are partial seeds,
-  not full behavioral coverage.
-- `waza run` / `waza gate` execute suites against a real model and gate on
-  regressions; adopt them when an API budget for eval runs is decided.
-- `waza adversarial --skill <name>` offers offline prompt-injection and
-  scope-bypass packs (`--engine mock` for CI smoke).
-- When adding or renaming a skill, update both the trigger matrix and its
-  eval suite; long term the eval suite is the executable replacement for
-  manual `manual_catalog_review` entries.
+Deliberately deferred (needs a real model):
+
+- `waza run --model ...` via the embedded Copilot CLI consumes Copilot
+  premium requests; useful locally for behavioral evals, not wired into CI.
+- `waza gate` regression gating becomes useful once stochastic real-model
+  results exist; offline trigger runs are deterministic, so plain pass/fail
+  is equivalent.
+- `waza spec verify skills/<name> skills/<name>/evals/eval.yaml` reports
+  which USE FOR phrases lack eval coverage; grow tasks toward full coverage.
+- `waza adversarial --skill <name>` prompt-injection/scope packs need a live
+  engine for real signal (`--engine mock` is plumbing smoke only).
+
+When adding or renaming a skill, update the trigger matrix and the eval
+suite together; the eval suite is the executable form of the matrix.
 
 ## 5. Reference Index
 
