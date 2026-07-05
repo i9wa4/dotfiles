@@ -99,7 +99,16 @@ uv run jupyter execute <notebook_path> --inplace --kernel_name=databricks --time
 
 Cluster startup can take several minutes if the target cluster is stopped.
 
-## 7. References
+## 7. Bundled Scripts
+
+- `skills/data-platform/scripts/databricks-libs.py <version>` — scrape the
+  Databricks Runtime release notes and emit the runtime's Python library
+  pins as pyproject.toml dependency-groups (or `--format req` for
+  requirements format). Use when pinning a local venv to match a runtime,
+  e.g. `databricks-libs.py 17.3`. Needs `requests`; run via
+  `uv run --with requests skills/data-platform/scripts/databricks-libs.py 17.3`.
+
+## 8. References
 
 - VARIANT: <https://docs.databricks.com/aws/en/semi-structured/variant.html>
 - JSON operations:
