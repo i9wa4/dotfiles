@@ -75,13 +75,7 @@ in
             };
             # Linux-specific home-manager settings
             home = {
-              packages = [
-                # pkgs.docker includes dockerd.
-                # Rootful socket setup is exposed by nix run '.#docker-socket'.
-                pkgs.docker
-                pkgs.docker-compose
-                pkgs.docker-credential-helpers
-              ];
+              packages = [ ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";
               # Start ssh-agent if not running

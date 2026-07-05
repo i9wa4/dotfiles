@@ -89,11 +89,11 @@ tmux capture-pane -t %33 -p | tail -20
 sleep 10 && tmux capture-pane -t %33 -p | tail -20
 ```
 
-### 2.2. devcontainer Build/Up Monitoring
+### 2.2. Long Build Monitoring
 
 ```bash
 # Send build command
-tmux send-keys -t %33 "devcontainer build --workspace-folder /path/to/project" Enter
+tmux send-keys -t %33 "nix build .#package" Enter
 
 # Monitor build progress (check every 10-15 seconds)
 sleep 10 && tmux capture-pane -t %33 -p | tail -25
@@ -163,11 +163,10 @@ pattern only appears in the file content, not in the Bash command itself.
 
 ## 4. Common Use Cases
 
-### 4.1. Container Operations
+### 4.1. Long-Running Operations
 
-- devcontainer build/up monitoring
-- Docker compose operations
-- Container log monitoring
+- Long build monitoring
+- Service log monitoring
 
 ### 4.2. Build Systems
 

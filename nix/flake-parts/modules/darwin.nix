@@ -122,6 +122,7 @@ in
       commonCasks = [
         "claude"
         "codex-app"
+        # TODO: replace with podman (planned migration off Docker Desktop)
         "docker-desktop"
         "drawio"
         "google-chrome"
