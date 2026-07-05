@@ -96,7 +96,7 @@ Full diagnosis and commands live in
   ```
 
 - For publishable skill changes, rely on the pre-commit gates (frontmatter,
-  private-content, Waza, trigger matrix). `gh skill publish --dry-run` is
+  private-content, Waza, offline trigger evals). `gh skill publish --dry-run` is
   reserved for the tag-push release flow.
 - Run `nix flake check` when feasible after changes that affect installed agent
   sources or Nix validation.

@@ -27,7 +27,7 @@ and `~/.codex/skills` (private-content-scan: allow; generic output).
    `waza --no-update-check check skills/<name> --format json`. Address
    readiness, trigger clarity, budget, links, eval gaps, and complexity.
 5. Treat Waza as quality/eval readiness. The deterministic commit gates are
-   the frontmatter, private-content, and trigger-matrix validators wired into
+   the frontmatter, private-content, and trigger-eval validators wired into
    pre-commit; a tag push publishes every checked-in skill via
    `gh skill publish` (dry-run with `gh skill publish --dry-run`).
 6. Verify the changed surface, then report remaining Waza findings.
@@ -60,8 +60,8 @@ dev shell.
 
 Every skill has a deterministic trigger-accuracy eval at
 `skills/<skill>/evals/eval.yaml` (mock executor, offline `trigger` graders):
-positives come from the curated trigger-matrix prompts, negatives from a
-far-domain skill's prompt. `validate-skill-trigger-evals.sh` runs all suites
+positives are curated realistic prompts, negatives come from a far-domain
+skill's prompt. `validate-skill-trigger-evals.sh` runs all suites
 at commit time and in `nix flake check`; a failing suite means a prompt and a
 description have drifted apart, and the fix is usually description keywords,
 not the eval.
@@ -78,11 +78,10 @@ Deliberately deferred (needs a real model):
 - `waza adversarial --skill <name>` prompt-injection/scope packs need a live
   engine for real signal (`--engine mock` is plumbing smoke only).
 
-When adding or renaming a skill, update the trigger matrix and the eval
-suite together; the eval suite is the executable form of the matrix.
+When adding or renaming a skill, update its eval suite in the same change;
+the suite is the enforced record of the skill's trigger surface.
 
 ## 5. Reference Index
 
 - [Waza and Publishing](waza-publishing.md)
 - [Skill Description Index](skill-description-index.md)
-- [Trigger Validation](agent-skill-trigger-validation.md)

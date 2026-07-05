@@ -1,5 +1,5 @@
 name: plan-design-eval
-description: Trigger-accuracy eval for plan-design, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for plan-design.
 skill: plan-design
 version: "1.0"
 config:

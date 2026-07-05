@@ -1,5 +1,5 @@
 name: programming-eval
-description: Trigger-accuracy eval for programming, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for programming.
 skill: programming
 version: "1.0"
 config:

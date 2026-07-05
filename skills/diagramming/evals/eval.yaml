@@ -1,5 +1,5 @@
 name: diagramming-eval
-description: Trigger-accuracy eval for diagramming, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for diagramming.
 skill: diagramming
 version: "1.0"
 config:

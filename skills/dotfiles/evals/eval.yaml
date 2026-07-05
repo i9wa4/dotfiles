@@ -1,5 +1,5 @@
 name: dotfiles-eval
-description: Trigger-accuracy eval for dotfiles, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for dotfiles.
 skill: dotfiles
 version: "1.0"
 config:

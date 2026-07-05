@@ -1,5 +1,5 @@
 name: technical-writing-eval
-description: Trigger-accuracy eval for technical-writing, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for technical-writing.
 skill: technical-writing
 version: "1.0"
 config:

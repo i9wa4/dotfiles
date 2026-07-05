@@ -1,5 +1,5 @@
 name: data-platform-eval
-description: Trigger-accuracy eval for data-platform, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for data-platform.
 skill: data-platform
 version: "1.0"
 config:

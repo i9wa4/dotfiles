@@ -40,14 +40,7 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-trigger-matrix)\\.sh))$";
-      skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh))$";
-      skillTriggerMatrixPath = pkgs.lib.makeBinPath [
-        pkgs.coreutils
-        pkgs.gawk
-        pkgs.gnugrep
-        pkgs.jq
-      ];
+      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -187,17 +180,6 @@
             types = [ "file" ];
             pass_filenames = false;
             require_serial = true;
-          };
-          skill-trigger-matrix-check = {
-            enable = true;
-            entry = "${pkgs.writeScript "skill-trigger-matrix-check" ''
-              #!${pkgs.bash}/bin/bash
-              export PATH=${skillTriggerMatrixPath}:$PATH
-              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results
-            ''}";
-            files = skillTriggerMatrixFiles;
-            types = [ "file" ];
-            pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 

@@ -1,6 +1,6 @@
 id: positive-trigger-002
 name: Positive Trigger 2
-description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+description: Curated trigger-accuracy prompt for this skill.
 tags:
   - positive-trigger
 inputs:

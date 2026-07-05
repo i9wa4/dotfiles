@@ -69,9 +69,6 @@ is_scan_target() {
   scripts/validation/validate-skill-private-content.sh)
     return 0
     ;;
-  scripts/validation/validate-skill-trigger-matrix.sh)
-    return 0
-    ;;
   *)
     return 1
     ;;

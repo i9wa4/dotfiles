@@ -1,5 +1,5 @@
 name: subagent-review-eval
-description: Trigger-accuracy eval for subagent-review, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for subagent-review.
 skill: subagent-review
 version: "1.0"
 config:

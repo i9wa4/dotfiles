@@ -1,5 +1,5 @@
 name: technical-research-eval
-description: Trigger-accuracy eval for technical-research, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for technical-research.
 skill: technical-research
 version: "1.0"
 config:

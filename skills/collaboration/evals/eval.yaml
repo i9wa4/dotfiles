@@ -1,5 +1,5 @@
 name: collaboration-eval
-description: Trigger-accuracy eval for collaboration, seeded from the repo trigger matrix.
+description: Trigger-accuracy eval for collaboration.
 skill: collaboration
 version: "1.0"
 config:
