@@ -203,8 +203,7 @@ skills:
     validation_expectations: *common_validation
     notes: >
       Merged into the dotfiles owner skill on 2026-07-05. All references
-      moved to skills/dotfiles/references/; the alias term stays in the
-      dotfiles frontmatter description for trigger continuity.
+      moved to skills/dotfiles/references/.
 
   - name: agent-skills-management
     path: skills/agent-skills-management

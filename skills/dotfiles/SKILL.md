@@ -2,13 +2,12 @@
 name: dotfiles
 license: MIT
 description: |
-  USE FOR: This dotfiles environment and its agent harness: machine setup (Ubuntu, WSL2, macOS, Nix install, home-manager, nix-darwin), daily Nix operations and upgrade/recovery, missing CLI tools / command not found, operating concepts, storage hygiene, clipboard (Vim, Neovim, tmux), Claude Code and Codex CLI config, hooks, MCP, skill installation, postman routing, orchestrator runbooks, tmux workspaces, issue/PR worktrees, pane operations, prompt/review contracts, resume handoff; aliases: agent-harness-engineering, agent-workspace, prompt-contracts-local. DO NOT USE FOR: Nix package authoring (programming); skill authoring (agent-skills-management).
+  USE FOR: This dotfiles environment and its agent harness: machine setup (Ubuntu, WSL2, macOS, Nix install, home-manager, nix-darwin), daily Nix operations and upgrade/recovery, missing CLI tools / command not found, operating concepts, storage hygiene, clipboard (Vim, Neovim, tmux), Claude Code and Codex CLI config, hooks, MCP, skill installation, postman routing, orchestrator runbooks, tmux workspaces, issue/PR worktrees, pane operations, prompt/review contracts, resume handoff. DO NOT USE FOR: Nix package authoring (programming); skill authoring (agent-skills-management).
 ---
 
 # Dotfiles Environment
 
-Owner skill for this machine, this repository, and the agent harness
-(formerly `agent-harness-engineering`).
+Owner skill for this machine, this repository, and the agent harness.
 
 ## 1. Workflow
 

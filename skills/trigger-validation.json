@@ -21,40 +21,7 @@
           "observed_skill": "dotfiles",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Former agent-harness-engineering target prompt; harness scope now owned by the dotfiles skill."
-        },
-        {
-          "id": "agent-workspace-removed-alias",
-          "kind": "removed_alias",
-          "prompt": "Use the former agent-workspace skill for an agent tmux workspace, issue worktree workflow, or pane operation.",
-          "expected_skill": "dotfiles",
-          "result": "pass",
-          "observed_skill": "dotfiles",
-          "checked_at": "2026-06-02",
-          "validation_method": "manual_catalog_review",
-          "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and workspace references."
-        },
-        {
-          "id": "prompt-contracts-local-removed-alias",
-          "kind": "removed_alias",
-          "prompt": "Use the former prompt-contracts-local skill for task prompt, review contract, prompt block, or resume-handoff work.",
-          "expected_skill": "dotfiles",
-          "result": "pass",
-          "observed_skill": "dotfiles",
-          "checked_at": "2026-06-02",
-          "validation_method": "manual_catalog_review",
-          "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and prompt-contract references."
-        },
-        {
-          "id": "agent-harness-engineering-removed-alias",
-          "kind": "removed_alias",
-          "prompt": "Use the former agent-harness-engineering skill for Claude/Codex harness config, hooks, or postman routing.",
-          "expected_skill": "dotfiles",
-          "result": "pass",
-          "observed_skill": "dotfiles",
-          "checked_at": "2026-07-05",
-          "validation_method": "manual_catalog_review",
-          "notes": "agent-harness-engineering was merged into the dotfiles owner skill; the alias term is listed in the dotfiles frontmatter description."
+          "notes": "Harness scope (Claude/Codex config, hooks, postman routing, workspaces, prompt contracts) is owned by the dotfiles skill."
         },
         {
           "id": "dotfiles-environment-target",

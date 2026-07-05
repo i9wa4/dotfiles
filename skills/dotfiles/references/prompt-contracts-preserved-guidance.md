@@ -12,14 +12,14 @@ concise skill needs domain-specific details.
 
 ~~~~~~~~~~~~markdown
 ---
-name: prompt-contracts-local
+name: dotfiles
 license: MIT
 description: |
   Task prompts, review contracts, and resume-handoff patterns for Claude Code
   and Codex CLI agent workflows in this repo.
 ---
 
-# prompt-contracts-local
+# Prompt Contracts
 
 This skill captures the shared prompt-shaping patterns used across the current
 `nix/home-manager/agents/` setup.

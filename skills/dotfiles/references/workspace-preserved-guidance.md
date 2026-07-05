@@ -14,7 +14,7 @@ concise skill needs domain-specific details.
 
 ~~~~~~~~~~~~markdown
 ---
-name: agent-workspace
+name: dotfiles
 license: MIT
 description: |
   Boot and manage agent tmux workspaces using the vde-layout va preset,
