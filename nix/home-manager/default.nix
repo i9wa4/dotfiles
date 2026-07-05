@@ -125,9 +125,6 @@ in
       pkgs.mise
       pkgs.podman
       pkgs.podman-compose
-    ]
-    ++ lib.optionals pkgs.stdenv.isDarwin [
-      pkgs.macmon
     ];
 
     # ==========================================================================
