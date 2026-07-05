@@ -1,16 +1,16 @@
 ---
 name: programming
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: Programming and systematic debugging: Bash scripts, Python code quality and Jupyter notebooks (type hints, pytest, uv, ruff, pyright), Nix package workflow, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
 ---
 
 # Programming
 
-Owns repo-local implementation guidance and systematic debugging. Use more
-specific domain skills when they exist; otherwise use this skill for Bash,
-Python, general Nix package workflow, Markdown, implementation-loop discipline,
-and root-cause debugging.
+Owns repo-local implementation guidance and systematic debugging. Prefer a
+narrower domain skill when one exists.
 
 ## 1. Use For
 

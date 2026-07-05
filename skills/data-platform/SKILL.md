@@ -1,16 +1,16 @@
 ---
 name: data-platform
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: Repo-local BigQuery, Databricks, dbt, restricted BigQuery/dbt safety, and cloud auth workflows. DO NOT USE FOR: harness, diagrams, or generic code.
 ---
 
 # Data Platform
 
-Owns repo-local data-platform guidance for BigQuery, Databricks, dbt,
-restricted BigQuery/dbt safety, and cloud authentication workflows. Use official
-provider skills for general cloud or product documentation, then apply these
-repo-specific guardrails.
+Owns repo-local data-platform guardrails. Use official provider skills for
+general cloud or product documentation, then apply these rules.
 
 ## 1. Use For
 

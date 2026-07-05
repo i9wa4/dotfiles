@@ -1,15 +1,15 @@
 ---
 name: subagent-review
 license: MIT
+metadata:
+  version: "1.0.0"
 description: "USE FOR: Guardian/critic reviews using guardian-specified native reviewer perspectives. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
 ---
 
 # Subagent Review
 
-Runtime-native reviewer perspectives. No implementation, approval, fan-out,
-or model/tier overrides.
-
-Defaults: security, architecture, historian, code, QA.
+Runtime-native reviewer perspectives (defaults: security, architecture,
+historian, code, QA). No implementation, approval, fan-out, or overrides.
 
 ## 1. Workflow
 
@@ -21,10 +21,10 @@ Defaults: security, architecture, historian, code, QA.
    to guardian-labeled trivials; self-review still required.
 4. Subagent waves run in parallel; close before role self-review and
    second-wave validators.
-5. Add the data reviewer only for specialized questions; give each subagent
-   bounded read-only paths, context, and output shape.
-6. Deduplicate across six inputs per role; produce critic packet (six) or
-   guardian verdict (twelve: six guardian + six critic).
+5. Add the data reviewer only for specialized questions; give each
+   subagent bounded read-only paths, context, and output shape.
+6. Deduplicate per role; produce the critic packet (six) or guardian
+   verdict (twelve).
 
 ## 2. Role Rules
 
@@ -45,5 +45,4 @@ Defaults: security, architecture, historian, code, QA.
 
 ## 3. Output
 
-Perspective, paths, evidence, severity, confidence, gaps. Guardian aggregates
-final verdicts.
+Perspective, paths, evidence, severity, confidence, gaps.

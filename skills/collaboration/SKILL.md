@@ -1,6 +1,8 @@
 ---
 name: collaboration
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: Collaboration platforms (GitHub, Jira, Confluence): gh CLI usage, PR/commit/issue management, review style, public surface path hygiene; Jira and Confluence via Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
 ---

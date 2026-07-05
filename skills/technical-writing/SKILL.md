@@ -1,6 +1,8 @@
 ---
 name: technical-writing
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: Technical prose quality, Vale/Harper checks, terminology, English
   and Japanese editorial review, English-to-Japanese translation workflow,

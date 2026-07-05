@@ -1,7 +1,7 @@
 # English-to-Japanese Technical Translation Workflow
 
 This reference is a packaged copy of
-`skills/technical-writing/references/english-to-japanese-technical-translation.md`.
+[English-to-Japanese Technical Translation](english-to-japanese-technical-translation.md).
 The docs page is canonical; update both files in the same change so the
 technical-writing skill can use the workflow without loading repository
 documentation context.

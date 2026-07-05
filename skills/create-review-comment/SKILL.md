@@ -1,6 +1,8 @@
 ---
 name: create-review-comment
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: `$create-review-comment`, ai-create-review-comment, or terse PR-review-comment requests. Infers the PR and routes postman substantive review through guardian/critic without exposing mechanics. DO NOT USE FOR: unrelated tasks, broad rewrites, generated outputs, or posting comments without explicit approval.
 ---

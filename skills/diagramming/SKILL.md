@@ -1,6 +1,8 @@
 ---
 name: diagramming
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: draw.io and Mermaid diagram authoring, preview, export, layout, color, and asset workflows in this repo. DO NOT USE FOR: data-platform or generic coding tasks.
 ---

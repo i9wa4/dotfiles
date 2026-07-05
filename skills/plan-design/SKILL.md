@@ -1,6 +1,8 @@
 ---
 name: plan-design
 license: MIT
+metadata:
+  version: "1.0.0"
 description: |
   USE FOR: Implementation plans and durable task tracking: parallel investigation, multi-source synthesis, review gates, task artifacts, evidence logs, handoff/resume, and DONE/BLOCKED verification. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
 ---
