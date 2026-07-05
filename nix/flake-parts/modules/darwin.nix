@@ -29,6 +29,14 @@ let
     "macskk"
     "zoom"
   ];
+  darwinHosts = {
+    "macos-p" = {
+      casks = commonHomebrewCasks;
+    };
+    "macos-w" = {
+      casks = commonHomebrewCasks ++ [ "openvpn-connect" ];
+    };
+  };
   skhdConfig = ''
     # App switching: Alt + 1/2/3
     alt - 1 : open -a "kitty"
@@ -215,14 +223,7 @@ in
   # darwin-rebuild switch --flake '.#macos-p' --impure
   # darwin-rebuild switch --flake '.#macos-w' --impure
   # Requires --impure because we use builtins.getEnv to read SUDO_USER
-  flake.darwinConfigurations = {
-    "macos-p" = mkDarwinConfiguration {
-      hostname = "macos-p";
-      casks = commonHomebrewCasks;
-    };
-    "macos-w" = mkDarwinConfiguration {
-      hostname = "macos-w";
-      casks = commonHomebrewCasks ++ [ "openvpn-connect" ];
-    };
-  };
+  flake.darwinConfigurations = lib.mapAttrs (
+    hostname: hostConfig: mkDarwinConfiguration ({ inherit hostname; } // hostConfig)
+  ) darwinHosts;
 }
