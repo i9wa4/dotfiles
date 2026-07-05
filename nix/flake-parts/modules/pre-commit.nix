@@ -58,6 +58,15 @@
         inherit system;
       };
       opensslLib = pkgs.lib.getLib pkgs.openssl;
+      pinactRun = pkgs.writeShellScript "pinact-run" ''
+        # `nix flake check` runs pre-commit in a sandbox without GitHub API access.
+        # Keep local dev-shell hooks on full `pinact run` behavior.
+        if [ -n "''${NIX_BUILD_TOP:-}" ]; then
+          exec ${pkgs.pinact}/bin/pinact run --fix=false --no-api "$@"
+        fi
+
+        exec ${pkgs.pinact}/bin/pinact run "$@"
+      '';
       skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md))$";
       skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh)|(docs/(agent-skills-management|agent-skills-release-all)\\.md))$";
       skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh)|(docs/agent-skill-trigger-validation\\.md))$";
@@ -122,7 +131,7 @@
 
           pinact = {
             enable = true;
-            entry = "${pkgs.pinact}/bin/pinact run --fix=false --no-api";
+            entry = "${pinactRun}";
             files = ghWorkflowFiles;
           };
 
