@@ -122,7 +122,7 @@
 
           pinact = {
             enable = true;
-            entry = "${pkgs.pinact}/bin/pinact run";
+            entry = "${pkgs.pinact}/bin/pinact run --fix=false --no-api";
             files = ghWorkflowFiles;
           };
 
