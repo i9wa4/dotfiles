@@ -1,4 +1,7 @@
 { pkgs, ... }:
+let
+  aiCommitScript = ../../../scripts/lazygit/ai-commit.sh;
+in
 {
   # Lazygit configuration (terminal UI for git)
   # cf. https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
@@ -11,7 +14,7 @@
           key = "<c-g>";
           context = "files";
           output = "terminal";
-          command = "${pkgs.bash}/bin/bash ${./lazygit-ai-commit.sh}";
+          command = "${pkgs.bash}/bin/bash ${aiCommitScript}";
         }
       ];
     };

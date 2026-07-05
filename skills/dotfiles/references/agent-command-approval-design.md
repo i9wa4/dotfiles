@@ -97,11 +97,11 @@ Codex hooks currently add these local checks:
 The write hook is observation-only. Codex has no repo-managed role-aware write
 deny equivalent to Claude's `claude-pretooluse-deny-write.sh`.
 
-`nix/home-manager/modules/lazygit-ai-commit.sh` is separate from postman
-agent panes. It uses `codex exec --ephemeral --ignore-rules --sandbox
-read-only -c approval_policy='"never"'` for commit-message generation from a
-staged diff, and should not be used as evidence for interactive agent-pane
-approval behavior.
+`scripts/lazygit/ai-commit.sh` is separate from postman agent panes. It uses
+`codex exec --ephemeral --ignore-rules --sandbox read-only -c
+approval_policy='"never"'` for commit-message generation from a staged diff,
+and should not be used as evidence for interactive agent-pane approval
+behavior.
 
 ### 2.3. Auto-Review
 

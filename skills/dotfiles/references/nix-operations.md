@@ -8,14 +8,49 @@
 | `nix run '.#update'` | Update flake inputs                                                                                                                                                                                                                                       |
 | `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                                                                 |
 
-## 2. Upgrade Nix
+## 2. Manual Cache Cleanup
+
+There is no `.#cleanup` flake app. Keep cache deletion as an explicit manual
+operation so the operator can review the target paths first.
+
+Low-risk user-owned cache cleanup commands:
+
+```sh
+cache_root="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+if command -v uv >/dev/null 2>&1; then
+  uv_cache_dir="$(uv cache dir)"
+  if command -v pgrep >/dev/null 2>&1 && pgrep -x uv >/dev/null 2>&1; then
+    echo "Skipping uv cache prune in $uv_cache_dir (active uv process detected)"
+  else
+    uv cache prune
+  fi
+fi
+
+rm -rf "$cache_root/pre-commit" "$cache_root/ruff" "$HOME/.npm"
+```
+
+Linux-only additions:
+
+```sh
+cache_root="${XDG_CACHE_HOME:-$HOME/.cache}"
+rm -rf "$cache_root/go-build" "$cache_root/nix"
+```
+
+macOS-only additions:
+
+```sh
+rm -rf "$HOME/Library/Caches/pre-commit" "$HOME/Library/Caches/ruff"
+```
+
+## 3. Upgrade Nix
 
 Nix upgrade ownership differs by OS. On macOS, `nix-darwin` manages
 `nix-daemon` declaratively, so the daily `update` + `switch` flow covers
 upgrades. On Ubuntu, the system `nix-daemon` is outside home-manager's scope,
 so upgrade it separately from the root Nix profile.
 
-### 2.1. Ubuntu
+### 3.1. Ubuntu
 
 For a normal upgrade, do not re-run the curl installer. Upgrade the system Nix
 profile as root, then reload and restart `nix-daemon`. `--remove-all` avoids a
@@ -36,7 +71,7 @@ nix --version
 systemctl is-active nix-daemon.service nix-daemon.socket
 ```
 
-### 2.2. macOS
+### 3.2. macOS
 
 Part of the daily flow. `nix-darwin` rewrites
 `/Library/LaunchDaemons/org.nixos.nix-daemon.plist` and reloads the daemon
@@ -57,7 +92,7 @@ Verify:
 nix --version
 ```
 
-### 2.3. Recover After macOS Update
+### 3.3. Recover After macOS Update
 
 macOS updates can break nix-darwin in two ways:
 

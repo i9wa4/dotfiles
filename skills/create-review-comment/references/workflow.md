@@ -1,21 +1,7 @@
-# Preserved Guidance
+# Review Comment Workflow
 
-Original SKILL.md guidance before Waza compaction. Use this reference when the
-concise skill needs domain-specific details.
-
-~~~~~~~~~~~~markdown
----
-name: create-review-comment
-license: MIT
-description: Create Japanese GitHub PR review comments from findings. Use for
-  `$create-review-comment`, ai-create-review-comment, or terse requests to
-  review a PR and draft comments.
----
-
-# Create Review Comment
-
-Use this skill to turn PR review findings into Japanese review comment drafts.
-The user makes the final choice about which comments to post.
+Turn PR review findings into Japanese review comment drafts. The user makes
+the final choice about which comments to post.
 
 Terse invocations such as `$create-review-comment`,
 `$create-review-comment #123`, or `ai-create-review-comment for this branch`
@@ -31,8 +17,8 @@ on top. Do not embed, copy, or redefine the `subagent-review` workflow here.
 
 Apply these skills together when available:
 
-- `collaboration` for PR retrieval, review comment tags, public-surface wording, and
-  inline comment rules.
+- `collaboration` for PR retrieval, review comment tags, public-surface
+  wording, and inline comment rules.
 - `subagent-review` for guardian/critic peer-review finding extraction,
   guardian aggregation, and draft validation. Use it as the default internal
   path for substantive reviews.
@@ -49,10 +35,10 @@ Apply these skills together when available:
 2. Fetch PR context with `gh`, including PR body, comments, review comments,
    commits, changed files, and diff.
 3. For substantive drafting, route the review package through postman to
-   guardian. Guardian and critic review mechanics — subagent counts, self-review
-   steps, aggregation, and mandatory critic participation — are fully defined
-   in `subagent-review`. Do not duplicate or override those rules here.
-   Never launch reviewer subagents from orchestrator or worker.
+   guardian. Guardian and critic review mechanics — subagent counts,
+   self-review steps, aggregation, and mandatory critic participation — are
+   fully defined in `subagent-review`. Do not duplicate or override those
+   rules here. Never launch reviewer subagents from orchestrator or worker.
    - In `tmux-a2a-postman` sessions, the route is not optional:
      orchestrator or worker may infer the target and collect PR context, but
      must send the substantive review package to guardian. Do not route the
@@ -61,7 +47,7 @@ Apply these skills together when available:
      worker.
 4. Select only IMPORTANT findings from the review artifact, guardian final
    summary, or normal review artifact produced by step 3.
-   - The selection step MUST cite this summary file path in the final
+   - The selection step must cite this summary file path in the final
      output's `Source review` line. If no current source review exists, halt
      until step 3 has produced one.
    - Keep correctness, security, data loss, regression, compatibility,
@@ -77,18 +63,18 @@ Apply these skills together when available:
      directly rather than letting spawn failures interrupt the workflow.
    - In postman sessions, validator waves follow the same guardian-mediated
      route unless guardian labels the follow-up trivial.
-   Ask reviewers to approve or reject each draft for correctness, clarity,
-   severity, duplication, and whether the comment is worth posting.
+   - Ask reviewers to approve or reject each draft for correctness, clarity,
+     severity, duplication, and whether the comment is worth posting.
 7. Adjust the draft until all material objections are resolved. If full
    agreement is unavailable, mark the disputed draft clearly and explain why.
-8. Output the final Markdown draft visibly to the user. Do not post comments to
-   GitHub unless the user explicitly asks.
+8. Output the final Markdown draft visibly to the user. Do not post comments
+   to GitHub unless the user explicitly asks.
 
 ## 3. Comment Draft Rules
 
 - Write comments in Japanese.
-- Start each comment body with the tag required by the `collaboration` skill, such as
-  `[must]`, `[want]`, `[ask]`, or `[nits]`.
+- Start each comment body with the tag required by the `collaboration` skill,
+  such as `[must]`, `[want]`, `[ask]`, or `[nits]`.
 - Prefer `[must]` for blockers and `[want]` for important non-blockers.
 - Write one concern per comment.
 - Focus on the problem and concrete risk, not a long fix recipe.
@@ -137,6 +123,5 @@ Why this matters: one short note.
 - `path/to/file.ext`: dropped because low confidence or duplicate.
 ```
 
-If a comment has no precise line, use the most specific repo-relative file path
-or a PR-level comment section.
-~~~~~~~~~~~~
+If a comment has no precise line, use the most specific repo-relative file
+path or a PR-level comment section.

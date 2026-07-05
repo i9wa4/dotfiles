@@ -1,17 +1,3 @@
-# Preserved Guidance
-
-Original SKILL.md guidance before Waza compaction. Use this reference when the
-concise skill needs domain-specific details.
-
-~~~~~~~~~~~~markdown
----
-name: plan-design
-license: MIT
-description: |
-  Implementation plans for complex tasks. Covers parallel investigation,
-  multi-source synthesis, and review gates. Task must be plan-ready.
----
-
 # Plan Design
 
 Extend (not replace) the base `orchestrator` workflow for high-rigor plan
@@ -210,7 +196,7 @@ Use this contract whenever work may span multiple turns, compactions, or agent
 handoffs. The goal is to keep one compact artifact that any later session can
 resume without replaying the whole transcript.
 
-### Planner responsibilities
+### 6.1. Planner responsibilities
 
 - Define the objective in one concrete sentence.
 - Name the success/acceptance criteria.
@@ -219,7 +205,7 @@ resume without replaying the whole transcript.
 - List the active plan/artifact paths that later stages must reopen.
 - Define the verification the worker must return.
 
-### Worker responsibilities
+### 6.2. Worker responsibilities
 
 - Execute only the scoped slice from the planner artifact.
 - Update the artifact with the latest verification outcome.
@@ -227,7 +213,7 @@ resume without replaying the whole transcript.
 - Replace stale blockers with current blockers or explicitly clear them.
 - Leave a concrete next action for the next worker or resumed session.
 
-### Evaluator responsibilities
+### 6.3. Evaluator responsibilities
 
 - Validate the worker result against the planner objective and acceptance
   criteria.
@@ -282,7 +268,7 @@ A plan is ready for final guardian review only if all are true:
   - Unresolved gates
   - Evidence of verification outputs
 
-## Cheap Verifier First (Mandatory)
+## 11. Cheap Verifier First (Mandatory)
 
 <!-- markdownlint-disable-next-line MD013 -->
 For implementation work, every plan milestone must name the first cheap
@@ -297,4 +283,3 @@ That verifier should be:
 Run that verifier before escalating to native subagent review, guardian,
 critic, or other expensive approval paths, unless the lane is
 documentation-only and `git diff --check` is the cheapest useful verifier.
-~~~~~~~~~~~~

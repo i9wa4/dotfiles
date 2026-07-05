@@ -503,10 +503,10 @@ Reusable review material belongs outside the live template:
 - `skills/create-review-comment/SKILL.md` owns the thin user-facing PR
   review-comment trigger, target inference, Japanese draft-comment workflow,
   and no-post-without-explicit-approval gate.
-- `skills/create-review-comment/references/preserved-guidance.md` owns
+- `skills/create-review-comment/references/workflow.md` owns
   detailed review-comment drafting templates and preserved examples.
 - `skills/collaboration/SKILL.md` and
-  `skills/collaboration/references/preserved-guidance.md` own GitHub mechanics,
+  `skills/collaboration/references/github-workflow.md` own GitHub mechanics,
   issue/PR operations, inline comment mechanics, commit/PR-publication rules,
   and public wording/path hygiene.
 

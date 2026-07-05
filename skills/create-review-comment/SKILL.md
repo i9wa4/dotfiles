@@ -29,7 +29,7 @@ context before routing substantive review to guardian.
 
 1. Infer the target PR from the prompt, current branch, or GitHub context. If
    missing or ambiguous, ask only for the minimum target identifier.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+2. Read [Workflow](references/workflow.md) before changing
    behavior or giving detailed instructions.
 3. For substantive drafting, use `subagent-review` through postman: send the
    review package to guardian, let guardian request critic, and never launch
@@ -47,7 +47,7 @@ review-comment drafting.
 
 ## 4. References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- [Workflow](references/workflow.md)
 
 ## 5. Troubleshooting
 

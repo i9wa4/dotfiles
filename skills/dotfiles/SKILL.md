@@ -32,11 +32,11 @@ Environment:
 
 Agent harness (hubs link their siblings):
 
-- [Harness](references/preserved-guidance.md) — Claude/Codex config, hooks,
+- [Harness](references/harness-guidance.md) — Claude/Codex config, hooks,
   deny rules, contracts, runbook
-- [Workspace](references/workspace-preserved-guidance.md) — tmux, worktrees,
+- [Workspace](references/workspace-guidance.md) — tmux, worktrees,
   panes, boot, VDE
-- [Prompts](references/prompt-contracts-preserved-guidance.md) — prompt
+- [Prompts](references/prompt-contracts.md) — prompt
   blocks, review contracts, boundaries, resume handoff
 - [Skills Management](references/skills-management.md) — skill authoring,
   Waza, release, publishing

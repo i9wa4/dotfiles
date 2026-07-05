@@ -25,7 +25,7 @@ generated runtime outputs, or replacing repo-specific source of truth.
 ## 1. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+2. Read [Plan Authoring](references/plan-authoring.md) before changing
    behavior or giving detailed instructions.
 3. If the task is fuzzy or has multiple viable approaches, read
    [Brainstorming](references/brainstorming.md) and stabilize the direction
@@ -41,7 +41,7 @@ source, run focused checks, and summarize the result.
 
 ## 3. References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- [Plan Authoring](references/plan-authoring.md)
 - [Brainstorming](references/brainstorming.md)
 - [Durable Task Tracking](references/durable-task-tracking.md)
 

@@ -1,27 +1,3 @@
-# Preserved Guidance
-
-Original SKILL.md guidance before Waza compaction. Use this reference when the
-concise skill needs domain-specific details.
-
-## 1. Reference Index
-
-- [Worktree Workflow](workspace-worktree-workflow.md)
-- [Worktree Development](worktree-development.md)
-- [Worktree Development Overview](worktree-development-overview.md)
-- [Pane Operations](workspace-tmux-pane-operations.md)
-- [Boot Failure Modes](workspace-boot-failure-modes.md)
-- [VDE Layout Internals](workspace-vde-layout-internals.md)
-
-~~~~~~~~~~~~markdown
----
-name: dotfiles
-license: MIT
-description: |
-  Boot and manage agent tmux workspaces using the vde-layout va preset,
-  issue-first worktree creation and re-entry, session naming, and pane
-  operations.
----
-
 # Agent Workspace
 
 Use this skill to boot, navigate, and manage agent workspaces in tmux: session
@@ -29,7 +5,7 @@ creation, vde-layout preset boot, worktree lifecycle, and pane operations.
 
 ## 1. Boot Procedure
 
-### Agent-Driven Boot (9 steps)
+### 1.1. Agent-Driven Boot (9 steps)
 
 For a `tmux-a2a-postman` agent session, the expected end-user flow is:
 
@@ -100,7 +76,7 @@ After resolving `va`, boot the session:
    tmux list-panes -t <session> -a -F "#{window_index} #{pane_title} #{pane_current_command}"
    ```
 
-### Human-Driven Boot
+### 1.2. Human-Driven Boot
 
 The human types `va` + Space in interactive zsh. `snippet-magic-space` expands
 to `vde-layout messenger-codex && vde-layout preset-a`, then Enter executes it.
@@ -111,18 +87,18 @@ See also: `workspace-boot-failure-modes.md`
 
 ## 2. Current va Preset
 
-| Aspect            | va flow                                                  |
-| ----------------- | -------------------------------------------------------- |
-| Snippet expansion | `vde-layout messenger-codex && vde-layout preset-a`      |
-| Messenger         | codex gpt-5.5, medium                                    |
-| Grid              | 3+2 panes, new window                                    |
-| orchestrator      | codex gpt-5.5 xhigh                                      |
-| worker            | codex gpt-5.5 xhigh                                      |
-| worker-alt        | codex gpt-5.5 xhigh                                      |
-| guardian          | codex gpt-5.5 xhigh                                      |
-| critic            | claude opus[1m] xhigh                                    |
-| Engine mix        | preset-a: 4 codex + 1 claude; messenger: codex           |
-| Description       | "codex-featured team"                                   |
+| Aspect            | va flow                                             |
+| ----------------- | --------------------------------------------------- |
+| Snippet expansion | `vde-layout messenger-codex && vde-layout preset-a` |
+| Messenger         | codex gpt-5.5, medium                               |
+| Grid              | 3+2 panes, new window                               |
+| orchestrator      | codex gpt-5.5 xhigh                                 |
+| worker            | codex gpt-5.5 xhigh                                 |
+| worker-alt        | codex gpt-5.5 xhigh                                 |
+| guardian          | codex gpt-5.5 xhigh                                 |
+| critic            | claude opus[1m] xhigh                               |
+| Engine mix        | preset-a: 4 codex + 1 claude; messenger: codex      |
+| Description       | "codex-featured team"                               |
 
 Config source: `dotfiles/config/vde/layout.yml`; zsh snippets:
 `dotfiles/config/zsh/snippet.zsh`. See also:
@@ -153,10 +129,10 @@ session by name in tmux commands.
 
 Primary creation entrypoints:
 `scripts/bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
-and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For interactive
-cleanup in the current repository, use `scripts/bin/worktree-remove` to choose one
-managed worktree under the repo's `.worktrees/` directory with `fzf`, validate
-safety gates, and delete through native `git worktree` cleanup.
+and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
+interactive cleanup in the current repository, use `scripts/bin/worktree-remove`
+to choose one managed worktree under the repo's `.worktrees/` directory with
+`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
 For issue implementation, agents must create or choose the GitHub issue first,
 then use `issue-worktree-create <issue_number>`. Do not create issue branches
@@ -241,4 +217,12 @@ Key rules:
 - WAL bloat (`$HOME/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex
   sessions; see `skills/dotfiles/references/codex-cli.md` WAL
   runbook (do not duplicate here)
-~~~~~~~~~~~~
+
+## 8. Reference Index
+
+- [Worktree Workflow](workspace-worktree-workflow.md)
+- [Worktree Development](worktree-development.md)
+- [Worktree Development Overview](worktree-development-overview.md)
+- [Pane Operations](workspace-tmux-pane-operations.md)
+- [Boot Failure Modes](workspace-boot-failure-modes.md)
+- [VDE Layout Internals](workspace-vde-layout-internals.md)

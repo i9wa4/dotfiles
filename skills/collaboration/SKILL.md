@@ -26,7 +26,7 @@ review engine or the user-facing review-comment trigger.
 ## 2. Workflow
 
 1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Preserved Guidance](references/preserved-guidance.md) before changing
+2. Read [Workflow Guide](references/github-workflow.md) before changing
    behavior or giving detailed instructions.
 3. Before branch publication or PR creation, verify branch, upstream, base,
    head, and clean status; use the same-name remote destination workflow in
@@ -37,7 +37,7 @@ review engine or the user-facing review-comment trigger.
 
 ## 3. References
 
-- [Preserved Guidance](references/preserved-guidance.md)
+- [Workflow Guide](references/github-workflow.md)
 - [Atlassian](references/atlassian.md)
 - [Atlassian API Token](references/atlassian-api-token.md)
 
