@@ -93,6 +93,32 @@ Two different delivery patterns are used on purpose:
 That split keeps interactive policy readable in the repo while still making the
 installed runtime reproducible on Linux and macOS.
 
+#### 3.1.1. Nix module ownership boundaries
+
+Keep flake-parts modules responsible for producing top-level flake outputs and
+choosing host-specific composition. Keep imported Nix modules responsible for
+reusable behavior once that composition has already been chosen.
+
+For Darwin:
+
+- `nix/flake-parts/modules/darwin.nix` owns `darwinConfigurations`, host names,
+  host-specific differences, and package/app selections that differ by host or
+  delivery channel. Homebrew `taps`, `brews`, `casks`, tap trust setup, and
+  Homebrew-backed services such as `skhd` live here because they are part of
+  assembling the macOS host profile.
+- `nix/nix-darwin/` owns common macOS system behavior that should apply after a
+  Darwin host has been selected: Nix daemon settings, nixpkgs platform and
+  overlays, fonts, power settings, keyboard mappings, and macOS defaults.
+- `nix/home-manager/` owns user-session behavior and cross-OS user tools:
+  shells, tmux, editor config, agent harness installation, XDG files, and
+  user-level activation steps.
+
+When a setting could live in two places, prefer the owner that answers the
+question being changed. "Which host or delivery channel should get this?" points
+to a flake-parts module. "What should every Darwin host do once selected?"
+points to `nix/nix-darwin/`. "What should the user environment do on any
+supported OS?" points to `nix/home-manager/`.
+
 ### 3.2. tmux is the visible runtime shell
 
 The tmux module is not cosmetic here. It is the live shell around the harness.

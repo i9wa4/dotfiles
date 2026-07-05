@@ -27,7 +27,8 @@ Environment:
   recovery
 - [Missing Tools](references/missing-tools.md) — command not found
   workflow
-- [Operating Concepts](references/operating-concepts.md) — repo map
+- [Operating Concepts](references/operating-concepts.md) — repo map and
+  module ownership boundaries
 - [Clipboard](references/clipboard-strategy.md) — Vim/Neovim/tmux/host
 
 Agent harness (hubs link their siblings):
