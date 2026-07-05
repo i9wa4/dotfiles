@@ -55,6 +55,21 @@ in
           ' >/dev/null
       }
 
+      # Version pins for upstream releases that are broken at install time.
+      # A pinned package is installed at the pinned version and skipped by the
+      # auto-update loop; remove the pin once a fixed release ships.
+      pnpmPackageSpec() {
+        case "$1" in
+          "vde-monitor")
+            # 0.9.3 ships an unresolvable "zod@catalog:" dependency spec.
+            echo "vde-monitor@0.9.2"
+            ;;
+          *)
+            echo "$1"
+            ;;
+        esac
+      }
+
       pnpmPackageReady() {
         pnpmPackageInstalled "$1" || return 1
         case "$1" in
@@ -217,7 +232,7 @@ in
       for pkg in "''${PNPM_PACKAGES[@]}"; do
         if ! pnpmPackageReady "$pkg"; then
           echo "Installing $pkg..."
-          missingPackages+=("$pkg")
+          missingPackages+=("$(pnpmPackageSpec "$pkg")")
         fi
       done
       if [ "''${#missingPackages[@]}" -gt 0 ]; then
@@ -240,6 +255,10 @@ in
       fi
       managedOutdatedPackages=()
       for pkg in $outdated; do
+        if [ "$(pnpmPackageSpec "$pkg")" != "$pkg" ]; then
+          echo "Skipping pinned pnpm package $pkg."
+          continue
+        fi
         for want in "''${PNPM_PACKAGES[@]}"; do
           if [ "$pkg" = "$want" ]; then
             managedOutdatedPackages+=("$pkg")
