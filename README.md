@@ -16,11 +16,6 @@ files serve humans reading this repo and agents working in it.
 
 ## 1. Quick Start
 
-```sh
-nix run nixpkgs#git -- clone git@github.com:i9wa4/dotfiles ~/ghq/github.com/i9wa4/dotfiles
-cd ~/ghq/github.com/i9wa4/dotfiles
-```
-
 Full bootstrap (GitHub SSH auth, Nix install, first switch per OS):
 [Machine Setup](skills/dotfiles/references/machine-setup.md).
 
