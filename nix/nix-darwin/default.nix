@@ -6,7 +6,7 @@
 }:
 {
   nixpkgs = {
-    # Allow unfree packages (e.g., terraform with BSL license)
+    # Allow unfree packages used by the workstation profile.
     config.allowUnfree = true;
     hostPlatform = "aarch64-darwin";
     overlays = [
@@ -70,6 +70,11 @@
   # NOTE: GUI apps moved to Homebrew casks to avoid nix store bloat from generations
   environment.systemPackages = [
   ];
+
+  # WORKAROUND: nix-darwin a1fa429 still passes the removed --toc-depth flag to
+  # nixos-render-docs from current nixpkgs when building the manual.
+  documentation.enable = false;
+  system.tools.darwin-uninstaller.enable = false;
 
   # Fonts
   fonts.packages = [

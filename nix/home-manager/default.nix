@@ -101,9 +101,6 @@ in
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
-      pkgs.tenv
-      pkgs.terraform
-      pkgs.tfenv
       pkgs.tirith
       pkgs.tmux
       pkgs.uv
