@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Create or inspect a GitHub issue or pull request while preserving public surface path hygiene."
+expected:
+  should_trigger: false
+graders:
+  - type: text
+    name: contains-keywords
+    config:
+      contains:
+        - "technical-writing"

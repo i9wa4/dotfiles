@@ -51,6 +51,11 @@ jobs:
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
+      - name: Validate Agent Skills spec conformance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run nixpkgs#gh -- skill publish --dry-run
+
       - name: Run gitleaks history scan
         run: nix develop .#ci --command gitleaks detect --verbose --redact
 

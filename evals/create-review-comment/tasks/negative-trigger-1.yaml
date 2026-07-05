@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Work on repo-local BigQuery, Databricks, dbt, or cloud-auth workflow guidance."
+expected:
+  should_trigger: false
+graders:
+  - type: text
+    name: contains-keywords
+    config:
+      contains:
+        - "create-review-comment"

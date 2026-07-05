@@ -38,7 +38,36 @@ Commands and fallbacks live in
 Skill catalog lookup and description recovery live in
 [Skill Description Index](skill-description-index.md).
 
-## 3. Reference Index
+## 3. Validation Stages
+
+| Stage                             | Gate                                                                                     | What it enforces                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| pre-commit (staged files)         | frontmatter, description-length (warn), Waza check, private-content scan, trigger matrix | Structural readiness, no private content, trigger mapping consistency |
+| CI (`nix flake check`, all files) | same hooks over the whole tree                                                           | Catches commits that bypassed local hooks                             |
+| CI (spec conformance)             | `gh skill publish --dry-run`                                                             | agentskills.io naming rules, frontmatter shape, allowed-tools format  |
+| Tag push (`v*`)                   | `release.yaml`: flake check, dry-run, `gh skill publish`                                 | Actual catalog publication                                            |
+
+Waza validators run from the working tree (`scripts/validation/*.sh`), so
+editing a validator takes effect on the next commit without re-entering the
+dev shell.
+
+## 4. Eval Suites
+
+Every skill has a trigger-accuracy eval under `evals/<skill>/`, seeded from
+the curated prompts in `skills/trigger-validation.json` (positives) and
+cross-skill prompts (negatives). Current state and adoption path:
+
+- `waza coverage .` prints the eval coverage grid; suites are partial seeds,
+  not full behavioral coverage.
+- `waza run` / `waza gate` execute suites against a real model and gate on
+  regressions; adopt them when an API budget for eval runs is decided.
+- `waza adversarial --skill <name>` offers offline prompt-injection and
+  scope-bypass packs (`--engine mock` for CI smoke).
+- When adding or renaming a skill, update both the trigger matrix and its
+  eval suite; long term the eval suite is the executable replacement for
+  manual `manual_catalog_review` entries.
+
+## 5. Reference Index
 
 - [Waza and Publishing](waza-publishing.md)
 - [Skill Description Index](skill-description-index.md)

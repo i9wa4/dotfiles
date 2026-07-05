@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Reduce ambiguity and compare options before writing an implementation plan."
+expected:
+  should_trigger: true
+graders:
+  - type: text
+    name: contains-keywords
+    config:
+      contains:
+        - "plan-design"

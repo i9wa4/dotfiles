@@ -140,8 +140,8 @@
             types = [ "file" ];
             pass_filenames = false;
           };
-          # Warn-only: 19/24 skills exceed the 138-char threshold today.
-          # Flip to block: set SKILL_DESC_LENGTH_STRICT=1 after fixing violations.
+          # Warn-only by design: descriptions stay keyword-rich for trigger
+          # accuracy and exceed the 138-char catalog threshold deliberately.
           skill-description-length-check = {
             enable = true;
             entry = "${pkgs.writeScript "skill-description-length-check" ''

@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated from the repo trigger matrix (skills/trigger-validation.json).
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Run the native multi-perspective review workflow and synthesize blocking findings."
+expected:
+  should_trigger: false
+graders:
+  - type: text
+    name: contains-keywords
+    config:
+      contains:
+        - "programming"
