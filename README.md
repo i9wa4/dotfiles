@@ -14,15 +14,5 @@ All operational knowledge lives in Agent Skills under [`skills/`](skills/) —
 each skill is a `SKILL.md` entry point plus detailed `references/`. The same
 files serve humans reading this repo and agents working in it.
 
-## 1. Quick Start
-
-Full bootstrap (GitHub SSH auth, Nix install, first switch per OS):
-[Machine Setup](skills/dotfiles/references/machine-setup.md).
-
-Daily commands (`nix run '.#switch'`, `.#update`, `.#check`), Nix upgrade, and
-macOS recovery: [Nix Operations](skills/dotfiles/references/nix-operations.md).
-
-## 2. Guide Index
-
 Start with the [dotfiles skill](skills/dotfiles/SKILL.md). It links the
 current setup, operations, harness, and skill-management references.
