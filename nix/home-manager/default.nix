@@ -101,9 +101,9 @@ in
       pkgs.ripgrep
       pkgs.rumdl
       pkgs.shellcheck
+      # tenv shims terraform/tofu/terragrunt; do not also install
+      # pkgs.terraform or pkgs.tfenv (conflicting bin/terraform).
       pkgs.tenv
-      pkgs.terraform
-      pkgs.tfenv
       pkgs.tirith
       pkgs.tmux
       pkgs.uv
