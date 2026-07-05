@@ -1,27 +1,9 @@
 {
   pkgs,
-  lib,
   username,
   commonNixSettings,
   ...
 }:
-let
-  skhdConfig = ''
-    # App switching: Alt + 1/2/3
-    alt - 1 : open -a "kitty"
-    alt - 2 : open -a "Google Chrome"
-  '';
-  homebrewThirdPartyTaps = [
-    "asmvik/formulae"
-  ];
-  homebrewBrews = [
-    "asmvik/formulae/skhd"
-    "macmon"
-    "mise"
-    "podman"
-    "podman-compose"
-  ];
-in
 {
   nixpkgs = {
     # Allow unfree packages (e.g., terraform with BSL license)
@@ -89,74 +71,10 @@ in
   environment.systemPackages = [
   ];
 
-  # skhd: hotkey daemon for app switching.
-  #
-  # Run the Homebrew binary from a stable path. When skhd is launched directly
-  # from the Nix store, nixpkgs updates can change the executable path and make
-  # macOS TCC ask for Accessibility permission again.
-  #
-  # If Accessibility must be granted manually, add the resolved Cellar binary
-  # (for example `/opt/homebrew/Cellar/skhd/<version>/bin/skhd`) instead of the
-  # `/opt/homebrew/bin/skhd` symlink. A Homebrew skhd version upgrade may still
-  # require granting the new Cellar binary once, but regular Nix updates will
-  # no longer rotate the executable path.
-  environment.etc."skhdrc".text = skhdConfig;
-  launchd.user.agents.skhd = {
-    serviceConfig = {
-      ProgramArguments = [
-        "/opt/homebrew/bin/skhd"
-        "-c"
-        "/etc/skhdrc"
-      ];
-      KeepAlive = true;
-      RunAtLoad = true;
-      ProcessType = "Interactive";
-      EnvironmentVariables = {
-        PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin";
-      };
-    };
-  };
-
   # Fonts
   fonts.packages = [
     pkgs.udev-gothic
   ];
-
-  # Homebrew requires explicit trust for non-official taps when tap trust is
-  # enforced. Run this before nix-darwin's Homebrew Bundle activation.
-  system.activationScripts.extraActivation.text = lib.mkAfter ''
-    if [ -x /opt/homebrew/bin/brew ]; then
-      echo >&2 "trusting Homebrew taps..."
-      ${lib.concatMapStringsSep "\n" (tap: ''
-        sudo \
-          --user=${lib.escapeShellArg username} \
-          --set-home \
-          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
-          /opt/homebrew/bin/brew tap ${lib.escapeShellArg tap} >/dev/null
-        sudo \
-          --user=${lib.escapeShellArg username} \
-          --set-home \
-          env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
-          /opt/homebrew/bin/brew trust --tap ${lib.escapeShellArg tap} >/dev/null
-      '') homebrewThirdPartyTaps}
-    fi
-  '';
-
-  # Homebrew
-  # Allow activation-time metadata updates so Homebrew's cask API and portable
-  # Ruby stay in sync before `brew bundle` resolves casks. Keep upgrades
-  # disabled so `nix run '.#switch'` does not force app version bumps.
-  homebrew = {
-    enable = true;
-    taps = homebrewThirdPartyTaps;
-    brews = homebrewBrews;
-    onActivation = {
-      autoUpdate = true;
-      upgrade = false;
-      # Homebrew 6 deprecated `brew bundle install --cleanup`; use
-      # `brew bundle cleanup --file <Brewfile> --force` explicitly when needed.
-    };
-  };
 
   # Power management
   power.sleep = {

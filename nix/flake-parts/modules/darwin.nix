@@ -2,11 +2,38 @@
 # This module is imported by flake.nix via flake-parts
 {
   inputs,
+  lib,
   commonNixSettings,
   ...
 }:
 let
   inherit (inputs) nix-darwin home-manager nix-index-database;
+  homebrewTaps = [
+    "asmvik/formulae"
+  ];
+  commonHomebrewBrews = [
+    "asmvik/formulae/skhd"
+    "macmon"
+    "mise"
+    "podman"
+    "podman-compose"
+  ];
+  commonHomebrewCasks = [
+    "claude"
+    "codex-app"
+    # TODO: replace with podman (planned migration off Docker Desktop)
+    "docker-desktop"
+    "drawio"
+    "google-chrome"
+    "kitty"
+    "macskk"
+    "zoom"
+  ];
+  skhdConfig = ''
+    # App switching: Alt + 1/2/3
+    alt - 1 : open -a "kitty"
+    alt - 2 : open -a "Google Chrome"
+  '';
 
   # Helper to get username from environment
   # SUDO_USER is automatically set by sudo to the original username
@@ -23,6 +50,8 @@ let
     {
       hostname,
       system ? "aarch64-darwin",
+      taps ? homebrewTaps,
+      brews ? commonHomebrewBrews,
       casks ? [ ],
     }:
     let
@@ -45,8 +74,77 @@ let
           # Host identification
           networking.hostName = hostname;
 
-          # Homebrew casks
-          homebrew.casks = casks;
+          # Homebrew-managed macOS tools and GUI apps.
+          # Allow activation-time metadata updates so Homebrew's cask API and
+          # portable Ruby stay in sync before `brew bundle` resolves casks.
+          # Keep upgrades disabled so `nix run '.#switch'` does not force app
+          # version bumps.
+          homebrew = {
+            enable = true;
+            inherit
+              taps
+              brews
+              casks
+              ;
+            onActivation = {
+              autoUpdate = true;
+              upgrade = false;
+              # Homebrew 6 deprecated `brew bundle install --cleanup`; use
+              # `brew bundle cleanup --file <Brewfile> --force` explicitly
+              # when needed.
+            };
+          };
+
+          # Homebrew requires explicit trust for non-official taps when tap
+          # trust is enforced. Run this before nix-darwin's Homebrew Bundle
+          # activation.
+          system.activationScripts.extraActivation.text = lib.mkAfter ''
+            if [ -x /opt/homebrew/bin/brew ]; then
+              echo >&2 "trusting Homebrew taps..."
+              ${lib.concatMapStringsSep "\n" (tap: ''
+                sudo \
+                  --user=${lib.escapeShellArg username} \
+                  --set-home \
+                  env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+                  /opt/homebrew/bin/brew tap ${lib.escapeShellArg tap} >/dev/null
+                sudo \
+                  --user=${lib.escapeShellArg username} \
+                  --set-home \
+                  env HOMEBREW_NO_AUTO_UPDATE=1 PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+                  /opt/homebrew/bin/brew trust --tap ${lib.escapeShellArg tap} >/dev/null
+              '') taps}
+            fi
+          '';
+
+          # skhd: hotkey daemon for app switching.
+          #
+          # Run the Homebrew binary from a stable path. When skhd is launched
+          # directly from the Nix store, nixpkgs updates can change the
+          # executable path and make macOS TCC ask for Accessibility permission
+          # again.
+          #
+          # If Accessibility must be granted manually, add the resolved Cellar
+          # binary (for example `/opt/homebrew/Cellar/skhd/<version>/bin/skhd`)
+          # instead of the `/opt/homebrew/bin/skhd` symlink. A Homebrew skhd
+          # version upgrade may still require granting the new Cellar binary
+          # once, but regular Nix updates will no longer rotate the executable
+          # path.
+          environment.etc."skhdrc".text = skhdConfig;
+          launchd.user.agents.skhd = {
+            serviceConfig = {
+              ProgramArguments = [
+                "/opt/homebrew/bin/skhd"
+                "-c"
+                "/etc/skhdrc"
+              ];
+              KeepAlive = true;
+              RunAtLoad = true;
+              ProcessType = "Interactive";
+              EnvironmentVariables = {
+                PATH = "/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin";
+              };
+            };
+          };
 
           # Home Manager integration
           home-manager = {
@@ -117,28 +215,14 @@ in
   # darwin-rebuild switch --flake '.#macos-p' --impure
   # darwin-rebuild switch --flake '.#macos-w' --impure
   # Requires --impure because we use builtins.getEnv to read SUDO_USER
-  flake.darwinConfigurations =
-    let
-      commonCasks = [
-        "claude"
-        "codex-app"
-        # TODO: replace with podman (planned migration off Docker Desktop)
-        "docker-desktop"
-        "drawio"
-        "google-chrome"
-        "kitty"
-        "macskk"
-        "zoom"
-      ];
-    in
-    {
-      "macos-p" = mkDarwinConfiguration {
-        hostname = "macos-p";
-        casks = commonCasks;
-      };
-      "macos-w" = mkDarwinConfiguration {
-        hostname = "macos-w";
-        casks = commonCasks ++ [ "openvpn-connect" ];
-      };
+  flake.darwinConfigurations = {
+    "macos-p" = mkDarwinConfiguration {
+      hostname = "macos-p";
+      casks = commonHomebrewCasks;
     };
+    "macos-w" = mkDarwinConfiguration {
+      hostname = "macos-w";
+      casks = commonHomebrewCasks ++ [ "openvpn-connect" ];
+    };
+  };
 }
