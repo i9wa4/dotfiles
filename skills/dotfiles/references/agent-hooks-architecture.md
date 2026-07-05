@@ -6,10 +6,10 @@ already aligned versus where they still drift. It is descriptive — it
 records the current state after the 2026-04-29 hook reduction — and
 prescriptive about the direction we want to keep pulling in.
 
-It complements `docs/agent-config-philosophy.md` (high-level principles)
-and `docs/deny-bash-design.md` (the deny rule data model). Read those
-first for the "why share at all" rationale; this doc is the "where we
-are and where the seams still are."
+It complements `skills/dotfiles/references/agent-config-philosophy.md`
+(high-level principles) and `skills/dotfiles/references/deny-bash-design.md`
+(the deny rule data model). Read those first for the "why share at all"
+rationale; this doc is the "where we are and where the seams still are."
 
 ## 1. North Star
 
@@ -40,10 +40,10 @@ Single source of truth for Bash command denies. One `entries` array
 produces the Claude built-in deny set and the shared hook pattern file in
 the same Nix evaluation:
 
-| Output                       | Consumer                                                                  |
-| ---------------------------- | ------------------------------------------------------------------------- |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs                        |
-| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex |
+| Output                       | Consumer                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny` globs (private-content-scan: allow; managed runtime path) |
+| `claudeCode.patternsFile`    | bash regex array sourced by the shared deny-bash hook in Claude and Codex                              |
 
 Adding a deny rule is one nix entry, picked up by both runtimes on the
 next `nix run '.#switch'`. Codex does not also install these shared command
@@ -71,6 +71,7 @@ and installed through the normal skill pipeline.
 
 ### 2.3. MCP Servers — `shared/mcp-servers.nix`
 
+<!-- private-content-scan: allow-next-line -->
 One module produces both Claude's `~/.claude/.claude.json` MCP block
 (via activation script) and Codex's `[mcp_servers]` TOML stanza
 (generated into `config.toml`).
@@ -172,12 +173,12 @@ sign that we owe a consolidation pass.
 
 ## 6. Cross-Links
 
-- `docs/agent-config-philosophy.md` — push behavior into prompts; one
-  source of truth for shared concepts.
-- `docs/deny-bash-design.md` — what the Bash deny system protects
-  against and why it is a guardrail rather than a security boundary.
-- `docs/repo-ai-operating-contract.md` — the multi-agent role
-  contract that justifies `claude-pretooluse-deny-write.sh` as an
+- `skills/dotfiles/references/agent-config-philosophy.md` — push behavior into
+  prompts; one source of truth for shared concepts.
+- `skills/dotfiles/references/deny-bash-design.md` — what the Bash deny system
+  protects against and why it is a guardrail rather than a security boundary.
+- `skills/dotfiles/references/repo-ai-operating-contract.md` — the multi-agent
+  role contract that justifies `claude-pretooluse-deny-write.sh` as an
   intentional asymmetry.
 - `nix/home-manager/agents/README.md` — practical "edit here, get
   installed there" map for the agents source tree.

@@ -45,10 +45,10 @@ defines three top-level lists:
 
 The Nix module exposes two outputs that consume this SSOT:
 
-| Output                       | Consumer                                                                                                                                      | Mechanism                                        |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                  | `Bash(<glob>)` glob match (Claude Code built-in) |
-| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook) | POSIX ERE regex match                            |
+| Output                       | Consumer                                                                                                                                      | Mechanism                                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                  | `Bash(<glob>)` glob match (Claude Code built-in) (private-content-scan: allow; managed runtime path) |
+| `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook) | POSIX ERE regex match (private-content-scan: allow; managed runtime path)                            |
 
 `allowPrefixBypass` and `stripDataArgs` are emitted into the shared
 `patternsFile`, so both Claude Code and Codex CLI inherit the same
@@ -210,15 +210,17 @@ special cases on top of regex.
 
 ## 7. References
 
-- `docs/agent-config-philosophy.md` — the design principles this hook
-  system follows (prompt-first, shared SSOT, vendor-specific as
-  compensation).
+- `skills/dotfiles/references/agent-config-philosophy.md` — the design
+  principles this hook system follows (prompt-first, shared SSOT,
+  vendor-specific as compensation).
 - `nix/home-manager/agents/shared/denied-bash-commands.nix` — SSOT.
 - `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` — the
   PreToolUse hook script.
 - `nix/home-manager/agents/claude/default.nix` — wires the SSOT into
+  <!-- private-content-scan: allow-next-line -->
   `~/.claude/settings.json` and `~/.claude/scripts/`.
 - `nix/home-manager/agents/codex/default.nix` — wires the shared hook and
+  <!-- private-content-scan: allow-next-line -->
   generated patterns into `~/.codex/scripts/` and `~/.codex/hooks.json`.
 - `config/tmux-a2a-postman/postman.md` section 2.16 — multi-agent
   bash discipline that complements this hook system on the agent side.

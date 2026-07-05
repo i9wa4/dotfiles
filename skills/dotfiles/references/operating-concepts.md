@@ -16,28 +16,30 @@ That is why the repo keeps:
 - generated instruction and review artifacts assembled from shared sources
 
 AI-specific operating rules live separately in
-`docs/repo-ai-operating-contract.md`.
+`skills/dotfiles/references/repo-ai-operating-contract.md`.
 
 ## 1. Dotfiles-local Guardrail Ownership
 
 Dotfiles-local guidance should stay small. Task procedures belong to focused
-skills or durable docs, not to a generic runtime skill.
+skills or their durable references, not to a generic runtime skill.
 
 There should not be a `skills/repo-local/` entry. The postman `skill_path`
 catalog is intentionally broad, so catch-all repository guidance would be
-visible too often. Put durable repo background in `docs/`, and put procedural
-agent behavior in the focused skill that owns that workflow.
+visible too often. Put durable repo background in the owning skill's
+`references/` directory, and put procedural agent behavior in the focused
+skill that owns that workflow. One-time evaluations and decision records go
+to the private knowledge vault, not this repository.
 
 - Workspace, tmux navigation, issue worktree safety, Claude/Codex runtime
   config, hooks, skill installation, prompt contracts, and postman routing
-  belong to `skills/agent-harness-engineering/` and the postman-specific
+  belong to `skills/dotfiles/` and the postman-specific
   skills. Compatibility triggers may remain in narrower skill names during
   migration, but their detailed guidance should point back to this owner.
 - Skill authoring and validation belong to `skills/agent-skills-management/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
 - Durable orchestration runbooks belong to
-  `skills/agent-harness-engineering/references/`.
+  `skills/dotfiles/references/`.
 
 Do not leave runtime behavior that installed Agent Skills need only in docs.
 Mirror the operational part into the owning skill reference and keep docs as
@@ -159,17 +161,17 @@ shared, inspectable, and generated from a small number of sources of truth.
 Repo-local agent behavior is split by ownership instead of centralized in one
 large fallback skill:
 
-- `skills/agent-harness-engineering/` owns Claude/Codex config, hooks,
+- `skills/dotfiles/` owns Claude/Codex config, hooks,
   postman routing, Nix/Home Manager agent harness changes, tmux workspaces,
   issue/PR worktree creation, worktree re-entry, pane operations, prompt
   contracts, and resume handoff
 - `skills/agent-skills-management/` owns source skill editing, validation, and
   publish-readiness checks
-- `docs/agent-skills-management.md` points to the Agent Skills management
-  procedure and the release-all classification memo in
-  `skills/classification.yaml`
-- `docs/repo-ai-operating-contract.md` owns durable operating rules and task
-  artifact workflow
+- `skills/agent-skills-management/references/agent-skills-management.md` points
+  to the Agent Skills management procedure and the release-all classification
+  memo in `skills/classification.yaml`
+- `skills/dotfiles/references/repo-ai-operating-contract.md` owns durable
+  operating rules and task artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
   narrower skill is obvious
 
@@ -324,16 +326,16 @@ When you need to understand the operating concept, read these in order:
 5. `nix/home-manager/agents/claude/default.nix`
 6. `nix/home-manager/agents/codex/default.nix`
 7. `config/tmux-a2a-postman/postman.md`
-8. `docs/repo-ai-operating-contract.md`
+8. `skills/dotfiles/references/repo-ai-operating-contract.md`
 
 ## 11. Related files
 
-- `docs/repo-ai-operating-contract.md`
-- `docs/agent-skills-management.md`
-- `docs/agent-config-philosophy.md`
-- `docs/deny-bash-design.md`
+- `skills/dotfiles/references/repo-ai-operating-contract.md`
+- `skills/agent-skills-management/references/agent-skills-management.md`
+- `skills/dotfiles/references/agent-config-philosophy.md`
+- `skills/dotfiles/references/deny-bash-design.md`
 - `skills/classification.yaml`
-- `skills/agent-harness-engineering/references/orchestrator-runbook.md`
+- `skills/dotfiles/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/install-manifest.nix`
 - `nix/home-manager/agents/shared/denied-bash-commands.nix`

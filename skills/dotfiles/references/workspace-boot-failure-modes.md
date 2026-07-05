@@ -92,5 +92,5 @@ checkpoint
 truncation fails.
 
 **Mitigation:** Cross-reference
-`skills/agent-harness-engineering/references/codex-cli.md` WAL runbook. Do not
+`skills/dotfiles/references/codex-cli.md` WAL runbook. Do not
 reproduce the runbook here.

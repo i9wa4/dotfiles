@@ -27,7 +27,7 @@ repo-specific guardrails.
 ## 2. Do Not Use For
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
-  installed agent outputs; use `agent-harness-engineering`.
+  installed agent outputs; use `dotfiles`.
 - GitHub issue, PR, review, or public-surface mechanics; use `github`.
 - Diagram authoring or export workflows; use `diagramming`.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use

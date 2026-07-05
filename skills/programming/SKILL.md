@@ -25,7 +25,7 @@ and root-cause debugging.
 ## 2. Do Not Use For
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
-  installed agent outputs; use `agent-harness-engineering`.
+  installed agent outputs; use `dotfiles`.
 - GitHub issue, PR, review, or public-surface mechanics; use `github`.
 - Data-platform or diagramming workflows; use their target skills.
 

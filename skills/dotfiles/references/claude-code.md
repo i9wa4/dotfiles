@@ -2,7 +2,7 @@
 
 Runtime-specific rules and tracking for Claude Code configuration inside the
 shared agent harness. Use this as the detailed reference from the
-`agent-harness-engineering` skill.
+`dotfiles` skill.
 
 ## 1. Config File Location
 

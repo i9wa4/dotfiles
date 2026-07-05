@@ -28,7 +28,7 @@ Use this skill when the output is a plan artifact requiring:
 
 - Shared orchestration mechanics: use `config/tmux-a2a-postman/postman.md` for
   the live role contract and
-  `skills/agent-harness-engineering/references/orchestrator-runbook.md` for
+  `skills/dotfiles/references/orchestrator-runbook.md` for
   durable orchestration runbooks.
 - Native guardian/critic review mechanics: reuse `subagent-review` concepts
   selectively.
@@ -57,7 +57,7 @@ Before drafting, run the following and read the results:
    ls skills/
 
 2. Read at minimum:
-   - skills/agent-harness-engineering/references/orchestrator-runbook.md
+   - skills/dotfiles/references/orchestrator-runbook.md
    - nix/home-manager/agents/shared/install-manifest.nix
    - nix/home-manager/agents/subagents/
 
@@ -180,7 +180,7 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 
 This step augments the base plan sections from the live role contract in
 `config/tmux-a2a-postman/postman.md` and the durable orchestration details in
-`skills/agent-harness-engineering/references/orchestrator-runbook.md`. Keep the
+`skills/dotfiles/references/orchestrator-runbook.md`. Keep the
 base sections (Purpose, Source, Context, Investigation Summary, Acceptance
 Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises), and add the
 sections below for beginner-friendly plan outputs.

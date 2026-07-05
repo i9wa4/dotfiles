@@ -27,7 +27,8 @@ skill is tracked so a later release can either publish it after cleanup or
 remove/demote it before the release-all gate.
 
 The pre-commit release readiness checks and tag-triggered publishing path are
-documented in `docs/agent-skills-release-all.md`.
+documented in
+`skills/agent-skills-management/references/agent-skills-release-all.md`.
 
 ## 2. Cleanup Lane
 

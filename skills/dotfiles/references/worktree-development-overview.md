@@ -2,7 +2,7 @@
 
 This document summarizes the overall worktree-based development approach used
 in this repository. For command-level details, see
-`docs/worktree-development.md`.
+`skills/dotfiles/references/worktree-development.md`.
 
 ## 1. Core Idea
 
@@ -98,10 +98,10 @@ unlocked, and merged or otherwise confirmed obsolete.
 
 ## 5. Related Files
 
-- `docs/worktree-development.md`
-- `docs/worktree-tool-evaluation.md`
+- `skills/dotfiles/references/worktree-development.md`
+- the worktree-tool evaluation decision record (private vault)
 - `bin/issue-worktree-create`
 - `bin/pr-worktree-create`
 - `bin/worktree-remove`
 - `config/zsh/zoxide.zsh`
-- `skills/agent-harness-engineering/references/workspace-worktree-workflow.md`
+- `skills/dotfiles/references/workspace-worktree-workflow.md`

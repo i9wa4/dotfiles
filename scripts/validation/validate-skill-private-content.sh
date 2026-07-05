@@ -72,9 +72,6 @@ is_scan_target() {
   scripts/validation/validate-skill-trigger-matrix.sh)
     return 0
     ;;
-  docs/agent-skill-trigger-validation.md | docs/agent-skills-management.md | docs/agent-skills-release-all.md | docs/dotfiles-operating-concepts.md)
-    return 0
-    ;;
   *)
     return 1
     ;;

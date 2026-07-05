@@ -2,7 +2,7 @@
 
 Runtime-specific rules and tracking for Codex CLI configuration inside the
 shared agent harness. Use this as the detailed reference from the
-`agent-harness-engineering` skill.
+`dotfiles` skill.
 
 ## 1. Config File Location
 
@@ -36,11 +36,12 @@ Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:
 runtime-agnostic shared scripts (no prefix, e.g. `pretooluse-deny-bash.sh`),
 shared scripts parameterised by runtime arg (`common-*`, e.g.
-`common-userpromptsubmit.sh`), and Codex-only scripts (`codex-*`, currently
-the write-tool payload observer). All consumed scripts are listed explicitly
-in `codexScriptsDir` so the consumed surface is self-documenting; see
-`docs/agent-hooks-architecture.md` §5 for the prefix convention. Scripts are
-materialized into the Codex scripts directory at switch time.
+`common-userpromptsubmit.sh`), and Codex-only scripts (`codex-*`, currently the
+write-tool payload observer). All consumed scripts are listed explicitly in
+`codexScriptsDir` so the consumed surface is self-documenting; see
+`skills/dotfiles/references/agent-hooks-architecture.md` §5 for the prefix
+convention. Scripts are materialized into the Codex scripts directory at switch
+time.
 
 To update settings, edit `nix/home-manager/agents/codex/default.nix` and
 rebuild.
@@ -128,8 +129,9 @@ Ignore any release entries for versions newer than `codex --version`.
 - YOU MUST: Keep Codex home-level hooks in
   `nix/home-manager/agents/codex/default.nix` unless there is a deliberate
   dotfiles-local override need
-- YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/`
-  using the prefix convention from `docs/agent-hooks-architecture.md` §5:
+- YOU MUST: Place hook scripts under `nix/home-manager/agents/scripts/` using
+  the prefix convention from
+  `skills/dotfiles/references/agent-hooks-architecture.md` §5:
   - `<no prefix>` for runtime-agnostic shared scripts (e.g.
     `pretooluse-deny-bash.sh`, invoked by both Claude and Codex)
   - `common-*` for shared scripts that take a runtime arg (e.g.
@@ -170,10 +172,10 @@ Ignore any release entries for versions newer than `codex --version`.
   runtime parses them but fails open
 - NOTE: Official docs say `SessionStart`, `PreToolUse`, `PostToolUse`,
   `UserPromptSubmit`, and `Stop` are the supported current events. Of these,
-  this repo currently uses only `PreToolUse` and `UserPromptSubmit`. The
-  others were removed on 2026-04-29 because their consumers (handoff
-  persistence, deterministic-command feedback decoration) were not load-
-  bearing -- see `docs/agent-hooks-architecture.md` §3 for the rationale.
+  this repo currently uses only `PreToolUse` and `UserPromptSubmit`. The others
+  were removed on 2026-04-29 because their consumers (handoff persistence,
+  deterministic-command feedback decoration) were not load- bearing -- see
+  `skills/dotfiles/references/agent-hooks-architecture.md` §3 for the rationale.
 - NOTE: Official docs say matching hooks from multiple `hooks.json` files all
   run, and matching command hooks for the same event launch concurrently
 

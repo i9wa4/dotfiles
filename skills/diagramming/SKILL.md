@@ -27,7 +27,7 @@ color/asset conventions, and diagram-focused validation.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.
 - Agent harness runtime, hooks, postman routing, or installed agent outputs;
-  use `agent-harness-engineering`.
+  use `dotfiles`.
 
 ## 3. Workflow
 

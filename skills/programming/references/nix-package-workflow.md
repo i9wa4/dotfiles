@@ -2,7 +2,7 @@
 
 Use this reference for general Nix package workflow guidance. Agent runtime,
 Home Manager agent config, hooks, and installed outputs belong to
-`agent-harness-engineering`.
+`dotfiles`.
 
 ## 1. Fetcher Hashes
 

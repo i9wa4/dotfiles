@@ -3,33 +3,33 @@
   "issue": 178,
   "source_issue": 168,
   "roadmap_issue": 182,
-  "procedure_doc": "docs/agent-skill-trigger-validation.md",
+  "procedure_doc": "skills/agent-skills-management/references/agent-skill-trigger-validation.md",
   "release_readiness_command": "bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results",
   "target_groups": [
     {
-      "target_group": "agent-harness-engineering",
-      "target_skill": "agent-harness-engineering",
-      "target_path": "skills/agent-harness-engineering/SKILL.md",
+      "target_group": "dotfiles",
+      "target_skill": "dotfiles",
+      "target_path": "skills/dotfiles/SKILL.md",
       "legacy_skills": [],
       "trigger_cases": [
         {
-          "id": "agent-harness-engineering-target",
+          "id": "dotfiles-harness-target",
           "kind": "target",
           "prompt": "Update the repository agent harness, orchestrator role/runbooks, issue worktree workflow, or postman routing rules.",
-          "expected_skill": "agent-harness-engineering",
+          "expected_skill": "dotfiles",
           "result": "pass",
-          "observed_skill": "agent-harness-engineering",
+          "observed_skill": "dotfiles",
           "checked_at": "2026-05-21",
           "validation_method": "manual_catalog_review",
-          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+          "notes": "Former agent-harness-engineering target prompt; harness scope now owned by the dotfiles skill."
         },
         {
           "id": "agent-workspace-removed-alias",
           "kind": "removed_alias",
           "prompt": "Use the former agent-workspace skill for an agent tmux workspace, issue worktree workflow, or pane operation.",
-          "expected_skill": "agent-harness-engineering",
+          "expected_skill": "dotfiles",
           "result": "pass",
-          "observed_skill": "agent-harness-engineering",
+          "observed_skill": "dotfiles",
           "checked_at": "2026-06-02",
           "validation_method": "manual_catalog_review",
           "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and workspace references."
@@ -38,12 +38,34 @@
           "id": "prompt-contracts-local-removed-alias",
           "kind": "removed_alias",
           "prompt": "Use the former prompt-contracts-local skill for task prompt, review contract, prompt block, or resume-handoff work.",
-          "expected_skill": "agent-harness-engineering",
+          "expected_skill": "dotfiles",
           "result": "pass",
-          "observed_skill": "agent-harness-engineering",
+          "observed_skill": "dotfiles",
           "checked_at": "2026-06-02",
           "validation_method": "manual_catalog_review",
           "notes": "The standalone compatibility wrapper was removed; the alias term and trigger intent are covered by agent-harness-engineering frontmatter, USE FOR text, and prompt-contract references."
+        },
+        {
+          "id": "agent-harness-engineering-removed-alias",
+          "kind": "removed_alias",
+          "prompt": "Use the former agent-harness-engineering skill for Claude/Codex harness config, hooks, or postman routing.",
+          "expected_skill": "dotfiles",
+          "result": "pass",
+          "observed_skill": "dotfiles",
+          "checked_at": "2026-07-05",
+          "validation_method": "manual_catalog_review",
+          "notes": "agent-harness-engineering was merged into the dotfiles owner skill; the alias term is listed in the dotfiles frontmatter description."
+        },
+        {
+          "id": "dotfiles-environment-target",
+          "kind": "target",
+          "prompt": "Set up a new machine, run nix run .#switch, clean up home-directory storage, or fix clipboard behavior across Vim, Neovim, and tmux.",
+          "expected_skill": "dotfiles",
+          "result": "pass",
+          "observed_skill": "dotfiles",
+          "checked_at": "2026-07-05",
+          "validation_method": "manual_catalog_review",
+          "notes": "Environment-level scope absorbed from README and docs/ (machine setup, Nix operations, storage hygiene, clipboard strategy)."
         }
       ]
     },

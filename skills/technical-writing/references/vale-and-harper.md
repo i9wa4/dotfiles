@@ -32,7 +32,7 @@ Vale is configured minimally in the Home Manager-managed `~/.vale.ini` with
 the built-in `Vale` style. Run it against the files you want to review:
 
 ```sh
-vale README.md docs/**/*.md skills/**/*.md
+vale README.md skills/**/*.md
 ```
 
 For focused checks, pass the global config explicitly when needed:
@@ -69,7 +69,7 @@ not a `harper` binary.
 Run CLI checks with:
 
 ```sh
-harper-cli lint README.md docs/**/*.md
+harper-cli lint README.md skills/**/*.md
 ```
 
 Use compact output for review notes:

@@ -173,7 +173,7 @@ let
   # were checkpointed but active readers kept TRUNCATE busy, the script logs
   # that distinction for emergency diagnosis. Documented in the WAL Bloat
   # Runbook in
-  # skills/agent-harness-engineering/references/codex-cli.md.
+  # skills/dotfiles/references/codex-cli.md.
   walCheckpointScript = pkgs.writeShellApplication {
     name = "codex-wal-checkpoint";
     runtimeInputs = [

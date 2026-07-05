@@ -3,6 +3,13 @@
 Original SKILL.md guidance before Waza compaction. Use this reference when the
 concise skill needs domain-specific details.
 
+## 1. Reference Index
+
+- [AI/Human Responsibility Boundaries](ai-human-responsibility-boundaries.md)
+- [Prompt Blocks](prompt-blocks.md)
+- [Review Output Contract](review-output-contract.md)
+- [Resume Handoff](resume-handoff.md)
+
 ~~~~~~~~~~~~markdown
 ---
 name: prompt-contracts-local

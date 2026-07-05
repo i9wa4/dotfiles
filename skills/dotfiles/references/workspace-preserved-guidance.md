@@ -3,6 +3,15 @@
 Original SKILL.md guidance before Waza compaction. Use this reference when the
 concise skill needs domain-specific details.
 
+## 1. Reference Index
+
+- [Worktree Workflow](workspace-worktree-workflow.md)
+- [Worktree Development](worktree-development.md)
+- [Worktree Development Overview](worktree-development-overview.md)
+- [Pane Operations](workspace-tmux-pane-operations.md)
+- [Boot Failure Modes](workspace-boot-failure-modes.md)
+- [VDE Layout Internals](workspace-vde-layout-internals.md)
+
 ~~~~~~~~~~~~markdown
 ---
 name: agent-workspace
@@ -230,6 +239,6 @@ Key rules:
 - `tmux list-sessions` is authoritative for session existence; postman routing
   may lag
 - WAL bloat (`$HOME/.codex/logs_2.sqlite-wal`) accumulates in multi-pane Codex
-  sessions; see `skills/agent-harness-engineering/references/codex-cli.md` WAL
+  sessions; see `skills/dotfiles/references/codex-cli.md` WAL
   runbook (do not duplicate here)
 ~~~~~~~~~~~~

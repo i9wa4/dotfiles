@@ -4,10 +4,10 @@ Issue #241 adapts the six-stage code review model from
 <https://zenn.dev/kenimo49/articles/code-review-6-stages-ai-human-boundary>
 to this repository.
 
-The decision for this repo is to document the boundary as a standalone guide
-and cross-link it from `docs/repo-ai-operating-contract.md`. The guide is
-policy for review responsibility, not a new review tool and not an approval
-shortcut.
+The decision for this repo is to document the boundary as a standalone guide and
+cross-link it from `skills/dotfiles/references/repo-ai-operating-contract.md`.
+The guide is policy for review responsibility, not a new review tool and not an
+approval shortcut.
 
 ## 1. Boundary Map
 
@@ -15,9 +15,9 @@ shortcut.
 | -------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | 1 Format       | Mechanical formatting, whitespace, generated formatting output                                                      | `treefmt`, format hooks, Markdown formatting checks                                                              | Deterministic automation                             | Fully automated; humans should not spend review time on formatting comments                                                  |
 | 2 Lint         | Static rule checks and deterministic safety scans                                                                   | `actionlint`, `statix`, `deadnix`, `shellcheck`, `ruff`, `gitleaks`, `betterleaks`, skill validation scripts, CI | Deterministic automation                             | Fully automated where the rule is deterministic; failures block until fixed or explicitly scoped out                         |
-| 3 Style        | Naming, prose quality, prompt wording, skill shape, docs structure                                                  | `skills/*`, `docs/*`, prompt references, `technical-writing`, local style conventions                            | AI-assisted plus human judgment                      | AI suggestions are useful and may be applied, but a human or responsible agent must decide whether they fit repo conventions |
+| 3 Style        | Naming, prose quality, prompt wording, skill shape, docs structure                                                  | `skills/*` (bodies and references), prompt references, `technical-writing`, local style conventions              | AI-assisted plus human judgment                      | AI suggestions are useful and may be applied, but a human or responsible agent must decide whether they fit repo conventions |
 | 4 Logic        | Behavior, edge cases, policy conditions, shell and Nix activation behavior                                          | scripts, Nix modules, hooks, storage cleanup, app connector policy, worktree helpers, tests                      | AI-assisted evidence plus responsible owner review   | AI review is evidence only; final approval requires checked specs, edge cases, and focused verification                      |
-| 5 Design       | Boundary placement across modules, docs, skills, hooks, postman roles, and helper scripts                           | `nix/home-manager/agents`, `skills/`, `config/tmux-a2a-postman/postman.md`, `docs/`, `bin/`, `scripts/`          | Human or designated owner, with AI analysis as input | Requires explicit design rationale; AI may compare patterns but cannot approve boundary movement alone                       |
+| 5 Design       | Boundary placement across modules, docs, skills, hooks, postman roles, and helper scripts                           | `nix/home-manager/agents`, `skills/`, `config/tmux-a2a-postman/postman.md`, `bin/`, `scripts/`                   | Human or designated owner, with AI analysis as input | Requires explicit design rationale; AI may compare patterns but cannot approve boundary movement alone                       |
 | 6 Architecture | Long-lived direction for sandbox model, credential boundaries, postman topology, CI strategy, and worktree strategy | operating contracts, ADR-style docs, role topology, branch protection assumptions, runtime trust model           | Human/ADR-style decision before implementation       | Pre-PR decision only; AI may prepare options, risks, and evidence but does not approve architecture                          |
 
 Owner approval and human approval are separate gates. A designated owner can
@@ -57,8 +57,8 @@ Style in this repo is broader than code formatting. It includes:
 - Markdown shape and table readability
 - prompt wording and reusable prompt-block placement
 - skill frontmatter clarity and `USE FOR` trigger coverage
-- whether a note belongs in `docs/`, a skill body, a skill reference, or
-  `config/tmux-a2a-postman/postman.md`
+- whether a note belongs in a skill body, a skill reference, the private vault,
+  or `config/tmux-a2a-postman/postman.md`
 
 AI is appropriate for Stage 3 because it can spot unclear naming, repeated
 phrases, overlong sections, missing cross-links, and inconsistent local
@@ -95,7 +95,7 @@ Design review asks whether the change is placed in the right surface.
 Examples that require design attention:
 
 - moving logic between Nix modules and shell scripts
-- deciding whether a skill responsibility belongs in `agent-harness-engineering`
+- deciding whether a skill responsibility belongs in `dotfiles`
   or a narrower compatibility trigger
 - changing the boundary between `postman.md` role contracts and skill
   references

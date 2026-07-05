@@ -66,7 +66,7 @@ artifacts.
   `model = null` means the generated TOML omits `model` and inherits the parent
   session. Keep reviewer usage guidance in `skills/subagent-review/SKILL.md`.
 - After setting up Claude Code on a new machine or after adding new projects,
-  use `/agent-harness-engineering` and its Claude workspace trust workflow;
+  use `/dotfiles` and its Claude workspace trust workflow;
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
   is recorded.
 

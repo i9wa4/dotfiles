@@ -1,11 +1,12 @@
 # Agent Config Philosophy
 
 This document captures the design principles that govern how Codex CLI and
-Claude Code are configured in this repo. They are prescriptive — they
-describe how new agent configuration should be authored — and they
-complement, not replace, the descriptive operating model in
-`docs/dotfiles-operating-concepts.md`. For command approval, sandbox, and
-writable-surface boundaries, see `docs/agent-command-approval-design.md`.
+Claude Code are configured in this repo. They are prescriptive — they describe
+how new agent configuration should be authored — and they complement, not
+replace, the descriptive operating model in
+`skills/dotfiles/references/operating-concepts.md`. For command approval,
+sandbox, and writable-surface boundaries, see
+`skills/dotfiles/references/agent-command-approval-design.md`.
 
 ## 1. The Three Principles
 
@@ -119,7 +120,7 @@ What this looks like in the current repo:
 - Hooks are configured for both engines with the same five jobs:
   context injection, deny enforcement, observation, handoff save,
   handoff reload. The hook surfaces differ but the intent mirrors.
-  See section 3 of `docs/dotfiles-operating-concepts.md`.
+  See section 3 of `skills/dotfiles/references/operating-concepts.md`.
 - Skills work in both engines (`/skill <name>` for Claude,
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
@@ -177,20 +178,21 @@ Before adding agent configuration, walk this checklist:
 4. If a feature is engine-specific by necessity, document why it has no
    cross-engine equivalent in the module header and the commit message.
    (Principle 1.3.)
-5. Whenever you cite a vendor-specific feature in a commit, add a brief
-   note in the relevant section of `docs/dotfiles-operating-concepts.md`
-   or this document so the engine dependency is discoverable.
+5. Whenever you cite a vendor-specific feature in a commit, add a brief note in
+   the relevant section of `skills/dotfiles/references/operating-concepts.md` or
+   this document so the engine dependency is discoverable.
 
 ## 4. References
 
-- `docs/dotfiles-operating-concepts.md` — descriptive operating model
-  (section 4 covers Claude/Codex parity in detail).
-- `docs/agent-hooks-architecture.md` — current hook surface in Claude
-  and Codex, where they are aligned, where they still drift, and the
-  direction we want to keep pulling in.
-- `docs/deny-bash-design.md` — concrete realisation of these
-  principles in the Bash deny system.
-- `docs/repo-ai-operating-contract.md` — AI operation rules.
+- `skills/dotfiles/references/operating-concepts.md` — descriptive operating
+  model (section 4 covers Claude/Codex parity in detail).
+- `skills/dotfiles/references/agent-hooks-architecture.md` — current hook
+  surface in Claude and Codex, where they are aligned, where they still drift,
+  and the direction we want to keep pulling in.
+- `skills/dotfiles/references/deny-bash-design.md` — concrete realisation of
+  these principles in the Bash deny system.
+- `skills/dotfiles/references/repo-ai-operating-contract.md` — AI operation
+  rules.
 - `config/tmux-a2a-postman/postman.md` — agent contract that carries
   the prompt-path rules into every postman session.
 - `nix/home-manager/agents/shared/denied-bash-commands.nix` — example of a

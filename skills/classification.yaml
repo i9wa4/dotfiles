@@ -28,9 +28,11 @@ policy:
     directly on main.
 
 target_groups:
-  agent-harness-engineering: >
-    Agent runtime, hooks, postman routing, workspace, prompt contracts, and
-    installed-agent engineering.
+  dotfiles: >
+    This dotfiles environment: machine setup, Nix operations, storage
+    hygiene, clipboard strategy, plus agent runtime, hooks, postman routing,
+    workspace, prompt contracts, and installed-agent engineering (absorbed
+    from agent-harness-engineering).
   agent-skills-management: >
     Agent Skills authoring, validation, Waza readiness, publish dry-runs, and
     catalog diagnostics.
@@ -167,18 +169,42 @@ common_validation_expectations: &common_validation
   - bash scripts/validation/validate-skill-release-readiness.sh --strict
 
 skills:
-  - name: agent-harness-engineering
-    path: skills/agent-harness-engineering
+  - name: dotfiles
+    path: skills/dotfiles
     publish: true
-    scope: repo-local-agent-harness
+    scope: dotfiles-environment-and-agent-harness
     action: keep
-    target_group: agent-harness-engineering
-    target_name: agent-harness-engineering
+    target_group: dotfiles
+    target_name: dotfiles
     release_state: release_ready
     owner_surface: skill
-    standalone_decision: keep_standalone
+    standalone_decision: keep_standalone_target
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Owner skill for the "my environment" domain. Created 2026-07-05 by
+      merging the former agent-harness-engineering skill with environment
+      guidance folded in from docs/ (operating concepts, storage hygiene,
+      clipboard strategy) and README (machine setup, Nix operations). docs/
+      was removed; one-time evaluations moved to the private vault under
+      github.com/i9wa4/dotfiles/decisions/.
+
+  - name: agent-harness-engineering
+    path: skills/agent-harness-engineering
+    publish: false
+    scope: repo-local-agent-harness
+    action: removed_before_release
+    target_group: dotfiles
+    target_name: dotfiles
+    release_state: removed_before_release
+    owner_surface: skills/dotfiles
+    standalone_decision: folded_into_owner_skill
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+    notes: >
+      Merged into the dotfiles owner skill on 2026-07-05. All references
+      moved to skills/dotfiles/references/; the alias term stays in the
+      dotfiles frontmatter description for trigger continuity.
 
   - name: agent-skills-management
     path: skills/agent-skills-management
@@ -420,7 +446,7 @@ skills:
     notes: >
       General package workflow now lives in programming references.
       Agent-runtime Nix and Home Manager material belongs under
-      agent-harness-engineering. The standalone skill directory was removed
+      the dotfiles owner skill. The standalone skill directory was removed
       before release.
 
   - name: markdown
@@ -570,7 +596,7 @@ skills:
     notes: >
       Classification confirmed under data-platform: the pane mechanics are
       incidental; the safety boundary protects cloud/data authentication and
-      write operations. Use agent-harness-engineering only for generic tmux pane
+      write operations. Use the dotfiles owner skill only for generic tmux pane
       operation guidance.
 
   - name: diagramming

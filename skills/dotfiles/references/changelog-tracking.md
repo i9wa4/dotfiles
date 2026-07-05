@@ -2,7 +2,7 @@
 
 Version history and optimization decision log for Claude Code configuration.
 This reference preserves older review notes that support current
-`agent-harness-engineering` decisions.
+`dotfiles` decisions.
 
 ## 1. Not Adopting
 

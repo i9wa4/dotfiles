@@ -6,7 +6,7 @@
 #   shared/       cross-runtime data (deny rules, MCP servers, install
 #                 manifest, agent-skills installer)
 #   subagents/    committed Markdown reviewer agent source
-#   skills/       hand-authored skills (agent-harness-engineering, runtime
+#   skills/       hand-authored skills (dotfiles, runtime
 #                 config optimizers, etc.)
 #   scripts/      hook + statusline scripts
 #

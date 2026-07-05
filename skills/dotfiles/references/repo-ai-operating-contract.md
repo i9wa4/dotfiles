@@ -7,10 +7,11 @@ repo-local AI runtime under `nix/home-manager/agents`, plus the routing and
 approval contract carried by `tmux-a2a-postman`.
 
 For the broader repository philosophy, read
-`docs/dotfiles-operating-concepts.md`.
+`skills/dotfiles/references/operating-concepts.md`.
 
-For review responsibility boundaries across automation, AI assistance, and
-human or owner approval, read `docs/repo-ai-review-boundaries.md`.
+For review responsibility boundaries across automation, AI assistance, and human
+or owner approval, read
+`skills/dotfiles/references/repo-ai-review-boundaries.md`.
 
 ## 1. Scope
 
@@ -40,6 +41,7 @@ The persona / language / scope contract lives in
 skill bodies live in top-level `skills/<name>/SKILL.md`; postman
 injects a generated catalog for that local skill tree through `skill_path`.
 
+<!-- private-content-scan: allow-next-line -->
 There is no generated root instruction file under `~/.claude/` or `~/.codex/`
 for this repo. Direct non-postman sessions rely on the installed runtime
 settings and skill trees until they receive a postman event.
@@ -51,9 +53,13 @@ settings and skill trees until they receive a postman event.
 `nix/home-manager/agents/shared/agent-skills.nix` declaratively materialize
 the runtime under:
 
+<!-- private-content-scan: allow-next-line -->
 - `~/.claude/`
+<!-- private-content-scan: allow-next-line -->
 - `~/.codex/`
+<!-- private-content-scan: allow-next-line -->
 - `~/.claude/skills`
+<!-- private-content-scan: allow-next-line -->
 - `~/.codex/skills`
 
 The point is that the installed runtime should come from this repo, not from
@@ -218,7 +224,9 @@ If the repo changes a Bash safety policy, this is where it should happen.
 This file maps the installed shared agent surface from
 `subagents/*.md` and `subagents/metadata.nix`:
 
+<!-- private-content-scan: allow-next-line -->
 - Claude receives generated Markdown files under `~/.claude/agents/`
+<!-- private-content-scan: allow-next-line -->
 - Codex receives generated TOML files under `~/.codex/agents/`
 - Both generated surfaces share the same prompt bodies and per-agent runtime
   metadata
@@ -250,6 +258,7 @@ surface.
 #### 5.3.2. Current public state
 
 The public review skill surface is one hand-authored skill installed into both
+<!-- private-content-scan: allow-next-line -->
 `~/.claude/skills` and `~/.codex/skills`:
 
 - `subagent-review`
@@ -292,19 +301,25 @@ aggregates the final verdict.
 Current materialization:
 
 ```text
+# private-content-scan: allow-next-line
 ~/.claude/skills/
   subagent-review/
+# private-content-scan: allow-next-line
 ~/.codex/skills/
   subagent-review/
+# private-content-scan: allow-next-line
 ~/.claude/agents/
   <agent name>.md
+# private-content-scan: allow-next-line
 ~/.codex/agents/
   <agent name>.toml
 ```
 
 `shared/agent-skills.nix` owns the skill-tree materialization into both
 engines. `claude/default.nix` installs generated Claude agent Markdown under
+<!-- private-content-scan: allow-next-line -->
 `~/.claude/agents`. `codex/default.nix` installs generated Codex TOML under
+<!-- private-content-scan: allow-next-line -->
 `~/.codex/agents`.
 
 ## 6. Claude/Codex parity contract

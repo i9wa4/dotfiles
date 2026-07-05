@@ -36,7 +36,7 @@ current task: tighten the review output contract for worker-side review runs
 status: local skill added and repo diff verified
 blockers: none
 next action: rebuild home-manager when ready to publish the skill to live homes
-verification: git diff --check clean; prompt references present under skills/agent-harness-engineering/references
+verification: git diff --check clean; prompt references present under skills/dotfiles/references
 resume command: resume the saved thread context when supported
 ```
 

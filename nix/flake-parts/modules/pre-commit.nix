@@ -67,9 +67,9 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh)|(docs/(agent-skill-trigger-validation|agent-skills-management|agent-skills-release-all|dotfiles-operating-concepts)\\.md))$";
-      skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh)|(docs/(agent-skills-management|agent-skills-release-all)\\.md))$";
-      skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh)|(docs/agent-skill-trigger-validation\\.md))$";
+      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/(validate-skill-private-content|validate-skill-release-readiness|validate-skill-trigger-matrix)\\.sh))$";
+      skillReleaseReadinessFiles = "^((skills/.*)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-release-readiness\\.sh))$";
+      skillTriggerMatrixFiles = "^((skills/.*)|(scripts/validation/validate-skill-trigger-matrix\\.sh))$";
       skillTriggerMatrixPath = pkgs.lib.makeBinPath [
         pkgs.coreutils
         pkgs.gawk

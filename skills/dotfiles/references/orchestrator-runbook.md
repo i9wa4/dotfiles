@@ -15,7 +15,7 @@ auditing whether orchestration details still belong in the live template.
   escalation thresholds, and completion vocabulary in
   `config/tmux-a2a-postman/postman.md`.
 - Keep durable design notes, historical workflow recipes, and long examples in
-  `skills/agent-harness-engineering/references/`.
+  `skills/dotfiles/references/`.
 - Use `durable-task-tracking` for task artifact setup and preservation
   mechanics. Cite the same artifact in worker, review, and completion traffic.
 - Do not restore a standalone role-only orchestrator skill unless the live
@@ -23,12 +23,12 @@ auditing whether orchestration details still belong in the live template.
 
 ## 2. Runtime Reference Boundary
 
-- Treat repo `docs/` as background for people and repo readers, not as the only
-  home for behavior that installed Agent Skills need at runtime.
+- Durable repo background lives in skill `references/` files; behavior that
+  installed Agent Skills need at runtime belongs in the owning skill.
 - Keep durable orchestration procedures in this reference when global skill
-  installation must be able to read them without opening repo docs.
-- Keep this reference compact. Mirror operational invariants from docs only
-  when they affect live orchestration behavior.
+  installation must be able to read them without opening other repo surfaces.
+- Keep this reference compact. Mirror operational invariants from other
+  references only when they affect live orchestration behavior.
 - If this reference and `config/tmux-a2a-postman/postman.md` disagree, update
   the live role contract first, then mirror the durable invariant here.
 

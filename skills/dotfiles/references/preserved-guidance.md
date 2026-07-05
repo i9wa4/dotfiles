@@ -3,9 +3,23 @@
 Original SKILL.md guidance before Waza compaction. Use this reference when the
 concise skill needs domain-specific details.
 
+## 1. Reference Index
+
+- [Config Philosophy](agent-config-philosophy.md)
+- [Hooks Architecture](agent-hooks-architecture.md)
+- [Deny Bash Design](deny-bash-design.md)
+- [Command Approval Design](agent-command-approval-design.md)
+- [AI Operating Contract](repo-ai-operating-contract.md)
+- [AI Review Boundaries](repo-ai-review-boundaries.md)
+- [Claude Code](claude-code.md)
+- [Claude Workspace Trust](claude-workspace-trust.md)
+- [Codex CLI](codex-cli.md)
+- [Changelog Tracking](changelog-tracking.md)
+- [Orchestrator Runbook](orchestrator-runbook.md)
+
 ~~~~~~~~~~~~markdown
 ---
-name: agent-harness-engineering
+name: dotfiles
 license: MIT
 description: |
   Dotfiles agent harness: Claude Code/Codex CLI config, Nix/HM settings,
@@ -39,11 +53,11 @@ installed, validated, or explained.
 
 ## Source Map
 
-- Harness principles: `docs/agent-config-philosophy.md`
-- Operating model: `docs/dotfiles-operating-concepts.md`
-- AI workflow and artifacts: `docs/repo-ai-operating-contract.md`
-- Hook architecture: `docs/agent-hooks-architecture.md`
-- Bash deny model: `docs/deny-bash-design.md`
+- Harness principles: `skills/dotfiles/references/agent-config-philosophy.md`
+- Operating model: `skills/dotfiles/references/operating-concepts.md`
+- AI workflow and artifacts: `skills/dotfiles/references/repo-ai-operating-contract.md`
+- Hook architecture: `skills/dotfiles/references/agent-hooks-architecture.md`
+- Bash deny model: `skills/dotfiles/references/deny-bash-design.md`
 - Skill installation: `nix/home-manager/agents/shared/agent-skills.nix`
 - Claude runtime config: `nix/home-manager/agents/claude/default.nix` and
   `references/claude-code.md`
@@ -105,7 +119,7 @@ Full diagnosis and commands live in
 - Validate skill frontmatter after skill edits:
 
   ```sh
-  bash scripts/validation/validate-skill-frontmatter.sh skills/agent-harness-engineering
+  bash scripts/validation/validate-skill-frontmatter.sh skills/dotfiles
   ```
 
 - For publishable skill changes, run

@@ -10,7 +10,7 @@ The canonical trigger cases live in `skills/trigger-validation.json`.
 
 That matrix covers every final target group from #168:
 
-- `agent-harness-engineering`
+- `dotfiles`
 - `agent-skills-management`
 - `github`
 - `create-review-comment`
@@ -63,7 +63,7 @@ bash scripts/validation/validate-skill-description-length.sh skills
 bash scripts/validation/validate-skill-waza.sh skills/<target-skill>/SKILL.md
 bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
-  docs/agent-skill-trigger-validation.md \
+  skills/agent-skills-management/references/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
 bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```
