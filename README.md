@@ -29,15 +29,8 @@ macOS recovery: [Nix Operations](skills/dotfiles/references/nix-operations.md).
 
 ## 2. Guide Index
 
-| Topic                                             | Location                                                                                             |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Machine setup and bootstrap                       | [skills/dotfiles/references/machine-setup.md](skills/dotfiles/references/machine-setup.md)           |
-| Daily Nix operations and upgrade                  | [skills/dotfiles/references/nix-operations.md](skills/dotfiles/references/nix-operations.md)         |
-| Repository operating concepts                     | [skills/dotfiles/references/operating-concepts.md](skills/dotfiles/references/operating-concepts.md) |
-| Clipboard strategy (Vim/Neovim/tmux/host)         | [skills/dotfiles/references/clipboard-strategy.md](skills/dotfiles/references/clipboard-strategy.md) |
-| Agent harness (Claude/Codex config, hooks, panes) | [skills/dotfiles/](skills/dotfiles/SKILL.md)                                                         |
-| Agent Skills authoring and release                | [skills/dotfiles/references/skills-management.md](skills/dotfiles/references/skills-management.md)   |
-| Multi-agent postman node contracts                | [config/tmux-a2a-postman/postman.md](config/tmux-a2a-postman/postman.md)                             |
+Start with the [dotfiles skill](skills/dotfiles/SKILL.md). It links the
+current setup, operations, harness, and skill-management references.
 
 Decision records (evaluations, one-time investigations) are archived in a
 private knowledge vault, not in this repository.
