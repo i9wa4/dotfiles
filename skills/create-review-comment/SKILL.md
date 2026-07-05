@@ -35,7 +35,7 @@ context before routing substantive review to guardian.
    review package to guardian, let guardian request critic, and never launch
    reviewer subagents from orchestrator/worker. Do not ask the user for review
    mechanics.
-4. Run the checks named in the preserved guidance or the nearest repo harness.
+4. Run the checks named in the workflow guide or the nearest repo harness.
 5. Output draft comments visibly for user approval. Do not post them unless the
    user explicitly asks.
 
@@ -51,5 +51,5 @@ review-comment drafting.
 
 ## 5. Troubleshooting
 
-If Waza or repo validation disagrees with preserved guidance, follow the
+If Waza or repo validation disagrees with the workflow guide, follow the
 stricter rule and record the exception in the handoff.

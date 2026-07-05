@@ -15,6 +15,10 @@ set -o posix
 #   - repo-setup (optional)
 #   - direnv (required by repo-setup when explicitly allowing .envrc)
 
+script_dir="$(unset CDPATH; cd -- "$(dirname -- "$0")" && pwd -P)"
+# shellcheck source=/dev/null
+source "${script_dir}/../lib/worktree-common.sh"
+
 # Check required dependencies
 for cmd in gh git; do
   if ! command -v "$cmd" &>/dev/null; then
@@ -95,26 +99,6 @@ connect_review_branch() {
   fi
 }
 
-find_worktree_for_branch() {
-  local branch=$1
-  local target_ref="refs/heads/${branch}"
-
-  git worktree list --porcelain | awk -v target_ref="$target_ref" '
-    /^worktree / {
-      path = substr($0, 10)
-    }
-    /^branch / {
-      if (substr($0, 8) == target_ref) {
-        print path
-        found = 1
-      }
-    }
-    END {
-      exit found ? 0 : 1
-    }
-  '
-}
-
 sync_existing_review_branch() {
   local branch=$1
   local upstream=$2
@@ -163,16 +147,8 @@ sync_existing_review_branch() {
   return 1
 }
 
-# Fetch remote and update main branch
-echo "-> Fetching remote..."
-git fetch origin
-current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [[ $current_branch == "main" ]]; then
-  git pull --ff-only origin main
-else
-  echo "* Keeping local main unchanged while ${current_branch} is checked out"
-fi
-echo ""
+# Fetch remote and update main branch.
+dotfiles_worktree_fetch_origin_and_update_main
 
 # Process each PR number
 had_failure="false"
@@ -231,7 +207,7 @@ for pr_number in "$@"; do
   fi
 
   existing_worktree_path=""
-  if existing_worktree_path=$(find_worktree_for_branch "${pr_local_branch}" 2>/dev/null); then
+  if existing_worktree_path=$(dotfiles_worktree_find_branch "${pr_local_branch}" 2>/dev/null); then
     :
   else
     existing_worktree_path=""
@@ -328,10 +304,7 @@ for pr_number in "$@"; do
     fi
   fi
 
-  if command -v zoxide &>/dev/null; then
-    zoxide add "$worktree_path"
-    echo "* Added worktree to zoxide database"
-  fi
+  dotfiles_worktree_add_zoxide "$worktree_path"
 
   echo ""
 done

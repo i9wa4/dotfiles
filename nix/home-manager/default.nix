@@ -14,9 +14,9 @@ let
 
   # Direct symlink (not via Nix store) - changes reflect immediately
   symlink = config.lib.file.mkOutOfStoreSymlink;
-  # Keep Node and pnpm on the newest versions available in pinned nixpkgs.
-  nodejsPackage = pkgs.nodejs_26;
-  pnpmPackage = pkgs.pnpm.override { nodejs = nodejsPackage; };
+  # Use the pinned nixpkgs defaults so Node/pnpm stay on cache-friendly builds.
+  nodejsPackage = pkgs.nodejs;
+  pnpmPackage = pkgs.pnpm;
   system = pkgs.stdenv.hostPlatform.system;
 
   # AI agent CLIs from llm-agents.nix flake input

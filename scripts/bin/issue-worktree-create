@@ -18,6 +18,10 @@ set -o posix
 #   - repo-setup (optional)
 #   - direnv (required by repo-setup when allowing generated or copied .envrc)
 
+script_dir="$(unset CDPATH; cd -- "$(dirname -- "$0")" && pwd -P)"
+# shellcheck source=/dev/null
+source "${script_dir}/../lib/worktree-common.sh"
+
 # Check required dependencies
 for cmd in gh jq git; do
   if ! command -v "$cmd" &>/dev/null; then
@@ -64,26 +68,6 @@ fi
 
 # Get repository root
 repo_root=$(git rev-parse --show-toplevel)
-
-find_worktree_for_branch() {
-  local branch=$1
-  local target_ref="refs/heads/${branch}"
-
-  git worktree list --porcelain | awk -v target_ref="$target_ref" '
-    /^worktree / {
-      path = substr($0, 10)
-    }
-    /^branch / {
-      if (substr($0, 8) == target_ref) {
-        print path
-        found = 1
-      }
-    }
-    END {
-      exit found ? 0 : 1
-    }
-  '
-}
 
 ensure_remote_tracking_branch() {
   local branch=$1
@@ -180,15 +164,8 @@ run_repo_setup_for_worktree() {
 }
 
 # Fetch remote and update main branch when it is the invoking branch.
-echo "-> Fetching remote..."
-git fetch origin
+dotfiles_worktree_fetch_origin_and_update_main
 current_branch=$(git rev-parse --abbrev-ref HEAD)
-if [[ "$current_branch" == "main" ]]; then
-  git pull --ff-only origin main
-else
-  echo "* Keeping local main unchanged while ${current_branch} is checked out"
-fi
-echo ""
 
 # Process each issue number
 had_failure="false"
@@ -284,7 +261,7 @@ ${issue_comments}
   worktree_name="${branch_name//\//-}"
   desired_worktree_path="${repo_root}/.worktrees/${worktree_name}"
   existing_worktree_path=""
-  if existing_worktree_path=$(find_worktree_for_branch "${branch_name}" 2>/dev/null); then
+  if existing_worktree_path=$(dotfiles_worktree_find_branch "${branch_name}" 2>/dev/null); then
     :
   else
     existing_worktree_path=""
@@ -430,10 +407,7 @@ ${issue_comments}
     run_repo_setup_for_worktree "${worktree_path}" "${allow_envrc}" "${allow_message}" "${allow_generated_envrc}"
   fi
 
-  if command -v zoxide &>/dev/null; then
-    zoxide add "$worktree_path"
-    echo "* Added worktree to zoxide database"
-  fi
+  dotfiles_worktree_add_zoxide "$worktree_path"
 
   echo ""
 done

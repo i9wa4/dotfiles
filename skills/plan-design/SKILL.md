@@ -31,13 +31,14 @@ generated runtime outputs, or replacing repo-specific source of truth.
    [Brainstorming](references/brainstorming.md) and stabilize the direction
    before drafting the execution plan.
 4. Make the smallest scoped change that satisfies the request.
-5. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Run the checks named in the plan authoring guide or the nearest repo
+   harness.
 6. Report verification results and any remaining risk.
 
 ## 2. Examples
 
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize the result.
+For a request in this domain, load the plan authoring guide, update the
+relevant source, run focused checks, and summarize the result.
 
 ## 3. References
 
@@ -47,5 +48,5 @@ source, run focused checks, and summarize the result.
 
 ## 4. Troubleshooting
 
-If Waza or repo validation disagrees with preserved guidance, follow the
+If Waza or repo validation disagrees with the plan authoring guide, follow the
 stricter rule and record the exception in the handoff.

@@ -30,9 +30,9 @@ review engine or the user-facing review-comment trigger.
    behavior or giving detailed instructions.
 3. Before branch publication or PR creation, verify branch, upstream, base,
    head, and clean status; use the same-name remote destination workflow in
-   the preserved guidance.
+   the workflow guide.
 4. Make the smallest scoped change that satisfies the request.
-5. Run the checks named in the preserved guidance or the nearest repo harness.
+5. Run the checks named in the workflow guide or the nearest repo harness.
 6. Report verification results and any remaining risk.
 
 ## 3. References
@@ -43,5 +43,5 @@ review engine or the user-facing review-comment trigger.
 
 ## 4. Troubleshooting
 
-If Waza or repo validation disagrees with preserved guidance, follow the
+If Waza or repo validation disagrees with the workflow guide, follow the
 stricter rule and record the exception in the handoff.
