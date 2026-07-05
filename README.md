@@ -31,6 +31,3 @@ macOS recovery: [Nix Operations](skills/dotfiles/references/nix-operations.md).
 
 Start with the [dotfiles skill](skills/dotfiles/SKILL.md). It links the
 current setup, operations, harness, and skill-management references.
-
-Decision records (evaluations, one-time investigations) are archived in a
-private knowledge vault, not in this repository.
