@@ -3,7 +3,7 @@
   "issue": 178,
   "source_issue": 168,
   "roadmap_issue": 182,
-  "procedure_doc": "skills/agent-skills-management/references/agent-skill-trigger-validation.md",
+  "procedure_doc": "skills/dotfiles/references/agent-skill-trigger-validation.md",
   "release_readiness_command": "bash scripts/validation/validate-skill-trigger-matrix.sh --strict-results",
   "target_groups": [
     {
@@ -33,49 +33,36 @@
           "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
           "notes": "Environment-level scope absorbed from README and docs/ (machine setup, Nix operations, storage hygiene, clipboard strategy)."
-        }
-      ]
-    },
-    {
-      "target_group": "agent-skills-management",
-      "target_skill": "agent-skills-management",
-      "target_path": "skills/agent-skills-management/SKILL.md",
-      "legacy_skills": [
-        {
-          "name": "skill-description-index",
-          "status": "removed_before_release"
-        }
-      ],
-      "trigger_cases": [
+        },
         {
           "id": "agent-skills-management-target",
           "kind": "target",
           "prompt": "Add, edit, remove, validate, or publish repository Agent Skills and run Waza readiness checks.",
-          "expected_skill": "agent-skills-management",
+          "expected_skill": "dotfiles",
           "result": "pass",
-          "observed_skill": "agent-skills-management",
-          "checked_at": "2026-05-21",
+          "observed_skill": "dotfiles",
+          "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
-          "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
+          "notes": "Agent Skills authoring/validation scope folded into the dotfiles owner skill (skills-management reference)."
         },
         {
           "id": "skill-description-index-removed-alias",
           "kind": "removed_alias",
           "legacy_skill": "skill-description-index",
           "prompt": "Recover full Agent Skill descriptions from disk when the active catalog is truncated or unclear.",
-          "expected_skill": "agent-skills-management",
+          "expected_skill": "dotfiles",
           "result": "pass",
-          "observed_skill": "agent-skills-management",
-          "checked_at": "2026-06-29",
+          "observed_skill": "dotfiles",
+          "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
-          "notes": "The standalone compatibility wrapper was removed; the alias term and script now live under agent-skills-management references and scripts."
+          "notes": "Agent Skills authoring/validation scope folded into the dotfiles owner skill (skills-management reference)."
         }
       ]
     },
     {
-      "target_group": "github",
-      "target_skill": "github",
-      "target_path": "skills/github/SKILL.md",
+      "target_group": "collaboration",
+      "target_skill": "collaboration",
+      "target_path": "skills/collaboration/SKILL.md",
       "legacy_skills": [
         {
           "name": "atlassian",
@@ -87,10 +74,10 @@
           "id": "github-target",
           "kind": "target",
           "prompt": "Create or inspect a GitHub issue or pull request while preserving public surface path hygiene.",
-          "expected_skill": "github",
+          "expected_skill": "collaboration",
           "result": "pass",
-          "observed_skill": "github",
-          "checked_at": "2026-05-21",
+          "observed_skill": "collaboration",
+          "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
           "notes": "Target prompt maps to the target skill frontmatter description and owner surface."
         },
@@ -99,10 +86,10 @@
           "kind": "removed_alias",
           "legacy_skill": "atlassian",
           "prompt": "Use Jira or Confluence via Atlassian Cloud when credentials are confirmed present.",
-          "expected_skill": "github",
+          "expected_skill": "collaboration",
           "result": "pass",
-          "observed_skill": "github",
-          "checked_at": "2026-06-29",
+          "observed_skill": "collaboration",
+          "checked_at": "2026-07-05",
           "validation_method": "manual_catalog_review",
           "notes": "The standalone compatibility wrapper was removed; GitHub owner frontmatter and references now cover Atlassian/Jira/Confluence."
         }

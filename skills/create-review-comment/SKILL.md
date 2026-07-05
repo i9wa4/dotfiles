@@ -19,7 +19,7 @@ outputs, replacing source of truth, or posting without explicit approval.
 
 This user-facing trigger owns target inference, Japanese draft output, and the
 no-post-without-approval gate. Review procedure belongs to
-`subagent-review`; GitHub mechanics and path hygiene belong to `github`.
+`subagent-review`; GitHub mechanics and path hygiene belong to `collaboration`.
 In `tmux-a2a-postman`, orchestrator/worker only infer targets and collect PR
 context before routing substantive review to guardian.
 

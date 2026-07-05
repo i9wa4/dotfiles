@@ -505,9 +505,10 @@ Reusable review material belongs outside the live template:
   and no-post-without-explicit-approval gate.
 - `skills/create-review-comment/references/preserved-guidance.md` owns
   detailed review-comment drafting templates and preserved examples.
-- `skills/github/SKILL.md` and `skills/github/references/preserved-guidance.md`
-  own GitHub mechanics, issue/PR operations, inline comment mechanics,
-  commit/PR-publication rules, and public wording/path hygiene.
+- `skills/collaboration/SKILL.md` and
+  `skills/collaboration/references/preserved-guidance.md` own GitHub mechanics,
+  issue/PR operations, inline comment mechanics, commit/PR-publication rules,
+  and public wording/path hygiene.
 
 If a review rule needs to be enforced while agents are actively routing mail,
 keep a short gate in `postman.md` and point here or to the relevant skill for

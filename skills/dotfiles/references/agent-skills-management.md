@@ -1,7 +1,7 @@
 # Agent Skills Management
 
-The reusable procedure for managing repository-owned agent skills in a
-top-level `skills/` tree now lives in `skills/agent-skills-management/SKILL.md`.
+The reusable procedure for managing repository-owned agent skills in a top-level
+`skills/` tree now lives in `skills/dotfiles/references/skills-management.md`.
 
 Use that skill when adding, editing, removing, publishing, or diagnosing
 top-level `skills/` entries and their publish harness. Keep this file as a
@@ -28,7 +28,7 @@ remove/demote it before the release-all gate.
 
 The pre-commit release readiness checks and tag-triggered publishing path are
 documented in
-`skills/agent-skills-management/references/agent-skills-release-all.md`.
+`skills/dotfiles/references/agent-skills-release-all.md`.
 
 ## 2. Cleanup Lane
 

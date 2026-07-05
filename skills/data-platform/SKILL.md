@@ -28,7 +28,7 @@ repo-specific guardrails.
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `dotfiles`.
-- GitHub issue, PR, review, or public-surface mechanics; use `github`.
+- GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
 - Diagram authoring or export workflows; use `diagramming`.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.

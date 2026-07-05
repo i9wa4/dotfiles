@@ -1,11 +1,4 @@
----
-name: agent-skills-management
-license: MIT
-description: |
-  USE FOR: add, edit, remove, validate, or inspect Agent Skills; run Waza, release-readiness checks, release-flow dry-runs, and skill-description catalog diagnostics. DO NOT USE FOR: runtime hooks or engine config.
----
-
-# Agent Skills Management
+# Skills Management
 
 Manage source-owned skills in `skills/`, including skill-description catalog
 diagnostics. Keep runtime hooks and engine config in harness/config skills.
@@ -39,7 +32,15 @@ If `waza check` exits 0 with `.ready=false`, parse `--format json`; do not treat
 the process exit alone as readiness.
 
 Commands and fallbacks live in
-[Waza and Publishing](references/waza-publishing.md).
+[Waza and Publishing](waza-publishing.md).
 
 Skill catalog lookup and description recovery live in
-[Skill Description Index](references/skill-description-index.md).
+[Skill Description Index](skill-description-index.md).
+
+## 3. Reference Index
+
+- [Waza and Publishing](waza-publishing.md)
+- [Skill Description Index](skill-description-index.md)
+- [Management Procedures](agent-skills-management.md)
+- [Trigger Validation](agent-skill-trigger-validation.md)
+- [Release All](agent-skills-release-all.md)

@@ -12,7 +12,7 @@ That matrix covers every final target group from #168:
 
 - `dotfiles`
 - `agent-skills-management`
-- `github`
+- `collaboration`
 - `create-review-comment`
 - `subagent-review`
 - `plan-design`
@@ -63,7 +63,7 @@ bash scripts/validation/validate-skill-description-length.sh skills
 bash scripts/validation/validate-skill-waza.sh skills/<target-skill>/SKILL.md
 bash scripts/validation/validate-skill-private-content.sh \
   skills/<target-skill> \
-  skills/agent-skills-management/references/agent-skill-trigger-validation.md \
+  skills/dotfiles/references/agent-skill-trigger-validation.md \
   skills/trigger-validation.json
 bash scripts/validation/validate-skill-release-readiness.sh --strict
 ```

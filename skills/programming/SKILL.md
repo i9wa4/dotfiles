@@ -2,7 +2,7 @@
 name: programming
 license: MIT
 description: |
-  USE FOR: Repo-local programming tasks and systematic debugging: Bash scripts, Python utilities, Nix package workflow, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
+  USE FOR: Programming and systematic debugging: Bash scripts, Python code quality and Jupyter notebooks (type hints, pytest, uv, ruff, pyright), Nix package workflow, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
 ---
 
 # Programming
@@ -15,7 +15,8 @@ and root-cause debugging.
 ## 1. Use For
 
 - Bash scripts and shell command design.
-- Python utility edits and local execution rules.
+- Python utility edits, local execution rules, and general Python quality:
+  type hints, pytest, uv/ruff/pyright tooling, Jupyter notebooks.
 - General Nix package workflow, especially fetcher hash acquisition.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
@@ -26,7 +27,7 @@ and root-cause debugging.
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `dotfiles`.
-- GitHub issue, PR, review, or public-surface mechanics; use `github`.
+- GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
 - Data-platform or diagramming workflows; use their target skills.
 
 ## 3. Workflow
@@ -43,6 +44,7 @@ and root-cause debugging.
 
 - [Bash Scripting](references/bash-scripting.md)
 - [Python Development](references/python-development.md)
+- [Python Quality](references/python-quality.md)
 - [Nix Package Workflow](references/nix-package-workflow.md)
 - [Markdown Authoring](references/markdown-authoring.md)
 - [TDD And Tidy First](references/tdd-tidy-first.md)

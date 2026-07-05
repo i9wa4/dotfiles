@@ -268,7 +268,7 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 - [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
   usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
-  custom `skills/github/SKILL.md` is sole authority (v2.1.69)
+  custom `skills/collaboration/SKILL.md` is sole authority (v2.1.69)
 - [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0"` - DISABLED (was "1"). At "1"
   the harness silently forces `permissionMode = "default"` and overrides
   `--dangerously-skip-permissions`, producing an "ask" prompt for every

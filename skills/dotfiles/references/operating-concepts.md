@@ -35,7 +35,7 @@ to the private knowledge vault, not this repository.
   belong to `skills/dotfiles/` and the postman-specific
   skills. Compatibility triggers may remain in narrower skill names during
   migration, but their detailed guidance should point back to this owner.
-- Skill authoring and validation belong to `skills/agent-skills-management/`.
+- Skill authoring and validation belong to `skills/dotfiles/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
 - Durable orchestration runbooks belong to
@@ -165,9 +165,9 @@ large fallback skill:
   postman routing, Nix/Home Manager agent harness changes, tmux workspaces,
   issue/PR worktree creation, worktree re-entry, pane operations, prompt
   contracts, and resume handoff
-- `skills/agent-skills-management/` owns source skill editing, validation, and
+- `skills/dotfiles/` owns source skill editing, validation, and
   publish-readiness checks
-- `skills/agent-skills-management/references/agent-skills-management.md` points
+- `skills/dotfiles/references/agent-skills-management.md` points
   to the Agent Skills management procedure and the release-all classification
   memo in `skills/classification.yaml`
 - `skills/dotfiles/references/repo-ai-operating-contract.md` owns durable
@@ -331,7 +331,7 @@ When you need to understand the operating concept, read these in order:
 ## 11. Related files
 
 - `skills/dotfiles/references/repo-ai-operating-contract.md`
-- `skills/agent-skills-management/references/agent-skills-management.md`
+- `skills/dotfiles/references/agent-skills-management.md`
 - `skills/dotfiles/references/agent-config-philosophy.md`
 - `skills/dotfiles/references/deny-bash-design.md`
 - `skills/classification.yaml`

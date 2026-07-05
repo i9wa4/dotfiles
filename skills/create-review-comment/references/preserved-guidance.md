@@ -31,7 +31,7 @@ on top. Do not embed, copy, or redefine the `subagent-review` workflow here.
 
 Apply these skills together when available:
 
-- `github` for PR retrieval, review comment tags, public-surface wording, and
+- `collaboration` for PR retrieval, review comment tags, public-surface wording, and
   inline comment rules.
 - `subagent-review` for guardian/critic peer-review finding extraction,
   guardian aggregation, and draft validation. Use it as the default internal
@@ -87,7 +87,7 @@ Apply these skills together when available:
 ## 3. Comment Draft Rules
 
 - Write comments in Japanese.
-- Start each comment body with the tag required by the `github` skill, such as
+- Start each comment body with the tag required by the `collaboration` skill, such as
   `[must]`, `[want]`, `[ask]`, or `[nits]`.
 - Prefer `[must]` for blockers and `[want]` for important non-blockers.
 - Write one concern per comment.

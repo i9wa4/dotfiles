@@ -23,7 +23,7 @@ color/asset conventions, and diagram-focused validation.
 ## 2. Do Not Use For
 
 - Data-platform workflows; use `data-platform`.
-- GitHub issue, PR, review, or public-surface mechanics; use `github`.
+- GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.
 - Agent harness runtime, hooks, postman routing, or installed agent outputs;

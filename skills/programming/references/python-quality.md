@@ -1,11 +1,4 @@
----
-name: python-dev
-license: MIT
-description: |
-  USE FOR: Writing, reviewing, or modifying Python code and Jupyter notebooks: code quality, type hints, pytest testing, and uv/ruff/pyright tooling. DO NOT USE FOR: running Python already in this dotfiles repo (`programming` owns that), or narrower domains (`data-platform`, `databricks-python-sdk`).
----
-
-# Python Dev
+# Python Quality
 
 General Python code quality, testing, and tooling guidance for any project.
 

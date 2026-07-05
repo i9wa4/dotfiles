@@ -37,7 +37,7 @@ macOS recovery: [Nix Operations](skills/dotfiles/references/nix-operations.md).
 | Storage hygiene and cleanup                       | [skills/dotfiles/references/storage-hygiene.md](skills/dotfiles/references/storage-hygiene.md)       |
 | Clipboard strategy (Vim/Neovim/tmux/host)         | [skills/dotfiles/references/clipboard-strategy.md](skills/dotfiles/references/clipboard-strategy.md) |
 | Agent harness (Claude/Codex config, hooks, panes) | [skills/dotfiles/](skills/dotfiles/SKILL.md)                                                         |
-| Agent Skills authoring and release                | [skills/agent-skills-management/](skills/agent-skills-management/SKILL.md)                           |
+| Agent Skills authoring and release                | [skills/dotfiles/references/skills-management.md](skills/dotfiles/references/skills-management.md)   |
 | Multi-agent postman node contracts                | [config/tmux-a2a-postman/postman.md](config/tmux-a2a-postman/postman.md)                             |
 
 Decision records (evaluations, one-time investigations) are archived in a

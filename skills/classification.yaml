@@ -33,13 +33,10 @@ target_groups:
     hygiene, clipboard strategy, plus agent runtime, hooks, postman routing,
     workspace, prompt contracts, and installed-agent engineering (absorbed
     from agent-harness-engineering).
-  agent-skills-management: >
-    Agent Skills authoring, validation, Waza readiness, publish dry-runs, and
-    catalog diagnostics.
-  github: >
-    GitHub CLI mechanics, public-surface hygiene, issue and PR operations,
-    inline comment rules, and Atlassian (Jira/Confluence) compatibility
-    guidance.
+  collaboration: >
+    Collaboration platforms (GitHub, Jira, Confluence): gh CLI mechanics,
+    public-surface hygiene, issue and PR operations, inline comment rules,
+    and Atlassian access guidance. Renamed from github on 2026-07-05.
   create-review-comment: >
     Thin user-facing PR review-comment drafting trigger.
   subagent-review: >
@@ -207,67 +204,72 @@ skills:
 
   - name: agent-skills-management
     path: skills/agent-skills-management
-    publish: true
+    publish: false
     scope: agent-skills-authoring
-    action: keep
-    target_group: agent-skills-management
-    target_name: agent-skills-management
-    release_state: release_ready
-    owner_surface: skill
-    standalone_decision: keep_standalone
+    action: removed_before_release
+    target_group: dotfiles
+    target_name: dotfiles
+    release_state: removed_before_release
+    owner_surface: skills/dotfiles
+    standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+    notes: >
+      Folded into the dotfiles owner skill on 2026-07-05. SKILL.md became
+      skills/dotfiles/references/skills-management.md; references and the
+      description-index script moved to skills/dotfiles/references/ and
+      skills/dotfiles/scripts/.
 
   - name: skill-description-index
     path: skills/skill-description-index
     publish: false
     scope: agent-skills-catalog-diagnostics
     action: removed_before_release
-    target_group: agent-skills-management
-    target_name: agent-skills-management
+    target_group: dotfiles
+    target_name: dotfiles
     release_state: removed_before_release
-    owner_surface: skills/agent-skills-management
+    owner_surface: skills/dotfiles
     standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
       Skill description lookup guidance and script moved to
-      skills/agent-skills-management/references/skill-description-index.md and
-      skills/agent-skills-management/scripts/agent-skill-description-index.sh.
+      skills/dotfiles/references/skill-description-index.md and
+      skills/dotfiles/scripts/agent-skill-description-index.sh.
 
-  - name: github
-    path: skills/github
+  - name: collaboration
+    path: skills/collaboration
     publish: true
-    scope: github-and-atlassian-workflow
+    scope: collaboration-platforms
     action: keep
-    target_group: github
-    target_name: github
+    target_group: collaboration
+    target_name: collaboration
     release_state: release_ready
     owner_surface: skill
     standalone_decision: keep_standalone
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
-      Owner skill for github-workflow and Atlassian (Jira/Confluence) domain.
-      USE FOR description now explicitly covers Atlassian. Detailed Atlassian
-      guidance in skills/github/references/atlassian.md.
+      Owner skill for collaboration platforms (GitHub, Jira, Confluence).
+      Renamed from github on 2026-07-05 because the scope exceeds GitHub.
+      Detailed Atlassian guidance in skills/collaboration/references/atlassian.md.
 
   - name: atlassian
     path: skills/atlassian
     publish: false
     scope: atlassian-workflow
     action: removed_before_release
-    target_group: github
-    target_name: github
+    target_group: collaboration
+    target_name: collaboration
     release_state: removed_before_release
-    owner_surface: skills/github
+    owner_surface: skills/collaboration
     standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
     notes: >
-      Detailed Atlassian guidance now lives in skills/github/references/atlassian.md.
+      Detailed Atlassian guidance now lives in skills/collaboration/references/atlassian.md.
       API-token setup guidance moved to
-      skills/github/references/atlassian-api-token.md. The standalone skill
+      skills/collaboration/references/atlassian-api-token.md. The standalone skill
       directory was removed before release.
 
   - name: create-review-comment
@@ -566,6 +568,23 @@ skills:
     standalone_decision: folded_into_owner_skill
     personal_content_action: scanned_release_ready
     validation_expectations: *common_validation
+
+  - name: python-dev
+    path: skills/python-dev
+    publish: false
+    scope: python-code-quality
+    action: removed_before_release
+    target_group: programming
+    target_name: programming
+    release_state: removed_before_release
+    owner_surface: skills/programming
+    standalone_decision: folded_into_owner_skill
+    personal_content_action: scanned_release_ready
+    validation_expectations: *common_validation
+    notes: >
+      Folded into programming on 2026-07-05 as
+      skills/programming/references/python-quality.md; it overlapped
+      programming's Python ownership and caused trigger ambiguity.
 
   - name: restricted-bigquery-dbt-environment
     path: skills/restricted-bigquery-dbt-environment

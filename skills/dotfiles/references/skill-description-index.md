@@ -11,11 +11,11 @@ are equivalent: the script scans every user-level skill tree under
 `$HOME/.*/skills` regardless of which copy launches it.
 
 ```sh
-bash "$HOME/.codex/skills/agent-skills-management/scripts/agent-skill-description-index.sh"
+bash "$HOME/.codex/skills/dotfiles/scripts/agent-skill-description-index.sh"
 ```
 
 ```sh
-bash "$HOME/.claude/skills/agent-skills-management/scripts/agent-skill-description-index.sh"
+bash "$HOME/.claude/skills/dotfiles/scripts/agent-skill-description-index.sh"
 ```
 
 The script prints a Markdown document with a fenced plain-text index containing

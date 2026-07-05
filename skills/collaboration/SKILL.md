@@ -1,15 +1,11 @@
 ---
-name: github
+name: collaboration
 license: MIT
 description: |
-  USE FOR: GitHub and Atlassian: gh CLI usage, PR/commit/issue management, review style, public surface path hygiene; Jira and Confluence via Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
+  USE FOR: Collaboration platforms (GitHub, Jira, Confluence): gh CLI usage, PR/commit/issue management, review style, public surface path hygiene; Jira and Confluence via Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
 ---
 
-# Github
-
-**UTILITY SKILL:** Apply this skill to GitHub and Atlassian: gh CLI usage,
-PR/commit/issue management, review style, public surface path hygiene, and
-Jira/Confluence. Preserve existing repo conventions.
+# Collaboration
 
 **USE FOR:** GitHub and Atlassian: gh CLI usage, PR/commit/issue management,
 review style, public surface path hygiene; Jira and Confluence when env vars
@@ -37,17 +33,13 @@ review engine or the user-facing review-comment trigger.
 5. Run the checks named in the preserved guidance or the nearest repo harness.
 6. Report verification results and any remaining risk.
 
-## 3. Examples
-
-For a request in this domain, load preserved guidance, update the relevant
-source, run focused checks, and summarize.
-
-## 4. References
+## 3. References
 
 - [Preserved Guidance](references/preserved-guidance.md)
 - [Atlassian](references/atlassian.md)
+- [Atlassian API Token](references/atlassian-api-token.md)
 
-## 5. Troubleshooting
+## 4. Troubleshooting
 
 If Waza or repo validation disagrees with preserved guidance, follow the
 stricter rule and record the exception in the handoff.
