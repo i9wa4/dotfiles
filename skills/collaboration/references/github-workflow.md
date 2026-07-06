@@ -3,6 +3,13 @@
 Detailed GitHub mechanics for this environment: `gh` usage, issue and PR
 operations, branch publication, commit messages, and review comment style.
 
+Implementation work is issue-first and worktree-based by default: create or
+choose the issue, run `issue-worktree-create <issue_number>`, and edit inside
+that issue worktree rather than the main checkout. Do not use the generic
+worktree tool (`EnterWorktree`) or raw `git worktree add` as the entrypoint.
+See `skills/dotfiles/references/workspace-worktree-workflow.md` for the full
+flow.
+
 ## 1. gh CLI
 
 - Use `gh` for GitHub information retrieval.
