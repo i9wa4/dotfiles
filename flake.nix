@@ -146,9 +146,11 @@
                 ${config.pre-commit.installationScript}
               '';
             };
-            # CI environment (no pre-commit hooks needed, but includes gitleaks for history scan)
+            # CI environment (no pre-commit hooks needed; gitleaks for history
+            # scan, gh for the skill spec-conformance check)
             ci = pkgs.mkShell {
               packages = [
+                pkgs.gh
                 pkgs.gitleaks
               ]
               ++ pkgs.lib.optionals (config.packages ? betterleaks) [
