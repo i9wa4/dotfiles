@@ -55,7 +55,7 @@ jobs:
       - name: Validate Agent Skills spec conformance
         env:
           GH_TOKEN: ${{ github.token }}
-        run: nix run nixpkgs#gh -- skill publish --dry-run
+        run: nix develop .#ci --command gh skill publish --dry-run
 
       - name: Run leak history scans
         run: nix develop .#ci --command bash -c 'gitleaks detect --verbose --redact && betterleaks git --verbose --redact'
