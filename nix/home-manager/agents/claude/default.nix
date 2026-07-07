@@ -58,6 +58,12 @@ let
       CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70";
       CLAUDE_CODE_DISABLE_AUTO_MEMORY = "true";
       CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
+      # Keep the conversation in the terminal's native scrollback (tmux
+      # copy-mode / wheel) instead of the fullscreen alt-screen renderer, so
+      # long sessions can be scrolled back in tmux. Trades away alt-screen
+      # mouse support and auto-copy; adopted for tmux-first operation.
+      # (v2.1.132; see claude-code.md §11.1)
+      CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1";
       CLAUDE_CODE_DISABLE_FAST_MODE = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
@@ -110,6 +116,11 @@ let
     outputStyle = "Explanatory";
     permissions = {
       deny = deniedBash.claudeCode.denyPermissions ++ [
+        # v2.1.200 made AskUserQuestion dialogs no longer auto-continue by
+        # default, so in headless / tmux-a2a-postman panes a question stalls
+        # the turn indefinitely with no human to answer. Deny the tool so the
+        # agent proceeds on its own judgement instead. (see claude-code.md §11.1)
+        "AskUserQuestion"
         "Read(**/*key*)"
         "Read(**/*token*)"
         "Read(.env*)"

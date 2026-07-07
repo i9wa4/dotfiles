@@ -233,7 +233,7 @@ When adding/removing files in skills/, agents/, or commands/:
 
 ## 11. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.195 (2026-06-29)
+Last reviewed Claude Code version: v2.1.202 (2026-07-07)
 
 ### 11.1. Applied Optimizations
 
@@ -292,6 +292,18 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
   v2.1.195 hyphenated hook matcher exact-match fix does not affect this repo.
   Keep plugin, auto-mode, sandbox, and Remote/agent-team additions as
   user-invoked/product defaults unless a measured harness need appears.
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1"` (v2.1.132) - keeps the
+  conversation in the terminal's native scrollback instead of the fullscreen
+  alt-screen renderer, so tmux copy-mode / wheel can scroll back over long
+  sessions. Adopted 2026-07-07 for tmux-first operation; trades away
+  alt-screen mouse support and auto-copy. Moved up from §11.2.2 deferred.
+- [x] `AskUserQuestion` denied via `permissions.deny` - v2.1.200 changed these
+  dialogs to no longer auto-continue by default, so a question in a headless
+  or `tmux-a2a-postman` pane stalls the turn indefinitely with no human to
+  answer. Denying the tool makes the agent proceed on its own judgement.
+  Alternative considered and rejected: opt into an idle timeout via `/config`
+  (keeps the tool for interactive sessions) - postman panes are the common
+  case here, so a hard deny is the right default.
 
 ### 11.2. Pending Considerations
 
@@ -374,10 +386,10 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 - [ ] `settings.autoMode.hard_deny` rules (v2.1.136) - auto-mode classifier
   hard deny that cannot be allow-overridden. We don't use auto mode, but
   worth tracking if we ever migrate away from `dontAsk`
-- [ ] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` env (v2.1.132) - keep the
-  conversation in the terminal's native scrollback instead of the fullscreen
-  alt-screen renderer. Quality-of-life tradeoff with mouse support and
-  auto-copy; defer until measured
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` env (v2.1.132) - ADOPTED
+  2026-07-07 (see §11.1). Keeps the conversation in the terminal's native
+  scrollback instead of the fullscreen alt-screen renderer. Accepted the
+  mouse-support / auto-copy tradeoff for tmux-first operation.
 - [ ] `CLAUDE_CODE_SESSION_ID` in Bash tool subprocess env (v2.1.132) -
   enables session-aware Bash scripts. No current consumer in
   `scripts/`; flag for future hook design
@@ -445,6 +457,32 @@ Last reviewed Claude Code version: v2.1.195 (2026-06-29)
 - [x] Background-agent, worktree, MCP, plugin, skill hot-reload, and
   subagent-depth fixes through v2.1.195 - mostly product reliability. Current
   harness should benefit automatically; no source change.
+
+#### 11.2.4. v2.1.196 -> v2.1.202 candidates (added 2026-07-07)
+
+- [x] AskUserQuestion no longer auto-continues by default (v2.1.200) - acted
+  on: denied the tool via `permissions.deny` (see §11.1) because headless
+  postman panes have no human to answer.
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` (v2.1.132, revisited) - adopted
+  (see §11.1).
+- [x] tmux 3.4+ synchronized-output flicker fix (v2.1.200) - automatic, no
+  config; complements the alt-screen scrollback change for tmux-first use.
+- [ ] "default" permission mode renamed to "Manual" (v2.1.200) -
+  informational. `default` / `"defaultMode": "manual"` both still accepted;
+  this repo runs bypass permissions, so no config change.
+- [ ] Claude Sonnet 5 is now the default model (v2.1.197) - informational;
+  model is pinned at launch (`--model opus`), so the default does not apply.
+- [x] Subagents background-by-default; Explore inherits opus (v2.1.198) -
+  matches current usage, no config. `/dataviz` ships as a bundled skill.
+- [x] `claude mcp list`/`get` no longer spawn self-approved `.mcp.json`
+  servers (v2.1.196, security) - beneficial automatically; no config.
+- [x] Skill re-invocation no longer duplicates instructions in context
+  (v2.1.202) - product fix; benefits sessions automatically.
+- [ ] `/review` reverted to single-pass; `/code-review <level> <pr#>` for the
+  multi-agent pass (v2.1.202) - user-invoked commands only; flag for
+  orchestrator-runbook awareness. Remaining background-agent / Remote Control /
+  workflow-parse fixes through v2.1.202 are product reliability; no source
+  change.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Changelog Tracking](changelog-tracking.md).

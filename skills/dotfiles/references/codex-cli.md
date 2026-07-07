@@ -209,13 +209,17 @@ Check the following when editing postman prompt blocks or `config.toml`:
 
 ## 9. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.142.3 (2026-06-29)
+Last reviewed Codex CLI version: v0.142.5 (2026-07-07)
 
-### 9.1. Release Catch-up (v0.136.0 -> v0.142.3)
+### 9.1. Release Catch-up (v0.136.0 -> v0.142.5)
 
-Stable releases through the locally installed `codex-cli 0.142.3` add mostly
+Stable releases through the locally installed `codex-cli 0.142.5` add mostly
 product/runtime capabilities rather than required dotfiles config changes:
 
+- v0.142.5 is a maintenance patch that redacts full Responses WebSocket request
+  payloads from trace logs (openai/codex #30771). No user-facing behavior
+  change; no config change.
+- v0.142.4 has no user-facing changes.
 - v0.142.3 is a maintenance-only patch with no user-facing changes after
   v0.142.2.
 - v0.142.2 turns MCP tool search on by default when supported, adds opt-in

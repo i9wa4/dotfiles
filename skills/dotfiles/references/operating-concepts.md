@@ -255,6 +255,34 @@ The result is parity of intent rather than byte-for-byte sameness. The repo is
 trying to make a worker on Claude and a worker on Codex behave comparably under
 the same local expectations.
 
+### 5.1. Parity matrix (living)
+
+This is the concrete form of the "make the parity boundary explicit" direction
+in section 8.2, and the map referenced by `agent-config-philosophy.md` §1.3.
+"Aligned" means a worker behaves the same regardless of engine; the mechanism
+may differ (an env var on one side, a launch flag on the other). Keep this table
+current whenever an interfering vendor default is neutralized on either engine.
+
+| Intent                      | Claude                                            | Codex                                   | Status                                |
+| --------------------------- | ------------------------------------------------- | --------------------------------------- | ------------------------------------- |
+| Co-author attribution off   | `attribution.commit/pr=""`                        | `command_attribution="disable"`         | aligned                               |
+| Fast mode off               | `CLAUDE_CODE_DISABLE_FAST_MODE=1`                 | `features.fast_mode=false`              | aligned                               |
+| Telemetry / analytics off   | `CLAUDE_CODE_ENABLE_TELEMETRY=false`              | `analytics.enabled=false`               | aligned                               |
+| Feedback survey off         | `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=true`        | `feedback.enabled=false`                | aligned                               |
+| Terminal-title writes off   | `CLAUDE_CODE_DISABLE_TERMINAL_TITLE=true`         | `tui.terminal_title=[]`                 | aligned                               |
+| Autocompact at 70%          | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=70`              | `model_auto_compact_token_limit` at 70% | aligned                               |
+| MCP tool search on          | `ENABLE_TOOL_SEARCH=auto`                         | default-on (v0.142.2)                   | aligned                               |
+| Native TUI scrollback       | `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` (env)    | `--no-alt-screen` (VDE launch flag)     | aligned, different mechanism          |
+| Effort pinned, no auto-swap | `DISABLE_ADAPTIVE_THINKING=1` + launch `--effort` | launch `model_reasoning_effort`         | aligned, different mechanism          |
+| Single git authority        | `includeGitInstructions=false`                    | no built-in git instructions            | aligned, Claude-only knob             |
+| Ask-to-continue tool        | `AskUserQuestion` denied                          | no equivalent tool                      | aligned, Claude-only                  |
+| Auto-memory off             | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=true`            | not yet disabled                        | open                                  |
+| Bundled skills              | on; `disableBundledSkills` available              | on; disable available (v0.114.0)        | accepted; revisit if surfaces diverge |
+
+Intentional product-surface differences (not drift): Claude MCP servers vs Codex
+Apps (both fed from `shared/mcp-servers.nix`), `outputStyle` vs `personality`,
+and Codex sandbox surfaces (`network_access`, `web_search`).
+
 ## 6. The review stack is part of the operating concept
 
 This repo treats review as a built artifact, not ad hoc human ceremony.
