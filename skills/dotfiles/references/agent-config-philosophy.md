@@ -115,8 +115,28 @@ When per-engine config is unavoidable:
 When a feature is exclusive to one engine, treat that as a cost to
 amortise, not a capability to lean on.
 
+The active form of this principle: when one engine ships a behavior the other
+lacks and it makes the two behave differently, neutralize it — disable the
+feature, or reproduce its effect on the other engine — so a worker behaves the
+same regardless of which engine runs it. A vendor-only feature that cannot be
+neutralized is recorded as an accepted asymmetry, not left as silent drift.
+Parity is of intent, not mechanism: the same outcome may be delivered by an env
+var on one engine and a launch flag on the other. The living map of what is
+aligned, still open, or intentionally different is the parity matrix in
+`skills/dotfiles/references/operating-concepts.md` §5.
+
 What this looks like in the current repo:
 
+- Interfering vendor defaults are disabled in matched pairs so both engines
+  stay quiet and predictable: fast mode, telemetry/analytics, feedback surveys,
+  terminal-title writes, and co-author attribution are all off on both.
+- Where only one engine has the feature, it is neutralized on that side alone:
+  Claude's `AskUserQuestion` is denied (Codex has no such tool), and Claude's
+  built-in git instructions are disabled (`includeGitInstructions=false`) so the
+  `collaboration` skill is the single git authority on both.
+- The same intent can take different mechanisms: native terminal scrollback is
+  an env var on Claude (`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`) and a launch
+  flag on Codex (`--no-alt-screen` in `config/vde/layout.yml`).
 - Hooks are configured for both engines with the same five jobs:
   context injection, deny enforcement, observation, handoff save,
   handoff reload. The hook surfaces differ but the intent mirrors.
@@ -150,6 +170,9 @@ What to avoid:
 - Adding a setting only because one engine ships a knob, without
   checking whether the same effect can be achieved through a prompt
   or through the shared SSOT.
+- Adding a setting to one engine without checking the other side. A one-sided
+  toggle silently creates the asymmetry this principle exists to prevent; pair
+  it, or record it in the parity matrix (operating-concepts.md §5).
 
 ## 2. How These Principles Were Applied Recently
 
