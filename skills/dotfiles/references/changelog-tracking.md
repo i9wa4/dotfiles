@@ -148,6 +148,30 @@ This reference preserves older review notes that support current
 
 ## 2. Version Notes
 
+- v2.1.202: `/review` reverted to a fast single-pass review (use
+  `/code-review <level> <pr#>` for the multi-agent pass); skill re-invocation no
+  longer duplicates its instructions in context; dynamic workflow-size `/config`
+  setting; many background-agent / Remote Control / workflow-parse fixes.
+  User-invoked or automatic; no source change.
+- v2.1.201: Claude Sonnet 5 sessions drop the mid-conversation system role for
+  harness reminders. Informational.
+- v2.1.200: **AskUserQuestion dialogs no longer auto-continue by default** (opt
+  into an idle timeout via `/config`) - drove the `AskUserQuestion` deny in
+  `claude/default.nix` (see claude-code.md §11.1), since headless postman panes
+  have no human to answer. "default" permission mode renamed to "Manual"
+  (`default` / `"defaultMode": "manual"` still accepted; repo runs bypass, no
+  change). tmux 3.4+ synchronized-output flicker fix (automatic).
+- v2.1.199: stacked slash-skill loading (up to 5 leading skills); TLS / stream /
+  subagent error-surfacing fixes; background-agent daemon self-kill and
+  cold-start fixes. Automatic; no config.
+- v2.1.198: subagents run in the background by default; Explore inherits the
+  main model capped at opus; `/dataviz` bundled skill; background-agent
+  `Notification` hook events. Matches current usage; no source change.
+- v2.1.197: Claude Sonnet 5 introduced as the default model (1M-token context).
+  Repo pins the model at launch, so informational.
+- v2.1.196: org default models; `claude mcp list`/`get` no longer spawn
+  self-approved `.mcp.json` servers (security); background-job transcript-probe
+  data-loss fix. Automatic; no config.
 - v2.1.195: `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` for fullscreen mouse
   click/drag/hover opt-out; **hook matcher fix for hyphenated identifiers**
   now exact-matches (`mcp__brave-search__.*` needed for all tools from such a
