@@ -1,5 +1,5 @@
 # Claude Code configuration module
-# Claude Code binary is managed externally (e.g. npm install -g @anthropic-ai/claude-code)
+# Claude Code binary is installed from llm-agents in nix/home-manager/default.nix.
 # ~/.claude/skills is managed by agent-skills.nix (symlink-tree)
 # Runtime files (projects/, todos/, etc.) live directly in ~/.claude/
 {
@@ -62,7 +62,7 @@ let
       # copy-mode / wheel) instead of the fullscreen alt-screen renderer, so
       # long sessions can be scrolled back in tmux. Trades away alt-screen
       # mouse support and auto-copy; adopted for tmux-first operation.
-      # (v2.1.132; see claude-code.md §11.1)
+      # (v2.1.132; see claude-optimization-tracking.md §1.1)
       CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1";
       CLAUDE_CODE_DISABLE_FAST_MODE = "1";
       CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
@@ -119,7 +119,8 @@ let
         # v2.1.200 made AskUserQuestion dialogs no longer auto-continue by
         # default, so in headless / tmux-a2a-postman panes a question stalls
         # the turn indefinitely with no human to answer. Deny the tool so the
-        # agent proceeds on its own judgement instead. (see claude-code.md §11.1)
+        # agent proceeds on its own judgement instead.
+        # (see claude-optimization-tracking.md §1.1)
         "AskUserQuestion"
         "Read(**/*key*)"
         "Read(**/*token*)"

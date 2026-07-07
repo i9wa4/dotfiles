@@ -37,7 +37,9 @@ installed, validated, or explained.
 - Claude workspace trust: `claude-workspace-trust.md`
 - Codex runtime config: `nix/home-manager/agents/codex/default.nix` and
   `codex-cli.md`
-- Changelog decisions: `changelog-tracking.md`
+- Claude optimization tracking: `claude-optimization-tracking.md`
+- Claude changelog decisions: `claude-changelog-tracking.md`
+- Codex optimization tracking: `codex-optimization-tracking.md`
 - Postman role contract: `config/tmux-a2a-postman/postman.md`
 
 ## 3. Design Workflow
@@ -71,12 +73,14 @@ Full diagnosis and commands live in
 
 ## 5. Runtime Notes
 
-- Claude Code runtime details, settings categories, permission notes, and
-  optimization tracking live in [Claude Code](claude-code.md).
-- Codex CLI runtime details, hook limitations, settings categories, and release
-  tracking live in [Codex CLI](codex-cli.md).
+- Claude Code runtime details, settings categories, and permission notes live
+  in [Claude Code](claude-code.md); current decisions live in
+  [Claude Code Optimization Tracking](claude-optimization-tracking.md).
+- Codex CLI runtime details, hook limitations, and settings categories live in
+  [Codex CLI](codex-cli.md); current release decisions live in
+  [Codex CLI Optimization Tracking](codex-optimization-tracking.md).
 - Older Claude Code changelog decisions and release notes live in
-  [Changelog Tracking](changelog-tracking.md).
+  [Claude Changelog Tracking](claude-changelog-tracking.md).
 
 ## 6. Changelog and Release Reviews
 
@@ -86,6 +90,8 @@ Full diagnosis and commands live in
   upstream releases as active local behavior.
 - Record adopted, rejected, and deferred runtime decisions in the relevant
   reference so future config work can see the rationale.
+- Keep runtime-specific references visibly prefixed: `claude-*` for
+  Claude-only material and `codex-*` for Codex-only material.
 
 ## 7. Verification
 
@@ -112,7 +118,9 @@ Full diagnosis and commands live in
 - [AI Operating Contract](repo-ai-operating-contract.md)
 - [AI Review Boundaries](repo-ai-review-boundaries.md)
 - [Claude Code](claude-code.md)
+- [Claude Code Optimization Tracking](claude-optimization-tracking.md)
 - [Claude Workspace Trust](claude-workspace-trust.md)
 - [Codex CLI](codex-cli.md)
-- [Changelog Tracking](changelog-tracking.md)
+- [Codex CLI Optimization Tracking](codex-optimization-tracking.md)
+- [Claude Changelog Tracking](claude-changelog-tracking.md)
 - [Orchestrator Runbook](orchestrator-runbook.md)

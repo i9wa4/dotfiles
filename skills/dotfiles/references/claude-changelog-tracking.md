@@ -84,7 +84,8 @@ This reference preserves older review notes that support current
 - `PermissionDenied` hook (v2.1.89) - auto mode classifier not in use
   (strict deny list handles permissions deterministically)
 - `CLAUDE_CODE_NO_FLICKER=1` (v2.1.89) - consider later if rendering
-  glitches observed; see pending considerations in SKILL.md section 11.2
+  glitches observed; see pending considerations in
+  `claude-optimization-tracking.md` §1.2
 - `MCP_CONNECTION_NONBLOCKING=true` (v2.1.89) - not running `-p` mode
 - `CLAUDE_CODE_FORCE_SYNC_OUTPUT=1` (v2.1.129) - terminal auto-detection works
   for our Alacritty/tmux setup; only needed on Emacs `eat` and similar
@@ -157,8 +158,9 @@ This reference preserves older review notes that support current
   harness reminders. Informational.
 - v2.1.200: **AskUserQuestion dialogs no longer auto-continue by default** (opt
   into an idle timeout via `/config`) - drove the `AskUserQuestion` deny in
-  `claude/default.nix` (see claude-code.md §11.1), since headless postman panes
-  have no human to answer. "default" permission mode renamed to "Manual"
+  `claude/default.nix` (see `claude-optimization-tracking.md` §1.1), since
+  headless postman panes have no human to answer. "default" permission mode
+  renamed to "Manual"
   (`default` / `"defaultMode": "manual"` still accepted; repo runs bypass, no
   change). tmux 3.4+ synchronized-output flicker fix (automatic).
 - v2.1.199: stacked slash-skill loading (up to 5 leading skills); TLS / stream /

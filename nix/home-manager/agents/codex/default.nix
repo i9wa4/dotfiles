@@ -1,5 +1,5 @@
 # Codex CLI configuration module
-# Codex CLI binary is managed externally (e.g. npm install -g @openai/codex)
+# Codex CLI binary is installed from llm-agents in nix/home-manager/default.nix.
 # ~/.codex/skills is managed by agent-skills.nix (symlink-tree)
 # Runtime files (auth.json, etc.) live directly in ~/.codex/
 {
