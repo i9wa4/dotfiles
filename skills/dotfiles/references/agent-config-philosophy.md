@@ -80,8 +80,9 @@ Concrete examples already in the repo:
   `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
   for configured skills. There is no longer a generated CLAUDE.md or
   codex AGENTS.md installed at the runtime root.
-- `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
-  set into both engines.
+- `nix/home-manager/agents/shared/agent-skills.nix` — validates the shared skill
+  graph, installs the full bundle for Claude, and installs a smaller Codex
+  bundle so Codex startup keeps skill descriptions within its context budget.
 - `nix/home-manager/agents/subagents/*.md` and
   `nix/home-manager/agents/subagents/metadata.nix` with
   `nix/home-manager/agents/shared/install-manifest.nix` — use Markdown for
@@ -90,10 +91,11 @@ Concrete examples already in the repo:
 
 Why shared beats per-tool:
 
-- One audit point. Changing the deny set, the skill set, or the
+- One audit point. Changing the deny set, the skill policy, or the
   operating core touches one file, not two.
-- Forces parity by construction. If the shared module emits a rule,
-  both engines get it; drift cannot accumulate by accident.
+- Forces parity of intent by construction. If the shared module emits a rule,
+  both engines get it; per-engine reductions such as the Codex skill bundle are
+  documented in the same shared module.
 - Migration cost stays low. Replacing or adding an engine is mostly a
   matter of updating the consumer side; the shared SSOT does not need
   to be reauthored.

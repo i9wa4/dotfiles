@@ -8,21 +8,21 @@ artifacts.
 
 ## 1. Start Here
 
-| If you want to change...    | Edit here                                                   | Installed result                                                                  |
-| --------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
-| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                  |
-| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers  |
-| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files            |
-| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files    |
-| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources |
-| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/`                           |
-| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)      |
-| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                      |
-| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines     |
-| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs   |
-| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs         |
-| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                    |
+| If you want to change...    | Edit here                                                   | Installed result                                                                            |
+| --------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                            |
+| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                            |
+| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers            |
+| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files                      |
+| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files              |
+| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources           |
+| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/`; a smaller Codex bundle is installed to `~/.codex/skills/` |
+| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                |
+| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                |
+| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines               |
+| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs             |
+| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs                   |
+| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                              |
 
 ## 2. Design Principle
 
@@ -92,8 +92,9 @@ graph LR
    pipeline and documents reviewer usage without generating agent files.
 5. `shared/install-manifest.nix` resolves the shared agent install targets and
    skill destinations that the runtime installers consume.
-6. `shared/agent-skills.nix` validates skill sources and installs them into both
-   runtimes.
+6. `shared/agent-skills.nix` validates skill sources, installs the full bundle
+   for Claude, and installs a smaller Codex bundle to avoid Codex startup
+   skill-context budget truncation.
 7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
    files during activation.
 

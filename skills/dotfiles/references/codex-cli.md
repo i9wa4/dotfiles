@@ -22,7 +22,7 @@ Source of truth:
 | Codex agents directory   | TOML generated from `subagents/*.md` + metadata       | `shared/install-manifest.nix`        |
 | Codex hooks file         | Generated hook config                                 | `codex/default.nix`                  |
 | Codex scripts directory  | Explicit ln list of shared scripts + deny patterns    | `codex/default.nix`                  |
-| Codex skills directory   | Multiple flake inputs + local skills                  | `shared/agent-skills.nix`            |
+| Codex skills directory   | Minimal local/postman + selected helper skills        | `shared/agent-skills.nix`            |
 | MCP servers              | `shared/mcp-servers.nix`                              | `codex/default.nix`                  |
 
 ## 2. Config Management
@@ -32,6 +32,14 @@ attributes in `codex/default.nix`. Trusted projects are discovered dynamically
 by `fd` at `home-manager switch` time and appended to `config.toml`.
 Existing `[hooks.state]` review entries are preserved from the local
 `config.toml` so user-approved hook hashes survive later Nix activations.
+
+Codex skill installation is intentionally smaller than Claude's full skill
+bundle. `shared/agent-skills.nix` installs local dotfiles skills,
+tmux-a2a-postman transport skills, `claude-api`, and `context7-cli` into
+the Codex skills directory, preserving Codex-managed `.system`. This keeps
+Codex startup below its skill-context budget; large cloud/vendor skill packs
+remain available to Claude and can be added to Codex only when there is a
+deliberate reason.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:

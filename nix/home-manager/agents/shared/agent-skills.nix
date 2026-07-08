@@ -62,6 +62,7 @@ let
       pkgs
       ;
   };
+  agentLib = inputs.agent-skills.lib.agent-skills;
   validateSkillSource =
     name: src:
     pkgs.runCommand name { } ''
@@ -206,6 +207,36 @@ let
       subdir = "skills";
     };
   };
+  allSources = baseSources // cfg.extraSources // installManifest.skills.sources;
+  codexMinimalSources = lib.getAttrs [
+    "local"
+    "tmux-a2a-postman"
+    "anthropic"
+    "context7"
+  ] allSources;
+  codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
+  codexMinimalAllowlist = agentLib.allowlistFor {
+    catalog = codexMinimalCatalog;
+    sources = codexMinimalSources;
+    enableAll = [
+      "local"
+      "tmux-a2a-postman"
+    ];
+    enable = [
+      "claude-api"
+      "context7-cli"
+    ];
+  };
+  codexMinimalSelection = agentLib.selectSkills {
+    catalog = codexMinimalCatalog;
+    allowlist = codexMinimalAllowlist;
+    skills = { };
+    sources = codexMinimalSources;
+  };
+  codexMinimalBundle = agentLib.mkBundle {
+    inherit pkgs;
+    selection = codexMinimalSelection;
+  };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
   sourceNameCollisions = lib.filter (collision: collision.names != [ ]) [
     {
@@ -254,7 +285,7 @@ in
       enable = true;
 
       # Skill sources
-      sources = baseSources // cfg.extraSources // installManifest.skills.sources;
+      sources = allSources;
 
       # Enable all skills from all sources
       skills.enableAll = true;
@@ -268,8 +299,10 @@ in
             structure
             ;
         };
-        # Codex CLI: ~/.codex/skills
+        # Codex CLI uses a smaller bundle below. Keeping the full upstream
+        # graph out of Codex avoids startup skill-context budget truncation.
         codex = {
+          enable = false;
           inherit (installManifest.codex.skills)
             dest
             structure
@@ -280,5 +313,19 @@ in
       # Preserve .system directory (created by agents at runtime)
       excludePatterns = [ "/.system" ];
     };
+
+    home.activation.agent-skills-codex-minimal =
+      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
+        ''
+          dest="${installManifest.codex.skills.dest}"
+          if [ -L "$dest" ]; then
+            rm -rf "$dest"
+          fi
+          mkdir -p "$dest"
+          ${pkgs.rsync}/bin/rsync -a --delete --exclude '/.system' \
+            "${codexMinimalBundle}/" "$dest/"
+          chmod u+w "$dest"
+          echo "agent-skills: installed minimal Codex skill bundle to $dest"
+        '';
   };
 }
