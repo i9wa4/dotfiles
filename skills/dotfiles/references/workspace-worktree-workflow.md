@@ -9,6 +9,8 @@ Migrated from `skills/using-git-worktrees/SKILL.md`.
 - For implementation work, follow the issue-first flow: create or choose a
   GitHub issue, run `issue-worktree-create <issue_number>`, then develop inside
   that issue worktree.
+- For deliberately no-issue branch work, still create a dedicated worktree
+  under `.worktrees/` before editing or committing.
 - Assume the managed root is `.worktrees`, even if generic tool help mentions a
   different default.
 - Report the final worktree path and branch in handoff or status messages.
@@ -117,7 +119,35 @@ shared remote branches such as `main` and `dev` with GitHub rulesets or branch
 protection so direct pushes to those refs are blocked or require the normal
 reviewed path.
 
-### 2.3. PR Review
+### 2.3. No-Issue Branch Work
+
+If a task deliberately has no GitHub issue or PR number, do not edit or commit
+from the main checkout. Create a dedicated branch worktree under `.worktrees/`
+before editing:
+
+```bash
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+pwd
+git branch --show-current
+git status --short --branch
+```
+
+Use a branch name that describes the task and is safe as a directory name. If
+the branch already exists, attach it to a worktree instead of creating it again:
+
+```bash
+branch_name=<existing-branch-name>
+git worktree add ".worktrees/$branch_name" "$branch_name"
+cd ".worktrees/$branch_name"
+```
+
+This is the normal native `git worktree add` use case in this repository. It is
+not a replacement for `issue-worktree-create` or `pr-worktree-create` when an
+issue or PR number exists.
+
+### 2.4. PR Review
 
 Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
 to:
@@ -181,7 +211,7 @@ task.
   `worktree-remove`
 
 Do not use raw `git worktree add` as the primary issue or PR entrypoint in this
-repo.
+repo. Use it only for explicit no-issue branch work when no wrapper applies.
 
 ## 5. Baseline Verification
 
@@ -222,5 +252,7 @@ git worktree list --porcelain
 
 - Do not ask the user to choose an arbitrary worktree directory.
 - Do not teach raw `git worktree add` as the issue or PR creation path.
+- Do not treat small or docs-only changes as permission to commit from the main
+  checkout.
 - Do not edit `.gitignore` or the wrapper scripts unless the task is explicitly
   about those files.

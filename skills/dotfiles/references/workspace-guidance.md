@@ -130,6 +130,15 @@ interactive cleanup in the current repository, use `scripts/bin/worktree-remove`
 to choose one managed worktree under the repo's `.worktrees/` directory with
 `fzf`, validate safety gates, and delete through native `git worktree` cleanup.
 
+If there is deliberately no issue or PR number, still create a dedicated branch
+worktree under `.worktrees/` before editing or committing:
+
+```bash
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+```
+
 For issue implementation, agents must create or choose the GitHub issue first,
 then use `issue-worktree-create <issue_number>`. Do not create issue branches
 or worktrees manually. Before editing, verify `pwd`,

@@ -18,6 +18,8 @@ the worktree-tool evaluation decision record (private vault).
   [issue_number2 ...]` to start issue work.
 - Use `pr-worktree-create [--allow-direnv] <pr_number> [pr_number2 ...]` to
   start PR review.
+- For deliberately no-issue branch work, create a dedicated worktree under
+  `.worktrees/` with native `git worktree add` before editing or committing.
 - Use `worktree-remove` from a repository to list that repo's managed
   worktrees under `.worktrees/`, choose one with `fzf`, type `yes`, and delete
   it through `git worktree remove`.
@@ -164,7 +166,40 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
 12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
     command exits nonzero and does not print the all-ready success message.
 
-## 5. Current re-entry flow
+## 5. Current no-issue branch workflow
+
+Use this flow only when there is deliberately no issue or PR number for the
+task. Small docs-only and single-line changes still need a dedicated worktree if
+they may become commits.
+
+For a new no-issue branch:
+
+```sh
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+pwd
+git branch --show-current
+git status --short --branch
+```
+
+For an existing branch that is not currently attached to a worktree:
+
+```sh
+branch_name=<existing-branch-name>
+git worktree add ".worktrees/$branch_name" "$branch_name"
+cd ".worktrees/$branch_name"
+pwd
+git branch --show-current
+git status --short --branch
+```
+
+Do not use this native branch flow when an issue or PR number exists. Use
+`issue-worktree-create` or `pr-worktree-create` instead so branch naming,
+upstream safety, `.envrc` handling, `repo-setup`, and zoxide registration stay
+consistent.
+
+## 6. Current re-entry flow
 
 1. `ghq + fzf` is still the explicit repository browser when the user wants to
    choose a repository first.
@@ -191,7 +226,7 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
     repository name plus the full worktree directory name with dots replaced by
     dashes.
 
-## 6. How Native Worktree Support Fits
+## 7. How Native Worktree Support Fits
 
 - `git worktree` is the backend and canonical read model for managed worktree
   paths.
@@ -204,10 +239,12 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
   --porcelain`, `git worktree add`, and `git worktree remove`.
 - Do not use a generic worktree package as the primary issue or PR entrypoint
   here.
+- Native `git worktree add` is the documented fallback only for deliberately
+  no-issue branch work.
 - Use `git worktree list --porcelain` and `worktree-remove` when
   inspecting stale linked worktrees.
 
-## 7. Removal and repository hygiene
+## 8. Removal and repository hygiene
 
 - Keep linked worktrees under repo-local `.worktrees/`.
 - Inspect cleanup candidates with `worktree-remove` or
@@ -246,7 +283,7 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
 - Notification or daemon behavior is outside this document. That belongs to
   `tmux-a2a-postman`.
 
-## 8. Recent changes reflected here
+## 9. Recent changes reflected here
 
 - Managed worktrees live under repo-root `.worktrees/`.
 - The zsh jump commands now live in `config/zsh/zoxide.zsh` and are sourced from
@@ -263,10 +300,13 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
   context.
 - Worktree scripts now use native `git worktree` commands directly; the
   npm-managed worktree backend package was removed.
+- No-issue branch work now has an explicit native `git worktree add` flow so
+  agents do not treat small changes as permission to commit from the main
+  checkout.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
-## 9. Related files
+## 10. Related files
 
 - `scripts/bin/issue-worktree-create`
 - `scripts/bin/pr-worktree-create`
