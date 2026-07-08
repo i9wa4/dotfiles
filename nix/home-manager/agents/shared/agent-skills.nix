@@ -62,6 +62,77 @@ let
       pkgs
       ;
   };
+  matchAny = names: "^(${lib.concatStringsSep "|" names})$";
+  googleCoreDataSkills = [
+    "alloydb-basics"
+    "bigquery-ai-ml"
+    "bigquery-basics"
+    "bigquery-bigframes"
+    "bigtable-basics"
+    "cloud-run-basics"
+    "cloud-sql-basics"
+    "datalineage-bigquery-asset-impact-analysis"
+    "gcloud"
+    "gke-basics"
+    "gke-networking"
+    "gke-observability"
+    "gke-security"
+    "gke-storage"
+    "google-cloud-recipe-auth"
+    "google-cloud-recipe-foundation-builder"
+  ];
+  awsCoreDataSkills = [
+    "core-skills/amazon-bedrock"
+    "core-skills/aws-cdk"
+    "core-skills/aws-cloudformation"
+    "core-skills/aws-containers"
+    "core-skills/aws-iam"
+    "core-skills/aws-messaging-and-streaming"
+    "core-skills/aws-observability"
+    "core-skills/aws-sdk-js-v3-usage"
+    "core-skills/aws-sdk-python-usage"
+    "core-skills/aws-serverless"
+    "specialized-skills/analytics-skills/amazon-opensearch-service"
+    "specialized-skills/analytics-skills/connecting-to-data-source"
+    "specialized-skills/analytics-skills/developing-applications-on-managed-service-for-apache-flink"
+    "specialized-skills/analytics-skills/exploring-data-catalog"
+    "specialized-skills/analytics-skills/finding-data-lake-assets"
+    "specialized-skills/analytics-skills/ingesting-into-data-lake"
+    "specialized-skills/analytics-skills/managing-amazon-msk"
+    "specialized-skills/analytics-skills/querying-data-lake"
+    "specialized-skills/database-skills/amazon-aurora-mysql"
+    "specialized-skills/database-skills/amazon-aurora-postgresql"
+    "specialized-skills/database-skills/amazon-documentdb"
+    "specialized-skills/database-skills/amazon-elasticache"
+    "specialized-skills/database-skills/aurora-dsql"
+    "specialized-skills/networking-and-content-delivery-skills/aws-networking"
+    "specialized-skills/networking-and-content-delivery-skills/configuring-vpc-endpoints-for-private-aws-service-access"
+    "specialized-skills/storage-skills/creating-data-lake-table"
+    "specialized-skills/storage-skills/securing-s3-buckets"
+    "specialized-skills/storage-skills/storing-and-querying-vectors"
+    "specialized-skills/system-table-skills/querying-aws-cloudwatch"
+    "specialized-skills/system-table-skills/querying-aws-s3"
+  ];
+  azureCoreDataSkills = [
+    "azure-ai"
+    "azure-aigateway"
+    "azure-compute"
+    "azure-deploy"
+    "azure-diagnostics"
+    "azure-kubernetes"
+    "azure-kubernetes/azure-kubernetes-automatic-readiness"
+    "azure-kusto"
+    "azure-messaging"
+    "azure-prepare"
+    "azure-rbac"
+    "azure-resource-lookup"
+    "azure-storage"
+    "azure-validate"
+    "entra-agent-id"
+    "entra-app-registration"
+    "microsoft-foundry"
+    "microsoft-foundry/models/deploy-model"
+  ];
   validateSkillSource =
     name: src:
     pkgs.runCommand name { } ''
@@ -137,20 +208,24 @@ let
       path = inputs.tmux-a2a-postman;
       subdir = "skills";
     };
-    # dbt-labs official agent skills (split by skill group)
+    # dbt-labs official agent skills
     dbt = {
       path = inputs.dbt-agent-skills;
       subdir = "skills/dbt/skills";
-    };
-    dbt-migration = {
-      path = inputs.dbt-agent-skills;
-      subdir = "skills/dbt-migration/skills";
     };
     # Anthropic official agent skills (claude-api/SKILL.md frontmatter
     # normalized, then validated before installation)
     anthropic = {
       path = anthropic-skills-patched;
       subdir = "skills";
+      filter.nameRegex = "claude-api";
+    };
+    # Microsoft Azure skills. Keep the installed catalog focused on core
+    # platform, identity, data, and AI-foundation workflows.
+    azure = {
+      path = inputs.azure-skills;
+      subdir = "skills";
+      filter.nameRegex = matchAny azureCoreDataSkills;
     };
     # Upstash Context7 CLI skill. MCP servers remain disabled in
     # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
@@ -160,11 +235,12 @@ let
       subdir = "skills";
       filter.nameRegex = "context7-cli";
     };
-    # Streamlit official agent skills
-    "developing-with-streamlit" = {
-      path = inputs.streamlit-skills;
-      subdir = "developing-with-streamlit";
-    };
+    # Streamlit official agent skills. Keep the flake input available, but do
+    # not install this by default.
+    # "developing-with-streamlit" = {
+    #   path = inputs.streamlit-skills;
+    #   subdir = "developing-with-streamlit";
+    # };
     # Databricks official agent skills
     # cf. https://github.com/databricks/databricks-agent-skills
     databricks-official = {
@@ -192,18 +268,20 @@ let
       path = inputs.hashicorp-agent-skills;
       subdir = "terraform/provider-development/skills";
     };
-    # Google skills for Google Cloud and Gemini API.
+    # Google skills, limited to core Cloud and data-platform workflows.
     # cf. https://github.com/google/skills
     google = {
       path = inputs.google-skills;
       subdir = "skills/cloud";
+      filter.nameRegex = matchAny googleCoreDataSkills;
     };
-    # AWS Agent Toolkit skills. Install skill bodies only; plugin and MCP
-    # integration remain out of scope for this Home Manager module.
+    # AWS Agent Toolkit skills, limited to core platform and data workflows.
+    # Install skill bodies only; plugin and MCP integration remain out of scope.
     # cf. https://github.com/aws/agent-toolkit-for-aws
     aws = {
       path = inputs.aws-agent-toolkit;
       subdir = "skills";
+      filter.nameRegex = matchAny awsCoreDataSkills;
     };
   };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);

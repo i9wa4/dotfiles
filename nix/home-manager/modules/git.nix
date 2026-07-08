@@ -38,6 +38,7 @@
         commentChar = ";";
         editor = "vim";
         ignorecase = false;
+        lockfilePid = true;
         pager = "LESSCHARSET=utf-8 less";
         quotepath = false;
         safecrlf = true;

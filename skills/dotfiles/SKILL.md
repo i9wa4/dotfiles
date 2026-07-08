@@ -36,7 +36,7 @@ Agent harness (hubs link their siblings):
 - [Harness](references/harness-guidance.md) — Claude/Codex config, hooks,
   deny rules, contracts, runbook
 - [Workspace](references/workspace-guidance.md) — tmux, worktrees,
-  panes, boot, VDE
+  Git lock diagnostics, panes, boot, VDE
 - [Prompts](references/prompt-contracts.md) — prompt
   blocks, review contracts, boundaries, resume handoff
 - [Skills Management](references/skills-management.md) — skill authoring,

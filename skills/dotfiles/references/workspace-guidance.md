@@ -181,7 +181,50 @@ Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).
 See `workspace-worktree-workflow.md` for full command reference including
 inspection, cleanup, and baseline verification.
 
-## 5. Navigation Primitives
+## 5. Git Lock Diagnostics
+
+Use `scripts/bin/git-locks` when a Git command reports an existing lock such as
+`.git/index.lock`.
+
+`git-locks` inspects the current repository with `GIT_OPTIONAL_LOCKS=0`, so the
+diagnostic read should not create optional index locks. By default it scans the
+current worktree git-dir plus the shared common git-dir. Pass
+`--all-worktrees` to also inspect every linked worktree registered by
+`git worktree list --porcelain`.
+
+The command understands Git's `core.lockfilePid` PID sidecar format. With that
+Git setting enabled, a lock such as `index.lock` may have a sibling
+`index~pid.lock` containing `pid <value>`. `git-locks` reports the lock age,
+PID, whether the PID is still alive, and the cleanup action it would take.
+
+Default mode is read-only:
+
+```bash
+git-locks
+git-locks --all-worktrees
+```
+
+Only use cleanup mode for stale locks whose PID is no longer alive:
+
+```bash
+git-locks --clean-stale
+git-locks --all-worktrees --clean-stale
+```
+
+Cleanup removes only locks with a valid PID sidecar whose process is not
+running. Locks without a PID sidecar are reported as unknown and are not removed
+automatically. The default cleanup age floor is 5 seconds; override it only for
+tests or when you have just verified the race is impossible:
+
+```bash
+git-locks --clean-stale --min-age 0
+```
+
+Do not use `git-locks` as a substitute for worktree isolation. If multiple
+agents or panes need to make Git index changes concurrently, split the work into
+separate issue or PR worktrees first.
+
+## 6. Navigation Primitives
 
 - `z <keyword>` — zoxide wrapper (`config/zsh/zoxide.zsh`); triggers session
   rename on cd
@@ -192,7 +235,7 @@ inspection, cleanup, and baseline verification.
   single worktree deletion, with compact status, upstream status, and branch
   rows
 
-## 6. Common tmux Pane Operations
+## 7. Common tmux Pane Operations
 
 For pane send-keys, capture-pane, hook-bypass via load-buffer + paste-buffer,
 and monitoring patterns, see `workspace-tmux-pane-operations.md`.
@@ -204,7 +247,7 @@ Key rules:
 - For hook-blocked content: write to file, then
   `tmux load-buffer <file> && tmux paste-buffer -t %N && tmux send-keys -t %N Enter`
 
-## 7. Postman Integration Caveats
+## 8. Postman Integration Caveats
 
 - Freshly-booted sessions may not appear in `tmux-a2a-postman get-status` even
   when tmux topology is correct; wait briefly and retry status
@@ -215,7 +258,7 @@ Key rules:
   resolution
   note and the archived runbook pointer
 
-## 8. Reference Index
+## 9. Reference Index
 
 - [Worktree Workflow](workspace-worktree-workflow.md)
 - [Worktree Development](worktree-development.md)

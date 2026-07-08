@@ -55,6 +55,22 @@
         "type": "github"
       }
     },
+    "azure-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783443153,
+        "narHash": "sha256-2iOmqj+LxyS/IQYB7IXCMZgkZNO726sUa+SZ+FDGlls=",
+        "owner": "microsoft",
+        "repo": "azure-skills",
+        "rev": "88cf4369b9b965aab879a154fcfca3212f2833ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "microsoft",
+        "repo": "azure-skills",
+        "type": "github"
+      }
+    },
     "blueprint": {
       "inputs": {
         "nixpkgs": [
@@ -643,6 +659,7 @@
         "agent-skills": "agent-skills",
         "anthropic-skills": "anthropic-skills",
         "aws-agent-toolkit": "aws-agent-toolkit",
+        "azure-skills": "azure-skills",
         "context7": "context7",
         "databricks-agent-skills": "databricks-agent-skills",
         "dbt-agent-skills": "dbt-agent-skills",
