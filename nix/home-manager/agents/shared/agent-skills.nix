@@ -120,7 +120,6 @@ let
     "azure-deploy"
     "azure-diagnostics"
     "azure-kubernetes"
-    "azure-kubernetes/azure-kubernetes-automatic-readiness"
     "azure-kusto"
     "azure-messaging"
     "azure-prepare"
@@ -131,7 +130,6 @@ let
     "entra-agent-id"
     "entra-app-registration"
     "microsoft-foundry"
-    "microsoft-foundry/models/deploy-model"
   ];
   validateSkillSource =
     name: src:
