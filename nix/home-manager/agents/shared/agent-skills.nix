@@ -119,7 +119,6 @@ let
     "azure-compute"
     "azure-deploy"
     "azure-diagnostics"
-    "azure-kubernetes"
     "azure-kusto"
     "azure-messaging"
     "azure-prepare"
