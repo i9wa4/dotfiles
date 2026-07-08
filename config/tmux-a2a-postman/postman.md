@@ -32,6 +32,19 @@ Current `edges`, explicit body instructions, health output, and observed send
 results are authoritative. Unless you are messenger, never end a message with a
 question directed at the user; decide, proceed, and report.
 
+Ending a turn with zero `tmux-a2a-postman send-heredoc` calls is itself a Core
+Contract violation, identical in severity to asking the human a direct
+question -- silence is not a safe default. This includes printing a question,
+a conclusion, or a plan directly onto the raw pane and then stopping without
+ever invoking `send-heredoc`: that produces zero postman traffic, so
+orchestrator never learns the turn happened at all. Concrete example of the
+violation this closes: a worker unsure whether it may commit, push, or open a
+PR must never print a question like "Should I push this?" on its own pane and
+stop; it must send `BLOCKED: awaiting human approval for <action>` to
+orchestrator instead. When uncertain how to proceed for any reason, the safe
+action is always to transmit something -- even a minimal `BLOCKED:` -- never
+to end the turn without sending anything.
+
 Use applicable skills before acting. Skills own detailed send, inbox/session,
 artifact, review, GitHub/publication, and workflow procedures; keep only hard
 runtime gates here. Messenger may use only transport and live-mail skills.
