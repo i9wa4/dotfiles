@@ -141,9 +141,9 @@ in
       # Persona / language / scope is delivered through postman.md
       # common_template (§2.2) on each tmux-a2a-postman pop. Skill bodies
       # are loaded from ~/.claude/skills/ at session start. CLAUDE.md is only
-      # the minimal fallback for direct, non-postman invocations; see
-      # shared/local-fallback.md.
-      ".claude/CLAUDE.md".source = ../shared/local-fallback.md;
+      # the minimal fallback for direct, non-postman invocations, derived from
+      # the single authored source shared/AGENTS.md (see codex/default.nix).
+      ".claude/CLAUDE.md".source = ../shared/AGENTS.md;
       # Committed native Claude agent files (rebuild required to update)
       "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;

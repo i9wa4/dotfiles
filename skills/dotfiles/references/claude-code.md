@@ -20,7 +20,7 @@ Source of truth:
 | -------------------------------------------------- | --------------------------------------------------- | ------------------------------------ |
 | Claude settings file                               | Generated from Nix attributes                       | `claude/default.nix`                 |
 | root instruction file (persona / language / scope) | postman common blocks                               | `config/tmux-a2a-postman/postman.md` |
-| root CLAUDE.md (local-invocation fallback only)    | `shared/local-fallback.md`                          | `claude/default.nix`                 |
+| root CLAUDE.md (derived from shared/AGENTS.md)     | `shared/AGENTS.md` (single authored source)         | `claude/default.nix`                 |
 | Claude agents directory                            | Generated Markdown from `subagents/*.md` + metadata | `shared/install-manifest.nix`        |
 | Claude scripts directory                           | `nix/home-manager/agents/scripts/`                  | `claude/default.nix`                 |
 | Claude skills directory                            | Multiple flake inputs + local skills                | `shared/agent-skills.nix`            |
@@ -106,8 +106,10 @@ reference was loaded; follow the current session's delegation policy.
 
 This section is general Claude Code guidance. The installed root
 <!-- private-content-scan: allow-next-line -->
-`~/.claude/CLAUDE.md` (`shared/local-fallback.md`) is intentionally minimal —
-a skill-catalog pointer for direct, non-postman invocations only.
+`~/.claude/CLAUDE.md` is derived from `shared/AGENTS.md` (the single authored
+<!-- private-content-scan: allow-next-line -->
+source, also installed as Codex's `~/.codex/AGENTS.md`) and is intentionally
+minimal — a skill-catalog pointer for direct, non-postman invocations only.
 Dotfiles-local persona and scope are delivered through
 `config/tmux-a2a-postman/postman.md` instead, not through this file.
 
