@@ -166,8 +166,13 @@ the harness from several smaller sources:
   persona / language / scope contract and compact skill-use rule. Its
   `skill_path` frontmatter injects a generated catalog of configured
   skills into every postman-driven role on each `tmux-a2a-postman pop`.
-  There is no longer a generated CLAUDE.md or codex AGENTS.md installed at
-  the runtime root.
+  `shared/AGENTS.md` is the single authored source for the local-invocation
+  <!-- private-content-scan: allow-next-line -->
+  fallback: `~/.codex/AGENTS.md` installs it directly, and
+  <!-- private-content-scan: allow-next-line -->
+  `~/.claude/CLAUDE.md` is derived from the same source rather than a second
+  hand-written file. It is only a minimal skill-catalog pointer for direct,
+  non-postman invocations; it does not duplicate the postman contract.
 - `shared/agent-skills.nix` installs both local and upstream skills into both
   engines
 - `subagents/*.md` is the native reviewer prompt source of truth;

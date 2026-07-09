@@ -78,8 +78,13 @@ Concrete examples already in the repo:
   authoritative location for the persona / language / scope contract
   and the compact skill-use rule; delivered to every postman role on each
   `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
-  for configured skills. There is no longer a generated CLAUDE.md or
-  codex AGENTS.md installed at the runtime root.
+  for configured skills. `nix/home-manager/agents/shared/AGENTS.md` is the
+  single authored source for the local-invocation fallback:
+  <!-- private-content-scan: allow-next-line -->
+  installed as `~/.codex/AGENTS.md` directly, and `~/.claude/CLAUDE.md` is
+  derived from the same source rather than a second hand-written file. It is
+  only a minimal pointer to the skill catalog for direct, non-postman
+  invocations; it does not duplicate the postman contract.
 - `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
   set into both engines.
 - `nix/home-manager/agents/subagents/*.md` and
