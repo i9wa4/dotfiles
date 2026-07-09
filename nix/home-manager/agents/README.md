@@ -8,21 +8,22 @@ artifacts.
 
 ## 1. Start Here
 
-| If you want to change...    | Edit here                                                   | Installed result                                                                  |
-| --------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                  |
-| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                  |
-| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers  |
-| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files            |
-| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files    |
-| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources |
-| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/`                           |
-| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)      |
-| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                      |
-| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines     |
-| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs   |
-| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs         |
-| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                    |
+| If you want to change...    | Edit here                                                   | Installed result                                                                                     |
+| --------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                                     |
+| Local-invocation fallback   | `shared/local-fallback.md`                                  | Installed as `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`; does not duplicate the postman contract |
+| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                                     |
+| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers                     |
+| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files                               |
+| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files                       |
+| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources                    |
+| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/`                                              |
+| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                         |
+| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                         |
+| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                        |
+| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs                      |
+| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs                            |
+| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                                       |
 
 ## 2. Design Principle
 
@@ -41,6 +42,7 @@ graph LR
         H[agents/scripts/ hooks]
         D[shared/denied-bash-commands.nix]
         M[shared/mcp-servers.nix]
+        L[shared/local-fallback.md]
     end
     subgraph emitters [Generators]
         IM[shared/install-manifest.nix]
@@ -53,12 +55,14 @@ graph LR
         CS[skills/]
         CJ[settings.json + .claude.json]
         CH[scripts/]
+        CF[CLAUDE.md]
     end
     subgraph codex [~/.codex]
         XA[agents/]
         XS[skills/]
         XT[config.toml + hooks.json]
         XH[scripts/]
+        XF[AGENTS.md]
     end
     A --> IM --> CA
     IM --> XA
@@ -70,6 +74,8 @@ graph LR
     D --> X --> XT
     M --> C
     M --> X
+    L --> C --> CF
+    L --> X --> XF
     P -. delivered per postman pop .-> claude
     P -. delivered per postman pop .-> codex
 ```
@@ -81,8 +87,10 @@ graph LR
    `config/tmux-a2a-postman/postman.md` `[common_template]` on each
    `tmux-a2a-postman pop`. Dotfiles-owned skill bodies stay in
    `skills/<skill>/SKILL.md`; postman traffic gets only the generated
-   `skill_path` catalog. There is no longer a generated CLAUDE.md or codex
-   AGENTS.md installed at the runtime root.
+   `skill_path` catalog. `shared/local-fallback.md` is installed as
+   `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` for direct, non-postman
+   invocations only; it points at the skill catalog and does not duplicate
+   the postman contract.
 3. `subagents/*.md` is the committed Markdown source of truth for native
    reviewer prompt bodies. `subagents/metadata.nix` is the shared source for
    runtime defaults such as model and effort. `shared/install-manifest.nix`

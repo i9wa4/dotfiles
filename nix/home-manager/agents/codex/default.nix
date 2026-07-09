@@ -176,7 +176,9 @@ in
     # listed by the generated skill_path catalog; catch-all repository
     # background intentionally lives in docs rather than a `skills/repo-local`
     # catch-all skill.
-    # Codex CLI has no AGENTS.md generated at the runtime root anymore.
+    # AGENTS.md is only the minimal fallback for direct, non-postman `codex`
+    # invocations; see shared/local-fallback.md.
+    ".codex/AGENTS.md".source = ../shared/local-fallback.md;
     # Shared Bash command-deny policy is installed through .codex/scripts and
     # .codex/hooks.json, not duplicated into embedded Codex rules.
     # Generated Codex agent files from the Markdown source (rebuild required to update)

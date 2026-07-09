@@ -16,14 +16,15 @@ Source of truth:
 - `nix/home-manager/agents/shared/`
 - `nix/home-manager/agents/`
 
-| Destination              | Source                                                | Managed by                           |
-| ------------------------ | ----------------------------------------------------- | ------------------------------------ |
-| Claude settings file     | Generated from Nix attributes                         | `claude/default.nix`                 |
-| no root instruction file | Persona / language / scope from postman common blocks | `config/tmux-a2a-postman/postman.md` |
-| Claude agents directory  | Generated Markdown from `subagents/*.md` + metadata   | `shared/install-manifest.nix`        |
-| Claude scripts directory | `nix/home-manager/agents/scripts/`                    | `claude/default.nix`                 |
-| Claude skills directory  | Multiple flake inputs + local skills                  | `shared/agent-skills.nix`            |
-| MCP servers              | `shared/mcp-servers.nix`                              | `claude/default.nix`                 |
+| Destination                                        | Source                                              | Managed by                           |
+| -------------------------------------------------- | --------------------------------------------------- | ------------------------------------ |
+| Claude settings file                               | Generated from Nix attributes                       | `claude/default.nix`                 |
+| root instruction file (persona / language / scope) | postman common blocks                               | `config/tmux-a2a-postman/postman.md` |
+| root CLAUDE.md (local-invocation fallback only)    | `shared/local-fallback.md`                          | `claude/default.nix`                 |
+| Claude agents directory                            | Generated Markdown from `subagents/*.md` + metadata | `shared/install-manifest.nix`        |
+| Claude scripts directory                           | `nix/home-manager/agents/scripts/`                  | `claude/default.nix`                 |
+| Claude skills directory                            | Multiple flake inputs + local skills                | `shared/agent-skills.nix`            |
+| MCP servers                                        | `shared/mcp-servers.nix`                            | `claude/default.nix`                 |
 
 ## 2. Fetch CHANGELOG
 
@@ -103,9 +104,12 @@ reference was loaded; follow the current session's delegation policy.
 
 ## 6. Upstream CLAUDE.md Design Guidelines
 
-This section is general Claude Code guidance. This repo does not install a root
-Claude global instruction file; dotfiles-local persona and scope are delivered
-through `config/tmux-a2a-postman/postman.md` instead.
+This section is general Claude Code guidance. The installed root
+<!-- private-content-scan: allow-next-line -->
+`~/.claude/CLAUDE.md` (`shared/local-fallback.md`) is intentionally minimal —
+a skill-catalog pointer for direct, non-postman invocations only.
+Dotfiles-local persona and scope are delivered through
+`config/tmux-a2a-postman/postman.md` instead, not through this file.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`

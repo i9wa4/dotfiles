@@ -54,12 +54,15 @@ remain responsible for filesystem and network blast radius.
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
 The persona / language / scope directives live as `[common_template]`
-sections inside `config/tmux-a2a-postman/postman.md` (§2.17 persona).
+sections inside `config/tmux-a2a-postman/postman.md` (§2.2 persona).
 Dotfiles-owned skill bodies stay in top-level `skills/`, and
 postman.md `skill_path` injects only their generated catalog. The postman
 daemon delivers this common contract into every role pane on each
-`tmux-a2a-postman pop`. There is no longer a generated CLAUDE.md or codex
-AGENTS.md at the runtime root; postman.md is the common delivery channel.
+`tmux-a2a-postman pop`; postman.md is the common delivery channel for
+orchestrated sessions. `shared/local-fallback.md` is installed as a
+generated CLAUDE.md / codex AGENTS.md at the runtime root, but only as a
+minimal skill-catalog pointer for direct, non-postman invocations — it does
+not carry the persona / language / scope contract.
 
 Subagent prompt bodies in `subagents/*.md` remain the tool-agnostic Markdown
 source. Per-agent runtime defaults live in `subagents/metadata.nix`. Claude
