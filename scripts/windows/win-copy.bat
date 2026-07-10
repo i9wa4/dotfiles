@@ -8,8 +8,6 @@ exit /b
     chcp 65001>nul
     cd /d %~dp0
 
-    cd ..\..
-
     @REM %USERPROFILE%
-    copy /y ".\etc\dot.wslconfig" "%USERPROFILE%\.wslconfig"
+    copy /y "%~dp0..\etc\dot.wslconfig" "%USERPROFILE%\.wslconfig"
 exit /b
