@@ -23,7 +23,9 @@ The workflow has five recurring phases:
 1. Start from a task identifier.
    For implementation work, create or choose the GitHub issue first, then run
    `issue-worktree-create <issue_number>` and develop inside that issue
-   worktree. Use `pr-worktree-create <pr_number>` for PR review.
+   worktree. Use `pr-worktree-create <pr_number>` for PR review. If there is
+   deliberately no issue or PR number, create a dedicated no-issue branch
+   worktree under `.worktrees/` before editing.
 2. Create or reuse a linked worktree.
    Managed worktrees live under repo-local `.worktrees/`, with branches and
    directory names derived from the issue or PR.
@@ -85,10 +87,19 @@ worktree backend package or hidden per-machine state.
 
 Keep the base checkout clean enough to launch and maintain worktrees. Do active
 task edits inside the task worktree, not by stacking unrelated changes in the
-base checkout.
+base checkout. This applies to small docs-only and single-line changes too: if
+the change may become a commit, make or enter a dedicated worktree first.
 
 Use issue and PR numbers as the stable human entrypoints. Avoid ad hoc branch
-or directory naming when a repository wrapper already covers the task.
+or directory naming when a repository wrapper already covers the task. When no
+issue or PR number exists by design, use an explicit no-issue branch worktree
+instead of falling back to the base checkout:
+
+```sh
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+```
 
 Use `z` and `zi` for re-entry instead of raw `zoxide` calls, because the repo
 wrappers keep the current shell and tmux session state aligned.

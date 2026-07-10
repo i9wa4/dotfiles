@@ -301,6 +301,36 @@ let
   ];
   formatCollision =
     collision: "${collision.left} and ${collision.right}: ${lib.concatStringsSep ", " collision.names}";
+  allSources = baseSources // cfg.extraSources // installManifest.skills.sources;
+  codexMinimalSources = lib.getAttrs [
+    "local"
+    "tmux-a2a-postman"
+    "anthropic"
+    "context7"
+  ] allSources;
+  codexMinimalCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog codexMinimalSources;
+  codexMinimalAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+    catalog = codexMinimalCatalog;
+    sources = codexMinimalSources;
+    enableAll = [
+      "local"
+      "tmux-a2a-postman"
+    ];
+    enable = [
+      "claude-api"
+      "context7-cli"
+    ];
+  };
+  codexMinimalSelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+    catalog = codexMinimalCatalog;
+    allowlist = codexMinimalAllowlist;
+    skills = { };
+    sources = codexMinimalSources;
+  };
+  codexMinimalBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+    inherit pkgs;
+    selection = codexMinimalSelection;
+  };
 in
 {
   imports = [
@@ -343,8 +373,10 @@ in
             structure
             ;
         };
-        # Codex CLI: ~/.codex/skills
+        # Codex CLI uses a smaller bundle below. Keeping the full upstream
+        # graph out of Codex avoids startup skill-context budget truncation.
         codex = {
+          enable = false;
           inherit (installManifest.codex.skills)
             dest
             structure
@@ -355,5 +387,19 @@ in
       # Preserve .system directory (created by agents at runtime)
       excludePatterns = [ "/.system" ];
     };
+
+    home.activation.agent-skills-codex-minimal =
+      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
+        ''
+          dest="${installManifest.codex.skills.dest}"
+          if [ -L "$dest" ]; then
+            rm -rf "$dest"
+          fi
+          mkdir -p "$dest"
+          ${pkgs.rsync}/bin/rsync -a --delete --exclude '/.system' \
+            "${codexMinimalBundle}/" "$dest/"
+          chmod u+w "$dest"
+          echo "agent-skills: installed minimal Codex skill bundle to $dest"
+        '';
   };
 }

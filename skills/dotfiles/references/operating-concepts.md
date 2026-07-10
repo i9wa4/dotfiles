@@ -260,6 +260,11 @@ The result is parity of intent rather than byte-for-byte sameness. The repo is
 trying to make a worker on Claude and a worker on Codex behave comparably under
 the same local expectations.
 
+Codex skill installation is intentionally smaller than Claude's full bundle so
+Codex startup stays within its skill-context budget. The reduction is still
+declared in `shared/agent-skills.nix`, so both engines keep a shared source of
+truth for skill policy even when their runtime bundles differ.
+
 ### 5.1. Parity matrix (living)
 
 This is the concrete form of the "make the parity boundary explicit" direction

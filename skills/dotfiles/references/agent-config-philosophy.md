@@ -103,6 +103,12 @@ Why shared beats per-tool:
   matter of updating the consumer side; the shared SSOT does not need
   to be reauthored.
 
+Codex is the current narrow exception to the full skill-install shape:
+`agent-skills.nix` keeps Claude on the full bundle while installing a smaller
+Codex bundle so startup skill descriptions stay within Codex's context budget.
+That exception stays in the shared module so the parity boundary remains
+explicit instead of drifting into a per-engine fork.
+
 When per-engine config is unavoidable:
 
 - The two engines have genuinely different surfaces for the same intent

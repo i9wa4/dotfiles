@@ -5,10 +5,23 @@ operations, branch publication, commit messages, and review comment style.
 
 Implementation work is issue-first and worktree-based by default: create or
 choose the issue, run `issue-worktree-create <issue_number>`, and edit inside
-that issue worktree rather than the main checkout. Do not use the generic
-worktree tool (`EnterWorktree`) or raw `git worktree add` as the entrypoint.
-See `skills/dotfiles/references/workspace-worktree-workflow.md` for the full
-flow.
+that issue worktree rather than the main checkout. PR review uses
+`pr-worktree-create <pr_number>`.
+
+The main checkout is not a place for task commits, including small docs-only or
+single-line changes. If there is deliberately no issue or PR number, create a
+dedicated branch worktree under `.worktrees/` before editing:
+
+```sh
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+```
+
+Use raw `git worktree add` only for this no-issue branch-work case. Do not use
+the generic worktree tool (`EnterWorktree`) or raw `git worktree add` as the
+entrypoint for issue implementation or PR review. See
+`skills/dotfiles/references/workspace-worktree-workflow.md` for the full flow.
 
 ## 1. gh CLI
 

@@ -34,6 +34,14 @@ by `fd` at `home-manager switch` time and appended to `config.toml`.
 Existing `[hooks.state]` review entries are preserved from the local
 `config.toml` so user-approved hook hashes survive later Nix activations.
 
+Codex skill installation is intentionally smaller than Claude's full skill
+bundle. `shared/agent-skills.nix` installs local dotfiles skills,
+tmux-a2a-postman transport skills, `claude-api`, and `context7-cli` into
+the Codex skills directory, preserving Codex-managed `.system`. This keeps
+Codex startup below its skill-context budget; large cloud/vendor skill packs
+remain available to Claude and can be added to Codex only when there is a
+deliberate reason.
+
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:
 runtime-agnostic shared scripts (no prefix, e.g. `pretooluse-deny-bash.sh`),

@@ -9,34 +9,30 @@ description: |
 
 # Collaboration
 
-Owns GitHub mechanics (`gh` usage, issue/PR state inspection, commit
-rules, inline comments, public path hygiene) and Atlassian access (Jira and
-Confluence when env vars are confirmed). Does not own the guardian/critic
-review engine or the user-facing review-comment trigger.
+Owns `gh` usage, GitHub issue/PR creation and inspection, public surface path
+hygiene, commit/PR rules, and Atlassian access when env vars are confirmed.
 
 ## 1. Development Default
 
-Before any git or GitHub action, the default is issue-first, worktree-based
-development: create or choose the GitHub issue, run
-`issue-worktree-create <issue_number>`, then develop inside that worktree. Do
-not edit the main checkout, and do not use raw `git worktree add` or the
-generic `EnterWorktree` tool as the entrypoint. Verify placement
-(`pwd`, `git branch --show-current`) before editing.
+Before git/GitHub actions that edit files, create commits, or change branches,
+work in a dedicated worktree. Issue work: create/choose the issue, run
+`issue-worktree-create <issue_number>`, then edit there. PR review:
+`pr-worktree-create <pr_number>`.
 
-Norm, not absolute rule; deliberate small base-checkout touches are fine. Full
-mechanics: `skills/dotfiles/references/worktree-development-overview.md`.
+Never edit or commit from the main checkout, even for docs-only or single-line
+changes. If there is deliberately no issue/PR number, first run
+`git worktree add -b <branch> .worktrees/<branch> main` and `cd` there. Raw
+`git worktree add` is only for this no-issue branch case, not issue/PR work.
+Avoid `EnterWorktree`. Verify `pwd`, branch, and status before editing.
 
 ## 2. Workflow
 
-1. Inspect the relevant files, current repo conventions, and `git status`.
+1. Inspect relevant files, repo conventions, and `git status`.
 2. Read [Workflow Guide](references/github-workflow.md) before changing
    behavior or giving detailed instructions.
-3. Before branch publication or PR creation, verify branch, upstream, base,
-   head, and clean status; use the same-name remote destination workflow in
-   the workflow guide.
-4. Make the smallest scoped change that satisfies the request.
-5. Run the checks named in the workflow guide or the nearest repo harness.
-6. Report verification results and any remaining risk.
+3. Before publication or PR creation, verify branch, upstream, base/head, and
+   clean status; use the same-name remote destination workflow.
+4. Make the smallest scoped change, run nearest checks, and report risk.
 
 ## 3. References
 
