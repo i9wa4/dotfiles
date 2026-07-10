@@ -125,10 +125,11 @@ session by name in tmux commands.
 
 Primary creation entrypoints:
 `scripts/bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
-and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For
-interactive cleanup in the current repository, use `scripts/bin/worktree-remove`
-to choose one managed worktree under the repo's `.worktrees/` directory with
-`fzf`, validate safety gates, and delete through native `git worktree` cleanup.
+and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For cleanup
+inspection in the current repository, use `scripts/bin/worktree-status` to list
+every registered worktree with issue/PR state when the naming rules expose a
+number, plus local Git state. The command is read-only; use native
+`git worktree remove` manually after inspection.
 
 For issue implementation, agents must create or choose the GitHub issue first,
 then use `issue-worktree-create <issue_number>`. Do not create issue branches
@@ -231,9 +232,9 @@ separate issue or PR worktrees first.
 - `^g` / `__zoxide_zi_widget` — fzf picker merging zoxide + ghq sources; calls
   `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
 - `zi [keywords...]` — interactive fzf version of `z`
-- `worktree-remove` — repo-root `.worktrees/` `fzf` selector for confirmed
-  single worktree deletion, with compact status, upstream status, and branch
-  rows
+- `worktree-status` — read-only inventory of every worktree registered to the
+  current repository, with issue/PR state when available from naming rules,
+  local flags, dirty state, upstream status, branch, HEAD, and path
 
 ## 7. Common tmux Pane Operations
 

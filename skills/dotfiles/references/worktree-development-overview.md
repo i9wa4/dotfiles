@@ -54,8 +54,9 @@ The workflow has five recurring phases:
    worktree from normal shell use. Inside tmux, re-entry also keeps session
    naming aligned with the selected repo or worktree.
 5. Clean up explicitly.
-   Use `worktree-remove` to inspect managed worktrees, confirm deletion, and
-   remove clean, unlocked, merged worktrees through native Git cleanup.
+   Use `worktree-status` to inspect every registered worktree for the current
+   repository. Delete confirmed clean, unlocked, merged worktrees manually with
+   native Git cleanup.
 
 ## 3. Why This Shape Works
 
@@ -75,7 +76,7 @@ policy:
   `.envrc`, PR review worktrees, or other pre-existing `.envrc`
 - zoxide registration for fast re-entry
 - tmux-aware session naming
-- explicit cleanup checks before removal
+- explicit cleanup inspection before manual removal
 
 That split keeps the workflow portable across machines without adding another
 worktree backend package or hidden per-machine state.
@@ -92,7 +93,7 @@ or directory naming when a repository wrapper already covers the task.
 Use `z` and `zi` for re-entry instead of raw `zoxide` calls, because the repo
 wrappers keep the current shell and tmux session state aligned.
 
-Before removing a worktree, inspect the candidate through `worktree-remove` or
+Before removing a worktree, inspect the candidate through `worktree-status` or
 `git worktree list --porcelain`. Delete only when the worktree is clean,
 unlocked, and merged or otherwise confirmed obsolete.
 
@@ -102,6 +103,6 @@ unlocked, and merged or otherwise confirmed obsolete.
 - the worktree-tool evaluation decision record (private vault)
 - `scripts/bin/issue-worktree-create`
 - `scripts/bin/pr-worktree-create`
-- `scripts/bin/worktree-remove`
+- `scripts/bin/worktree-status`
 - `config/zsh/zoxide.zsh`
 - `skills/dotfiles/references/workspace-worktree-workflow.md`
