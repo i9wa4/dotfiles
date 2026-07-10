@@ -206,9 +206,8 @@ task.
 - Inspect all worktrees: `git worktree list --porcelain`
 - Resolve a branch to its absolute path:
   `git worktree list --porcelain` and match `branch refs/heads/<branch>`
-- Select and delete one managed worktree under the current repo's
-  `.worktrees/` directory:
-  `worktree-remove`
+- Inspect every worktree registered to the current repo:
+  `worktree-status`
 
 Do not use raw `git worktree add` as the primary issue or PR entrypoint in this
 repo. Use it only for explicit no-issue branch work when no wrapper applies.
@@ -233,14 +232,11 @@ git worktree list --porcelain
 ## 6. Repo Fit Notes
 
 - Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-remove` or `git worktree list --porcelain`, then delete selected
-  linked worktrees with the wrapper flow.
-- `worktree-remove` keeps the selector focused on compact issue/PR status,
-  upstream status, and branch rows. Path and upstream-branch details stay hidden
-  in selection data for safety checks.
-- `worktree-remove` treats both ancestry-merged branches and matching
-  squash-merged GitHub PR branches as merged when `gh` can resolve the merged
-  PR by head branch.
+  `worktree-status` or `git worktree list --porcelain`, then delete selected
+  linked worktrees manually with native Git commands.
+- `worktree-status` is read-only. It reports GitHub issue or PR state only when
+  the issue/PR number can be derived from this repo's worktree naming rules,
+  and otherwise leaves those fields as `-`. It does not remove worktrees.
 - The repo may contain detached linked worktrees; do not assume every linked
   worktree is a simple branch-only case.
 - If the task is about changing worktree scripts or config, read those files in

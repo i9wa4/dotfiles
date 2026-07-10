@@ -20,9 +20,9 @@ the worktree-tool evaluation decision record (private vault).
   start PR review.
 - For deliberately no-issue branch work, create a dedicated worktree under
   `.worktrees/` with native `git worktree add` before editing or committing.
-- Use `worktree-remove` from a repository to list that repo's managed
-  worktrees under `.worktrees/`, choose one with `fzf`, type `yes`, and delete
-  it through `git worktree remove`.
+- Use `worktree-status` from a repository to list every registered worktree for
+  that repo. It is read-only; for worktrees matching this repo's issue/PR
+  naming rules, it also resolves GitHub issue or PR state.
 - Use `z <keyword>` for the normal zoxide-backed jump flow.
 - Use `zi [keywords...]` for explicit interactive selection.
 - Treat `z` and `zi` as shell-local navigation helpers that `cd` the current
@@ -236,32 +236,31 @@ consistent.
 - Their merged candidate set is built from the current `zoxide` database and
   `ghq list -p`.
 - In this repository, current scripts actively use `git worktree list
-  --porcelain`, `git worktree add`, and `git worktree remove`.
+  --porcelain` and `git worktree add`. Removal is manual with native
+  `git worktree remove` after inspection.
 - Do not use a generic worktree package as the primary issue or PR entrypoint
   here.
 - Native `git worktree add` is the documented fallback only for deliberately
   no-issue branch work.
-- Use `git worktree list --porcelain` and `worktree-remove` when
+- Use `git worktree list --porcelain` and `worktree-status` when
   inspecting stale linked worktrees.
 
 ## 8. Removal and repository hygiene
 
 - Keep linked worktrees under repo-local `.worktrees/`.
-- Inspect cleanup candidates with `worktree-remove` or
+- Inspect cleanup candidates with `worktree-status` or
   `git worktree list --porcelain`.
-- For interactive deletion in the current repository, run `worktree-remove`.
-  It lists only secondary managed worktrees under the repo's `.worktrees/`,
-  shows compact issue, PR, and upstream-branch state before long branch and
-  path fields, requires typing `yes`, and removes clean, unlocked, merged
-  branch worktrees with `git worktree remove` plus local branch deletion.
-  Squash-merged GitHub PR branches count as merged when `gh` can resolve the
-  matching merged PR, even though the local branch commit is not an ancestor of
-  `origin/main`.
+- For cleanup inspection in the current repository, run `worktree-status`. It
+  lists every registered worktree, including the primary checkout, with issue
+  state, PR state, local worktree flags, dirty state, upstream state, branch,
+  HEAD, and path. It only calls GitHub when an issue or PR number can be derived
+  from the managed naming rules; non-matching worktrees keep issue/PR fields as
+  `-`. It does not delete anything.
 - Treat clean merged `pr-*` worktrees as normal deletion candidates.
 - Treat clean `issue-*` worktrees as deletion candidates only after confirming
   the issue is closed and the branch is merged or otherwise obsolete.
-- Delete confirmed linked worktrees with `worktree-remove` or
-  `git worktree remove` after the same clean, unlocked, merged checks.
+- Delete confirmed linked worktrees manually with `git worktree remove` after
+  the same clean, unlocked, merged checks.
 - If a path was added to zoxide manually and still appears after deletion,
   remove it with `zoxide remove <path>`.
 - Preserve copy-first `.envrc` behavior and `repo-setup` bootstrap when
@@ -295,9 +294,9 @@ consistent.
   rewriting it in place.
 - PR review now supports cross-repository heads by fetching from the PR source
   repository directly.
-- `worktree-remove` now provides a repo-root `.worktrees/` `fzf` selector for
-  confirmed single-worktree deletion with issue, PR, and miscellaneous preview
-  context.
+- `worktree-status` now provides a read-only inventory for every worktree
+  registered to the current repository, plus issue/PR state for worktrees that
+  match the repo's naming rules.
 - Worktree scripts now use native `git worktree` commands directly; the
   npm-managed worktree backend package was removed.
 - No-issue branch work now has an explicit native `git worktree add` flow so
@@ -310,7 +309,7 @@ consistent.
 
 - `scripts/bin/issue-worktree-create`
 - `scripts/bin/pr-worktree-create`
-- `scripts/bin/worktree-remove`
+- `scripts/bin/worktree-status`
 - `config/zsh/zoxide.zsh` for the zsh jump flow
 - `config/zsh/zinit.zsh`
 - `nix/home-manager/modules/zsh.nix`

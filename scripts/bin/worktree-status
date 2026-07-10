@@ -1,0 +1,405 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Show the current repository's registered worktrees. This command is
+# intentionally read-only; remove worktrees manually after inspection.
+
+usage() {
+  cat <<'EOF'
+Usage:
+  worktree-status
+
+List every worktree registered for the current repository. This command does
+not remove anything.
+
+Columns:
+  issue     issue:<number>:<state>, or -
+  pr        pr:<number>:<state>, or -
+  flags     primary/managed/external plus raw worktree flags
+  dirty     clean, dirty, missing, bare, or dirty?
+  upstream  local branch upstream state
+  branch    local branch name, or -
+  head      short HEAD commit
+  path      worktree path
+
+Options:
+  -h, --help  Show this help.
+EOF
+}
+
+require_command() {
+  local command_name="$1"
+
+  if ! command -v "$command_name" &>/dev/null; then
+    echo "Error: ${command_name} command not found. Please install it." >&2
+    exit 1
+  fi
+}
+
+shorten_head() {
+  local head="$1"
+
+  if [[ -z "$head" || "$head" == "-" ]]; then
+    printf '%s\n' "-"
+  else
+    printf '%.12s\n' "$head"
+  fi
+}
+
+path_basename() {
+  local path="$1"
+
+  path="${path%/}"
+  printf '%s\n' "${path##*/}"
+}
+
+extract_prefixed_number() {
+  local value="$1"
+  local prefix="$2"
+  local rest
+  local number
+
+  case "$value" in
+    "${prefix}-"[0-9]*)
+      rest="${value#"${prefix}-"}"
+      number="${rest%%-*}"
+      case "$number" in
+        "" | *[!0-9]*)
+          return 1
+          ;;
+        *)
+          printf '%s\n' "$number"
+          ;;
+      esac
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+worktree_flags() {
+  local repo_root="$1"
+  local managed_root="$2"
+  local worktree_path="$3"
+  local detached="$4"
+  local bare="$5"
+  local locked="$6"
+  local prunable="$7"
+  local flags=""
+
+  case "$worktree_path" in
+    "$repo_root")
+      flags="primary"
+      ;;
+    "$managed_root"/*)
+      flags="managed"
+      ;;
+    *)
+      flags="external"
+      ;;
+  esac
+
+  if [[ "$bare" == "true" ]]; then
+    flags="${flags},bare"
+  fi
+  if [[ "$detached" == "true" ]]; then
+    flags="${flags},detached"
+  fi
+  if [[ "$locked" == "true" ]]; then
+    flags="${flags},locked"
+  fi
+  if [[ "$prunable" == "true" ]]; then
+    flags="${flags},prunable"
+  fi
+
+  printf '%s\n' "$flags"
+}
+
+github_repo_from_origin() {
+  local repo_root="$1"
+  local remote_url
+  local repo=""
+
+  remote_url=$(git -C "$repo_root" remote get-url origin 2>/dev/null || true)
+  case "$remote_url" in
+    git@github.com:*)
+      repo="${remote_url#git@github.com:}"
+      ;;
+    https://github.com/*)
+      repo="${remote_url#https://github.com/}"
+      ;;
+    ssh://git@github.com/*)
+      repo="${remote_url#ssh://git@github.com/}"
+      ;;
+  esac
+
+  repo="${repo%.git}"
+  printf '%s\n' "$repo"
+}
+
+issue_number_for_worktree() {
+  local branch="$1"
+  local worktree_path="$2"
+  local worktree_name
+
+  if extract_prefixed_number "$branch" "issue"; then
+    return 0
+  fi
+
+  worktree_name=$(path_basename "$worktree_path")
+  extract_prefixed_number "$worktree_name" "issue"
+}
+
+pr_number_for_worktree() {
+  local worktree_path="$1"
+  local worktree_name
+
+  worktree_name=$(path_basename "$worktree_path")
+  extract_prefixed_number "$worktree_name" "pr"
+}
+
+github_issue_status() {
+  local github_repo="$1"
+  local number="$2"
+  local output
+
+  if [[ -z "$number" ]]; then
+    printf '%s\n' "-"
+    return 0
+  fi
+
+  if [[ -z "$github_repo" ]]; then
+    printf 'issue:%s:repo-unavailable\n' "$number"
+    return 0
+  fi
+
+  if ! command -v gh &>/dev/null; then
+    printf 'issue:%s:gh-unavailable\n' "$number"
+    return 0
+  fi
+
+  if output=$(gh issue view "$number" --repo "$github_repo" --json state --jq '.state' 2>/dev/null); then
+    printf 'issue:%s:%s\n' "$number" "$output"
+  else
+    printf 'issue:%s:unknown\n' "$number"
+  fi
+}
+
+github_pr_status() {
+  local github_repo="$1"
+  local number="$2"
+  local output
+
+  if [[ -z "$number" ]]; then
+    printf '%s\n' "-"
+    return 0
+  fi
+
+  if [[ -z "$github_repo" ]]; then
+    printf 'pr:%s:repo-unavailable\n' "$number"
+    return 0
+  fi
+
+  if ! command -v gh &>/dev/null; then
+    printf 'pr:%s:gh-unavailable\n' "$number"
+    return 0
+  fi
+
+  if output=$(gh pr view "$number" --repo "$github_repo" --json state,mergedAt --jq 'if .mergedAt != null then "MERGED" else .state end' 2>/dev/null); then
+    printf 'pr:%s:%s\n' "$number" "$output"
+  else
+    printf 'pr:%s:unknown\n' "$number"
+  fi
+}
+
+worktree_dirty_state() {
+  local worktree_path="$1"
+  local bare="$2"
+  local status_output
+
+  if [[ "$bare" == "true" ]]; then
+    printf '%s\n' "bare"
+    return 0
+  fi
+
+  if [[ ! -d "$worktree_path" ]]; then
+    printf '%s\n' "missing"
+    return 0
+  fi
+
+  if ! status_output=$(git -C "$worktree_path" --no-optional-locks status --porcelain 2>/dev/null); then
+    printf '%s\n' "dirty?"
+    return 0
+  fi
+
+  if [[ -n "$status_output" ]]; then
+    printf '%s\n' "dirty"
+  else
+    printf '%s\n' "clean"
+  fi
+}
+
+branch_upstream_status() {
+  local repo_root="$1"
+  local branch="$2"
+  local upstream
+  local counts
+  local ahead="-"
+  local behind="-"
+
+  if [[ -z "$branch" || "$branch" == "-" ]]; then
+    printf '%s\n' "-"
+    return 0
+  fi
+
+  upstream=$(git -C "$repo_root" for-each-ref --format='%(upstream:short)' "refs/heads/${branch}" 2>/dev/null || true)
+  if [[ -z "$upstream" ]]; then
+    printf '%s\n' "none"
+    return 0
+  fi
+
+  if ! git -C "$repo_root" rev-parse --verify --quiet "${upstream}^{commit}" >/dev/null; then
+    printf '%s\n' "${upstream}:deleted"
+    return 0
+  fi
+
+  counts=$(git -C "$repo_root" rev-list --left-right --count "refs/heads/${branch}...${upstream}" 2>/dev/null || true)
+  if [[ -n "$counts" ]]; then
+    read -r ahead behind <<<"$counts"
+  fi
+
+  printf '%s(+%s/-%s)\n' "$upstream" "$ahead" "$behind"
+}
+
+parse_worktrees() {
+  local repo_root="$1"
+
+  git -C "$repo_root" worktree list --porcelain | awk '
+    function flush() {
+      if (path != "") {
+        if (head == "") {
+          head = "-"
+        }
+        if (branch == "") {
+          branch = "-"
+        }
+        print path "\t" head "\t" branch "\t" detached "\t" bare "\t" locked "\t" prunable
+      }
+    }
+
+    /^worktree / {
+      flush()
+      path = substr($0, 10)
+      head = ""
+      branch = ""
+      detached = "false"
+      bare = "false"
+      locked = "false"
+      prunable = "false"
+      next
+    }
+
+    /^HEAD / {
+      head = substr($0, 6)
+      next
+    }
+
+    /^branch / {
+      ref = substr($0, 8)
+      if (index(ref, "refs/heads/") == 1) {
+        branch = substr(ref, 12)
+      } else {
+        branch = ref
+      }
+      next
+    }
+
+    /^detached$/ {
+      detached = "true"
+      next
+    }
+
+    /^bare$/ {
+      bare = "true"
+      next
+    }
+
+    /^locked/ {
+      locked = "true"
+      next
+    }
+
+    /^prunable/ {
+      prunable = "true"
+      next
+    }
+
+    END {
+      flush()
+    }
+  '
+}
+
+format_output() {
+  if command -v column &>/dev/null; then
+    column -t -s $'\t'
+  else
+    cat
+  fi
+}
+
+case "${1:-}" in
+  "")
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac
+
+require_command git
+
+if ! current_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+  echo "Error: worktree-status must be run inside a git repository." >&2
+  exit 1
+fi
+
+repo_root=$(git -C "$current_root" worktree list --porcelain | awk '/^worktree / { print substr($0, 10); exit }')
+if [[ -z "$repo_root" ]]; then
+  echo "Error: failed to resolve primary worktree." >&2
+  exit 1
+fi
+
+managed_root="${repo_root}/.worktrees"
+github_repo=$(github_repo_from_origin "$repo_root")
+
+{
+  printf 'issue\tpr\tflags\tdirty\tupstream\tbranch\thead\tpath\n'
+  while IFS=$'\t' read -r worktree_path head branch detached bare locked prunable; do
+    issue_number=$(issue_number_for_worktree "$branch" "$worktree_path" || true)
+    pr_number=$(pr_number_for_worktree "$worktree_path" || true)
+    issue_status=$(github_issue_status "$github_repo" "$issue_number")
+    pr_status=$(github_pr_status "$github_repo" "$pr_number")
+    flags=$(worktree_flags "$repo_root" "$managed_root" "$worktree_path" "$detached" "$bare" "$locked" "$prunable")
+    dirty=$(worktree_dirty_state "$worktree_path" "$bare")
+    upstream=$(branch_upstream_status "$repo_root" "$branch")
+    short_head=$(shorten_head "$head")
+
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$issue_status" \
+      "$pr_status" \
+      "$flags" \
+      "$dirty" \
+      "$upstream" \
+      "$branch" \
+      "$short_head" \
+      "$worktree_path"
+  done < <(parse_worktrees "$repo_root")
+} | format_output
