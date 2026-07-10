@@ -18,8 +18,6 @@ the worktree-tool evaluation decision record (private vault).
   [issue_number2 ...]` to start issue work.
 - Use `pr-worktree-create [--allow-direnv] <pr_number> [pr_number2 ...]` to
   start PR review.
-- For deliberately no-issue branch work, create a dedicated worktree under
-  `.worktrees/` with native `git worktree add` before editing or committing.
 - Use `worktree-status` from a repository to list every registered worktree for
   that repo. It is read-only; for worktrees matching this repo's issue/PR
   naming rules, it also resolves GitHub issue or PR state.
@@ -127,40 +125,7 @@ Before creating a PR, verify that `origin/<feature-branch>` exists, the PR base
 is the intended base branch, and the PR head is the feature branch. Do not
 create a PR from an unverified local-only branch or mismatched base/head pair.
 
-## 4. Current no-issue branch workflow
-
-Use this flow only when there is deliberately no issue or PR number for the
-task. Small docs-only and single-line changes still need a dedicated worktree if
-they may become commits.
-
-For a new no-issue branch:
-
-```sh
-branch_name=<short-branch-name>
-git worktree add -b "$branch_name" ".worktrees/$branch_name" main
-cd ".worktrees/$branch_name"
-pwd
-git branch --show-current
-git status --short --branch
-```
-
-For an existing branch that is not currently attached to a worktree:
-
-```sh
-branch_name=<existing-branch-name>
-git worktree add ".worktrees/$branch_name" "$branch_name"
-cd ".worktrees/$branch_name"
-pwd
-git branch --show-current
-git status --short --branch
-```
-
-Do not use this native branch flow when an issue or PR number exists. Use
-`issue-worktree-create` or `pr-worktree-create` instead so branch naming,
-upstream safety, `.envrc` handling, `repo-setup`, and zoxide registration stay
-consistent.
-
-## 5. Current PR review workflow
+## 4. Current PR review workflow
 
 1. `pr-worktree-create` fetches `origin` first. If the current branch is
    `main`, it runs `git pull --ff-only origin main`. Otherwise it keeps local
@@ -199,7 +164,7 @@ consistent.
 12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
     command exits nonzero and does not print the all-ready success message.
 
-## 6. Current re-entry flow
+## 5. Current re-entry flow
 
 1. `ghq + fzf` is still the explicit repository browser when the user wants to
    choose a repository first.
@@ -226,7 +191,7 @@ consistent.
     repository name plus the full worktree directory name with dots replaced by
     dashes.
 
-## 7. How Native Worktree Support Fits
+## 6. How Native Worktree Support Fits
 
 - `git worktree` is the backend and canonical read model for managed worktree
   paths.
@@ -240,12 +205,10 @@ consistent.
   `git worktree remove` after inspection.
 - Do not use a generic worktree package as the primary issue or PR entrypoint
   here.
-- Native `git worktree add` is the documented fallback only for deliberately
-  no-issue branch work.
 - Use `git worktree list --porcelain` and `worktree-status` when
   inspecting stale linked worktrees.
 
-## 8. Removal and repository hygiene
+## 7. Removal and repository hygiene
 
 - Keep linked worktrees under repo-local `.worktrees/`.
 - Inspect cleanup candidates with `worktree-status` or
@@ -282,7 +245,7 @@ consistent.
 - Notification or daemon behavior is outside this document. That belongs to
   `tmux-a2a-postman`.
 
-## 9. Recent changes reflected here
+## 8. Recent changes reflected here
 
 - Managed worktrees live under repo-root `.worktrees/`.
 - The zsh jump commands now live in `config/zsh/zoxide.zsh` and are sourced from
@@ -299,13 +262,10 @@ consistent.
   match the repo's naming rules.
 - Worktree scripts now use native `git worktree` commands directly; the
   npm-managed worktree backend package was removed.
-- No-issue branch work now has an explicit native `git worktree add` flow so
-  agents do not treat small changes as permission to commit from the main
-  checkout.
 - The old “approved target after migration” framing was removed from this page
   because the current code and recent commits are the source of truth.
 
-## 10. Related files
+## 9. Related files
 
 - `scripts/bin/issue-worktree-create`
 - `scripts/bin/pr-worktree-create`

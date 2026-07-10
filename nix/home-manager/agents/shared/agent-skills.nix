@@ -62,7 +62,6 @@ let
       pkgs
       ;
   };
-  agentLib = inputs.agent-skills.lib.agent-skills;
   matchAny = names: "^(${lib.concatStringsSep "|" names})$";
   googleCoreDataSkills = [
     "alloydb-basics"
@@ -282,36 +281,6 @@ let
       filter.nameRegex = matchAny awsCoreDataSkills;
     };
   };
-  allSources = baseSources // cfg.extraSources // installManifest.skills.sources;
-  codexMinimalSources = lib.getAttrs [
-    "local"
-    "tmux-a2a-postman"
-    "anthropic"
-    "context7"
-  ] allSources;
-  codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
-  codexMinimalAllowlist = agentLib.allowlistFor {
-    catalog = codexMinimalCatalog;
-    sources = codexMinimalSources;
-    enableAll = [
-      "local"
-      "tmux-a2a-postman"
-    ];
-    enable = [
-      "claude-api"
-      "context7-cli"
-    ];
-  };
-  codexMinimalSelection = agentLib.selectSkills {
-    catalog = codexMinimalCatalog;
-    allowlist = codexMinimalAllowlist;
-    skills = { };
-    sources = codexMinimalSources;
-  };
-  codexMinimalBundle = agentLib.mkBundle {
-    inherit pkgs;
-    selection = codexMinimalSelection;
-  };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
   sourceNameCollisions = lib.filter (collision: collision.names != [ ]) [
     {
@@ -332,6 +301,36 @@ let
   ];
   formatCollision =
     collision: "${collision.left} and ${collision.right}: ${lib.concatStringsSep ", " collision.names}";
+  allSources = baseSources // cfg.extraSources // installManifest.skills.sources;
+  codexMinimalSources = lib.getAttrs [
+    "local"
+    "tmux-a2a-postman"
+    "anthropic"
+    "context7"
+  ] allSources;
+  codexMinimalCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog codexMinimalSources;
+  codexMinimalAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+    catalog = codexMinimalCatalog;
+    sources = codexMinimalSources;
+    enableAll = [
+      "local"
+      "tmux-a2a-postman"
+    ];
+    enable = [
+      "claude-api"
+      "context7-cli"
+    ];
+  };
+  codexMinimalSelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+    catalog = codexMinimalCatalog;
+    allowlist = codexMinimalAllowlist;
+    skills = { };
+    sources = codexMinimalSources;
+  };
+  codexMinimalBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+    inherit pkgs;
+    selection = codexMinimalSelection;
+  };
 in
 {
   imports = [
@@ -360,7 +359,7 @@ in
       enable = true;
 
       # Skill sources
-      sources = allSources;
+      sources = baseSources // cfg.extraSources // installManifest.skills.sources;
 
       # Enable all skills from all sources
       skills.enableAll = true;

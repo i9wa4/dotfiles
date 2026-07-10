@@ -85,9 +85,8 @@ Concrete examples already in the repo:
   derived from the same source rather than a second hand-written file. It is
   only a minimal pointer to the skill catalog for direct, non-postman
   invocations; it does not duplicate the postman contract.
-- `nix/home-manager/agents/shared/agent-skills.nix` — validates the shared skill
-  graph, installs the full bundle for Claude, and installs a smaller Codex
-  bundle so Codex startup keeps skill descriptions within its context budget.
+- `nix/home-manager/agents/shared/agent-skills.nix` — installs the same skill
+  set into both engines.
 - `nix/home-manager/agents/subagents/*.md` and
   `nix/home-manager/agents/subagents/metadata.nix` with
   `nix/home-manager/agents/shared/install-manifest.nix` — use Markdown for
@@ -96,14 +95,19 @@ Concrete examples already in the repo:
 
 Why shared beats per-tool:
 
-- One audit point. Changing the deny set, the skill policy, or the
+- One audit point. Changing the deny set, the skill set, or the
   operating core touches one file, not two.
-- Forces parity of intent by construction. If the shared module emits a rule,
-  both engines get it; per-engine reductions such as the Codex skill bundle are
-  documented in the same shared module.
+- Forces parity by construction. If the shared module emits a rule,
+  both engines get it; drift cannot accumulate by accident.
 - Migration cost stays low. Replacing or adding an engine is mostly a
   matter of updating the consumer side; the shared SSOT does not need
   to be reauthored.
+
+Codex is the current narrow exception to the full skill-install shape:
+`agent-skills.nix` keeps Claude on the full bundle while installing a smaller
+Codex bundle so startup skill descriptions stay within Codex's context budget.
+That exception stays in the shared module so the parity boundary remains
+explicit instead of drifting into a per-engine fork.
 
 When per-engine config is unavoidable:
 

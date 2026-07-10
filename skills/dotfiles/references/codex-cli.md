@@ -23,7 +23,7 @@ Source of truth:
 | Codex agents directory                             | TOML generated from `subagents/*.md` + metadata    | `shared/install-manifest.nix`        |
 | Codex hooks file                                   | Generated hook config                              | `codex/default.nix`                  |
 | Codex scripts directory                            | Explicit ln list of shared scripts + deny patterns | `codex/default.nix`                  |
-| Codex skills directory                             | Minimal local/postman + selected helper skills     | `shared/agent-skills.nix`            |
+| Codex skills directory                             | Multiple flake inputs + local skills               | `shared/agent-skills.nix`            |
 | MCP servers                                        | `shared/mcp-servers.nix`                           | `codex/default.nix`                  |
 
 ## 2. Config Management
