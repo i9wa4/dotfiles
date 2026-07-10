@@ -127,7 +127,40 @@ Before creating a PR, verify that `origin/<feature-branch>` exists, the PR base
 is the intended base branch, and the PR head is the feature branch. Do not
 create a PR from an unverified local-only branch or mismatched base/head pair.
 
-## 4. Current PR review workflow
+## 4. Current no-issue branch workflow
+
+Use this flow only when there is deliberately no issue or PR number for the
+task. Small docs-only and single-line changes still need a dedicated worktree if
+they may become commits.
+
+For a new no-issue branch:
+
+```sh
+branch_name=<short-branch-name>
+git worktree add -b "$branch_name" ".worktrees/$branch_name" main
+cd ".worktrees/$branch_name"
+pwd
+git branch --show-current
+git status --short --branch
+```
+
+For an existing branch that is not currently attached to a worktree:
+
+```sh
+branch_name=<existing-branch-name>
+git worktree add ".worktrees/$branch_name" "$branch_name"
+cd ".worktrees/$branch_name"
+pwd
+git branch --show-current
+git status --short --branch
+```
+
+Do not use this native branch flow when an issue or PR number exists. Use
+`issue-worktree-create` or `pr-worktree-create` instead so branch naming,
+upstream safety, `.envrc` handling, `repo-setup`, and zoxide registration stay
+consistent.
+
+## 5. Current PR review workflow
 
 1. `pr-worktree-create` fetches `origin` first. If the current branch is
    `main`, it runs `git pull --ff-only origin main`. Otherwise it keeps local
@@ -165,39 +198,6 @@ create a PR from an unverified local-only branch or mismatched base/head pair.
     exists.
 12. If any requested PR is invalid, skipped, refused, or otherwise fails, the
     command exits nonzero and does not print the all-ready success message.
-
-## 5. Current no-issue branch workflow
-
-Use this flow only when there is deliberately no issue or PR number for the
-task. Small docs-only and single-line changes still need a dedicated worktree if
-they may become commits.
-
-For a new no-issue branch:
-
-```sh
-branch_name=<short-branch-name>
-git worktree add -b "$branch_name" ".worktrees/$branch_name" main
-cd ".worktrees/$branch_name"
-pwd
-git branch --show-current
-git status --short --branch
-```
-
-For an existing branch that is not currently attached to a worktree:
-
-```sh
-branch_name=<existing-branch-name>
-git worktree add ".worktrees/$branch_name" "$branch_name"
-cd ".worktrees/$branch_name"
-pwd
-git branch --show-current
-git status --short --branch
-```
-
-Do not use this native branch flow when an issue or PR number exists. Use
-`issue-worktree-create` or `pr-worktree-create` instead so branch naming,
-upstream safety, `.envrc` handling, `repo-setup`, and zoxide registration stay
-consistent.
 
 ## 6. Current re-entry flow
 
