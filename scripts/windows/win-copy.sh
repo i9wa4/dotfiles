@@ -6,6 +6,7 @@ set -o pipefail
 set -o posix
 
 GITHUB_DIR="$(ghq root)/github.com"
+DOTFILES_DIR="${GITHUB_DIR}/i9wa4/dotfiles"
 WIN_UTIL_DIR="/mnt/c/work/util"
 
 # WSL2
@@ -18,7 +19,11 @@ appendWindowsPath=true
 EOF
 
 # Windows
+rm -rf "${WIN_UTIL_DIR}"
 mkdir -p "${WIN_UTIL_DIR}/etc"
+cp -rf "${DOTFILES_DIR}/scripts/bin/." "${WIN_UTIL_DIR}/"
+cp -rf "${DOTFILES_DIR}/scripts/ubuntu" "${WIN_UTIL_DIR}/ubuntu"
+cp -rf "${DOTFILES_DIR}/scripts/windows" "${WIN_UTIL_DIR}/windows"
 cat <<'EOF' | tee "${WIN_UTIL_DIR}/etc/dot.wslconfig"
 [wsl2]
 localhostForwarding=true
@@ -28,6 +33,3 @@ swap=0
 [experimental]
 autoMemoryReclaim=gradual
 EOF
-
-rm -rf "${WIN_UTIL_DIR}"
-cp -rf "${GITHUB_DIR}/i9wa4/dotfiles/bin" "${WIN_UTIL_DIR}"
