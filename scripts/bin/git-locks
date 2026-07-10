@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  git-locks [--all-worktrees] [--clean-stale] [--min-age SECONDS]
+
+Inspect Git lock files for the current repository. By default this reports
+locks for the current worktree git-dir and the shared common git-dir.
+
+Options:
+  --all-worktrees    Also inspect every linked worktree in this repository.
+  --clean-stale      Remove locks whose core.lockfilePid PID is no longer alive.
+  --min-age SECONDS  Minimum lock age before --clean-stale removes it. Default: 5.
+  -h, --help         Show this help.
+EOF
+}
+
+git_readonly() {
+  GIT_OPTIONAL_LOCKS=0 git "$@"
+}
+
+die() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+file_mtime_epoch() {
+  local path="$1"
+
+  if stat -c %Y "$path" >/dev/null 2>&1; then
+    stat -c %Y "$path"
+  else
+    stat -f %m "$path"
+  fi
+}
+
+format_age() {
+  local seconds="$1"
+  local days hours minutes
+
+  if (( seconds < 0 )); then
+    seconds=0
+  fi
+
+  days=$((seconds / 86400))
+  seconds=$((seconds % 86400))
+  hours=$((seconds / 3600))
+  seconds=$((seconds % 3600))
+  minutes=$((seconds / 60))
+  seconds=$((seconds % 60))
+
+  if (( days > 0 )); then
+    printf '%dd%02dh\n' "$days" "$hours"
+  elif (( hours > 0 )); then
+    printf '%dh%02dm\n' "$hours" "$minutes"
+  elif (( minutes > 0 )); then
+    printf '%dm%02ds\n' "$minutes" "$seconds"
+  else
+    printf '%ds\n' "$seconds"
+  fi
+}
+
+relative_lock_path() {
+  local base="$1"
+  local path="$2"
+
+  case "$path" in
+    "$base"/*)
+      printf '%s\n' "${path#"$base"/}"
+      ;;
+    *)
+      printf '%s\n' "$path"
+      ;;
+  esac
+}
+
+shorten() {
+  local value="$1"
+  local max_length="$2"
+
+  if (( ${#value} <= max_length )); then
+    printf '%s\n' "$value"
+  else
+    printf '%s...\n' "${value:0:max_length - 3}"
+  fi
+}
+
+process_command() {
+  local pid="$1"
+  local command=""
+
+  command=$(ps -p "$pid" -o command= 2>/dev/null || true)
+  if [[ -z $command ]]; then
+    command=$(ps -p "$pid" -o comm= 2>/dev/null || true)
+  fi
+
+  printf '%s\n' "$command"
+}
+
+read_lock_pid() {
+  local pid_file="$1"
+  local key=""
+  local value=""
+
+  if [[ ! -f $pid_file ]]; then
+    return 1
+  fi
+
+  read -r key value <"$pid_file" || true
+  if [[ $key != "pid" || -z $value || $value == *[!0-9]* ]]; then
+    return 2
+  fi
+
+  printf '%s\n' "$value"
+}
+
+add_scan_dir() {
+  local scan_dirs_file="$1"
+  local label="$2"
+  local path="$3"
+
+  [[ -d $path ]] || return 0
+
+  if awk -F '\t' -v path="$path" '$2 == path { found = 1 } END { exit !found }' "$scan_dirs_file"; then
+    return 0
+  fi
+
+  printf '%s\t%s\n' "$label" "$path" >>"$scan_dirs_file"
+}
+
+clean_stale="false"
+all_worktrees="false"
+min_age=5
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --all-worktrees)
+      all_worktrees="true"
+      shift
+      ;;
+    --clean-stale)
+      clean_stale="true"
+      shift
+      ;;
+    --min-age)
+      [[ $# -ge 2 ]] || die "--min-age requires a value"
+      min_age="$2"
+      [[ $min_age != *[!0-9]* ]] || die "--min-age must be a non-negative integer"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown option: $1"
+      ;;
+  esac
+done
+
+repo_root=$(git_readonly rev-parse --show-toplevel 2>/dev/null) ||
+  die "not inside a Git repository"
+git_dir=$(git_readonly rev-parse --path-format=absolute --git-dir)
+git_common_dir=$(git_readonly rev-parse --path-format=absolute --git-common-dir)
+now=$(date +%s)
+
+scan_dirs=$(mktemp /tmp/git-locks-scan-dirs.XXXXXX)
+locks_seen=$(mktemp /tmp/git-locks-seen.XXXXXX)
+trap 'rm -f "$scan_dirs" "$locks_seen"' EXIT
+
+add_scan_dir "$scan_dirs" "worktree:current" "$git_dir"
+if [[ $git_common_dir != "$git_dir" ]]; then
+  add_scan_dir "$scan_dirs" "common" "$git_common_dir"
+fi
+
+if [[ $all_worktrees == "true" ]]; then
+  while IFS= read -r worktree_path; do
+    [[ -n $worktree_path ]] || continue
+    worktree_git_dir=$(git -C "$worktree_path" rev-parse --path-format=absolute --git-dir 2>/dev/null || true)
+    [[ -n $worktree_git_dir ]] || continue
+    add_scan_dir "$scan_dirs" "worktree:${worktree_path##*/}" "$worktree_git_dir"
+  done < <(git_readonly worktree list --porcelain | awk '/^worktree / { sub(/^worktree /, ""); print }')
+fi
+
+printf 'repo: %s\n' "$repo_root"
+if [[ $all_worktrees == "true" ]]; then
+  printf 'scope: current repository and linked worktrees\n'
+else
+  printf 'scope: current worktree (use --all-worktrees to scan linked worktrees)\n'
+fi
+printf '\n'
+printf '%-42s %-8s %-8s %-48s %s\n' "LOCK" "AGE" "PID" "STATE" "ACTION"
+
+found="false"
+
+while IFS=$'\t' read -r label scan_dir; do
+  [[ -n $scan_dir ]] || continue
+
+  while IFS= read -r lock_file; do
+    case "$lock_file" in
+      *~pid.lock)
+        continue
+        ;;
+    esac
+
+    if awk -v path="$lock_file" '$0 == path { found = 1 } END { exit !found }' "$locks_seen"; then
+      continue
+    fi
+    printf '%s\n' "$lock_file" >>"$locks_seen"
+
+    found="true"
+    relative_path=$(relative_lock_path "$scan_dir" "$lock_file")
+    display_path="${label}:${relative_path}"
+    mtime=$(file_mtime_epoch "$lock_file")
+    age_seconds=$((now - mtime))
+    age=$(format_age "$age_seconds")
+    pid_file="${lock_file%.lock}~pid.lock"
+    pid="-"
+    state="unknown:no-pid-file"
+    action="kept"
+    stale="false"
+
+    if pid_value=$(read_lock_pid "$pid_file"); then
+      pid="$pid_value"
+      if kill -0 "$pid_value" >/dev/null 2>&1; then
+        command=$(process_command "$pid_value")
+        if [[ -n $command ]]; then
+          state="alive:${command}"
+        else
+          state="alive"
+        fi
+      else
+        state="stale:pid-not-running"
+        stale="true"
+      fi
+    else
+      case $? in
+        1)
+          state="unknown:no-pid-file"
+          ;;
+        2)
+          state="unknown:bad-pid-file"
+          ;;
+      esac
+    fi
+
+    if [[ $clean_stale == "true" && $stale == "true" ]]; then
+      if (( age_seconds >= min_age )); then
+        rm -f -- "$lock_file" "$pid_file"
+        action="cleaned"
+      else
+        action="kept:younger-than-${min_age}s"
+      fi
+    elif [[ $stale == "true" ]]; then
+      action="candidate:--clean-stale"
+    fi
+
+    display_path=$(shorten "$display_path" 42)
+    state=$(shorten "$state" 48)
+    printf '%-42s %-8s %-8s %-48s %s\n' "$display_path" "$age" "$pid" "$state" "$action"
+  done < <(find "$scan_dir" -type f -name '*.lock' 2>/dev/null | sort)
+done <"$scan_dirs"
+
+if [[ $found != "true" ]]; then
+  printf '%s\n' "No Git lock files found."
+fi

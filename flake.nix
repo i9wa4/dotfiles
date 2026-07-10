@@ -84,6 +84,10 @@
       url = "github:anthropics/skills";
       flake = false;
     };
+    azure-skills = {
+      url = "github:microsoft/azure-skills";
+      flake = false;
+    };
     context7 = {
       url = "github:upstash/context7";
       flake = false;
