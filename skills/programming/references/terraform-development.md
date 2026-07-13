@@ -6,7 +6,7 @@ Terraform plans, adding Terraform CI checks, or handling Checkov findings.
 Prefer narrower vendor Terraform skills when the main task is Terraform code
 generation, module scaffolding, or provider internals.
 
-## Workflow
+## 1. Workflow
 
 1. Inspect the Terraform tree, module boundaries, backend/provider setup, and
    `git status`.
@@ -35,7 +35,7 @@ generation, module scaffolding, or provider internals.
    fail only when paying down an existing backlog; switch to hard fail once the
    accepted baseline is documented.
 
-## Installation
+## 2. Installation
 
 - Do not assume this dotfiles environment has `checkov` on `PATH`; check first.
 - Do not add `pkgs.checkov` to global Home Manager by default. This repo's
@@ -48,7 +48,7 @@ generation, module scaffolding, or provider internals.
 - For repository CI, prefer `bridgecrewio/checkov-action` so CI owns the exact
   Checkov runtime instead of relying on a developer's local installation.
 
-### Nixpkgs Verification Gate
+### 2.1. Nixpkgs Verification Gate
 
 Before recommending `pkgs.checkov`, adding it to a project devShell, or using
 `nix run nixpkgs#checkov`, verify the current pinned nixpkgs state in the repo:
@@ -93,7 +93,7 @@ Current observed state on 2026-07-13:
 Do not rely only on `meta.insecure` for `checkov`; transitive Python
 dependencies can still make the runnable package fail the gate.
 
-## Review Guidance
+## 3. Review Guidance
 
 - Prefer scanning generated plans over raw `.tf` files when reviewing a
   security-sensitive change whose risk depends on resolved variables, provider
@@ -107,16 +107,16 @@ dependencies can still make the runnable package fail the gate.
   Terraform state, drift, audit, or runtime compliance evidence when the user
   asks whether production is still compliant.
 
-## Source Notes
+## 4. Source Notes
 
 - Stategraph, "Checkov and Terraform: What is Checkov and how does it work?"
-  (2026-07-08), https://stategraph.com/blog/checkov-terraform: useful framing
-  for local scans, CI scans, and the limit that a passing Checkov scan is only
-  a point-in-time code result.
+  (2026-07-08): <https://stategraph.com/blog/checkov-terraform>. Useful
+  framing for local scans, CI scans, and the limit that a passing Checkov scan
+  is only a point-in-time code result.
 - Official Checkov docs: use as the authority for current CLI flags,
   Terraform plan scanning, GitHub Actions integration, and suppression syntax.
   Start with:
-  - https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html
-  - https://www.checkov.io/7.Scan%20Examples/Terraform%20Plan%20Scanning.html
-  - https://www.checkov.io/4.Integrations/GitHub%20Actions.html
-  - https://www.checkov.io/2.Basics/Suppressing%20and%20Skipping%20Policies.html
+  - <https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html>
+  - <https://www.checkov.io/7.Scan%20Examples/Terraform%20Plan%20Scanning.html>
+  - <https://www.checkov.io/4.Integrations/GitHub%20Actions.html>
+  - <https://www.checkov.io/2.Basics/Suppressing%20and%20Skipping%20Policies.html>
