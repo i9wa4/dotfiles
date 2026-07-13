@@ -4,7 +4,7 @@ description: Curated trigger-accuracy prompt for this skill.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Make a small repo-local Bash, Python, Nix, or Markdown implementation change and run focused checks."
+  prompt: "Make a small repo-local Bash, Python, Nix, Terraform, or Markdown implementation change and run focused checks."
 expected:
   should_trigger: true
 graders:
