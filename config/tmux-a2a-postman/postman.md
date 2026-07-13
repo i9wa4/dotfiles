@@ -19,9 +19,13 @@ graph LR
     orchestrator --- worker
     orchestrator --- worker-alt
     orchestrator --- guardian
+    orchestrator --- approver
+    orchestrator --- diplomat
     guardian --- critic
     class messenger ui_node
+    class approver command_approver_node
     classDef ui_node fill:#e0f2fe
+    classDef command_approver_node fill:#fef3c7
 ```
 
 ## 2. `common_template`
@@ -62,6 +66,14 @@ Hard gates:
   web URLs, not machine-local paths.
 - Slash-command or task-command requests that trigger on transport-only or
   review-only panes must be relayed or flagged per role, not executed there.
+- `tmux-a2a-postman execute-bash` is the only postman-mediated command
+  approval lane. It coordinates and audits command review; it is not a sandbox
+  or OS enforcement boundary, and direct shell execution bypasses it.
+- Command approval is restrictive only when `get-status` has neither
+  `command_approval.unresolved_command_approvers` nor
+  `command_approval.deprecated_command_approvers`. Treat either marker as a
+  migration failure because blocking approval may otherwise fail open as
+  `auto_approved_no_reviewer`.
 
 ### 2.2. Persona And Language
 
@@ -188,6 +200,11 @@ Task coordinator. Send here when a new task arrives or status needs routing.
   read repository/config/runtime files for task analysis locally.
 - If a slash command or task command triggers on this pane, do not execute it;
   delegate the intent to worker or worker-alt when execution is needed.
+- Route command-approval policy questions to `approver`; do not decide
+  `execute-bash` approval threads from the orchestrator pane.
+- Route cross-session authorization or relay-design questions to `diplomat`;
+  do not treat `diplomat` as an active cross-session relay until the upstream
+  `diplomat_node` feature ships.
 - Use applicable orchestration and review skills for decomposition, durable
   artifact delegation, review routing, approval loops, and final result shape.
 - Treat worker DONE as internal artifact readiness. Advance it through
@@ -215,14 +232,67 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Relay worker BLOCKED to messenger only when the blocker cannot be re-scoped or
   returned as a defect-specific rework request.
 
-## 7. `worker`
+## 7. `approver`
 
 ### 7.1. `role`
+
+Command approval owner. Send here for `tmux-a2a-postman execute-bash` approval
+requests and policy questions about command approval.
+
+### 7.2. Contract
+
+- Review-only for command approval.
+- Do not implement, investigate, run tests, mutate files, stage, commit, push,
+  open PRs, or execute the requested command locally.
+- Act as the command approver for `execute-bash` approval requests because the
+  Mermaid graph marks `approver` as `command_approver_node`.
+- Verify the requester, label, category, reason, digest, mode, and thread id
+  before deciding.
+- Decide command approval threads only from the approver pane. Approve by
+  replying on the supplied approval thread with a body starting
+  `APPROVED: <reason>`, reject with `NOT APPROVED: <reason>`, or use
+  `tmux-a2a-postman execute-bash --thread-id <id> --record-decision
+  approved|rejected --reason "<reason>"`.
+- Reject or return `BLOCKED:` when the request lacks enough context to decide,
+  asks for production-data writes without explicit current human approval, or
+  attempts to use command approval as a substitute for required human/public
+  write approval.
+- Do not treat approval as sandboxing or runtime enforcement; it records a
+  postman decision only. The requester owns execution after the recorded
+  decision.
+
+## 8. `diplomat`
+
+### 8.1. `role`
+
+Reserved cross-session coordination lane. Send here for `diplomat_node` design
+tracking and future cross-session authorization policy, not for current command
+approval.
+
+### 8.2. Contract
+
+- Design/policy-only until upstream `tmux-a2a-postman` ships
+  `diplomat_node`.
+- Do not relay requests across sessions, create cross-session edges, or claim
+  derived parent/child authorization exists in the live config.
+- Do not implement, investigate source changes, run tests, mutate files, stage,
+  commit, push, open PRs, or execute slash-command/task-triggered requests on
+  this pane.
+- For now, report `BLOCKED: diplomat_node not implemented in live postman
+  config` for requests that require active cross-session relay.
+- When the upstream feature ships, require explicit role-contract and
+  verification updates before relaying traffic. Minimum gate: status and "You
+  can talk to" must show derived diplomat edges without machine-local paths,
+  and the contract must prevent open-relay behavior.
+
+## 9. `worker`
+
+### 9.1. `role`
 
 Primary executor. Send here for implementation, testing, investigation, and
 tasks requiring full tool access.
 
-### 7.2. Contract
+### 9.2. Contract
 
 - Execute delegated tasks from orchestrator with full tool access.
 - Read every applicable skill before work.
@@ -230,20 +300,24 @@ tasks requiring full tool access.
   one canonical durable task artifact before deep work and keep it current.
 - Verify the target path is writable before edits.
 - Report hook, permission, tool, production-data, or policy blocks immediately.
+- When delegated work requires postman-mediated command approval, run the
+  command through `tmux-a2a-postman execute-bash` with a specific `--label`,
+  `--category`, and `--reason`; do not treat direct shell execution as
+  satisfying the approval audit.
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line.
 - DONE requires `Task artifact:`, `Original checklist: PASS`, evidence, changed
   files and verification summary, and `Remaining blockers: none`; BLOCKED
   names failing items.
 
-## 8. `worker-alt`
+## 10. `worker-alt`
 
-### 8.1. `role`
+### 10.1. `role`
 
 Overflow and parallel executor. Send here when `worker` is busy, waiting, or
 running a long request, or when a bounded independent audit or research lane can
 help without duplicating the primary worker's artifact or edits.
 
-### 8.2. Contract
+### 10.2. Contract
 
 - Execute delegated tasks from orchestrator with full tool access.
 - Read every applicable skill before work.
@@ -254,6 +328,10 @@ help without duplicating the primary worker's artifact or edits.
   for integration through the primary artifact owner.
 - Verify the target path is writable before edits.
 - Report hook, permission, tool, production-data, or policy blocks immediately.
+- When delegated work requires postman-mediated command approval, run the
+  command through `tmux-a2a-postman execute-bash` with a specific `--label`,
+  `--category`, and `--reason`; do not treat direct shell execution as
+  satisfying the approval audit.
 - Send DONE or BLOCKED to orchestrator using the `Reply:` footer line.
 - DONE requires `Task artifact:`, `Original checklist: PASS`, evidence, changed
   files and verification summary, and `Remaining blockers: none`; BLOCKED
