@@ -96,8 +96,12 @@ presets:
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
         - type: vertical
-          ratio: [1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
+            - name: approver
+              title: approver
+              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+              delay: 500
             - name: guardian
               title: guardian
               command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
@@ -105,6 +109,10 @@ presets:
             - name: critic
               title: critic
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              delay: 500
+            - name: diplomat
+              title: diplomat
+              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
 
   preset-w:
@@ -131,8 +139,12 @@ presets:
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
         - type: vertical
-          ratio: [1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
+            - name: approver
+              title: approver
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              delay: 500
             - name: guardian
               title: guardian
               command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
@@ -140,4 +152,8 @@ presets:
             - name: critic
               title: critic
               command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+              delay: 500
+            - name: diplomat
+              title: diplomat
+              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500

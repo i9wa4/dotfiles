@@ -38,6 +38,8 @@ The approval workflow has these standing role nodes:
 
 - `messenger`
 - `orchestrator`
+- `approver`
+- `diplomat`
 - `worker`
 - `worker-alt`
 - `critic`
@@ -50,7 +52,12 @@ Reachability is strict:
 
 - `messenger` talks only to `orchestrator`.
 - `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `guardian`,
-  and auxiliary `agent`.
+  `approver`, `diplomat`, and auxiliary `agent`.
+- `approver` receives command-approval traffic and policy questions; it does
+  not execute the requested command locally.
+- `diplomat` is reserved for future cross-session authorization work; it does
+  not relay live cross-session traffic until the upstream `diplomat_node`
+  feature and this repo's verification gates exist.
 - `critic` talks only to `guardian`.
 - `guardian` receives review requests from `orchestrator`, sends review
   packages to `critic`, receives critic review evidence, aggregates the

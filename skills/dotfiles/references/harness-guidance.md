@@ -26,6 +26,8 @@ installed, validated, or explained.
 ## 2. Source Map
 
 - Harness principles: `skills/dotfiles/references/agent-config-philosophy.md`
+- Command approval and writable surface:
+  `skills/dotfiles/references/agent-command-approval-design.md`
 - Operating model: `skills/dotfiles/references/operating-concepts.md`
 - AI workflow and artifacts:
   `skills/dotfiles/references/repo-ai-operating-contract.md`

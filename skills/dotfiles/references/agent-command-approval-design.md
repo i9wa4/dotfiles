@@ -1,8 +1,22 @@
 # Agent Command Approval Design
 
 This design documents the current command approval and writable-surface model
-for Codex CLI and Claude Code, then defines the first follow-up shape. It is
-documentation for issue #201 only; it does not change runtime behavior.
+for Codex CLI, Claude Code, and the postman-mediated command approval layer.
+The May 2026 sections describe runtime permission design for issue #201; the
+July 2026 update records the adopted `tmux-a2a-postman execute-bash` contract.
+
+Update checked on 2026-07-13:
+
+- Local `tmux-a2a-postman --version`: `git-c928f9d`.
+- Adjacent `tmux-a2a-postman` source repo recent changes include command
+  approval through `execute-bash`, reply-delivered approval requests, and the
+  migration of the approver marker to the Mermaid `command_approver_node`
+  class.
+- `diplomat_node` is a separate, not-yet-shipped design issue for
+  cross-session edge authorization. Do not configure it in dotfiles until that
+  issue lands in `tmux-a2a-postman`.
+- This repo currently has `config/tmux-a2a-postman/postman.md` only; there is
+  no checked-in `postman.toml` policy file.
 
 Sources checked on 2026-05-30:
 
@@ -210,6 +224,123 @@ Claude profile.
 | Human review lane                    | `postman.md` approval route and review skills                                        | Codex `approvals_reviewer = "auto_review"` is Codex-only                                                                                                         | Auto-review may assist Codex approval prompts, but it must not replace guardian/critic/human approval gates.                                                                                             |
 | Role-based write restrictions        | `postman.md` role contract                                                           | Claude has `claude-pretooluse-deny-write.sh`; Codex currently observes write payloads only                                                                       | Keep Claude enforcement. Add Codex enforcement only after the observed write payloads support a reliable rule.                                                                                           |
 
+### 4.1. Postman Command Approval Layer
+
+`tmux-a2a-postman execute-bash` is now the shared command-approval wrapper for
+postman sessions. It records requester, reviewer audit label, label, category,
+mode, command digest, reason, expiry, approval thread id, decision, and exit
+status, then runs the command through `bash -lc` only when the selected mode
+allows it.
+
+This wrapper is coordination and audit, not a security boundary. It does not
+sandbox Bash, block direct shell execution, or prevent another process from
+running the same command. Keep runtime enforcement in Codex sandboxing, Claude
+permissions/sandboxing, or the shared PreToolUse hooks when the rule must hold
+against bypass.
+
+The real approver is not the `reviewer` field in a policy or CLI flag.
+`reviewer` is an audit label. The authenticated approver is the single node
+marked in the `postman.md` Mermaid graph:
+
+```mermaid
+graph LR
+    messenger --- orchestrator
+    orchestrator --- worker
+    orchestrator --- approver
+    class approver command_approver_node
+    classDef command_approver_node fill:#fef3c7
+```
+
+This repo marks the dedicated `approver` node as that singleton. All command
+approval policies share the same approver. Per-policy approver routing is not
+supported.
+
+The fail-open rule is the most important operational detail: `advisory`,
+`warn-only`, and `blocking` become restrictive only when the Mermaid
+`command_approver_node` resolves to a real configured node. If the marker is
+absent or misspelled, every wrapper-mediated command runs and is recorded as
+`auto_approved_no_reviewer`, including commands requested in `blocking` mode.
+Migration is complete only when `tmux-a2a-postman get-status` has neither
+`command_approval.unresolved_command_approvers` nor
+`command_approval.deprecated_command_approvers`.
+
+When a command needs approval and a valid approver exists, `execute-bash`
+delivers a reply-required approval request to that approver. The approver can
+decide by replying on the approval thread with a body starting
+`APPROVED: <reason>` or `NOT APPROVED: <reason>`, preserving the supplied
+`thread_id` in frontmatter. The approver can also decide from its own pane:
+
+```sh
+tmux-a2a-postman execute-bash \
+  --thread-id command-approval-... \
+  --record-decision approved \
+  --reason "digest reviewed"
+```
+
+Decision identity always comes from the calling tmux pane title or the reply
+sender, never from `--reviewer`. A decision attempted from any pane other than
+the resolved `command_approver_node` is refused or recorded as wrong reviewer.
+
+Current dotfiles adoption:
+
+- `config/tmux-a2a-postman/postman.md` adds a dedicated `approver` node and
+  marks it with
+  `command_approver_node`.
+- `config/vde/layout.yml` starts an `approver` pane in the standard `preset-p`
+  and `preset-w` team layouts. This is required: a Mermaid approver marker that
+  has no live pane title resolves as unavailable and can leave blocking command
+  approval in fail-open mode.
+- `config/vde/layout.yml` also starts a reserved `diplomat` pane so future
+  cross-session design traffic has a stable node name, but no `diplomat_node`
+  routing is configured yet.
+- The common template states that `execute-bash` is the only postman-mediated
+  command approval lane and that direct shell execution bypasses its audit.
+- The approver role contract tells approver to approve or reject command
+  approval threads, and not to run the requested command locally while acting
+  as approver.
+- The orchestrator role contract routes command-approval policy questions to
+  `approver` rather than deciding approval threads itself.
+- Worker roles must use `execute-bash` with a specific `--label`,
+  `--category`, and `--reason` when delegated work requires this approval lane.
+- There is still no checked-in `postman.toml` command policy. Any future
+  blocking policy must be added alongside a verification showing the valid
+  Mermaid approver marker survives config load.
+
+### 4.2. Diplomat Node Status
+
+`diplomat_node` is not part of command approval. It is an open
+`tmux-a2a-postman` design for tree-derived cross-session authorization:
+sessions declared through `[[postman.workspace_tree]]` would each name one
+`diplomat_node`, and those diplomats would be allowed to communicate across
+parent/child session boundaries derived from the workspace tree.
+
+Do not add a `diplomat_node` class or active cross-session authorization to
+this repo yet. As of the 2026-07-13 check:
+
+- The workspace tree prerequisite is present in `tmux-a2a-postman` through
+  issue #504 / PR #622.
+- The diplomat design itself remains open as issue #624.
+- Related trust-ledger accountability work remains open as issue #614, and the
+  diplomat design names that work as relevant to confused-deputy risk.
+- `config/tmux-a2a-postman/postman.md` reserves a `diplomat` node for future
+  design and policy routing only. It must report blocked for active
+  cross-session relay until upstream support lands and this repo adds explicit
+  verification gates.
+
+When `diplomat_node` ships, the dotfiles follow-up should be separate from
+command approval and should update:
+
+- `config/tmux-a2a-postman/postman.md` only if the shipped syntax uses the
+  Markdown topology file.
+- `config/vde/layout.yml` if the existing reserved `diplomat` pane needs a
+  different runtime, pane title, or launch placement for the shipped feature.
+- A checked-in `postman.toml` only if the shipped syntax stays under
+  `[[postman.workspace_tree]]`.
+- The role contracts for whichever node is allowed to relay cross-session
+  traffic, including explicit anti-open-relay instructions.
+- Verification that status output and "You can talk to" include the derived
+  diplomat edges without exposing filesystem paths.
+
 ## 5. Follow-Up Implementation Shape
 
 The first implementation should be an opt-in profile or preset, not a default
@@ -266,6 +397,10 @@ repo-relative paths:
   changelog and operational notes.
 - `config/tmux-a2a-postman/postman.md` only if the human approval or worker
   operating contract changes.
+- `config/vde/layout.yml` whenever adding a postman node that must exist as a
+  live pane; topology-only nodes are not enough for command approval identity.
+- A future checked-in `postman.toml`, if command approval policies become
+  declarative rather than per-command `execute-bash` flags.
 
 ## 7. Representative Verification Scenarios
 
@@ -279,3 +414,15 @@ from a disposable issue worktree or scratch repository, not from `main`.
 | Package operations       | Routine local checks such as `nix run '.#check'` work in the intended profile. Networked package or cache operations either work only when intentionally allowed or route through approval.                            | Package checks follow the selected permission mode. If sandboxing is enabled, Bash child processes stay inside the configured filesystem and network boundary.                                      | Run the repo check surface and one package-manager command with expected network behavior documented.                                                                                      |
 | Denied commands          | `git push`, `git reset`, `git rebase`, `git commit --amend`, `rm`, `sudo`, `aws sso login`, `git -C`, and `tmux select-pane -T` remain blocked by the shared hook or future Codex-native forbidden rules.              | The shared PreToolUse hook should block the same command set when hooks run. The high-consequence `permissions.deny` subset is a non-bypass expectation unless a bypass-mode test proves otherwise. | Execute harmless dry forms where possible, or use hook/unit command checks that prove the deny rule fires without side effects; record hook-layer and permission-layer results separately. |
 | Postman state operations | `tmux-a2a-postman pop` and `tmux-a2a-postman send-heredoc` remain usable. Heredoc bodies that mention denied commands do not trigger false positives. Direct mailbox file edits remain outside the operating contract. | Same as Codex. `--dangerously-skip-permissions` must not be required for legitimate postman state traffic once an alternative profile exists.                                                       | Pop a ping/status message in a test session, send a heredoc containing command-like text, and confirm the shared Bash deny hook does not block message transport.                          |
+
+Postman command approval scenario:
+
+- Codex expectation: `execute-bash --mode blocking` does not fail open after
+  config load when `approver` is the resolved `command_approver_node`. Direct
+  shell remains a documented bypass, not a tested approval path.
+- Claude expectation: same as Codex because approval identity comes from tmux
+  pane title, not runtime vendor settings.
+- Evidence to capture: restart the postman daemon after config changes, run
+  `get-status`, confirm no unresolved/deprecated command approval markers,
+  create a harmless blocking request, approve or reject from `approver`, and
+  inspect the recorded thread.
