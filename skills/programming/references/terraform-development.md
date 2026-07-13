@@ -41,17 +41,57 @@ generation, module scaffolding, or provider internals.
 - Do not add `pkgs.checkov` to global Home Manager by default. This repo's
   Home Manager policy says project-specific tools belong in a project devShell
   or mise.
-- As of 2026-07-13, the pinned `nixpkgs#checkov` evaluates to `checkov-3.3.6`
-  but does not run cleanly in this environment because a transitive dependency,
-  `python3.13-ecdsa-0.19.2`, is marked insecure for CVE-2024-23342. Do not
-  recommend `nix run nixpkgs#checkov` or `pkgs.checkov` unless that package
-  evaluates without an insecure-package override.
 - For local ad hoc use, prefer an official upstream install path:
   `pip install checkov`, `brew install checkov`, or the official Docker image.
   Use a project-local Python environment or isolated tool runner rather than
   installing into the system Python.
 - For repository CI, prefer `bridgecrewio/checkov-action` so CI owns the exact
   Checkov runtime instead of relying on a developer's local installation.
+
+### Nixpkgs Verification Gate
+
+Before recommending `pkgs.checkov`, adding it to a project devShell, or using
+`nix run nixpkgs#checkov`, verify the current pinned nixpkgs state in the repo:
+
+```sh
+nix eval --raw nixpkgs#checkov.name
+nix run nixpkgs#checkov -- --version
+```
+
+Passing gate:
+
+- `nix eval` prints a Checkov derivation name.
+- `nix run` exits 0 and prints the Checkov CLI version.
+- No insecure-package override, `permittedInsecurePackages`, or
+  `NIXPKGS_ALLOW_INSECURE=1` is required.
+
+If the gate passes, using `pkgs.checkov` in a project-specific devShell is
+acceptable:
+
+```nix
+devShells.default = pkgs.mkShell {
+  packages = [
+    pkgs.checkov
+  ];
+};
+```
+
+Failing gate:
+
+- If `nix run` fails because a transitive dependency is marked insecure, do not
+  add `pkgs.checkov`, do not add a repo-wide insecure-package override, and do
+  not present nixpkgs as the install path.
+- Prefer an upstream install path or CI-owned `bridgecrewio/checkov-action`
+  until nixpkgs evaluates and runs cleanly.
+
+Current observed state on 2026-07-13:
+
+- `nix eval --raw nixpkgs#checkov.name` returns `checkov-3.3.6`.
+- `nix run nixpkgs#checkov -- --version` fails because
+  `python3.13-ecdsa-0.19.2` is marked insecure for CVE-2024-23342.
+
+Do not rely only on `meta.insecure` for `checkov`; transitive Python
+dependencies can still make the runnable package fail the gate.
 
 ## Review Guidance
 
