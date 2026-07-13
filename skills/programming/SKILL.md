@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Programming and systematic debugging: Bash scripts, Python code quality and Jupyter notebooks (type hints, pytest, uv, ruff, pyright), Nix package workflow, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
+  USE FOR: Programming and systematic debugging: Bash scripts, Python code quality and Jupyter notebooks (type hints, pytest, uv, ruff, pyright), Nix package workflow, Terraform development with Checkov scanning, Markdown authoring, TDD/Tidy First loops, and root-cause debugging via reproducer isolation. DO NOT USE FOR: agent harness runtime, data-platform, diagramming, or GitHub workflow work.
 ---
 
 # Programming
@@ -18,6 +18,8 @@ narrower domain skill when one exists.
 - Python utility edits, local execution rules, and general Python quality:
   type hints, pytest, uv/ruff/pyright tooling, Jupyter notebooks.
 - General Nix package workflow, especially fetcher hash acquisition.
+- Terraform infrastructure code development, plan review, and Checkov
+  security/compliance scanning.
 - Markdown authoring and formatting rules.
 - Red-Green-Refactor and Tidy First implementation loops.
 - Systematic debugging: reproducer isolation, working-pattern comparison, and
@@ -46,6 +48,7 @@ Out of scope:
 - [Python Development](references/python-development.md)
 - [Python Quality](references/python-quality.md)
 - [Nix Package Workflow](references/nix-package-workflow.md)
+- [Terraform Development](references/terraform-development.md)
 - [Markdown Authoring](references/markdown-authoring.md)
 - [TDD And Tidy First](references/tdd-tidy-first.md)
 - [Systematic Debugging](references/systematic-debugging.md)
