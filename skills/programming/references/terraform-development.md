@@ -10,10 +10,12 @@ generation, module scaffolding, or provider internals.
 
 1. Inspect the Terraform tree, module boundaries, backend/provider setup, and
    `git status`.
-2. Run the nearest Terraform checks available in the repo, usually
+2. Check whether `checkov` is available before requiring Checkov commands:
+   `command -v checkov`.
+3. Run the nearest Terraform checks available in the repo, usually
    `terraform fmt -check`, `terraform validate`, and the repo's CI or wrapper
    command.
-3. Run Checkov while developing Terraform:
+4. Run Checkov while developing Terraform:
    - Use `checkov -d <terraform-dir> --framework terraform` for a fast static
      scan of checked-in configuration.
    - Use `terraform plan -out tfplan.binary`, then
@@ -22,16 +24,34 @@ generation, module scaffolding, or provider internals.
      exact planned resources matter.
    - Prefer plan scans in CI or another trusted environment because plan JSON
      can contain dynamic values and secrets.
-4. Treat Checkov findings as review inputs, not as proof by themselves. Fix the
+5. Treat Checkov findings as review inputs, not as proof by themselves. Fix the
    underlying Terraform behavior, then rerun Terraform and Checkov checks.
-5. Suppress only accepted exceptions. Put `#checkov:skip=<CHECK_ID>:<reason>`
+6. Suppress only accepted exceptions. Put `#checkov:skip=<CHECK_ID>:<reason>`
    next to the resource when the exception is resource-local; prefer a
    `.checkov.yml` skip only for repo-wide policy decisions. Every suppression
    needs a concrete reason.
-6. When adding CI, wire `bridgecrewio/checkov-action` or an equivalent local
+7. When adding CI, wire `bridgecrewio/checkov-action` or an equivalent local
    Checkov invocation into push and pull request workflows. Start with soft
    fail only when paying down an existing backlog; switch to hard fail once the
    accepted baseline is documented.
+
+## Installation
+
+- Do not assume this dotfiles environment has `checkov` on `PATH`; check first.
+- Do not add `pkgs.checkov` to global Home Manager by default. This repo's
+  Home Manager policy says project-specific tools belong in a project devShell
+  or mise.
+- As of 2026-07-13, the pinned `nixpkgs#checkov` evaluates to `checkov-3.3.6`
+  but does not run cleanly in this environment because a transitive dependency,
+  `python3.13-ecdsa-0.19.2`, is marked insecure for CVE-2024-23342. Do not
+  recommend `nix run nixpkgs#checkov` or `pkgs.checkov` unless that package
+  evaluates without an insecure-package override.
+- For local ad hoc use, prefer an official upstream install path:
+  `pip install checkov`, `brew install checkov`, or the official Docker image.
+  Use a project-local Python environment or isolated tool runner rather than
+  installing into the system Python.
+- For repository CI, prefer `bridgecrewio/checkov-action` so CI owns the exact
+  Checkov runtime instead of relying on a developer's local installation.
 
 ## Review Guidance
 
