@@ -6,11 +6,11 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.202 (2026-07-07)
+Last reviewed Claude Code version: v2.1.207 (2026-07-14)
 
-Review confirmation (2026-07-07): local `claude --version` reported
-`2.1.202 (Claude Code)`, and the official
-`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.202`
+Review confirmation (2026-07-14): local `claude --version` reported
+`2.1.207 (Claude Code)`, and the official
+`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.207`
 section. No package or generated config change is needed from this pass.
 
 ### 1.1. Applied Optimizations
@@ -82,6 +82,14 @@ section. No package or generated config change is needed from this pass.
   Alternative considered and rejected: opt into an idle timeout via `/config`
   (keeps the tool for interactive sessions) - postman panes are the common
   case here, so a hard deny is the right default.
+- [x] v2.1.207 permission-mode review - no migration needed. Claude Code did
+  not default-disable bypass permissions in this review window:
+  `--dangerously-skip-permissions` and `--permission-mode bypassPermissions`
+  still appear in `claude --help`, user settings have no
+  `disableBypassPermissionsMode`, and no `/etc/claude-code/managed-settings*`
+  policy is present locally. `disableBypassPermissionsMode` remains an
+  explicit settings key for preventing bypass mode when an operator chooses to
+  enforce it.
 
 ### 1.2. Pending Considerations
 
@@ -261,6 +269,25 @@ section. No package or generated config change is needed from this pass.
   orchestrator-runbook awareness. Remaining background-agent / Remote Control /
   workflow-parse fixes through v2.1.202 are product reliability; no source
   change.
+
+#### 1.2.5. v2.1.203 -> v2.1.207 candidates (added 2026-07-14)
+
+- [x] Bypass permission mode default check (v2.1.207) - no config change. The
+  upstream change was not a default disablement of bypass permissions. The
+  relevant managed/user settings key is still `disableBypassPermissionsMode`,
+  and it is unset locally.
+- [ ] Auto mode availability and `autoMode` scope changes (v2.1.207) -
+  informational for now. Auto mode is now available without
+  `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry, and
+  `autoMode` is no longer read from `.claude/settings.local.json`; if this repo
+  ever adopts auto mode, place policy in `~/.claude/settings.json` or managed
+  settings, not local/project settings.
+- [x] Plugin `${user_config.*}` shell-form rejection (v2.1.207) - no local
+  migration. Repo search found no plugin hook, monitor, MCP `headersHelper`,
+  or `pluginConfigs` usage of `user_config`.
+- [x] Background-agent, Remote Control, worktree, MCP timeout, and terminal
+  rendering fixes through v2.1.207 - product reliability; current harness should
+  benefit automatically with no source change.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
