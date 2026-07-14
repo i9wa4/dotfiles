@@ -52,7 +52,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
           delay: 500
 
   messenger-codex:
@@ -93,7 +93,7 @@ presets:
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
@@ -108,7 +108,7 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
             - name: diplomat
               title: diplomat
@@ -128,26 +128,26 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: worker
               title: worker
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: approver
               title: approver
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500
             - name: guardian
               title: guardian
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
               delay: 500
             - name: critic
               title: critic
@@ -155,5 +155,5 @@ presets:
               delay: 500
             - name: diplomat
               title: diplomat
-              command: claude --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
               delay: 500

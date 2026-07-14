@@ -82,14 +82,11 @@ section. No package or generated config change is needed from this pass.
   Alternative considered and rejected: opt into an idle timeout via `/config`
   (keeps the tool for interactive sessions) - postman panes are the common
   case here, so a hard deny is the right default.
-- [x] v2.1.207 permission-mode review - no migration needed. Claude Code did
-  not default-disable bypass permissions in this review window:
-  `--dangerously-skip-permissions` and `--permission-mode bypassPermissions`
-  still appear in `claude --help`, user settings have no
-  `disableBypassPermissionsMode`, and no `/etc/claude-code/managed-settings*`
-  policy is present locally. `disableBypassPermissionsMode` remains an
-  explicit settings key for preventing bypass mode when an operator chooses to
-  enforce it.
+- [x] v2.1.207 permission-mode review - launcher migration applied. Claude Code
+  now exposes `--allow-dangerously-skip-permissions` as an explicit gate:
+  `--dangerously-skip-permissions` still selects bypass mode, but bypassing is
+  disabled by default until the allow flag is also present. Updated
+  `config/vde/layout.yml` so every Claude pane passes both flags.
 
 ### 1.2. Pending Considerations
 
@@ -272,10 +269,10 @@ section. No package or generated config change is needed from this pass.
 
 #### 1.2.5. v2.1.203 -> v2.1.207 candidates (added 2026-07-14)
 
-- [x] Bypass permission mode default check (v2.1.207) - no config change. The
-  upstream change was not a default disablement of bypass permissions. The
-  relevant managed/user settings key is still `disableBypassPermissionsMode`,
-  and it is unset locally.
+- [x] Bypass permission mode default check (v2.1.207) - config change applied.
+  `--allow-dangerously-skip-permissions` must accompany
+  `--dangerously-skip-permissions` in launcher commands; otherwise Claude Code
+  reports bypass permissions as disabled by default.
 - [ ] Auto mode availability and `autoMode` scope changes (v2.1.207) -
   informational for now. Auto mode is now available without
   `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry, and

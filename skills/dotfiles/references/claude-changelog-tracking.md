@@ -152,10 +152,10 @@ This reference preserves older review notes that support current
 - v2.1.207: Auto mode is available without `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in
   on Bedrock, Vertex AI, and Foundry; `autoMode` is no longer read from
   `.claude/settings.local.json`; plugin hooks/monitors/MCP `headersHelper`
-  reject shell-form `${user_config.*}` interpolation. Bypass permissions were
-  not default-disabled: `disableBypassPermissionsMode` remains an explicit
-  settings key, and the local harness keeps `--dangerously-skip-permissions`
-  launch paths. No source change.
+  reject shell-form `${user_config.*}` interpolation. Bypass permissions now
+  require the launcher opt-in flag `--allow-dangerously-skip-permissions` before
+  `--dangerously-skip-permissions` can activate bypass mode; VDE Claude launch
+  paths were updated to pass both.
 - v2.1.206: `/cd` path suggestions, `/doctor` checked-in `CLAUDE.md` trimming
   check, `/commit-push-pr` push-remote auto-allow, gateway `/login`, safer
   `EnterWorktree`, and many background-agent / MCP / model-picker fixes.

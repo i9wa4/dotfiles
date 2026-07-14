@@ -45,7 +45,8 @@ codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effo
 It starts the Claude critic pane with:
 
 ```sh
-claude --dangerously-skip-permissions --add-dir "${SUBDIR}" \
+claude --allow-dangerously-skip-permissions --dangerously-skip-permissions \
+  --add-dir "${SUBDIR}" \
   --model "opus[1m]" --effort xhigh
 ```
 
@@ -58,8 +59,8 @@ a version-specific verification proves that behavior. The `--add-dir` value
 extends the workspace surface for each session. The exact extra directory is
 chosen by the vde session environment, not by Home Manager agent config.
 
-The current local tool versions observed during this design pass were
-`codex-cli 0.135.0` and `Claude Code 2.1.156`.
+The current local tool versions observed during the 2026-07-14 refresh were
+`codex-cli 0.144.3` and `Claude Code 2.1.207`.
 
 ## 2. Current Codex Behavior
 
@@ -162,16 +163,18 @@ rules apply to built-in file tools and recognized file-reading shell commands,
 but not to arbitrary subprocesses that open files themselves.
 
 This deny set documents the current configured permission policy. The current
-critic pane is launched with `--dangerously-skip-permissions`, and installed
-Claude Code 2.1.156 help describes that option as bypassing all permission
-checks. Therefore the design treats `permissions.deny` as a non-bypass
-expectation unless a follow-up captures installed-version evidence that a
-specific deny rule still applies in bypass mode.
+critic pane is launched with `--allow-dangerously-skip-permissions` plus
+`--dangerously-skip-permissions`, and installed Claude Code 2.1.207 help
+describes the first flag as enabling bypass as an option and the second as
+selecting bypass mode. Therefore the design treats `permissions.deny` as a
+non-bypass expectation unless a follow-up captures installed-version evidence
+that a specific deny rule still applies in bypass mode.
 
 ### 3.2. Launch Mode And Hooks
 
-The vde launcher starts the Claude critic pane with
-`--dangerously-skip-permissions --add-dir "${SUBDIR}"`. That suppresses normal
+The vde launcher starts the Claude critic pane with the two bypass flags
+followed by `--add-dir "${SUBDIR}"`. The allow flag makes bypass mode
+selectable, and the dangerous skip flag selects it. That suppresses normal
 permission prompts and, per the installed help, bypasses permission checks for
 that pane. Do not use the current critic launch as evidence that
 `permissions.deny` is enforced.
