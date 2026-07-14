@@ -149,6 +149,26 @@ This reference preserves older review notes that support current
 
 ## 2. Version Notes
 
+- v2.1.207: Auto mode is available without `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in
+  on Bedrock, Vertex AI, and Foundry; `autoMode` is no longer read from
+  `.claude/settings.local.json`; plugin hooks/monitors/MCP `headersHelper`
+  reject shell-form `${user_config.*}` interpolation. Bypass permissions now
+  require the launcher opt-in flag `--allow-dangerously-skip-permissions` before
+  `--dangerously-skip-permissions` can activate bypass mode; VDE Claude launch
+  paths were updated to pass both.
+- v2.1.206: `/cd` path suggestions, `/doctor` checked-in `CLAUDE.md` trimming
+  check, `/commit-push-pr` push-remote auto-allow, gateway `/login`, safer
+  `EnterWorktree`, and many background-agent / MCP / model-picker fixes.
+  User-invoked or automatic; no config.
+- v2.1.205: Auto-mode transcript-tampering rule, `/doctor` checkup alias,
+  auto-updater memory reduction, PR-linking and agent-view improvements, plus
+  Windows worktree and background-agent reliability fixes. Auto mode remains
+  unused by this repo.
+- v2.1.204: Headless `SessionStart` hook events now stream during hooks,
+  avoiding idle reaping of remote workers. Automatic; no config.
+- v2.1.203: Manual permission-mode footer badge, MCP `roots/list` includes
+  additional working directories, background-agent worktree/PATH/base-URL fixes,
+  many agent-view and terminal-rendering fixes. Automatic; no config.
 - v2.1.202: `/review` reverted to a fast single-pass review (use
   `/code-review <level> <pr#>` for the multi-agent pass); skill re-invocation no
   longer duplicates its instructions in context; dynamic workflow-size `/config`
