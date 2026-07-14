@@ -164,8 +164,8 @@ This reference preserves older review notes that support current
   auto-updater memory reduction, PR-linking and agent-view improvements, plus
   Windows worktree and background-agent reliability fixes. Auto mode remains
   unused by this repo.
-- v2.1.204: Headless `SessionStart` hook events now stream during hooks, avoiding
-  idle reaping of remote workers. Automatic; no config.
+- v2.1.204: Headless `SessionStart` hook events now stream during hooks,
+  avoiding idle reaping of remote workers. Automatic; no config.
 - v2.1.203: Manual permission-mode footer badge, MCP `roots/list` includes
   additional working directories, background-agent worktree/PATH/base-URL fixes,
   many agent-view and terminal-rendering fixes. Automatic; no config.
