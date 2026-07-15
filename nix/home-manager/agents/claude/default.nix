@@ -126,8 +126,8 @@ let
         "Read(**/*token*)"
         "Read(.env*)"
         "Read(~/.ssh/**)"
-        "Write(**/secrets/**)"
-        "Write(.env*)"
+        "Edit(**/secrets/**)"
+        "Edit(.env*)"
       ];
     };
     showThinkingSummaries = true;

@@ -149,6 +149,21 @@ This reference preserves older review notes that support current
 
 ## 2. Version Notes
 
+- v2.1.210: Added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
+  `Glob(path)` permission rules; migrated local sensitive write denies to
+  `Edit(path)` in `claude/default.nix`. Also fixed worktree-isolated subagents
+  running git-mutating commands in the main checkout, hook timeout misreporting
+  as user rejection, plugin MCP teardown on refresh, alt-screen-disabled ghost
+  frames, killed background-session worktree locks, and several agent-view /
+  MCP / memory reliability issues. Mostly automatic beyond the permission-rule
+  syntax migration.
+- v2.1.209: Fixed `/model` and other dialogs being blocked in
+  `claude agents` background sessions. Automatic; no config.
+- v2.1.208: Added screen reader mode, `vimInsertModeRemaps`, and
+  `CLAUDE_CODE_PROCESS_WRAPPER`; improved background-agent attach/update,
+  large output handling, permission-rule matcher caching, memory bounds, and
+  transcript/checkpoint size. Accessibility, vim remaps, and corporate process
+  wrapper are opt-in surfaces; no shared config.
 - v2.1.207: Auto mode is available without `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in
   on Bedrock, Vertex AI, and Foundry; `autoMode` is no longer read from
   `.claude/settings.local.json`; plugin hooks/monitors/MCP `headersHelper`

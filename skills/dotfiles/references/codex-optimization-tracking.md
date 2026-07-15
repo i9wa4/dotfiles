@@ -5,18 +5,40 @@ and version history for Codex CLI. The runtime overview lives in `codex-cli.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.142.5 (2026-07-07)
+Last reviewed Codex CLI version: v0.144.4 (2026-07-15)
 
-Review confirmation (2026-07-07): local `codex --version` reported
-`codex-cli 0.142.5`, and the official `openai/codex` release
-`rust-v0.142.5` is stable. Newer `rust-v0.143.0-alpha.*` releases are
-prereleases and are not treated as active local behavior.
+Review confirmation (2026-07-15): local `codex --version` reported
+`codex-cli 0.144.4`, and the official `openai/codex` release
+`rust-v0.144.4` is the latest stable release. Newer
+`rust-v0.145.0-alpha.*` releases are prereleases and are not treated as active
+local behavior.
 
-### 1.1. Release Catch-up (v0.136.0 -> v0.142.5)
+### 1.1. Release Catch-up (v0.136.0 -> v0.144.4)
 
-Stable releases through the locally installed `codex-cli 0.142.5` add mostly
+Stable releases through the locally installed `codex-cli 0.144.4` add mostly
 product/runtime capabilities rather than required dotfiles config changes:
 
+- v0.144.4 is a patch release with no user-facing changes.
+- v0.144.3 is a version-only release with no merged PR changes after v0.144.2.
+- v0.144.2 restores the previous Guardian auto-review policy, request format,
+  and tool behavior after a prompting regression. No local config change.
+- v0.144.0 adds usage-limit reset-credit selection, `writes` app approval mode,
+  interactive MCP authentication by default, runtime Codex auth for app-server
+  hosts, global pnpm-install detection, Ultra reasoning concurrency warnings,
+  Code Mode and Windows sandbox fixes, terminal-control sanitization, app auth
+  refresh fixes, WebSocket proxy/custom CA preservation, faster review branch
+  picking, plugin skill-loading speedups, and Bedrock model display updates.
+  No generated config change: keep app connector approvals at `prompt` because
+  switching to `writes` would allow read-only Gmail/Drive/Calendar/Slack tool
+  calls without a prompt, which is a privacy-policy change rather than a pure
+  compatibility update.
+- v0.143.0 enables remote plugins by default, adds system-proxy routing for
+  authentication and Responses API traffic, adds `codex remote-control pair`,
+  adds Amazon Bedrock GPT-5.6 Sol/Terra/Luna plus `max` reasoning effort,
+  defaults MCP tools to tool search, adds ChatGPT-hosted MCP session auth,
+  extends app-server environment/thread/fork APIs, reduces installer GitHub API
+  rate-limit failures, and lands the remaining persistent-log write reduction
+  for the Codex WAL-bloat incident. No local config change.
 - v0.142.5 is a maintenance patch that redacts full Responses WebSocket request
   payloads from trace logs (openai/codex #30771). No user-facing behavior
   change; no config change.
@@ -76,7 +98,7 @@ Local decisions from this catch-up:
 
 Codex logs SQLite WAL growth (observed at 32-35 GB locally in 2026-05) was
 fixed upstream: openai/codex #29432 and #29457 landed in v0.142.0 and #29599
-lands in v0.143.0, removing ~85% of persistent log writes. The local
+landed in v0.143.0, removing ~85% of persistent log writes. The local
 checkpoint and pressure-relief timers were removed on 2026-07-05. The full
 incident runbook is archived in the private vault
 (2026-07-05-storage-hygiene-playbook-retirement). Sessions under
@@ -215,6 +237,10 @@ incident runbook is archived in the private vault
 - Plugin marketplace/share workflow - not used by this dotfiles-managed local
   harness; keep skills and agents installed through `shared/agent-skills.nix`
   and `shared/install-manifest.nix`
+- App connector `default_tools_approval_mode = "writes"` - useful when
+  read-only app calls should auto-run while write-like tools prompt, but this
+  repo keeps Gmail, Drive, Calendar, and Slack at `prompt` because read access
+  to private connector data is still sensitive
 - Python SDK package/auth/turn APIs - useful for app-server automation, but no
   local harness script currently imports `openai_codex`
 - `remote-control` / remote environments - no current daemon-managed remote
@@ -224,6 +250,28 @@ incident runbook is archived in the private vault
 
 ### 1.6. Version Notes
 
+- v0.144.4 (2026-07-14): Latest stable at review time; patch release with no
+  user-facing changes. Local `codex --version` reported `codex-cli 0.144.4`.
+- v0.144.3 (2026-07-13): Version-only release with no merged PR changes after
+  v0.144.2.
+- v0.144.2 (2026-07-13): Restored the previous Guardian auto-review policy,
+  request format, and tool behavior after a prompting regression. No local
+  config change.
+- v0.144.0 (2026-07-09): Reviewed during the v0.144.4 pass. Relevant items:
+  usage-limit reset-credit selection, new `writes` app approval mode,
+  interactive MCP auth by default, runtime Codex auth for app-server hosts,
+  global pnpm-install detection, Ultra reasoning concurrency warnings, Code
+  Mode and Windows sandbox fixes, terminal-control sanitization, app auth
+  refresh fixes, WebSocket proxy/custom CA preservation, faster review branch
+  picking, plugin skill-loading speedups, and Bedrock model display updates.
+  Kept app connector approvals at `prompt`.
+- v0.143.0 (2026-07-08): Reviewed during the v0.144.4 pass. Relevant items:
+  remote plugins enabled by default, system-proxy routing for authentication
+  and Responses API traffic, `codex remote-control pair`, Bedrock GPT-5.6
+  Sol/Terra/Luna plus `max` reasoning effort, MCP tool search by default,
+  ChatGPT-hosted MCP session auth, app-server environment/thread/fork APIs,
+  installer GitHub API rate-limit reduction, and the final persistent-log write
+  reduction for the prior WAL-bloat incident. No local config change.
 - v0.135.0 (2026-05-28): Reviewed release notes on 2026-05-31 after local
   `codex --version` reported `codex-cli 0.135.0`; upstream marked this as the
   latest stable release, with `rust-v0.136.0-alpha.1` newer but pre-release.
