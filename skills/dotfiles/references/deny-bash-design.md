@@ -71,7 +71,7 @@ Claude Code normally recognises certain dangerous patterns
 dangerous primitives, redirects to `/dev/tcp/...`, `find -exec`,
 `find -delete`, etc.) and surfaces permission prompts or denial behavior.
 
-Installed Claude Code 2.1.207 help describes
+Installed Claude Code 2.1.210 help describes
 `--allow-dangerously-skip-permissions` as enabling bypass as an option, and
 `--dangerously-skip-permissions` as bypassing all permission checks. Therefore
 this design does not claim that the built-in safety classifier or

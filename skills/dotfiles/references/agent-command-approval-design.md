@@ -154,8 +154,8 @@ The current deny set is:
 - `Read(**/*token*)`
 - `Read(.env*)`
 - `Read(~/.ssh/**)`
-- `Write(**/secrets/**)`
-- `Write(.env*)`
+- `Edit(**/secrets/**)`
+- `Edit(.env*)`
 
 Claude Code evaluates deny, ask, and allow rules as runtime permission policy,
 not as prompt guidance. The official docs also note that read and edit deny
@@ -164,7 +164,7 @@ but not to arbitrary subprocesses that open files themselves.
 
 This deny set documents the current configured permission policy. The current
 critic pane is launched with `--allow-dangerously-skip-permissions` plus
-`--dangerously-skip-permissions`, and installed Claude Code 2.1.207 help
+`--dangerously-skip-permissions`, and installed Claude Code 2.1.210 help
 describes the first flag as enabling bypass as an option and the second as
 selecting bypass mode. Therefore the design treats `permissions.deny` as a
 non-bypass expectation unless a follow-up captures installed-version evidence

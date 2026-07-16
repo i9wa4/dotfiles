@@ -6,12 +6,14 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.207 (2026-07-14)
+Last reviewed Claude Code version: v2.1.210 (2026-07-15)
 
-Review confirmation (2026-07-14): local `claude --version` reported
-`2.1.207 (Claude Code)`, and the official
-`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.207`
-section. No package or generated config change is needed from this pass.
+Review confirmation (2026-07-15): local `claude --version` reported
+`2.1.210 (Claude Code)`, and the official
+`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.210`
+section. This pass migrated file-edit deny rules from invalid
+`Write(path)` syntax to `Edit(path)` after v2.1.210 added startup warnings for
+`Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules.
 
 ### 1.1. Applied Optimizations
 
@@ -87,6 +89,11 @@ section. No package or generated config change is needed from this pass.
   `--dangerously-skip-permissions` still selects bypass mode, but bypassing is
   disabled by default until the allow flag is also present. Updated
   `config/vde/layout.yml` so every Claude pane passes both flags.
+- [x] v2.1.210 permission path-rule review - migrated sensitive write denies
+  from `Write(**/secrets/**)` / `Write(.env*)` to
+  `Edit(**/secrets/**)` / `Edit(.env*)`. Claude Code now warns that
+  `Write(path)` permission rules are not matched by file permission checks;
+  `Edit(path)` covers file-editing tools.
 
 ### 1.2. Pending Considerations
 
@@ -285,6 +292,28 @@ section. No package or generated config change is needed from this pass.
 - [x] Background-agent, Remote Control, worktree, MCP timeout, and terminal
   rendering fixes through v2.1.207 - product reliability; current harness should
   benefit automatically with no source change.
+
+#### 1.2.6. v2.1.208 -> v2.1.210 candidates (added 2026-07-15)
+
+- [x] Permission path-rule warnings (v2.1.210) - config change applied.
+  `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules now
+  warn at startup; use `Edit(path)` for write restrictions and `Read(path)` for
+  read/glob restrictions. This repo's sensitive write denies now use
+  `Edit(**/secrets/**)` and `Edit(.env*)`.
+- [x] Hook callback timeout no longer reported as user rejection (v2.1.210) -
+  product reliability for unattended panes; no config change.
+- [x] Worktree-isolated subagents no longer run git-mutating commands against
+  the main checkout (v2.1.210) - product reliability, complements this repo's
+  dedicated-worktree workflow.
+- [ ] `axScreenReader` / `CLAUDE_AX_SCREEN_READER` (v2.1.208) - accessibility
+  opt-in only; no default config.
+- [ ] `vimInsertModeRemaps` (v2.1.208) - personal editor preference; no shared
+  harness config.
+- [ ] `CLAUDE_CODE_PROCESS_WRAPPER` (v2.1.208) - corporate launcher support;
+  not needed for this solo Nix-managed install.
+- [x] Background-agent attach, memory, MCP refresh, terminal rendering, and
+  telemetry-redaction fixes through v2.1.210 - product reliability; current
+  harness benefits automatically with no source change.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
