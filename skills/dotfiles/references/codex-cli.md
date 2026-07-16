@@ -163,29 +163,32 @@ Ignore any release entries for versions newer than `codex --version`.
   rejection tells the agent what to do next, not just what was blocked
 - YOU MUST: Treat Codex write-tool control as observational until local hook
   payloads prove enough structure for reliable deny logic
-- NOTE: As of Codex CLI v0.130.0, the Codex-only
-  `PreToolUse` matcher=`apply_patch|Edit|Write` observer is a forward-looking
-  sentinel, not proven enforcement. The script is
+- NOTE: As of Codex CLI v0.144.4, official docs say `PreToolUse` can match
+  canonical `Bash`, `apply_patch`, and MCP tool names; `apply_patch` also
+  matches `Edit` and `Write`. The Codex-only
+  `PreToolUse` matcher=`apply_patch|Edit|Write` observer remains observational
+  until local hook payloads prove enough structure for reliable deny logic. The
+  script is
   `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`; it
   appends metadata to the Codex write-tool observation log. A restarted
   agent pane created and removed a temporary file with the Codex `apply_patch`
   file tool on 2026-05-11; the observer log stayed at the single manual
   script-test entry. Keep the hook installed because it is low-risk and will
-  reveal payload shape if future Codex versions start firing write-tool hooks,
-  but do not claim it currently observes or controls real `apply_patch` writes.
-- NOTE: Official docs say `PreToolUse` can match canonical `Bash`,
-  `apply_patch`, and MCP tool names; `apply_patch` also matches `Edit` and
-  `Write`. This repo observes `apply_patch|Edit|Write` before adding write
-  enforcement.
+  reveal payload shape, but do not claim it currently controls real
+  `apply_patch` writes.
 - NEVER: Rely on unsupported `permissionDecision: "ask"` / `"allow"`,
   `updatedInput`, or `additionalContext` fields for `PreToolUse`; the current
   runtime parses them but fails open
-- NOTE: Official docs say `SessionStart`, `PreToolUse`, `PostToolUse`,
-  `UserPromptSubmit`, and `Stop` are the supported current events. Of these,
-  this repo currently uses only `PreToolUse` and `UserPromptSubmit`. The others
-  were removed on 2026-04-29 because their consumers (handoff persistence,
-  deterministic-command feedback decoration) were not load- bearing -- see
-  `skills/dotfiles/references/agent-hooks-architecture.md` §3 for the rationale.
+- NOTE: Official docs list `SessionStart`, `PreToolUse`, `PermissionRequest`,
+  `PostToolUse`, `PreCompact`, `PostCompact`, `UserPromptSubmit`,
+  `SubagentStart`, `SubagentStop`, and `Stop` as supported events. Matchers are
+  event-specific: for example `UserPromptSubmit` and `Stop` ignore matchers,
+  while `PreToolUse` can match `Bash`, `apply_patch`, and MCP tool names. This
+  repo currently uses only `PreToolUse` and `UserPromptSubmit`. The others were
+  removed on 2026-04-29 because their consumers (handoff persistence,
+  deterministic-command feedback decoration) were not load-bearing -- see
+  `skills/dotfiles/references/agent-hooks-architecture.md` §3 for the
+  rationale.
 - NOTE: Official docs say matching hooks from multiple `hooks.json` files all
   run, and matching command hooks for the same event launch concurrently
 
