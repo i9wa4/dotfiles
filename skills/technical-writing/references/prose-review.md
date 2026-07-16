@@ -5,9 +5,15 @@ over-polished, or AI-like. It adapts task-relevant lessons from:
 
 - <https://github.com/hardikpandya/stop-slop>
 - <https://github.com/iKora128/stop-ai-slop-jp>
+- <https://github.com/coji/natural-japanese> at
+  `c2ad5da4e4f9a29a84a0a9e74d93b6ce921d22d3` (MIT, Copyright (c) 2026 coji)
 
 Do not treat this as an AI detector or a humanizer. The goal is clearer
 technical writing with a visible author stance and preserved technical meaning.
+
+For English-to-Japanese work, fix the source English here first. A vague,
+formulaic, or over-polished English draft usually becomes vague Japanese; do not
+expect translation QA to repair a weak source argument.
 
 ## 1. Review Order
 
@@ -25,6 +31,14 @@ Fix deeper writing problems before surface artifacts:
    [Cognitive Rhythm](cognitive-rhythm.md) before line editing.
 6. Language: remove filler, vague intensifiers, business jargon, decorative
    punctuation, and repeated pet phrases.
+
+Before drafting or translating, check the skeleton: reader, purpose, document
+type, main message, and heading flow. Use prose for causality, chronology, and
+judgment; use lists only for genuinely parallel items. Explain a technical term
+by function or phenomenon before naming it. If a paragraph stays true after
+removing names, numbers, logs, examples, and constraints, gather evidence
+instead of polishing the wording. Treat "AI-like" phrasing as contextual
+evidence, not a mechanical ban list.
 
 ## 2. English Checks
 

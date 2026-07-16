@@ -4,44 +4,46 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Technical prose quality, Vale/Harper checks, terminology, English
-  and Japanese editorial review, English-to-Japanese translation workflow,
-  glossary handling, explanatory prose rhythm, AI-slop cleanup, and
-  publication QA. DO NOT USE FOR: AI detector/humanizer workflows, content
-  generation from scratch, meaning-changing rewrites, replacing author
-  judgment, publishing, model/cost/privacy choices, external sharing, or
-  source chunking.
+  USE FOR: Prose QA, Vale/Harper, terminology, English/Japanese editing,
+  English-to-Japanese, glossary, rhythm, AI-slop cleanup, publication QA.
+  DO NOT USE FOR: AI detector/humanizer workflows, fresh generation,
+  meaning-changing rewrites, replacing author judgment, publishing,
+  model/cost/privacy, external sharing, or chunking.
 ---
 
 # Technical Writing
 
-Owns meaning-preserving prose quality: English/Japanese editing, translation,
-terminology, AI-slop cleanup, rhythm, and QA.
+Owns meaning-preserving editing, translation, terminology, AI-slop cleanup,
+rhythm, and QA. Translation: clean source English, then render natural
+Japanese.
 
 ## 1. Workflow
 
-1. Identify the surface: English docs, Japanese prose, translation, skill text,
-   or publication QA.
-2. Preserve technical meaning. Do not rewrite commands, identifiers, product
-   names, paths, code, links, versions, or API names for style.
-3. For English prose checks, read
+1. Identify surface: English docs, Japanese prose, translation, skill text, or
+   QA.
+2. Preserve meaning. Do not rewrite commands, identifiers, product
+   names, paths, code, links, versions, or APIs for style.
+3. For generic/AI-like prose, read
+   [Prose Review](references/prose-review.md).
+4. For English checks, read
    [Vale And Harper](references/vale-and-harper.md).
-4. For English-to-Japanese translation, read
+5. For English-to-Japanese, clean English first, then read
    [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
    and [Japanese Writing Style](references/japanese-writing-style.md).
-5. For prose that feels generic or AI-like, read
-   [Prose Review](references/prose-review.md) and fix stance, agency,
-   concrete claims, structure, rhythm, and filler before punctuation.
-6. For accurate but flat explanatory prose, read
+6. For Japanese editorial review, read
+   [Japanese Writing Style](references/japanese-writing-style.md).
+7. For accurate but flat explanatory prose, read
    [Cognitive Rhythm](references/cognitive-rhythm.md). Build rhythm from
-   source-backed material, not document meta-commentary.
-7. Apply only changes that improve clarity without changing facts or intent.
+   source material, not meta-commentary.
+8. Apply only clarity changes; preserve facts and intent.
 
 ## 2. Boundaries
 
-The #225/#226 documentation-first translation boundary remains: automation,
-model/cost/privacy choices, external-sharing approval, derivative publication
-approval, and chunking are outside this skill.
+Issue 225/226 boundaries: no automation, model/cost/privacy, external-sharing
+approval, derivative publication approval, or chunking.
+
+Do not add direct polished-Japanese drafting from scratch. Repair English
+first, then translate or QA Japanese.
 
 ## 3. References
 
