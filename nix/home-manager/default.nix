@@ -173,6 +173,19 @@ in
     # nix-index-database: comma (run uninstalled commands via nix-index)
     nix-index-database.comma.enable = true;
 
+    # nh: unified Nix helper. On Linux/WSL, run a weekly user-profile cleanup
+    # with a conservative retention window. Darwin keeps the existing
+    # nix-darwin system GC; Home Manager's nh launchd wrapper passes
+    # extraArgs as one argument, so avoid enabling scheduled clean there.
+    nh = {
+      enable = true;
+      clean = {
+        enable = !pkgs.stdenv.isDarwin;
+        dates = "weekly";
+        extraArgs = "--keep-since 30d --keep-one";
+      };
+    };
+
     # direnv (auto-activate devShell when cd into project)
     # Note: zsh hook is loaded manually in modules/zsh.nix.
     direnv = {

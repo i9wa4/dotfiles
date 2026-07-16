@@ -39,7 +39,9 @@
     #       and scheduled optimise can cause syspolicyd high CPU
     # cf. `https://github.com/nix-darwin/nix-darwin/issues/1252`
     optimise.automatic = false;
-    # Garbage collection (daily at noon, delete older than 1 day)
+    # Garbage collection (daily at noon, retain the last 30 days)
+    # Keep the retention window aligned with Home Manager's nh clean policy on
+    # Ubuntu/WSL while using nix-darwin's system GC path on macOS.
     # cf. https://mynixos.com/nix-darwin/option/nix.gc.interval
     gc = {
       automatic = true;
@@ -47,7 +49,7 @@
         Hour = 12;
         Minute = 0;
       };
-      options = "--delete-older-than 1d";
+      options = "--delete-older-than 30d";
     };
   };
 
