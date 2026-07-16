@@ -15,7 +15,9 @@ policy, or Markdown AST handling.
 The expected path is English first: make the source English clear, concrete,
 and non-AI-sloppy before translating. This workflow translates and reviews a
 source-backed English article; it does not create polished Japanese from a blank
-page.
+page. When the requested deliverable is Japanese prose generation, still create
+a clear private English draft first, run prose review on that draft, then
+translate or adapt it into natural Japanese.
 
 The workflow is also packaged as the
 `technical-writing` agent skill so translation tasks can load the same
