@@ -6,18 +6,17 @@ metadata:
 description: |
   USE FOR: Technical prose quality, Vale/Harper checks, terminology, English
   and Japanese editorial review, English-to-Japanese translation workflow,
-  glossary handling, AI-slop cleanup, and publication QA. DO NOT USE FOR: AI
-  detector/humanizer workflows, content generation from scratch, meaning-
-  changing rewrites, replacing author judgment, publishing, provider/model/
-  cost/privacy choices, external-sharing authorization, or source chunking
-  automation.
+  glossary handling, explanatory prose rhythm, AI-slop cleanup, and
+  publication QA. DO NOT USE FOR: AI detector/humanizer workflows, content
+  generation from scratch, meaning-changing rewrites, replacing author
+  judgment, publishing, model/cost/privacy choices, external sharing, or
+  source chunking.
 ---
 
 # Technical Writing
 
-Owns technical prose quality without changing meaning: English and Japanese
-editorial review, English-to-Japanese translation workflow, terminology,
-AI-slop cleanup, and publication QA.
+Owns meaning-preserving prose quality: English/Japanese editing, translation,
+terminology, AI-slop cleanup, rhythm, and QA.
 
 ## 1. Workflow
 
@@ -33,15 +32,16 @@ AI-slop cleanup, and publication QA.
 5. For prose that feels generic or AI-like, read
    [Prose Review](references/prose-review.md) and fix stance, agency,
    concrete claims, structure, rhythm, and filler before punctuation.
-6. Treat tool findings and editorial suggestions as review evidence. Apply only
-   changes that improve clarity without changing facts or author intent.
+6. For accurate but flat explanatory prose, read
+   [Cognitive Rhythm](references/cognitive-rhythm.md). Build rhythm from
+   source-backed material, not document meta-commentary.
+7. Apply only changes that improve clarity without changing facts or intent.
 
 ## 2. Boundaries
 
-This skill preserves the documentation-first translation boundary from #225
-and PR #226: automation, provider/model choice, cost controls, privacy policy,
-external-sharing authorization, derivative publication approval, and source
-chunking remain outside this skill.
+The #225/#226 documentation-first translation boundary remains: automation,
+model/cost/privacy choices, external-sharing approval, derivative publication
+approval, and chunking are outside this skill.
 
 ## 3. References
 
@@ -49,3 +49,4 @@ chunking remain outside this skill.
 - [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
 - [Japanese Writing Style](references/japanese-writing-style.md)
 - [Prose Review](references/prose-review.md)
+- [Cognitive Rhythm](references/cognitive-rhythm.md)
