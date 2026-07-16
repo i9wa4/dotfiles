@@ -12,6 +12,11 @@ terminology, and publication quality. It is a manual review workflow. It does
 not define automation, chunking, provider selection, model selection, privacy
 policy, or Markdown AST handling.
 
+The expected path is English first: make the source English clear, concrete,
+and non-AI-sloppy before translating. This workflow translates and reviews a
+source-backed English article; it does not create polished Japanese from a blank
+page.
+
 The workflow is also packaged as the
 `technical-writing` agent skill so translation tasks can load the same
 glossary-first process, prompt templates, and QA passes.
@@ -39,15 +44,18 @@ privacy policy.
 1. Complete the privacy, source-rights, and provider-policy preflight.
 2. Save or reference the exact source revision.
 3. Identify the target publication surface and expected audience.
-4. Decide the Japanese register before translation:
+4. Run [Prose Review](prose-review.md) on the English source or draft. If the
+   source is vague, formulaic, or unsupported, fix or flag that before
+   translation.
+5. Decide the Japanese register before translation:
    - `desu/masu` for approachable tutorials, guides, and product articles.
    - `da/dearu` for formal essays, research notes, or documentation that
      already uses that register.
-5. Preserve the source section structure unless the target publication has a
+6. Preserve the source section structure unless the target publication has a
    clear reason to reorganize it.
-6. List verbatim tokens and semantic or structural constraints before
+7. List verbatim tokens and semantic or structural constraints before
    translation.
-7. Build a glossary before translating body text.
+8. Build a glossary before translating body text.
 
 Do not translate the full article in one pass. Translate section by section,
 then run separate review passes over the combined result.
