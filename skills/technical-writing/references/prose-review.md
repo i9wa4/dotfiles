@@ -21,6 +21,8 @@ Fix deeper writing problems before surface artifacts:
 4. Structure: remove formulaic setup-reversal patterns, negative listings,
    proposition-like headings, and meta announcements.
 5. Rhythm: vary paragraph length, sentence length, density, and endings.
+   For dense explanatory prose that is accurate but flat, read
+   [Cognitive Rhythm](cognitive-rhythm.md) before line editing.
 6. Language: remove filler, vague intensifiers, business jargon, decorative
    punctuation, and repeated pet phrases.
 

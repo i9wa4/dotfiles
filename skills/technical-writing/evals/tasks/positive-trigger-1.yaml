@@ -4,7 +4,7 @@ description: Curated trigger-accuracy prompt for this skill.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Review technical documentation prose for terminology, clarity, grammar, AI-slop, and publication quality."
+  prompt: "Review technical documentation prose for terminology, clarity, grammar, cognitive rhythm, AI-slop, and publication quality."
 expected:
   should_trigger: true
 graders:
