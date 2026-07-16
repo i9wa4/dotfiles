@@ -8,6 +8,8 @@ This reference also adapts task-relevant ideas from:
 
 - <https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d>
 - <https://zenn.dev/ikora/articles/88f62861a953c1>
+- <https://github.com/coji/natural-japanese> at
+  `c2ad5da4e4f9a29a84a0a9e74d93b6ce921d22d3` (MIT, Copyright (c) 2026 coji)
 
 ## 1. 日本語の文体
 
