@@ -2,11 +2,11 @@
 
 ## 1. Daily Usage
 
-| Command              | Description                                                                                                                                                                                                                                               |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `nix run '.#switch'` | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day. Scheduled daemon GC remains separate and uses 1 day on both Linux and macOS |
-| `nix run '.#update'` | Update flake inputs                                                                                                                                                                                                                                       |
-| `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                                                                 |
+| Command              | Description                                                                                                                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nix run '.#switch'` | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day; scheduled cleanup remains separate |
+| `nix run '.#update'` | Update flake inputs                                                                                                                                                                                              |
+| `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                        |
 
 One-off host repair helpers are kept as explicit scripts rather than flake
 apps. For Ubuntu root LVM expansion, run from the dotfiles repository root:
@@ -18,7 +18,24 @@ sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 
 Use `--apply` only after reviewing the VG/LV target printed by `--check`.
 
-## 2. Manual Cache Cleanup
+## 2. Scheduled Nix Cleanup
+
+Cleanup uses the same 30 day retention threshold on Ubuntu/WSL and macOS, but
+the mechanisms are intentionally different.
+
+- Ubuntu/WSL: Home Manager enables `programs.nh.clean` on non-Darwin targets
+  with `dates = "weekly"` and `extraArgs = "--keep-since 30d --keep-one"`.
+  The standalone Home Manager `nix.gc.automatic` timer stays disabled in
+  `nix/flake-parts/modules/ubuntu.nix` to avoid overlapping cleanup timers.
+- macOS: nix-darwin owns system cleanup. It runs plain Nix GC daily at noon
+  with `--delete-older-than 30d` in `nix/nix-darwin/default.nix`.
+- Caveat: macOS is not using scheduled Home Manager `nh clean`. The current
+  Home Manager Darwin launchd wrapper passes `extraArgs` as one argument, so
+  the space-separated `--keep-since 30d --keep-one` policy is not enabled
+  there. Use nix-darwin GC, or add a custom split-argument launchd job if exact
+  `nh` parity is required.
+
+## 3. Manual Cache Cleanup
 
 There is no `.#cleanup` flake app. Keep cache deletion as an explicit manual
 operation so the operator can review the target paths first.
@@ -53,14 +70,14 @@ macOS-only additions:
 rm -rf "$HOME/Library/Caches/pre-commit" "$HOME/Library/Caches/ruff"
 ```
 
-## 3. Upgrade Nix
+## 4. Upgrade Nix
 
 Nix upgrade ownership differs by OS. On macOS, `nix-darwin` manages
 `nix-daemon` declaratively, so the daily `update` + `switch` flow covers
 upgrades. On Ubuntu, the system `nix-daemon` is outside home-manager's scope,
 so upgrade it separately from the root Nix profile.
 
-### 3.1. Ubuntu
+### 4.1. Ubuntu
 
 For a normal upgrade, do not re-run the curl installer. Upgrade the system Nix
 profile as root, then reload and restart `nix-daemon`. `--remove-all` avoids a
@@ -81,7 +98,7 @@ nix --version
 systemctl is-active nix-daemon.service nix-daemon.socket
 ```
 
-### 3.2. macOS
+### 4.2. macOS
 
 Part of the daily flow. `nix-darwin` rewrites
 `/Library/LaunchDaemons/org.nixos.nix-daemon.plist` and reloads the daemon
@@ -102,7 +119,7 @@ Verify:
 nix --version
 ```
 
-### 3.3. Recover After macOS Update
+### 4.3. Recover After macOS Update
 
 macOS updates can break nix-darwin in two ways:
 

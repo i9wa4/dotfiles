@@ -51,12 +51,11 @@ in
           }:
           {
             nix = {
-              # Garbage collection via systemd timer (daily at noon, delete older than 1 day)
-              # cf. nix-darwin's nix.gc.interval in nix-darwin/default.nix
+              # Garbage collection is handled by programs.nh.clean in
+              # nix/home-manager/default.nix. Home Manager warns when both
+              # programs.nh.clean.enable and nix.gc.automatic are enabled.
               gc = {
-                automatic = true;
-                dates = "12:00";
-                options = "--delete-older-than 1d";
+                automatic = false;
               };
               settings = commonNixSettings // {
                 # Nix store optimisation via hard links (writes to ~/.config/nix/nix.conf)
