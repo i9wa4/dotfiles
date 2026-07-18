@@ -81,38 +81,6 @@ let
     "google-cloud-recipe-auth"
     "google-cloud-recipe-foundation-builder"
   ];
-  awsCoreDataSkills = [
-    "core-skills/amazon-bedrock"
-    "core-skills/aws-cdk"
-    "core-skills/aws-cloudformation"
-    "core-skills/aws-containers"
-    "core-skills/aws-iam"
-    "core-skills/aws-messaging-and-streaming"
-    "core-skills/aws-observability"
-    "core-skills/aws-sdk-js-v3-usage"
-    "core-skills/aws-sdk-python-usage"
-    "core-skills/aws-serverless"
-    "specialized-skills/analytics-skills/amazon-opensearch-service"
-    "specialized-skills/analytics-skills/connecting-to-data-source"
-    "specialized-skills/analytics-skills/developing-applications-on-managed-service-for-apache-flink"
-    "specialized-skills/analytics-skills/exploring-data-catalog"
-    "specialized-skills/analytics-skills/finding-data-lake-assets"
-    "specialized-skills/analytics-skills/ingesting-into-data-lake"
-    "specialized-skills/analytics-skills/managing-amazon-msk"
-    "specialized-skills/analytics-skills/querying-data-lake"
-    "specialized-skills/database-skills/amazon-aurora-mysql"
-    "specialized-skills/database-skills/amazon-aurora-postgresql"
-    "specialized-skills/database-skills/amazon-documentdb"
-    "specialized-skills/database-skills/amazon-elasticache"
-    "specialized-skills/database-skills/aurora-dsql"
-    "core-skills/aws-networking"
-    "specialized-skills/networking-and-content-delivery-skills/configuring-vpc-endpoints-for-private-aws-service-access"
-    "specialized-skills/storage-skills/creating-data-lake-table"
-    "specialized-skills/storage-skills/securing-s3-buckets"
-    "specialized-skills/storage-skills/storing-and-querying-vectors"
-    "specialized-skills/system-table-skills/querying-aws-cloudwatch"
-    "specialized-skills/system-table-skills/querying-aws-s3"
-  ];
   azureCoreDataSkills = [
     "azure-ai"
     "azure-aigateway"
@@ -269,13 +237,14 @@ let
       subdir = "skills/cloud";
       filter.nameRegex = matchAny googleCoreDataSkills;
     };
-    # AWS Agent Toolkit skills, limited to core platform and data workflows.
+    # AWS Agent Toolkit skills. Keep the full skills/ inventory reference-only
+    # so nested upstream AWS skill categories are flattened for lookup without
+    # making the AWS provider pack active.
     # Install skill bodies only; plugin and MCP integration remain out of scope.
     # cf. https://github.com/aws/agent-toolkit-for-aws
     aws = {
       path = inputs.aws-agent-toolkit;
       subdir = "skills";
-      filter.nameRegex = matchAny awsCoreDataSkills;
     };
   };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);

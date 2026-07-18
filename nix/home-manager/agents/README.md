@@ -66,10 +66,14 @@ graph LR
         XH[scripts/]
         XF[AGENTS.md]
     end
+    subgraph references [~/.local/share]
+        RS[skills/]
+    end
     A --> IM --> CA
     IM --> XA
     S --> AS --> CS
     AS --> XS
+    AS --> RS
     H --> C --> CH
     H --> X --> XH
     D --> C --> CJ
