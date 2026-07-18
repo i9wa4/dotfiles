@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Create a Mermaid architecture diagram and export it through the draw.io workflow."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/external-references/SKILL.md
+      mode: negative

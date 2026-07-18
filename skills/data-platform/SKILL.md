@@ -9,8 +9,9 @@ description: |
 
 # Data Platform
 
-Owns repo-local data-platform guardrails. Use official provider skills for
-general cloud or product documentation, then apply these rules.
+Owns repo-local data-platform guardrails. These references are self-contained
+for local safety and workflow rules; broad provider skill packs are
+reference-only unless deliberately promoted into the active runtime bundle.
 
 ## 1. Scope
 

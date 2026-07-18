@@ -23,7 +23,7 @@ Source of truth:
 | Codex agents directory                             | TOML generated from `subagents/*.md` + metadata    | `shared/install-manifest.nix`        |
 | Codex hooks file                                   | Generated hook config                              | `codex/default.nix`                  |
 | Codex scripts directory                            | Explicit ln list of shared scripts + deny patterns | `codex/default.nix`                  |
-| Codex skills directory                             | Multiple flake inputs + local skills               | `shared/agent-skills.nix`            |
+| Codex skills directory                             | Curated active skill bundle                        | `shared/agent-skills.nix`            |
 | MCP servers                                        | `shared/mcp-servers.nix`                           | `codex/default.nix`                  |
 
 ## 2. Config Management
@@ -34,13 +34,17 @@ by `fd` at `home-manager switch` time and appended to `config.toml`.
 Existing `[hooks.state]` review entries are preserved from the local
 `config.toml` so user-approved hook hashes survive later Nix activations.
 
-Codex skill installation is intentionally smaller than Claude's full skill
-bundle. `shared/agent-skills.nix` installs local dotfiles skills,
-tmux-a2a-postman transport skills, `claude-api`, and `context7-cli` into
-the Codex skills directory, preserving Codex-managed `.system`. This keeps
-Codex startup below its skill-context budget; large cloud/vendor skill packs
-remain available to Claude and can be added to Codex only when there is a
-deliberate reason.
+Codex skill installation uses a separate allowlisted bundle in
+`shared/agent-skills.nix`: local dotfiles skills, including
+`external-references`, tmux-a2a-postman transport skills, `claude-api`, and
+`context7-cli`. Claude follows the shared `activeSources` set, including
+wrapper-promoted sources. Codex does not automatically consume
+wrapper-promoted provider packs; add a source to the Codex source allowlist and
+add its skills to the Codex skill-selection allowlist only when those skill
+descriptions should spend Codex startup context. Broad cloud/vendor skill packs
+stay pinned in `referenceOnlySources` as a Nix source inventory until
+deliberately promoted, with `external-references` acting as the active routing
+skill for those dormant packs.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:

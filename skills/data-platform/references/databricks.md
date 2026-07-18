@@ -1,8 +1,11 @@
 # Databricks
 
-Repo-specific Databricks additions. Use official Databricks skills for CLI
-basics, auth, Unity Catalog, Delta Lake, Lakeflow Jobs, ML, security, and schema
-discovery.
+Repo-specific Databricks guidance for safe local work. This reference does not
+depend on official Databricks provider skills being installed; broad provider
+packs are reference-only by default. For Databricks CLI basics, auth, Unity
+Catalog, Delta Lake, Lakeflow Jobs, ML, security, or schema discovery not
+covered here, use the `databricks` executable help, checked-in project docs, or
+upstream Databricks documentation, then apply the local safety rules below.
 
 ## 1. Profile Verification
 

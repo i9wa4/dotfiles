@@ -195,8 +195,9 @@ let
     mv "$tmp" "$target"
     ${pkgs.bash}/bin/bash ${../../../../scripts/validation/validate-skill-frontmatter.sh} "$out/skills"
   '';
-  baseSources = {
-    # Local skills from this dotfiles repository
+  activeBaseSources = {
+    # Local skills from this dotfiles repository, including the active
+    # external-references router for dormant provider-pack inventory.
     local = {
       path = local-skills-validated;
     };
@@ -205,24 +206,12 @@ let
       path = inputs.tmux-a2a-postman;
       subdir = "skills";
     };
-    # dbt-labs official agent skills
-    dbt = {
-      path = inputs.dbt-agent-skills;
-      subdir = "skills/dbt/skills";
-    };
     # Anthropic official agent skills (claude-api/SKILL.md frontmatter
     # normalized, then validated before installation)
     anthropic = {
       path = anthropic-skills-patched;
       subdir = "skills";
       filter.nameRegex = "claude-api";
-    };
-    # Microsoft Azure skills. Keep the installed catalog focused on core
-    # platform, identity, data, and AI-foundation workflows.
-    azure = {
-      path = inputs.azure-skills;
-      subdir = "skills";
-      filter.nameRegex = matchAny azureCoreDataSkills;
     };
     # Upstash Context7 CLI skill. MCP servers remain disabled in
     # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
@@ -232,12 +221,20 @@ let
       subdir = "skills";
       filter.nameRegex = "context7-cli";
     };
-    # Streamlit official agent skills. Keep the flake input available, but do
-    # not install this by default.
-    # "developing-with-streamlit" = {
-    #   path = inputs.streamlit-skills;
-    #   subdir = "developing-with-streamlit";
-    # };
+  };
+  referenceOnlySources = {
+    # dbt-labs official agent skills.
+    dbt = {
+      path = inputs.dbt-agent-skills;
+      subdir = "skills/dbt/skills";
+    };
+    # Microsoft Azure skills. The filtered subset remains documented here for
+    # future promotion decisions without loading it by default.
+    azure = {
+      path = inputs.azure-skills;
+      subdir = "skills";
+      filter.nameRegex = matchAny azureCoreDataSkills;
+    };
     # Databricks official agent skills
     # cf. https://github.com/databricks/databricks-agent-skills
     databricks-official = {
@@ -284,30 +281,26 @@ let
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
   sourceNameCollisions = lib.filter (collision: collision.names != [ ]) [
     {
-      left = "baseSources";
+      left = "activeBaseSources";
+      right = "referenceOnlySources";
+      names = collisionNames activeBaseSources referenceOnlySources;
+    }
+    {
+      left = "activeBaseSources";
       right = "i9wa4.agentSkills.extraSources";
-      names = collisionNames baseSources cfg.extraSources;
-    }
-    {
-      left = "baseSources";
-      right = "installManifest.skills.sources";
-      names = collisionNames baseSources installManifest.skills.sources;
-    }
-    {
-      left = "i9wa4.agentSkills.extraSources";
-      right = "installManifest.skills.sources";
-      names = collisionNames cfg.extraSources installManifest.skills.sources;
+      names = collisionNames activeBaseSources cfg.extraSources;
     }
   ];
   formatCollision =
     collision: "${collision.left} and ${collision.right}: ${lib.concatStringsSep ", " collision.names}";
-  allSources = baseSources // cfg.extraSources // installManifest.skills.sources;
-  codexMinimalSources = lib.getAttrs [
+  activeSources = activeBaseSources // cfg.extraSources;
+  codexMinimalSourceNames = [
     "local"
     "tmux-a2a-postman"
     "anthropic"
     "context7"
-  ] allSources;
+  ];
+  codexMinimalSources = lib.getAttrs codexMinimalSourceNames activeSources;
   codexMinimalCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog codexMinimalSources;
   codexMinimalAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
     catalog = codexMinimalCatalog;
@@ -358,10 +351,17 @@ in
     programs.agent-skills = {
       enable = true;
 
-      # Skill sources
-      sources = baseSources // cfg.extraSources // installManifest.skills.sources;
+      # Skill sources installed into active loader paths. Broad provider packs
+      # stay in `referenceOnlySources` above so the flake pins remain
+      # discoverable without expanding the default runtime skill surface.
+      # A wrapper may promote a reference-only source with the same key through
+      # `extraSources`; that promotion reaches Claude through this source set.
+      # Codex intentionally uses the separate source and skill-selection
+      # allowlists below, so promoted sources reach Codex only when both
+      # `codexMinimalSourceNames` and `codexMinimalAllowlist` are changed too.
+      sources = activeSources;
 
-      # Enable all skills from all sources
+      # Enable all skills from the curated active source set.
       skills.enableAll = true;
 
       # Target destinations (symlink-tree uses activation rsync)
@@ -373,8 +373,9 @@ in
             structure
             ;
         };
-        # Codex CLI uses a smaller bundle below. Keeping the full upstream
-        # graph out of Codex avoids startup skill-context budget truncation.
+        # Codex CLI materializes the allowlisted bundle below instead of using
+        # the full active source set. This keeps wrapper-injected provider packs
+        # out of Codex's startup skill context unless explicitly allowed.
         codex = {
           enable = false;
           inherit (installManifest.codex.skills)
@@ -401,5 +402,6 @@ in
           chmod u+w "$dest"
           echo "agent-skills: installed minimal Codex skill bundle to $dest"
         '';
+
   };
 }

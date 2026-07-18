@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "I need the dormant hashicorp-terraform-codegen, hashicorp-terraform-module, and hashicorp-terraform-provider packs for Terraform work and how to promote them safely."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/external-references/SKILL.md
+      mode: positive

@@ -3,8 +3,8 @@
 General Python code quality, testing, and tooling guidance for any project.
 
 **DO NOT USE FOR:** running Python already in this repo (`programming` owns
-that); Databricks-specific guidance (`databricks-python-sdk`,
-`data-platform`).
+that); Databricks-specific guidance (`data-platform` owns local guardrails;
+external Databricks provider skill packs are reference-only unless promoted).
 
 ## 1. Code Quality
 

@@ -49,8 +49,4 @@ in
       structure = "symlink-tree";
     };
   };
-
-  skills = {
-    sources = { };
-  };
 }

@@ -1,8 +1,10 @@
 # dbt
 
-Repo-local dbt additions. Use official dbt skills for command basics such as
-`debug`, `compile`, `run`, `test`, `show`, selectors, verification procedures,
-and ad-hoc queries.
+Repo-local dbt guidance for safe local execution. This reference does not
+depend on the official dbt provider skill pack being installed; broad provider
+packs are reference-only by default. For command syntax not covered here, use
+the project `dbt` executable help, checked-in project docs, or upstream dbt
+documentation, then apply the local target and production-safety rules below.
 
 ## 1. Issue Work Target Setup
 

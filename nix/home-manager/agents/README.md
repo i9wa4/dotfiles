@@ -17,7 +17,9 @@ artifacts.
 | Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files                                                                     |
 | Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files                                                             |
 | Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources                                                          |
-| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/`                                                                                    |
+| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/` through the curated active source set                                              |
+| External reference router   | `skills/external-references/SKILL.md`                       | Active local skill that routes Databricks/dbt/Azure/Google/AWS/Terraform/Obsidian provider-pack questions to dormant references            |
+| Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned and discoverable in Nix, but not installed into active runtime skill loader paths                                                   |
 | Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                                                               |
 | Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                                                               |
 | Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                                                              |
@@ -101,8 +103,14 @@ graph LR
    pipeline and documents reviewer usage without generating agent files.
 5. `shared/install-manifest.nix` resolves the shared agent install targets and
    skill destinations that the runtime installers consume.
-6. `shared/agent-skills.nix` validates skill sources and installs them into both
-   runtimes.
+6. `shared/agent-skills.nix` validates local and patched Anthropic skill
+   sources, discovers the other active sources, and installs the curated active
+   source set into Claude. Codex is materialized from a hardcoded source
+   allowlist so wrapper-promoted provider packs do not consume Codex startup
+   skill context unless the Codex allowlist is changed too. The active
+   `external-references` local skill names dormant provider packs and routes
+   lookup or promotion decisions; broad external provider packs remain named
+   in `referenceOnlySources` as a Nix source inventory.
 7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
    files during activation.
 
@@ -124,6 +132,12 @@ graph LR
   Runtime model defaults are explicit in `subagents/metadata.nix`; Codex
   `model = null` means the generated TOML omits `model` and inherits the parent
   session. Keep reviewer usage guidance in `skills/subagent-review/SKILL.md`.
+- Keep active skill loader paths small and intentional. Add always-on Claude
+  skills to the active source set in `shared/agent-skills.nix`; keep broad
+  provider packs in `referenceOnlySources` unless they are deliberately
+  promoted through `i9wa4.agentSkills.extraSources`. Codex has an additional
+  source allowlist and skill-selection allowlist in the same file; update both
+  only when the promoted source should also be loaded by Codex.
 - After setting up Claude Code on a new machine or after adding new projects,
   use `/dotfiles` and its Claude workspace trust workflow;
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
