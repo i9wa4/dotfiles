@@ -140,6 +140,9 @@ graph LR
   promoted through `i9wa4.agentSkills.extraSources`. Codex has an additional
   source allowlist and skill-selection allowlist in the same file; update both
   only when the promoted source should also be loaded by Codex.
+- The `~/.local/share/skills` reference tree is Home Manager owned only when
+  its ownership marker is present. Activation refuses to prune an unmarked
+  directory that contains unmanaged entries.
 - After setting up Claude Code on a new machine or after adding new projects,
   use `/dotfiles` and its Claude workspace trust workflow;
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust

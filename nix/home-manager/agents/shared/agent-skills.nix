@@ -350,6 +350,10 @@ let
     pkgs.runCommand "agent-skills-reference-only-flat-bundle" { preferLocalBuild = true; }
       ''
         mkdir -p "$out"
+        printf '%s\n' 'managed-by: i9wa4.agent-skills.reference-only' \
+          > "$out/${installManifest.reference.skills.ownershipMarker}"
+        printf '%s\n' ${lib.concatMapStringsSep " " lib.escapeShellArg referenceOnlyFlatNames} \
+          > "$out/${installManifest.reference.skills.ownershipMarker}.manifest"
         ${lib.concatMapStringsSep "\n" (
           id:
           let
@@ -447,8 +451,36 @@ in
       lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
         ''
           dest="${installManifest.reference.skills.dest}"
+          ownershipMarker="${installManifest.reference.skills.ownershipMarker}"
+          marker="$dest/$ownershipMarker"
+
           if [ -L "$dest" ]; then
-            rm -rf "$dest"
+            echo "agent-skills: refusing to replace symlinked reference skill tree at $dest" >&2
+            exit 1
+          fi
+          if [ -e "$dest" ] && [ ! -d "$dest" ]; then
+            echo "agent-skills: refusing to replace non-directory reference skill tree at $dest" >&2
+            exit 1
+          fi
+          if [ -d "$dest" ] && [ ! -e "$marker" ]; then
+            unmanaged=0
+            for entry in "$dest"/* "$dest"/.[!.]* "$dest"/..?*; do
+              if [ ! -e "$entry" ] && [ ! -L "$entry" ]; then
+                continue
+              fi
+              target="$(${pkgs.coreutils}/bin/readlink "$entry" || true)"
+              case "$target" in
+                *-agent-skills-reference-only-bundle/*) ;;
+                *)
+                  echo "agent-skills: refusing to prune unmanaged reference skill entry: $entry" >&2
+                  unmanaged=1
+                  ;;
+              esac
+            done
+            if [ "$unmanaged" -ne 0 ]; then
+              echo "agent-skills: add $marker only after confirming $dest is owned by Home Manager" >&2
+              exit 1
+            fi
           fi
           mkdir -p "$dest"
           ${pkgs.rsync}/bin/rsync -a --delete \

@@ -42,9 +42,10 @@ wrapper-promoted sources. Codex does not automatically consume
 wrapper-promoted provider packs; add a source to the Codex source allowlist and
 add its skills to the Codex skill-selection allowlist only when those skill
 descriptions should spend Codex startup context. Broad cloud/vendor skill packs
-stay pinned in `referenceOnlySources` as a Nix source inventory until
-deliberately promoted, with `external-references` acting as the active routing
-skill for those dormant packs.
+stay pinned in `referenceOnlySources` and are generated as a flat reference tree
+at `~/.local/share/skills` until deliberately promoted. Codex does not consume
+that tree as an active loader path by default; `external-references` acts as the
+active routing skill for those dormant packs.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
 are drawn from `nix/home-manager/agents/scripts/` and split as follows:

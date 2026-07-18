@@ -53,7 +53,8 @@ in
   reference = {
     skills = {
       dest = "${homeDir}/.local/share/skills";
-      structure = "symlink-tree";
+      structure = "owned-symlink-tree";
+      ownershipMarker = ".i9wa4-agent-skills-reference-only";
     };
   };
 }
