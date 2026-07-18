@@ -174,11 +174,11 @@ the harness from several smaller sources:
   hand-written file. It is only a minimal skill-catalog pointer for direct,
   non-postman invocations; it does not duplicate the postman contract.
 - `shared/agent-skills.nix` owns the curated active-source policy, installs
-  that source set for Claude, keeps broad upstream provider packs in a
-  reference-only Nix source inventory, and materializes Codex separately from
-  its source and skill-selection allowlists. The active
-  `external-references` skill names dormant packs for lookup and promotion
-  decisions.
+  that source set for Claude, keeps broad upstream provider packs in
+  `referenceOnlySources`, generates their flat reference tree at
+  `~/.local/share/skills`, and materializes Codex separately from its source and
+  skill-selection allowlists. The active `external-references` skill routes
+  lookup and promotion decisions to that generated reference tree.
 - `subagents/*.md` is the native reviewer prompt source of truth;
   `subagents/metadata.nix` owns per-agent model and effort defaults, and
   `shared/install-manifest.nix` generates Claude Markdown plus Codex TOML for
@@ -269,7 +269,9 @@ the same local expectations.
 Runtime skill installation is intentionally curated so broad provider packs do
 not enter loader paths by default. The active set and the reference-only source
 inventory both live in `shared/agent-skills.nix`, so both engines keep a shared
-source of truth for skill policy. `external-references` stays active as the
+source of truth for skill policy. `referenceOnlySources` is materialized as a
+flat lookup tree at `~/.local/share/skills`; that tree is outside Claude and
+Codex active loader paths by default. `external-references` stays active as the
 lightweight router for dormant packs. Wrapper promotion reaches Claude through
 `activeSources`; Codex remains on its source and skill-selection allowlists
 unless both allowlists are changed too.

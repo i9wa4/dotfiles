@@ -81,38 +81,6 @@ let
     "google-cloud-recipe-auth"
     "google-cloud-recipe-foundation-builder"
   ];
-  awsCoreDataSkills = [
-    "core-skills/amazon-bedrock"
-    "core-skills/aws-cdk"
-    "core-skills/aws-cloudformation"
-    "core-skills/aws-containers"
-    "core-skills/aws-iam"
-    "core-skills/aws-messaging-and-streaming"
-    "core-skills/aws-observability"
-    "core-skills/aws-sdk-js-v3-usage"
-    "core-skills/aws-sdk-python-usage"
-    "core-skills/aws-serverless"
-    "specialized-skills/analytics-skills/amazon-opensearch-service"
-    "specialized-skills/analytics-skills/connecting-to-data-source"
-    "specialized-skills/analytics-skills/developing-applications-on-managed-service-for-apache-flink"
-    "specialized-skills/analytics-skills/exploring-data-catalog"
-    "specialized-skills/analytics-skills/finding-data-lake-assets"
-    "specialized-skills/analytics-skills/ingesting-into-data-lake"
-    "specialized-skills/analytics-skills/managing-amazon-msk"
-    "specialized-skills/analytics-skills/querying-data-lake"
-    "specialized-skills/database-skills/amazon-aurora-mysql"
-    "specialized-skills/database-skills/amazon-aurora-postgresql"
-    "specialized-skills/database-skills/amazon-documentdb"
-    "specialized-skills/database-skills/amazon-elasticache"
-    "specialized-skills/database-skills/aurora-dsql"
-    "specialized-skills/networking-and-content-delivery-skills/aws-networking"
-    "specialized-skills/networking-and-content-delivery-skills/configuring-vpc-endpoints-for-private-aws-service-access"
-    "specialized-skills/storage-skills/creating-data-lake-table"
-    "specialized-skills/storage-skills/securing-s3-buckets"
-    "specialized-skills/storage-skills/storing-and-querying-vectors"
-    "specialized-skills/system-table-skills/querying-aws-cloudwatch"
-    "specialized-skills/system-table-skills/querying-aws-s3"
-  ];
   azureCoreDataSkills = [
     "azure-ai"
     "azure-aigateway"
@@ -269,13 +237,14 @@ let
       subdir = "skills/cloud";
       filter.nameRegex = matchAny googleCoreDataSkills;
     };
-    # AWS Agent Toolkit skills, limited to core platform and data workflows.
+    # AWS Agent Toolkit skills. Keep the full skills/ inventory reference-only
+    # so nested upstream AWS skill categories are flattened for lookup without
+    # making the AWS provider pack active.
     # Install skill bodies only; plugin and MCP integration remain out of scope.
     # cf. https://github.com/aws/agent-toolkit-for-aws
     aws = {
       path = inputs.aws-agent-toolkit;
       subdir = "skills";
-      filter.nameRegex = matchAny awsCoreDataSkills;
     };
   };
   collisionNames = left: right: lib.attrNames (lib.intersectAttrs left right);
@@ -324,6 +293,46 @@ let
     inherit pkgs;
     selection = codexMinimalSelection;
   };
+  referenceOnlySourceNames = lib.attrNames referenceOnlySources;
+  referenceOnlyCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog referenceOnlySources;
+  referenceOnlyAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+    catalog = referenceOnlyCatalog;
+    sources = referenceOnlySources;
+    enableAll = referenceOnlySourceNames;
+  };
+  referenceOnlySelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+    catalog = referenceOnlyCatalog;
+    allowlist = referenceOnlyAllowlist;
+    skills = { };
+    sources = referenceOnlySources;
+  };
+  referenceOnlyBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+    inherit pkgs;
+    selection = referenceOnlySelection;
+    name = "agent-skills-reference-only-bundle";
+  };
+  referenceOnlyFlatNames = map builtins.baseNameOf (lib.attrNames referenceOnlySelection);
+  referenceOnlyDuplicateFlatNames = lib.filter (
+    name: (builtins.length (lib.filter (candidate: candidate == name) referenceOnlyFlatNames)) > 1
+  ) (lib.unique referenceOnlyFlatNames);
+  referenceOnlyFlatBundle =
+    pkgs.runCommand "agent-skills-reference-only-flat-bundle" { preferLocalBuild = true; }
+      ''
+        mkdir -p "$out"
+        printf '%s\n' 'managed-by: i9wa4.agent-skills.reference-only' \
+          > "$out/${installManifest.reference.skills.ownershipMarker}"
+        printf '%s\n' ${lib.concatMapStringsSep " " lib.escapeShellArg referenceOnlyFlatNames} \
+          > "$out/${installManifest.reference.skills.ownershipMarker}.manifest"
+        ${lib.concatMapStringsSep "\n" (
+          id:
+          let
+            flatName = builtins.baseNameOf id;
+          in
+          ''
+            ln -s ${lib.escapeShellArg "${referenceOnlyBundle}/${id}"} "$out/${flatName}"
+          ''
+        ) (lib.attrNames referenceOnlySelection)}
+      '';
 in
 {
   imports = [
@@ -345,6 +354,10 @@ in
       {
         assertion = sourceNameCollisions == [ ];
         message = "agent skill source names must be unique across merge inputs; collisions: ${lib.concatStringsSep "; " (map formatCollision sourceNameCollisions)}";
+      }
+      {
+        assertion = referenceOnlyDuplicateFlatNames == [ ];
+        message = "reference-only skill flat names must be unique; collisions: ${lib.concatStringsSep ", " referenceOnlyDuplicateFlatNames}";
       }
     ];
 
@@ -401,6 +414,48 @@ in
             "${codexMinimalBundle}/" "$dest/"
           chmod u+w "$dest"
           echo "agent-skills: installed minimal Codex skill bundle to $dest"
+        '';
+
+    home.activation.agent-skills-reference-only =
+      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
+        ''
+          dest="${installManifest.reference.skills.dest}"
+          ownershipMarker="${installManifest.reference.skills.ownershipMarker}"
+          marker="$dest/$ownershipMarker"
+
+          if [ -L "$dest" ]; then
+            echo "agent-skills: refusing to replace symlinked reference skill tree at $dest" >&2
+            exit 1
+          fi
+          if [ -e "$dest" ] && [ ! -d "$dest" ]; then
+            echo "agent-skills: refusing to replace non-directory reference skill tree at $dest" >&2
+            exit 1
+          fi
+          if [ -d "$dest" ] && [ ! -e "$marker" ]; then
+            unmanaged=0
+            for entry in "$dest"/* "$dest"/.[!.]* "$dest"/..?*; do
+              if [ ! -e "$entry" ] && [ ! -L "$entry" ]; then
+                continue
+              fi
+              target="$(${pkgs.coreutils}/bin/readlink "$entry" || true)"
+              case "$target" in
+                *-agent-skills-reference-only-bundle/*) ;;
+                *)
+                  echo "agent-skills: refusing to prune unmanaged reference skill entry: $entry" >&2
+                  unmanaged=1
+                  ;;
+              esac
+            done
+            if [ "$unmanaged" -ne 0 ]; then
+              echo "agent-skills: add $marker only after confirming $dest is owned by Home Manager" >&2
+              exit 1
+            fi
+          fi
+          mkdir -p "$dest"
+          ${pkgs.rsync}/bin/rsync -a --delete \
+            "${referenceOnlyFlatBundle}/" "$dest/"
+          chmod u+w "$dest"
+          echo "agent-skills: installed flat reference-only skill bundle to $dest"
         '';
 
   };

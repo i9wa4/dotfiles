@@ -49,4 +49,12 @@ in
       structure = "symlink-tree";
     };
   };
+
+  reference = {
+    skills = {
+      dest = "${homeDir}/.local/share/skills";
+      structure = "owned-symlink-tree";
+      ownershipMarker = ".i9wa4-agent-skills-reference-only";
+    };
+  };
 }

@@ -19,7 +19,7 @@ artifacts.
 | Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources                                                          |
 | Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/` through the curated active source set                                              |
 | External reference router   | `skills/external-references/SKILL.md`                       | Active local skill that routes Databricks/dbt/Azure/Google/AWS/Terraform/Obsidian provider-pack questions to dormant references            |
-| Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned and discoverable in Nix, but not installed into active runtime skill loader paths                                                   |
+| Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned in Nix and materialized as a flat reference-only tree under `~/.local/share/skills`; not installed into active runtime loader paths |
 | Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                                                               |
 | Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                                                               |
 | Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                                                              |
@@ -66,10 +66,14 @@ graph LR
         XH[scripts/]
         XF[AGENTS.md]
     end
+    subgraph references [~/.local/share]
+        RS[skills/]
+    end
     A --> IM --> CA
     IM --> XA
     S --> AS --> CS
     AS --> XS
+    AS --> RS
     H --> C --> CH
     H --> X --> XH
     D --> C --> CJ
@@ -109,8 +113,9 @@ graph LR
    allowlist so wrapper-promoted provider packs do not consume Codex startup
    skill context unless the Codex allowlist is changed too. The active
    `external-references` local skill names dormant provider packs and routes
-   lookup or promotion decisions; broad external provider packs remain named
-   in `referenceOnlySources` as a Nix source inventory.
+   lookup or promotion decisions to `~/.local/share/skills`; broad external
+   provider packs remain named in `referenceOnlySources` and materialized
+   outside active Claude/Codex loader paths.
 7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
    files during activation.
 
@@ -134,10 +139,14 @@ graph LR
   session. Keep reviewer usage guidance in `skills/subagent-review/SKILL.md`.
 - Keep active skill loader paths small and intentional. Add always-on Claude
   skills to the active source set in `shared/agent-skills.nix`; keep broad
-  provider packs in `referenceOnlySources` unless they are deliberately
+  provider packs in `referenceOnlySources`, which are generated into the flat
+  reference-only tree at `~/.local/share/skills`, unless they are deliberately
   promoted through `i9wa4.agentSkills.extraSources`. Codex has an additional
   source allowlist and skill-selection allowlist in the same file; update both
   only when the promoted source should also be loaded by Codex.
+- The `~/.local/share/skills` reference tree is Home Manager owned only when
+  its ownership marker is present. Activation refuses to prune an unmarked
+  directory that contains unmanaged entries.
 - After setting up Claude Code on a new machine or after adding new projects,
   use `/dotfiles` and its Claude workspace trust workflow;
   otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
