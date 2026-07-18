@@ -105,7 +105,7 @@ let
     "specialized-skills/database-skills/amazon-documentdb"
     "specialized-skills/database-skills/amazon-elasticache"
     "specialized-skills/database-skills/aurora-dsql"
-    "specialized-skills/networking-and-content-delivery-skills/aws-networking"
+    "core-skills/aws-networking"
     "specialized-skills/networking-and-content-delivery-skills/configuring-vpc-endpoints-for-private-aws-service-access"
     "specialized-skills/storage-skills/creating-data-lake-table"
     "specialized-skills/storage-skills/securing-s3-buckets"
@@ -324,6 +324,42 @@ let
     inherit pkgs;
     selection = codexMinimalSelection;
   };
+  referenceOnlySourceNames = lib.attrNames referenceOnlySources;
+  referenceOnlyCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog referenceOnlySources;
+  referenceOnlyAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+    catalog = referenceOnlyCatalog;
+    sources = referenceOnlySources;
+    enableAll = referenceOnlySourceNames;
+  };
+  referenceOnlySelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+    catalog = referenceOnlyCatalog;
+    allowlist = referenceOnlyAllowlist;
+    skills = { };
+    sources = referenceOnlySources;
+  };
+  referenceOnlyBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+    inherit pkgs;
+    selection = referenceOnlySelection;
+    name = "agent-skills-reference-only-bundle";
+  };
+  referenceOnlyFlatNames = map builtins.baseNameOf (lib.attrNames referenceOnlySelection);
+  referenceOnlyDuplicateFlatNames = lib.filter (
+    name: (builtins.length (lib.filter (candidate: candidate == name) referenceOnlyFlatNames)) > 1
+  ) (lib.unique referenceOnlyFlatNames);
+  referenceOnlyFlatBundle =
+    pkgs.runCommand "agent-skills-reference-only-flat-bundle" { preferLocalBuild = true; }
+      ''
+        mkdir -p "$out"
+        ${lib.concatMapStringsSep "\n" (
+          id:
+          let
+            flatName = builtins.baseNameOf id;
+          in
+          ''
+            ln -s ${lib.escapeShellArg "${referenceOnlyBundle}/${id}"} "$out/${flatName}"
+          ''
+        ) (lib.attrNames referenceOnlySelection)}
+      '';
 in
 {
   imports = [
@@ -345,6 +381,10 @@ in
       {
         assertion = sourceNameCollisions == [ ];
         message = "agent skill source names must be unique across merge inputs; collisions: ${lib.concatStringsSep "; " (map formatCollision sourceNameCollisions)}";
+      }
+      {
+        assertion = referenceOnlyDuplicateFlatNames == [ ];
+        message = "reference-only skill flat names must be unique; collisions: ${lib.concatStringsSep ", " referenceOnlyDuplicateFlatNames}";
       }
     ];
 
@@ -401,6 +441,20 @@ in
             "${codexMinimalBundle}/" "$dest/"
           chmod u+w "$dest"
           echo "agent-skills: installed minimal Codex skill bundle to $dest"
+        '';
+
+    home.activation.agent-skills-reference-only =
+      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
+        ''
+          dest="${installManifest.reference.skills.dest}"
+          if [ -L "$dest" ]; then
+            rm -rf "$dest"
+          fi
+          mkdir -p "$dest"
+          ${pkgs.rsync}/bin/rsync -a --delete \
+            "${referenceOnlyFlatBundle}/" "$dest/"
+          chmod u+w "$dest"
+          echo "agent-skills: installed flat reference-only skill bundle to $dest"
         '';
 
   };

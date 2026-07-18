@@ -49,4 +49,11 @@ in
       structure = "symlink-tree";
     };
   };
+
+  reference = {
+    skills = {
+      dest = "${homeDir}/.local/share/skills";
+      structure = "symlink-tree";
+    };
+  };
 }

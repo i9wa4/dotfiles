@@ -10,17 +10,20 @@ description: |
 # External References
 
 Route external provider-pack requests to dormant references without activating
-the broad packs by default.
+the broad packs by default. The generated reference tree is
+`~/.local/share/skills`.
 
 ## 1. Workflow
 
 1. Inspect `nix/home-manager/agents/shared/agent-skills.nix`.
-2. Use `referenceOnlySources` as the dormant provider-pack inventory.
-3. Prefer local owner skills for guardrails: `data-platform`, `programming`,
+2. Inspect matching skill bodies under `~/.local/share/skills/<skill-name>`.
+3. Use `referenceOnlySources` as the dormant provider-pack inventory when the
+   generated tree is missing or needs source-level verification.
+4. Prefer local owner skills for guardrails: `data-platform`, `programming`,
    or `dotfiles`.
-4. For provider syntax not covered locally, inspect the pinned source or
+5. For provider syntax not covered locally, inspect the pinned source or
    upstream docs without adding it to loader paths.
-5. Promote only on an explicit active-provider-pack request.
+6. Promote only on an explicit active-provider-pack request.
 
 ## 2. Dormant Packs
 
