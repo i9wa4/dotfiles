@@ -4,18 +4,18 @@ Use this table before drafting when a term, label, heading, category, state,
 condition, event, method/type name, or summary bucket may become vague if it is
 chosen too early.
 
-The original proposal discussed this as `semantic-generation` with a
+The task request framed this as `semantic-generation` with a
 `referent-before-label` rule. In this repo the method is named
 `clarify-concepts` because the reusable operation is concept clarification
 before naming, not broad semantic generation.
 
-## Table
+## 1. Table
 
-| 出典 | 目的 | 具体対象 | 役割 | 前後関係 | 候補語 | 初出定義 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Source or evidence location | Why this row matters | Concrete object, behavior, state, record, value, or relation | One role from the allowed set | Preconditions, sequence, cause/effect, lifecycle, or neighboring concept | Candidate term, filled last | Definition to use at first mention |
+| 出典                                                                                                  | 目的                 | 具体対象                                                     | 役割                          | 前後関係                                                                 | 候補語                      | 初出定義                           |
+| ----------------------------------------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------ | --------------------------- | ---------------------------------- |
+| Public-safe source reference: repo-relative path, stable URL, citation key, or sanitized source label | Why this row matters | Concrete object, behavior, state, record, value, or relation | One role from the allowed set | Preconditions, sequence, cause/effect, lifecycle, or neighboring concept | Candidate term, filled last | Definition to use at first mention |
 
-## Role Choices
+## 2. Role Choices
 
 Choose one role per row:
 
@@ -27,7 +27,7 @@ Choose one role per row:
 - `目的`: intended outcome or reason
 - `手段`: method, mechanism, or action used to reach an outcome
 
-## Procedure
+## 3. Procedure
 
 1. Extract `出典` and `目的` from the source material or task objective.
 2. Write `具体対象` as the concrete referent, not as a candidate label.
@@ -39,18 +39,21 @@ Choose one role per row:
    role, not from a circular label.
 7. Draft the target text from the table.
 
-## Required Discipline
+## 4. Required Discipline
 
 - Do not place a vague term first and then reason from that term.
 - Keep `候補語` rightmost in the table to make it visually and procedurally
   last.
+- For public or permanent output, never put machine-local absolute paths or
+  private workspace paths in `出典`; use repo-relative paths, stable URLs,
+  citation keys, or sanitized source labels.
 - Do not merge rows just because one attractive label could cover them.
 - Prefer ordinary names when the referent is ordinary; the method is not a
   mandate to coin special terminology.
 - Skip the table for simple edits, casual chat, translation-only tasks, or
   generic summaries where concept/naming ambiguity is not a risk.
 
-## Output Pattern
+## 5. Output Pattern
 
 When the table is useful to show, use:
 

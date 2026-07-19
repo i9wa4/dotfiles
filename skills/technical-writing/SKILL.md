@@ -4,8 +4,9 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Prose QA, Vale/Harper, terminology, English/Japanese editing,
-  English-to-Japanese, glossary, rhythm, AI-slop cleanup, publication QA.
+  USE FOR: Prose QA, Vale/Harper, terminology, English/Japanese edits,
+  English-to-Japanese, stable glossaries, rhythm, AI-slop cleanup,
+  publication QA.
   DO NOT USE FOR: AI detector/humanizer workflows, fresh generation,
   meaning-changing rewrites, replacing author judgment, publishing,
   model/cost/privacy, external sharing, or chunking.
@@ -20,7 +21,8 @@ Owns meaning-preserving editing, translation, terminology, rhythm, and QA.
 1. Identify surface: English, Japanese, translation, skill text, or QA.
 2. Preserve meaning. Do not rewrite commands, identifiers, product
    names, paths, code, links, versions, or APIs for style.
-3. Use `clarify-concepts` first when terminology is not conceptually fixed.
+3. Keep glossary/terminology polish here when meanings are stable; use
+   `clarify-concepts` first when they are not.
 4. For generic/AI-like prose, read
    [Prose Review](references/prose-review.md).
 5. For English checks, read
@@ -32,7 +34,7 @@ Owns meaning-preserving editing, translation, terminology, rhythm, and QA.
    [Japanese Writing Style](references/japanese-writing-style.md).
 8. For flat explanatory prose, read
    [Cognitive Rhythm](references/cognitive-rhythm.md). Build rhythm from
-   source material, not meta-commentary.
+   source material.
 9. Apply only clarity changes; preserve facts and intent.
 
 ## 2. Boundaries
