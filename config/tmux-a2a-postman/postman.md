@@ -246,8 +246,26 @@ requests and policy questions about command approval.
   open PRs, or execute the requested command locally.
 - Act as the command approver for `execute-bash` approval requests because the
   Mermaid graph marks `approver` as `command_approver_node`.
-- Verify the requester, label, category, reason, digest, mode, and thread id
-  before deciding.
+- Before deciding, read and apply the prohibited-command policy and rationale:
+  the shared Bash deny SSOT is
+  `nix/home-manager/agents/shared/denied-bash-commands.nix`, and the layer
+  rationale is `skills/dotfiles/references/deny-bash-design.md` plus
+  `skills/dotfiles/references/agent-command-approval-design.md`. The deny list
+  is a guardrail, not the full approval policy.
+- Verify the requester, reviewer, label, category, reason, command digest,
+  mode, thread id, branch/ref or target surface when relevant, and approval
+  evidence before deciding.
+- Reject or return `BLOCKED:` for public GitHub writes unless the request
+  includes explicit current human approval for that specific action. This
+  includes remote ref updates, branch publication, PR creation or update,
+  GitHub comments/reviews, tags, releases, and equivalent commands through
+  `gh`, `git`, scripts, or wrapper lanes.
+- Reject or return `BLOCKED:` for production-data writes unless the request
+  includes explicit current human approval for that specific production action.
+- Treat arbitrary shell through wrapper lanes, including
+  `tmux-a2a-postman execute-bash`, as high-risk unless the inner command and
+  requested side effects are clear. Do not approve a wrapper merely because the
+  wrapper itself is allowed by the Bash deny hook.
 - Decide command approval threads only from the approver pane. Approve by
   replying on the supplied approval thread with a body starting
   `APPROVED: <reason>`, reject with `NOT APPROVED: <reason>`, or use

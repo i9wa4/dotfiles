@@ -39,6 +39,7 @@ installed, validated, or explained.
 - Claude workspace trust: `claude-workspace-trust.md`
 - Codex runtime config: `nix/home-manager/agents/codex/default.nix` and
   `codex-cli.md`
+- Herdr terminal workspace manager: `herdr.md`
 - Claude optimization tracking: `claude-optimization-tracking.md`
 - Claude changelog decisions: `claude-changelog-tracking.md`
 - Codex optimization tracking: `codex-optimization-tracking.md`
@@ -81,6 +82,7 @@ Full diagnosis and commands live in
 - Codex CLI runtime details, hook limitations, and settings categories live in
   [Codex CLI](codex-cli.md); current release decisions live in
   [Codex CLI Optimization Tracking](codex-optimization-tracking.md).
+- Herdr terminal workspace manager notes live in [Herdr](herdr.md).
 - Older Claude Code changelog decisions and release notes live in
   [Claude Changelog Tracking](claude-changelog-tracking.md).
 
@@ -124,5 +126,6 @@ Full diagnosis and commands live in
 - [Claude Workspace Trust](claude-workspace-trust.md)
 - [Codex CLI](codex-cli.md)
 - [Codex CLI Optimization Tracking](codex-optimization-tracking.md)
+- [Herdr](herdr.md)
 - [Claude Changelog Tracking](claude-changelog-tracking.md)
 - [Orchestrator Runbook](orchestrator-runbook.md)
