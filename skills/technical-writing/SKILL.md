@@ -13,34 +13,32 @@ description: |
 
 # Technical Writing
 
-Owns meaning-preserving editing, translation, terminology, AI-slop cleanup,
-rhythm, and QA. Translation: clean source English, then render natural
-Japanese.
+Owns meaning-preserving editing, translation, terminology, rhythm, and QA.
 
 ## 1. Workflow
 
-1. Identify surface: English docs, Japanese prose, translation, skill text, or
-   QA.
+1. Identify surface: English, Japanese, translation, skill text, or QA.
 2. Preserve meaning. Do not rewrite commands, identifiers, product
    names, paths, code, links, versions, or APIs for style.
-3. For generic/AI-like prose, read
+3. Use `clarify-concepts` first when terminology is not conceptually fixed.
+4. For generic/AI-like prose, read
    [Prose Review](references/prose-review.md).
-4. For English checks, read
+5. For English checks, read
    [Vale And Harper](references/vale-and-harper.md).
-5. For English-to-Japanese, clean English first, then read
+6. For English-to-Japanese, clean English first, then read
    [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
    and [Japanese Writing Style](references/japanese-writing-style.md).
-6. For Japanese editorial review, read
+7. For Japanese editorial review, read
    [Japanese Writing Style](references/japanese-writing-style.md).
-7. For accurate but flat explanatory prose, read
+8. For flat explanatory prose, read
    [Cognitive Rhythm](references/cognitive-rhythm.md). Build rhythm from
    source material, not meta-commentary.
-8. Apply only clarity changes; preserve facts and intent.
+9. Apply only clarity changes; preserve facts and intent.
 
 ## 2. Boundaries
 
-Issue 225/226 boundaries: no automation, model/cost/privacy, external-sharing
-approval, derivative publication approval, or chunking.
+Issue 225/226 boundaries: no automation, model/cost/privacy,
+external-sharing approval, derivative publication approval, or chunking.
 
 Do not add direct polished-Japanese drafting from scratch. Repair English
 first, then translate or QA Japanese.

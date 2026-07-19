@@ -34,6 +34,9 @@ behave before conclusions are relied on.
 
 4. Cross-reference: do multiple sources agree? Flag contradictions.
 5. Test when possible: run code, check versions, verify claims hands-on
+6. When synthesis needs categories, labels, or first-use terms before final
+   wording, use `clarify-concepts` after evidence acquisition and before
+   drafting conclusions.
 
 ## 3. Source Priority
 
