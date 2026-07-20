@@ -1,0 +1,15 @@
+id: negative-trigger-003
+name: Negative Trigger 3
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Research whether a CLI tool is available in nixpkgs and add the appropriate Nix install handling."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: negative

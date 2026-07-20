@@ -21,10 +21,12 @@ gates, task artifacts, evidence logs, and handoff/resume.
 3. If the task is fuzzy or has multiple viable approaches, read
    [Brainstorming](references/brainstorming.md) and stabilize the direction
    before drafting the execution plan.
-4. Make the smallest scoped change that satisfies the request.
-5. Run the checks named in the plan authoring guide or the nearest repo
+4. If plan terms, states, conditions, cause categories, or mitigation names are
+   ambiguous, use `clarify-concepts` before the plan language hardens.
+5. Make the smallest scoped change that satisfies the request.
+6. Run the checks named in the plan authoring guide or the nearest repo
    harness.
-6. Report verification results and any remaining risk.
+7. Report verification results and any remaining risk.
 
 ## 2. References
 
