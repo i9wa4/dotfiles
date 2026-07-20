@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Negative Trigger 2
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Translate this short status update from English to Japanese and keep all identifiers unchanged."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: negative

@@ -1,0 +1,15 @@
+id: negative-trigger-005
+name: Negative Trigger 5
+description: Near-neighbor technical-research prompt with stable concepts.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "The categories and labels are already fixed; verify the technical claims and cite current sources for each option."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: negative

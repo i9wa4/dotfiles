@@ -1,0 +1,15 @@
+id: positive-trigger-003
+name: Positive Trigger 3
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "For this research synthesis, choose summary categories only after grounding each category in concrete source referents and first-use definitions."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: positive

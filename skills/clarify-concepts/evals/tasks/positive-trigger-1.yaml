@@ -1,0 +1,15 @@
+id: positive-trigger-001
+name: Positive Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Before drafting this terminology-heavy design doc, build a referent table so concrete referents, roles, sequence, candidate terms, and first-use definitions are fixed before names harden."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: positive

@@ -1,0 +1,15 @@
+id: negative-trigger-006
+name: Negative Trigger 6
+description: Near-neighbor plan-design prompt with stable names.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Create a durable task tracker from this approved checklist; preserve the existing labels, gates, phases, and verification items."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: negative

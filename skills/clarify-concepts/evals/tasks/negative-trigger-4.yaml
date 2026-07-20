@@ -1,0 +1,15 @@
+id: negative-trigger-004
+name: Negative Trigger 4
+description: Near-neighbor technical-writing prompt with stable referents.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Run Vale and Harper on this approved glossary, then fix grammar, spelling, punctuation, and style consistency without changing any entries."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/clarify-concepts/SKILL.md
+      mode: negative
