@@ -241,6 +241,30 @@ running the same command. Keep runtime enforcement in Codex sandboxing, Claude
 permissions/sandboxing, or the shared PreToolUse hooks when the rule must hold
 against bypass.
 
+Approver policy therefore has two separate sources:
+
+- Structured deny data belongs in
+  `nix/home-manager/agents/shared/denied-bash-commands.nix` when the rule is a
+  concrete Bash pattern that should be blocked before execution in both
+  runtimes. Each entry carries its repair-oriented rationale.
+- Human approval gates belong in `config/tmux-a2a-postman/postman.md` because
+  they depend on intent, target surface, provenance, and current human approval
+  evidence rather than only argv tokens.
+
+Do not collapse these into one JSON command list. A structured list is useful
+for deterministic command-pattern denies, but it is the wrong shape for public
+write approval because `gh`, `git`, scripts, and wrapper lanes can express the
+same side effect in many forms. Keep the prose approver contract as the policy
+that interprets side effects and evidence, and keep the Nix deny list as the
+runtime guardrail for concrete prohibited Bash patterns.
+
+The approver contract must reject or block any request that lacks explicit
+current human approval for public GitHub writes, remote ref updates, branch
+publication, PR creation or update, GitHub comments/reviews, tags, releases,
+or production-data writes. `tmux-a2a-postman execute-bash` does not make a
+command safe; the approver must inspect the inner command and requested side
+effects before deciding.
+
 The real approver is not the `reviewer` field in a policy or CLI flag.
 `reviewer` is an audit label. The authenticated approver is the single node
 marked in the `postman.md` Mermaid graph:

@@ -121,6 +121,7 @@ in
       llmAgents.ccusage
       llmAgents.claude-code
       llmAgents.codex
+      llmAgents.herdr
     ]
     ++ lib.optionals (!pkgs.stdenv.isDarwin) [
       pkgs.mise
