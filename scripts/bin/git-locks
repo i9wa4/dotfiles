@@ -6,21 +6,23 @@ set -o pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  git-locks [--all-worktrees] [--clean-stale] [--min-age SECONDS]
+  git-locks [--repo PATH] [--all-worktrees] [--clean-stale] [--clean-unknown] [--min-age SECONDS]
 
 Inspect Git lock files for the current repository. By default this reports
 locks for the current worktree git-dir and the shared common git-dir.
 
 Options:
+  --repo PATH         Inspect PATH instead of the current directory.
   --all-worktrees    Also inspect every linked worktree in this repository.
   --clean-stale      Remove locks whose core.lockfilePid PID is no longer alive.
-  --min-age SECONDS  Minimum lock age before --clean-stale removes it. Default: 5.
+  --clean-unknown    Remove locks without a valid PID sidecar after --min-age.
+  --min-age SECONDS  Minimum lock age before cleanup removes it. Default: 5.
   -h, --help         Show this help.
 EOF
 }
 
 git_readonly() {
-  GIT_OPTIONAL_LOCKS=0 git "$@"
+  GIT_OPTIONAL_LOCKS=0 git -C "$repo_path" "$@"
 }
 
 die() {
@@ -31,11 +33,7 @@ die() {
 file_mtime_epoch() {
   local path="$1"
 
-  if stat -c %Y "$path" >/dev/null 2>&1; then
-    stat -c %Y "$path"
-  else
-    stat -f %m "$path"
-  fi
+  stat -c %Y "$path" 2>/dev/null || stat -f %m "$path" 2>/dev/null
 }
 
 format_age() {
@@ -133,17 +131,28 @@ add_scan_dir() {
 }
 
 clean_stale="false"
+clean_unknown="false"
 all_worktrees="false"
 min_age=5
+repo_path="."
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --repo)
+      [[ $# -ge 2 ]] || die "--repo requires a path"
+      repo_path="$2"
+      shift 2
+      ;;
     --all-worktrees)
       all_worktrees="true"
       shift
       ;;
     --clean-stale)
       clean_stale="true"
+      shift
+      ;;
+    --clean-unknown)
+      clean_unknown="true"
       shift
       ;;
     --min-age)
@@ -164,6 +173,7 @@ done
 
 repo_root=$(git_readonly rev-parse --show-toplevel 2>/dev/null) ||
   die "not inside a Git repository"
+repo_path="$repo_root"
 git_dir=$(git_readonly rev-parse --path-format=absolute --git-dir)
 git_common_dir=$(git_readonly rev-parse --path-format=absolute --git-common-dir)
 now=$(date +%s)
@@ -180,7 +190,7 @@ fi
 if [[ $all_worktrees == "true" ]]; then
   while IFS= read -r worktree_path; do
     [[ -n $worktree_path ]] || continue
-    worktree_git_dir=$(git -C "$worktree_path" rev-parse --path-format=absolute --git-dir 2>/dev/null || true)
+    worktree_git_dir=$(GIT_OPTIONAL_LOCKS=0 git -C "$worktree_path" rev-parse --path-format=absolute --git-dir 2>/dev/null || true)
     [[ -n $worktree_git_dir ]] || continue
     add_scan_dir "$scan_dirs" "worktree:${worktree_path##*/}" "$worktree_git_dir"
   done < <(git_readonly worktree list --porcelain | awk '/^worktree / { sub(/^worktree /, ""); print }')
@@ -215,7 +225,7 @@ while IFS=$'\t' read -r label scan_dir; do
     found="true"
     relative_path=$(relative_lock_path "$scan_dir" "$lock_file")
     display_path="${label}:${relative_path}"
-    mtime=$(file_mtime_epoch "$lock_file")
+    mtime=$(file_mtime_epoch "$lock_file") || continue
     age_seconds=$((now - mtime))
     age=$(format_age "$age_seconds")
     pid_file="${lock_file%.lock}~pid.lock"
@@ -223,6 +233,7 @@ while IFS=$'\t' read -r label scan_dir; do
     state="unknown:no-pid-file"
     action="kept"
     stale="false"
+    unknown="false"
 
     if pid_value=$(read_lock_pid "$pid_file"); then
       pid="$pid_value"
@@ -241,9 +252,11 @@ while IFS=$'\t' read -r label scan_dir; do
       case $? in
         1)
           state="unknown:no-pid-file"
+          unknown="true"
           ;;
         2)
           state="unknown:bad-pid-file"
+          unknown="true"
           ;;
       esac
     fi
@@ -255,8 +268,17 @@ while IFS=$'\t' read -r label scan_dir; do
       else
         action="kept:younger-than-${min_age}s"
       fi
+    elif [[ $clean_unknown == "true" && $unknown == "true" ]]; then
+      if (( age_seconds >= min_age )); then
+        rm -f -- "$lock_file" "$pid_file"
+        action="cleaned:unknown"
+      else
+        action="kept:younger-than-${min_age}s"
+      fi
     elif [[ $stale == "true" ]]; then
       action="candidate:--clean-stale"
+    elif [[ $unknown == "true" ]]; then
+      action="candidate:--clean-unknown"
     fi
 
     display_path=$(shorten "$display_path" 42)

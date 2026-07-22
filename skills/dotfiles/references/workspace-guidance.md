@@ -187,6 +187,14 @@ inspection, cleanup, and baseline verification.
 Use `scripts/bin/git-locks` when a Git command reports an existing lock such as
 `.git/index.lock`.
 
+For the common ghq-wide update case, run `ghq-repo-repair` before
+`ghq get --update --parallel`. It scans every ghq-managed repository, removes
+stale PID-backed locks, removes sufficiently old PID-less lock files, and
+prunes stale worktree administrative entries. The `up` zsh snippet expands to
+`ghq-repo-repair && ghq list | ghq get --update --parallel && ghq-repo-status`.
+Use `ghq-repo-repair --dry-run` to inspect the cleanup candidates without
+changing files.
+
 `git-locks` inspects the current repository with `GIT_OPTIONAL_LOCKS=0`, so the
 diagnostic read should not create optional index locks. By default it scans the
 current worktree git-dir plus the shared common git-dir. Pass
@@ -213,9 +221,11 @@ git-locks --all-worktrees --clean-stale
 ```
 
 Cleanup removes only locks with a valid PID sidecar whose process is not
-running. Locks without a PID sidecar are reported as unknown and are not removed
-automatically. The default cleanup age floor is 5 seconds; override it only for
-tests or when you have just verified the race is impossible:
+running. `--clean-unknown` also removes PID-less or invalid-PID locks after the
+configured age floor; this is intended for old, clearly abandoned locks such as
+failed ghq-wide updates, not for active repositories. The default cleanup age
+floor is 5 seconds; override it only for tests or when you have just verified
+the race is impossible:
 
 ```bash
 git-locks --clean-stale --min-age 0
