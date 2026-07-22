@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ghq-repo-repair [--dry-run] [--min-age SECONDS] [--keep-unknown-locks] [--no-clean-locks] [--no-prune-worktrees]
+
+Repair common transient Git state across ghq-managed repositories.
+
+By default this command:
+  1. removes stale Git lock files that have a dead core.lockfilePid sidecar,
+  2. removes PID-less Git lock files after a conservative age floor,
+  3. prunes stale git-worktree administrative entries.
+
+Locks with a live PID and intentional `git worktree lock` markers are
+respected, not removed.
+
+Options:
+  --dry-run              Inspect locks and worktree prune candidates without changing them.
+  --min-age SECONDS      Minimum lock age before removal. Default: 300.
+  --keep-unknown-locks   Do not remove old locks without a valid PID sidecar.
+  --no-clean-locks       Skip stale Git lock cleanup.
+  --no-prune-worktrees   Skip `git worktree prune`.
+  -h, --help             Show this help.
+EOF
+}
+
+die() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+require_command() {
+  local command_name="$1"
+
+  command -v "$command_name" >/dev/null 2>&1 ||
+    die "required command not found: ${command_name}"
+}
+
+ghq_root_with_trailing_slash() {
+  local root="$1"
+
+  [[ $root == */ ]] || root="${root}/"
+  printf '%s\n' "$root"
+}
+
+repo_label() {
+  local repo_path="$1"
+
+  case "$repo_path" in
+    "$ghq_root"*)
+      printf '%s\n' "${repo_path#"$ghq_root"}"
+      ;;
+    *)
+      printf '%s\n' "$repo_path"
+      ;;
+  esac
+}
+
+is_git_repository() {
+  local repo_path="$1"
+
+  [[ -d "${repo_path}/.git" || -f "${repo_path}/.git" ]]
+}
+
+print_nonempty_output() {
+  local heading="$1"
+  local output_file="$2"
+
+  [[ -s $output_file ]] || return 0
+  printf '%s\n' "$heading"
+  sed 's/^/  /' "$output_file"
+}
+
+repair_repo() {
+  local repo_path="$1"
+  local label
+  local locks_output
+  local prune_output
+  local -a clean_args
+
+  is_git_repository "$repo_path" || return 0
+  label=$(repo_label "$repo_path")
+
+  if [[ $clean_locks == "true" ]]; then
+    locks_output=$(mktemp /tmp/ghq-repo-repair-locks.XXXXXX)
+    if [[ $dry_run == "true" ]]; then
+      git-locks --repo "$repo_path" --all-worktrees --min-age "$min_age" >"$locks_output" 2>&1 || {
+        print_nonempty_output "[${label}] git-locks failed:" "$locks_output"
+        rm -f "$locks_output"
+        return 1
+      }
+    else
+      clean_args=(--clean-stale)
+      if [[ $clean_unknown_locks == "true" ]]; then
+        clean_args+=(--clean-unknown)
+      fi
+      git-locks --repo "$repo_path" --all-worktrees "${clean_args[@]}" --min-age "$min_age" >"$locks_output" 2>&1 || {
+        print_nonempty_output "[${label}] git-locks failed:" "$locks_output"
+        rm -f "$locks_output"
+        return 1
+      }
+    fi
+
+    if ! grep -qx 'No Git lock files found.' "$locks_output"; then
+      print_nonempty_output "[${label}] git locks:" "$locks_output"
+    fi
+    rm -f "$locks_output"
+  fi
+
+  if [[ $prune_worktrees == "true" ]]; then
+    prune_output=$(mktemp /tmp/ghq-repo-repair-prune.XXXXXX)
+    if [[ $dry_run == "true" ]]; then
+      GIT_OPTIONAL_LOCKS=0 git -C "$repo_path" worktree prune --dry-run --verbose >"$prune_output" 2>&1 || {
+        print_nonempty_output "[${label}] git worktree prune failed:" "$prune_output"
+        rm -f "$prune_output"
+        return 1
+      }
+    else
+      GIT_OPTIONAL_LOCKS=0 git -C "$repo_path" worktree prune --verbose >"$prune_output" 2>&1 || {
+        print_nonempty_output "[${label}] git worktree prune failed:" "$prune_output"
+        rm -f "$prune_output"
+        return 1
+      }
+    fi
+
+    print_nonempty_output "[${label}] worktree prune:" "$prune_output"
+    rm -f "$prune_output"
+  fi
+}
+
+repair_all_repositories() {
+  local repo_path
+  local failures=0
+
+  while IFS= read -r repo_path; do
+    [[ -n $repo_path ]] || continue
+    repair_repo "$repo_path" || failures=$((failures + 1))
+  done < <(ghq list -p)
+
+  if (( failures > 0 )); then
+    echo "Warning: repair failed for ${failures} repository/repositories." >&2
+    return 1
+  fi
+}
+
+dry_run="false"
+clean_locks="true"
+clean_unknown_locks="true"
+prune_worktrees="true"
+min_age=300
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dry-run)
+      dry_run="true"
+      shift
+      ;;
+    --min-age)
+      [[ $# -ge 2 ]] || die "--min-age requires a value"
+      min_age="$2"
+      [[ $min_age != *[!0-9]* ]] || die "--min-age must be a non-negative integer"
+      shift 2
+      ;;
+    --keep-unknown-locks)
+      clean_unknown_locks="false"
+      shift
+      ;;
+    --no-clean-locks)
+      clean_locks="false"
+      shift
+      ;;
+    --no-prune-worktrees)
+      prune_worktrees="false"
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "unknown option: $1"
+      ;;
+  esac
+done
+
+require_command ghq
+require_command git
+require_command git-locks
+
+ghq_root_raw=$(ghq root 2>/dev/null) ||
+  die "could not determine ghq root"
+[[ -n $ghq_root_raw ]] || die "could not determine ghq root"
+ghq_root=$(ghq_root_with_trailing_slash "$ghq_root_raw")
+
+if [[ $dry_run == "true" ]]; then
+  echo "* Inspecting ghq repositories without changing files."
+else
+  echo "* Repairing ghq repositories before update."
+fi
+repair_all_repositories
+
+if [[ $dry_run == "true" ]]; then
+  echo "* Dry run complete."
+fi
