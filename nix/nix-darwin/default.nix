@@ -124,7 +124,7 @@
         # Automatically rearrange spaces based on most recent use. Nix default is null; macOS default is true.
         mru-spaces = false;
         # Size of the icons in the dock. Nix default is null; macOS default is 64.
-        tilesize = 48;
+        tilesize = 64;
       };
 
       # ------------------------------------------------------------------------
@@ -351,16 +351,6 @@
           # USB drives. macOS default is false.
           DSDontWriteUSBStores = true;
         };
-        # Mission Control keyboard shortcuts
-        # 118: Switch to Desktop 1, 119: Switch to Desktop 2, 120: Switch to Desktop 3
-        # parameters: (ASCII code, key code, modifier) / 524288 = Option (Alt)
-        # "com.apple.symbolichotkeys" = {
-        #   AppleSymbolicHotKeys = {
-        #     "118" = { enabled = 1; value = { parameters = [ 49 18 524288 ]; type = "standard"; }; };
-        #     "119" = { enabled = 1; value = { parameters = [ 50 19 524288 ]; type = "standard"; }; };
-        #     "120" = { enabled = 1; value = { parameters = [ 51 20 524288 ]; type = "standard"; }; };
-        #   };
-        # };
       };
     };
 
