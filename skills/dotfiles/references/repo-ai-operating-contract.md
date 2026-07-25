@@ -42,9 +42,13 @@ skill bodies live in top-level `skills/<name>/SKILL.md`; postman
 injects a generated catalog for that local skill tree through `skill_path`.
 
 <!-- private-content-scan: allow-next-line -->
-There is no generated root instruction file under `~/.claude/` or `~/.codex/`
-for this repo. Direct non-postman sessions rely on the installed runtime
-settings and skill trees until they receive a postman event.
+The full persona / language / scope prompt is not installed as a generated
+runtime-root instruction file under `~/.claude/` or `~/.codex/`. Minimal
+direct-invocation fallbacks remain: `~/.claude/CLAUDE.md` and
+`~/.codex/AGENTS.md`, both derived from
+`nix/home-manager/agents/shared/AGENTS.md`. Direct non-postman sessions use
+those fallbacks, installed runtime settings, and skill trees until they receive
+a postman event.
 
 ### 2.2. Declarative installation
 
@@ -190,7 +194,8 @@ surfaces allow:
 
 The Claude runtime currently carries:
 
-- `UserPromptSubmit` for role, cwd, git, and usage context
+- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
+  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for shared Bash denials
 - `PreToolUse` for Claude-only role write denials
 
@@ -198,8 +203,10 @@ The Claude runtime currently carries:
 
 The Codex runtime currently carries:
 
-- `UserPromptSubmit` for role, cwd, and git context
+- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
+  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for Bash denials
+- `PreToolUse` observer for `apply_patch|Edit|Write` write-tool payloads
 
 The surface is not identical, but the repo is aiming for equivalent operating
 discipline.

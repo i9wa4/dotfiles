@@ -130,11 +130,12 @@ without being able to mutate the repo. It reads `pane_title` via
 roles when the target file is outside the allowlisted state
 directories.
 
-Codex does not yet have comparable enforcement because Codex's multi-agent
-model is different — there is no equivalent `pane_title` role contract to
-enforce against. This asymmetry is deliberate, not drift, and it should stay
-asymmetric unless Codex grows a role contract worth gating on or local payload
-observations prove that role-aware deny logic can be implemented reliably.
+Codex preserves the same tmux `pane_title` role identity by setting
+`tui.terminal_title = []`. It does not yet have comparable enforcement because
+the observed Codex write-hook payload has not supplied a validated mapping from
+that identity to a hook invocation, nor a validated deny/blocking result. This
+asymmetry is deliberate, not drift, and should remain until focused real-write
+validation proves both pieces.
 
 Codex's primary file-edit primitive is `apply_patch` (a single patch-applied
 tool), not the Write/Edit/NotebookEdit triple Claude exposes. The current Codex
@@ -144,6 +145,23 @@ unless `CODEX_HOOK_OBSERVE_DIR` overrides the directory; it does not deny. If
 enforcement is added later, the matcher and patch-shaped payload differ enough
 that the script body should stay separate from Claude's pane-title-aware
 deny-write hook.
+
+### 4.2. Codex Role Configuration Is Not Role-Based Enforcement
+
+Codex CLI v0.145.0 stabilizes multi-agent role configuration: `[agents]` can
+set subagent model, reasoning effort, and concurrency, and generated agent
+files provide per-role prompts. That is useful for assigning work, but it is
+not an authorization signal comparable to the tmux pane title consumed by
+`claude-pretooluse-deny-write.sh`.
+
+Keep the shared policy in `postman.md`, shared prompt sources, and the common
+Bash deny hook. Keep runtime enforcement deliberately different: Claude can
+apply the established pane-title write gate; Codex continues to observe actual
+write-hook payloads. Codex's documented `PreToolUse` matcher covers
+`apply_patch` (with `Edit` and `Write` aliases), but the observer has not yet
+supplied evidence for a dependable role-to-write mapping or blocking behavior.
+Do not convert the observer into a deny hook until a focused, real-write
+validation proves both.
 
 ## 5. Direction We Want To Keep Pulling In
 
@@ -167,7 +185,7 @@ The script directory naming convention we are converging on:
 | Prefix        | Meaning                                                                   |
 | ------------- | ------------------------------------------------------------------------- |
 | `claude-*.sh` | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).           |
-| `codex-*.sh`  | Codex-only by design (none currently).                                    |
+| `codex-*.sh`  | Codex-only by design (e.g. `codex-pretooluse-observe-write.sh`).          |
 | `common-*.sh` | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`). |
 | `<no prefix>` | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                |
 

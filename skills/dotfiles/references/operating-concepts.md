@@ -225,8 +225,8 @@ Across Claude and Codex, hooks currently do two load-bearing jobs:
 The Claude side has the richer hook surface, so it carries one additional
 role-readonly guard:
 
-- `common-userpromptsubmit.sh claude` injects time, role, cwd, git, add-dir,
-  and usage context
+- `common-userpromptsubmit.sh claude` injects time, role, cwd, git, launch
+  command, and add-dir path/context
 - `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
 - `claude-pretooluse-deny-write.sh` prevents non-worker role panes from
   mutating files outside approved state directories
@@ -235,9 +235,12 @@ role-readonly guard:
 
 The Codex side uses the hooks it has to approximate the same contract:
 
-- `common-userpromptsubmit.sh codex` injects time, role, cwd, git, and
-  add-dir context
+- `common-userpromptsubmit.sh codex` injects time, role, cwd, git, launch
+  command, and add-dir path/context
 - `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
+- `codex-pretooluse-observe-write.sh` observes and logs `apply_patch|Edit|Write`
+  write-tool payloads; it is non-enforcing and does not provide locally
+  validated role-based write denial
 
 The hook surfaces are intentionally small after the 2026-04-29 reduction. The
 repo relies on durable `mkmd` artifacts and postman traffic for handoff state
