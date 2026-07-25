@@ -34,7 +34,7 @@ let
     };
   };
   skhdConfig = ''
-    # App switching: Alt + 1/2/3
+    # App switching: Alt + Number
     alt - 1 : open -a "kitty"
     alt - 2 : open -a "Google Chrome"
   '';
