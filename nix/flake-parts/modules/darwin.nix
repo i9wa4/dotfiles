@@ -93,9 +93,9 @@ let
             onActivation = {
               autoUpdate = true;
               upgrade = false;
-              # Homebrew 6 deprecated `brew bundle install --cleanup`; use
-              # `brew bundle cleanup --file <Brewfile> --force` explicitly
-              # when needed.
+              # Remove Homebrew packages and casks not declared in this module
+              # during `nix run '.#switch'`.
+              cleanup = "uninstall";
             };
           };
 
