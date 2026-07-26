@@ -168,22 +168,29 @@ Ignore any release entries for versions newer than `codex --version`.
   rejection tells the agent what to do next, not just what was blocked
 - YOU MUST: Treat Codex write-tool control as observational until local hook
   payloads prove enough structure for reliable deny logic
-- NOTE: As of Codex CLI v0.144.4, official docs say `PreToolUse` can match
+- NOTE: As of Codex CLI v0.145.0, official docs say `PreToolUse` can match
   canonical `Bash`, `apply_patch`, and MCP tool names; `apply_patch` also
-  matches `Edit` and `Write`. The Codex-only
-  `PreToolUse` matcher=`apply_patch|Edit|Write` observer remains observational
-  until local hook payloads prove enough structure for reliable deny logic. The
-  script is
+  matches `Edit` and `Write`. The Codex-only `PreToolUse`
+  matcher=`apply_patch|Edit|Write` observer remains observational until local
+  hook payloads prove enough structure for reliable deny logic and blocking
+  behavior. The script is
   `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`; it
-  appends metadata to the Codex write-tool observation log. A restarted
-  agent pane created and removed a temporary file with the Codex `apply_patch`
-  file tool on 2026-05-11; the observer log stayed at the single manual
-  script-test entry. Keep the hook installed because it is low-risk and will
-  reveal payload shape, but do not claim it currently controls real
-  `apply_patch` writes.
-- NEVER: Rely on unsupported `permissionDecision: "ask"` / `"allow"`,
-  `updatedInput`, or `additionalContext` fields for `PreToolUse`; the current
-  runtime parses them but fails open
+  appends metadata to
+  `~/.cache/codex/hook-observations/pretooluse-write-tools.jsonl`. Live
+  inspection on 2026-07-25 with
+  `jq -s '{record_count:length, tool_names:([.[].tool_name] | unique), most_recent:.[-1]}'`
+  reported 2,468 records, `tool_names: ["apply_patch"]`, and a most-recent
+  `PreToolUse` record at `2026-07-25T08:18:11Z` from another local repository
+  cwd. Its scalar paths included `cwd`, `tool_input.command`, `tool_name`,
+  `session_id`, and `turn_id`. This proves that real `apply_patch` activity
+  reaches the observer, but does not validate role-to-title mapping or blocking
+  enforcement; do not claim that the hook controls writes.
+- NEVER: Treat `permissionDecision: "ask"` as a supported `PreToolUse`
+  outcome. Current Codex documentation establishes that `PreToolUse` can
+  inspect JSON arguments and block or rewrite a local tool call. This repo has
+  not used or locally validated allow decisions, input rewrites, or additional
+  context for role-to-title mapping or blocking enforcement, so none is an
+  active local role-control guarantee.
 - NOTE: Official docs list `SessionStart`, `PreToolUse`, `PermissionRequest`,
   `PostToolUse`, `PreCompact`, `PostCompact`, `UserPromptSubmit`,
   `SubagentStart`, `SubagentStop`, and `Stop` as supported events. Matchers are

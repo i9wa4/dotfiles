@@ -6,19 +6,22 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.210 (2026-07-15)
+Last reviewed Claude Code version: v2.1.220 (2026-07-25)
 
-Review confirmation (2026-07-15): local `claude --version` reported
-`2.1.210 (Claude Code)`, and the official
-`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.210`
-section. This pass migrated file-edit deny rules from invalid
-`Write(path)` syntax to `Edit(path)` after v2.1.210 added startup warnings for
-`Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules.
+Review confirmation (2026-07-25): local `claude --version` reported
+`2.1.220 (Claude Code)`, and the official
+`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.220`
+section. This pass reviewed 2.1.211 through 2.1.220. The prior pass migrated
+file-edit deny rules from invalid `Write(path)` syntax to `Edit(path)` after
+v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
+`Glob(path)` permission rules.
 
 ### 1.1. Applied Optimizations
 
-- [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`
+- [x] The full runtime-root persona/scope prompt was removed; persona and scope
+  now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  direct-invocation fallback remains at `~/.claude/CLAUDE.md`, derived from
+  `nix/home-manager/agents/shared/AGENTS.md`.
 - [x] Skills installed through `shared/agent-skills.nix`
 - [x] Claude agents generated from
   `nix/home-manager/agents/subagents/*.md` plus
@@ -314,6 +317,23 @@ section. This pass migrated file-edit deny rules from invalid
 - [x] Background-agent attach, memory, MCP refresh, terminal rendering, and
   telemetry-redaction fixes through v2.1.210 - product reliability; current
   harness benefits automatically with no source change.
+
+#### 1.2.7. v2.1.211 -> v2.1.220 candidates (added 2026-07-25)
+
+- [x] Claude Opus 5 default, dynamic-workflow sizing, nested-subagent
+  forwarding, and related background-agent reliability changes (v2.1.211-
+  v2.1.220) - no managed setting change. Launchers retain their explicit
+  model/effort choices and the postman topology remains the authority for
+  orchestration.
+- [x] `DirectoryAdded` hook (v2.1.219) - no new hook. The existing role policy
+  is tied to tmux pane identity and tool use, not directory registration.
+- [ ] `sandbox.network.strictAllowlist` (v2.1.219) - defer. It is a useful
+  sandbox control, but these headless panes deliberately use bypass
+  permissions and have no reviewed end-to-end sandbox policy yet. They
+  therefore have no enforced egress allowlist. Do not add a partial allowlist
+  that could silently break MCP, package, or documentation
+  access.
+- [x] 2.1.220 bug-fix-only release - no source migration.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).

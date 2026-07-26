@@ -5,19 +5,25 @@ and version history for Codex CLI. The runtime overview lives in `codex-cli.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.144.4 (2026-07-15)
+Last reviewed Codex CLI version: v0.145.0 (2026-07-25)
 
-Review confirmation (2026-07-15): local `codex --version` reported
-`codex-cli 0.144.4`, and the official `openai/codex` release
-`rust-v0.144.4` is the latest stable release. Newer
-`rust-v0.145.0-alpha.*` releases are prereleases and are not treated as active
-local behavior.
+Review confirmation (2026-07-25): local `codex --version` reported
+`codex-cli 0.145.0`, and the official stable `openai/codex` release
+`rust-v0.145.0` was published on 2026-07-21. This pass excludes only releases
+newer than that installed version.
 
-### 1.1. Release Catch-up (v0.136.0 -> v0.144.4)
+### 1.1. Release Catch-up (v0.136.0 -> v0.145.0)
 
-Stable releases through the locally installed `codex-cli 0.144.4` add mostly
+Stable releases through the locally installed `codex-cli 0.145.0` add mostly
 product/runtime capabilities rather than required dotfiles config changes:
 
+- v0.145.0 stabilizes multi-agent V2, including configurable subagent models,
+  reasoning levels, concurrency, role restoration, and agent navigation. The
+  existing generated per-agent TOML remains the role-definition source; do not
+  add global `[agents]` defaults because they would broaden behavior beyond
+  the launcher and per-agent defaults already in use. This release does not
+  establish a role-to-tmux-pane identity mapping or a reliable role-based
+  write-deny output contract, so the Codex write hook remains observational.
 - v0.144.4 is a patch release with no user-facing changes.
 - v0.144.3 is a version-only release with no merged PR changes after v0.144.2.
 - v0.144.2 restores the previous Guardian auto-review policy, request format,
@@ -108,16 +114,23 @@ incident runbook is archived in the private vault
 
 ### 1.3. Applied Optimizations
 
-- [x] Runtime-root instruction file removed; persona and scope now flow through
-  `config/tmux-a2a-postman/postman.md`; applicable skills flow through the
-  generated `skill_path` catalog, while catch-all repo background lives in docs
-- [x] skills/ symlinked to Claude Code skills
+- [x] The full runtime-root persona/scope prompt was removed; persona and scope
+  now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  direct-invocation fallback remains at `~/.codex/AGENTS.md`, derived from
+  `nix/home-manager/agents/shared/AGENTS.md`; applicable skills flow through
+  the generated `skill_path` catalog, while catch-all repo background lives in
+  docs.
+- [x] Separate minimal/allowlisted Codex skills bundle materialized by
+  `nix/home-manager/agents/shared/agent-skills.nix`; Codex does not symlink or
+  consume Claude's full active skill set
 - [x] Shared Bash command-deny policy enforced through the Codex
   `PreToolUse` matcher=`Bash`; `default.rules` is not generated for the
   shared deny set.
-- [x] Home-level Codex hooks reduced to the load-bearing minimum:
-  `UserPromptSubmit` (shared `common-userpromptsubmit.sh codex`) and
-  `PreToolUse` matcher=`Bash` (shared `pretooluse-deny-bash.sh`).
+- [x] Home-level Codex hooks reduced to the load-bearing set:
+  `UserPromptSubmit` (shared `common-userpromptsubmit.sh codex`),
+  `PreToolUse` matcher=`Bash` (shared `pretooluse-deny-bash.sh`), and
+  `PreToolUse` matcher=`apply_patch|Edit|Write`
+  (`codex-pretooluse-observe-write.sh`, observational).
   Removed 2026-04-29: `SessionStart` (`codex-sessionstart-reload.sh`),
   `PostToolUse` matcher=`Bash` (`codex-posttooluse-review.sh`), and
   `Stop` (`codex-stop-save.sh`) — see commit `6add5abb`.
@@ -131,8 +144,9 @@ incident runbook is archived in the private vault
   and sed delimiter fixes). See commit `5fb7e44a`.
 - [x] Shared deny-bash justifications upgraded from bare denials to repair
   guidance for both Claude Code and Codex CLI
-- [x] Codex `UserPromptSubmit` now carries time, role, cwd, and git context
-  (via shared `common-userpromptsubmit.sh codex`)
+- [x] Codex `UserPromptSubmit` now carries time, role, cwd, git, launch
+  command, and add-dir path/context (via shared
+  `common-userpromptsubmit.sh codex`)
 - [x] `model_auto_compact_token_limit =
   builtins.floor (codexContextWindow * 0.7)` autocompact at 70% (190,400
   tokens for gpt-5.x 272k window)
@@ -140,8 +154,9 @@ incident runbook is archived in the private vault
   `pane_title` stays reserved for role identity (v0.117.0)
 - [x] `codexScriptsDir` switched from `codex-*` glob to explicit `ln` list
   (commit `5fb7e44a`). The old glob would have expanded to literal
-  `codex-*` after consolidation (no codex-prefixed scripts left) and
-  failed the `runCommand` build. The explicit list also documents the
+  `codex-*` after consolidation and failed the `runCommand` build. The
+  explicit list retains the Codex-only `codex-pretooluse-observe-write.sh`
+  observer and documents the
   Codex consumed surface in one place.
 - [x] Removed `features.apps = false` on 2026-05-31 to allow Codex Apps by
   default again. It had been added 2026-05-03 after observing `codex_apps` MCP
@@ -200,6 +215,9 @@ incident runbook is archived in the private vault
   are generated from `nix/home-manager/agents/subagents/*.md` plus
   `nix/home-manager/agents/subagents/metadata.nix` by
   `shared/install-manifest.nix` and installed by `codex/default.nix`
+- [x] Multi-agent V2 role configuration reviewed at v0.145.0. Per-agent
+  generated TOML and launcher model/effort choices remain the narrowest
+  configuration surface; no global `[agents]` default is required.
 - [x] Status line permission/approval indicators - adopted after v0.131.0 added
   native TUI status items; generated `config.toml` now renders `permissions`
   and `approval-mode` next to model/context/version so `--yolo` and sandbox
@@ -224,10 +242,19 @@ incident runbook is archived in the private vault
 - `tui.notifications_method` - keep default
 - `CLAUDE_CODE_DISABLE_CRON` env - N/A for Codex CLI
 - `approval_policy: on-failure` - deprecated (v0.102.0); not used in config
-- `PreToolUse` / `PostToolUse` matcher patterns like `Write|Edit` - current
-  Codex runtime only emits `Bash`, so these configs are misleading today
-- `permissionDecision: "ask"` / `"allow"` and `updatedInput` in `PreToolUse` -
-  current runtime parses them but does not enforce them
+- role-based write enforcement in Codex - v0.145.0 has stable role
+  configuration and `PreToolUse` can match `apply_patch` (including `Edit` and
+  `Write` aliases). Codex preserves the existing tmux pane-title role identity
+  through `tui.terminal_title = []`, but the observed hook payload does not yet
+  provide a validated role-to-title mapping or deny/blocking enforcement.
+  Keep the write hook as an observer until actual write-path payloads and a
+  deny result are validated.
+- `permissionDecision: "ask"` is not a supported `PreToolUse` outcome. The
+  current Codex manual documents JSON-argument inspection plus call blocking
+  and rewriting, but this repo has not used or locally validated allow
+  decisions, input rewrites, or additional context as a role-enforcement
+  mechanism. The managed configuration does not currently depend on any of
+  those capabilities for role-to-title mapping or blocking enforcement.
 - PostToolUse Bash hooks at all - the previous `codex-posttooluse-review.sh`
   feedback decorator was removed 2026-04-29 (commit `6add5abb`); the agent
   reads command failures directly from stdout/stderr without a hook
@@ -250,6 +277,12 @@ incident runbook is archived in the private vault
 
 ### 1.6. Version Notes
 
+- v0.145.0 (2026-07-21): Latest stable at review time; local `codex --version`
+  reported `codex-cli 0.145.0`. Stabilized multi-agent V2 with configurable
+  subagent models, reasoning, concurrency, restored roles, and improved agent
+  navigation. No runtime config change: generated per-agent TOML and launcher
+  defaults already define the active roles, while role-based write enforcement
+  remains deliberately unimplemented pending reliable hook validation.
 - v0.144.4 (2026-07-14): Latest stable at review time; patch release with no
   user-facing changes. Local `codex --version` reported `codex-cli 0.144.4`.
 - v0.144.3 (2026-07-13): Version-only release with no merged PR changes after
