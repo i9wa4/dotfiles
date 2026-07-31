@@ -224,7 +224,7 @@
         # Accessibility > Display
         "com.apple.Accessibility" = {
           # Color Filters: Grayscale. macOS default is 0 (off).
-          GrayscaleDisplay = 1;
+          GrayscaleDisplay = 0;
           # Differentiate without color. macOS default is 0 (off).
           DifferentiateWithoutColor = 1;
           # Dim flashing lights. macOS default is 0 (off).
@@ -234,11 +234,11 @@
         };
         "com.apple.mediaaccessibility" = {
           # Enable color filters. macOS default is 0 (off).
-          "__Color__-MADisplayFilterCategoryEnabled" = 1;
+          "__Color__-MADisplayFilterCategoryEnabled" = 0;
           # Color filter type. macOS default is not set until Color Filters is configured; 1 = Grayscale.
           "__Color__-MADisplayFilterType" = 1;
           # Color filter intensity slider. macOS default is not set until Color Filters is configured.
-          MADisplayFilterGrayscaleCorrectionIntensity = 0.5;
+          MADisplayFilterGrayscaleCorrectionIntensity = 0.25;
         };
         # Spotlight search results. macOS default is system-managed.
         # Note: Enable only Applications; disable all other result categories.
