@@ -1,0 +1,15 @@
+id: positive-trigger-003
+name: Positive Trigger 3
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Run parallel guardian/critic reviewer waves to convergence: preserve stable finding IDs, batch all material defects, reconcile fixes against frozen verification targets, quarantine invalid packets, handle missing evidence, authority gaps, cap exhaustion, and criterion changes, then perform final confirmation."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/subagent-review/SKILL.md
+      mode: positive

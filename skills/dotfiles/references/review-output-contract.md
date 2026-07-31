@@ -11,6 +11,7 @@ review-oriented prompt.
 
 ```json
 {
+  "perspective": "architecture",
   "verdict": "approve",
   "summary": "Terse ship or no-ship assessment.",
   "findings": [
@@ -41,8 +42,19 @@ review-oriented prompt.
   speculation.
 - Every finding must include file and line coordinates, honest confidence, and
   a concrete recommendation.
+- A blind reviewer uses a projection-relative alias path and line coordinates;
+  use `no file applicable` when no inspected file supports the finding. The
+  Guardian control envelope binds aliases to real repository paths after review.
 - Keep claims grounded in inspected files or tool output.
 - Prefer one strong finding over several weak ones.
+
+### 2.1. Normal and blind modes
+
+Normal mode uses real repository paths and any inspected Issue/PR/commit
+evidence. Blind mode uses exactly one identity-safe representation: a supplied
+projection-relative alias path and line coordinates, or `no file applicable`.
+Blind mode never emits or infers real paths, filenames, Issue/PR/commit IDs,
+URLs, authors, branches, timestamps, or candidate identity.
 
 ## 3. Severity Guidance
 

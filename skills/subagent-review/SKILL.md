@@ -3,46 +3,42 @@ name: subagent-review
 license: MIT
 metadata:
   version: "1.0.0"
-description: "USE FOR: Guardian/critic reviews: native multi-perspective reviewer waves, peer critic review evidence, guardian verdict aggregation, synthesis of blocking findings. DO NOT USE FOR: implementation, dispatcher fan-out, model/tier overrides, or public posting."
+description: "USE FOR: Guardian/critic native multi-perspective review workflow, peer critic evidence, material-finding convergence, and blocking-finding synthesis. DO NOT USE FOR: implementation, dispatcher fan-out, overrides, or public posting."
 ---
 
 # Subagent Review
 
-Native reviewer perspectives: security, architecture, historian, code, QA.
-No implementation, approval, fan-out, or overrides.
+## 1. Ledger
 
-## 1. Workflow
+1. Before review, guardian freezes target, criteria, scope, and the
+   design/public boundary. Broadening is recorded, never inferred.
+2. Guardian owns a never-reused ledger (`F-001`); use the
+   [contract](references/review-topology.md) for required fields and reports.
+3. Guardian alone decides materiality and convergence; packets supply
+   observations, evidence, and risk signals. Nits never gate rework. Invalid
+   packets, missing evidence, authority gaps, cap exhaustion, and criterion
+   changes are guardian-recorded states.
 
-1. Run the cheapest verifier first.
-2. Each role: five subagent perspectives + one self-review (six inputs).
-   Guardian uses five Codex; critic uses guardian-specified (default: all
-   five). Guardian narrows; critic never self-selects.
-3. Self-review accompanies the wave, never replaces it. Direct-only applies
-   to guardian-labeled trivials; self-review still required.
-4. Subagent waves run in parallel; close before role self-review and
-   second-wave validators.
-5. Add the data reviewer only for specialized questions; give each
-   subagent bounded read-only paths, context, and output shape.
-6. Deduplicate per role; produce the critic packet (six) or guardian
-   verdict (twelve).
+## 2. Review to Convergence
 
-## 2. Role Rules
+1. Run cheapest verification. Guardian defines the required perspective set;
+   critic is guardian-specified and never self-selects. Waves are parallel.
+2. Deduplicate. Guardian MUST request critic for substantive review; critic
+   returns its set plus self-review; guardian aggregates both sets. Reviewers
+   never edit, commit, push, approve, or decide materiality. See the packet
+   schema and blind-projection contract in
+   [contract](references/review-topology.md).
+3. Each round reconciles every prior ID: recurrence, regression, new discovery,
+   closure, supersession, accepted risk, or unchanged; record changed criteria.
+4. Review the full change, then deduplicate material findings and freeze IDs,
+   closure conditions, and reproducible verification in one executor batch.
+   After rework, verify and review only that set unless scope/criteria changed.
+5. Repeat batched fix → verification → diff-review until closure, then final
+   confirmation. Cap: initial plus two failed reworks. At cap/unavailable
+   evidence, `BLOCKED` includes IDs, gap, authority needed, and next owner.
+   Quarantine invalid packets before a round; they consume no rework slot.
 
-- Guardian: five Codex subagents + one self-review (six); aggregates all six
-  into the intermediary result. MUST request critic for substantive reviews.
-- Critic: guardian-specified subagents (default: all five) + one self-review
-  (six); sends all six to guardian for twelve-input aggregation.
-- Guardian aggregates twelve (six + six) into the final verdict.
-- Postman request to critic authorizes launches. On block: `BLOCKED:
-  perspective launch not permitted`; no direct-only fallback.
-- Trivials may omit subagents when guardian so labels; self-review still
-  required.
-- Critic sends result to guardian, not orchestrator.
-- Reviewer subagents must not edit, commit, push, or approve.
-- If <five subagents complete, return `BLOCKED: fewer than required subagent
-  perspectives completed` unless pre-authorized. Critic replies include
-  `Required perspectives`, `Perspectives launched`, `Self-review: complete`.
+## 3. Round Report
 
-## 3. Output
-
-Perspective, paths, evidence, severity, confidence.
+Each round follows the [contract](references/review-topology.md): frozen
+scope/criteria/targets, ledger, evidence, batch, verdict, and next action.

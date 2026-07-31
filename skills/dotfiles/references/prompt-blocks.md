@@ -159,7 +159,39 @@ finalizing.
 </dig_deeper_nudge>
 ```
 
-## 14. `progress_updates`
+## 14. `decision_quality_check`
+
+Use for research, diagnosis, recommendation, or review prompts where the agent
+must reach a defensible conclusion without overstating certainty.
+
+```xml
+<decision_quality_check>
+Run at least two genuinely independent checks before relying on a conclusion;
+if only one is feasible, say so and lower confidence.
+Do not relabel the same evidence as independent confirmation.
+For consequential work, keep a cumulative finding ledger across the task:
+claims and assumptions, supporting and conflicting evidence, confidence or
+uncertainty, discarded alternatives, and newly discovered relevant issues.
+Revisit the accumulated ledger before later decisions and self-audits. Add new
+relevant findings as they emerge; mark resolved items closed only when closure
+is supported by evidence.
+In a review workflow, only Guardian/critic synthesis owns that authoritative
+ledger. Reviewer checks are packet-local: they cannot create, close, or change
+Guardian ledger IDs.
+Challenge the load-bearing assumption only when a concrete alternative, failure
+mode, or counterexample could change the decision.
+State a direct recommendation when evidence supports one, then name material
+uncertainty and what would change the conclusion.
+Do not expose private chain-of-thought. For the decision-quality audit summary
+only, report at most three concise bullets: lead claim, disconfirming check or
+why none was feasible, and decision impact. This cap does not limit required
+review findings, attestations, or task output sections.
+Use neutral language: no pressure, flattery, shame, false urgency, or emotional
+steering.
+</decision_quality_check>
+```
+
+## 15. `progress_updates`
 
 Use when the run may take a while.
 

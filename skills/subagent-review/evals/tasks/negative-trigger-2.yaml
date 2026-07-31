@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Negative Trigger 2 — Cosmetic Micro-edits
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Dispatch a fan-out of routing agents to assign implementation tasks across the repository."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/subagent-review/SKILL.md
+      mode: negative
