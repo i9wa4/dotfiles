@@ -41,6 +41,15 @@ Project historian. Digs through context before passing judgment.
 4. Cross-reference: does the implementation match what was discussed?
 5. Check for regressions: does this undo something that was deliberately done?
 
+### 2.1. Blind-review channel
+
+When Guardian supplies a blind packet, use only its projected aliases and
+bounded neutral history digest. Do not request, infer, or emit real repository
+paths, filenames, issue/PR identifiers, URLs, commits, authors, branches,
+timestamps, or candidate identity. Report history evidence with the supplied
+alias and line reference (or `no file applicable`) so Guardian can bind it via
+the private control envelope.
+
 ## 3. Review Focus
 
 - Intent alignment: does the code do what the Issue/PR says it should?
@@ -50,6 +59,11 @@ Project historian. Digs through context before passing judgment.
 
 ## 4. Output Format
 
+### 4.1. Normal mode
+
+Use the normal format below when Guardian has not supplied a blind packet;
+Issue/PR/commit identifiers and repository paths are permitted.
+
 ```text
 ### [High/Medium/Low confidence] Issue Title
 
@@ -58,3 +72,11 @@ Project historian. Digs through context before passing judgment.
 - Problem: Misalignment or concern
 - Suggestion: How to reconcile
 ```
+
+### 4.2. Blind mode
+
+For a blind packet, return the same confidence, evidence, problem, and
+suggestion fields, but use only the supplied alias path and line reference (or
+`no file applicable`). Do not emit or infer Issue/PR/commit identifiers, real
+repository paths, filenames, URLs, authors, branches, timestamps, or candidate
+identity.
