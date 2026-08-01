@@ -1,6 +1,6 @@
 # dotfiles
 
-[![CI](https://github.com/i9wa4/dotfiles/actions/workflows/ci.yaml/badge.svg)](https://github.com/i9wa4/dotfiles/actions/workflows/ci.yaml)
+[![CI](https://github.com/i9wa4/dotfiles/actions/workflows/ci-nix-quick-install.yaml/badge.svg)](https://github.com/i9wa4/dotfiles/actions/workflows/ci-nix-quick-install.yaml)
 [![Last Commit](https://img.shields.io/github/last-commit/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/commits/main)
 [![Top Language](https://img.shields.io/github/languages/top/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles)
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/commits/main)
