@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 import os
 import re
 from pathlib import Path
-
 
 TABLE_HEADER_RE = re.compile(r"^\[[^\]]+\]\s*(?:#.*)?$")
 PROJECT_HEADER_RE = re.compile(r'^\[projects\."(?P<repo_path>[^"]+)"\]\s*(?:#.*)?$')

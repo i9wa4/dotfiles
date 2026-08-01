@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Scrape Databricks Runtime Python libraries from official documentation.
 
@@ -21,10 +22,12 @@ Dependencies:
 """
 
 from __future__ import annotations
+
 import argparse
 import re
-import requests
 import sys
+
+import requests
 
 # =========================================================
 # Constants
@@ -199,9 +202,6 @@ def main() -> int:
         return 1
     except ConnectionError as e:
         print(f"Network error: {e}", file=sys.stderr)
-        return 1
-    except Exception as e:
-        print(f"Unexpected error: {e}", file=sys.stderr)
         return 1
 
 

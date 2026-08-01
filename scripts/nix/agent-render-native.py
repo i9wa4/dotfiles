@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 import json
 import sys
 from pathlib import Path
-
 
 source_dir = Path(sys.argv[1])
 metadata_path = Path(sys.argv[2])
@@ -22,8 +20,7 @@ def split_frontmatter(path):
 
     frontmatter = text[4:end]
     body = text[end + len(marker) :]
-    if body.startswith("\n"):
-        body = body[1:]
+    body = body.removeprefix("\n")
     return frontmatter, body
 
 
@@ -114,8 +111,10 @@ def render_codex_agent(source, values, body, metadata):
         )
     lines.extend(
         [
-            "developer_instructions = "
-            f"{toml_multiline_literal(body, f'{source}: developer_instructions')}",
+            (
+                "developer_instructions = "
+                f"{toml_multiline_literal(body, f'{source}: developer_instructions')}"
+            ),
             "",
         ]
     )
