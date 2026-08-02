@@ -1,4 +1,4 @@
-name: ci-nix-quick-install
+name: ci
 run-name: ${{ github.event_name }} on ${{ github.ref_name }} by @${{ github.actor }}
 
 on:
