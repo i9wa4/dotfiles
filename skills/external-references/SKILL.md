@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Reference-only external provider packs and dormant source inventory: dbt, azure, databricks-official, obsidian, hashicorp-terraform-codegen, hashicorp-terraform-module, hashicorp-terraform-provider, google, aws, Databricks, Azure, Microsoft Foundry, Google Cloud, GCP, AWS, Terraform, HashiCorp, Obsidian, provider-pack lookup, and promotion questions. DO NOT USE FOR: repo-local guardrails, harness implementation, or making provider packs active without explicit promotion.
+  USE FOR: Reference-only external provider packs and dormant source inventory: dbt, azure, databricks-official, obsidian, hashicorp-terraform, google, aws, Databricks, Azure, Microsoft Foundry, Google Cloud, GCP, AWS, Terraform, HashiCorp, Obsidian, provider-pack lookup, and promotion questions. DO NOT USE FOR: repo-local guardrails, harness implementation, or making provider packs active without explicit promotion.
 ---
 
 # External References
@@ -32,8 +32,7 @@ the broad packs by default. The generated reference tree is
 - `azure`: Azure, Microsoft Foundry, Entra.
 - `google`: Google Cloud, GCP, BigQuery, GKE, AlloyDB.
 - `aws`: AWS, Amazon Web Services.
-- `hashicorp-terraform-codegen`, `hashicorp-terraform-module`,
-  `hashicorp-terraform-provider`: Terraform, HashiCorp.
+- `hashicorp-terraform`: Terraform, HashiCorp.
 - `obsidian`: Obsidian, Bases, Canvas, Markdown vault workflows.
 
 ## 3. Promotion Rules

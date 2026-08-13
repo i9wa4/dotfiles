@@ -216,19 +216,11 @@ let
       path = inputs.obsidian-skills;
       subdir = "skills";
     };
-    # HashiCorp agent skills (split by plugin)
+    # HashiCorp Terraform agent skills.
     # cf. https://github.com/hashicorp/agent-skills
-    hashicorp-terraform-codegen = {
+    hashicorp-terraform = {
       path = inputs.hashicorp-agent-skills;
-      subdir = "terraform/code-generation/skills";
-    };
-    hashicorp-terraform-module = {
-      path = inputs.hashicorp-agent-skills;
-      subdir = "terraform/module-generation/skills";
-    };
-    hashicorp-terraform-provider = {
-      path = inputs.hashicorp-agent-skills;
-      subdir = "terraform/provider-development/skills";
+      subdir = "plugins/terraform/skills";
     };
     # Google skills, limited to core Cloud and data-platform workflows.
     # cf. https://github.com/google/skills
