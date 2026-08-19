@@ -22,7 +22,6 @@ let
   # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
   llmAgents = inputs.llm-agents.packages.${system};
   markdownFormatter = inputs.markdown-formatter.packages.${system}.default;
-  markdownRemoteViewer = inputs.markdown-remote-viewer.packages.${system}.default;
   tmuxA2aPostman = inputs.tmux-a2a-postman.packages.${system}.default;
   wazaPackage = pkgs.callPackage ../packages/waza.nix {
     inherit system;
@@ -110,7 +109,6 @@ in
       pkgs.zoxide
       # Other Tools
       markdownFormatter
-      markdownRemoteViewer
       pnpmPackage
       tmuxA2aPostman
       wazaPackage
