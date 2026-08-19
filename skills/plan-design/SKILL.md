@@ -4,7 +4,13 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Implementation plans and durable task tracking: reduce ambiguity, compare options, parallel investigation, multi-source synthesis, review gates, task artifacts, evidence logs, handoff/resume, and DONE/BLOCKED verification. DO NOT USE FOR: unrelated tasks, broad rewrites outside the request, or generated runtime outputs.
+  USE FOR: Implementation plans and durable task tracking: reduce ambiguity,
+  compare options, parallel investigation, multi-source synthesis, review
+  gates, task artifacts, evidence logs, handoff/resume, DONE/BLOCKED
+  verification, and human-facing artifacts requiring a Japanese Secret-Gist
+  handoff. DO NOT USE FOR: machine-only outputs, internal logs, code/config
+  artifacts, unrelated tasks, broad rewrites outside the request, or generated
+  runtime outputs.
 ---
 
 # Plan Design
