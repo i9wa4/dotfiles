@@ -66,22 +66,43 @@ not permission to perform one. Each creation command intentionally omits
 gh auth status
 gh gist create --desc 'agent-task:<repo>:<task>' task.md
 gh gist edit <gist-id> --filename task.md task.md
-gh api gists/<gist-id> --jq '{html_url,public,description,files:(.files|keys)}'
+gh api gists/<gist-id> --jq '{public,description,files:(.files|keys)}'
 ```
 
 Verify API output reports `public=false`, the expected description, and the
-expected single filename. Fetch Raw content, compare it with the local source,
-and scan before sharing the URL:
+expected single filename. Fetch Raw content into a private unique temporary
+directory, compare it with the local source, and scan before retrieving or
+sharing the URL:
 
 ```sh
-gh gist view <gist-id> --raw > "$TMPDIR/agent-task-gist.md"
-shasum -a 256 task.md "$TMPDIR/agent-task-gist.md"
-rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$TMPDIR/agent-task-gist.md"
+# agent-task-gist-raw-verification
+tmp_base=${TMPDIR:-/tmp}
+umask 077
+raw_dir=$(mktemp -d "$tmp_base/agent-task-gist.XXXXXX") || exit 1
+cleanup_raw_dir() {
+  rm -rf "$raw_dir"
+}
+trap cleanup_raw_dir EXIT HUP INT TERM
+raw_file="$raw_dir/task.md"
+gh gist view "$gist_id" --raw > "$raw_file"
+shasum -a 256 "$task_file" "$raw_file"
+if rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$raw_file"; then
+  exit 1
+fi
 ```
 
 The hashes must match and the scan must find no private handoff or secret
 material. If any check fails, keep the local artifact canonical and report the
-failure through the approved private handoff channel.
+failure through the approved private handoff channel. Only after every API,
+identity, filename, hash, and content check above succeeds may the secret URL
+be retrieved. Do not print it: send it only through that approved private
+handoff channel.
+
+```sh
+# agent-task-gist-url-handoff
+secret_gist_url=$(gh api "gists/$gist_id" --jq '.html_url')
+test -n "$secret_gist_url"
+```
 
 ### 2.3. Resume, finish, and safe cleanup
 
@@ -99,15 +120,20 @@ per-Gist confirmation; never bulk-delete from a bare list.
 
 ```sh
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100
-read -r 'DELETE_GIST_ID?Delete this approved agent-task Gist ID: '
+# agent-task-gist-delete-confirmation
+approved_gist_id='<reviewed-gist-id>'
+printf '%s' 'Delete this approved agent-task Gist ID: '
+IFS= read -r DELETE_GIST_ID
 test -n "$DELETE_GIST_ID"
+test "$DELETE_GIST_ID" = "$approved_gist_id"
 gh gist delete "$DELETE_GIST_ID"
 ```
 
 Do not use `gh gist delete --yes` in an agent-facing cleanup path. Keep a
 preview record and delete only the reviewed Gist after checking its description,
-owner/account, and age. On task completion, delete the approved memo or
-promote durable knowledge before deletion.
+owner/account, and age. `approved_gist_id` must be the exact reviewed ID and
+current human approval must still cover that one deletion. On task completion,
+delete the approved memo or promote durable knowledge before deletion.
 
 ## 3. Recommended Result Fields
 
