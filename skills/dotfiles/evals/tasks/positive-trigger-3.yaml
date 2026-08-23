@@ -1,0 +1,15 @@
+id: positive-trigger-003
+name: Positive Trigger 3
+description: Curated trigger for portable agent task-memo Gist policy.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Update the dotfiles agent harness policy for optional portable agent task-memo Gists alongside local resume handoff artifacts."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/dotfiles/SKILL.md
+      mode: positive
