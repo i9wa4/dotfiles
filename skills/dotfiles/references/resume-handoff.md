@@ -64,12 +64,49 @@ not permission to perform one. Each creation command intentionally omits
 
 ```sh
 # agent-task-gist-create-read-back
-gh auth status
-create_output=$(gh gist create --desc 'agent-task:<repo>:<task>' task.md)
-gist_id=${create_output##*/}
-test -n "$gist_id"
-gh gist edit "$gist_id" --filename task.md task.md
-gh api "gists/$gist_id" --jq '{public,description,files:(.files|keys)}'
+set -e
+expected_account='i9wa4'
+expected_description='agent-task:<repo>:<task>'
+expected_filename='task.md'
+task_file=${task_file:-task.md}
+gh auth status >/dev/null
+account=$(gh api user --jq .login)
+test "$account" = "$expected_account"
+gist_id=
+create_log=
+agent_task_gist_metadata_verified=0
+cleanup_unverified_gist() {
+  if [ -n "$create_log" ]; then
+    rm -f "$create_log"
+  fi
+  if [ -n "$gist_id" ] && [ "$agent_task_gist_metadata_verified" != 1 ]; then
+    gh gist delete "$gist_id"
+  fi
+}
+trap cleanup_unverified_gist EXIT HUP INT TERM
+create_log=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-create.XXXXXX") || exit 1
+create_output=$(gh gist create --desc "$expected_description" "$task_file" 2>"$create_log") || exit 1
+test ! -s "$create_log"
+rm -f "$create_log"
+create_log=
+case "$create_output" in
+https://gist.github.com/*) ;;
+*) exit 1 ;;
+esac
+gist_url=$create_output
+gist_id=${gist_url#https://gist.github.com/}
+test "$gist_id" != "$gist_url"
+test "$gist_id" = "${gist_id##*/}"
+case "$gist_id" in
+"" | *[!A-Za-z0-9]*) exit 1 ;;
+esac
+test "$gist_url" = "https://gist.github.com/$gist_id"
+gh gist edit "$gist_id" --filename "$expected_filename" "$task_file" >/dev/null
+test "$(gh api "gists/$gist_id" --jq .public)" = false
+test "$(gh api "gists/$gist_id" --jq .description)" = "$expected_description"
+test "$(gh api "gists/$gist_id" --jq '.files | keys | length')" = 1
+test "$(gh api "gists/$gist_id" --jq '.files | keys[0]')" = "$expected_filename"
+agent_task_gist_metadata_verified=1
 ```
 
 Verify API output reports `public=false`, the expected description, and the
@@ -79,6 +116,7 @@ sharing the URL:
 
 ```sh
 # agent-task-gist-raw-verification
+set -e
 tmp_base=${TMPDIR:-/tmp}
 umask 077
 raw_dir=$(mktemp -d "$tmp_base/agent-task-gist.XXXXXX") || exit 1
@@ -108,7 +146,8 @@ handoff channel.
 
 ```sh
 # agent-task-gist-url-handoff
-secret_gist_url=$create_output
+set -e
+secret_gist_url=$gist_url
 test -n "$secret_gist_url"
 ```
 
@@ -129,6 +168,7 @@ per-Gist confirmation; never bulk-delete from a bare list.
 ```sh
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100
 # agent-task-gist-delete-confirmation
+set -e
 approved_gist_id='<reviewed-gist-id>'
 printf '%s' 'Delete this approved agent-task Gist ID: '
 IFS= read -r DELETE_GIST_ID

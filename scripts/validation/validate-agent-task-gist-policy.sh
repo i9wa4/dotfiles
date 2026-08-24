@@ -16,12 +16,12 @@ fail() {
 
 contains_public_gist_command() {
   awk '
-    function inspect(command) {
-      if (command ~ /^[[:space:]]*gh[[:space:]]+gist[[:space:]]+(create|edit|list|delete)([[:space:]]|$)/ && command ~ /(^|[[:space:]])--public([[:space:]]|$)/) {
-        print command
-        found = 1
-      }
-    }
+	  function inspect(command) {
+	    if (command ~ /^[[:space:]]*((command[[:space:]]+)|(env([[:space:]]+(-[[:alnum:]_=-]+|[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]+))*[[:space:]]+))?gh[[:space:]]+gist[[:space:]]+(create|edit|list|delete)([[:space:]]|$)/ && command ~ /(^|[[:space:]])--public([[:space:]]|$)/) {
+	      print command
+	      found = 1
+	    }
+	  }
     {
       line = $0
       sub(/[[:space:]]+$/, "", line)
@@ -97,6 +97,10 @@ run_public_mode_fixtures() {
   assert_fixture_rejected multiline-delete \
     "gh gist delete $continuation" \
     '  --public gist-id'
+  assert_fixture_rejected env-prefixed-public-create \
+    'env GITHUB_TOKEN=fixture gh gist create --public task.md'
+  assert_fixture_rejected command-prefixed-public-list \
+    'command gh gist list --public'
   assert_fixture_allowed allowed-create \
     "gh gist create --desc 'agent-task:<repo>:<task>' task.md"
   assert_fixture_allowed allowed-multiline-create \
@@ -113,32 +117,71 @@ run_documented_snippet_fixtures() {
   cat >"$mock_bin/gh" <<'EOF'
 #!/bin/sh
 if [ "$1" = auth ] && [ "$2" = status ]; then
-  printf '%s\n' 'Logged in to github.com account i9wa4'
-  exit 0
+	printf '%s\n' 'Logged in to github.com account i9wa4'
+	exit 0
+fi
+if [ "$1" = api ] && [ "$2" = user ] && [ "$3" = --jq ] && [ "$4" = .login ]; then
+	printf '%s\n' "${GIST_MOCK_ACCOUNT:-i9wa4}"
+	exit 0
 fi
 if [ "$1" = gist ] && [ "$2" = create ]; then
-  printf '%s\n' 'https://gist.github.com/fixture-gist-id'
-  exit 0
+	case "${GIST_CREATE_MODE:-ok}" in
+	ok)
+		printf '%s\n' 'https://gist.github.com/fixtureGistId'
+		;;
+	stderr-url)
+		printf '%s\n' 'https://gist.github.com/fixtureGistId' >&2
+		printf '%s\n' 'https://gist.github.com/fixtureGistId'
+		;;
+	noisy)
+		printf '%s\n%s\n' 'created:' 'https://gist.github.com/fixtureGistId'
+		;;
+	multiline)
+		printf '%s\n%s\n' 'https://gist.github.com/fixtureGistId' 'https://gist.github.com/other'
+		;;
+	malformed)
+		printf '%s\n' 'not-a-gist-url'
+		;;
+	*)
+		exit 64
+		;;
+	esac
+	exit 0
 fi
-if [ "$1" = gist ] && [ "$2" = edit ] && [ "$3" = fixture-gist-id ]; then
-  exit 0
+if [ "$1" = gist ] && [ "$2" = edit ] && [ "$3" = fixtureGistId ]; then
+	exit 0
 fi
-if [ "$1" = gist ] && [ "$2" = delete ] && [ "$3" = fixture-gist-id ]; then
-  : > "$GIST_DELETE_RECORD"
-  exit 0
+if [ "$1" = gist ] && [ "$2" = delete ]; then
+	printf '%s\n' "$3" >> "$GIST_DELETE_RECORD"
+	exit 0
 fi
 if [ "$1" = gist ] && [ "$2" = view ]; then
-  cat "$GIST_FIXTURE_SOURCE"
-  exit 0
+	cat "$GIST_FIXTURE_SOURCE"
+	exit 0
 fi
-if [ "$1" = api ] && [ "$2" = gists/fixture-gist-id ] && [ "$4" = '{public,description,files:(.files|keys)}' ]; then
-  printf '%s\n' '{"public":false,"description":"agent-task:<repo>:<task>","files":["task.md"]}'
-  exit 0
-fi
-if [ "$1" = api ] && [ "$2" = gists/fixture-gist-id ] && [ "$4" = '.html_url' ]; then
-  : > "$GIST_URL_HANDOFF_RECORD"
-  printf '%s\n' 'https://gist.github.com/fixture-gist-id'
-  exit 0
+if [ "$1" = api ] && [ "$2" = gists/fixtureGistId ] && [ "$3" = --jq ]; then
+	case "$4" in
+	.public)
+		printf '%s\n' "${GIST_MOCK_PUBLIC:-false}"
+		;;
+	.description)
+		printf '%s\n' "${GIST_MOCK_DESCRIPTION:-agent-task:<repo>:<task>}"
+		;;
+	'.files | keys | length')
+		printf '%s\n' "${GIST_MOCK_FILE_COUNT:-1}"
+		;;
+	'.files | keys[0]')
+		printf '%s\n' "${GIST_MOCK_FILENAME:-task.md}"
+		;;
+	.html_url)
+		: > "$GIST_URL_HANDOFF_RECORD"
+		printf '%s\n' 'https://gist.github.com/fixtureGistId'
+		;;
+	*)
+		exit 64
+		;;
+	esac
+	exit 0
 fi
 exit 64
 EOF
@@ -146,7 +189,9 @@ EOF
 
   cat >"$mock_bin/rm" <<'EOF'
 #!/bin/sh
-printf '%s\n' "$2" > "$GIST_CLEANUP_RECORD"
+if [ -n "${GIST_CLEANUP_RECORD:-}" ]; then
+	printf '%s\n' "$2" > "$GIST_CLEANUP_RECORD"
+fi
 exec /bin/rm "$@"
 EOF
   chmod 700 "$mock_bin/rm"
@@ -178,27 +223,77 @@ EOF
 
   printf 'fixture memo\n' >"$fixture_dir/task.md"
   extract_documented_snippet '# agent-task-gist-create-read-back' "$fixture_dir/create-read-back.sh"
+  extract_documented_snippet '# agent-task-gist-url-handoff' "$fixture_dir/url-handoff.sh"
+  {
+    printf 'set -e\n'
+    cat "$fixture_dir/create-read-back.sh"
+    cat "$fixture_dir/url-handoff.sh"
+    # shellcheck disable=SC2016 # The generated script must write this literal expansion.
+    printf '%s\n' 'printf "%s\n" "$secret_gist_url" > "$GIST_URL_HANDOFF_RECORD"'
+  } >"$fixture_dir/create-url-flow.sh"
   GIST_URL_HANDOFF_RECORD="$fixture_dir/create-url-record" \
+    GIST_DELETE_RECORD="$fixture_dir/create-delete-record" \
     PATH="$mock_bin:$PATH" \
     task_file="$fixture_dir/task.md" \
     sh "$fixture_dir/create-read-back.sh" >"$fixture_dir/create-read-back.out"
   if grep -Fq 'https://gist.github.com/' "$fixture_dir/create-read-back.out"; then
     fail "documented create/read-back flow prints the secret URL before verification"
   fi
+  test ! -e "$fixture_dir/create-delete-record" ||
+    fail "documented create/read-back flow cleaned up after successful metadata verification"
+
+  assert_create_failure_blocks_handoff() {
+    name=$1
+    shift
+    out_file="$fixture_dir/$name.out"
+    err_file="$fixture_dir/$name.err"
+    url_record="$fixture_dir/$name-url-record"
+    delete_record="$fixture_dir/$name-delete-record"
+    if GIST_URL_HANDOFF_RECORD="$url_record" \
+      GIST_DELETE_RECORD="$delete_record" \
+      PATH="$mock_bin:$PATH" \
+      task_file="$fixture_dir/task.md" \
+      env "$@" sh "$fixture_dir/create-url-flow.sh" >"$out_file" 2>"$err_file"; then
+      fail "documented create/read-back failure reached URL handoff: $name"
+    fi
+    if grep -Fq 'https://gist.github.com/' "$out_file" "$err_file"; then
+      fail "documented create/read-back failure leaked URL to logs: $name"
+    fi
+    test ! -e "$url_record" ||
+      fail "documented create/read-back failure created URL handoff record: $name"
+  }
+
+  assert_create_failure_blocks_handoff bad-account GIST_MOCK_ACCOUNT=other-user
+  assert_create_failure_blocks_handoff public-metadata GIST_MOCK_PUBLIC=true
+  test "$(cat "$fixture_dir/public-metadata-delete-record")" = fixtureGistId ||
+    fail "public metadata failure did not clean up the created Gist"
+  assert_create_failure_blocks_handoff wrong-description GIST_MOCK_DESCRIPTION=wrong
+  test "$(cat "$fixture_dir/wrong-description-delete-record")" = fixtureGistId ||
+    fail "wrong description failure did not clean up the created Gist"
+  assert_create_failure_blocks_handoff wrong-filename GIST_MOCK_FILENAME=wrong.md
+  test "$(cat "$fixture_dir/wrong-filename-delete-record")" = fixtureGistId ||
+    fail "wrong filename failure did not clean up the created Gist"
+  assert_create_failure_blocks_handoff multiple-filenames GIST_MOCK_FILE_COUNT=2
+  test "$(cat "$fixture_dir/multiple-filenames-delete-record")" = fixtureGistId ||
+    fail "multiple filename failure did not clean up the created Gist"
+  assert_create_failure_blocks_handoff stderr-url-leakage GIST_CREATE_MODE=stderr-url
+  assert_create_failure_blocks_handoff noisy-create-output GIST_CREATE_MODE=noisy
+  assert_create_failure_blocks_handoff multiline-create-output GIST_CREATE_MODE=multiline
+  assert_create_failure_blocks_handoff malformed-create-output GIST_CREATE_MODE=malformed
 
   extract_documented_snippet '# agent-task-gist-delete-confirmation' "$fixture_dir/delete.sh"
-  sed 's/<reviewed-gist-id>/fixture-gist-id/g' "$fixture_dir/delete.sh" >"$fixture_dir/delete-fixture.sh"
+  sed 's/<reviewed-gist-id>/fixtureGistId/g' "$fixture_dir/delete.sh" >"$fixture_dir/delete-fixture.sh"
   GIST_DELETE_RECORD="$fixture_dir/delete-record" \
     PATH="$mock_bin:$PATH" \
     sh "$fixture_dir/delete-fixture.sh" <<'EOF'
-fixture-gist-id
+fixtureGistId
 EOF
   test -f "$fixture_dir/delete-record" ||
     fail "documented deletion confirmation did not invoke the exact approved ID"
   GIST_DELETE_RECORD="$fixture_dir/delete-record-bash" \
     PATH="$mock_bin:$PATH" \
     bash "$fixture_dir/delete-fixture.sh" <<'EOF'
-fixture-gist-id
+fixtureGistId
 EOF
   test -f "$fixture_dir/delete-record-bash" ||
     fail "documented deletion confirmation is not Bash-compatible"
@@ -206,7 +301,7 @@ EOF
   extract_documented_snippet '# agent-task-gist-raw-verification' "$fixture_dir/raw.sh"
   GIST_CLEANUP_RECORD="$fixture_dir/cleanup-record" \
     GIST_FIXTURE_SOURCE="$fixture_dir/task.md" \
-    gist_id=fixture-gist-id \
+    gist_id=fixtureGistId \
     task_file="$fixture_dir/task.md" \
     PATH="$mock_bin:$PATH" \
     env -u TMPDIR sh "$fixture_dir/raw.sh"
@@ -223,7 +318,7 @@ EOF
   printf 'different memo\n' >"$fixture_dir/mismatch-task.md"
   GIST_CLEANUP_RECORD="$fixture_dir/mismatch-cleanup-record" \
     GIST_FIXTURE_SOURCE="$fixture_dir/mismatch-task.md" \
-    gist_id=fixture-gist-id \
+    gist_id=fixtureGistId \
     task_file="$fixture_dir/task.md" \
     PATH="$mock_bin:$PATH" \
     env -u TMPDIR sh "$fixture_dir/raw.sh" >"$fixture_dir/raw-mismatch.out" 2>&1 &&
@@ -234,7 +329,6 @@ EOF
   test ! -e "$mismatch_cleaned_directory" ||
     fail "documented raw verification mismatch path left its temporary directory behind"
 
-  extract_documented_snippet '# agent-task-gist-url-handoff' "$fixture_dir/url-handoff.sh"
   {
     printf 'set -e\n'
     cat "$fixture_dir/create-read-back.sh"
