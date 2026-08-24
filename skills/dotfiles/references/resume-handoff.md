@@ -75,6 +75,7 @@ account=$(gh api user --jq .login)
 test "$account" = "$expected_account"
 gist_id=
 create_log=
+post_create_lifecycle=0
 write_pending_cleanup() {
   reason=$1
   {
@@ -92,14 +93,25 @@ fail_with_pending_cleanup() {
   write_pending_cleanup "$1"
   exit 1
 }
+cleanup_after_signal() {
+  cleanup_create_log
+  if [ "$post_create_lifecycle" = 1 ]; then
+    write_pending_cleanup interrupted
+  fi
+  exit 1
+}
 cleanup_create_log() {
   if [ -n "$create_log" ]; then
     rm -f "$create_log"
   fi
 }
-trap cleanup_create_log EXIT HUP INT TERM
+trap cleanup_create_log EXIT
+trap cleanup_after_signal HUP INT TERM
 create_log=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-create.XXXXXX") || exit 1
-create_output=$(gh gist create --desc "$expected_description" "$task_file" 2>"$create_log") || exit 1
+post_create_lifecycle=1
+if ! create_output=$(gh gist create --desc "$expected_description" "$task_file" 2>"$create_log"); then
+  fail_with_pending_cleanup create-command-failed
+fi
 if [ -s "$create_log" ]; then
   fail_with_pending_cleanup create-stderr
 fi
@@ -113,27 +125,39 @@ case "$create_output" in
 *'
 '*) fail_with_pending_cleanup create-output-unvalidated ;;
 esac
-gist_url=$create_output
-gist_id=${gist_url#https://gist.github.com/}
-test "$gist_id" != "$gist_url"
+gist_id=${create_output#https://gist.github.com/}
+test "$gist_id" != "$create_output"
 test "$gist_id" = "${gist_id##*/}"
 case "$gist_id" in
 "" | *[!A-Za-z0-9]*) fail_with_pending_cleanup create-output-unvalidated ;;
 esac
-test "$gist_url" = "https://gist.github.com/$gist_id"
+test "$create_output" = "https://gist.github.com/$gist_id"
+create_output=
 if ! gh gist edit "$gist_id" --filename "$expected_filename" "$task_file" >/dev/null; then
   fail_with_pending_cleanup metadata-edit-failed
 fi
-if [ "$(gh api "gists/$gist_id" --jq .public)" != false ]; then
+if ! gist_public=$(gh api "gists/$gist_id" --jq .public); then
+  fail_with_pending_cleanup metadata-public-read
+fi
+if [ "$gist_public" != false ]; then
   fail_with_pending_cleanup metadata-public
 fi
-if [ "$(gh api "gists/$gist_id" --jq .description)" != "$expected_description" ]; then
+if ! gist_description=$(gh api "gists/$gist_id" --jq .description); then
+  fail_with_pending_cleanup metadata-description-read
+fi
+if [ "$gist_description" != "$expected_description" ]; then
   fail_with_pending_cleanup metadata-description
 fi
-if [ "$(gh api "gists/$gist_id" --jq '.files | keys | length')" != 1 ]; then
+if ! gist_file_count=$(gh api "gists/$gist_id" --jq '.files | keys | length'); then
+  fail_with_pending_cleanup metadata-file-count-read
+fi
+if [ "$gist_file_count" != 1 ]; then
   fail_with_pending_cleanup metadata-file-count
 fi
-if [ "$(gh api "gists/$gist_id" --jq '.files | keys[0]')" != "$expected_filename" ]; then
+if ! gist_filename=$(gh api "gists/$gist_id" --jq '.files | keys[0]'); then
+  fail_with_pending_cleanup metadata-filename-read
+fi
+if [ "$gist_filename" != "$expected_filename" ]; then
   fail_with_pending_cleanup metadata-filename
 fi
 ```
@@ -170,35 +194,60 @@ if ! type fail_with_pending_cleanup >/dev/null 2>&1; then
 fi
 tmp_base=${TMPDIR:-/tmp}
 umask 077
-raw_dir=$(mktemp -d "$tmp_base/agent-task-gist.XXXXXX") || exit 1
+raw_dir=$(mktemp -d "$tmp_base/agent-task-gist.XXXXXX") ||
+  fail_with_pending_cleanup raw-temp
 cleanup_raw_dir() {
   rm -rf "$raw_dir"
 }
 trap cleanup_raw_dir EXIT HUP INT TERM
 raw_file="$raw_dir/task.md"
-gh gist view "$gist_id" --raw > "$raw_file"
-local_hash=$(shasum -a 256 "$task_file" | awk '{print $1}')
-raw_hash=$(shasum -a 256 "$raw_file" | awk '{print $1}')
+if ! gh gist view "$gist_id" --raw > "$raw_file"; then
+  fail_with_pending_cleanup raw-fetch
+fi
+if ! local_hash_line=$(shasum -a 256 "$task_file"); then
+  fail_with_pending_cleanup raw-local-hash
+fi
+local_hash=$(printf '%s\n' "$local_hash_line" | awk '{print $1}')
+if [ -z "$local_hash" ]; then
+  fail_with_pending_cleanup raw-local-hash
+fi
+if ! raw_hash_line=$(shasum -a 256 "$raw_file"); then
+  fail_with_pending_cleanup raw-remote-hash
+fi
+raw_hash=$(printf '%s\n' "$raw_hash_line" | awk '{print $1}')
+if [ -z "$raw_hash" ]; then
+  fail_with_pending_cleanup raw-remote-hash
+fi
 printf '%s  %s\n%s  %s\n' "$local_hash" "$task_file" "$raw_hash" "$raw_file"
 if [ "$local_hash" != "$raw_hash" ]; then
   fail_with_pending_cleanup raw-digest-mismatch
 fi
-if rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$raw_file"; then
+set +e
+rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$raw_file" >/dev/null
+scan_status=$?
+set -e
+if [ "$scan_status" -eq 0 ]; then
   fail_with_pending_cleanup content-scan
+fi
+if [ "$scan_status" -ne 1 ]; then
+  fail_with_pending_cleanup scanner-error
 fi
 ```
 
 The hashes must match and the scan must find no private handoff or secret
 material. If any check fails, keep the local artifact canonical and report the
-failure through the approved private handoff channel. Only after every API,
-identity, filename, hash, and content check above succeeds may the secret URL
-be retrieved. Do not print it: send it only through that approved private
-handoff channel.
+failure through the approved private handoff channel. The create command's
+returned URL is private, unapproved transient state until it is normalized to
+the exact Gist ID and all checks pass; it must not be logged, handed off, or
+stored in cleanup records. Only after every API, identity, filename, hash, and
+content check above succeeds may the secret URL be derived from the validated
+ID. Do not print it: send it only through that approved private handoff
+channel.
 
 ```sh
 # agent-task-gist-url-handoff
 set -e
-secret_gist_url=$gist_url
+secret_gist_url="https://gist.github.com/$gist_id"
 test -n "$secret_gist_url"
 ```
 
@@ -217,19 +266,74 @@ is an external mutation: require current human approval and an explicit
 per-Gist confirmation; never bulk-delete from a bare list.
 
 ```sh
+# agent-task-gist-reviewed-preview
+set -e
+expected_account='i9wa4'
+expected_description_prefix='agent-task:<repo>:'
+reviewed_preview=${reviewed_preview:-agent-task-gist-reviewed-preview.tsv}
+preview_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-preview.XXXXXX") || exit 1
+cleanup_preview_data() {
+  rm -f "$preview_data"
+}
+trap cleanup_preview_data EXIT HUP INT TERM
+gh auth status >/dev/null
+account=$(gh api user --jq .login)
+test "$account" = "$expected_account"
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100
+gh gist list --secret --filter '^agent-task:<repo>:' --limit 100 \
+  --json id,description,owner,updatedAt \
+  --jq '.[] | [.id, .owner.login, "i9wa4", 8, .description] | @tsv' \
+  > "$preview_data"
+if grep -Fv "$expected_description_prefix" "$preview_data" >/dev/null; then
+  exit 1
+fi
+preview_hash=$(shasum -a 256 "$preview_data" | awk '{print $1}')
+{
+  printf '# schema=agent-task-gist-reviewed-preview-v1\n'
+  printf '# account=%s\n' "$account"
+  printf '# generated_epoch=%s\n' "$(date +%s)"
+  printf '# data_sha256=%s\n' "$preview_hash"
+  cat "$preview_data"
+} > "$reviewed_preview"
+```
+
+The preview file is the reviewed authority artifact for deletion. Keep the
+metadata lines and data rows intact; the deletion step rejects missing,
+malformed, stale, or digest-mismatched preview files.
+
+```sh
 # agent-task-gist-delete-confirmation
 set -e
 expected_account='i9wa4'
 expected_owner='i9wa4'
 expected_description='agent-task:<repo>:<task>'
 min_age_days=7
+max_preview_age_seconds=3600
 reviewed_preview=${reviewed_preview:-agent-task-gist-reviewed-preview.tsv}
 approved_gist_id='<reviewed-gist-id>'
 gh auth status >/dev/null
 account=$(gh api user --jq .login)
 test "$account" = "$expected_account"
-preview_row=$(awk -F '	' -v id="$approved_gist_id" '$1 == id { print; found = 1 } END { exit(found ? 0 : 1) }' "$reviewed_preview")
+test "$(awk -F = '$1 == "# schema" { print $2 }' "$reviewed_preview")" = agent-task-gist-reviewed-preview-v1
+test "$(awk -F = '$1 == "# account" { print $2 }' "$reviewed_preview")" = "$expected_account"
+preview_generated_epoch=$(awk -F = '$1 == "# generated_epoch" { print $2 }' "$reviewed_preview")
+case "$preview_generated_epoch" in
+"" | *[!0-9]*) exit 1 ;;
+esac
+now_epoch=${now_epoch:-$(date +%s)}
+test $((now_epoch - preview_generated_epoch)) -le "$max_preview_age_seconds"
+expected_preview_hash=$(awk -F = '$1 == "# data_sha256" { print $2 }' "$reviewed_preview")
+case "$expected_preview_hash" in
+"" | *[!A-Fa-f0-9]*) exit 1 ;;
+esac
+preview_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-preview.XXXXXX") || exit 1
+cleanup_preview_data() {
+  rm -f "$preview_data"
+}
+trap cleanup_preview_data EXIT HUP INT TERM
+awk '/^#/ { next } NF { print }' "$reviewed_preview" > "$preview_data"
+test "$(shasum -a 256 "$preview_data" | awk '{print $1}')" = "$expected_preview_hash"
+preview_row=$(awk -F '	' -v id="$approved_gist_id" '$1 == id { print; found = 1 } END { exit(found ? 0 : 1) }' "$preview_data")
 IFS="$(printf '\t')" read -r preview_id preview_owner preview_account preview_age_days preview_description <<EOF
 $preview_row
 EOF
