@@ -19,6 +19,22 @@
         direnv = prev.direnv.overrideAttrs (_: {
           doCheck = false;
         });
+
+        # WORKAROUND: nixpkgs-unstable updated tmux to 3.7c before the Darwin
+        # jemalloc fix reached the channel. Keep daily flake updates usable
+        # until https://github.com/NixOS/nixpkgs/commit/56d4d710bd0bc7bcf953f6616bdc3e48c21ec549
+        # is included, without duplicating the upstream settings afterward.
+        tmux = prev.tmux.overrideAttrs (
+          oldAttrs:
+          let
+            needsJemalloc = !(builtins.elem "--enable-jemalloc" (oldAttrs.configureFlags or [ ]));
+          in
+          {
+            buildInputs = (oldAttrs.buildInputs or [ ]) ++ prev.lib.optionals needsJemalloc [ prev.jemalloc ];
+            configureFlags =
+              (oldAttrs.configureFlags or [ ]) ++ prev.lib.optional needsJemalloc "--enable-jemalloc";
+          }
+        );
       })
     ];
   };
