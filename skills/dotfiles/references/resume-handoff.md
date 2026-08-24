@@ -126,12 +126,23 @@ case "$create_output" in
 '*) fail_with_pending_cleanup create-output-unvalidated ;;
 esac
 gist_id=${create_output#https://gist.github.com/}
-test "$gist_id" != "$create_output"
-test "$gist_id" = "${gist_id##*/}"
+if [ "$gist_id" = "$create_output" ]; then
+  fail_with_pending_cleanup create-output-unvalidated
+fi
+if [ "$gist_id" != "${gist_id##*/}" ]; then
+  gist_id=
+  fail_with_pending_cleanup create-output-unvalidated
+fi
 case "$gist_id" in
-"" | *[!A-Za-z0-9]*) fail_with_pending_cleanup create-output-unvalidated ;;
+"" | *[!A-Za-z0-9]*)
+  gist_id=
+  fail_with_pending_cleanup create-output-unvalidated
+  ;;
 esac
-test "$create_output" = "https://gist.github.com/$gist_id"
+if [ "$create_output" != "https://gist.github.com/$gist_id" ]; then
+  gist_id=
+  fail_with_pending_cleanup create-output-unvalidated
+fi
 create_output=
 if ! gh gist edit "$gist_id" --filename "$expected_filename" "$task_file" >/dev/null; then
   fail_with_pending_cleanup metadata-edit-failed
@@ -199,7 +210,15 @@ raw_dir=$(mktemp -d "$tmp_base/agent-task-gist.XXXXXX") ||
 cleanup_raw_dir() {
   rm -rf "$raw_dir"
 }
-trap cleanup_raw_dir EXIT HUP INT TERM
+cleanup_raw_after_signal() {
+  cleanup_raw_dir
+  if type cleanup_after_signal >/dev/null 2>&1; then
+    cleanup_after_signal
+  fi
+  fail_with_pending_cleanup interrupted
+}
+trap cleanup_raw_dir EXIT
+trap cleanup_raw_after_signal HUP INT TERM
 raw_file="$raw_dir/task.md"
 if ! gh gist view "$gist_id" --raw > "$raw_file"; then
   fail_with_pending_cleanup raw-fetch
@@ -279,19 +298,27 @@ trap cleanup_preview_data EXIT HUP INT TERM
 gh auth status >/dev/null
 account=$(gh api user --jq .login)
 test "$account" = "$expected_account"
+generated_epoch=$(date +%s)
+case "$generated_epoch" in
+"" | *[!0-9]*) exit 1 ;;
+esac
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100 \
   --json id,description,owner,updatedAt \
-  --jq '.[] | [.id, .owner.login, "i9wa4", 8, .description] | @tsv' \
+  --jq ".[] | [.id, .owner.login, \"$account\", (((($generated_epoch) - (.updatedAt | fromdateiso8601)) / 86400) | floor), .description] | @tsv" \
   > "$preview_data"
-if grep -Fv "$expected_description_prefix" "$preview_data" >/dev/null; then
+if ! awk -F '	' -v prefix="$expected_description_prefix" '
+  NF != 5 { exit 1 }
+  $4 !~ /^[0-9]+$/ { exit 1 }
+  $5 !~ "^" prefix { exit 1 }
+' "$preview_data"; then
   exit 1
 fi
 preview_hash=$(shasum -a 256 "$preview_data" | awk '{print $1}')
 {
   printf '# schema=agent-task-gist-reviewed-preview-v1\n'
   printf '# account=%s\n' "$account"
-  printf '# generated_epoch=%s\n' "$(date +%s)"
+  printf '# generated_epoch=%s\n' "$generated_epoch"
   printf '# data_sha256=%s\n' "$preview_hash"
   cat "$preview_data"
 } > "$reviewed_preview"

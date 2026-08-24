@@ -78,6 +78,33 @@ tokenize_shell_words() {
           token="$token${command:i:1}"
         fi
         ;;
+      ';')
+        if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
+          TOKENS+=("$token")
+          TOKEN_QUOTED+=("$quoted")
+          token=
+          quoted=0
+        fi
+        TOKENS+=(';')
+        TOKEN_QUOTED+=(0)
+        ;;
+      '&' | '|')
+        if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
+          TOKENS+=("$token")
+          TOKEN_QUOTED+=("$quoted")
+          token=
+          quoted=0
+        fi
+        next=${command:$((i + 1)):1}
+        if [ "$next" = "$char" ]; then
+          TOKENS+=("$char$next")
+          TOKEN_QUOTED+=(0)
+          i=$((i + 1))
+        else
+          TOKENS+=("$char")
+          TOKEN_QUOTED+=(0)
+        fi
+        ;;
       *)
         token="$token$char"
         ;;
@@ -116,14 +143,22 @@ tokenize_shell_words() {
   fi
 }
 
-command_has_public_gist_flag() {
-  local command=$1
-  tokenize_shell_words "$command"
+is_assignment_word() {
+  [[ $1 =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]
+}
+
+segment_has_public_gist_flag() {
+  local start=$1
+  local end=$2
   local index=0
-  while [ "$index" -lt "${#TOKENS[@]}" ]; do
+  index=$start
+  while [ "$index" -lt "$end" ] && is_assignment_word "${TOKENS[$index]}" && [ "${TOKEN_QUOTED[$index]}" -eq 0 ]; do
+    index=$((index + 1))
+  done
+  while [ "$index" -lt "$end" ]; do
     if [ "${TOKENS[$index]}" = env ] && [ "${TOKEN_QUOTED[$index]}" -eq 0 ]; then
       index=$((index + 1))
-      while [ "$index" -lt "${#TOKENS[@]}" ]; do
+      while [ "$index" -lt "$end" ]; do
         case "${TOKENS[$index]}" in
         -u | --unset)
           index=$((index + 2))
@@ -141,7 +176,7 @@ command_has_public_gist_flag() {
       done
     elif [ "${TOKENS[$index]}" = command ] && [ "${TOKEN_QUOTED[$index]}" -eq 0 ]; then
       index=$((index + 1))
-      while [ "$index" -lt "${#TOKENS[@]}" ] && [[ ${TOKENS[$index]} == -* ]]; do
+      while [ "$index" -lt "$end" ] && [[ ${TOKENS[$index]} == -* ]]; do
         index=$((index + 1))
       done
     else
@@ -158,13 +193,32 @@ command_has_public_gist_flag() {
   esac
   [ "${TOKEN_QUOTED[$((index + 2))]:-1}" -eq 0 ] || return 1
   local flag_index=$((index + 3))
-  while [ "$flag_index" -lt "${#TOKENS[@]}" ]; do
-    if [ "${TOKEN_QUOTED[$flag_index]}" -eq 0 ]; then
-      case "${TOKENS[$flag_index]}" in
-      --public | --public=* | -p) return 0 ;;
+  while [ "$flag_index" -lt "$end" ]; do
+    case "${TOKENS[$flag_index]}" in
+    --public | --public=* | -p) return 0 ;;
+    esac
+    flag_index=$((flag_index + 1))
+  done
+  return 1
+}
+
+command_has_public_gist_flag() {
+  local command=$1
+  tokenize_shell_words "$command"
+  local start=0
+  local index=0
+  while [ "$index" -le "${#TOKENS[@]}" ]; do
+    if [ "$index" -eq "${#TOKENS[@]}" ]; then
+      segment_has_public_gist_flag "$start" "$index" && return 0
+    else
+      case "${TOKENS[$index]}" in
+      ';' | '&&' | '||' | '|')
+        segment_has_public_gist_flag "$start" "$index" && return 0
+        start=$((index + 1))
+        ;;
       esac
     fi
-    flag_index=$((flag_index + 1))
+    index=$((index + 1))
   done
   return 1
 }
@@ -230,6 +284,14 @@ run_public_mode_fixtures() {
     'gh gist create --public=true task.md'
   assert_fixture_rejected short-public-create \
     'gh gist create -p task.md'
+  assert_fixture_rejected quoted-public-argv-create \
+    "gh gist create '--public' task.md"
+  assert_fixture_rejected quote-spliced-public-create \
+    'gh gist create --pub"lic" task.md'
+  assert_fixture_rejected separated-public-create \
+    'printf x; gh gist create --public task.md'
+  assert_fixture_rejected assignment-prefixed-public-create \
+    'TOKEN=x gh gist create --public task.md'
   assert_fixture_allowed allowed-create \
     "gh gist create --desc 'agent-task:<repo>:<task>' task.md"
   assert_fixture_allowed allowed-multiline-create \
@@ -287,6 +349,12 @@ if [ "$1" = gist ] && [ "$2" = create ]; then
 	malformed)
 		printf '%s\n' 'not-a-gist-url'
 		;;
+	path-extra)
+		printf '%s\n' 'https://gist.github.com/fixtureGistId/extra'
+		;;
+	query-extra)
+		printf '%s\n' 'https://gist.github.com/fixtureGistId?extra'
+		;;
 	*)
 		exit 64
 		;;
@@ -313,8 +381,34 @@ fi
 if [ "$1" = gist ] && [ "$2" = list ] && [ "$3" = --secret ]; then
 	for arg in "$@"; do
 		if [ "$arg" = --json ]; then
+			jq_arg=
+			while [ "$#" -gt 0 ]; do
+				if [ "$1" = --jq ]; then
+					jq_arg=$2
+					break
+				fi
+				shift
+			done
+			case "$jq_arg" in
+			*fromdateiso8601*) ;;
+			*) exit 64 ;;
+			esac
+			case "$jq_arg" in
+			*'"i9wa4", 8'*) exit 64 ;;
+			esac
+			case "${GIST_LIST_MODE:-ok}" in
+			invalid-timestamp)
+				exit 64
+				;;
+			future)
+				age=-1
+				;;
+			*)
+				age=${GIST_LIST_AGE_DAYS:-8}
+				;;
+			esac
 			printf '%s\t%s\t%s\t%s\t%s\n' \
-				fixtureGistId i9wa4 i9wa4 8 'agent-task:<repo>:<task>'
+				fixtureGistId i9wa4 i9wa4 "$age" 'agent-task:<repo>:<task>'
 			exit 0
 		fi
 	done
@@ -350,6 +444,16 @@ fi
 exit 64
 EOF
   chmod 700 "$mock_bin/gh"
+
+  cat >"$mock_bin/date" <<'EOF'
+#!/bin/sh
+if [ "$1" = +%s ]; then
+	printf '%s\n' "${GIST_NOW_EPOCH:-1000}"
+	exit 0
+fi
+exec /bin/date "$@"
+EOF
+  chmod 700 "$mock_bin/date"
 
   cat >"$mock_bin/rm" <<'EOF'
 #!/bin/sh
@@ -465,8 +569,42 @@ EOF
   assert_create_failure_blocks_handoff noisy-create-output unknown GIST_CREATE_MODE=noisy
   assert_create_failure_blocks_handoff multiline-create-output unknown GIST_CREATE_MODE=multiline
   assert_create_failure_blocks_handoff malformed-create-output unknown GIST_CREATE_MODE=malformed
+  assert_create_failure_blocks_handoff malformed-create-path-extra unknown GIST_CREATE_MODE=path-extra
+  assert_create_failure_blocks_handoff malformed-create-query-extra unknown GIST_CREATE_MODE=query-extra
   assert_create_failure_blocks_handoff metadata-edit-failed fixtureGistId GIST_EDIT_MODE=fail
   assert_create_failure_blocks_handoff metadata-api-failed fixtureGistId GIST_API_MODE=fail
+
+  for signal_name in HUP INT TERM; do
+    signal_script="$fixture_dir/create-signal-$signal_name.sh"
+    awk -v signal_name="$signal_name" '
+      { print }
+      $0 == "post_create_lifecycle=1" {
+        printf "kill -s %s $$\n", signal_name
+      }
+    ' "$fixture_dir/create-url-flow.sh" >"$signal_script"
+    pending_record="$fixture_dir/create-signal-$signal_name-pending-cleanup"
+    delete_record="$fixture_dir/create-signal-$signal_name-delete-record"
+    url_record="$fixture_dir/create-signal-$signal_name-url-record"
+    GIST_URL_HANDOFF_RECORD="$url_record" \
+      GIST_DELETE_RECORD="$delete_record" \
+      pending_cleanup_record="$pending_record" \
+      PATH="$mock_bin:$PATH" \
+      task_file="$fixture_dir/task.md" \
+      sh "$signal_script" >"$fixture_dir/create-signal-$signal_name.out" 2>"$fixture_dir/create-signal-$signal_name.err" &&
+      fail "documented create/read-back signal reached URL handoff: $signal_name"
+    test -s "$pending_record" ||
+      fail "documented create/read-back signal left no pending cleanup record: $signal_name"
+    if grep -Fq 'gist_id=' "$pending_record"; then
+      fail "documented create/read-back signal recorded an unvalidated Gist ID: $signal_name"
+    fi
+    if grep -Fq 'https://gist.github.com/' "$pending_record" "$fixture_dir/create-signal-$signal_name.out" "$fixture_dir/create-signal-$signal_name.err"; then
+      fail "documented create/read-back signal leaked URL: $signal_name"
+    fi
+    test ! -e "$url_record" ||
+      fail "documented create/read-back signal created URL handoff record: $signal_name"
+    test ! -e "$delete_record" ||
+      fail "documented create/read-back signal deleted before reviewed confirmation: $signal_name"
+  done
 
   extract_documented_snippet '# agent-task-gist-reviewed-preview' "$fixture_dir/preview.sh"
   GIST_DELETE_RECORD="$fixture_dir/unused-preview-delete-record" \
@@ -477,8 +615,28 @@ EOF
     fail "documented reviewed-preview producer did not write a preview record"
   grep -Fq '# schema=agent-task-gist-reviewed-preview-v1' "$fixture_dir/reviewed-preview.tsv" ||
     fail "documented reviewed-preview producer did not write schema metadata"
+  grep -Fq "$(printf 'fixtureGistId\ti9wa4\ti9wa4\t8\tagent-task:<repo>:<task>')" "$fixture_dir/reviewed-preview.tsv" ||
+    fail "documented reviewed-preview producer did not persist the derived age row"
   test ! -e "$fixture_dir/unused-preview-delete-record" ||
     fail "documented reviewed-preview producer deleted a Gist"
+
+  GIST_LIST_MODE=invalid-timestamp \
+    GIST_DELETE_RECORD="$fixture_dir/invalid-preview-delete-record" \
+    PATH="$mock_bin:$PATH" \
+    reviewed_preview="$fixture_dir/invalid-reviewed-preview.tsv" \
+    sh "$fixture_dir/preview.sh" >"$fixture_dir/invalid-preview.out" 2>"$fixture_dir/invalid-preview.err" &&
+    fail "documented reviewed-preview producer accepted an invalid updatedAt timestamp"
+  test ! -e "$fixture_dir/invalid-preview-delete-record" ||
+    fail "documented reviewed-preview producer deleted after invalid timestamp"
+
+  GIST_LIST_MODE=future \
+    GIST_DELETE_RECORD="$fixture_dir/future-preview-delete-record" \
+    PATH="$mock_bin:$PATH" \
+    reviewed_preview="$fixture_dir/future-reviewed-preview.tsv" \
+    sh "$fixture_dir/preview.sh" >"$fixture_dir/future-preview.out" 2>"$fixture_dir/future-preview.err" &&
+    fail "documented reviewed-preview producer accepted a future updatedAt timestamp"
+  test ! -e "$fixture_dir/future-preview-delete-record" ||
+    fail "documented reviewed-preview producer deleted after future timestamp"
 
   write_reviewed_preview() {
     destination=$1
@@ -522,6 +680,21 @@ fixtureGistId
 EOF
   test -f "$fixture_dir/delete-record-bash" ||
     fail "documented deletion confirmation is not Bash-compatible"
+
+  GIST_LIST_AGE_DAYS=6 \
+    PATH="$mock_bin:$PATH" \
+    reviewed_preview="$fixture_dir/too-new-produced-preview.tsv" \
+    sh "$fixture_dir/preview.sh" >"$fixture_dir/too-new-produced-preview.out"
+  GIST_DELETE_RECORD="$fixture_dir/too-new-produced-delete-record" \
+    reviewed_preview="$fixture_dir/too-new-produced-preview.tsv" \
+    now_epoch=1000 \
+    PATH="$mock_bin:$PATH" \
+    sh "$fixture_dir/delete-fixture.sh" >"$fixture_dir/too-new-produced.out" 2>"$fixture_dir/too-new-produced.err" <<'EOF' &&
+fixtureGistId
+EOF
+    fail "documented deletion accepted producer-derived too-new age"
+  test ! -e "$fixture_dir/too-new-produced-delete-record" ||
+    fail "documented deletion deleted producer-derived too-new preview"
 
   assert_delete_rejected() {
     name=$1
@@ -608,6 +781,45 @@ EOF
     "gh gist list --secret --filter '^agent-task:<repo>:' --limit 100"
 
   extract_documented_snippet '# agent-task-gist-raw-verification' "$fixture_dir/raw.sh"
+  raw_signal_script="$fixture_dir/raw-signal.sh"
+  awk '
+    { print }
+    $0 == "raw_file=\"$raw_dir/task.md\"" {
+      print "kill -s TERM $$"
+    }
+  ' "$fixture_dir/raw.sh" >"$raw_signal_script"
+  {
+    printf 'set -e\n'
+    cat "$fixture_dir/create-read-back.sh"
+    cat "$raw_signal_script"
+    cat "$fixture_dir/url-handoff.sh"
+    # shellcheck disable=SC2016 # The generated script must write this literal expansion.
+    printf '%s\n' 'printf "%s\n" "$secret_gist_url" > "$GIST_URL_HANDOFF_RECORD"'
+  } >"$fixture_dir/full-raw-signal-flow.sh"
+  GIST_CLEANUP_RECORD="$fixture_dir/raw-signal-cleanup-record" \
+    GIST_FIXTURE_SOURCE="$fixture_dir/task.md" \
+    GIST_URL_HANDOFF_RECORD="$fixture_dir/raw-signal-url-record" \
+    GIST_DELETE_RECORD="$fixture_dir/raw-signal-delete-record" \
+    pending_cleanup_record="$fixture_dir/raw-signal-pending-cleanup" \
+    task_file="$fixture_dir/task.md" \
+    PATH="$mock_bin:$PATH" \
+    env -u TMPDIR sh "$fixture_dir/full-raw-signal-flow.sh" >"$fixture_dir/full-raw-signal-flow.out" 2>&1 &&
+    fail "documented raw-stage signal reached URL handoff"
+  test -s "$fixture_dir/raw-signal-cleanup-record" ||
+    fail "documented raw-stage signal did not clean raw temp state"
+  raw_signal_cleaned_directory=$(cat "$fixture_dir/raw-signal-cleanup-record")
+  test ! -e "$raw_signal_cleaned_directory" ||
+    fail "documented raw-stage signal left raw temp state behind"
+  grep -Fq 'gist_id=fixtureGistId' "$fixture_dir/raw-signal-pending-cleanup" ||
+    fail "documented raw-stage signal did not preserve exact pending cleanup ID"
+  if grep -Fq 'https://gist.github.com/' "$fixture_dir/raw-signal-pending-cleanup" "$fixture_dir/full-raw-signal-flow.out"; then
+    fail "documented raw-stage signal leaked URL"
+  fi
+  test ! -e "$fixture_dir/raw-signal-url-record" ||
+    fail "documented raw-stage signal created URL handoff record"
+  test ! -e "$fixture_dir/raw-signal-delete-record" ||
+    fail "documented raw-stage signal deleted before reviewed confirmation"
+
   GIST_CLEANUP_RECORD="$fixture_dir/cleanup-record" \
     GIST_FIXTURE_SOURCE="$fixture_dir/task.md" \
     gist_id=fixtureGistId \
