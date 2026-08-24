@@ -73,6 +73,16 @@ pending_cleanup_record=${pending_cleanup_record:-agent-task-gist-pending-cleanup
 gh auth status >/dev/null
 account=$(gh api user --jq .login)
 test "$account" = "$expected_account"
+set +e
+rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$task_file" >/dev/null
+local_scan_status=$?
+set -e
+if [ "$local_scan_status" -eq 0 ]; then
+  exit 1
+fi
+if [ "$local_scan_status" -ne 1 ]; then
+  exit 1
+fi
 gist_id=
 create_log=
 post_create_lifecycle=0
@@ -291,8 +301,10 @@ expected_account='i9wa4'
 expected_description_prefix='agent-task:<repo>:'
 reviewed_preview=${reviewed_preview:-agent-task-gist-reviewed-preview.tsv}
 preview_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-preview.XXXXXX") || exit 1
+preview_proof=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-proof.XXXXXX") || exit 1
 cleanup_preview_data() {
   rm -f "$preview_data"
+  rm -f "$preview_proof"
 }
 trap cleanup_preview_data EXIT HUP INT TERM
 gh auth status >/dev/null
@@ -314,13 +326,16 @@ if ! awk -F '	' -v prefix="$expected_description_prefix" '
 ' "$preview_data"; then
   exit 1
 fi
-preview_hash=$(shasum -a 256 "$preview_data" | awk '{print $1}')
 {
   printf '# schema=agent-task-gist-reviewed-preview-v1\n'
   printf '# account=%s\n' "$account"
   printf '# generated_epoch=%s\n' "$generated_epoch"
-  printf '# data_sha256=%s\n' "$preview_hash"
   cat "$preview_data"
+} > "$preview_proof"
+preview_hash=$(shasum -a 256 "$preview_proof" | awk '{print $1}')
+{
+  cat "$preview_proof"
+  printf '# proof_sha256=%s\n' "$preview_hash"
 } > "$reviewed_preview"
 ```
 
@@ -348,18 +363,30 @@ case "$preview_generated_epoch" in
 "" | *[!0-9]*) exit 1 ;;
 esac
 now_epoch=${now_epoch:-$(date +%s)}
+case "$now_epoch" in
+"" | *[!0-9]*) exit 1 ;;
+esac
+test "$preview_generated_epoch" -le "$now_epoch"
 test $((now_epoch - preview_generated_epoch)) -le "$max_preview_age_seconds"
-expected_preview_hash=$(awk -F = '$1 == "# data_sha256" { print $2 }' "$reviewed_preview")
+expected_preview_hash=$(awk -F = '$1 == "# proof_sha256" { print $2 }' "$reviewed_preview")
 case "$expected_preview_hash" in
 "" | *[!A-Fa-f0-9]*) exit 1 ;;
 esac
 preview_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-preview.XXXXXX") || exit 1
+preview_proof=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-proof.XXXXXX") || exit 1
 cleanup_preview_data() {
   rm -f "$preview_data"
+  rm -f "$preview_proof"
 }
 trap cleanup_preview_data EXIT HUP INT TERM
 awk '/^#/ { next } NF { print }' "$reviewed_preview" > "$preview_data"
-test "$(shasum -a 256 "$preview_data" | awk '{print $1}')" = "$expected_preview_hash"
+{
+  printf '# schema=%s\n' "$(awk -F = '$1 == "# schema" { print $2 }' "$reviewed_preview")"
+  printf '# account=%s\n' "$(awk -F = '$1 == "# account" { print $2 }' "$reviewed_preview")"
+  printf '# generated_epoch=%s\n' "$preview_generated_epoch"
+  cat "$preview_data"
+} > "$preview_proof"
+test "$(shasum -a 256 "$preview_proof" | awk '{print $1}')" = "$expected_preview_hash"
 preview_row=$(awk -F '	' -v id="$approved_gist_id" '$1 == id { print; found = 1 } END { exit(found ? 0 : 1) }' "$preview_data")
 IFS="$(printf '\t')" read -r preview_id preview_owner preview_account preview_age_days preview_description <<EOF
 $preview_row
