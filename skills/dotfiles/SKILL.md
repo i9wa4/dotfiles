@@ -4,7 +4,12 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: This dotfiles environment and its agent harness: machine setup (Ubuntu, WSL2, macOS, home-manager, nix-darwin), daily Nix operations and upgrade/recovery, missing CLI tools / command not found, operating concepts, clipboard (Vim, Neovim, tmux), Claude Code and Codex CLI config, hooks, MCP, skill installation, postman routing, orchestrator runbooks, tmux workspaces, issue/PR worktrees, pane operations, prompt/review contracts, resume handoff; Agent Skills authoring: add/edit/validate skills, Waza, publishing. DO NOT USE FOR: Nix package authoring (programming).
+  USE FOR: This dotfiles environment and agent harness: machine setup, Nix
+  operations/recovery, missing tools, operating concepts, clipboard,
+  Claude/Codex config, hooks, MCP, skills, Postman routing/runbooks,
+  tmux/worktrees/panes, prompt/review/resume-handoff contracts, and optional
+  portable agent task-memo Gists; Agent Skills authoring/validation/Waza.
+  DO NOT USE FOR: Nix package authoring (programming).
 ---
 
 # Dotfiles Environment
@@ -39,5 +44,7 @@ Agent harness (hubs link their siblings):
   Git lock diagnostics, panes, boot, VDE
 - [Prompts](references/prompt-contracts.md) — prompt
   blocks, review contracts, boundaries, resume handoff
+- [Resume Handoff](references/resume-handoff.md) — local task handoffs and
+  optional portable agent task-memo Gists
 - [Skills Management](references/skills-management.md) — skill authoring,
   Waza, release, publishing
