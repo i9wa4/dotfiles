@@ -300,9 +300,11 @@ set -e
 expected_account='i9wa4'
 expected_description_prefix='agent-task:<repo>:'
 reviewed_preview=${reviewed_preview:-agent-task-gist-reviewed-preview.tsv}
+candidate_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-candidates.XXXXXX") || exit 1
 preview_data=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-preview.XXXXXX") || exit 1
 preview_proof=$(mktemp "${TMPDIR:-/tmp}/agent-task-gist-reviewed-proof.XXXXXX") || exit 1
 cleanup_preview_data() {
+  rm -f "$candidate_data"
   rm -f "$preview_data"
   rm -f "$preview_proof"
 }
@@ -314,11 +316,12 @@ generated_epoch=$(date +%s)
 case "$generated_epoch" in
 "" | *[!0-9]*) exit 1 ;;
 esac
-gh gist list --secret --filter '^agent-task:<repo>:' --limit 100
 gh gist list --secret --filter '^agent-task:<repo>:' --limit 100 \
   --json id,description,owner,updatedAt \
   --jq ".[] | [.id, .owner.login, \"$account\", (((($generated_epoch) - (.updatedAt | fromdateiso8601)) / 86400) | floor), .description] | @tsv" \
-  > "$preview_data"
+  > "$candidate_data"
+cp "$candidate_data" "$preview_data"
+cat "$candidate_data"
 if ! awk -F '	' -v prefix="$expected_description_prefix" '
   NF != 5 { exit 1 }
   $4 !~ /^[0-9]+$/ { exit 1 }

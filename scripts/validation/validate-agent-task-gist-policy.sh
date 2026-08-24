@@ -18,21 +18,27 @@ contains_public_gist_command() {
   local file=$1
   local command=
   local line=
+  local continuation=0
   while IFS= read -r line || [ -n "$line" ]; do
     line=${line%"${line##*[![:space:]]}"}
-    if [ -n "$command" ]; then
-      command="$command ${line%\\}"
+    if [ "$continuation" -eq 1 ]; then
+      command="$command$line"
     else
-      command=${line%\\}
+      command=$line
     fi
     case "$line" in
-    *\\) continue ;;
+    *\\)
+      command=${command%\\}
+      continuation=1
+      continue
+      ;;
     esac
     if command_has_public_gist_flag "$command"; then
       printf '%s\n' "$command"
       return 0
     fi
     command=
+    continuation=0
   done <"$file"
   if [ -n "$command" ] && command_has_public_gist_flag "$command"; then
     printf '%s\n' "$command"
@@ -374,6 +380,21 @@ run_public_mode_fixtures() {
     "gh gist create '--public' task.md"
   assert_fixture_rejected quote-spliced-public-create \
     'gh gist create --pub"lic" task.md'
+  assert_fixture_rejected split-public-continuation-create \
+    "gh gist create --pub$continuation" \
+    'lic task.md'
+  assert_fixture_rejected split-quote-spliced-gh-continuation-create \
+    "g$continuation" \
+    '"h" gist create --public task.md'
+  assert_fixture_rejected split-quote-spliced-gist-continuation-create \
+    "gh g$continuation" \
+    '"ist" create --public task.md'
+  assert_fixture_rejected split-assignment-prefix-continuation-create \
+    "TOKEN=$continuation" \
+    '"x" gh gist create --public task.md'
+  assert_fixture_rejected split-env-assignment-continuation-create \
+    "env \"TOKEN=$continuation" \
+    'x" gh gist create --public task.md'
   assert_fixture_rejected separated-public-create \
     'printf x; gh gist create --public task.md'
   assert_fixture_rejected assignment-prefixed-public-create \
@@ -403,6 +424,9 @@ run_public_mode_fixtures() {
   assert_fixture_allowed allowed-list 'gh gist list --secret --limit 100'
   assert_fixture_allowed allowed-publicity-token \
     'gh gist create --publicity task.md'
+  assert_fixture_allowed allowed-split-publicity-continuation-token \
+    "gh gist create --pub$continuation" \
+    'licity task.md'
   assert_fixture_allowed allowed-preview-short-token \
     'gh gist create -preview task.md'
   assert_fixture_allowed allowed-quoted-text \
@@ -415,6 +439,9 @@ run_public_mode_fixtures() {
     'gh gist create "--public-task.md"'
   assert_fixture_allowed allowed-quoted-assignment-like-command \
     '"TOKEN=x" gh gist create --public task.md'
+  assert_fixture_allowed allowed-split-quoted-assignment-like-command \
+    "\"TOKEN=x\"$continuation" \
+    ' gh gist create --public task.md'
   assert_fixture_allowed allowed-desc-public-value \
     "gh gist create --desc '--public' task.md"
   assert_fixture_allowed allowed-stop-option-public-positional \
@@ -493,6 +520,13 @@ if [ "$1" = gist ] && [ "$2" = view ]; then
 	exit 0
 fi
 if [ "$1" = gist ] && [ "$2" = list ] && [ "$3" = --secret ]; then
+	list_call_number=1
+	if [ -n "${GIST_LIST_RECORD:-}" ]; then
+		if [ -f "$GIST_LIST_RECORD" ]; then
+			list_call_number=$(($(wc -l < "$GIST_LIST_RECORD") + 1))
+		fi
+		printf '%s\n' list >> "$GIST_LIST_RECORD"
+	fi
 	for arg in "$@"; do
 		if [ "$arg" = --json ]; then
 			jq_arg=
@@ -521,8 +555,14 @@ if [ "$1" = gist ] && [ "$2" = list ] && [ "$3" = --secret ]; then
 				age=${GIST_LIST_AGE_DAYS:-8}
 				;;
 			esac
+			gist_id=fixtureGistId
+			case "${GIST_LIST_MODE:-ok}:$list_call_number" in
+			divergent:2)
+				gist_id=divergentGistId
+				;;
+			esac
 			printf '%s\t%s\t%s\t%s\t%s\n' \
-				fixtureGistId i9wa4 i9wa4 "$age" 'agent-task:<repo>:<task>'
+				"$gist_id" i9wa4 i9wa4 "$age" 'agent-task:<repo>:<task>'
 			exit 0
 		fi
 	done
@@ -792,10 +832,13 @@ EOF
   done
 
   extract_documented_snippet '# agent-task-gist-reviewed-preview' "$fixture_dir/preview.sh"
-  GIST_DELETE_RECORD="$fixture_dir/unused-preview-delete-record" \
+  GIST_LIST_RECORD="$fixture_dir/preview-list-record" \
+    GIST_DELETE_RECORD="$fixture_dir/unused-preview-delete-record" \
     PATH="$mock_bin:$PATH" \
     reviewed_preview="$fixture_dir/reviewed-preview.tsv" \
     sh "$fixture_dir/preview.sh" >"$fixture_dir/preview.out"
+  test "$(wc -l <"$fixture_dir/preview-list-record")" -eq 1 ||
+    fail "documented reviewed-preview producer listed candidates more than once"
   test -s "$fixture_dir/reviewed-preview.tsv" ||
     fail "documented reviewed-preview producer did not write a preview record"
   grep -Fq '# schema=agent-task-gist-reviewed-preview-v1' "$fixture_dir/reviewed-preview.tsv" ||
@@ -804,6 +847,29 @@ EOF
     fail "documented reviewed-preview producer did not persist the derived age row"
   test ! -e "$fixture_dir/unused-preview-delete-record" ||
     fail "documented reviewed-preview producer deleted a Gist"
+  awk '/^#/ { next } NF { print }' "$fixture_dir/reviewed-preview.tsv" >"$fixture_dir/reviewed-preview-data.tsv"
+  cmp -s "$fixture_dir/preview.out" "$fixture_dir/reviewed-preview-data.tsv" ||
+    fail "documented reviewed-preview display was not derived from the proof-bound data"
+
+  GIST_LIST_MODE=divergent \
+    GIST_LIST_RECORD="$fixture_dir/divergent-preview-list-record" \
+    GIST_DELETE_RECORD="$fixture_dir/divergent-preview-unused-delete-record" \
+    PATH="$mock_bin:$PATH" \
+    reviewed_preview="$fixture_dir/divergent-reviewed-preview.tsv" \
+    sh "$fixture_dir/preview.sh" >"$fixture_dir/divergent-preview.out"
+  test "$(wc -l <"$fixture_dir/divergent-preview-list-record")" -eq 1 ||
+    fail "documented reviewed-preview producer permitted divergent consecutive lists"
+  awk '/^#/ { next } NF { print }' "$fixture_dir/divergent-reviewed-preview.tsv" >"$fixture_dir/divergent-reviewed-preview-data.tsv"
+  cmp -s "$fixture_dir/divergent-preview.out" "$fixture_dir/divergent-reviewed-preview-data.tsv" ||
+    fail "documented divergent preview display was not proof-bound"
+  grep -Fq "$(printf 'fixtureGistId\ti9wa4\ti9wa4\t8\tagent-task:<repo>:<task>')" \
+    "$fixture_dir/divergent-reviewed-preview.tsv" ||
+    fail "documented divergent preview did not preserve the reviewed candidate row"
+  if grep -Fq divergentGistId "$fixture_dir/divergent-preview.out" "$fixture_dir/divergent-reviewed-preview.tsv"; then
+    fail "documented divergent preview used a second candidate list"
+  fi
+  test ! -e "$fixture_dir/divergent-preview-unused-delete-record" ||
+    fail "documented divergent reviewed-preview producer deleted a Gist"
 
   GIST_LIST_MODE=invalid-timestamp \
     GIST_DELETE_RECORD="$fixture_dir/invalid-preview-delete-record" \
@@ -871,6 +937,15 @@ fixtureGistId
 EOF
   test -f "$fixture_dir/delete-record-bash" ||
     fail "documented deletion confirmation is not Bash-compatible"
+  GIST_DELETE_RECORD="$fixture_dir/divergent-delete-record" \
+    reviewed_preview="$fixture_dir/divergent-reviewed-preview.tsv" \
+    now_epoch=1000 \
+    PATH="$mock_bin:$PATH" \
+    sh "$fixture_dir/delete-fixture.sh" <<'EOF'
+fixtureGistId
+EOF
+  test "$(cat "$fixture_dir/divergent-delete-record")" = fixtureGistId ||
+    fail "documented deletion was not bound to the divergent reviewed dataset"
 
   GIST_LIST_AGE_DAYS=6 \
     PATH="$mock_bin:$PATH" \
