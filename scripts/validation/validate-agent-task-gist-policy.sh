@@ -45,12 +45,64 @@ tokenize_shell_words() {
   local command=$1
   TOKENS=()
   TOKEN_QUOTED=()
+  TOKEN_ASSIGNMENT_PREFIX=()
   local token=
   local quoted=0
+  local assignment_prefix=0
+  local assignment_equal_seen=0
+  local assignment_name_valid=1
+  local assignment_name_len=0
   local state=normal
   local i=0
   local char=
   local next=
+  flush_token() {
+    TOKENS+=("$token")
+    TOKEN_QUOTED+=("$quoted")
+    TOKEN_ASSIGNMENT_PREFIX+=("$assignment_prefix")
+    token=
+    quoted=0
+    assignment_prefix=0
+    assignment_equal_seen=0
+    assignment_name_valid=1
+    assignment_name_len=0
+  }
+  append_unquoted_char() {
+    local appended=$1
+    if [ "$assignment_equal_seen" -eq 0 ]; then
+      case "$appended" in
+      =)
+        if [ "$assignment_name_valid" -eq 1 ] && [ "$assignment_name_len" -gt 0 ]; then
+          assignment_prefix=1
+        fi
+        assignment_equal_seen=1
+        ;;
+      [A-Za-z_])
+        assignment_name_len=$((assignment_name_len + 1))
+        ;;
+      [0-9])
+        if [ "$assignment_name_len" -eq 0 ]; then
+          assignment_name_valid=0
+        fi
+        assignment_name_len=$((assignment_name_len + 1))
+        ;;
+      *)
+        assignment_name_valid=0
+        assignment_name_len=$((assignment_name_len + 1))
+        ;;
+      esac
+    fi
+    token="$token$appended"
+  }
+  append_quoted_char() {
+    local appended=$1
+    # Only an unquoted NAME= prefix is shell assignment syntax; quoted NAME=
+    # remains the command argv word.
+    if [ "$assignment_equal_seen" -eq 0 ]; then
+      assignment_name_valid=0
+    fi
+    token="$token$appended"
+  }
   while [ "$i" -lt "${#command}" ]; do
     char=${command:i:1}
     case "$state" in
@@ -58,55 +110,55 @@ tokenize_shell_words() {
       case "$char" in
       [[:space:]])
         if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
-          TOKENS+=("$token")
-          TOKEN_QUOTED+=("$quoted")
-          token=
-          quoted=0
+          flush_token
         fi
         ;;
       "'")
         state=single
         quoted=1
+        if [ "$assignment_equal_seen" -eq 0 ]; then
+          assignment_name_valid=0
+        fi
         ;;
       '"')
         state=double
         quoted=1
+        if [ "$assignment_equal_seen" -eq 0 ]; then
+          assignment_name_valid=0
+        fi
         ;;
       \\)
         i=$((i + 1))
         if [ "$i" -lt "${#command}" ]; then
-          token="$token${command:i:1}"
+          append_quoted_char "${command:i:1}"
         fi
         ;;
       ';')
         if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
-          TOKENS+=("$token")
-          TOKEN_QUOTED+=("$quoted")
-          token=
-          quoted=0
+          flush_token
         fi
         TOKENS+=(';')
         TOKEN_QUOTED+=(0)
+        TOKEN_ASSIGNMENT_PREFIX+=(0)
         ;;
       '&' | '|' | '(' | ')')
         if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
-          TOKENS+=("$token")
-          TOKEN_QUOTED+=("$quoted")
-          token=
-          quoted=0
+          flush_token
         fi
         next=${command:$((i + 1)):1}
         if [ "$char" != '(' ] && [ "$char" != ')' ] && [ "$next" = "$char" ]; then
           TOKENS+=("$char$next")
           TOKEN_QUOTED+=(0)
+          TOKEN_ASSIGNMENT_PREFIX+=(0)
           i=$((i + 1))
         else
           TOKENS+=("$char")
           TOKEN_QUOTED+=(0)
+          TOKEN_ASSIGNMENT_PREFIX+=(0)
         fi
         ;;
       *)
-        token="$token$char"
+        append_unquoted_char "$char"
         ;;
       esac
       ;;
@@ -114,7 +166,7 @@ tokenize_shell_words() {
       if [ "$char" = "'" ]; then
         state=normal
       else
-        token="$token$char"
+        append_quoted_char "$char"
       fi
       ;;
     double)
@@ -126,11 +178,11 @@ tokenize_shell_words() {
         i=$((i + 1))
         if [ "$i" -lt "${#command}" ]; then
           next=${command:i:1}
-          token="$token$next"
+          append_quoted_char "$next"
         fi
         ;;
       *)
-        token="$token$char"
+        append_quoted_char "$char"
         ;;
       esac
       ;;
@@ -138,13 +190,8 @@ tokenize_shell_words() {
     i=$((i + 1))
   done
   if [ -n "$token" ] || [ "$quoted" -eq 1 ]; then
-    TOKENS+=("$token")
-    TOKEN_QUOTED+=("$quoted")
+    flush_token
   fi
-}
-
-is_assignment_word() {
-  [[ $1 =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]
 }
 
 segment_has_public_gist_flag() {
@@ -152,7 +199,7 @@ segment_has_public_gist_flag() {
   local end=$2
   local index=0
   index=$start
-  while [ "$index" -lt "$end" ] && is_assignment_word "${TOKENS[$index]}"; do
+  while [ "$index" -lt "$end" ] && [ "${TOKEN_ASSIGNMENT_PREFIX[$index]}" -eq 1 ]; do
     index=$((index + 1))
   done
   while [ "$index" -lt "$end" ]; do
@@ -288,6 +335,12 @@ run_public_mode_fixtures() {
     'command g"h" gist create --public task.md'
   assert_command_rejected direct-ampersand-separated-public-create \
     'printf x & gh gist create --public task.md'
+  assert_command_rejected direct-assignment-quoted-value-public-create \
+    'TOKEN="x" gh gist create --public task.md'
+  assert_command_rejected direct-env-quoted-assignment-public-create \
+    'env "TOKEN=x" gh gist create --public task.md'
+  assert_command_allowed direct-quoted-assignment-like-command \
+    '"TOKEN=x" gh gist create --public task.md'
   assert_command_allowed direct-desc-public-value \
     "gh gist create --desc '--public' task.md"
   assert_command_allowed direct-stop-option-public-positional \
@@ -333,6 +386,8 @@ run_public_mode_fixtures() {
     'gh gist c"reate" --public task.md'
   assert_fixture_rejected quoted-assignment-prefixed-public-create \
     'TOKEN="x" gh gist create --public task.md'
+  assert_fixture_rejected env-quoted-assignment-public-create \
+    'env "TOKEN=x" gh gist create --public task.md'
   assert_fixture_rejected ampersand-separated-public-create \
     'printf x & gh gist create --public task.md'
   assert_fixture_rejected command-quote-spliced-public-create \
@@ -358,6 +413,8 @@ run_public_mode_fixtures() {
     "gh gist create --desc 'document the --public prohibition' task.md"
   assert_fixture_allowed allowed-quoted-filename-public-text \
     'gh gist create "--public-task.md"'
+  assert_fixture_allowed allowed-quoted-assignment-like-command \
+    '"TOKEN=x" gh gist create --public task.md'
   assert_fixture_allowed allowed-desc-public-value \
     "gh gist create --desc '--public' task.md"
   assert_fixture_allowed allowed-stop-option-public-positional \
