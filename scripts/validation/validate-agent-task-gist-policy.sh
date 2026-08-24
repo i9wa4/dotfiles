@@ -184,7 +184,18 @@ tokenize_shell_words() {
         i=$((i + 1))
         if [ "$i" -lt "${#command}" ]; then
           next=${command:i:1}
-          append_quoted_char "$next"
+          case "$next" in
+          '"' | \\ | '$' | '`')
+            append_quoted_char "$next"
+            ;;
+          $'\n')
+            ;;
+          *)
+            # shellcheck disable=SC1003 # Literal backslash preserved in double quotes.
+            append_quoted_char '\'
+            append_quoted_char "$next"
+            ;;
+          esac
         fi
         ;;
       *)
@@ -333,8 +344,37 @@ assert_command_allowed() {
   fi
 }
 
+assert_token_equals() {
+  name=$1
+  command=$2
+  index=$3
+  expected=$4
+  tokenize_shell_words "$command"
+  test "${TOKENS[$index]:-}" = "$expected" ||
+    fail "tokenizer produced unexpected token for $name"
+}
+
 run_public_mode_fixtures() {
   continuation=$(printf '%b' '\134')
+  assert_token_equals direct-double-quote-preserved-nonspecial-backslash \
+    'gh gist create "--pub\lic" task.md' 3 '--pub\lic'
+  assert_token_equals direct-double-quote-escaped-backslash \
+    'gh gist create "--pub\\lic" task.md' 3 '--pub\lic'
+  assert_token_equals direct-double-quote-escaped-quote \
+    'gh gist create "--pub\"lic" task.md' 3 '--pub"lic'
+  # shellcheck disable=SC2016 # Literal dollar exercises double-quote escaping.
+  assert_token_equals direct-double-quote-escaped-dollar \
+    'gh gist create "--pub\$lic" task.md' 3 '--pub$lic'
+  assert_token_equals direct-double-quote-escaped-backtick \
+    'gh gist create "--pub\`lic" task.md' 3 '--pub`lic'
+  assert_token_equals direct-double-quote-backslash-newline-removal \
+    $'gh gist create "--pub\\\nlic" task.md' 3 '--public'
+  assert_command_allowed direct-double-quote-preserved-nonspecial-backslash-create \
+    'gh gist create "--pub\lic" task.md'
+  assert_command_allowed direct-double-quote-escaped-backslash-create \
+    'gh gist create "--pub\\lic" task.md'
+  assert_command_rejected direct-double-quote-backslash-newline-public-create \
+    $'gh gist create "--pub\\\nlic" task.md'
   assert_command_rejected direct-quote-spliced-gh-create \
     'g"h" gist create --public task.md'
   assert_command_rejected direct-command-quote-spliced-public-create \
@@ -383,6 +423,9 @@ run_public_mode_fixtures() {
   assert_fixture_rejected split-public-continuation-create \
     "gh gist create --pub$continuation" \
     'lic task.md'
+  assert_fixture_rejected split-public-double-quoted-continuation-create \
+    "gh gist create \"--pub$continuation" \
+    'lic" task.md'
   assert_fixture_rejected split-quote-spliced-gh-continuation-create \
     "g$continuation" \
     '"h" gist create --public task.md'
@@ -424,6 +467,10 @@ run_public_mode_fixtures() {
   assert_fixture_allowed allowed-list 'gh gist list --secret --limit 100'
   assert_fixture_allowed allowed-publicity-token \
     'gh gist create --publicity task.md'
+  assert_fixture_allowed allowed-double-quoted-preserved-backslash-public-token \
+    'gh gist create "--pub\lic" task.md'
+  assert_fixture_allowed allowed-double-quoted-escaped-backslash-public-token \
+    'gh gist create "--pub\\lic" task.md'
   assert_fixture_allowed allowed-split-publicity-continuation-token \
     "gh gist create --pub$continuation" \
     'licity task.md'
