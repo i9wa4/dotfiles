@@ -63,10 +63,13 @@ not permission to perform one. Each creation command intentionally omits
 `--public`.
 
 ```sh
+# agent-task-gist-create-read-back
 gh auth status
-gh gist create --desc 'agent-task:<repo>:<task>' task.md
-gh gist edit <gist-id> --filename task.md task.md
-gh api gists/<gist-id> --jq '{public,description,files:(.files|keys)}'
+create_output=$(gh gist create --desc 'agent-task:<repo>:<task>' task.md)
+gist_id=${create_output##*/}
+test -n "$gist_id"
+gh gist edit "$gist_id" --filename task.md task.md
+gh api "gists/$gist_id" --jq '{public,description,files:(.files|keys)}'
 ```
 
 Verify API output reports `public=false`, the expected description, and the
@@ -85,7 +88,12 @@ cleanup_raw_dir() {
 trap cleanup_raw_dir EXIT HUP INT TERM
 raw_file="$raw_dir/task.md"
 gh gist view "$gist_id" --raw > "$raw_file"
-shasum -a 256 "$task_file" "$raw_file"
+local_hash=$(shasum -a 256 "$task_file" | awk '{print $1}')
+raw_hash=$(shasum -a 256 "$raw_file" | awk '{print $1}')
+printf '%s  %s\n%s  %s\n' "$local_hash" "$task_file" "$raw_hash" "$raw_file"
+if [ "$local_hash" != "$raw_hash" ]; then
+  exit 1
+fi
 if rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$raw_file"; then
   exit 1
 fi
@@ -100,7 +108,7 @@ handoff channel.
 
 ```sh
 # agent-task-gist-url-handoff
-secret_gist_url=$(gh api "gists/$gist_id" --jq '.html_url')
+secret_gist_url=$create_output
 test -n "$secret_gist_url"
 ```
 

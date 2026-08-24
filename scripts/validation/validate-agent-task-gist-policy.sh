@@ -112,12 +112,32 @@ run_documented_snippet_fixtures() {
 
   cat >"$mock_bin/gh" <<'EOF'
 #!/bin/sh
+if [ "$1" = auth ] && [ "$2" = status ]; then
+  printf '%s\n' 'Logged in to github.com account i9wa4'
+  exit 0
+fi
+if [ "$1" = gist ] && [ "$2" = create ]; then
+  printf '%s\n' 'https://gist.github.com/fixture-gist-id'
+  exit 0
+fi
+if [ "$1" = gist ] && [ "$2" = edit ] && [ "$3" = fixture-gist-id ]; then
+  exit 0
+fi
 if [ "$1" = gist ] && [ "$2" = delete ] && [ "$3" = fixture-gist-id ]; then
   : > "$GIST_DELETE_RECORD"
   exit 0
 fi
 if [ "$1" = gist ] && [ "$2" = view ]; then
   cat "$GIST_FIXTURE_SOURCE"
+  exit 0
+fi
+if [ "$1" = api ] && [ "$2" = gists/fixture-gist-id ] && [ "$4" = '{public,description,files:(.files|keys)}' ]; then
+  printf '%s\n' '{"public":false,"description":"agent-task:<repo>:<task>","files":["task.md"]}'
+  exit 0
+fi
+if [ "$1" = api ] && [ "$2" = gists/fixture-gist-id ] && [ "$4" = '.html_url' ]; then
+  : > "$GIST_URL_HANDOFF_RECORD"
+  printf '%s\n' 'https://gist.github.com/fixture-gist-id'
   exit 0
 fi
 exit 64
@@ -137,6 +157,35 @@ exit 1
 EOF
   chmod 700 "$mock_bin/rg"
 
+  cat >"$mock_bin/shasum" <<'EOF'
+#!/bin/sh
+if [ "$1" != -a ] || [ "$2" != 256 ]; then
+  exit 64
+fi
+case "$(cat "$3")" in
+"fixture memo")
+  printf '%s  %s\n' '1c72c50d1320856521d1a956f0cae3c257091c72294a1c99a22b337417457127' "$3"
+  ;;
+"different memo")
+  printf '%s  %s\n' 'e9cf18bd5c7a707b7c5f624f45639792a38b2ed609c5fbfb6d2df921c68bf858' "$3"
+  ;;
+*)
+  exit 64
+  ;;
+esac
+EOF
+  chmod 700 "$mock_bin/shasum"
+
+  printf 'fixture memo\n' >"$fixture_dir/task.md"
+  extract_documented_snippet '# agent-task-gist-create-read-back' "$fixture_dir/create-read-back.sh"
+  GIST_URL_HANDOFF_RECORD="$fixture_dir/create-url-record" \
+    PATH="$mock_bin:$PATH" \
+    task_file="$fixture_dir/task.md" \
+    sh "$fixture_dir/create-read-back.sh" >"$fixture_dir/create-read-back.out"
+  if grep -Fq 'https://gist.github.com/' "$fixture_dir/create-read-back.out"; then
+    fail "documented create/read-back flow prints the secret URL before verification"
+  fi
+
   extract_documented_snippet '# agent-task-gist-delete-confirmation' "$fixture_dir/delete.sh"
   sed 's/<reviewed-gist-id>/fixture-gist-id/g' "$fixture_dir/delete.sh" >"$fixture_dir/delete-fixture.sh"
   GIST_DELETE_RECORD="$fixture_dir/delete-record" \
@@ -154,7 +203,6 @@ EOF
   test -f "$fixture_dir/delete-record-bash" ||
     fail "documented deletion confirmation is not Bash-compatible"
 
-  printf 'fixture memo\n' >"$fixture_dir/task.md"
   extract_documented_snippet '# agent-task-gist-raw-verification' "$fixture_dir/raw.sh"
   GIST_CLEANUP_RECORD="$fixture_dir/cleanup-record" \
     GIST_FIXTURE_SOURCE="$fixture_dir/task.md" \
@@ -171,6 +219,42 @@ EOF
   esac
   test ! -e "$cleaned_directory" ||
     fail "documented raw verification left its temporary directory behind"
+
+  printf 'different memo\n' >"$fixture_dir/mismatch-task.md"
+  GIST_CLEANUP_RECORD="$fixture_dir/mismatch-cleanup-record" \
+    GIST_FIXTURE_SOURCE="$fixture_dir/mismatch-task.md" \
+    gist_id=fixture-gist-id \
+    task_file="$fixture_dir/task.md" \
+    PATH="$mock_bin:$PATH" \
+    env -u TMPDIR sh "$fixture_dir/raw.sh" >"$fixture_dir/raw-mismatch.out" 2>&1 &&
+    fail "documented raw verification accepted mismatched content"
+  test -s "$fixture_dir/mismatch-cleanup-record" ||
+    fail "documented raw verification mismatch path did not clean up"
+  mismatch_cleaned_directory=$(cat "$fixture_dir/mismatch-cleanup-record")
+  test ! -e "$mismatch_cleaned_directory" ||
+    fail "documented raw verification mismatch path left its temporary directory behind"
+
+  extract_documented_snippet '# agent-task-gist-url-handoff' "$fixture_dir/url-handoff.sh"
+  {
+    printf 'set -e\n'
+    cat "$fixture_dir/create-read-back.sh"
+    cat "$fixture_dir/raw.sh"
+    cat "$fixture_dir/url-handoff.sh"
+    # shellcheck disable=SC2016 # The generated script must write this literal expansion.
+    printf '%s\n' 'printf "%s\n" "$secret_gist_url" > "$GIST_URL_HANDOFF_RECORD"'
+  } >"$fixture_dir/full-mismatch-flow.sh"
+  GIST_CLEANUP_RECORD="$fixture_dir/full-mismatch-cleanup-record" \
+    GIST_FIXTURE_SOURCE="$fixture_dir/mismatch-task.md" \
+    GIST_URL_HANDOFF_RECORD="$fixture_dir/url-handoff-record" \
+    task_file="$fixture_dir/task.md" \
+    PATH="$mock_bin:$PATH" \
+    env -u TMPDIR sh "$fixture_dir/full-mismatch-flow.sh" >"$fixture_dir/full-mismatch-flow.out" 2>&1 &&
+    fail "documented full flow reached URL handoff after mismatched content"
+  if grep -Fq 'https://gist.github.com/' "$fixture_dir/full-mismatch-flow.out"; then
+    fail "documented mismatch flow printed the secret URL"
+  fi
+  test ! -e "$fixture_dir/url-handoff-record" ||
+    fail "documented mismatch flow reached URL handoff"
 }
 
 # shellcheck disable=SC2016 # The literal command text is the policy assertion.
@@ -200,10 +284,10 @@ run_public_mode_fixtures
 run_documented_snippet_fixtures
 
 url_handoff_line=$(grep -n '^# agent-task-gist-url-handoff$' "$policy_file" | cut -d: -f1)
-html_url_line=$(grep -n 'html_url' "$policy_file" | cut -d: -f1)
+url_assignment_line=$(grep -n '^secret_gist_url=' "$policy_file" | cut -d: -f1)
 test -n "$url_handoff_line" || fail "missing post-verification URL handoff marker"
-test -n "$html_url_line" || fail "missing post-verification URL retrieval"
-test "$html_url_line" -gt "$url_handoff_line" ||
-  fail "secret URL is retrieved before the approved handoff stage"
+test -n "$url_assignment_line" || fail "missing post-verification URL handoff assignment"
+test "$url_assignment_line" -gt "$url_handoff_line" ||
+  fail "secret URL is assigned before the approved handoff stage"
 
 echo "agent-task Gist policy validation passed"
