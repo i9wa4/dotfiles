@@ -18,21 +18,26 @@ contains_public_gist_command() {
   local file=$1
   local command=
   local line=
+  local raw_line=
+  local continues=0
   local continuation=0
   while IFS= read -r line || [ -n "$line" ]; do
+    raw_line=$line
+    continues=0
+    case "$raw_line" in
+    *\\) continues=1 ;;
+    esac
     line=${line%"${line##*[![:space:]]}"}
     if [ "$continuation" -eq 1 ]; then
       command="$command$line"
     else
       command=$line
     fi
-    case "$line" in
-    *\\)
+    if [ "$continues" -eq 1 ]; then
       command=${command%\\}
       continuation=1
       continue
-      ;;
-    esac
+    fi
     if command_has_public_gist_flag "$command"; then
       printf '%s\n' "$command"
       return 0
@@ -381,6 +386,12 @@ run_public_mode_fixtures() {
     'command g"h" gist create --public task.md'
   assert_command_rejected direct-ampersand-separated-public-create \
     'printf x & gh gist create --public task.md'
+  assert_command_rejected direct-pipe-separated-public-create \
+    'printf x | gh gist create --public task.md'
+  assert_command_rejected direct-and-if-public-create \
+    'true && gh gist create --public task.md'
+  assert_command_rejected direct-or-if-public-create \
+    'false || gh gist create --public task.md'
   assert_command_rejected direct-assignment-quoted-value-public-create \
     'TOKEN="x" gh gist create --public task.md'
   assert_command_rejected direct-env-quoted-assignment-public-create \
@@ -423,6 +434,9 @@ run_public_mode_fixtures() {
   assert_fixture_rejected split-public-continuation-create \
     "gh gist create --pub$continuation" \
     'lic task.md'
+  assert_fixture_allowed allowed-backslash-space-no-continuation-create \
+    "gh gist create --pub$continuation  " \
+    'lic task.md'
   assert_fixture_rejected split-public-double-quoted-continuation-create \
     "gh gist create \"--pub$continuation" \
     'lic" task.md'
@@ -440,6 +454,12 @@ run_public_mode_fixtures() {
     'x" gh gist create --public task.md'
   assert_fixture_rejected separated-public-create \
     'printf x; gh gist create --public task.md'
+  assert_fixture_rejected pipe-separated-public-create \
+    'printf x | gh gist create --public task.md'
+  assert_fixture_rejected and-if-public-create \
+    'true && gh gist create --public task.md'
+  assert_fixture_rejected or-if-public-create \
+    'false || gh gist create --public task.md'
   assert_fixture_rejected assignment-prefixed-public-create \
     'TOKEN=x gh gist create --public task.md'
   assert_fixture_rejected quote-spliced-gh-create \
