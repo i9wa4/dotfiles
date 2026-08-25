@@ -155,7 +155,7 @@ Local absolute artifact paths are fine in internal chat, mailbox traffic, and
 local task artifacts. Public GitHub surfaces such as commits, issues, PRs, and
 reviews should use repo-relative paths or stable URLs.
 
-## 9. Human-Facing Japanese Secret-Gist Workflow
+## 9. Human-Facing Secret-Gist Workflow
 
 Use this subsection whenever an artifact is intended for human viewing. Do not
 use it for machine-only build outputs, internal logs or mailbox receipts, code,
@@ -163,8 +163,11 @@ configuration, Nix sources, temporary scratch files, or other non-human output.
 
 ### 9.1. Source and language
 
-- Write the human-facing final Markdown body in Japanese. Preserve commands,
-  paths, URLs, identifiers, and versions in their exact notation when needed.
+- Follow the output language designated by the active runtime/session policy or
+  explicit request. Do not establish an independent language policy in this
+  workflow.
+- Preserve commands, paths, URLs, identifiers, and versions in their exact
+  notation when needed.
 - Create the local canonical source with `mkmd`; include title, purpose, scope,
   verification evidence, and remaining work.
 - Before upload, remove secrets, tokens, private data, internal mail or review
@@ -180,7 +183,7 @@ human approval. After approval, confirm the intended account with
 ```sh
 gh auth status
 gh gist create --filename "$(basename "$MKMD_ARTIFACT")" \
-  --desc '日本語の人間向け成果物' "$MKMD_ARTIFACT"
+  --desc '<human-facing artifact description>' "$MKMD_ARTIFACT"
 ```
 
 Keep the `mkmd` basename, including its unique suffix, as the Gist filename;
@@ -196,7 +199,9 @@ the URL in human-facing text until every check passes.
 ```sh
 gh api gists/<gist-id> --jq '{html_url,public,description,files:(.files|keys)}'
 curl -L --silent --show-error --head https://gist.github.com/<owner>/<gist-id>
-curl -L --silent https://gist.githubusercontent.com/<owner>/<gist-id>/raw/<filename> > "$TMPDIR/gist-raw.md"
+curl -L --silent \
+  https://gist.githubusercontent.com/<owner>/<gist-id>/raw/<filename> \
+  > "$TMPDIR/gist-raw.md"
 shasum -a 256 "$MKMD_ARTIFACT" "$TMPDIR/gist-raw.md"
 rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$TMPDIR/gist-raw.md"
 ```
@@ -208,10 +213,11 @@ unchanged when outside the request; on a filename collision, create a new
 
 ### 9.3. Handoff and fallback
 
-Postman or requester-facing Japanese handoff text must include the complete
-clickable Gist URL, visibility, filename, source identifier, verification
-commands and results, changed scope, and remaining blockers. Do not copy a
-Secret-Gist URL into public issues, PRs, or logs without separate approval.
+Postman or requester-facing handoff text must follow the active output language
+policy and include the complete clickable Gist URL, visibility, filename,
+source identifier, verification commands and results, changed scope, and
+remaining blockers. Do not copy a Secret-Gist URL into public issues, PRs, or
+logs without separate approval.
 
 If creation or verification fails, keep the local `mkmd` source as the
 canonical artifact and report the failure reason and next action. Never fall
