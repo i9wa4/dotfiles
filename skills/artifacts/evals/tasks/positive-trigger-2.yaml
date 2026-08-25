@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Curated trigger for human-facing Secret-Gist delivery.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Prepare an approved human-facing Secret-Gist delivery copy from a local markdown artifact and verify the raw content before handoff."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: positive

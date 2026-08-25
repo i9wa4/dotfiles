@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Curated anti-trigger for implementation-only code changes.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Make a small Bash implementation change and run shellcheck plus focused tests."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: negative

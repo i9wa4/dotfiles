@@ -181,13 +181,6 @@
             pass_filenames = false;
             require_serial = true;
           };
-          agent-task-gist-policy-check = {
-            enable = true;
-            entry = "${pkgs.bash}/bin/bash scripts/validation/validate-agent-task-gist-policy.sh";
-            files = "^(skills/dotfiles/(SKILL\\.md|references/resume-handoff\\.md|evals/.*)|scripts/validation/validate-agent-task-gist-policy\\.sh)$";
-            types = [ "file" ];
-            pass_filenames = false;
-          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===

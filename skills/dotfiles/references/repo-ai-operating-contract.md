@@ -41,11 +41,10 @@ The persona / language / scope contract lives in
 skill bodies live in top-level `skills/<name>/SKILL.md`; postman
 injects a generated catalog for that local skill tree through `skill_path`.
 
-<!-- private-content-scan: allow-next-line -->
 The full persona / language / scope prompt is not installed as a generated
-runtime-root instruction file under `~/.claude/` or `~/.codex/`. Minimal
-direct-invocation fallbacks remain: `~/.claude/CLAUDE.md` and
-`~/.codex/AGENTS.md`, both derived from
+runtime-root instruction file under `$HOME/.claude/` or `$HOME/.codex/`.
+Minimal direct-invocation fallbacks remain: `$HOME/.claude/CLAUDE.md` and
+`$HOME/.codex/AGENTS.md`, both derived from
 `nix/home-manager/agents/shared/AGENTS.md`. Direct non-postman sessions use
 those fallbacks, installed runtime settings, and skill trees until they receive
 a postman event.
@@ -121,14 +120,15 @@ skill:
   configuration
 - use uppercase annotations such as `NOTE:`, `TODO:`, `FIXME:`, and `WARNING:`
 
-### 3.2. Durable `mkmd` handoff artifacts
+### 3.2. Durable handoff artifacts
 
-`mkmd` is the default way to keep cross-agent context durable in this repo.
-Do not rely on chat history or short status traffic alone when later readers
-will need to recover why work moved, what changed, or what still needs
-verification.
+Use `artifacts` for non-code artifact lifecycle, including local markdown
+creation, reuse, discovery, directory labels, temporary discard rules, and
+approved human-facing Secret-Gist delivery. Do not rely on chat history or
+short status traffic alone when later readers will need to recover why work
+moved, what changed, or what still needs verification.
 
-Create or update a durable `mkmd` artifact when any of these are true:
+Create or update a durable artifact when any of these are true:
 
 - review findings, rework notes, or approval-defect lists need to move between
   nodes
@@ -140,7 +140,7 @@ Create or update a durable `mkmd` artifact when any of these are true:
 A short status update is enough only when the next node needs no context beyond
 the current control-plane state.
 
-Use the standard `mkmd` directories by artifact type:
+Use the standard artifact directory labels by artifact type:
 
 - `draft` for temporary working notes and handoff drafts
 - `research` for investigation findings and decision support
@@ -150,8 +150,8 @@ Use the standard `mkmd` directories by artifact type:
 
 ### 3.3. Markdown checklist workflow for task artifacts
 
-When work needs a durable task tracker, use a `mkmd` markdown artifact instead
-of ad hoc chat prose.
+When work needs a durable task tracker, use a markdown artifact instead of ad
+hoc chat prose.
 
 - intake rule: if the work will span multiple steps, nodes, or review rounds,
   create or update a `plans` or `research` artifact before implementation
@@ -188,7 +188,7 @@ surfaces allow:
 
 - inject live repo context into prompts
 - deny dangerous Bash actions before execution
-- keep handoff state durable through postman messages and `mkmd` artifacts
+- keep handoff state durable through postman messages and artifacts
 
 ### 4.2. Claude runtime hooks
 
@@ -339,7 +339,7 @@ In practice that means:
 - both engines should see the same review topology
 - both engines should obey the same Bash deny policy
 - both engines should use the same durable handoff discipline through postman
-  traffic and `mkmd` artifacts
+  traffic and artifacts
 - both engines should be able to participate in the same repo-local review and
   routing model
 

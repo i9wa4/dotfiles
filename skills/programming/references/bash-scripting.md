@@ -20,7 +20,7 @@ Use this reference for Bash scripts and shell command design in this repo.
 ## 3. Example
 
 ```sh
-FILE=$(mkmd --dir tmp --label output)
+FILE=$(skills/artifacts/scripts/mkmd --dir tmp --label output)
 { git branch -r | rg issue; } >"$FILE" 2>&1
 ```
 

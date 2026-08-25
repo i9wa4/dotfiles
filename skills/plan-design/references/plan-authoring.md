@@ -98,10 +98,11 @@ contexts, follow the live role contract and durable runbook.
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
 1. Create a research artifact for source digestion:
-   mkmd --dir research --label "plan-investigation"
+   `skills/artifacts/scripts/mkmd --dir research --label plan-investigation`
    - Note: add a suffix to disambiguate if multiple plans exist in the same
      session.
-   - Example: `mkmd --dir research --label "plan-investigation-dbt-merge"`
+   - Example:
+     `skills/artifacts/scripts/mkmd --dir research --label plan-investigation-dbt-merge`
 2. Read all source artifacts in full.
 3. For large files, read in chunks (`offset/limit` or line ranges).
 4. Extract:
@@ -261,7 +262,7 @@ A plan is ready for final guardian review only if all are true:
 ## 10. Deliverables
 
 - Plan file created via:
-  - `mkmd --dir plans --label plan`
+  - `skills/artifacts/scripts/mkmd --dir plans --label plan`
 - Progress updates and status changes recorded in the plan.
 - Final handoff summary including:
   - Key decisions

@@ -32,8 +32,8 @@ full design exercise.
 
 ## 3. Repo Fit
 
-- Use `mkmd` artifacts when the brainstorming output needs to persist as
-  research or plan input.
+- Use `artifacts` when the brainstorming output needs to persist as research
+  or plan input.
 - Continue into the main `plan-design` workflow when the outcome is a
   multi-phase execution plan.
 - Hand off directly to implementation when the scope is now narrow and stable.
