@@ -12,7 +12,7 @@ Use this precedence:
 2. The already-active artifact recorded in the current task or handoff.
 3. A discovered recent artifact that clearly matches the same repo, branch,
    task, and purpose.
-4. A new artifact created with `skills/artifacts/scripts/mkmd`.
+4. A new artifact created with the installed artifacts `mkmd` script.
 
 Do not create a second tracker because the current artifact is inconvenient.
 Update or rename only when the requester explicitly changes the canonical path.
@@ -68,24 +68,29 @@ original checklist across multiple canonical trackers.
 
 ## 3. Cwd-Independent Mkmd Contract
 
-Callers must resolve the artifacts skill root before invoking `mkmd`. Relative
-calls such as `skills/artifacts/scripts/mkmd` are valid only after `cd` to the
-repository root and should not appear in reusable snippets.
+Callers must receive the installed or currently loaded artifacts skill root
+before invoking `mkmd`. Relative calls such as
+`skills/artifacts/scripts/mkmd`, and roots derived from the active target
+repository, must not appear in reusable snippets because most repositories do
+not vendor this skill tree.
 
-Repository-local callers:
+Reusable callers:
+
+```sh
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
+```
+
+`ARTIFACTS_SKILL_ROOT` is a runtime-provided contract from the session, wrapper,
+or explicit caller setup. It should point to the installed/current artifacts
+skill root, not to the repository being worked on.
+
+Dotfiles source-local maintenance is the only documented case that may derive
+the root from the repository checkout:
 
 ```sh
 repo_root=$(git rev-parse --show-toplevel)
 ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
-```
-
-Non-repository or arbitrary-cwd callers must receive `ARTIFACTS_SKILL_ROOT`
-from the session, wrapper, or explicit caller setup:
-
-```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT to the artifacts skill root}"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output
 ```
 
 Use the absolute path returned by the script. The path is the canonical artifact
@@ -96,8 +101,7 @@ identifier for future Postman traffic and handoffs.
 Run the skill-owned script directly:
 
 ```sh
-repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
 "${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 

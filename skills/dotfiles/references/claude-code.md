@@ -43,8 +43,7 @@ Do NOT report features or changes from versions newer than the local install.
 ### 2.2. Fetch from GitHub
 
 ```sh
-repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
 FILE=$("${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label claude-code-changelog)
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
   --jq '.content' | base64 -d > "$FILE"

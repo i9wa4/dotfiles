@@ -36,44 +36,27 @@ Keep the local basename, including the unique suffix, as the Gist filename.
 On filename collision or wrong content, create a new local artifact or Gist
 copy; do not overwrite unrelated material.
 
-Verify in a unique temporary directory before handing off the URL:
+Verify with the executable operator path before handing off the URL:
 
 ```sh
-verify_tmp=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist.XXXXXX")
-cleanup_verify_tmp() {
-  rm -rf "$verify_tmp"
-}
-trap cleanup_verify_tmp EXIT HUP INT TERM
-
-gh api gists/<gist-id> --jq '{html_url,public,description,files:(.files|keys)}'
-curl --fail --location --silent --show-error --head \
-  https://gist.github.com/<owner>/<gist-id>
-curl --fail --location --silent --show-error \
-  https://gist.githubusercontent.com/<owner>/<gist-id>/raw/<filename> \
-  > "$verify_tmp/gist-raw.md"
-cmp -s "$MKMD_ARTIFACT" "$verify_tmp/gist-raw.md"
-shasum -a 256 "$MKMD_ARTIFACT" "$verify_tmp/gist-raw.md"
-
-set +e
-rg --quiet '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' \
-  "$verify_tmp/gist-raw.md"
-rg_status=$?
-set -e
-case "$rg_status" in
-0) echo "private content found in Gist raw copy" >&2; exit 1 ;;
-1) : ;;
-*) echo "private-content scan failed with status $rg_status" >&2; exit 1 ;;
-esac
+export MKMD_ARTIFACT=/absolute/path/to/local-artifact.md
+export GIST_ID=<gist-id>
+export GIST_OWNER=<owner>
+export GIST_DESCRIPTION='<human-facing artifact description>'
+export GIST_FILENAME="$(basename "$MKMD_ARTIFACT")"
+export GIST_EXPECTED_FILES="$GIST_FILENAME"
+skills/artifacts/scripts/verify-gist-delivery
 ```
 
 Required result:
 
-- API reports `public=false`;
-- URL, description, and filename match expectation;
+- the verifier exits nonzero unless the API reports `public=false`;
+- URL, description, expected filename, and exact file set match expectation;
 - page and raw transports return success; failed transport is a blocker;
 - raw bytes match the local source with `cmp`;
 - raw SHA-256 matches the local source;
-- public-surface scan reports no private content;
+- public-surface scan reports no private content, including machine-local
+  `/Users/...` paths;
 - `rg` status `0` means prohibited content found, `1` means no match, and any
   other status is a scanner failure.
 
@@ -81,10 +64,12 @@ If any check fails, keep the local artifact as canonical, do not hand off the
 URL, and report the exact blocker. Do not fall back to a public Gist.
 
 When replacing an earlier Gist delivery copy, verify the replacement raw bytes
-against the intended local artifact before sharing the new URL. Do not hand off
-the replacement URL when the old and new filenames collide, transport fails,
-the byte/hash comparison fails, or the scan status is anything except the
-explicit no-match status.
+against the intended local artifact before sharing the new URL. Set
+`GIST_REPLACEMENT_OLD_FILENAME` to the earlier delivery filename before running
+the verifier. Do not hand off the replacement URL when the old and new
+filenames collide, transport fails, visibility/metadata differs, the byte/hash
+comparison fails, or the scan status is anything except the explicit no-match
+status.
 
 ## 3. Handoff
 
@@ -101,6 +86,9 @@ Run the artifacts-owned contract check after editing this reference:
 skills/artifacts/scripts/validate-gist-delivery-contract.sh
 ```
 
-The validator uses local fixtures only. It checks unique temporary directories,
-fail-closed transport, byte and hash equality, explicit `rg` status handling,
-and replacement-copy failure behavior without creating or changing any Gist.
+The validator uses local fixtures only. It executes the published verifier path
+with mocked `gh`, `curl`, and `rg` commands. It checks unique temporary
+directories, fail-closed transport, visibility and metadata assertions, byte
+and hash equality, explicit `rg` status handling, replacement collision
+failure behavior, and machine-local path detection without creating or changing
+any Gist.

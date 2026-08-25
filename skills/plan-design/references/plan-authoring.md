@@ -100,8 +100,7 @@ contexts, follow the live role contract and durable runbook.
 Resolve the artifacts skill root before running `mkmd` from this workflow:
 
 ```sh
-repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
 ```
 
 1. Create a research artifact for source digestion:

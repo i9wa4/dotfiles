@@ -33,14 +33,12 @@ provided. Read `artifacts` first for the current creation command and path
 rules.
 
 ```sh
-repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
 "${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 ```sh
-repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
 "${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
 ```
 

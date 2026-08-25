@@ -196,7 +196,7 @@
               }:$PATH
               exec ${pkgs.bash}/bin/bash skills/artifacts/scripts/validate-gist-delivery-contract.sh
             ''}";
-            files = "^skills/artifacts/(references/gist-delivery\\.md|scripts/validate-gist-delivery-contract\\.sh)$";
+            files = "^skills/artifacts/(references/gist-delivery\\.md|scripts/(validate-gist-delivery-contract\\.sh|verify-gist-delivery))$";
             pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
