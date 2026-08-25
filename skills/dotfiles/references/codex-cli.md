@@ -78,7 +78,8 @@ Do NOT report features or changes from versions newer than the local install.
 ### 3.2. Fetch from GitHub
 
 ```sh
-FILE=$(mkmd --dir tmp --label output)
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
+FILE=$("${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
 gh api repos/openai/codex/releases --jq '.[0:10]' > "$FILE"
 ```
 

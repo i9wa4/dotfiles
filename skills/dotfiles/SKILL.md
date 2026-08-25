@@ -7,8 +7,8 @@ description: |
   USE FOR: This dotfiles environment and agent harness: machine setup, Nix
   operations/recovery, missing tools, operating concepts, clipboard,
   Claude/Codex config, hooks, MCP, skills, Postman routing/runbooks,
-  tmux/worktrees/panes, prompt/review/resume-handoff contracts, and optional
-  portable agent task-memo Gists; Agent Skills authoring/validation/Waza.
+  tmux/worktrees/panes, prompt/review/resume-handoff contracts, and Agent
+  Skills authoring/validation/Waza.
   DO NOT USE FOR: Nix package authoring (programming).
 ---
 
@@ -45,6 +45,6 @@ Agent harness (hubs link their siblings):
 - [Prompts](references/prompt-contracts.md) — prompt
   blocks, review contracts, boundaries, resume handoff
 - [Resume Handoff](references/resume-handoff.md) — local task handoffs and
-  optional portable agent task-memo Gists
+  resume prompts
 - [Skills Management](references/skills-management.md) — skill authoring,
   Waza, release, publishing

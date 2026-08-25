@@ -9,7 +9,7 @@ BASE_DIR="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
 print_usage() {
   cat <<EOF
 Usage:
-  mkmd --dir DIR --label LABEL
+  skills/artifacts/scripts/mkmd --dir DIR --label LABEL
 
 mktemp wrapper that creates a markdown working file.
 
@@ -49,33 +49,31 @@ validate_component() {
 LABEL=""
 DIR=""
 
-# Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-  -h | --help)
-    print_usage
-    exit 0
-    ;;
-  --dir)
-    DIR="$2"
-    shift 2
-    ;;
-  --label)
-    LABEL="$2"
-    shift 2
-    ;;
-  -*)
-    echo "Unknown option: $1" >&2
-    exit 1
-    ;;
-  *)
-    echo "Error: Unknown argument: $1" >&2
-    exit 1
-    ;;
+    -h | --help)
+      print_usage
+      exit 0
+      ;;
+    --dir)
+      DIR="$2"
+      shift 2
+      ;;
+    --label)
+      LABEL="$2"
+      shift 2
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      echo "Error: Unknown argument: $1" >&2
+      exit 1
+      ;;
   esac
 done
 
-# Validate DIR and LABEL
 if [[ -z $DIR || -z $LABEL ]]; then
   echo "Error: --dir and --label are required" >&2
   print_usage >&2
@@ -90,7 +88,6 @@ repo_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -n $repo_root ]]; then
   remote_url="$(git remote get-url origin 2>/dev/null || true)"
   if [[ -n $remote_url ]]; then
-    # Extract owner/repo from remote URL (handles both SSH and HTTPS)
     remote_url="${remote_url%.git}"
     project_name="${remote_url##*/}"
     remote_url="${remote_url%/*}"
@@ -106,11 +103,11 @@ else
   project_name="$(basename "$(pwd -P)")"
   branch_name="local"
 fi
+
 date_dir="$(date +%Y-%m-%d)-${branch_name}"
 TARGET_DIR="${BASE_DIR}/${project_owner}-${project_name}/${date_dir}/${DIR}"
 
 mkdir -p "$TARGET_DIR"
-# BSD mktemp requires XXXXXX at the end of the template (no suffix allowed)
 TEMP_PATH=$(mktemp "${TARGET_DIR}/${LABEL}-XXXXXX")
 trap 'rm -f "$TEMP_PATH"' EXIT
 FILE_PATH="${TEMP_PATH}.md"

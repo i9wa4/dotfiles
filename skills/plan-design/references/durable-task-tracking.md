@@ -4,12 +4,15 @@ Durable task tracking is needed when work must survive chat compaction, node
 handoff, review loops, or original-checklist completion gates. The artifact is
 an operational record, not a replacement for source changes or tests.
 
-Use `mkmd` as the local implementation for these artifacts.
+Use `artifacts` for local markdown creation, supplied-path reuse, discovery,
+directory labels, temporary discard rules, and Secret-Gist delivery mechanics.
+This reference defines what a task tracker must prove.
 
 ## 1. Choosing A Directory Label
 
-Use the `--dir` value as an `mkmd` directory label. It is not a repo-local
-directory to create by hand.
+When a new artifact is needed, use the directory labels owned by `artifacts`.
+The `--dir` value is an artifact label, not a repo-local directory to create by
+hand.
 
 | Label      | Use when                                                 |
 | ---------- | -------------------------------------------------------- |
@@ -26,20 +29,22 @@ new one.
 ## 2. Creating A Tracker
 
 Create a new artifact before deep work only when no canonical markdown path was
-provided.
+provided. Read `artifacts` first for the current creation command and path
+rules.
 
 ```sh
-mkmd --dir plans --label implement-feature-x
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 ```sh
-mkmd --dir research --label investigate-feature-x
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
 ```
 
-Use the absolute path returned by `mkmd`. It should live under
-`$MKMD_BASE_DIR`. Do not create repo-local `plans/` or `research/` task
-artifacts unless the user explicitly provided that repo path as the original
-checklist.
+Use the absolute path returned by the script. Do not create repo-local `plans/`
+or `research/` task artifacts unless the user explicitly provided that repo
+path as the original checklist.
 
 ## 3. Preserving The Original Checklist
 
@@ -155,79 +160,21 @@ Local absolute artifact paths are fine in internal chat, mailbox traffic, and
 local task artifacts. Public GitHub surfaces such as commits, issues, PRs, and
 reviews should use repo-relative paths or stable URLs.
 
-## 9. Human-Facing Secret-Gist Workflow
+## 9. Human-Facing Delivery
 
-Use this subsection whenever an artifact is intended for human viewing. Do not
-use it for machine-only build outputs, internal logs or mailbox receipts, code,
-configuration, Nix sources, temporary scratch files, or other non-human output.
-
-### 9.1. Source and language
-
-- Follow the output language designated by the active runtime/session policy or
-  explicit request. Do not establish an independent language policy in this
-  workflow.
-- Preserve commands, paths, URLs, identifiers, and versions in their exact
-  notation when needed.
-- Create the local canonical source with `mkmd`; include title, purpose, scope,
-  verification evidence, and remaining work.
-- Before upload, remove secrets, tokens, private data, internal mail or review
-  details, and machine-local absolute paths. Use repository-relative paths or
-  stable Web URLs instead.
-
-### 9.2. Secret-Gist creation and verification
-
-Creating, updating, or deleting an external Gist requires explicit current
-human approval. After approval, confirm the intended account with
-`gh auth status` and create a Secret Gist without `--public`:
-
-```sh
-gh auth status
-gh gist create --filename "$(basename "$MKMD_ARTIFACT")" \
-  --desc '<human-facing artifact description>' "$MKMD_ARTIFACT"
-```
-
-Keep the `mkmd` basename, including its unique suffix, as the Gist filename;
-do not rename it or overwrite an existing same-name file. A Secret Gist is not
-an access-controlled secret store: anyone with its URL can read it.
-
-Verify the Gist API reports `public=false`, the expected URL, description, and
-filename; verify the page returns HTTP 200; fetch the Raw content and compare
-its SHA-256 with the local source; then rescan Raw content for secrets,
-machine-local paths, mailbox receipts, and other private material. Do not put
-the URL in human-facing text until every check passes.
-
-```sh
-gh api gists/<gist-id> --jq '{html_url,public,description,files:(.files|keys)}'
-curl -L --silent --show-error --head https://gist.github.com/<owner>/<gist-id>
-curl -L --silent \
-  https://gist.githubusercontent.com/<owner>/<gist-id>/raw/<filename> \
-  > "$TMPDIR/gist-raw.md"
-shasum -a 256 "$MKMD_ARTIFACT" "$TMPDIR/gist-raw.md"
-rg -n '/\.local/|tmux-a2a|pop_receipt|BEGIN (RSA|OPENSSH|PRIVATE)' "$TMPDIR/gist-raw.md"
-```
-
-The Raw hash must equal the local source, the page and API checks must pass,
-and the public-surface scan must find no private content. Keep existing Gists
-unchanged when outside the request; on a filename collision, create a new
-`mkmd` source with its unique suffix rather than overwriting a file.
-
-### 9.3. Handoff and fallback
-
-Postman or requester-facing handoff text must follow the active output language
-policy and include the complete clickable Gist URL, visibility, filename,
-source identifier, verification commands and results, changed scope, and
-remaining blockers. Do not copy a Secret-Gist URL into public issues, PRs, or
-logs without separate approval.
-
-If creation or verification fails, keep the local `mkmd` source as the
-canonical artifact and report the failure reason and next action. Never fall
-back to a public Gist or upload a file containing secrets or private data.
+When a task tracker must become a human-facing Secret-Gist delivery copy, read
+`artifacts`, follow the active output language policy, and keep this task
+tracker as the local canonical source. The Gist is a delivery copy only; it is
+not task-state storage or cross-machine agent memory.
 
 ## 10. Common Mistakes
 
-- Creating a repo-local `plans/` or `research/` file instead of using `mkmd`.
+- Creating a repo-local `plans/` or `research/` file instead of using the
+  `artifacts` script.
 - Creating multiple trackers after a markdown path was already supplied.
 - Treating a generated plan as the original checklist and dropping user items.
 - Marking DONE without evidence for every original checklist item.
 - Putting local absolute paths on public GitHub surfaces.
+- Treating a Secret Gist as task memory or reporting its URL before approval
+  and verification pass.
 - Copying the full tracker method into live postman routing text.

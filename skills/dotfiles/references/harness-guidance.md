@@ -20,8 +20,8 @@ installed, validated, or explained.
   <!-- private-content-scan: allow-next-line -->
   `PreToolUse` hooks can be skipped when `~/.claude/.claude.json` project
   entries have `hasTrustDialogAccepted` set to `false`.
-- For multi-step harness work, create or update a durable `mkmd` plan and record
-  verification evidence before reporting completion.
+- For multi-step harness work, create or update a durable artifact plan and
+  record verification evidence before reporting completion.
 
 ## 2. Source Map
 

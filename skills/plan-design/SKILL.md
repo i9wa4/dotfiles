@@ -6,11 +6,10 @@ metadata:
 description: |
   USE FOR: Implementation plans and durable task tracking: reduce ambiguity,
   compare options, parallel investigation, multi-source synthesis, review
-  gates, task artifacts, evidence logs, handoff/resume, DONE/BLOCKED
-  verification, and human-facing artifacts requiring a Secret-Gist
-  handoff. DO NOT USE FOR: machine-only outputs, internal logs, code/config
-  artifacts, unrelated tasks, broad rewrites outside the request, or generated
-  runtime outputs.
+  gates, planning evidence, handoff/resume, DONE/BLOCKED verification, and
+  Secret-Gist handoff semantics. DO NOT USE FOR: artifact storage mechanics,
+  machine-only outputs, internal logs, code/config artifacts, unrelated tasks,
+  broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Plan Design
@@ -18,6 +17,10 @@ description: |
 Owns implementation-plan authoring and durable task tracking for plan-ready
 tasks: ambiguity reduction, option framing, multi-source synthesis, review
 gates, task artifacts, evidence logs, and handoff/resume.
+
+Use `artifacts` for non-code artifact lifecycle, local `mkmd` storage,
+artifact discovery/reuse, and Secret-Gist delivery mechanics. This skill owns
+planning semantics and evidence expectations, not artifact storage policy.
 
 Follow the output language designated by the active runtime/session policy or
 explicit request. Do not establish an independent language policy in this

@@ -31,6 +31,6 @@ Use this reference for small, verifiable implementation loops.
 
 ## 4. Repo Fit
 
-- Use `mkmd` plan and research artifacts when planning is needed.
+- Use `artifacts` plan and research artifacts when planning is needed.
 - Do not run every test after every tiny edit by default; run focused checks
   during iteration and broader checks before reporting success.

@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+
+fail() {
+  echo "gist delivery verification: $*" >&2
+  exit 1
+}
+
+require_env() {
+  name=$1
+  value=${!name:-}
+  test -n "$value" || fail "missing required environment variable: $name"
+}
+
+scan_public_surface() {
+  file=$1
+
+  set +e
+  rg --quiet '/\.local/|tmux-a2a|pop_receipt|/Users/[[:alnum:]_.-]+/|BEGIN (RSA|OPENSSH|PRIVATE)' "$file"
+  rg_status=$?
+  set -e
+
+  case "$rg_status" in
+  0)
+    fail "private content found in Gist raw copy"
+    ;;
+  1)
+    ;;
+  *)
+    fail "private-content scan failed with status $rg_status"
+    ;;
+  esac
+}
+
+require_env MKMD_ARTIFACT
+require_env GIST_ID
+require_env GIST_OWNER
+require_env GIST_DESCRIPTION
+
+test -f "$MKMD_ARTIFACT" || fail "MKMD_ARTIFACT is not a file: $MKMD_ARTIFACT"
+
+expected_filename=${GIST_FILENAME:-$(basename "$MKMD_ARTIFACT")}
+expected_files=${GIST_EXPECTED_FILES:-$expected_filename}
+expected_url=${GIST_URL:-https://gist.github.com/$GIST_OWNER/$GIST_ID}
+raw_url=${GIST_RAW_URL:-https://gist.githubusercontent.com/$GIST_OWNER/$GIST_ID/raw/$expected_filename}
+
+if [ "${GIST_REPLACEMENT_OLD_FILENAME:-}" = "$expected_filename" ]; then
+  fail "replacement filename collides with prior delivery: $expected_filename"
+fi
+
+verify_tmp=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist.XXXXXX")
+cleanup_verify_tmp() {
+  rm -rf "$verify_tmp"
+}
+trap cleanup_verify_tmp EXIT HUP INT TERM
+
+metadata=$(gh api "gists/$GIST_ID" --jq '[.public, .description, (.files|keys|sort|join(",")), .html_url] | @tsv') ||
+  fail "Gist API metadata request failed"
+
+IFS="$(printf '\t')" read -r actual_public actual_description actual_files actual_url <<EOF
+$metadata
+EOF
+
+test "$actual_public" = false ||
+  fail "expected private Secret Gist public=false, got public=$actual_public"
+test "$actual_description" = "$GIST_DESCRIPTION" ||
+  fail "Gist description mismatch"
+test "$actual_files" = "$expected_files" ||
+  fail "Gist file set mismatch: expected $expected_files, got $actual_files"
+test "$actual_url" = "$expected_url" ||
+  fail "Gist URL mismatch: expected $expected_url, got $actual_url"
+
+curl --fail --location --silent --show-error --head "$expected_url" >/dev/null ||
+  fail "Gist HTML transport check failed"
+curl --fail --location --silent --show-error "$raw_url" >"$verify_tmp/gist-raw.md" ||
+  fail "Gist raw transport check failed"
+
+cmp -s "$MKMD_ARTIFACT" "$verify_tmp/gist-raw.md" ||
+  fail "Gist raw bytes differ from local artifact"
+
+source_hash=$(shasum -a 256 "$MKMD_ARTIFACT" | awk '{print $1}')
+raw_hash=$(shasum -a 256 "$verify_tmp/gist-raw.md" | awk '{print $1}')
+test "$source_hash" = "$raw_hash" ||
+  fail "Gist raw SHA-256 differs from local artifact"
+
+scan_public_surface "$verify_tmp/gist-raw.md"
+
+printf 'gist delivery verification: OK\n'
+printf 'gist_url=%s\n' "$actual_url"
+printf 'gist_public=%s\n' "$actual_public"
+printf 'gist_description=%s\n' "$actual_description"
+printf 'gist_files=%s\n' "$actual_files"
+printf 'source_sha256=%s\n' "$source_hash"
+printf 'raw_sha256=%s\n' "$raw_hash"

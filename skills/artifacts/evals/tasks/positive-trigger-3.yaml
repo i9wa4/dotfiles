@@ -1,0 +1,15 @@
+id: positive-trigger-003
+name: Positive Trigger 3
+description: Curated trigger for work-start and resume discovery.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "At work start, resume an existing local markdown artifact by searching recent mkmd files, mapping repo, branch, worktree, and purpose, then checking staleness before reuse."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: positive

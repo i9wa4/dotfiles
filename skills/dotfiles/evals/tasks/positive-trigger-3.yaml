@@ -1,10 +1,10 @@
 id: positive-trigger-003
 name: Positive Trigger 3
-description: Curated trigger for portable agent task-memo Gist policy.
+description: Curated trigger for skill authoring and validation.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Update the dotfiles agent harness policy for optional portable agent task-memo Gists alongside local resume handoff artifacts."
+  prompt: "Update dotfiles Agent Skills authoring guidance, validation scripts, Waza readiness checks, or skill publishing workflow."
 expected:
   should_trigger: true
 graders:

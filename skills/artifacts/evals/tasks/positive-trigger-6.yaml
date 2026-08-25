@@ -1,0 +1,15 @@
+id: positive-trigger-006
+name: Positive Trigger 6
+description: Curated trigger for fail-closed Secret-Gist verification.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Before human-facing Secret-Gist delivery, run fail-closed verification in a unique temp dir: transport must succeed, raw bytes and hash must match the local artifact, and rg status must be explicit no-match."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: positive

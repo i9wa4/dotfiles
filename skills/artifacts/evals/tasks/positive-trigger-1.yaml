@@ -1,0 +1,15 @@
+id: positive-trigger-001
+name: Positive Trigger 1
+description: Curated trigger for creating or reusing local markdown artifacts.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "A multi-step handoff needs a local markdown artifact task tracker; choose whether to reuse the supplied tracker or create an mkmd file with the correct directory label, checklist, and evidence log."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: positive
