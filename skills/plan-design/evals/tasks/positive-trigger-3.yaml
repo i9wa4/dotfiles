@@ -4,7 +4,7 @@ description: Curated trigger-accuracy prompt for human-facing artifact handoffs.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Prepare a Japanese human-facing completion artifact from an mkmd source, verify a Secret Gist without exposing private data, and hand it off through Postman."
+  prompt: "Prepare a human-facing Secret-Gist handoff from an mkmd task artifact, follow the active runtime language policy, verify the Gist safely, and report DONE/BLOCKED evidence through Postman."
 expected:
   should_trigger: true
 graders:

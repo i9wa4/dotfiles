@@ -7,7 +7,7 @@ description: |
   USE FOR: Implementation plans and durable task tracking: reduce ambiguity,
   compare options, parallel investigation, multi-source synthesis, review
   gates, task artifacts, evidence logs, handoff/resume, DONE/BLOCKED
-  verification, and human-facing artifacts requiring a Japanese Secret-Gist
+  verification, and human-facing artifacts requiring a Secret-Gist
   handoff. DO NOT USE FOR: machine-only outputs, internal logs, code/config
   artifacts, unrelated tasks, broad rewrites outside the request, or generated
   runtime outputs.
@@ -18,6 +18,10 @@ description: |
 Owns implementation-plan authoring and durable task tracking for plan-ready
 tasks: ambiguity reduction, option framing, multi-source synthesis, review
 gates, task artifacts, evidence logs, and handoff/resume.
+
+Follow the output language designated by the active runtime/session policy or
+explicit request. Do not establish an independent language policy in this
+skill.
 
 ## 1. Workflow
 

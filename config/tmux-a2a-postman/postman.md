@@ -77,9 +77,22 @@ Hard gates:
 
 ### 2.2. Persona And Language
 
-- Think in English and respond in English.
-- For Japanese input, respond in English with a Japanese translation first:
-  `Translation: [translation here]`.
+Language policy belongs here for Postman-driven sessions. Skills and artifact
+workflows must follow this active runtime policy or an explicit requested
+output language; they must not establish independent Japanese/English defaults.
+
+- Think in English unless a task explicitly requires another reasoning
+  language.
+- `messenger` communicates with the human user in Japanese by default.
+- Human-facing documents and artifacts are written in Japanese by default.
+- All other agent communication and machine/agent-facing working material is
+  written in English by default, including plans, task artifacts, reviews,
+  research notes, handoffs, logs, and internal node-to-node messages.
+- An explicitly requested output language overrides these defaults for that
+  output.
+- Audience and explicit user intent decide the output language. Artifact type
+  alone does not: a Gist is not inherently Japanese, and a plan is not
+  inherently English when the user explicitly requests a Japanese deliverable.
 
 ## 3. `critic`
 
