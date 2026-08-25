@@ -78,7 +78,9 @@ Do NOT report features or changes from versions newer than the local install.
 ### 3.2. Fetch from GitHub
 
 ```sh
-FILE=$(skills/artifacts/scripts/mkmd --dir tmp --label output)
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+FILE=$("${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
 gh api repos/openai/codex/releases --jq '.[0:10]' > "$FILE"
 ```
 

@@ -17,12 +17,88 @@ Use this precedence:
 Do not create a second tracker because the current artifact is inconvenient.
 Update or rename only when the requester explicitly changes the canonical path.
 
-## 2. Creating Artifacts
+## 2. Work-Start And Resume Discovery
+
+Before creating a new artifact, search the local state root for recent
+candidates. Use this search root:
+
+```sh
+mkmd_root="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
+```
+
+When the current directory is inside a Git worktree, map candidates by:
+
+- repo: remote owner and repository name, or `local/<repo-dir>` when no origin
+  remote exists;
+- branch: current branch with `/` rendered as `-`;
+- worktree: the Git top-level directory and whether it matches the active
+  checkout;
+- purpose: directory label, filename label, title, task paragraph, checklist,
+  and evidence log.
+
+Use this command as the default candidate list:
+
+```sh
+find "$mkmd_root" -type f -name '*.md' -mtime -14 -print 2>/dev/null |
+  sort -r
+```
+
+Inspect candidates in this order:
+
+1. Supplied path or active artifact from the latest handoff.
+2. Same repo and same branch session directory.
+3. Same repo with a related branch or PR branch name.
+4. Same owner/repo directory with matching task title, issue number, PR number,
+   or filename label.
+
+Reject stale candidates when the branch, task, or purpose no longer matches, or
+when the evidence log says the work was completed and the current task is a new
+scope. If several candidates tie, choose the one referenced by the latest
+trusted message; otherwise choose the newest candidate only after inspecting
+the title, task paragraph, checklist, and most recent evidence entry. When two
+files are both live for the same repo and task but different purposes, keep
+both and name their roles in the handoff. When two files claim the same role,
+reuse the clearer or newer canonical file and record the rejected path in the
+evidence log instead of merging content ad hoc.
+
+Create a new artifact only when no candidate clearly matches the same repo,
+branch, task, and purpose. Create multiple artifacts only for distinct purposes,
+for example a `research` digest plus a `plans` tracker. Do not split one
+original checklist across multiple canonical trackers.
+
+## 3. Cwd-Independent Mkmd Contract
+
+Callers must resolve the artifacts skill root before invoking `mkmd`. Relative
+calls such as `skills/artifacts/scripts/mkmd` are valid only after `cd` to the
+repository root and should not appear in reusable snippets.
+
+Repository-local callers:
+
+```sh
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
+```
+
+Non-repository or arbitrary-cwd callers must receive `ARTIFACTS_SKILL_ROOT`
+from the session, wrapper, or explicit caller setup:
+
+```sh
+: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT to the artifacts skill root}"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output
+```
+
+Use the absolute path returned by the script. The path is the canonical artifact
+identifier for future Postman traffic and handoffs.
+
+## 4. Creating Artifacts
 
 Run the skill-owned script directly:
 
 ```sh
-skills/artifacts/scripts/mkmd --dir plans --label implement-feature-x
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 The script creates:
@@ -37,7 +113,7 @@ The script works inside git repositories and local directories.
 Use single-component `--dir` and `--label` values with letters, numbers,
 dots, underscores, and hyphens. Do not use path separators or `..`.
 
-## 3. Directory Labels
+## 5. Directory Labels
 
 | Label      | Use when                                                 |
 | ---------- | -------------------------------------------------------- |
@@ -50,7 +126,7 @@ dots, underscores, and hyphens. Do not use path separators or `..`.
 Prefer the narrowest label that fits. Use `tmp` only when the output can be
 discarded without losing task state.
 
-## 4. Scope And Retention
+## 6. Scope And Retention
 
 - Branch or worktree-specific artifacts should stay under the script-generated
   branch session directory.
@@ -62,7 +138,7 @@ discarded without losing task state.
 - Local absolute paths are fine in private task artifacts and Postman traffic.
   Public GitHub surfaces should use repo-relative paths or stable URLs.
 
-## 5. Suggested Artifact Shape
+## 7. Suggested Artifact Shape
 
 Keep artifacts compact but resumable:
 

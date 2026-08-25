@@ -181,6 +181,24 @@
             pass_filenames = false;
             require_serial = true;
           };
+          artifacts-gist-delivery-contract = {
+            enable = true;
+            entry = "${pkgs.writeScript "artifacts-gist-delivery-contract" ''
+              #!${pkgs.bash}/bin/bash
+              export PATH=${
+                pkgs.lib.makeBinPath [
+                  pkgs.coreutils
+                  pkgs.gawk
+                  pkgs.git
+                  pkgs.perl
+                  pkgs.ripgrep
+                ]
+              }:$PATH
+              exec ${pkgs.bash}/bin/bash skills/artifacts/scripts/validate-gist-delivery-contract.sh
+            ''}";
+            files = "^skills/artifacts/(references/gist-delivery\\.md|scripts/validate-gist-delivery-contract\\.sh)$";
+            pass_filenames = false;
+          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===

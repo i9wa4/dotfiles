@@ -33,11 +33,15 @@ provided. Read `artifacts` first for the current creation command and path
 rules.
 
 ```sh
-skills/artifacts/scripts/mkmd --dir plans --label implement-feature-x
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 ```sh
-skills/artifacts/scripts/mkmd --dir research --label investigate-feature-x
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
 ```
 
 Use the absolute path returned by the script. Do not create repo-local `plans/`

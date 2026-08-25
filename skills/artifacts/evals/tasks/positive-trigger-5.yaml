@@ -1,0 +1,15 @@
+id: positive-trigger-005
+name: Positive Trigger 5
+description: Curated trigger for arbitrary-cwd mkmd invocation.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "From an arbitrary cwd outside the repository, create a local markdown artifact with cwd-independent mkmd invocation by using ARTIFACTS_SKILL_ROOT instead of assuming a relative path."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/artifacts/SKILL.md
+      mode: positive

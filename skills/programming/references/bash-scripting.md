@@ -20,7 +20,9 @@ Use this reference for Bash scripts and shell command design in this repo.
 ## 3. Example
 
 ```sh
-FILE=$(skills/artifacts/scripts/mkmd --dir tmp --label output)
+repo_root=$(git rev-parse --show-toplevel)
+ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+FILE=$("${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
 { git branch -r | rg issue; } >"$FILE" 2>&1
 ```
 
