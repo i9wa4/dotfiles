@@ -6,10 +6,10 @@ metadata:
 description: |
   USE FOR: Implementation plans and durable task tracking: reduce ambiguity,
   compare options, parallel investigation, multi-source synthesis, review
-  gates, planning evidence, handoff/resume, and DONE/BLOCKED verification.
-  DO NOT USE FOR: artifact storage mechanics, machine-only outputs, internal
-  logs, code/config artifacts, unrelated tasks, broad rewrites outside the
-  request, or generated runtime outputs.
+  gates, planning evidence, handoff/resume, DONE/BLOCKED verification, and
+  Secret-Gist handoff semantics. DO NOT USE FOR: artifact storage mechanics,
+  machine-only outputs, internal logs, code/config artifacts, unrelated tasks,
+  broad rewrites outside the request, or generated runtime outputs.
 ---
 
 # Plan Design

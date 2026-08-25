@@ -163,9 +163,9 @@ reviews should use repo-relative paths or stable URLs.
 ## 9. Human-Facing Delivery
 
 When a task tracker must become a human-facing Secret-Gist delivery copy, read
-`artifacts` and keep this task tracker as the local canonical source. The Gist
-is a delivery copy only; it is not task-state storage or cross-machine agent
-memory.
+`artifacts`, follow the active output language policy, and keep this task
+tracker as the local canonical source. The Gist is a delivery copy only; it is
+not task-state storage or cross-machine agent memory.
 
 ## 10. Common Mistakes
 
