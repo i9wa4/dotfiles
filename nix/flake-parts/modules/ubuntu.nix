@@ -66,7 +66,12 @@ in
             };
             # Linux-specific home-manager settings
             home = {
-              packages = [ ];
+              # tailscale: CLI + tailscaled binary. The systemd unit that runs
+              # tailscaled as root is generated and installed by the `switch`
+              # app (nix/flake-parts/modules/apps.nix) on every run, since
+              # standalone home-manager cannot manage root-level systemd
+              # units directly.
+              packages = [ pkgs.tailscale ];
               # Timezone data (not needed on macOS)
               sessionVariables.TZDIR = "${pkgs.tzdata}/share/zoneinfo";
               # Start ssh-agent if not running

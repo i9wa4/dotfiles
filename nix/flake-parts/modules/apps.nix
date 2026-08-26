@@ -25,6 +25,48 @@
       tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh;
       wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
       actrunUpdateScript = ./../../../scripts/nix/package-update-actrun.sh;
+
+      # Neither standalone home-manager (Ubuntu) nor a plain nix-darwin
+      # environment.systemPackages entry (macOS) can declare a root-level
+      # service on their own, so both service definitions are generated here
+      # and (re)installed on every `switch` -- one shared pattern instead of
+      # leaning on nix-darwin's services.tailscale module for macOS only.
+      tailscaledUnit = pkgs.writeText "tailscaled.service" ''
+        [Unit]
+        Description=Tailscale node agent
+        Documentation=https://tailscale.com/kb/
+        Wants=network-pre.target
+        After=network-pre.target NetworkManager.service systemd-resolved.service
+        StartLimitIntervalSec=0
+
+        [Service]
+        ExecStart=${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock
+        ExecStopPost=${pkgs.tailscale}/bin/tailscaled --cleanup
+        Restart=on-failure
+        RuntimeDirectory=tailscale
+        RuntimeDirectoryMode=0755
+        StateDirectory=tailscale
+        StateDirectoryMode=0700
+        CacheDirectory=tailscale
+        CacheDirectoryMode=0750
+        Type=notify
+
+        [Install]
+        WantedBy=multi-user.target
+      '';
+
+      # macOS equivalent of tailscaledUnit above, as a LaunchDaemon plist.
+      # cf. nix-darwin's modules/services/tailscale.nix (launchd.daemons.tailscaled),
+      # reimplemented directly here to keep the nix-darwin-specific surface at zero.
+      # lib.generators.toPlist renders the XML; only this attrset needs editing.
+      tailscaledPlist = pkgs.writeText "com.tailscale.tailscaled.plist" (
+        lib.generators.toPlist { escape = true; } {
+          Label = "com.tailscale.tailscaled";
+          ProgramArguments = [ "${pkgs.tailscale}/bin/tailscaled" ];
+          RunAtLoad = true;
+          KeepAlive = true;
+        }
+      );
     in
     {
       apps = {
@@ -43,6 +85,13 @@
 
                   sudo -H darwin-rebuild switch --impure --flake ".#$profile"
                   sudo -H ${pkgs.nix}/bin/nix-env --profile /nix/var/nix/profiles/system --delete-generations 1d
+
+                  # tailscaled LaunchDaemon: idempotent (re)install, safe to
+                  # run on every switch. Regenerates the plist so it always
+                  # points at the current nixpkgs tailscale store path.
+                  sudo install -m644 ${tailscaledPlist} /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+                  sudo launchctl unload /Library/LaunchDaemons/com.tailscale.tailscaled.plist 2>/dev/null || true
+                  sudo launchctl load -w /Library/LaunchDaemons/com.tailscale.tailscaled.plist
                 ''
               else
                 ''
@@ -51,6 +100,13 @@
                     home-manager -- switch -b backup --flake '.#ubuntu' --impure
                   nix run --access-tokens "github.com=$access_token" \
                     home-manager -- expire-generations '-1 days'
+
+                  # tailscaled systemd unit: idempotent (re)install, safe to
+                  # run on every switch. Regenerates the unit so it always
+                  # points at the current nixpkgs tailscale store path.
+                  sudo install -m644 ${tailscaledUnit} /etc/systemd/system/tailscaled.service
+                  sudo systemctl daemon-reload
+                  sudo systemctl enable --now tailscaled
                 ''
             }
           ''}/bin/switch";
