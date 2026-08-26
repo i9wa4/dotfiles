@@ -59,11 +59,11 @@
     "azure-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1787675983,
-        "narHash": "sha256-ZdjT30KdTaSj7pM+WF1Yh0Fcg4CVj8g3UonpU8l2oPA=",
+        "lastModified": 1787763748,
+        "narHash": "sha256-KMqMzW76tyyxe0IsnMbc4MwInm6/W3A88o0XyFy4eAc=",
         "owner": "microsoft",
         "repo": "azure-skills",
-        "rev": "fa01c311406ba644e59463318a66f359890105c3",
+        "rev": "8bcae3112896668ae0a4d02b44dddc0424d88c8c",
         "type": "github"
       },
       "original": {
