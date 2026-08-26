@@ -33,6 +33,7 @@ assert_failure() {
   fi
 }
 
+# shellcheck disable=SC2030,SC2031
 run_verifier_fixture() {
   (
     export PATH="$mock_bin:$PATH"
@@ -48,7 +49,38 @@ run_verifier_fixture() {
   )
 }
 
-require_doc 'skills/artifacts/scripts/verify-gist-delivery'
+# shellcheck disable=SC2030,SC2031
+run_operator_fixture() {
+  (
+    cd "$operator_cwd"
+    export PATH="$mock_bin:$PATH"
+    export MKMD_ARTIFACT="$source_file"
+    export GIST_ID="abc123"
+    export GIST_OWNER="example-owner"
+    export GIST_DESCRIPTION="Expected handoff"
+    export GIST_FILENAME="source.md"
+    export GIST_EXPECTED_FILES="source.md"
+    export ARTIFACTS_GIST_SOURCE="$source_file"
+    export ARTIFACTS_GIST_REAL_RG="$real_rg"
+    if test "${ARTIFACTS_OPERATOR_EXPORT_ROOT:-1}" = 1; then
+      export ARTIFACTS_SKILL_ROOT="$repo_root/skills/artifacts"
+    else
+      unset ARTIFACTS_SKILL_ROOT
+    fi
+    "${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
+  )
+}
+
+run_old_relative_operator_fixture() {
+  (
+    cd "$operator_cwd"
+    skills/artifacts/scripts/verify-gist-delivery
+  )
+}
+
+require_doc 'ARTIFACTS_SKILL_ROOT'
+# shellcheck disable=SC2016
+require_doc '${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery'
 require_doc 'public=false'
 require_doc 'GIST_DESCRIPTION'
 require_doc 'GIST_EXPECTED_FILES'
@@ -71,6 +103,8 @@ test -d "$first_tmp" || fail "first temporary directory was not created"
 test -d "$second_tmp" || fail "second temporary directory was not created"
 test "$first_tmp" != "$second_tmp" || fail "temporary directory names are not unique"
 rm -rf "$first_tmp" "$second_tmp"
+operator_cwd=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist-unrelated-cwd.XXXXXX")
+test -d "$operator_cwd" || fail "operator cwd was not created"
 
 mock_bin="$fixture_dir/bin"
 mkdir "$mock_bin"
@@ -142,6 +176,11 @@ source_file="$fixture_dir/source.md"
 printf '%s\n' 'clean handoff body' >"$source_file"
 
 ARTIFACTS_GIST_RG_MODE=clean assert_success clean-copy run_verifier_fixture
+ARTIFACTS_GIST_RG_MODE=clean assert_success injected-root-operator run_operator_fixture
+ARTIFACTS_GIST_RG_MODE=clean assert_failure old-relative-operator run_old_relative_operator_fixture
+ARTIFACTS_OPERATOR_EXPORT_ROOT=0 \
+  ARTIFACTS_GIST_RG_MODE=clean \
+  assert_failure missing-artifacts-skill-root run_operator_fixture
 
 ARTIFACTS_GIST_CURL_MODE=changed \
   ARTIFACTS_GIST_RG_MODE=clean \

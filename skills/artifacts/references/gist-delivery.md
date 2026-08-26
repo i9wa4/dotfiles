@@ -39,17 +39,20 @@ copy; do not overwrite unrelated material.
 Verify with the executable operator path before handing off the URL:
 
 ```sh
+export ARTIFACTS_SKILL_ROOT=/absolute/path/to/artifacts-skill
 export MKMD_ARTIFACT=/absolute/path/to/local-artifact.md
 export GIST_ID=<gist-id>
 export GIST_OWNER=<owner>
 export GIST_DESCRIPTION='<human-facing artifact description>'
 export GIST_FILENAME="$(basename "$MKMD_ARTIFACT")"
 export GIST_EXPECTED_FILES="$GIST_FILENAME"
-skills/artifacts/scripts/verify-gist-delivery
+"${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
 ```
 
 Required result:
 
+- `ARTIFACTS_SKILL_ROOT` is set to the local artifacts skill directory, so the
+  verifier is reachable from any target repository or current working directory;
 - the verifier exits nonzero unless the API reports `public=false`;
 - URL, description, expected filename, and exact file set match expectation;
 - page and raw transports return success; failed transport is a blocker;
@@ -88,7 +91,8 @@ skills/artifacts/scripts/validate-gist-delivery-contract.sh
 
 The validator uses local fixtures only. It executes the published verifier path
 with mocked `gh`, `curl`, and `rg` commands. It checks unique temporary
-directories, fail-closed transport, visibility and metadata assertions, byte
-and hash equality, explicit `rg` status handling, replacement collision
+directories, unrelated-cwd operator reachability through `ARTIFACTS_SKILL_ROOT`,
+absent-root failure, fail-closed transport, visibility and metadata assertions,
+byte and hash equality, explicit `rg` status handling, replacement collision
 failure behavior, and machine-local path detection without creating or changing
 any Gist.
