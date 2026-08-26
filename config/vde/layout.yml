@@ -7,16 +7,10 @@ presets:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - type: vertical
-          ratio: [1, 1]
-          panes:
-            - name: postman
-              command: tmux-a2a-postman start  # tmux-a2a-postman control-plane state is review_first
-              delay: 500
-              focus: true
-            - name: tailscale
-              command: sudo $(which tailscaled)
-              delay: 500
+        - name: postman
+          command: tmux-a2a-postman start  # tmux-a2a-postman control-plane state is review_first
+          delay: 500
+          focus: true
         - name: vde-monitor
           command: sh -c 'rm -rf -- "$HOME/.vde-monitor/panes" && exec vde-monitor --tailscale'  # startup prunes only disposable pane logs; durable vde-monitor state stays preserved
           delay: 500

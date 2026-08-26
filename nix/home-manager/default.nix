@@ -80,7 +80,6 @@ in
     packages = [
       # System
       pkgs.gnumake
-      pkgs.tailscale
       pkgs.wget
       # nixpkgs
       (pkgs.python3.withPackages (ps: [ ps.pynvim ]))

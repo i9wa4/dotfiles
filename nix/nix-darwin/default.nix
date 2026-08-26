@@ -86,7 +86,13 @@
 
   # System packages (CLI tools that need to be system-wide)
   # NOTE: GUI apps moved to Homebrew casks to avoid nix store bloat from generations
+  # tailscale: CLI + tailscaled binary. The LaunchDaemon that runs tailscaled
+  # as root is generated and (re)installed by the `switch` app
+  # (nix/flake-parts/modules/apps.nix) on every run, mirroring the systemd
+  # unit handling on Ubuntu, so both platforms share one pattern instead of
+  # this file depending on nix-darwin's services.tailscale module.
   environment.systemPackages = [
+    pkgs.tailscale
   ];
 
   # WORKAROUND: nix-darwin a1fa429 still passes the removed --toc-depth flag to
