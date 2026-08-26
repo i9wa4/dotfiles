@@ -25,6 +25,7 @@
       tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh;
       wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
       actrunUpdateScript = ./../../../scripts/nix/package-update-actrun.sh;
+      tailscaledLabel = "com.tailscale.tailscaled";
 
       # Neither standalone home-manager (Ubuntu) nor a plain nix-darwin
       # environment.systemPackages entry (macOS) can declare a root-level
@@ -61,7 +62,7 @@
       # lib.generators.toPlist renders the XML; only this attrset needs editing.
       tailscaledPlist = pkgs.writeText "com.tailscale.tailscaled.plist" (
         lib.generators.toPlist { escape = true; } {
-          Label = "com.tailscale.tailscaled";
+          Label = tailscaledLabel;
           ProgramArguments = [ "${pkgs.tailscale}/bin/tailscaled" ];
           RunAtLoad = true;
           KeepAlive = true;
@@ -90,8 +91,11 @@
                   # run on every switch. Regenerates the plist so it always
                   # points at the current nixpkgs tailscale store path.
                   sudo install -m644 ${tailscaledPlist} /Library/LaunchDaemons/com.tailscale.tailscaled.plist
-                  sudo launchctl unload /Library/LaunchDaemons/com.tailscale.tailscaled.plist 2>/dev/null || true
-                  sudo launchctl load -w /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+                  sudo launchctl bootout system /Library/LaunchDaemons/com.tailscale.tailscaled.plist 2>/dev/null || true
+                  sudo launchctl bootstrap system /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+                  sudo launchctl enable system/${tailscaledLabel}
+                  sudo launchctl kickstart -k system/${tailscaledLabel}
+                  sudo launchctl print system/${tailscaledLabel} >/dev/null
                 ''
               else
                 ''
@@ -107,6 +111,7 @@
                   sudo install -m644 ${tailscaledUnit} /etc/systemd/system/tailscaled.service
                   sudo systemctl daemon-reload
                   sudo systemctl enable --now tailscaled
+                  sudo systemctl is-active --quiet tailscaled
                 ''
             }
           ''}/bin/switch";
