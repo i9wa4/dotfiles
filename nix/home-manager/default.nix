@@ -8,7 +8,8 @@
 }:
 let
   # Platform-agnostic paths
-  homeDir = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  homeDir = if isDarwin then "/Users/${username}" else "/home/${username}";
   ghqRoot = "${homeDir}/ghq"; # cf. git config --global ghq.root
   dotfilesDir = "${ghqRoot}/github.com/i9wa4/dotfiles";
 
@@ -120,7 +121,7 @@ in
       llmAgents.codex
       llmAgents.herdr
     ]
-    ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+    ++ lib.optionals (!isDarwin) [
       pkgs.mise
       pkgs.podman
       pkgs.podman-compose
@@ -178,7 +179,7 @@ in
     nh = {
       enable = true;
       clean = {
-        enable = !pkgs.stdenv.isDarwin;
+        enable = !isDarwin;
         dates = "weekly";
         extraArgs = "--keep-since 30d --keep-one";
       };

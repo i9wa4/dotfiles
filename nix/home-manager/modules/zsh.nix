@@ -40,7 +40,7 @@ in
 
       # Platform-specific PATH recovery
       (
-        if pkgs.stdenv.isDarwin then
+        if pkgs.stdenv.hostPlatform.isDarwin then
           ''
             # Nix PATH recovery (in case macOS update overwrites /etc/zshenv)
             if [ -z "''${__NIX_DARWIN_SET_ENVIRONMENT_DONE-}" ]; then
