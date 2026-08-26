@@ -255,6 +255,7 @@ let
   formatCollision =
     collision: "${collision.left} and ${collision.right}: ${lib.concatStringsSep ", " collision.names}";
   activeSources = activeBaseSources // cfg.extraSources;
+  agentLib = inputs.agent-skills.lib.agent-skills;
   codexMinimalSourceNames = [
     "local"
     "tmux-a2a-postman"
@@ -262,8 +263,8 @@ let
     "context7"
   ];
   codexMinimalSources = lib.getAttrs codexMinimalSourceNames activeSources;
-  codexMinimalCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog codexMinimalSources;
-  codexMinimalAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+  codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
+  codexMinimalAllowlist = agentLib.allowlistFor {
     catalog = codexMinimalCatalog;
     sources = codexMinimalSources;
     enableAll = [
@@ -275,30 +276,46 @@ let
       "context7-cli"
     ];
   };
-  codexMinimalSelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+  codexMinimalSelection = agentLib.selectSkills {
     catalog = codexMinimalCatalog;
     allowlist = codexMinimalAllowlist;
     skills = { };
     sources = codexMinimalSources;
   };
-  codexMinimalBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+  codexMinimalBundle = agentLib.mkBundle {
     inherit pkgs;
     selection = codexMinimalSelection;
   };
+  claudeHomeSkillsInstall = agentLib.mkSyncProgram {
+    inherit pkgs;
+    bundle = config.programs.agent-skills.bundlePath;
+    targets = {
+      claude-home = {
+        enable = true;
+        inherit (installManifest.claude.skills)
+          dest
+          structure
+          ;
+      };
+    };
+    system = pkgs.stdenv.hostPlatform.system;
+    excludePatterns = config.programs.agent-skills.excludePatterns;
+    programName = "skills-install-claude-home";
+  };
   referenceOnlySourceNames = lib.attrNames referenceOnlySources;
-  referenceOnlyCatalog = inputs.agent-skills.lib.agent-skills.discoverCatalog referenceOnlySources;
-  referenceOnlyAllowlist = inputs.agent-skills.lib.agent-skills.allowlistFor {
+  referenceOnlyCatalog = agentLib.discoverCatalog referenceOnlySources;
+  referenceOnlyAllowlist = agentLib.allowlistFor {
     catalog = referenceOnlyCatalog;
     sources = referenceOnlySources;
     enableAll = referenceOnlySourceNames;
   };
-  referenceOnlySelection = inputs.agent-skills.lib.agent-skills.selectSkills {
+  referenceOnlySelection = agentLib.selectSkills {
     catalog = referenceOnlyCatalog;
     allowlist = referenceOnlyAllowlist;
     skills = { };
     sources = referenceOnlySources;
   };
-  referenceOnlyBundle = inputs.agent-skills.lib.agent-skills.mkBundle {
+  referenceOnlyBundle = agentLib.mkBundle {
     inherit pkgs;
     selection = referenceOnlySelection;
     name = "agent-skills-reference-only-bundle";
@@ -371,7 +388,9 @@ in
 
       # Target destinations (symlink-tree uses activation rsync)
       targets = {
-        # Claude Code: ~/.claude/skills
+        # Claude Code: ~/.claude/skills is synchronized by the custom
+        # best-effort activation below so an unmanaged legacy directory does
+        # not abort the rest of `switch`.
         claude-home = {
           inherit (installManifest.claude.skills)
             dest
@@ -394,61 +413,113 @@ in
       excludePatterns = [ "/.system" ];
     };
 
-    home.activation.agent-skills-codex-minimal =
-      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
-        ''
-          dest="${installManifest.codex.skills.dest}"
-          if [ -L "$dest" ]; then
-            rm -rf "$dest"
-          fi
-          mkdir -p "$dest"
-          ${pkgs.rsync}/bin/rsync -a --delete --exclude '/.system' \
-            "${codexMinimalBundle}/" "$dest/"
-          chmod u+w "$dest"
-          echo "agent-skills: installed minimal Codex skill bundle to $dest"
-        '';
+    home.activation = {
+      agent-skills = lib.mkForce (
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          dest="${installManifest.claude.skills.dest}"
+          marker="$dest/.agent-skills-managed.json"
+          force=0
+          skip=0
 
-    home.activation.agent-skills-reference-only =
-      lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ]
-        ''
-          dest="${installManifest.reference.skills.dest}"
-          ownershipMarker="${installManifest.reference.skills.ownershipMarker}"
-          marker="$dest/$ownershipMarker"
+          if [ -e "$dest" ] && [ ! -L "$dest" ] && [ ! -d "$dest" ]; then
+            echo "agent-skills: skipping non-directory Claude skill tree at $dest" >&2
+            skip=1
+          fi
 
-          if [ -L "$dest" ]; then
-            echo "agent-skills: refusing to replace symlinked reference skill tree at $dest" >&2
-            exit 1
-          fi
-          if [ -e "$dest" ] && [ ! -d "$dest" ]; then
-            echo "agent-skills: refusing to replace non-directory reference skill tree at $dest" >&2
-            exit 1
-          fi
-          if [ -d "$dest" ] && [ ! -e "$marker" ]; then
+          if [ "$skip" -eq 0 ] && [ -d "$dest" ] && [ ! -f "$marker" ]; then
             unmanaged=0
             for entry in "$dest"/* "$dest"/.[!.]* "$dest"/..?*; do
               if [ ! -e "$entry" ] && [ ! -L "$entry" ]; then
                 continue
               fi
-              target="$(${pkgs.coreutils}/bin/readlink "$entry" || true)"
+              if [ "$entry" = "$dest/.system" ]; then
+                continue
+              fi
+
+              target="$(${pkgs.coreutils}/bin/readlink -f "$entry" 2>/dev/null || true)"
               case "$target" in
-                *-agent-skills-reference-only-bundle/*) ;;
+                /nix/store/*) ;;
                 *)
-                  echo "agent-skills: refusing to prune unmanaged reference skill entry: $entry" >&2
+                  echo "agent-skills: found unmanaged Claude skill entry: $entry" >&2
                   unmanaged=1
                   ;;
               esac
             done
+
             if [ "$unmanaged" -ne 0 ]; then
-              echo "agent-skills: add $marker only after confirming $dest is owned by Home Manager" >&2
-              exit 1
+              echo "agent-skills: skipping unmanaged Claude skill tree at $dest; set AGENT_SKILLS_FORCE=1 to replace it" >&2
+              skip=1
+            else
+              force=1
             fi
           fi
-          mkdir -p "$dest"
-          ${pkgs.rsync}/bin/rsync -a --delete \
-            "${referenceOnlyFlatBundle}/" "$dest/"
-          chmod u+w "$dest"
-          echo "agent-skills: installed flat reference-only skill bundle to $dest"
-        '';
+
+          if [ "$skip" -ne 0 ]; then
+            :
+          elif [ "$force" -eq 1 ]; then
+            AGENT_SKILLS_FORCE=1 ${claudeHomeSkillsInstall}/bin/skills-install-claude-home || {
+              echo "agent-skills: failed to synchronize Claude skill tree at $dest; continuing" >&2
+            }
+          else
+            ${claudeHomeSkillsInstall}/bin/skills-install-claude-home || {
+              echo "agent-skills: failed to synchronize Claude skill tree at $dest; continuing" >&2
+            }
+          fi
+        ''
+      );
+
+      agent-skills-codex-minimal = lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ] ''
+        dest="${installManifest.codex.skills.dest}"
+        if [ -L "$dest" ]; then
+          rm -rf "$dest"
+        fi
+        mkdir -p "$dest"
+        ${pkgs.rsync}/bin/rsync -a --delete --exclude '/.system' \
+          "${codexMinimalBundle}/" "$dest/"
+        chmod u+w "$dest"
+        echo "agent-skills: installed minimal Codex skill bundle to $dest"
+      '';
+
+      agent-skills-reference-only = lib.hm.dag.entryAfter [ "agent-skills" "writeBoundary" ] ''
+        dest="${installManifest.reference.skills.dest}"
+        ownershipMarker="${installManifest.reference.skills.ownershipMarker}"
+        marker="$dest/$ownershipMarker"
+
+        if [ -L "$dest" ]; then
+          echo "agent-skills: refusing to replace symlinked reference skill tree at $dest" >&2
+          exit 1
+        fi
+        if [ -e "$dest" ] && [ ! -d "$dest" ]; then
+          echo "agent-skills: refusing to replace non-directory reference skill tree at $dest" >&2
+          exit 1
+        fi
+        if [ -d "$dest" ] && [ ! -e "$marker" ]; then
+          unmanaged=0
+          for entry in "$dest"/* "$dest"/.[!.]* "$dest"/..?*; do
+            if [ ! -e "$entry" ] && [ ! -L "$entry" ]; then
+              continue
+            fi
+            target="$(${pkgs.coreutils}/bin/readlink "$entry" || true)"
+            case "$target" in
+              *-agent-skills-reference-only-bundle/*) ;;
+              *)
+                echo "agent-skills: refusing to prune unmanaged reference skill entry: $entry" >&2
+                unmanaged=1
+                ;;
+            esac
+          done
+          if [ "$unmanaged" -ne 0 ]; then
+            echo "agent-skills: add $marker only after confirming $dest is owned by Home Manager" >&2
+            exit 1
+          fi
+        fi
+        mkdir -p "$dest"
+        ${pkgs.rsync}/bin/rsync -a --delete \
+          "${referenceOnlyFlatBundle}/" "$dest/"
+        chmod u+w "$dest"
+        echo "agent-skills: installed flat reference-only skill bundle to $dest"
+      '';
+    };
 
   };
 }
