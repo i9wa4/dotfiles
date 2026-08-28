@@ -18,5 +18,10 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
+      # First-party input: cooldown would hide a fresh release and make
+      # Dependabot propose the previous tag as the "latest eligible" version,
+      # i.e. a downgrade of the manual pin in flake.nix.
+      exclude:
+        - "tmux-a2a-postman"
     commit-message:
       prefix: "chore(deps)"
