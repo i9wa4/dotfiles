@@ -18,5 +18,13 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
+    # First-party input: the flake.nix pin is bumped by hand within hours of
+    # each release, so Dependabot can only race that bump. Every PR it has ever
+    # opened for it was a downgrade (#278, #285, #320, #321) or a redundant
+    # catch-up (#286). Any filter that drops the pinned version from the
+    # candidate set turns a "version update" into a downgrade, so take the
+    # dependency out of Dependabot's hands entirely rather than tuning filters.
+    ignore:
+      - dependency-name: "tmux-a2a-postman"
     commit-message:
       prefix: "chore(deps)"
