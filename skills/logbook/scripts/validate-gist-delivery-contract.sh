@@ -9,8 +9,8 @@ fail() {
 }
 
 repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)
-reference="$repo_root/skills/artifacts/references/gist-delivery.md"
-verifier="$repo_root/skills/artifacts/scripts/verify-gist-delivery"
+reference="$repo_root/skills/logbook/references/gist-delivery.md"
+verifier="$repo_root/skills/logbook/scripts/verify-gist-delivery"
 real_rg=$(command -v rg)
 
 require_doc() {
@@ -63,24 +63,24 @@ run_operator_fixture() {
     export ARTIFACTS_GIST_SOURCE="$source_file"
     export ARTIFACTS_GIST_REAL_RG="$real_rg"
     if test "${ARTIFACTS_OPERATOR_EXPORT_ROOT:-1}" = 1; then
-      export ARTIFACTS_SKILL_ROOT="$repo_root/skills/artifacts"
+      export LOGBOOK_SKILL_ROOT="$repo_root/skills/logbook"
     else
-      unset ARTIFACTS_SKILL_ROOT
+      unset LOGBOOK_SKILL_ROOT
     fi
-    bash "${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
+    bash "${LOGBOOK_SKILL_ROOT}/scripts/verify-gist-delivery"
   )
 }
 
 run_old_relative_operator_fixture() {
   (
     cd "$operator_cwd"
-    skills/artifacts/scripts/verify-gist-delivery
+    skills/logbook/scripts/verify-gist-delivery
   )
 }
 
-require_doc 'ARTIFACTS_SKILL_ROOT'
+require_doc 'LOGBOOK_SKILL_ROOT'
 # shellcheck disable=SC2016
-require_doc '${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery'
+require_doc '${LOGBOOK_SKILL_ROOT}/scripts/verify-gist-delivery'
 require_doc 'public=false'
 require_doc 'GIST_DESCRIPTION'
 require_doc 'GIST_EXPECTED_FILES'
@@ -91,19 +91,19 @@ require_doc 'visibility/metadata differs'
 test -x "$verifier" || fail "verifier is not executable: $verifier"
 bash -n "$verifier"
 
-fixture_dir=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist-contract.XXXXXX")
+fixture_dir=$(mktemp -d "${TMPDIR:-/tmp}/logbook-gist-contract.XXXXXX")
 cleanup_fixture_dir() {
   rm -rf "$fixture_dir"
 }
 trap cleanup_fixture_dir EXIT HUP INT TERM
 
-first_tmp=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist.XXXXXX")
-second_tmp=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist.XXXXXX")
+first_tmp=$(mktemp -d "${TMPDIR:-/tmp}/logbook-gist.XXXXXX")
+second_tmp=$(mktemp -d "${TMPDIR:-/tmp}/logbook-gist.XXXXXX")
 test -d "$first_tmp" || fail "first temporary directory was not created"
 test -d "$second_tmp" || fail "second temporary directory was not created"
 test "$first_tmp" != "$second_tmp" || fail "temporary directory names are not unique"
 rm -rf "$first_tmp" "$second_tmp"
-operator_cwd=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist-unrelated-cwd.XXXXXX")
+operator_cwd=$(mktemp -d "${TMPDIR:-/tmp}/logbook-gist-unrelated-cwd.XXXXXX")
 test -d "$operator_cwd" || fail "operator cwd was not created"
 
 mock_bin="$fixture_dir/bin"
@@ -180,7 +180,7 @@ ARTIFACTS_GIST_RG_MODE=clean assert_success injected-root-operator run_operator_
 ARTIFACTS_GIST_RG_MODE=clean assert_failure old-relative-operator run_old_relative_operator_fixture
 ARTIFACTS_OPERATOR_EXPORT_ROOT=0 \
   ARTIFACTS_GIST_RG_MODE=clean \
-  assert_failure missing-artifacts-skill-root run_operator_fixture
+  assert_failure missing-logbook-skill-root run_operator_fixture
 
 ARTIFACTS_GIST_CURL_MODE=changed \
   ARTIFACTS_GIST_RG_MODE=clean \

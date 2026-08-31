@@ -9,7 +9,7 @@ BASE_DIR="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
 print_usage() {
   cat <<EOF
 Usage:
-  skills/artifacts/scripts/mkmd --dir DIR --label LABEL
+  skills/logbook/scripts/mkmd --dir DIR --label LABEL
 
 mktemp wrapper that creates a markdown working file.
 

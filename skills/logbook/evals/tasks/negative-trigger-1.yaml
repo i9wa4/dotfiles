@@ -11,5 +11,5 @@ graders:
   - type: trigger
     name: negative-trigger
     config:
-      skill_path: skills/artifacts/SKILL.md
+      skill_path: skills/logbook/SKILL.md
       mode: negative

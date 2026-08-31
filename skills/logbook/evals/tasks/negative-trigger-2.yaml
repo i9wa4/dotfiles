@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Negative Trigger 2
+description: Curated anti-trigger for claude.ai's native `/artifacts` Artifact publish/canvas feature, which this skill does not govern.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Publish this report as an artifact for the user to view — create a canvas-style Artifact page they can open in the browser."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/logbook/SKILL.md
+      mode: negative
