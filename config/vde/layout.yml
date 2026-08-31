@@ -29,7 +29,7 @@ presets:
           focus: true
         - name: agent
           title: agent
-          command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+          command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=high
           delay: 500
 
   messenger-claude:
@@ -46,7 +46,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+          command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
           delay: 500
 
   messenger-codex:
@@ -63,7 +63,7 @@ presets:
           focus: true
         - name: messenger
           title: messenger
-          command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.6-terra --config model_reasoning_effort=medium
+          command: codex --yolo --no-alt-screen --model gpt-5.6-terra --config model_reasoning_effort=medium
           delay: 500
 
   preset-p:
@@ -79,34 +79,34 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.6-sol --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.6-sol --config model_reasoning_effort=medium
               delay: 500
             - name: worker
               title: worker
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.6-terra --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.6-terra --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: approver
               title: approver
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.6-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --model gpt-5.6-sol --config model_reasoning_effort=high
               delay: 500
             - name: critic
               title: critic
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=high
               delay: 500
             - name: diplomat
               title: diplomat
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.6-terra --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.6-terra --config model_reasoning_effort=medium
               delay: 500
 
   preset-w:
@@ -122,32 +122,32 @@ presets:
           panes:
             - name: orchestrator
               title: orchestrator
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
             - name: worker
               title: worker
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1, 1]
           panes:
             - name: approver
               title: approver
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
             - name: guardian
               title: guardian
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model "opus[1m]" --effort high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
               delay: 500
             - name: critic
               title: critic
-              command: codex --yolo --no-alt-screen --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=medium
               delay: 500
             - name: diplomat
               title: diplomat
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --add-dir "${SUBDIR}" --model sonnet --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
