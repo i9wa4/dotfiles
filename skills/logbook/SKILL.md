@@ -1,5 +1,5 @@
 ---
-name: artifacts
+name: logbook
 license: MIT
 metadata:
   version: "1.0.0"
@@ -13,15 +13,16 @@ description: |
   memory, or claude.ai's `/artifacts` feature (see `artifact-design`).
 ---
 
-# Artifacts
+# Logbook
 
-Owns non-code artifact lifecycle and delivery. This skill decides where
-working artifacts live, when to create or reuse them, how to discover them on
-resume, and how to prepare approved human-facing Secret-Gist delivery.
+Owns non-code artifact lifecycle and delivery: where working artifacts live,
+when to create or reuse them, how to discover them on resume, and how to
+prepare approved human-facing Secret-Gist delivery.
 
-This skill's "artifact" is a local Markdown file (`mkmd`) or a Secret Gist —
-never claude.ai's Artifact/canvas feature. Route `/artifacts` questions to
-`artifact-design` instead; see the references below for `mkmd` vs. Gist.
+A logbook entry is a local Markdown file (`mkmd`) or a Secret Gist — never
+claude.ai's Artifact/canvas feature (hence this skill's name, not
+`artifacts`). Route `/artifacts` questions to `artifact-design`; see
+references below for `mkmd` vs. Gist.
 
 Follow the active runtime/session language policy or explicit request. This
 skill does not define its own output language defaults.

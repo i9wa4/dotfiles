@@ -20,8 +20,8 @@ Use this reference for Bash scripts and shell command design in this repo.
 ## 3. Example
 
 ```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
-FILE=$("${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
+: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
+FILE=$("${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
 { git branch -r | rg issue; } >"$FILE" 2>&1
 ```
 
