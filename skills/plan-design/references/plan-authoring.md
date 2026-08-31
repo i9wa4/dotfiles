@@ -97,7 +97,7 @@ contexts, follow the live role contract and durable runbook.
 
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
-Resolve the artifacts skill root before running `mkmd` from this workflow:
+Resolve the logbook skill root before running `mkmd` from this workflow:
 
 ```sh
 : "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
