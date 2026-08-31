@@ -4,18 +4,10 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-vim.opt.autoread = true
-vim.opt.backup = false
-vim.opt.swapfile = false
-vim.opt.undofile = false
-
-vim.opt.nrformats = { "unsigned" }
-
 vim.opt.ignorecase = true
-
-vim.opt.cursorline = true
+vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
-
+vim.opt.swapfile = false
 vim.opt.termguicolors = true
 
 vim.g.auto_reload = vim.fn.timer_start(1000, function()
@@ -191,7 +183,7 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
 
 vim.api.nvim_create_autocmd("BufWritePost", {
   group = augroup,
-  pattern = { "*.md", "*.qmd" },
+  pattern = { "*.md", "*.mdx", "*.qmd" },
   callback = function()
     if vim.fn.executable("mdfmt") == 1 then
       vim.system({ "mdfmt", "--write", vim.fn.expand("%:p") }):wait()
