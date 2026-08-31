@@ -147,7 +147,23 @@ discarded without losing task state.
 - Local absolute paths are fine in private task artifacts and Postman traffic.
   Public GitHub surfaces should use repo-relative paths or stable URLs.
 
-## 7. Suggested Artifact Shape
+## 7. Save-Point Usage Pattern
+
+One of several recommended usage patterns alongside plans, research notes,
+review packets, drafts, and scratch outputs: use a single local artifact as
+a periodic save point during an in-progress task. Create it once at task
+start, then update it in place — checklist, evidence log, decisions — as
+work progresses, so state stays resumable without replaying chat or message
+history. This is the same canonical-file rule as
+[Canonical Path Selection](#1-canonical-path-selection): reuse one file
+across the task rather than creating a new snapshot per update.
+
+This pattern stays local, AI/agent-facing working memory. It is not, and
+must not become, a substitute for [Secret-Gist Delivery](gist-delivery.md):
+a Gist is a human-facing delivery copy, created only with current explicit
+approval, and never a checkpoint or task-memory mechanism.
+
+## 8. Suggested Artifact Shape
 
 Keep artifacts compact but resumable:
 
