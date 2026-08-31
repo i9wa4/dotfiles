@@ -45,7 +45,7 @@ run_verifier_fixture() {
     export GIST_EXPECTED_FILES="source.md"
     export ARTIFACTS_GIST_SOURCE="$source_file"
     export ARTIFACTS_GIST_REAL_RG="$real_rg"
-    "$verifier"
+    bash "$verifier"
   )
 }
 
@@ -67,7 +67,7 @@ run_operator_fixture() {
     else
       unset ARTIFACTS_SKILL_ROOT
     fi
-    "${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
+    bash "${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
   )
 }
 
