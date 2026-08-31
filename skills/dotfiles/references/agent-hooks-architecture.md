@@ -128,7 +128,8 @@ orchestrator, reviewer, etc. roles share the multi-agent surface
 without being able to mutate the repo. It reads `pane_title` via
 `tmux display-message` and emits a deny payload for non-worker
 roles when the target file is outside the allowlisted state
-directories.
+and temporary directories. The allowlist does not include `${SUBDIR}` or any
+other repository path.
 
 Codex preserves the same tmux `pane_title` role identity by setting
 `tui.terminal_title = []`. It does not yet have comparable enforcement because

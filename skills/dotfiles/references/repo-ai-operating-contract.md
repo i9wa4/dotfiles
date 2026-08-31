@@ -277,14 +277,17 @@ review lane:
 orchestrator -> guardian -> critic -> guardian -> orchestrator
 ```
 
-Guardian runs in Codex and uses five Codex-native subagents through
-`subagent-review` by default for substantive reviews. Critic runs in Claude
-and uses five Claude-native subagents through `subagent-review` by default for
-substantive reviews. These are peer review roles: neither role uses a unified
-`cc` / `cx` dispatcher fan-out, and neither role assigns implementation to
-review subagents. Guardian mediates the orchestrator-facing review request:
-critic returns independent review evidence to guardian, and guardian
-aggregates the final verdict for orchestrator.
+The guardian and critic responsibilities are engine-neutral: guardian
+mediates the orchestrator-facing request and aggregates the final verdict;
+critic returns independent evidence to guardian. These peer review roles do
+not use a unified `cc` / `cx` dispatcher fan-out, and neither role assigns
+implementation to review subagents.
+
+`config/vde/layout.yml` owns supported engine mappings rather than the role
+contract. `preset-p` is the Codex-featured mapping, with guardian and critic
+both in Codex. `preset-w` is the Claude-team mapping, with guardian in Claude
+and critic in Codex. Neither mapping changes the review route or role
+responsibilities.
 
 #### 5.3.3. Native reviewer contract
 
@@ -299,9 +302,9 @@ only when non-null and `modelReasoningEffort` is emitted as
 `model_reasoning_effort`.
 For substantive reviews, the active role defaults to the five native
 perspectives documented by `subagent-review`: security, architecture,
-historian, code, and QA. Guardian uses the five in Codex; critic uses the five
-in Claude. Each role owns its synthesis and evidence quality, while guardian
-aggregates the final verdict.
+historian, code, and QA. Each role uses the native reviewer definitions for
+its selected engine, owns its synthesis and evidence quality, and returns the
+same logical review evidence; guardian aggregates the final verdict.
 
 #### 5.3.4. `nix switch` materialization
 

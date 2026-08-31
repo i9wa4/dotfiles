@@ -111,7 +111,7 @@ presets:
 
   preset-w:
     name: preset-w
-    description: codex-featured team
+    description: Claude-team review mapping with a Codex critic
     windowMode: new-window
     layout:
       type: horizontal
