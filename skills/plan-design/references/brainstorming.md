@@ -32,7 +32,7 @@ full design exercise.
 
 ## 3. Repo Fit
 
-- Use `artifacts` when the brainstorming output needs to persist as research
+- Use `logbook` when the brainstorming output needs to persist as research
   or plan input.
 - Continue into the main `plan-design` workflow when the outcome is a
   multi-phase execution plan.

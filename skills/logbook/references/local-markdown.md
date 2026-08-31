@@ -4,6 +4,11 @@ Use local markdown artifacts when work must survive chat compaction, handoff,
 review loops, or terminal DONE/BLOCKED evidence. They are operational records,
 not source changes or test substitutes.
 
+These files are AI/agent-facing working memory kept locally, not a
+human-facing delivery format and not claude.ai's rendered Artifact/canvas
+feature. For an approved human-facing delivery copy, see
+[Secret-Gist Delivery](gist-delivery.md) instead.
+
 ## 1. Canonical Path Selection
 
 Use this precedence:
@@ -12,7 +17,7 @@ Use this precedence:
 2. The already-active artifact recorded in the current task or handoff.
 3. A discovered recent artifact that clearly matches the same repo, branch,
    task, and purpose.
-4. A new artifact created with the installed artifacts `mkmd` script.
+4. A new artifact created with the installed logbook `mkmd` script.
 
 Do not create a second tracker because the current artifact is inconvenient.
 Update or rename only when the requester explicitly changes the canonical path.
@@ -68,21 +73,21 @@ original checklist across multiple canonical trackers.
 
 ## 3. Cwd-Independent Mkmd Contract
 
-Callers must receive the installed or currently loaded artifacts skill root
+Callers must receive the installed or currently loaded logbook skill root
 before invoking `mkmd`. Relative calls such as
-`skills/artifacts/scripts/mkmd`, and roots derived from the active target
+`skills/logbook/scripts/mkmd`, and roots derived from the active target
 repository, must not appear in reusable snippets because most repositories do
 not vendor this skill tree.
 
 Reusable callers:
 
 ```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
+: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
+"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
-`ARTIFACTS_SKILL_ROOT` is a runtime-provided contract from the session, wrapper,
-or explicit caller setup. It should point to the installed/current artifacts
+`LOGBOOK_SKILL_ROOT` is a runtime-provided contract from the session, wrapper,
+or explicit caller setup. It should point to the installed/current logbook
 skill root, not to the repository being worked on.
 
 Dotfiles source-local maintenance is the only documented case that may derive
@@ -90,7 +95,7 @@ the root from the repository checkout:
 
 ```sh
 repo_root=$(git rev-parse --show-toplevel)
-ARTIFACTS_SKILL_ROOT="${repo_root}/skills/artifacts"
+LOGBOOK_SKILL_ROOT="${repo_root}/skills/logbook"
 ```
 
 Use the absolute path returned by the script. The path is the canonical artifact
@@ -101,8 +106,8 @@ identifier for future Postman traffic and handoffs.
 Run the skill-owned script directly:
 
 ```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
+: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
+"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 The script creates:
@@ -142,7 +147,23 @@ discarded without losing task state.
 - Local absolute paths are fine in private task artifacts and Postman traffic.
   Public GitHub surfaces should use repo-relative paths or stable URLs.
 
-## 7. Suggested Artifact Shape
+## 7. Save-Point Usage Pattern
+
+One of several recommended usage patterns alongside plans, research notes,
+review packets, drafts, and scratch outputs: use a single local artifact as
+a periodic save point during an in-progress task. Create it once at task
+start, then update it in place — checklist, evidence log, decisions — as
+work progresses, so state stays resumable without replaying chat or message
+history. This is the same canonical-file rule as
+[Canonical Path Selection](#1-canonical-path-selection): reuse one file
+across the task rather than creating a new snapshot per update.
+
+This pattern stays local, AI/agent-facing working memory. It is not, and
+must not become, a substitute for [Secret-Gist Delivery](gist-delivery.md):
+a Gist is a human-facing delivery copy, created only with current explicit
+approval, and never a checkpoint or task-memory mechanism.
+
+## 8. Suggested Artifact Shape
 
 Keep artifacts compact but resumable:
 

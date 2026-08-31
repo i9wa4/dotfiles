@@ -50,7 +50,7 @@ if [ "${GIST_REPLACEMENT_OLD_FILENAME:-}" = "$expected_filename" ]; then
   fail "replacement filename collides with prior delivery: $expected_filename"
 fi
 
-verify_tmp=$(mktemp -d "${TMPDIR:-/tmp}/artifacts-gist.XXXXXX")
+verify_tmp=$(mktemp -d "${TMPDIR:-/tmp}/logbook-gist.XXXXXX")
 cleanup_verify_tmp() {
   rm -rf "$verify_tmp"
 }
