@@ -4,6 +4,11 @@ Secret Gists are human-facing delivery copies. They are not task-state storage,
 cross-machine agent memory, or access-controlled secret stores. Anyone with the
 URL can read them.
 
+For AI/agent-facing working memory kept locally (for example, a handoff memo
+to resume tomorrow's work), use
+[Local Markdown Artifacts](local-markdown.md) (`mkmd`) instead. A Gist is
+also not claude.ai's rendered Artifact/canvas feature.
+
 Use this reference only when a local artifact is intended for approved human
 viewing outside the local workspace.
 

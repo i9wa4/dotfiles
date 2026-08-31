@@ -4,6 +4,11 @@ Use local markdown artifacts when work must survive chat compaction, handoff,
 review loops, or terminal DONE/BLOCKED evidence. They are operational records,
 not source changes or test substitutes.
 
+These files are AI/agent-facing working memory kept locally, not a
+human-facing delivery format and not claude.ai's rendered Artifact/canvas
+feature. For an approved human-facing delivery copy, see
+[Secret-Gist Delivery](gist-delivery.md) instead.
+
 ## 1. Canonical Path Selection
 
 Use this precedence:
