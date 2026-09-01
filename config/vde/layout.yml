@@ -34,7 +34,7 @@ presets:
 
   preset-p:
     name: preset-p
-    description: claude-featured private team
+    description: codex-featured private team
     windowMode: new-window
     layout:
       type: horizontal
