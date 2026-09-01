@@ -32,51 +32,21 @@ presets:
           command: codex --yolo --no-alt-screen --model gpt-5.5 --config model_reasoning_effort=high
           delay: 500
 
-  messenger-claude:
-    name: messenger-claude
-    description: messenger-claude
-    windowMode: current-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: pane
-          title: editor
-          delay: 500
-          focus: true
-        - name: messenger
-          title: messenger
-          command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
-          delay: 500
-
-  messenger-codex:
-    name: messenger-codex
-    description: messenger-codex
-    windowMode: current-window
-    layout:
-      type: horizontal
-      ratio: [1, 1]
-      panes:
-        - name: pane
-          title: editor
-          delay: 500
-          focus: true
-        - name: messenger
-          title: messenger
-          command: codex --yolo --no-alt-screen --model gpt-5.6-terra --config model_reasoning_effort=medium
-          delay: 500
-
   preset-p:
     name: preset-p
-    description: codex-featured team
+    description: claude-featured private team
     windowMode: new-window
     layout:
       type: horizontal
       ratio: [1, 1]
       panes:
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
+            - name: messenger
+              title: messenger
+              command: codex --yolo --no-alt-screen --model gpt-5.6-terra --config model_reasoning_effort=medium
+              delay: 500
             - name: orchestrator
               title: orchestrator
               command: codex --yolo --no-alt-screen --model gpt-5.6-sol --config model_reasoning_effort=medium
@@ -111,15 +81,19 @@ presets:
 
   preset-w:
     name: preset-w
-    description: codex-featured team
+    description: codex-featured work team
     windowMode: new-window
     layout:
       type: horizontal
       ratio: [1, 1]
       panes:
         - type: vertical
-          ratio: [1, 1, 1]
+          ratio: [1, 1, 1, 1]
           panes:
+            - name: messenger
+              title: messenger
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
+              delay: 500
             - name: orchestrator
               title: orchestrator
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
