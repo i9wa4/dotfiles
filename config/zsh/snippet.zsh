@@ -20,15 +20,15 @@ else
 fi
 __snippet_add "ll" "ll" "$__snippet_ll_body" ""
 unset __snippet_ll_body
-__snippet_add "update" "up" "ghq-repo-repair && ghq list | ghq get --update --parallel && ghq-repo-status" ""
 __snippet_add "(AWS) profile" "p" "--profile \$(aws configure list-profiles | fzf)" "^aws[[:space:]]"
-__snippet_add "(Git) graph" "lo" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status" "^git[[:space:]]"
 __snippet_add "(Git) graph --all" "la" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status --all" "^git[[:space:]]"
+__snippet_add "(Git) graph" "lo" "log --graph --format='%C(auto)%h%C(auto)%d %C(auto)%s%n%C(brightblack)[%ai] %C(green)<%an> %C(brightblack)<%ae>' --name-status" "^git[[:space:]]"
+__snippet_add "(ghq) update" "gup" "ghq-repo-repair && ghq list | ghq get --update --parallel && ghq-repo-status" ""
 __snippet_add "(macOS) caffeinate" "caffeinate" "sudo pmset disablesleep" ""
 __snippet_add "(vde-layout) dev" "vd" "vde-layout dev" ""
 __snippet_add "(vde-layout) main" "vm" "vde-layout main" ""
-__snippet_add "(vde-layout) preset-p" "vp" "vde-layout messenger-codex && vde-layout preset-p" ""
-__snippet_add "(vde-layout) preset-w" "vw" "vde-layout messenger-claude && vde-layout preset-w" ""
+__snippet_add "(vde-layout) preset-p" "vp" "vde-layout preset-p" ""
+__snippet_add "(vde-layout) preset-w" "vw" "vde-layout preset-w" ""
 
 __snippet_find_index() {
   local keyword="$1"
