@@ -4,15 +4,15 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
+
 vim.opt.ignorecase = true
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
-
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
 
 vim.opt.clipboard = ""
 if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
