@@ -217,4 +217,14 @@ ARTIFACTS_GIST_RG_MODE=error assert_failure private-scan-error run_verifier_fixt
 printf '%s\n' 'local path /Users/example/private.md' >"$source_file"
 ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-users-path run_verifier_fixture
 
+# private-content-scan: allow-next-line -- fixtures prove Linux, checkout, and Nix paths fail closed.
+printf '%s\n' 'local path /home/example/private.md' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-home-path run_verifier_fixture
+
+printf '%s\n' 'local checkout ~/ghq/github.com/i9wa4/dotfiles' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-ghq-path run_verifier_fixture
+
+printf '%s\n' 'local store /nix/store/example-source' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-nix-store-path run_verifier_fixture
+
 echo "gist delivery contract: OK"
