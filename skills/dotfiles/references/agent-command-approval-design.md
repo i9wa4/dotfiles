@@ -442,6 +442,21 @@ from a disposable issue worktree or scratch repository, not from `main`.
 | Denied commands          | `git push`, `git reset`, `git rebase`, `git commit --amend`, `rm`, `sudo`, `aws sso login`, `git -C`, and `tmux select-pane -T` remain blocked by the shared hook or future Codex-native forbidden rules.              | The shared PreToolUse hook should block the same command set when hooks run. The high-consequence `permissions.deny` subset is a non-bypass expectation unless a bypass-mode test proves otherwise. | Execute harmless dry forms where possible, or use hook/unit command checks that prove the deny rule fires without side effects; record hook-layer and permission-layer results separately. |
 | Postman state operations | `tmux-a2a-postman pop` and `tmux-a2a-postman send-heredoc` remain usable. Heredoc bodies that mention denied commands do not trigger false positives. Direct mailbox file edits remain outside the operating contract. | Same as Codex. `--dangerously-skip-permissions` must not be required for legitimate postman state traffic once an alternative profile exists.                                                       | Pop a ping/status message in a test session, send a heredoc containing command-like text, and confirm the shared Bash deny hook does not block message transport.                          |
 
+Version-bounded Codex deny probe recorded on 2026-09-03:
+
+- Runtime: Codex CLI `0.152.0`, launched with `--yolo`.
+- Probe: `git -C . status --short` from the dotfiles repository root. This is a
+  harmless status-only command selected to exercise the existing `git -C`
+  shared-Bash-deny rule.
+- Result: the `PreToolUse` hook blocked the command before execution and
+  returned the configured rationale: use the current working directory and
+  `cd` into a target worktree rather than using `git -C`.
+- Interpretation: this proves that the current shared Bash deny hook executes
+  and its denial is honored in this installed Codex `--yolo` runtime. It does
+  not prove default-deny allow-list behavior, filesystem/write enforcement, or
+  parity with Claude's role-based write-deny hook; those remain separate
+  scenarios for any opt-in implementation.
+
 Postman command approval scenario:
 
 - Codex expectation: `execute-bash --mode blocking` does not fail open after
