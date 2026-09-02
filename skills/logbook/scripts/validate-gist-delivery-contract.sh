@@ -229,6 +229,26 @@ ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-ghq-path run_verifier_f
 printf '%s\n' 'local store /nix/store/example-source' >"$source_file"
 ARTIFACTS_GIST_RG_MODE=real assert_failure machine-local-nix-store-path run_verifier_fixture
 
+# private-content-scan: allow-next-line -- fixture proves inline-code home path fails closed.
+printf '%s\n' $'inline `/home/example/private.md`' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure inline-code-home-path run_verifier_fixture
+
+# private-content-scan: allow-next-line -- fixture proves inline-code checkout path fails closed.
+printf '%s\n' $'inline `~/ghq/github.com/i9wa4/dotfiles`' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure inline-code-ghq-path run_verifier_fixture
+
+# private-content-scan: allow-next-line -- fixture proves inline-code store path fails closed.
+printf '%s\n' $'inline `/nix/store/example-source`' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure inline-code-nix-store-path run_verifier_fixture
+
+# private-content-scan: allow-next-line -- fixture proves assignment home path fails closed.
+printf '%s\n' 'HOME=/home/example/private.md' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure assignment-home-path run_verifier_fixture
+
+# private-content-scan: allow-next-line -- fixture proves parenthesized store path fails closed.
+printf '%s\n' '(/nix/store/example-source)' >"$source_file"
+ARTIFACTS_GIST_RG_MODE=real assert_failure parenthesized-nix-store-path run_verifier_fixture
+
 # public-content-scan: allow-next-line -- stable URLs and repository-relative paths remain accepted.
 # private-content-scan: allow-next-line -- fixture proves public home URL control remains accepted.
 printf '%s\n' 'https://docs.example.test/home/example/guide' >"$source_file"
