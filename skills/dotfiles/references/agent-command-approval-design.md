@@ -445,8 +445,8 @@ from a disposable issue worktree or scratch repository, not from `main`.
 Version-bounded Codex deny probe recorded on 2026-09-03:
 
 - Runtime: Codex CLI `0.152.0`, launched with `--yolo`.
-- Probe: `git -C . status --short` from the dotfiles repository root. This is a
-  harmless status-only command selected to exercise the existing `git -C`
+- Probe: `git -C . status --short` from the disposable issue worktree root.
+  This harmless status-only command exercises the existing `git -C`
   shared-Bash-deny rule.
 - Result: the `PreToolUse` hook blocked the command before execution and
   returned the configured rationale: use the current working directory and
