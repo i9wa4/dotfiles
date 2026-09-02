@@ -52,7 +52,7 @@ cause before attempting a fix. Load it when the failure mechanism is unclear.
 
 - Prefer `rg` for text and file discovery.
 - Record the reproducer command and the exact output you observed.
-- Use `artifacts` research artifacts when the debugging trail will span many
+- Use `logbook` research artifacts when the debugging trail will span many
   steps or multiple turns.
 - Prefer POSIX-compatible and repo-managed tools over ad hoc global setup.
 - Do not hide uncertainty with speculative cleanup or defensive code.

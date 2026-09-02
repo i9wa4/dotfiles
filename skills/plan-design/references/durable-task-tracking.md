@@ -4,13 +4,13 @@ Durable task tracking is needed when work must survive chat compaction, node
 handoff, review loops, or original-checklist completion gates. The artifact is
 an operational record, not a replacement for source changes or tests.
 
-Use `artifacts` for local markdown creation, supplied-path reuse, discovery,
+Use `logbook` for local markdown creation, supplied-path reuse, discovery,
 directory labels, temporary discard rules, and Secret-Gist delivery mechanics.
 This reference defines what a task tracker must prove.
 
 ## 1. Choosing A Directory Label
 
-When a new artifact is needed, use the directory labels owned by `artifacts`.
+When a new artifact is needed, use the directory labels owned by `logbook`.
 The `--dir` value is an artifact label, not a repo-local directory to create by
 hand.
 
@@ -29,17 +29,17 @@ new one.
 ## 2. Creating A Tracker
 
 Create a new artifact before deep work only when no canonical markdown path was
-provided. Read `artifacts` first for the current creation command and path
+provided. Read `logbook` first for the current creation command and path
 rules.
 
 ```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
+: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
+"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
 ```
 
 ```sh
-: "${ARTIFACTS_SKILL_ROOT:?set ARTIFACTS_SKILL_ROOT}"
-"${ARTIFACTS_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
+: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
+"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
 ```
 
 Use the absolute path returned by the script. Do not create repo-local `plans/`
@@ -163,14 +163,14 @@ reviews should use repo-relative paths or stable URLs.
 ## 9. Human-Facing Delivery
 
 When a task tracker must become a human-facing Secret-Gist delivery copy, read
-`artifacts`, follow the active output language policy, and keep this task
+`logbook`, follow the active output language policy, and keep this task
 tracker as the local canonical source. The Gist is a delivery copy only; it is
 not task-state storage or cross-machine agent memory.
 
 ## 10. Common Mistakes
 
 - Creating a repo-local `plans/` or `research/` file instead of using the
-  `artifacts` script.
+  `logbook` script.
 - Creating multiple trackers after a markdown path was already supplied.
 - Treating a generated plan as the original checklist and dropping user items.
 - Marking DONE without evidence for every original checklist item.

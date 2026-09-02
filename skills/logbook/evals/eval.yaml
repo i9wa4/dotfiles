@@ -1,6 +1,6 @@
-name: artifacts-eval
-description: Trigger-accuracy eval for artifacts.
-skill: artifacts
+name: logbook-eval
+description: Trigger-accuracy eval for logbook.
+skill: logbook
 version: "1.0"
 config:
   trials_per_task: 1
