@@ -122,7 +122,7 @@ skill:
 
 ### 3.2. Durable handoff artifacts
 
-Use `artifacts` for non-code artifact lifecycle, including local markdown
+Use `logbook` for non-code artifact lifecycle, including local markdown
 creation, reuse, discovery, directory labels, temporary discard rules, and
 approved human-facing Secret-Gist delivery. Do not rely on chat history or
 short status traffic alone when later readers will need to recover why work

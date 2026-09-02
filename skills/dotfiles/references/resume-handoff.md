@@ -8,7 +8,7 @@ Those hooks were removed on 2026-04-29 because their saved state was not a
 load-bearing handoff mechanism. Keep local artifacts, repository state, and
 Postman traffic as the normal handoff record.
 
-Use `artifacts` for local markdown artifact lifecycle and any approved
+Use `logbook` for local markdown artifact lifecycle and any approved
 human-facing Secret-Gist delivery. Do not use Gists as cross-machine agent
 memory or task-state storage.
 
@@ -26,4 +26,4 @@ memory or task-state storage.
 
 Past guidance allowed optional portable agent Gists. That model is retired:
 task state remains local, in repository state, or in Postman traffic. Gists
-are only human-facing delivery copies governed by `artifacts`.
+are only human-facing delivery copies governed by `logbook`.

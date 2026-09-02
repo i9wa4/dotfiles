@@ -4,6 +4,11 @@ Secret Gists are human-facing delivery copies. They are not task-state storage,
 cross-machine agent memory, or access-controlled secret stores. Anyone with the
 URL can read them.
 
+For AI/agent-facing working memory kept locally (for example, a handoff memo
+to resume tomorrow's work), use
+[Local Markdown Artifacts](local-markdown.md) (`mkmd`) instead. A Gist is
+also not claude.ai's rendered Artifact/canvas feature.
+
 Use this reference only when a local artifact is intended for approved human
 viewing outside the local workspace.
 
@@ -39,19 +44,19 @@ copy; do not overwrite unrelated material.
 Verify with the executable operator path before handing off the URL:
 
 ```sh
-export ARTIFACTS_SKILL_ROOT=/absolute/path/to/artifacts-skill
+export LOGBOOK_SKILL_ROOT=/absolute/path/to/logbook-skill
 export MKMD_ARTIFACT=/absolute/path/to/local-artifact.md
 export GIST_ID=<gist-id>
 export GIST_OWNER=<owner>
 export GIST_DESCRIPTION='<human-facing artifact description>'
 export GIST_FILENAME="$(basename "$MKMD_ARTIFACT")"
 export GIST_EXPECTED_FILES="$GIST_FILENAME"
-"${ARTIFACTS_SKILL_ROOT}/scripts/verify-gist-delivery"
+"${LOGBOOK_SKILL_ROOT}/scripts/verify-gist-delivery"
 ```
 
 Required result:
 
-- `ARTIFACTS_SKILL_ROOT` is set to the local artifacts skill directory, so the
+- `LOGBOOK_SKILL_ROOT` is set to the local logbook skill directory, so the
   verifier is reachable from any target repository or current working directory;
 - the verifier exits nonzero unless the API reports `public=false`;
 - URL, description, expected filename, and exact file set match expectation;
@@ -83,15 +88,15 @@ issues, PRs, commits, reviews, or logs without separate approval.
 
 ## 4. Contract Validator
 
-Run the artifacts-owned contract check after editing this reference:
+Run the logbook-owned contract check after editing this reference:
 
 ```sh
-skills/artifacts/scripts/validate-gist-delivery-contract.sh
+skills/logbook/scripts/validate-gist-delivery-contract.sh
 ```
 
 The validator uses local fixtures only. It executes the published verifier path
 with mocked `gh`, `curl`, and `rg` commands. It checks unique temporary
-directories, unrelated-cwd operator reachability through `ARTIFACTS_SKILL_ROOT`,
+directories, unrelated-cwd operator reachability through `LOGBOOK_SKILL_ROOT`,
 absent-root failure, fail-closed transport, visibility and metadata assertions,
 byte and hash equality, explicit `rg` status handling, replacement collision
 failure behavior, and machine-local path detection without creating or changing
