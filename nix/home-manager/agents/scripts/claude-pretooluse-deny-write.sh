@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # claude-pretooluse-deny-write.sh - Role-based write deny using tmux pane title (role name)
 #
-# Blocks Edit/Write/NotebookEdit for non-worker agents.
+# Blocks Edit/Write/NotebookEdit for non-worker agents except approved local
+# state and temporary directories. It never grants a role-based exception for
+# the current repository (`SUBDIR`).
 # Pattern-based deny is handled by settings.json deny list.
 #
 # Hook: PreToolUse
@@ -61,10 +63,8 @@ if [[ ${CLAUDE_DENY_WRITE_BYPASS:-0} != 1 ]] &&
       : # Allow writes to mkmd state directory
     elif [[ -n $FILE_PATH && $FILE_PATH == "/tmp/"* ]]; then
       : # Allow writes to /tmp/ directory
-    elif [[ -n $FILE_PATH && -n ${SUBDIR:-} && $FILE_PATH == "${SUBDIR}/"* ]]; then
-      : # Allow writes to SUBDIR directory
     else
-      REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker can edit files."$'\n'"💡 Alternative: Delegate task to worker via tmux-a2a-postman."
+      REASON="🚫 BLOCKED: ${ROLE_NAME} is READONLY. Only worker or agent roles can edit repository files."$'\n'"💡 Alternative: Delegate task to worker via tmux-a2a-postman."
       jq -n \
         --arg reason "$REASON" \
         '{
