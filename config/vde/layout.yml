@@ -34,7 +34,7 @@ presets:
 
   preset-p:
     name: preset-p
-    description: claude-featured private team
+    description: codex-featured private team
     windowMode: new-window
     layout:
       type: horizontal
@@ -81,7 +81,7 @@ presets:
 
   preset-w:
     name: preset-w
-    description: codex-featured work team
+    description: Claude-team review mapping with a Codex critic
     windowMode: new-window
     layout:
       type: horizontal

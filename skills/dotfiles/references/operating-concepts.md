@@ -125,7 +125,7 @@ The tmux module is not cosmetic here. It is the live shell around the harness.
 
 Three details matter:
 
-- pane titles default to `anonymous`, then become role identity during agent
+- pane titles default to `pane`, then become role identity during agent
   work
 - the pane title is surfaced in the border format, so role identity stays
   visible while working
@@ -229,7 +229,8 @@ role-readonly guard:
   command, and add-dir path/context
 - `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
 - `claude-pretooluse-deny-write.sh` prevents non-worker role panes from
-  mutating files outside approved state directories
+  mutating repository files; it allows only the Postman and mkmd state roots
+  plus `/tmp/` for local temporary output
 
 ### 4.3. Codex shape
 
@@ -326,6 +327,13 @@ That means reviewer topology and naming stay in sync from a shared source.
 Review is therefore another example of the same repo philosophy: one concept,
 declaratively materialized into multiple runtime targets.
 
+The role contract is engine-neutral: guardian owns the final internal verdict
+and critic supplies independent evidence. `config/vde/layout.yml` separately
+defines supported launch mappings. `preset-p` is the Codex-featured mapping,
+with both reviewer roles in Codex; `preset-w` is the Claude-team mapping, with
+guardian in Claude and critic in Codex. Neither mapping changes the review
+route or the responsibility of either role.
+
 ## 7. Why `tmux-a2a-postman` remains central
 
 Even with the broader harness in place, `tmux-a2a-postman` remains central
@@ -398,7 +406,7 @@ When you need to understand the operating concept, read these in order:
 
 1. `flake.nix`
 2. `nix/home-manager/default.nix`
-3. `nix/home-manager/modules/tmux.nix`
+3. `config/tmux/tmux.conf`
 4. `nix/home-manager/agents/README.md`
 5. `nix/home-manager/agents/claude/default.nix`
 6. `nix/home-manager/agents/codex/default.nix`
