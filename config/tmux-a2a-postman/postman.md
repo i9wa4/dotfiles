@@ -296,6 +296,44 @@ requests and policy questions about command approval.
   postman decision only. The requester owns execution after the recorded
   decision.
 
+### 7.3. Command-Approval-Mechanism Changes
+
+In addition to individual `execute-bash` approval decisions, `approver`
+owns decisions about the command-approval mechanism itself: changes to
+Bash permission hooks (PreToolUse/PostToolUse), deny-list or allow-list
+rule changes (`denied-bash-commands.nix` and any settings.json-level
+allow/deny hooks), and equivalent changes to how commands get
+ask/allow/deny decisions across the fleet. Route these proposals to
+`approver` for a yes/no decision before any worker role applies them, the
+same as an `execute-bash` approval thread. `approver` reviews only and
+does not implement or apply the change itself.
+
+When reviewing a proposed command-approval-mechanism change that can grant
+an automatic "allow" decision (not just a deny or a pass-through to the
+normal ask prompt), apply all of the following:
+
+1. Enumerate every shell chaining/statement-separation/substitution/
+   redirection/backgrounding metacharacter, not an ad hoc subset. At
+   minimum: `;`, bare `&` (checked separately from `&&`), `|`, backtick,
+   `$(`, `<(`, `>(`, `<`, `>`, embedded newline, embedded carriage return.
+   Treat this list as a floor, not a ceiling.
+2. Any keyword-based sensitive-content exclusion (key, token, secret,
+   .env, .ssh, credential, password, or similar) must match
+   case-insensitively against the full command string.
+3. Prefer narrow, exact-shape allow patterns over broad "contains X
+   anywhere" matching. Anchor to command structure instead of
+   substring-anywhere globs.
+4. When permitting a limited compound shape (e.g. a `cd <dir> &&`
+   prefix), require the exact literal shape and reject every other count
+   or variant of the joining operator.
+5. Treat an auto-"allow" decision as strictly higher-stakes than a
+   fallthrough to the existing ask/deny prompt. Bias toward
+   fallthrough/rejection when coverage is ambiguous.
+6. Verify against the literal final implementation string, not just the
+   natural-language description of intended behavior.
+7. Review only -- do not implement, apply, or execute the proposed change
+   locally to test it.
+
 ## 8. `diplomat`
 
 ### 8.1. `role`
