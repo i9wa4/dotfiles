@@ -173,11 +173,14 @@ let
       path = inputs.databricks-agent-skills;
       subdir = "skills";
     };
-    # kepano/obsidian-skills: Obsidian-related skills (defuddle,
-    # json-canvas, obsidian-bases, obsidian-cli, obsidian-markdown).
-    # cf. https://github.com/kepano/obsidian-skills
-    obsidian = {
-      path = inputs.obsidian-skills;
+    # Google Workspace CLI skills (Gmail, Calendar, Docs, Drive, Sheets,
+    # Slides, Chat, Forms, Classroom, Tasks, Keep, Meet, People, plus
+    # persona-* and recipe-* templates). Keep the full pinned inventory
+    # reference-only; this session already has native Google Workspace MCP
+    # tools wired in directly.
+    # cf. https://github.com/googleworkspace/cli
+    googleworkspace-cli = {
+      path = inputs.googleworkspace-cli;
       subdir = "skills";
     };
     # HashiCorp Terraform agent skills.

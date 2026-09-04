@@ -324,6 +324,22 @@
         "type": "github"
       }
     },
+    "googleworkspace-cli": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774983075,
+        "narHash": "sha256-YyNIHbyZrLlXYtWxZY8Um19MsnLharmS+nWGWO89fsA=",
+        "owner": "googleworkspace",
+        "repo": "cli",
+        "rev": "a3768d0e82ad83cca2da97724e46bea4ff0e6dbd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "googleworkspace",
+        "repo": "cli",
+        "type": "github"
+      }
+    },
     "hashicorp-agent-skills": {
       "flake": false,
       "locked": {
@@ -584,22 +600,6 @@
         "type": "github"
       }
     },
-    "obsidian-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1780935121,
-        "narHash": "sha256-/Kr3cMaN81WXFxgWMNt/QQhEMzuu3e3WJpspqjrnPss=",
-        "owner": "kepano",
-        "repo": "obsidian-skills",
-        "rev": "a1dc48e68138490d522c04cbf5822214c6eb1202",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kepano",
-        "repo": "obsidian-skills",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
@@ -612,6 +612,7 @@
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
         "google-skills": "google-skills",
+        "googleworkspace-cli": "googleworkspace-cli",
         "hashicorp-agent-skills": "hashicorp-agent-skills",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
@@ -620,7 +621,6 @@
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_2",
-        "obsidian-skills": "obsidian-skills",
         "streamlit-skills": "streamlit-skills",
         "tmux-a2a-postman": "tmux-a2a-postman",
         "treefmt-nix": "treefmt-nix_3"

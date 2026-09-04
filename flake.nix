@@ -106,8 +106,8 @@
       url = "github:aws/agent-toolkit-for-aws";
       flake = false;
     };
-    obsidian-skills = {
-      url = "github:kepano/obsidian-skills";
+    googleworkspace-cli = {
+      url = "github:googleworkspace/cli";
       flake = false;
     };
   };
