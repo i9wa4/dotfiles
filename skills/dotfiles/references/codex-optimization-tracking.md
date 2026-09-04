@@ -116,6 +116,7 @@ incident runbook is archived in the private vault
 
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
   now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  <!-- private-content-scan: allow-next-line -->
   direct-invocation fallback remains at `~/.codex/AGENTS.md`, derived from
   `nix/home-manager/agents/shared/AGENTS.md`; applicable skills flow through
   the generated `skill_path` catalog, while catch-all repo background lives in
@@ -135,7 +136,7 @@ incident runbook is archived in the private vault
   `PostToolUse` matcher=`Bash` (`codex-posttooluse-review.sh`), and
   `Stop` (`codex-stop-save.sh`) — see commit `6add5abb`.
 - [x] Shared deny-bash patterns reused by both Claude Code and Codex CLI hooks
-  (`denied-bash-commands.nix` SSOT; both runtimes consume).
+  (`bash-commands-denied.nix` SSOT; both runtimes consume).
 - [x] Shared deny-bash *script* now also shared, not just the patterns:
   `pretooluse-deny-bash.sh` (no runtime prefix) is invoked by both
   Claude and Codex. Replaced the previous `codex-pretooluse-deny-bash.sh`

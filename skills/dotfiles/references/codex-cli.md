@@ -154,7 +154,7 @@ Ignore any release entries for versions newer than `codex --version`.
     `common-userpromptsubmit.sh codex`)
   - `codex-*` only for genuinely Codex-only behavior (e.g. current write-tool
     payload observation)
-- YOU MUST: Reuse `denied-bash-commands.nix` as the SSOT for Bash deny policy
+- YOU MUST: Reuse `bash-commands-denied.nix` as the SSOT for Bash deny policy
   instead of hand-maintaining separate Codex-only command lists
 - YOU MUST: Reuse `pretooluse-deny-bash.sh` instead of forking a Codex copy.
   A previous Codex-only fork drifted (missed `is_allow_prefix_bypass`,
