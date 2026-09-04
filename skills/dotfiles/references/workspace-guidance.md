@@ -133,7 +133,9 @@ number, plus local Git state. The command is read-only; use native
 
 For issue implementation, agents must create or choose the GitHub issue first,
 then use `issue-worktree-create <issue_number>`. Do not create issue branches
-or worktrees manually. Before editing, verify `pwd`,
+or worktrees manually, and do not use the generic worktree tool
+(`EnterWorktree`) as the entrypoint for issue implementation or PR review.
+Before editing, verify `pwd`,
 `git branch --show-current`, and
 `git status --short --branch`. Before asking a human to push, verify upstream
 with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report

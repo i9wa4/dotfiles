@@ -4,47 +4,24 @@ Durable task tracking is needed when work must survive chat compaction, node
 handoff, review loops, or original-checklist completion gates. The artifact is
 an operational record, not a replacement for source changes or tests.
 
-Use `logbook` for local markdown creation, supplied-path reuse, discovery,
-directory labels, temporary discard rules, and Secret-Gist delivery mechanics.
-This reference defines what a task tracker must prove.
+Leave a durable artifact of your work; its creation, reuse, discovery, and
+delivery mechanics are governed elsewhere in this environment and are not
+restated here. This reference defines what a task tracker must prove.
 
-## 1. Choosing A Directory Label
+## 1. Choosing An Artifact Category
 
-When a new artifact is needed, use the directory labels owned by `logbook`.
-The `--dir` value is an artifact label, not a repo-local directory to create by
-hand.
-
-| Label      | Use when                                                 |
-| ---------- | -------------------------------------------------------- |
-| `plans`    | The artifact is an execution plan or milestone tracker.  |
-| `research` | The work is investigation, synthesis, or decision notes. |
-| `reviews`  | The artifact records review findings or approvals.       |
-| `draft`    | The artifact is temporary text for a handoff or message. |
-| `tmp`      | The artifact is scratch output with low retention value. |
-
-Prefer the narrowest label that matches the work. For implementation tasks that
-already have a supplied markdown path, preserve that path instead of creating a
-new one.
+Match the artifact to the work type — an execution plan, an investigation or
+decision-support record, a review record, or a temporary draft — and prefer
+the narrowest category that fits. For implementation tasks that already have
+a supplied markdown path, preserve that path instead of creating a new one.
 
 ## 2. Creating A Tracker
 
-Create a new artifact before deep work only when no canonical markdown path was
-provided. Read `logbook` first for the current creation command and path
-rules.
-
-```sh
-: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir plans --label implement-feature-x
-```
-
-```sh
-: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir research --label investigate-feature-x
-```
-
-Use the absolute path returned by the script. Do not create repo-local `plans/`
-or `research/` task artifacts unless the user explicitly provided that repo
-path as the original checklist.
+Create a new artifact before deep work only when no canonical markdown path
+was provided. Use the absolute path the creation step returns as the
+canonical path going forward. Do not hand-create ad hoc repo-local `plans/`
+or `research/` directories or files unless the user explicitly provided that
+repo path as the original checklist.
 
 ## 3. Preserving The Original Checklist
 
@@ -162,15 +139,16 @@ reviews should use repo-relative paths or stable URLs.
 
 ## 9. Human-Facing Delivery
 
-When a task tracker must become a human-facing Secret-Gist delivery copy, read
-`logbook`, follow the active output language policy, and keep this task
-tracker as the local canonical source. The Gist is a delivery copy only; it is
-not task-state storage or cross-machine agent memory.
+When a task tracker must become a human-facing delivery copy, follow the
+active output language policy and keep this task tracker as the local
+canonical source. A delivery copy is a copy only, produced with current
+explicit approval; it is never task-state storage or cross-machine agent
+memory.
 
 ## 10. Common Mistakes
 
-- Creating a repo-local `plans/` or `research/` file instead of using the
-  `logbook` script.
+- Creating a repo-local `plans/` or `research/` file by hand instead of
+  leaving a durable artifact through the established convention.
 - Creating multiple trackers after a markdown path was already supplied.
 - Treating a generated plan as the original checklist and dropping user items.
 - Marking DONE without evidence for every original checklist item.
