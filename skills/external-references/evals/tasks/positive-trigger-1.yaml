@@ -4,7 +4,7 @@ description: Curated trigger-accuracy prompt for this skill.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Find the reference-only dbt, azure, databricks-official, google, aws, or obsidian provider pack guidance without enabling broad skill packs."
+  prompt: "Find the reference-only dbt, azure, databricks-official, google, aws, streamlit, or obsidian provider pack guidance without enabling broad skill packs."
 expected:
   should_trigger: true
 graders:
