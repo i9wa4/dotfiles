@@ -18,9 +18,10 @@ Owns implementation-plan authoring and durable task tracking for plan-ready
 tasks: ambiguity reduction, option framing, multi-source synthesis, review
 gates, task artifacts, evidence logs, and handoff/resume.
 
-Use `logbook` for non-code artifact lifecycle, local `mkmd` storage,
-artifact discovery/reuse, and Secret-Gist delivery mechanics. This skill owns
-planning semantics and evidence expectations, not artifact storage policy.
+This skill owns planning semantics and evidence expectations, not artifact
+storage or delivery mechanics. Leave a durable artifact of your work; where
+and how it is created, reused, discovered, and delivered is governed
+elsewhere in this environment.
 
 Follow the output language designated by the active runtime/session policy or
 explicit request. Do not establish an independent language policy in this

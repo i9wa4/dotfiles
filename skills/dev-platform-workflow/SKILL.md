@@ -14,16 +14,12 @@ hygiene, commit/PR rules, and Atlassian access when env vars are confirmed.
 
 ## 1. Development Default
 
-Before git/GitHub actions that edit files, create commits, or change branches,
-work in a dedicated worktree. Issue work: create/choose the issue, run
-`issue-worktree-create <issue_number>`, then edit there. PR review:
-`pr-worktree-create <pr_number>`.
-
-Never edit or commit from the main checkout, even for docs-only or single-line
-changes. If there is deliberately no issue/PR number, first run
-`git worktree add -b <branch> .worktrees/<branch> main` and `cd` there. Raw
-`git worktree add` is only for this no-issue branch case, not issue/PR work.
-Avoid `EnterWorktree`. Verify `pwd`, branch, and status before editing.
+Before git/GitHub actions that edit files, create commits, or change
+branches, work in a dedicated worktree — never edit or commit from the main
+checkout, even for docs-only or single-line changes. See
+`skills/dotfiles/references/workspace-guidance.md` for the worktree creation
+commands, the no-issue-branch fallback, and entrypoint restrictions. Verify
+`pwd`, branch, and status before editing.
 
 ## 2. Workflow
 

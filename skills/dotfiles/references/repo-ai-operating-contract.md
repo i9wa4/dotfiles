@@ -122,11 +122,12 @@ skill:
 
 ### 3.2. Durable handoff artifacts
 
-Use `logbook` for non-code artifact lifecycle, including local markdown
-creation, reuse, discovery, directory labels, temporary discard rules, and
-approved human-facing Secret-Gist delivery. Do not rely on chat history or
+Leave a durable artifact of your work rather than relying on chat history or
 short status traffic alone when later readers will need to recover why work
-moved, what changed, or what still needs verification.
+moved, what changed, or what still needs verification. Artifact lifecycle
+mechanics — creation, reuse, discovery, categorization, discard rules, and
+approved human-facing delivery — are governed elsewhere in this environment
+and are not restated here.
 
 Create or update a durable artifact when any of these are true:
 
@@ -140,13 +141,10 @@ Create or update a durable artifact when any of these are true:
 A short status update is enough only when the next node needs no context beyond
 the current control-plane state.
 
-Use the standard artifact directory labels by artifact type:
-
-- `draft` for temporary working notes and handoff drafts
-- `research` for investigation findings and decision support
-- `reviews` for completion or review artifacts
-- `plans` for execution plans
-- `tmp` for disposable scratch output
+Categorize the artifact by type — temporary working notes and handoff
+drafts, investigation findings and decision support, completion or review
+records, execution plans, or disposable scratch output — using the
+established artifact-category convention in this environment.
 
 ### 3.3. Markdown checklist workflow for task artifacts
 
@@ -216,7 +214,7 @@ discipline.
 Two repo files matter especially because they are single sources of truth
 consumed by both engines.
 
-### 5.1. `shared/denied-bash-commands.nix`
+### 5.1. `shared/bash-commands-denied.nix`
 
 This file defines the dangerous Bash patterns once and then emits:
 

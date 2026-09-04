@@ -185,7 +185,7 @@ the harness from several smaller sources:
   the runtime agent directories
 - `skills/subagent-review/SKILL.md` documents native reviewer subagent usage
   through the normal local skill pipeline
-- `shared/denied-bash-commands.nix` is the single source of truth for
+- `shared/bash-commands-denied.nix` is the single source of truth for
   dangerous Bash denials across both engines
 
 That is the repo's harness-engineering philosophy: keep policy declarative,
@@ -257,7 +257,7 @@ Parity is visible in several places:
 
 - both postman-driven engines receive the same common contract from
   `config/tmux-a2a-postman/postman.md`
-- both derive policy from the same `shared/denied-bash-commands.nix`
+- both derive policy from the same `shared/bash-commands-denied.nix`
 - both receive skills from `shared/agent-skills.nix`; Claude follows the
   curated active source graph, while Codex follows the explicit source
   allowlist documented there
@@ -421,5 +421,5 @@ When you need to understand the operating concept, read these in order:
 - `skills/dotfiles/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/install-manifest.nix`
-- `nix/home-manager/agents/shared/denied-bash-commands.nix`
+- `nix/home-manager/agents/shared/bash-commands-denied.nix`
 - `config/tmux-a2a-postman/postman.md`

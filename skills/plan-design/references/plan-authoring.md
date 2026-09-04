@@ -98,18 +98,9 @@ contexts, follow the live role contract and durable runbook.
 
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
-Resolve the logbook skill root before running `mkmd` from this workflow:
-
-```sh
-: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-```
-
-1. Create a research artifact for source digestion:
-   `"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir research --label plan-investigation`
-   - Note: add a suffix to disambiguate if multiple plans exist in the same
-     session.
-   - Example:
-     `"${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir research --label plan-investigation-dbt-merge`
+1. Leave a durable research artifact for source digestion before deep work.
+   Disambiguate its label if multiple plans exist in the same session (for
+   example, a plan-investigation label naming the specific merge or feature).
 2. Read all source artifacts in full.
 3. For large files, read in chunks (`offset/limit` or line ranges).
 4. Extract:

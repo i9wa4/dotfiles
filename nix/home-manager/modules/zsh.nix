@@ -127,7 +127,7 @@ in
 
       # tirith (interactive-shell command guard; human terminal sessions only -
       # AI-agent Bash-tool invocations spawn non-interactive zsh and never
-      # source this file, see denied-bash-commands.nix for that path instead)
+      # source this file, see bash-commands-denied.nix for that path instead)
       eval "$(tirith init --shell zsh)"
 
       # Source modular configs

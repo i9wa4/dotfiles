@@ -9,6 +9,15 @@ human-facing delivery format and not claude.ai's rendered Artifact/canvas
 feature. For an approved human-facing delivery copy, see
 [Secret-Gist Delivery](gist-delivery.md) instead.
 
+This reference is the single deterministic location convention for where
+working artifacts live in this environment: the path template in
+[Creating Artifacts](#4-creating-artifacts) plus the directory labels in
+[Directory Labels](#5-directory-labels) together form that index. Other
+skills should not restate this convention, the `mkmd` invocation contract, or
+the label table — they should point here generically (for example, "leave a
+durable artifact of your work") and let this file stay the one place that
+changes when the convention changes.
+
 ## 1. Canonical Path Selection
 
 Use this precedence:
