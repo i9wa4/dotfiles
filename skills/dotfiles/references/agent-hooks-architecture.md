@@ -34,7 +34,7 @@ or (2).
 
 ## 2. What Is Already Shared
 
-### 2.1. Deny Rule Data — `denied-bash-commands.nix`
+### 2.1. Deny Rule Data — `bash-commands-denied.nix`
 
 Single source of truth for Bash command denies. One `entries` array
 produces the Claude built-in deny set and the shared hook pattern file in

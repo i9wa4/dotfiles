@@ -148,7 +148,7 @@ settings file `~/.claude/settings.json`. The repo currently configures
 The current deny set is:
 
 - `deniedBash.claudeCode.denyPermissions` from
-  `nix/home-manager/agents/shared/denied-bash-commands.nix` for selected
+  `nix/home-manager/agents/shared/bash-commands-denied.nix` for selected
   high-consequence Bash commands.
 - `Read(**/*key*)`
 - `Read(**/*token*)`
@@ -220,7 +220,7 @@ Claude profile.
 
 | Intent                               | Shared home                                                                          | Runtime-specific home                                                                                                                                            | Current design                                                                                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dangerous Bash command denies        | `nix/home-manager/agents/shared/denied-bash-commands.nix`; `pretooluse-deny-bash.sh` | Claude additionally receives selected `permissions.deny` globs for non-bypass permission profiles; Codex receives the shared hook patterns                       | Shared SSOT owns command-deny intent. For the bypass-launched Claude critic, verify the PreToolUse hook separately and do not claim `permissions.deny` enforcement without installed-version evidence.   |
+| Dangerous Bash command denies        | `nix/home-manager/agents/shared/bash-commands-denied.nix`; `pretooluse-deny-bash.sh` | Claude additionally receives selected `permissions.deny` globs for non-bypass permission profiles; Codex receives the shared hook patterns                       | Shared SSOT owns command-deny intent. For the bypass-launched Claude critic, verify the PreToolUse hook separately and do not claim `permissions.deny` enforcement without installed-version evidence.   |
 | Postman message and mailbox workflow | `config/tmux-a2a-postman/postman.md` and shared hook bypass data                     | Runtime hook registration paths differ                                                                                                                           | Keep postman state operations prompt-first plus hook-compatible. The shared deny hook must not false-positive on heredoc message bodies.                                                                 |
 | Sensitive file read/write denies     | Policy intent should be shared                                                       | Claude has direct `Read`/`Write` denies for non-bypass permission profiles today; Codex needs sandbox or permission-profile rules in a follow-up                 | Preserve Claude's configured file denies, but do not treat them as enforced for bypass-launched panes unless tested. Add equivalent Codex boundaries only through Codex-native sandbox/profile settings. |
 | Filesystem and network blast radius  | Design principle only                                                                | Codex uses sandbox modes, approval policy, writable roots, or permission profiles. Claude uses permission rules plus optional Bash sandbox or process isolation. | Keep the policy goal aligned, but implement boundaries through each runtime's native controls.                                                                                                           |
@@ -244,7 +244,7 @@ against bypass.
 Approver policy therefore has two separate sources:
 
 - Structured deny data belongs in
-  `nix/home-manager/agents/shared/denied-bash-commands.nix` when the rule is a
+  `nix/home-manager/agents/shared/bash-commands-denied.nix` when the rule is a
   concrete Bash pattern that should be blocked before execution in both
   runtimes. Each entry carries its repair-oriented rationale.
 - Human approval gates belong in `config/tmux-a2a-postman/postman.md` because
@@ -408,7 +408,7 @@ repo-relative paths:
   approval-reviewer, or config-profile generation.
 - `nix/home-manager/agents/claude/default.nix` for Claude permission mode,
   allow/ask rules, sandbox settings, or env-scrub changes.
-- `nix/home-manager/agents/shared/denied-bash-commands.nix` only if the shared
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` only if the shared
   Bash deny policy itself changes.
 - `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` only if a
   verification scenario proves the shared hook mishandles command parsing or

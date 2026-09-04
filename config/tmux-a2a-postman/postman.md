@@ -265,7 +265,7 @@ requests and policy questions about command approval.
   Mermaid graph marks `approver` as `command_approver_node`.
 - Before deciding, read and apply the prohibited-command policy and rationale:
   the shared Bash deny SSOT is
-  `nix/home-manager/agents/shared/denied-bash-commands.nix`, and the layer
+  `nix/home-manager/agents/shared/bash-commands-denied.nix`, and the layer
   rationale is `skills/dotfiles/references/deny-bash-design.md` plus
   `skills/dotfiles/references/agent-command-approval-design.md`. The deny list
   is a guardrail, not the full approval policy.

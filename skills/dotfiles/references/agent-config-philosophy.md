@@ -70,7 +70,7 @@ into both Codex and Claude consumers.
 
 Concrete examples already in the repo:
 
-- `nix/home-manager/agents/shared/denied-bash-commands.nix` — SSOT for the deny
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` — SSOT for the deny
   set; emits Claude's built-in `permissions.deny` glob and the generated
   deny-patterns file consumed by the shared `pretooluse-deny-bash.sh` hook
   in both runtimes.
@@ -204,7 +204,7 @@ worked example. The mapping below is illustrative, not exhaustive.
 | Decision                                               | Principle                           | Concrete form                                                                      |
 | ------------------------------------------------------ | ----------------------------------- | ---------------------------------------------------------------------------------- |
 | Section 2.16 uses `postman.md` rather than a deny glob | 1.1 prompt-first                    | Rule lives in the agent contract, applies to both engines, no settings.json change |
-| `denied-bash-commands.nix` is the shared deny source   | 1.2 shared SSOT                     | One file feeds Claude globs and the shared Claude/Codex hook patterns              |
+| `bash-commands-denied.nix` is the shared deny source   | 1.2 shared SSOT                     | One file feeds Claude globs and the shared Claude/Codex hook patterns              |
 | Command-deny compensation lives in the shared hook     | 1.3 vendor-specific as compensation | Postman data-carrier handling applies to both runtimes                             |
 
 ## 3. Decision Checklist for New Agent Config
@@ -240,5 +240,5 @@ Before adding agent configuration, walk this checklist:
   rules.
 - `config/tmux-a2a-postman/postman.md` — agent contract that carries
   the prompt-path rules into every postman session.
-- `nix/home-manager/agents/shared/denied-bash-commands.nix` — example of a
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` — example of a
   shared SSOT emitting to multiple engines.
