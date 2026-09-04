@@ -28,6 +28,8 @@ installed, validated, or explained.
 - Harness principles: `skills/dotfiles/references/agent-config-philosophy.md`
 - Command approval and writable surface:
   `skills/dotfiles/references/agent-command-approval-design.md`
+- Software Factory A2A/Postman boundary:
+  `skills/dotfiles/references/a2a-postman-integration-boundary.md`
 - Operating model: `skills/dotfiles/references/operating-concepts.md`
 - AI workflow and artifacts:
   `skills/dotfiles/references/repo-ai-operating-contract.md`
@@ -119,6 +121,7 @@ Full diagnosis and commands live in
 - [Hooks Architecture](agent-hooks-architecture.md)
 - [Deny Bash Design](deny-bash-design.md)
 - [Command Approval Design](agent-command-approval-design.md)
+- [A2A/Postman Integration Boundary](a2a-postman-integration-boundary.md)
 - [AI Operating Contract](repo-ai-operating-contract.md)
 - [AI Review Boundaries](repo-ai-review-boundaries.md)
 - [Claude Code](claude-code.md)

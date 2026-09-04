@@ -62,42 +62,6 @@ let
       pkgs
       ;
   };
-  matchAny = names: "^(${lib.concatStringsSep "|" names})$";
-  googleCoreDataSkills = [
-    "alloydb-basics"
-    "bigquery-ai-ml"
-    "bigquery-basics"
-    "bigquery-bigframes"
-    "bigtable-basics"
-    "cloud-run-basics"
-    "cloud-sql-basics"
-    "datalineage-bigquery-asset-impact-analysis"
-    "gcloud"
-    "gke-basics"
-    "gke-networking"
-    "gke-observability"
-    "gke-security"
-    "gke-storage"
-    "google-cloud-recipe-auth"
-    "google-cloud-recipe-foundation-builder"
-  ];
-  azureCoreDataSkills = [
-    "azure-ai"
-    "azure-aigateway"
-    "azure-compute"
-    "azure-deploy"
-    "azure-diagnostics"
-    "azure-kusto"
-    "azure-messaging"
-    "azure-prepare"
-    "azure-rbac"
-    "azure-resource-lookup"
-    "azure-storage"
-    "azure-validate"
-    "entra-agent-id"
-    "entra-app-registration"
-    "microsoft-foundry"
-  ];
   validateSkillSource =
     name: src:
     pkgs.runCommand name { } ''
@@ -196,12 +160,12 @@ let
       path = inputs.dbt-agent-skills;
       subdir = "skills/dbt/skills";
     };
-    # Microsoft Azure skills. The filtered subset remains documented here for
-    # future promotion decisions without loading it by default.
+    # Microsoft Azure skills. Keep the full pinned inventory reference-only so
+    # discovery is complete without loading it by default.
     azure = {
       path = inputs.azure-skills;
       subdir = "skills";
-      filter.nameRegex = matchAny azureCoreDataSkills;
+      filter.maxDepth = 1;
     };
     # Databricks official agent skills
     # cf. https://github.com/databricks/databricks-agent-skills
@@ -222,12 +186,18 @@ let
       path = inputs.hashicorp-agent-skills;
       subdir = "plugins/terraform/skills";
     };
-    # Google skills, limited to core Cloud and data-platform workflows.
+    # Google skills. Keep the full pinned Cloud inventory reference-only so
+    # discovery is complete without loading it by default.
     # cf. https://github.com/google/skills
     google = {
       path = inputs.google-skills;
       subdir = "skills/cloud";
-      filter.nameRegex = matchAny googleCoreDataSkills;
+    };
+    # Streamlit skills.
+    # cf. https://github.com/streamlit/agent-skills
+    streamlit = {
+      path = inputs.streamlit-skills;
+      subdir = "developing-with-streamlit";
     };
     # AWS Agent Toolkit skills. Keep the full skills/ inventory reference-only
     # so nested upstream AWS skill categories are flattened for lookup without
