@@ -22,8 +22,8 @@ let
       inputs
       ;
   };
-  # Shared Bash deny surface includes aws sso login; see shared/denied-bash-commands.nix.
-  deniedBash = import ../shared/denied-bash-commands.nix { inherit pkgs; };
+  # Shared Bash deny surface includes aws sso login; see shared/bash-commands-denied.nix.
+  deniedBash = import ../shared/bash-commands-denied.nix { inherit pkgs; };
 
   # Generated patterns file name (change here to relocate)
   bashDenyPatternsName = "deny-bash-patterns.sh";

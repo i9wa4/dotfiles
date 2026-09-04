@@ -32,7 +32,7 @@ both of which exceed the value the hook is meant to deliver.
 
 ## 2. Single Source of Truth
 
-`nix/home-manager/agents/shared/denied-bash-commands.nix` is the SSOT. It
+`nix/home-manager/agents/shared/bash-commands-denied.nix` is the SSOT. It
 defines three top-level lists:
 
 - `entries` — deny rules. Each entry has an `argv` token list, an
@@ -214,7 +214,7 @@ special cases on top of regex.
 - `skills/dotfiles/references/agent-config-philosophy.md` — the design
   principles this hook system follows (prompt-first, shared SSOT,
   vendor-specific as compensation).
-- `nix/home-manager/agents/shared/denied-bash-commands.nix` — SSOT.
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` — SSOT.
 - `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` — the
   PreToolUse hook script.
 - `nix/home-manager/agents/claude/default.nix` — wires the SSOT into

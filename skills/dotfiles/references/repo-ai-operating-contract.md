@@ -214,7 +214,7 @@ discipline.
 Two repo files matter especially because they are single sources of truth
 consumed by both engines.
 
-### 5.1. `shared/denied-bash-commands.nix`
+### 5.1. `shared/bash-commands-denied.nix`
 
 This file defines the dangerous Bash patterns once and then emits:
 

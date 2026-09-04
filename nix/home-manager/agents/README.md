@@ -22,7 +22,7 @@ artifacts.
 | Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned in Nix and materialized as a flat reference-only tree under `~/.local/share/skills`; not installed into active runtime loader paths        |
 | Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                                                                      |
 | Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                                                                      |
-| Shared runtime data         | `shared/mcp-servers.nix`, `shared/denied-bash-commands.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                                                                     |
+| Shared runtime data         | `shared/mcp-servers.nix`, `shared/bash-commands-denied.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                                                                     |
 | Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs                                                                   |
 | Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs                                                                         |
 | Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                                                                                    |
@@ -42,7 +42,7 @@ graph LR
         S[skills/]
         A[subagents/*.md + metadata.nix]
         H[agents/scripts/ hooks]
-        D[shared/denied-bash-commands.nix]
+        D[shared/bash-commands-denied.nix]
         M[shared/mcp-servers.nix]
         L[shared/AGENTS.md]
     end
@@ -158,7 +158,7 @@ graph LR
 - If you are changing hook behavior, runtime settings, or install targets, edit
   the `.nix` modules.
 - If a file lives under `shared/` and is named `install-manifest.nix`,
-  `agent-skills.nix`, `mcp-servers.nix`, or `denied-bash-commands.nix`, it is
+  `agent-skills.nix`, `mcp-servers.nix`, or `bash-commands-denied.nix`, it is
   composition or shared data code rather than final installed prompt text.
 - Treat `~/.claude/` and `~/.codex/` as outputs of this tree, not as the
   editing surface.
