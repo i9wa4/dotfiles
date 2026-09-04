@@ -513,7 +513,7 @@ command approval and should update:
 - Verification that status output and "You can talk to" include the derived
   diplomat edges without exposing filesystem paths.
 
-### 4.4. Follow-Up Implementation Shape
+## 5. Follow-Up Implementation Shape
 
 The first implementation should be an opt-in profile or preset, not a default
 change.
@@ -543,7 +543,7 @@ cleanup means follow-up implementation should edit the current installer and
 runtime config files directly, not revive the retired native-agent renderer
 shape.
 
-### 4.5. Repo Files For A Follow-Up
+## 6. Repo Files For A Follow-Up
 
 A follow-up implementation is expected to touch some subset of these
 repo-relative paths:
@@ -574,7 +574,7 @@ repo-relative paths:
 - A future checked-in `postman.toml`, if command approval policies become
   declarative rather than per-command `execute-bash` flags.
 
-### 4.6. Representative Verification Scenarios
+## 7. Representative Verification Scenarios
 
 These are design scenarios for the follow-up implementation. They should run
 from a disposable issue worktree or scratch repository, not from `main`.
