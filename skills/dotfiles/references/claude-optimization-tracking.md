@@ -20,6 +20,7 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
 
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
   now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  <!-- private-content-scan: allow-next-line -->
   direct-invocation fallback remains at `~/.claude/CLAUDE.md`, derived from
   `nix/home-manager/agents/shared/AGENTS.md`.
 - [x] Skills installed through `shared/agent-skills.nix`
@@ -51,7 +52,7 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
 - [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
   usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
-  custom `skills/collaboration/SKILL.md` is sole authority (v2.1.69)
+  custom `skills/dev-platform-workflow/SKILL.md` is sole authority (v2.1.69)
 - [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0"` - DISABLED (was "1"). At "1"
   the harness silently forces `permissionMode = "default"` and overrides
   `--dangerously-skip-permissions`, producing an "ask" prompt for every
@@ -287,6 +288,7 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
   informational for now. Auto mode is now available without
   `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry, and
   `autoMode` is no longer read from `.claude/settings.local.json`; if this repo
+  <!-- private-content-scan: allow-next-line -->
   ever adopts auto mode, place policy in `~/.claude/settings.json` or managed
   settings, not local/project settings.
 - [x] Plugin `${user_config.*}` shell-form rejection (v2.1.207) - no local

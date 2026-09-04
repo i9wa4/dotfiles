@@ -11,5 +11,5 @@ graders:
   - type: trigger
     name: negative-trigger
     config:
-      skill_path: skills/collaboration/SKILL.md
+      skill_path: skills/dev-platform-workflow/SKILL.md
       mode: negative

@@ -1,5 +1,5 @@
 ---
-name: collaboration
+name: dev-platform-workflow
 license: MIT
 metadata:
   version: "1.0.0"
@@ -7,7 +7,7 @@ description: |
   USE FOR: Read BEFORE any git or GitHub action (issue, branch, commit, push, PR create/review) — sets the issue-first, worktree-based default via issue-worktree-create. GitHub/Jira/Confluence: gh CLI, PR/commit/issue management, review style, public path hygiene; Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
 ---
 
-# Collaboration
+# Dev Platform Workflow
 
 Owns `gh` usage, GitHub issue/PR creation and inspection, public surface path
 hygiene, commit/PR rules, and Atlassian access when env vars are confirmed.

@@ -14,11 +14,11 @@ User-facing trigger for drafting Japanese GitHub PR review comments.
 `ai-create-review-comment for this branch` all start target inference and
 drafting.
 
-Owns target inference, Japanese draft output, and the
-no-post-without-approval gate. Review procedure belongs to
-`subagent-review`; GitHub mechanics and path hygiene belong to `collaboration`.
-In `tmux-a2a-postman`, orchestrator/worker only infer targets and collect PR
-context before routing substantive review to guardian.
+Owns target inference, Japanese draft output, and the no-post-without-approval
+gate. Review procedure belongs to `subagent-review`; GitHub mechanics and path
+hygiene belong to `dev-platform-workflow`. In `tmux-a2a-postman`,
+orchestrator/worker only infer targets and collect PR context before routing
+substantive review to guardian.
 
 ## 1. Workflow
 

@@ -155,7 +155,7 @@ What this looks like in the current repo:
 - Where only one engine has the feature, it is neutralized on that side alone:
   Claude's `AskUserQuestion` is denied (Codex has no such tool), and Claude's
   built-in git instructions are disabled (`includeGitInstructions=false`) so the
-  `collaboration` skill is the single git authority on both.
+  `dev-platform-workflow` skill is the single git authority on both.
 - The same intent can take different mechanisms: native terminal scrollback is
   an env var on Claude (`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`) and a launch
   flag on Codex (`--no-alt-screen` in `config/vde/layout.yml`).
