@@ -18,7 +18,7 @@ scan_public_surface() {
   file=$1
 
   set +e
-  rg --quiet '/\.local/|tmux-a2a|pop_receipt|/Users/[[:alnum:]_.-]+/|BEGIN (RSA|OPENSSH|PRIVATE)' "$file"
+  rg --quiet '/\.local/|tmux-a2a|pop_receipt|/Users/[[:alnum:]_.-]+/|(^|[[:space:]`=]|\()(/home/[[:alnum:]_.-]+/|~\/ghq/|/nix/store/)|BEGIN (RSA|OPENSSH|PRIVATE)' "$file"
   rg_status=$?
   set -e
 
