@@ -138,15 +138,93 @@ strip_data_arg_values() {
 # splits on those as top-level fragment separators before this check
 # runs; a literal one inside the current fragment would only be possible
 # inside quotes, which is data, not a live shell operator.
+#
+# Quote-aware: reuses the same char-by-char quote-tracking walk_bash_fragments
+# uses, rather than a naive substring case-match, so a backtick/$(/</> inside
+# a quoted argument (data) is not confused with a live shell metacharacter.
+# A run of two or more unquoted `<` is a heredoc (`<<`) or here-string
+# (`<<<`) marker, not input redirection -- unlike a bare single `<`, it never
+# reads from an arbitrary file, so it is not flagged. `>` gets no equivalent
+# exemption: `>>` is still real output redirection either way.
 # shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
 fragment_has_risky_construct() {
   local fragment="$1"
-  # shellcheck disable=SC2016 # case pattern, not variable expansion
-  case "$fragment" in
-  *'`'* | *'$('* | *'<('* | *'>('* | *'<'* | *'>'*)
-    return 0
-    ;;
-  esac
+  local char next_char
+  local index
+  local single_quoted=0 double_quoted=0 escaped=0
+
+  for ((index = 0; index < ${#fragment}; index++)); do
+    char="${fragment:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
+      escaped=1
+      continue
+    fi
+
+    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$single_quoted" -eq 1 ]; then
+        single_quoted=0
+      else
+        single_quoted=1
+      fi
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$double_quoted" -eq 1 ]; then
+        double_quoted=0
+      else
+        double_quoted=1
+      fi
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 1 ] || [ "$double_quoted" -eq 1 ]; then
+      if [ "$char" = '`' ]; then
+        # Backtick and $( ) still expand inside double quotes in real
+        # bash, so unlike </>, they stay risky there too.
+        if [ "$double_quoted" -eq 1 ]; then
+          return 0
+        fi
+      elif [ "$char" = '$' ] && [ "${fragment:index+1:1}" = "(" ] && [ "$double_quoted" -eq 1 ]; then
+        return 0
+      fi
+      continue
+    fi
+
+    case "$char" in
+    '`')
+      return 0
+      ;;
+    '$')
+      if [ "${fragment:index+1:1}" = "(" ]; then
+        return 0
+      fi
+      ;;
+    '<')
+      next_char="${fragment:index+1:1}"
+      if [ "$next_char" = "<" ]; then
+        # Heredoc (<<, <<-) or here-string (<<<) marker: skip the whole
+        # run of unquoted `<` so neither end of it is mistaken for a
+        # standalone input-redirection `<`.
+        while [ "${fragment:index+1:1}" = "<" ]; do
+          index=$((index + 1))
+        done
+        continue
+      fi
+      return 0
+      ;;
+    '>')
+      return 0
+      ;;
+    esac
+  done
+
   return 1
 }
 
