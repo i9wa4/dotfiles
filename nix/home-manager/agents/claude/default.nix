@@ -101,6 +101,15 @@ let
           ];
         }
         {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-allow-safe-grep.sh";
+            }
+          ];
+        }
+        {
           matcher = "Write|Edit|NotebookEdit";
           hooks = [
             {
