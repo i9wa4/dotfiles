@@ -1,6 +1,6 @@
-name: collaboration-eval
-description: Trigger-accuracy eval for collaboration.
-skill: collaboration
+name: dev-platform-workflow-eval
+description: Trigger-accuracy eval for dev-platform-workflow.
+skill: dev-platform-workflow
 version: "1.0"
 config:
   trials_per_task: 1

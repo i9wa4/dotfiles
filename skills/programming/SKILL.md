@@ -28,7 +28,8 @@ Out of scope:
 
 - Agent harness runtime, Home Manager agent config, hooks, postman routing, or
   installed agent outputs; use `dotfiles`.
-- GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
+- GitHub issue, PR, review, or public-surface mechanics; use
+  `dev-platform-workflow`.
 - Data-platform or diagramming workflows; use their target skills.
 
 ## 2. Workflow

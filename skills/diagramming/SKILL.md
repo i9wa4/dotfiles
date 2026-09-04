@@ -25,7 +25,8 @@ color/asset conventions, and diagram-focused validation.
 Out of scope:
 
 - Data-platform workflows; use `data-platform`.
-- GitHub issue, PR, review, or public-surface mechanics; use `collaboration`.
+- GitHub issue, PR, review, or public-surface mechanics; use
+  `dev-platform-workflow`.
 - Generic Bash, Python, Nix, Markdown, or implementation-loop work; use
   `programming`.
 - Agent harness runtime, hooks, postman routing, or installed agent outputs;

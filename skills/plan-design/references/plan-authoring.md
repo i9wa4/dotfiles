@@ -18,7 +18,8 @@ Use this skill when the output is a plan artifact requiring:
   durable orchestration runbooks.
 - Native guardian/critic review mechanics: reuse `subagent-review` concepts
   selectively.
-- GitHub fetch/comment commands: follow `collaboration` rule where needed.
+- GitHub fetch/comment commands: follow `dev-platform-workflow` rule where
+  needed.
 - Do not duplicate those skills; add only plan-design specific workflow.
 
 ## 2. Trigger Conditions

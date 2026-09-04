@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Verifying technical claims, comparing options, and investigating unfamiliar libraries/APIs/tools with cited, confidence-rated evidence. DO NOT USE FOR: implementation, opinion without evidence, or tasks better served by a narrower repo-specific skill (e.g. `data-platform`, `collaboration`).
+  USE FOR: Verifying technical claims, comparing options, and investigating unfamiliar libraries/APIs/tools with cited, confidence-rated evidence. DO NOT USE FOR: implementation, opinion without evidence, or tasks better served by a narrower repo-specific skill (e.g. `data-platform`, `dev-platform-workflow`).
 ---
 
 # Technical Research
