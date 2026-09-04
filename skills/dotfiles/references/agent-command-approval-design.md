@@ -333,7 +333,152 @@ Current dotfiles adoption:
   blocking policy must be added alongside a verification showing the valid
   Mermaid approver marker survives config load.
 
-### 4.2. Diplomat Node Status
+### 4.2. Bash Command Allow/Deny Mechanism (Current Implementation)
+
+This section documents the shared `pretooluse-deny-bash.sh` hook's actual
+runtime behavior as implemented through issue #346 (default-deny redesign,
+absorbing the former standalone grep/rg hook from issue #342) and issue #352
+(quote-aware risky-construct fix). It is the concrete mechanism behind the
+"Dangerous Bash command denies" row in the §4 table above.
+
+#### 4.2.1. One Script, Two Installation Paths
+
+`nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` is the single
+script both runtimes execute -- there is no separate Codex or Claude
+implementation of the deny/allow logic itself. The two Nix modules differ
+only in *how* that identical file gets installed, not in what it does once
+it runs:
+
+- Claude (`claude/default.nix`): `scriptsDir` symlinks every file under
+  `agents/scripts/*` with a wildcard loop, so `pretooluse-deny-bash.sh`
+  arrives automatically alongside any other script added to that directory.
+- Codex (`codex/default.nix`): `codexScriptsDir` symlinks each script by an
+  explicit `ln -s` line, `pretooluse-deny-bash.sh` included, with an in-file
+  comment noting this is deliberate: "make the consumed hook surface
+  reviewable in this file" rather than implicit.
+
+Both wire the resulting installed script to the same `PreToolUse` / `Bash`
+hook matcher in their respective hook configs, and both source the same
+generated `deny-bash-patterns.sh` (from `bash-commands-denied.nix` /
+`bash-commands-allowed.nix`) placed beside it.
+
+```mermaid
+flowchart LR
+    src["agents/scripts/pretooluse-deny-bash.sh<br/>(single source file)"]
+    src -->|wildcard symlink, scriptsDir| claudeInstalled["Claude scripts dir<br/>(installed copy)"]
+    src -->|explicit ln -s, codexScriptsDir| codexInstalled["Codex scripts dir<br/>(installed copy)"]
+    claudeInstalled --> claudeHook["Claude PreToolUse/Bash hook"]
+    codexInstalled --> codexHook["Codex PreToolUse/Bash hook"]
+    claudeSettings["Claude settings.json<br/>permissions.deny<br/>(Claude-only, native)"]
+    claudeHook -.also feeds.-> claudeSettings
+```
+
+Installed locations (Home Manager-managed, not repo paths): the Claude copy
+<!-- private-content-scan: allow-next-line -->
+lands at `~/.claude/scripts/pretooluse-deny-bash.sh`, and the Codex copy at
+<!-- private-content-scan: allow-next-line -->
+`~/.codex/scripts/pretooluse-deny-bash.sh`.
+
+#### 4.2.2. Claude-Only Native Extra Layer
+
+Four `bash-commands-denied.nix` entries (`rm`, `sudo`, `aws sso login`,
+`tmux select-pane -T`) set `claudeSettingsJson = true`. Only for those four,
+`claude/default.nix` also adds a derived glob (e.g. `Bash(rm *)`) to Claude's
+own native `permissions.deny` in `settings.json` -- a structurally separate
+enforcement layer from the `PreToolUse` hook script, evaluated by Claude
+Code itself rather than by the hook subprocess. Codex has no equivalent
+native permission engine, so for Codex those four commands rely on the
+shared hook script alone; there is no `permissions.deny`-equivalent second
+layer on the Codex side.
+
+#### 4.2.3. Runtime Decision Flow
+
+Every Bash command the hook sees is decided in this order; the first
+matching stage wins and no later stage is consulted:
+
+1. `check_grep_rg_allow` -- a dedicated procedural check for a single
+   grep/rg/ripgrep invocation, ported verbatim from the former standalone
+
+   #342 hook. It operates on the *whole raw command*, not a split fragment:
+
+   any chaining, substitution, or redirection metacharacter anywhere in the
+   command is an outright reject, and at most one `&&` is tolerated, only in
+   the exact `cd <path> && grep/rg ...` shape. It also rejects sensitive
+   keywords (`key`, `token`, `secret`, `.env`, `.ssh`, `credential`,
+   `password`) and the substrings `rm`, `sudo`, `curl`, `wget` inside the
+   grep/rg part.
+2. `check_bash_command_for_allow` -- splits the command into fragments on
+   top-level (unquoted) `;`, `&`, `|`, then for each fragment: unwraps
+   `bash -c`/`sh -c` wrappers recursively, runs `fragment_has_risky_construct`
+   (quote-aware as of #352 -- see below), strips `STRIP_DATA_ARGS` argument
+   values (e.g. a `-m` commit-message value), then checks the fragment
+   against `ALLOW_PATTERNS` (`bash-commands-allowed.nix`: `tmux-a2a-postman`,
+   `ls`, `pwd`, `cat`, `head`, `tail`, `wc`, `sort`, `uniq`, `cut`, `date`,
+   `whoami`, `which`, `echo`, `git status`/`diff`/`log`/`show`, and an
+   end-anchored `git branch` exact-form entry). Every fragment must pass for
+   the whole command to be allowed.
+3. `check_bash_command_for_denials` -- `DENY_PATTERNS`
+   (`bash-commands-denied.nix`). **This is not a second enforcement gate.**
+   By the time this stage runs, the command has already missed every allow
+   path above, so it is being denied either way; this stage only decides
+   *which message* the agent sees -- a specific, repair-oriented
+   justification for a recognized pattern (`git push`, `rm`, `sudo`, etc.),
+   versus:
+4. The generic "not on the allowlist for automatic execution" fallback for
+   anything matching none of the above.
+
+Every deny message, regardless of which stage produced it, appends a hint to
+request the command via `tmux-a2a-postman execute-bash` instead of retrying
+it directly.
+
+```mermaid
+flowchart TD
+    start(["Bash command"]) --> grepCheck{"check_grep_rg_allow:<br/>single grep/rg/ripgrep shape,<br/>no chaining/substitution/redirection?"}
+    grepCheck -->|yes| allow1["ALLOW"]
+    grepCheck -->|no| splitFragments["split on top-level ; & |<br/>(quote-aware)"]
+    splitFragments --> perFragment{"every fragment:<br/>unwrap bash -c/sh -c,<br/>fragment_has_risky_construct?<br/>(quote-aware, #352)"}
+    perFragment -->|any fragment risky| denyMsg
+    perFragment -->|none risky| allowPatterns{"every fragment matches<br/>ALLOW_PATTERNS?"}
+    allowPatterns -->|yes| allow2["ALLOW"]
+    allowPatterns -->|no| denyPatterns{"matches a<br/>DENY_PATTERNS entry?"}
+    denyPatterns -->|yes| specificDeny["DENY:<br/>specific repair-oriented message"]
+    denyPatterns -->|no| genericDeny["DENY:<br/>generic not-on-allowlist message"]
+    denyMsg["DENY<br/>(risky construct: unquoted<br/>` $( <( >( or lone unquoted < / >)"]
+```
+
+#### 4.2.4. The #352 Fix: Quote-Aware Risky-Construct Detection
+
+`fragment_has_risky_construct` exists to reject constructs that could
+smuggle additional commands past a prefix-shaped `ALLOW_PATTERNS` match
+(e.g. `ls > /etc/passwd`, `` ls `evil` ``, `ls $(rm -rf /)`) -- `ALLOW_PATTERNS`
+only checks a fragment's leading token, so a trailing metacharacter has to
+be caught separately, before any allow match is trusted.
+
+As originally shipped in #349, this check was a naive substring scan with no
+quoting awareness at all: any occurrence of `` ` ``, `$(`, `<(`, `>(`, `<`,
+or `>` anywhere in the fragment was flagged, regardless of whether it was
+live shell syntax or literal data inside quotes. This unconditionally denied
+`tmux-a2a-postman send-heredoc --to <node> <<'DELIM' ... DELIM` -- postman's
+own send mechanism -- because the heredoc operator's literal, unquoted `<`
+characters tripped the check before the otherwise-matching `tmux-a2a-postman`
+`ALLOW_PATTERNS` entry was ever consulted. It also denied harmless redirects
+like a bare `2>&1` on an otherwise-fine command.
+
+Issue #352 rewrote the check to walk the fragment character-by-character
+with the same single/double-quote tracking `walk_bash_fragments` already
+used for fragment splitting, plus two points that plain quote-awareness
+alone does not cover:
+
+- A run of two or more unquoted `<` (`<<`, `<<-`, `<<<`) is recognized as a
+  heredoc or here-string marker -- which can never read an arbitrary file --
+  and is not flagged. A single, standalone unquoted `<` is still real input
+  redirection and remains risky.
+- `` ` `` and `$(` remain risky even inside double quotes, because real bash
+  still expands command substitution there; only single quotes fully
+  suppress it. `<` and `>` lose their special meaning inside either quote
+  type, so they are not flagged there.
+
+### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
 `tmux-a2a-postman` design for tree-derived cross-session authorization:
@@ -368,7 +513,7 @@ command approval and should update:
 - Verification that status output and "You can talk to" include the derived
   diplomat edges without exposing filesystem paths.
 
-## 5. Follow-Up Implementation Shape
+### 4.4. Follow-Up Implementation Shape
 
 The first implementation should be an opt-in profile or preset, not a default
 change.
@@ -398,7 +543,7 @@ cleanup means follow-up implementation should edit the current installer and
 runtime config files directly, not revive the retired native-agent renderer
 shape.
 
-## 6. Repo Files For A Follow-Up
+### 4.5. Repo Files For A Follow-Up
 
 A follow-up implementation is expected to touch some subset of these
 repo-relative paths:
@@ -429,7 +574,7 @@ repo-relative paths:
 - A future checked-in `postman.toml`, if command approval policies become
   declarative rather than per-command `execute-bash` flags.
 
-## 7. Representative Verification Scenarios
+### 4.6. Representative Verification Scenarios
 
 These are design scenarios for the follow-up implementation. They should run
 from a disposable issue worktree or scratch repository, not from `main`.
