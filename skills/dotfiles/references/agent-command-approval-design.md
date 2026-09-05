@@ -622,6 +622,56 @@ fallback. With only one function ever deciding what a `<<`/`<<-` run
 means, the two-recognizers-disagree bug class is closed by construction
 rather than by patching the specific disagreement found.
 
+A post-approval finding (guardian, minor, landed before merge) affected
+only the multi-operator fallback's queue: popping the front entry read
+just two of the three tab-separated fields (`word`, `strip_tabs`) that
+`extract_heredoc_delimiters` prints, so bash's `read` folded the third
+field (`quoted`) into the second, leaving the strip-tabs value a string
+that could never equal the literal comparison it was checked against.
+This silently disabled leading-tab stripping for a queued `<<-`
+delimiter's closing line, which could leave the queue permanently
+non-empty and keep later, otherwise-maskable heredocs stuck visible. Fixed
+by reading all three fields; the regression case is built so the final
+allow/deny verdict only matches expectation when the queue pop actually
+succeeds, not merely when a superficially similar case happens to pass
+either way.
+
+#### 4.2.6. Issue #358: A Live Command Right After A Closing Delimiter
+
+Guardian finding G9, filed as a distinct follow-up issue rather than
+folded into the #355/#356 work in progress, to avoid overlapping edits on
+the same file mid-review: `pretooluse-deny-bash.sh` only ever treated `;`,
+`&`, and `|` as top-level fragment separators (see `walk_bash_fragments`
+and the duplicate splitting loop inside `check_bash_command_for_denials`).
+A bare newline was never one, even outside any heredoc, though real bash
+treats a bare newline outside a heredoc body as a statement separator
+equivalent to `;`. A command shaped like an allowlisted-prefix command
+that opens a heredoc, followed on a *later* line -- after the heredoc's
+own closing delimiter -- by a completely different, non-allowlisted,
+genuinely dangerous command, was scanned as a single fragment; because the
+leading token still matched an `ALLOW_PATTERNS` entry, the entire fragment
+was allowed, trailing dangerous command included.
+
+`mask_heredoc_bodies` now rewrites a bare newline between two top-level
+lines into `;` as it builds the scanned text (in the same top-level branch
+that calls `extract_heredoc_delimiters`), reusing the heredoc-extent
+tracking already in place from the #355/#356 rounds above: a newline
+strictly inside a heredoc span (between an operator line and its own
+delimiter line, inclusive, regardless of quoting, and including every line
+still covered by the multi-operator `fallback_queue`) stays a plain
+newline, since that is one syntactic unit from bash's perspective and
+splitting it would produce a bare delimiter-word fragment that matches no
+`ALLOW_PATTERNS` entry, breaking every legitimate heredoc-bearing command.
+Only a newline between genuinely separate top-level lines becomes a real
+separator. No change was needed to `walk_bash_fragments`,
+`check_bash_command_for_allow`, or `check_bash_command_for_denials`: they
+already split correctly on `;`, so injecting real semicolons at genuine
+statement boundaries is sufficient for the existing fragment-by-fragment
+allow/deny logic to isolate and independently evaluate a trailing command
+that previously inherited its predecessor's allow decision. This also
+generalizes correctly to ordinary multi-line commands with no heredoc at
+all, which were subject to the same gap.
+
 ### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
