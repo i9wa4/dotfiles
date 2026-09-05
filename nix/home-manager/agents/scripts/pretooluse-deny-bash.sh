@@ -414,6 +414,19 @@ extract_heredoc_delimiters() {
 # suppressed for those lines, so a body line that looks like an opener
 # cannot restart the single-span tracker and reintroduce the same
 # confusion one level later.
+#
+# Also rewrites a bare newline between two TOP-LEVEL lines into a `;`
+# (issue #358). Real bash treats such a newline as a statement separator,
+# exactly like `;` -- but `walk_bash_fragments` (and its duplicate in
+# check_bash_command_for_denials) never did, so a live, non-allowlisted
+# command placed on the line right after a heredoc's closing delimiter was
+# scanned as part of the SAME fragment as the heredoc-bearing prefix, and
+# inherited whatever allow decision that prefix's leading token earned.
+# Newlines strictly inside a heredoc span (an operator line through its own
+# delimiter line inclusive, regardless of quoting, and every line still
+# covered by `fallback_queue`) are left as plain newlines, since that is
+# one syntactic unit from bash's perspective, not two statements; only a
+# newline between genuinely separate top-level lines becomes `;`.
 mask_heredoc_bodies() {
   local command_text="$1"
   local line
@@ -505,7 +518,7 @@ mask_heredoc_bodies() {
     if [ "$first" -eq 1 ]; then
       out="$line"
       first=0
-    else out+=$'\n'"$line"; fi
+    else out+=';'"$line"; fi
 
     line_delims_raw="$(extract_heredoc_delimiters "$line")"
     line_delims=()
