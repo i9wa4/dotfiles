@@ -207,13 +207,17 @@ incident runbook is archived in the private vault
   suffice for leaner sessions (v0.114.0)
 - [ ] Permission profile config language - split filesystem/network sandbox
   policies for finer control in config.toml (v0.113.0)
-- [x] Subagent support - multi-agent feature stabilized (v0.115.0); TOML agents
-  are generated from `nix/home-manager/agents/subagents/*.md` plus
-  `nix/home-manager/agents/subagents/metadata.nix` by
-  `shared/install-manifest.nix` and installed by `codex/default.nix`
-- [x] Multi-agent V2 role configuration reviewed at v0.145.0. Per-agent
-  generated TOML and launcher model/effort choices remain the narrowest
-  configuration surface; no global `[agents]` default is required.
+- [x] Subagent support - multi-agent feature stabilized (v0.115.0); reviewer
+  guidance is maintained as plain Markdown references under
+  `skills/subagent-review/references/` and uses active runtime defaults
+- [x] Runtime smoke test (2026-09-05): Codex CLI `0.153.4`, invoked as
+  `codex exec --ephemeral --sandbox read-only RUNTIME_OK`, returned
+  `RUNTIME_OK`; Claude Code `2.1.261`, invoked as `claude -p RUNTIME_OK`, also
+  returned `RUNTIME_OK`. This confirms both runtimes can use the consolidated
+  skill/reference setup without generated reviewer agent files.
+- [x] Multi-agent V2 role configuration reviewed at v0.145.0. Reviewer prompts
+  no longer pin per-agent model or effort choices; no global `[agents]` default
+  is required.
 - [x] Status line permission/approval indicators - adopted after v0.131.0 added
   native TUI status items; generated `config.toml` now renders `permissions`
   and `approval-mode` next to model/context/version so `--yolo` and sandbox

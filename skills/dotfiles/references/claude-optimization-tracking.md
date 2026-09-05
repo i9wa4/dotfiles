@@ -24,10 +24,8 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
   direct-invocation fallback remains at `~/.claude/CLAUDE.md`, derived from
   `nix/home-manager/agents/shared/AGENTS.md`.
 - [x] Skills installed through `shared/agent-skills.nix`
-- [x] Claude agents generated from
-  `nix/home-manager/agents/subagents/*.md` plus
-  `nix/home-manager/agents/subagents/metadata.nix`; Codex TOML agents generated
-  from the same sources by `shared/install-manifest.nix`
+- [x] Reviewer guidance consolidated as plain Markdown references under
+  `skills/subagent-review/references/`; runtime model defaults are inherited
 - [x] Commands split into commands/ directory
 - [x] Reference links moved to skills
 - [x] `language` setting - set to "English"

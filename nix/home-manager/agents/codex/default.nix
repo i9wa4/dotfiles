@@ -12,12 +12,6 @@
 let
   homeDir = config.home.homeDirectory;
   ghqRoot = "${homeDir}/ghq";
-  installManifest = import ../shared/install-manifest.nix {
-    inherit
-      config
-      pkgs
-      ;
-  };
 
   mcpServers = import ../shared/mcp-servers.nix {
     inherit
@@ -161,8 +155,6 @@ in
     ".codex/AGENTS.md".source = ../shared/AGENTS.md;
     # Shared Bash command-deny policy is installed through .codex/scripts and
     # .codex/hooks.json, not duplicated into embedded Codex rules.
-    # Generated Codex agent files from the Markdown source (rebuild required to update)
-    "${installManifest.codex.agents.target}".source = installManifest.codex.agents.source;
     # Hook scripts (Nix store, rebuild required to update)
     ".codex/scripts".source = codexScriptsDir;
     # Hooks config (Nix store, rebuild required to update)

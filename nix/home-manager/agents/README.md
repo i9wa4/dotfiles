@@ -14,9 +14,8 @@ artifacts.
 | Local-invocation fallback   | `shared/AGENTS.md` (single authored source)                 | Installed as `~/.codex/AGENTS.md` directly and `~/.claude/CLAUDE.md` derived from the same source; does not duplicate the postman contract        |
 | Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                                                                                  |
 | Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers                                                                  |
-| Native reviewer prompts     | `subagents/*.md`                                            | Prompt bodies for generated Claude Markdown and Codex TOML agent files                                                                            |
-| Native reviewer metadata    | `subagents/metadata.nix`                                    | Per-agent model and effort defaults emitted into generated runtime agent files                                                                    |
-| Shared install targets      | `shared/install-manifest.nix`                               | Resolves generated Claude agent files and Codex TOML from shared subagent sources                                                                 |
+| Reviewer prompt references  | `skills/subagent-review/references/*.md`                    | Plain Markdown reviewer guidance; runtime model defaults are inherited                                                                            |
+| Shared install targets      | `shared/install-manifest.nix`                               | Resolves shared skill destinations only                                                                                                           |
 | Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/` through the curated active source set                                                     |
 | External reference router   | `skills/external-references/SKILL.md`                       | Active local skill that routes Databricks/dbt/Azure/Google/AWS/Terraform/Google Workspace/Streamlit provider-pack questions to dormant references |
 | Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned in Nix and materialized as a flat reference-only tree under `~/.local/share/skills`; not installed into active runtime loader paths        |
@@ -40,7 +39,7 @@ graph LR
     subgraph sources [Author here]
         P[postman.md role contract]
         S[skills/]
-        A[subagents/*.md + metadata.nix]
+        A[skills/subagent-review/references/*.md]
         H[agents/scripts/ hooks]
         D[shared/bash-commands-denied.nix]
         M[shared/mcp-servers.nix]
@@ -53,14 +52,12 @@ graph LR
         X[codex/default.nix]
     end
     subgraph claude [~/.claude]
-        CA[agents/]
         CS[skills/]
         CJ[settings.json + .claude.json]
         CH[scripts/]
         CF[CLAUDE.md]
     end
     subgraph codex [~/.codex]
-        XA[agents/]
         XS[skills/]
         XT[config.toml + hooks.json]
         XH[scripts/]
@@ -69,8 +66,6 @@ graph LR
     subgraph references [~/.local/share]
         RS[skills/]
     end
-    A --> IM --> CA
-    IM --> XA
     S --> AS --> CS
     AS --> XS
     AS --> RS
@@ -98,15 +93,13 @@ graph LR
    and `~/.claude/CLAUDE.md` is derived from the same source, not a second
    hand-written file. It points at the skill catalog and does not duplicate
    the postman contract.
-3. `subagents/*.md` is the committed Markdown source of truth for native
-   reviewer prompt bodies. `subagents/metadata.nix` is the shared source for
-   runtime defaults such as model and effort. `shared/install-manifest.nix`
-   generates Claude Markdown into `~/.claude/agents/` and Codex TOML into
-   `~/.codex/agents/` from those sources.
+3. `skills/subagent-review/references/*.md` is the plain Markdown source of
+   truth for reviewer prompt guidance. Reviewers inherit the active runtime
+   model and effort defaults; no generated agent files are installed.
 4. `skills/subagent-review/SKILL.md` is installed through the normal local skill
    pipeline and documents reviewer usage without generating agent files.
-5. `shared/install-manifest.nix` resolves the shared agent install targets and
-   skill destinations that the runtime installers consume.
+5. `shared/install-manifest.nix` resolves the shared skill destinations that
+   the runtime installers consume.
 6. `shared/agent-skills.nix` validates local and patched Anthropic skill
    sources, discovers the other active sources, and installs the curated active
    source set into Claude. Codex is materialized from a hardcoded source
@@ -132,11 +125,9 @@ graph LR
 
 ## 5. Authoring Notes
 
-- Keep reviewer agent prompt bodies and runtime metadata in `subagents/`. Do
-  not hand-author or track generated Claude Markdown or Codex TOML copies.
-  Runtime model defaults are explicit in `subagents/metadata.nix`; Codex
-  `model = null` means the generated TOML omits `model` and inherits the parent
-  session. Keep reviewer usage guidance in `skills/subagent-review/SKILL.md`.
+- Keep reviewer prompt guidance in `skills/subagent-review/references/` and
+  keep runtime model selection implicit so the active session/account default
+  is used. Do not create or track generated Claude/Codex agent copies.
 - Keep active skill loader paths small and intentional. Add always-on Claude
   skills to the active source set in `shared/agent-skills.nix`; keep broad
   provider packs in `referenceOnlySources`, which are generated into the flat

@@ -5,7 +5,7 @@
 #   codex/        Codex CLI runtime config
 #   shared/       cross-runtime data (deny rules, MCP servers, install
 #                 manifest, agent-skills installer)
-#   subagents/    committed Markdown reviewer agent source
+#   skills/       hand-authored skills, including subagent-review references
 #   skills/       hand-authored skills (dotfiles, runtime
 #                 config optimizers, etc.)
 #   scripts/      hook + statusline scripts

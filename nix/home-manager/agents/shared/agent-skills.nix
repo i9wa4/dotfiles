@@ -1,7 +1,7 @@
 # Agent skills declarative management via agent-skills-nix.
-# Edit top-level skills/ for hand-authored, publishable skills. Native reviewer
-# agent prompts live as Markdown under agents/subagents/; `subagent-review`
-# itself is a normal local skill under skills/subagent-review/. This file
+# Edit top-level skills/ for hand-authored, publishable skills. Reviewer
+# prompts live as Markdown references under skills/subagent-review/;
+# `subagent-review` is a normal local skill. This file
 # consumes install-manifest.nix for the shared skill installation targets.
 # Do not edit ~/.claude/skills or ~/.codex/skills directly.
 # cf. https://github.com/Kyure-A/agent-skills-nix
