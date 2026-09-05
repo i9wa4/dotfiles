@@ -2,6 +2,17 @@
 
 ## 1. Perspective Set and Routing
 
+Reviewer prompt mapping:
+
+| Perspective  | Prompt reference                                     |
+| ------------ | ---------------------------------------------------- |
+| Architecture | [reviewer-architecture.md](reviewer-architecture.md) |
+| Code         | [reviewer-code.md](reviewer-code.md)                 |
+| Data         | [reviewer-data.md](reviewer-data.md)                 |
+| Historian    | [reviewer-historian.md](reviewer-historian.md)       |
+| QA           | [reviewer-qa.md](reviewer-qa.md)                     |
+| Security     | [reviewer-security.md](reviewer-security.md)         |
+
 - Guardian defines the required perspective set. If omitted, it defaults to
   security, architecture, historian, code, and QA; do not substitute fixed
   five/six/twelve counts after narrowing.

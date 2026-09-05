@@ -46,7 +46,7 @@ Before drafting, run the following and read the results:
 2. Read at minimum:
    - skills/dotfiles/references/orchestrator-runbook.md
    - nix/home-manager/agents/shared/install-manifest.nix
-   - nix/home-manager/agents/subagents/
+   - skills/subagent-review/references/
 
 3. Read any skill whose name suggests planning, review, or session workflow.
 

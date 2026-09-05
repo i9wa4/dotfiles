@@ -65,11 +65,10 @@ hand-written file. It is only a minimal skill-catalog pointer for direct,
 non-postman invocations — it does not carry the persona / language / scope
 contract.
 
-Subagent prompt bodies in `subagents/*.md` remain the tool-agnostic Markdown
-source. Per-agent runtime defaults live in `subagents/metadata.nix`. Claude
-gets generated Markdown and Codex gets generated TOML through
-`shared/install-manifest.nix`; the runtime-specific install layout is the only
-fork.
+Reviewer prompt guidance lives as tool-agnostic Markdown references under
+`skills/subagent-review/references/`. Reviewers inherit the active runtime and
+account defaults; no runtime-specific generated agent files or install fork is
+needed.
 The `subagent-review` skill is hand-authored under `skills/subagent-review/`
 and installed through the normal skill pipeline.
 

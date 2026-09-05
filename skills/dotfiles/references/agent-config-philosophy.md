@@ -22,11 +22,8 @@ What "prompt path" means in this repo:
   delivered into every postman session as the live operating contract.
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
-- `nix/home-manager/agents/subagents/*.md` — native reviewer prompt bodies.
-- `nix/home-manager/agents/subagents/metadata.nix` — per-agent runtime model
-  and effort defaults.
-- `nix/home-manager/agents/shared/install-manifest.nix` — generates Claude
-  Markdown and Codex TOML from the same subagent prompt and metadata sources.
+- `skills/subagent-review/references/*.md` — plain Markdown reviewer prompt
+  guidance; active runtime/account defaults select the model and effort.
 
 Why prompt over config:
 
@@ -89,11 +86,9 @@ Concrete examples already in the repo:
   skill policy, keeps broad provider packs in `referenceOnlySources`, generates
   their flat reference tree at `~/.local/share/skills`, and installs the active
   `external-references` router for dormant packs.
-- `nix/home-manager/agents/subagents/*.md` and
-  `nix/home-manager/agents/subagents/metadata.nix` with
-  `nix/home-manager/agents/shared/install-manifest.nix` — use Markdown for
-  reviewer prompt bodies and shared Nix metadata for runtime model/effort
-  defaults, then generate Claude Markdown and Codex TOML runtime files.
+- `skills/subagent-review/references/*.md` with
+  `skills/subagent-review/SKILL.md` — keep reviewer guidance as plain Markdown
+  references and inherit the active runtime/account model defaults.
 
 Why shared beats per-tool:
 

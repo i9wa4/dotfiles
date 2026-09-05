@@ -3,19 +3,12 @@
 # ~/.claude/skills is managed by agent-skills.nix (symlink-tree)
 # Runtime files (projects/, todos/, etc.) live directly in ~/.claude/
 {
-  config,
   pkgs,
   inputs,
   lib,
   ...
 }:
 let
-  installManifest = import ../shared/install-manifest.nix {
-    inherit
-      config
-      pkgs
-      ;
-  };
   mcpServers = import ../shared/mcp-servers.nix {
     inherit
       pkgs
@@ -125,8 +118,6 @@ in
       # the minimal fallback for direct, non-postman invocations, derived from
       # the single authored source shared/AGENTS.md (see codex/default.nix).
       ".claude/CLAUDE.md".source = ../shared/AGENTS.md;
-      # Committed native Claude agent files (rebuild required to update)
-      "${installManifest.claude.agents.target}".source = installManifest.claude.agents.source;
       ".claude/scripts".source = scriptsDir;
     };
 
