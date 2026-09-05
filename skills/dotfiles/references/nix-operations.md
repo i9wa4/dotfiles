@@ -8,6 +8,18 @@
 | `nix run '.#update'` | Update flake inputs                                                                                                                                                                                              |
 | `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                        |
 
+**Agents must not run `nix run '.#switch'` (or any other system activation
+command) themselves.** On macOS this triggers an interactive `sudo` password
+prompt that no automated agent can supply -- both direct execution and the
+postman `execute-bash` approval lane hang or must be cancelled at the
+prompt, and the activation never completes. This is not merely a permission
+gap to route around; the human running the switch is a durable part of the
+workflow. When a task needs the merged changes live on a machine, hand
+activation off explicitly (e.g. `BLOCKED: awaiting human to run
+nix run '.#switch'` to orchestrator, or ask the human directly outside
+postman) and verify the outcome afterward instead -- do not attempt the
+switch, and do not treat a cancelled/hung attempt as something to retry.
+
 One-off host repair helpers are kept as explicit scripts rather than flake
 apps. For Ubuntu root LVM expansion, run from the dotfiles repository root:
 
