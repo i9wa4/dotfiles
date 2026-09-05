@@ -628,6 +628,70 @@ check_grep_rg_allow() {
   return 0
 }
 
+# File-content-reading commands on ALLOW_PATTERNS (bash-commands-allowed.nix)
+# that take an arbitrary path argument with no argument-level check at all
+# (unlike grep/rg/ripgrep, which already reject secret-shaped matches via
+# check_grep_rg_allow below) -- `cat .env`, `head ~/.ssh/id_rsa`,
+# `tail some/secrets/api.key`, and the same shape for wc/sort/uniq/cut, would
+# otherwise be allowed through unconditionally (issue #365). Intentionally
+# excludes `ls` (lists filenames only, does not dump file content) and
+# `echo`/`date`/`whoami`/`which` (do not read files at all).
+SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
+
+# Duplicated, not shared with check_grep_rg_allow's keyword case statement:
+# that function is already approver-reviewed (twice, issue #342) and is kept
+# untouched here to avoid re-opening review on tested logic (its bare-
+# substring matching has the same false-positive class fixed below, but
+# fixing it is out of scope for this issue -- tracked separately).
+#
+# Word/path-segment anchored, NOT bare substring: a bare `*key*`-style glob
+# denied ordinary non-secret paths purely because the word "key" or ".env"
+# appeared as a substring (e.g. `cat config/zsh/keybind.zsh`, `cat .envrc`,
+# `cat .env.example`), which is exactly what issue #365's own acceptance
+# criterion says must stay allowed. key/token/secret(s)/credential(s)/
+# password must appear as a whole word (bounded by start/end-of-string or a
+# non-alnum/non-underscore character on both sides; `secrets?`/`credentials?`
+# so a `secrets/`- or `credentials/`-named directory still matches).
+# `.env` and `.ssh` are anchored to a path segment (start-of-string/space/`/`
+# on the left, and on the right either the same set, end-of-string, or a
+# literal `.` so `.env.local`/`.env.production` still match) rather than a
+# bare substring, and `.envrc`/`.env.example` are stripped out before the
+# test runs so they cannot match at all -- `.envrc` is a direnv config file,
+# not a secret store, and `.env.example` is a placeholder template committed
+# to the repo, not real secret values.
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+fragment_has_secret_keyword() {
+  local fragment="$1"
+  local lc
+  local regex
+  lc=$(printf '%s' "$fragment" | tr '[:upper:]' '[:lower:]')
+
+  # Known non-secret filenames that would otherwise match the `.env`
+  # path-segment check below; strip them so their mere presence cannot
+  # trigger a false positive.
+  lc="${lc//.envrc/}"
+  lc="${lc//.env.example/}"
+
+  regex='(^|[^[:alnum:]_])(key|token|secrets?|credentials?|password)([^[:alnum:]_]|$)'
+  regex+='|(^|[[:space:]/])\.env([[:space:]/]|$|\.[^[:space:]/]*)'
+  regex+='|(^|[[:space:]/])\.ssh([[:space:]/]|$)'
+
+  [[ $lc =~ $regex ]]
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+command_is_secret_argument_sensitive() {
+  local fragment="$1"
+  local leading_word="${fragment%%[[:space:]]*}"
+  local cmd
+  for cmd in "${SECRET_ARGUMENT_SENSITIVE_COMMANDS[@]}"; do
+    if [ "$leading_word" = "$cmd" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # shellcheck disable=SC2329 # invoked indirectly via walk_bash_fragments
 check_bash_fragment_for_allow() {
   local fragment="$1"
@@ -649,6 +713,11 @@ check_bash_fragment_for_allow() {
 
   if fragment_has_risky_construct "$fragment"; then
     return 1
+  fi
+
+  if command_is_secret_argument_sensitive "$fragment" && fragment_has_secret_keyword "$fragment"; then
+    emit_deny_payload "$fragment" "secret-shaped path argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a file-reading command (cat/head/tail/wc/sort/uniq/cut). If this path is not actually secret, request it via tmux-a2a-postman execute-bash instead of retrying directly."
+    exit 0
   fi
 
   original_fragment="$fragment"
