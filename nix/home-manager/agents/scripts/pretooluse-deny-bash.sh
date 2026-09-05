@@ -47,6 +47,15 @@ set -o posix
 #
 # Every deny message also appends a hint to request the command through
 # `tmux-a2a-postman execute-bash` instead of retrying it directly.
+#
+# Before any allow path runs, `mask_heredoc_bodies` strips heredoc BODY
+# lines out of the command text (issue #355). Heredoc bodies are literal
+# data -- postman message text in practice -- not live shell syntax; the
+# earlier #352/#354 fix already exempted the `<<`/`<<-`/`<<<` operator
+# marker itself from `fragment_has_risky_construct`, but left body lines
+# unprotected, so a Markdown-formatted body (backticks, `$(`, bare `<`/`>`)
+# still tripped a false deny before the `tmux-a2a-postman` allow entry was
+# ever consulted.
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PATTERNS_FILE="$SCRIPT_DIR/deny-bash-patterns.sh"
@@ -226,6 +235,144 @@ fragment_has_risky_construct() {
   done
 
   return 1
+}
+
+# Detect a heredoc/here-string operator (`<<`, `<<-`) in a single line,
+# outside quotes, that starts a multi-line body -- as opposed to a `<<<`
+# here-string, which is single-line and has no following body. On success,
+# print "<delimiter>\t<strip_tabs_flag>" and return 0; otherwise return 1.
+# Only the first such operator in the line is detected; multiple heredocs on
+# one line is a real but rare bash shape and is out of scope here.
+# shellcheck disable=SC2329 # invoked indirectly via mask_heredoc_bodies
+detect_heredoc_operator() {
+  local line="$1"
+  local char
+  local index
+  local single_quoted=0 double_quoted=0 escaped=0
+  local len=${#line}
+  local run j rest strip_tabs word
+
+  for ((index = 0; index < len; index++)); do
+    char="${line:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
+      escaped=1
+      continue
+    fi
+    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$single_quoted" -eq 1 ]; then single_quoted=0; else single_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$double_quoted" -eq 1 ]; then double_quoted=0; else double_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 1 ] || [ "$double_quoted" -eq 1 ]; then
+      continue
+    fi
+
+    if [ "$char" = "<" ] && [ "${line:index+1:1}" = "<" ]; then
+      run=2
+      j=$((index + 2))
+      while [ "${line:j:1}" = "<" ]; do
+        run=$((run + 1))
+        j=$((j + 1))
+      done
+      if [ "$run" -ne 2 ]; then
+        # `<<<` here-string (or a degenerate longer run): single-line, no
+        # body follows, nothing to mask.
+        return 1
+      fi
+
+      rest="${line:j}"
+      strip_tabs=0
+      if [ "${rest:0:1}" = "-" ]; then
+        strip_tabs=1
+        rest="${rest:1}"
+      fi
+      while [ "${rest:0:1}" = " " ] || [ "${rest:0:1}" = $'\t' ]; do
+        rest="${rest:1}"
+      done
+      case "${rest:0:1}" in
+      "'" | '"')
+        rest="${rest:1}"
+        ;;
+      esac
+      word=""
+      while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+        word+="${rest:0:1}"
+        rest="${rest:1}"
+      done
+      if [ -z "$word" ]; then
+        return 1
+      fi
+      printf '%s\t%s' "$word" "$strip_tabs"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+# Mask heredoc BODY lines out of a raw (possibly multi-line) command before
+# it reaches the fragment-splitting/risky-construct scanners below. A
+# heredoc body is arbitrary literal data -- postman message text in
+# practice -- not live shell syntax: a body line containing a bare
+# backtick, `$(`, `<`, or `>` (extremely common in Markdown-formatted
+# message text) must not be mistaken for a chaining/substitution/
+# redirection attempt. The quote-aware `<<`/`<<<` skip inside
+# fragment_has_risky_construct only protects the operator token itself, not
+# the body lines that follow it, which is exactly the gap this closes.
+# Neither `walk_bash_fragments` nor `fragment_has_risky_construct` treats a
+# bare newline as meaningful, so body lines are simply dropped rather than
+# replaced with placeholders -- the surrounding structure (operator line,
+# delimiter line, and anything after) is preserved unchanged.
+mask_heredoc_bodies() {
+  local command_text="$1"
+  local line
+  local out=""
+  local first=1
+  local in_heredoc=0
+  local strip_tabs=0
+  local delimiter=""
+  local detected compare
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "$in_heredoc" -eq 1 ]; then
+      compare="$line"
+      if [ "$strip_tabs" -eq 1 ]; then
+        while [ "${compare:0:1}" = $'\t' ]; do
+          compare="${compare:1}"
+        done
+      fi
+      if [ "$compare" = "$delimiter" ]; then
+        in_heredoc=0
+        if [ "$first" -eq 1 ]; then
+          out="$line"
+          first=0
+        else out+=$'\n'"$line"; fi
+      fi
+      # else: this is a body line -- swallow it, do not append.
+      continue
+    fi
+
+    if [ "$first" -eq 1 ]; then
+      out="$line"
+      first=0
+    else out+=$'\n'"$line"; fi
+
+    if detected="$(detect_heredoc_operator "$line")"; then
+      in_heredoc=1
+      delimiter="${detected%%$'\t'*}"
+      strip_tabs="${detected##*$'\t'}"
+    fi
+  done <<<"$command_text"
+
+  printf '%s' "$out"
 }
 
 emit_deny_payload() {
@@ -516,17 +663,23 @@ check_bash_command_for_denials() {
 
 # ── Decision ───────────────────────────────────────────────────────────
 
-if check_grep_rg_allow "$COMMAND"; then
+# Heredoc body lines are literal data, not live shell syntax -- scan the
+# masked form so a Markdown-formatted message body (backticks, $(...), bare
+# </>) cannot trip the risky-construct guard. The original $COMMAND is kept
+# for the final generic deny message so the agent sees exactly what it sent.
+MASKED_COMMAND="$(mask_heredoc_bodies "$COMMAND")"
+
+if check_grep_rg_allow "$MASKED_COMMAND"; then
   emit_allow_payload "Auto-allowed: single read-only grep/rg command, no chaining/substitution/redirection, no sensitive-path or risky-construct indicators."
   exit 0
 fi
 
-if check_bash_command_for_allow "$COMMAND"; then
+if check_bash_command_for_allow "$MASKED_COMMAND"; then
   emit_allow_payload "Auto-allowed: every part of this command matched the read-only/side-effect-free Bash allowlist."
   exit 0
 fi
 
-if check_bash_command_for_denials "$COMMAND"; then
+if check_bash_command_for_denials "$MASKED_COMMAND"; then
   exit 0
 fi
 

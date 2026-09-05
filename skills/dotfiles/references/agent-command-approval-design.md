@@ -478,6 +478,39 @@ alone does not cover:
   suppress it. `<` and `>` lose their special meaning inside either quote
   type, so they are not flagged there.
 
+#### 4.2.5. The #355 Fix: Heredoc BODY Content, Not Just The Marker
+
+Issue #352 and PR #354 exempted the `<<`/`<<-`/`<<<` operator *marker* from
+`fragment_has_risky_construct`, but left the heredoc **body** lines that
+follow it unprotected. Since only `;`, `&`, `|` are top-level fragment
+separators, a heredoc's marker line, body lines, and closing delimiter line
+are all one fragment; the risky-construct char-walk continued scanning body
+lines exactly like command text. A postman message body is Markdown-
+formatted, so it routinely contains a bare backtick (inline code spans), a
+literal `<`/`>`, or `$(...)` -- any one of these in the body denied the
+entire `send-heredoc` call before the `tmux-a2a-postman` `ALLOW_PATTERNS`
+entry was ever consulted, forcing operators back to hand-wrapping every such
+call in `execute-bash --command`.
+
+Issue #355 added `mask_heredoc_bodies` (plus the `detect_heredoc_operator`
+helper), run once on `$COMMAND` before all three allow/deny decision paths.
+It line-scans the raw command, recognizes a `<<`/`<<-` operator (excluding
+`<<<` here-strings, which are single-line and have no body) outside quotes,
+and swallows every following line up to and including the line that matches
+the delimiter (tab-stripped first when the operator was `<<-`), while
+leaving the operator line, the delimiter line, and everything else
+unchanged. The masked command -- not the original -- is what
+`check_grep_rg_allow`, `check_bash_command_for_allow`, and
+`check_bash_command_for_denials` all scan; the original `$COMMAND` is still
+what the final generic deny message shows the agent.
+
+This fix does not change fragment splitting: a bare newline still is not a
+top-level fragment separator. That is a separate, known, pre-existing gap
+(a real command placed on the line immediately after a heredoc's closing
+delimiter is not split into its own fragment, so it inherits whatever allow
+decision the heredoc-bearing fragment gets) and is out of scope for #355 --
+tracked as a follow-up rather than folded into this fix.
+
 ### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
