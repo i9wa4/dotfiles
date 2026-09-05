@@ -355,6 +355,84 @@ detect_heredoc_operator() {
   return 1
 }
 
+# Extract EVERY heredoc/here-string-operator delimiter word from a single
+# line, in the order the operators appear (bash consumes heredoc bodies in
+# that same order when a line carries more than one, e.g. `cmd <<'A' <<B`).
+# Only genuine two-character `<<`/`<<-` runs count; `<<<` (here-string) is
+# skipped since it has no following body. Prints one `word<TAB>strip_tabs`
+# line per operator found to stdout (not a nameref array -- `set -o posix`
+# at the top of this script disables `local -n` at runtime); quoting is
+# irrelevant here and intentionally not tracked, because the caller
+# (mask_heredoc_bodies) only consults this when a line has more than one
+# operator, and that shape always falls back to never masking any of them
+# regardless of quoting (see the fallback below).
+# shellcheck disable=SC2329 # invoked indirectly via mask_heredoc_bodies
+extract_heredoc_delimiters() {
+  local line="$1"
+  local char index run j rest word strip_tabs
+  local single_quoted=0 double_quoted=0 escaped=0
+  local len=${#line}
+
+  for ((index = 0; index < len; index++)); do
+    char="${line:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
+      escaped=1
+      continue
+    fi
+    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$single_quoted" -eq 1 ]; then single_quoted=0; else single_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$double_quoted" -eq 1 ]; then double_quoted=0; else double_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 1 ] || [ "$double_quoted" -eq 1 ]; then
+      continue
+    fi
+
+    if [ "$char" = "<" ] && [ "${line:index+1:1}" = "<" ]; then
+      run=2
+      j=$((index + 2))
+      while [ "${line:j:1}" = "<" ]; do
+        run=$((run + 1))
+        j=$((j + 1))
+      done
+      if [ "$run" -eq 2 ]; then
+        rest="${line:j}"
+        strip_tabs=0
+        if [ "${rest:0:1}" = "-" ]; then
+          strip_tabs=1
+          rest="${rest:1}"
+        fi
+        while [ "${rest:0:1}" = " " ] || [ "${rest:0:1}" = $'\t' ]; do
+          rest="${rest:1}"
+        done
+        # shellcheck disable=SC1003 # the '\' case pattern below matches a single backslash char, not an escape mistake; shfmt's canonical style prefers this quoting over "\\"
+        case "${rest:0:1}" in
+        "'" | '"' | '\')
+          rest="${rest:1}"
+          ;;
+        esac
+        word=""
+        while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+          word+="${rest:0:1}"
+          rest="${rest:1}"
+        done
+        if [ -n "$word" ]; then
+          printf '%s\t%s\n' "$word" "$strip_tabs"
+        fi
+      fi
+      index=$((j - 1))
+    fi
+  done
+}
+
 # Mask heredoc BODY lines out of a raw (possibly multi-line) command before
 # it reaches the fragment-splitting/risky-construct scanners below. A
 # heredoc body is arbitrary literal data -- postman message text in
@@ -389,6 +467,24 @@ detect_heredoc_operator() {
 # the receiving command ever sees it -- that body is exactly as dangerous
 # as any other command text and must stay fully visible to the scanners,
 # never masked.
+#
+# Multiple heredoc operators on one line (e.g. `cmd <<'A' <<B`) fall back
+# to never masking any of them, rather than trying to track several
+# concurrent pending spans (guardian/critic finding, round 4). The
+# single-span model above closes span-tracking after the FIRST operator's
+# delimiter and then has no memory of the second one at all -- a line after
+# that first close which merely LOOKS like a heredoc opener gets misread as
+# a fresh top-level operator, and text between that false opener and its
+# false close (which is actually still the real second heredoc's body) can
+# be masked away even though it may contain a live substitution. Refusing
+# to mask is a false-denial-safe fallback: every line from the
+# multi-operator line onward, until all of its delimiters are consumed in
+# order, is appended to the scanned text unmodified and never buffered,
+# so nothing can be hidden. Critically, heredoc EXTENT is still tracked via
+# `fallback_queue` for exactly that span -- operator detection is
+# suppressed for those lines, so a body line that looks like an opener
+# cannot restart the single-span tracker and reintroduce the same
+# confusion one level later.
 mask_heredoc_bodies() {
   local command_text="$1"
   local line
@@ -400,8 +496,30 @@ mask_heredoc_bodies() {
   local delimiter=""
   local detected compare delim_word strip_flag quoted_flag
   local pending="" pending_first=1
+  local -a line_delims=()
+  local -a fallback_queue=()
+  local fq_word fq_strip fq_compare
+  local line_delims_raw line_delim_entry
 
   while IFS= read -r line || [ -n "$line" ]; do
+    if [ "${#fallback_queue[@]}" -gt 0 ]; then
+      IFS=$'\t' read -r fq_word fq_strip <<<"${fallback_queue[0]}"
+      fq_compare="$line"
+      if [ "$fq_strip" = "1" ]; then
+        while [ "${fq_compare:0:1}" = $'\t' ]; do
+          fq_compare="${fq_compare:1}"
+        done
+      fi
+      if [ "$fq_compare" = "$fq_word" ]; then
+        fallback_queue=("${fallback_queue[@]:1}")
+      fi
+      if [ "$first" -eq 1 ]; then
+        out="$line"
+        first=0
+      else out+=$'\n'"$line"; fi
+      continue
+    fi
+
     if [ "$in_span" -eq 1 ]; then
       compare="$line"
       if [ "$strip_tabs" -eq 1 ]; then
@@ -450,7 +568,16 @@ mask_heredoc_bodies() {
       first=0
     else out+=$'\n'"$line"; fi
 
-    if detected="$(detect_heredoc_operator "$line")"; then
+    line_delims_raw="$(extract_heredoc_delimiters "$line")"
+    line_delims=()
+    if [ -n "$line_delims_raw" ]; then
+      while IFS= read -r line_delim_entry; do
+        line_delims+=("$line_delim_entry")
+      done <<<"$line_delims_raw"
+    fi
+    if [ "${#line_delims[@]}" -ge 2 ]; then
+      fallback_queue=("${line_delims[@]}")
+    elif detected="$(detect_heredoc_operator "$line")"; then
       IFS=$'\t' read -r delim_word strip_flag quoted_flag <<<"$detected"
       in_span=1
       delimiter="$delim_word"

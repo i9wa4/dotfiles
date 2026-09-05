@@ -569,6 +569,28 @@ redirection is shell syntax resolved before the CLI ever receives stdin,
 not CLI-internal data handling the way the entry's original rationale
 implied.
 
+Guardian and critic found one more shape in a fourth, human-authorized
+review round: a line carrying MORE THAN ONE heredoc operator (for example
+an allowlisted command opening a quoted heredoc and an unquoted one on the
+same line). The single-span tracker above closes span-tracking after the
+FIRST operator's delimiter and then has no memory of the second one at
+all, so a later line that merely looks like a heredoc opener is misread as
+a fresh top-level operator, and text between that false opener and its
+false close -- which is actually still the real second heredoc's live body
+-- can be masked away even though it may contain a substitution bash
+genuinely executes. The fix: when `extract_heredoc_delimiters` finds two or
+more operators on one line, `mask_heredoc_bodies` refuses to mask anything
+opened by that line at all, regardless of quoting, but still tracks extent
+via an ordered queue of the delimiter words in the order bash would
+consume them; operator detection is suppressed for every line in that span
+so nothing can restart the single-span tracker and reintroduce the same
+confusion one level later. This is a false-denial-safe fallback, not an
+attempt to model concurrent heredocs precisely: a legitimate multi-heredoc
+line with benign bodies still allows correctly (the bodies are merely
+visible rather than masked, and clean text still passes the risky-construct
+scan), while a body that would have been masked-and-hidden under the
+single-span model is now visible and, if genuinely risky, correctly denied.
+
 ### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
