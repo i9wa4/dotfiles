@@ -208,8 +208,8 @@ Check the following when editing postman prompt blocks or `config.toml`:
 - [ ] Is config.toml using appropriate approval_mode?
 - [ ] Are shared Bash deny messages phrased as safe next steps, not only
   denials?
-- [ ] Are Codex hook limitations documented honestly (Bash deny enforced;
-  write-tool payloads observed before deny logic)?
+- [ ] Are Codex hook limitations documented honestly (Bash deny enforced; no
+  current write-side hook enforcement after the 2026-09-05 hook reduction)?
 - [ ] Is hook state split correctly between `hooks.json` (declaration) and
   `scripts/` (runtime, prefix-conventioned per `agent-hooks-architecture.md`)?
 - [ ] Are shared scripts (no prefix) actually shared with Claude rather than

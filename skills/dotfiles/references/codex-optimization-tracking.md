@@ -23,7 +23,8 @@ product/runtime capabilities rather than required dotfiles config changes:
   add global `[agents]` defaults because they would broaden behavior beyond
   the launcher and per-agent defaults already in use. This release does not
   establish a role-to-tmux-pane identity mapping or a reliable role-based
-  write-deny output contract, so the Codex write hook remains observational.
+  file-write denial output contract. This repo also removed that observer
+  surface in the 2026-09-05 hook reduction.
 - v0.144.4 is a patch release with no user-facing changes.
 - v0.144.3 is a version-only release with no merged PR changes after v0.144.2.
 - v0.144.2 restores the previous Guardian auto-review policy, request format,
@@ -240,10 +241,10 @@ incident runbook is archived in the private vault
 - role-based write enforcement in Codex - v0.145.0 has stable role
   configuration and `PreToolUse` can match `apply_patch` (including `Edit` and
   `Write` aliases). Codex preserves the existing tmux pane-title role identity
-  through `tui.terminal_title = []`, but the observed hook payload does not yet
-  provide a validated role-to-title mapping or deny/blocking enforcement.
-  Keep the write hook as an observer until actual write-path payloads and a
-  deny result are validated.
+  through `tui.terminal_title = []`, but this repo has no active Codex
+  write-side enforcement hook after the 2026-09-05 hook reduction. Reintroduce
+  Codex write-side enforcement only with validated role-to-title mapping,
+  write-path payloads, and deny/blocking behavior.
 - `permissionDecision: "ask"` is not a supported `PreToolUse` outcome. The
   current Codex manual documents JSON-argument inspection plus call blocking
   and rewriting, but this repo has not used or locally validated allow

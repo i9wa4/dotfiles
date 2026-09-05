@@ -72,8 +72,8 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
       `claude-changelog-tracking.md` for the prior rationale around adaptive
       thinking.
 - [x] v2.1.195 catch-up review - no local config migration needed. Current
-  Claude hooks use only `Bash` and `Write|Edit|NotebookEdit`, so the
-  v2.1.195 hyphenated hook matcher exact-match fix does not affect this repo.
+  Claude hooks use only `Bash`, so the v2.1.195 hyphenated hook matcher
+  exact-match fix does not affect this repo.
   Keep plugin, auto-mode, sandbox, and Remote/agent-team additions as
   user-invoked/product defaults unless a measured harness need appears.
 - [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1"` (v2.1.132) - keeps the
@@ -168,9 +168,9 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
   for hook commands in `claude/default.nix` once
   we audit each script's argv expectations
 - [ ] Hook `continueOnBlock: true` on PostToolUse (v2.1.139) - feed the hook's
-  rejection back to Claude and continue the turn. Useful for the
-  write-deny hook if we ever want soft "warn-and-redo" semantics
-  instead of hard deny
+  rejection back to Claude and continue the turn. Useful for a future
+  file-edit hook if we ever want soft "warn-and-redo" semantics instead of
+  hard deny
 - [ ] `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (v2.1.143) - bounds runaway Stop
   hooks at 8 consecutive blocks. We have no Stop hooks yet; track for future
 - [ ] `terminalSequence` field on hook JSON output (v2.1.141) - hooks can emit
@@ -214,8 +214,8 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
 #### 1.2.3. v2.1.147 -> v2.1.195 candidates (added 2026-06-29)
 
 - [x] Hyphenated hook matcher exact matching (v2.1.195) - no migration needed.
-  Current hook matchers are `Bash` and `Write|Edit|NotebookEdit`; there are no
-  hyphenated MCP or agent matchers in `claude/default.nix`.
+  Current hook matchers are `Bash`; there are no hyphenated MCP or agent
+  matchers in `claude/default.nix`.
 - [ ] `sandbox.credentials` setting (v2.1.187) - blocks sandboxed commands
   from reading credential files and secret environment variables. Not adopted
   yet because harness sessions currently run with bypass permissions and

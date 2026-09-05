@@ -347,13 +347,12 @@ Shared policy that must stay aligned across Claude and Codex
 
 The shared policy line above is the part that must not drift. Both engines are
 still expected to inherit the same repo-local operating core, deny policy,
-review topology, resumable handoff discipline, and launch-command visibility in
-`UserPromptSubmit`.
+review topology, and resumable handoff discipline.
 
 Within that shared policy, the repo currently treats these differences as
 intentional:
 
-- Claude-only role write-deny hook
+- Claude-only native secret-path `permissions.deny` entries
 - Codex denser installed rules artifact
 
 These differences are acceptable only so long as they keep the same local
