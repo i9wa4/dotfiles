@@ -22,9 +22,8 @@ Short reference for vde-layout config resolution and preset structure.
 
 ## 3. Key Behavioral Notes
 
-- `${SUBDIR}` in command strings is NOT interpolated by vde-layout — it is
-  passed as-is to `tmux send-keys` and expanded by the destination pane's shell
+- Env var references in command strings are NOT interpolated by vde-layout —
+  they are passed as-is to `tmux send-keys` and expanded by the destination
+  pane's shell
 - `delay` field (ms) is honored before sending agent command per pane
 - Pane title set via `tmux select-pane -T <title>` after split-window
-- No `env:` keys are used in the current layout.yml — `$SUBDIR` expansion relies
-  on shell environment
