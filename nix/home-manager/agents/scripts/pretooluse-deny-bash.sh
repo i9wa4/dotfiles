@@ -394,14 +394,15 @@ mask_heredoc_bodies() {
   local line
   local out=""
   local first=1
-  local in_heredoc=0
+  local in_span=0
+  local masking=0
   local strip_tabs=0
   local delimiter=""
   local detected compare delim_word strip_flag quoted_flag
   local pending="" pending_first=1
 
   while IFS= read -r line || [ -n "$line" ]; do
-    if [ "$in_heredoc" -eq 1 ]; then
+    if [ "$in_span" -eq 1 ]; then
       compare="$line"
       if [ "$strip_tabs" -eq 1 ]; then
         while [ "${compare:0:1}" = $'\t' ]; do
@@ -409,20 +410,37 @@ mask_heredoc_bodies() {
         done
       fi
       if [ "$compare" = "$delimiter" ]; then
-        in_heredoc=0
+        in_span=0
+        masking=0
         pending=""
         pending_first=1
         if [ "$first" -eq 1 ]; then
           out="$line"
           first=0
         else out+=$'\n'"$line"; fi
-      else
+      elif [ "$masking" -eq 1 ]; then
         # Buffer rather than drop: appended back below only if the
         # heredoc turns out never to close.
         if [ "$pending_first" -eq 1 ]; then
           pending="$line"
           pending_first=0
         else pending+=$'\n'"$line"; fi
+      else
+        # Unquoted heredoc: pass the body through unmasked (real bash
+        # expands it as live syntax) -- and, critically, do NOT run
+        # detect_heredoc_operator on it. Heredoc extent is tracked
+        # unconditionally via `in_span` regardless of quoting; only the
+        # MASKING decision depends on the quoted flag. A prior version
+        # tracked extent only for quoted delimiters, so an unquoted body
+        # line that itself looked like a heredoc opener (e.g. a quoted
+        # `<<'EOF'` appearing as plain body text) was misread as a real
+        # nested opener, and text between that false opener and its false
+        # closer was masked away -- even though it was ordinary body text
+        # bash would expand and the receiving command would see verbatim.
+        if [ "$first" -eq 1 ]; then
+          out="$line"
+          first=0
+        else out+=$'\n'"$line"; fi
       fi
       continue
     fi
@@ -434,19 +452,20 @@ mask_heredoc_bodies() {
 
     if detected="$(detect_heredoc_operator "$line")"; then
       IFS=$'\t' read -r delim_word strip_flag quoted_flag <<<"$detected"
+      in_span=1
+      delimiter="$delim_word"
+      strip_tabs="$strip_flag"
+      pending=""
+      pending_first=1
       if [ "$quoted_flag" = "1" ]; then
-        in_heredoc=1
-        delimiter="$delim_word"
-        strip_tabs="$strip_flag"
-        pending=""
-        pending_first=1
+        masking=1
+      else
+        masking=0
       fi
-      # else: unquoted delimiter -- do not mask, leave the body fully
-      # visible to the scanners (real bash expands it as live syntax).
     fi
   done <<<"$command_text"
 
-  if [ "$in_heredoc" -eq 1 ] && [ -n "$pending" ]; then
+  if [ "$in_span" -eq 1 ] && [ "$masking" -eq 1 ] && [ -n "$pending" ]; then
     # Heredoc never closed -- do not hide the unmatched trailing lines
     # from the risky-construct/allow/deny scanners.
     if [ "$first" -eq 1 ]; then

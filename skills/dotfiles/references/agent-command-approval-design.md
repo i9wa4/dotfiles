@@ -218,6 +218,25 @@ Claude profile.
 
 ## 4. Shared Policy Versus Runtime-Specific Settings
 
+The governing principle for everything in this section, stated explicitly
+here because the command-approval layer is where it matters most: keep the
+deny/allow design as simple as possible, and keep it common between Codex
+and Claude as much as possible. This is the same principle
+`agent-config-philosophy.md` section 1.2 ("Leverage Shared Configuration")
+argues for at the whole-harness level -- one shared module fed into both
+runtime consumers gives one audit point, forces parity by construction, and
+keeps migration cost low -- restated here because command approval is the
+highest-consequence surface it applies to. Default-deny (section 4.2) is
+one consequence of following this principle, not the principle itself: it
+was chosen because a single explicit allow/deny decision tree is simpler to
+reason about and keep in sync across two runtimes than a default-allow
+model layered with ad hoc exceptions would be. Prefer one shared
+implementation (`pretooluse-deny-bash.sh` plus its generated patterns file)
+over parallel Codex- and Claude-specific logic; add runtime-specific code
+only where the underlying product surfaces genuinely differ (see the table
+below), and treat any proposed divergence as a cost to justify, not a
+default.
+
 | Intent                               | Shared home                                                                          | Runtime-specific home                                                                                                                                            | Current design                                                                                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Dangerous Bash command denies        | `nix/home-manager/agents/shared/bash-commands-denied.nix`; `pretooluse-deny-bash.sh` | Claude additionally receives selected `permissions.deny` globs for non-bypass permission profiles; Codex receives the shared hook patterns                       | Shared SSOT owns command-deny intent. For the bypass-launched Claude critic, verify the PreToolUse hook separately and do not claim `permissions.deny` enforcement without installed-version evidence.   |
