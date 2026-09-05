@@ -47,6 +47,15 @@ set -o posix
 #
 # Every deny message also appends a hint to request the command through
 # `tmux-a2a-postman execute-bash` instead of retrying it directly.
+#
+# Before any allow path runs, `mask_heredoc_bodies` strips heredoc BODY
+# lines out of the command text (issue #355). Heredoc bodies are literal
+# data -- postman message text in practice -- not live shell syntax; the
+# earlier #352/#354 fix already exempted the `<<`/`<<-`/`<<<` operator
+# marker itself from `fragment_has_risky_construct`, but left body lines
+# unprotected, so a Markdown-formatted body (backticks, `$(`, bare `<`/`>`)
+# still tripped a false deny before the `tmux-a2a-postman` allow entry was
+# ever consulted.
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 PATTERNS_FILE="$SCRIPT_DIR/deny-bash-patterns.sh"
@@ -226,6 +235,312 @@ fragment_has_risky_construct() {
   done
 
   return 1
+}
+
+# Extract EVERY heredoc/here-string-operator delimiter from a single line,
+# outside quotes, in the order the operators appear (bash consumes heredoc
+# bodies in that same order when a line carries more than one, e.g.
+# `cmd <<'A' <<B`). Only genuine two-character `<<`/`<<-` runs open a
+# heredoc; a run of three or more (`<<<`, here-string) is single-line, has
+# no following body, and is skipped -- but scanning CONTINUES past it
+# rather than abandoning the line, because a here-string can be followed
+# later on the same line by a real heredoc operator (round 5 finding: an
+# earlier version of this logic lived in two places -- this whole-line
+# scan, and a since-deleted single-operator function that `return`ed empty
+# handed on a here-string instead of skipping past it. The two recognizers
+# disagreed on exactly this shape, and the call site picked between them by
+# counting delimiters, so a line with one real heredoc plus a preceding
+# here-string got a different, wrong answer depending on which one ran.
+# Collapsing to this single recognizer, used for both the one-delimiter and
+# multi-delimiter cases, removes that class of disagreement entirely).
+#
+# Prints one `word<TAB>strip_tabs_flag<TAB>quoted_flag` line per operator
+# found to stdout (not a nameref array -- `set -o posix` at the top of this
+# script disables `local -n` at runtime).
+#
+# `quoted_flag` matters more than it looks: real bash only treats a heredoc
+# BODY as inert literal text when the delimiter word is quoted (single- or
+# double-quoted, with the SAME quote character closing it) or has an
+# escaped character (e.g. `<<\WORD`). An UNQUOTED delimiter (`<<WORD`)
+# means the body undergoes real parameter expansion, command substitution,
+# and backslash processing before the receiving command ever sees it -- a
+# bare `$(...)` or backtick in such a body is live shell syntax, not data.
+# The caller must only mask a single-delimiter body when this flag is 1;
+# an unquoted delimiter must be left fully visible to the scanners. For a
+# multi-delimiter line, the caller ignores this flag and never masks any of
+# them regardless of quoting (see the fallback in mask_heredoc_bodies).
+# shellcheck disable=SC2329 # invoked indirectly via mask_heredoc_bodies
+extract_heredoc_delimiters() {
+  local line="$1"
+  local char index run j rest word strip_tabs opener quoted
+  local single_quoted=0 double_quoted=0 escaped=0
+  local len=${#line}
+
+  for ((index = 0; index < len; index++)); do
+    char="${line:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
+      escaped=1
+      continue
+    fi
+    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$single_quoted" -eq 1 ]; then single_quoted=0; else single_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$double_quoted" -eq 1 ]; then double_quoted=0; else double_quoted=1; fi
+      continue
+    fi
+    if [ "$single_quoted" -eq 1 ] || [ "$double_quoted" -eq 1 ]; then
+      continue
+    fi
+
+    if [ "$char" = "<" ] && [ "${line:index+1:1}" = "<" ]; then
+      run=2
+      j=$((index + 2))
+      while [ "${line:j:1}" = "<" ]; do
+        run=$((run + 1))
+        j=$((j + 1))
+      done
+      if [ "$run" -eq 2 ]; then
+        rest="${line:j}"
+        strip_tabs=0
+        if [ "${rest:0:1}" = "-" ]; then
+          strip_tabs=1
+          rest="${rest:1}"
+        fi
+        while [ "${rest:0:1}" = " " ] || [ "${rest:0:1}" = $'\t' ]; do
+          rest="${rest:1}"
+        done
+
+        opener="${rest:0:1}"
+        word=""
+        # shellcheck disable=SC1003 # the '\' case pattern below matches a single backslash char, not an escape mistake; shfmt's canonical style prefers this quoting over "\\"
+        case "$opener" in
+        "'" | '"')
+          rest="${rest:1}"
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          # Only genuinely quoted -- i.e. the SAME quote character closes
+          # the word -- disables expansion. An unmatched opener (malformed,
+          # or not actually a quote at all) must not be trusted as quoted.
+          if [ -n "$word" ] && [ "${rest:0:1}" = "$opener" ]; then
+            quoted=1
+          else
+            quoted=0
+          fi
+          ;;
+        '\')
+          rest="${rest:1}"
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          quoted=1
+          ;;
+        *)
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          quoted=0
+          ;;
+        esac
+
+        if [ -n "$word" ]; then
+          printf '%s\t%s\t%s\n' "$word" "$strip_tabs" "$quoted"
+        fi
+      fi
+      index=$((j - 1))
+    fi
+  done
+}
+
+# Mask heredoc BODY lines out of a raw (possibly multi-line) command before
+# it reaches the fragment-splitting/risky-construct scanners below. A
+# heredoc body is arbitrary literal data -- postman message text in
+# practice -- not live shell syntax: a body line containing a bare
+# backtick, `$(`, `<`, or `>` (extremely common in Markdown-formatted
+# message text) must not be mistaken for a chaining/substitution/
+# redirection attempt. The quote-aware `<<`/`<<<` skip inside
+# fragment_has_risky_construct only protects the operator token itself, not
+# the body lines that follow it, which is exactly the gap this closes.
+# Neither `walk_bash_fragments` nor `fragment_has_risky_construct` treats a
+# bare newline as meaningful, so body lines are simply dropped rather than
+# replaced with placeholders -- the surrounding structure (operator line,
+# delimiter line, and anything after) is preserved unchanged.
+#
+# Fail safe, not fail open, on a malformed/unclosed heredoc (issue #355
+# follow-up finding): body lines are buffered rather than dropped
+# immediately. If the closing delimiter is found, the buffer is discarded
+# -- that was a genuine heredoc body and masking it is the whole point. If
+# input ends while still inside the heredoc (no matching delimiter line
+# ever appears), the buffered lines are NOT genuinely known to be inert
+# data -- an unclosed heredoc opener is exactly the shape that could smuggle
+# a risky metacharacter (backtick, `$(`, bare `<`/`>`) past
+# `fragment_has_risky_construct` by hiding it inside what looks like a
+# heredoc body. So on that ambiguous outcome, the buffered lines are
+# appended back to the scanned text instead of being silently discarded:
+# masking must never make the scanned text safer-looking than reality by
+# omission.
+#
+# Only masks when `extract_heredoc_delimiters` reports a QUOTED delimiter.
+# An unquoted delimiter (`<<WORD`, no quotes or escape) means real bash
+# expands `$(...)`/backticks/`$VAR` inside the body as live syntax before
+# the receiving command ever sees it -- that body is exactly as dangerous
+# as any other command text and must stay fully visible to the scanners,
+# never masked.
+#
+# Multiple heredoc operators on one line (e.g. `cmd <<'A' <<B`) fall back
+# to never masking any of them, rather than trying to track several
+# concurrent pending spans (guardian/critic finding, round 4). The
+# single-span model above closes span-tracking after the FIRST operator's
+# delimiter and then has no memory of the second one at all -- a line after
+# that first close which merely LOOKS like a heredoc opener gets misread as
+# a fresh top-level operator, and text between that false opener and its
+# false close (which is actually still the real second heredoc's body) can
+# be masked away even though it may contain a live substitution. Refusing
+# to mask is a false-denial-safe fallback: every line from the
+# multi-operator line onward, until all of its delimiters are consumed in
+# order, is appended to the scanned text unmodified and never buffered,
+# so nothing can be hidden. Critically, heredoc EXTENT is still tracked via
+# `fallback_queue` for exactly that span -- operator detection is
+# suppressed for those lines, so a body line that looks like an opener
+# cannot restart the single-span tracker and reintroduce the same
+# confusion one level later.
+mask_heredoc_bodies() {
+  local command_text="$1"
+  local line
+  local out=""
+  local first=1
+  local in_span=0
+  local masking=0
+  local strip_tabs=0
+  local delimiter=""
+  local compare delim_word strip_flag quoted_flag
+  local pending="" pending_first=1
+  local -a line_delims=()
+  local -a fallback_queue=()
+  local fq_word fq_strip fq_quoted fq_compare
+  local line_delims_raw line_delim_entry
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "${#fallback_queue[@]}" -gt 0 ]; then
+      # Read all three fields the record carries (word/strip_tabs/quoted).
+      # Reading only two here previously let $fq_strip silently absorb
+      # "strip_tabs<TAB>quoted" as one leftover string (read's last named
+      # variable gets everything remaining) -- a value that can never
+      # equal the literal "1" the check below compares against, so the
+      # leading-tab-stripping for a `<<-` operator's queued delimiter
+      # never activated (guardian finding C5). quoted_flag is unused here
+      # since the fallback never masks regardless of quoting; it must
+      # still be consumed so it does not get folded into fq_strip.
+      # shellcheck disable=SC2034 # fq_quoted deliberately unused: consumed only to keep fq_strip isolated to its own field
+      IFS=$'\t' read -r fq_word fq_strip fq_quoted <<<"${fallback_queue[0]}"
+      fq_compare="$line"
+      if [ "$fq_strip" = "1" ]; then
+        while [ "${fq_compare:0:1}" = $'\t' ]; do
+          fq_compare="${fq_compare:1}"
+        done
+      fi
+      if [ "$fq_compare" = "$fq_word" ]; then
+        fallback_queue=("${fallback_queue[@]:1}")
+      fi
+      if [ "$first" -eq 1 ]; then
+        out="$line"
+        first=0
+      else out+=$'\n'"$line"; fi
+      continue
+    fi
+
+    if [ "$in_span" -eq 1 ]; then
+      compare="$line"
+      if [ "$strip_tabs" -eq 1 ]; then
+        while [ "${compare:0:1}" = $'\t' ]; do
+          compare="${compare:1}"
+        done
+      fi
+      if [ "$compare" = "$delimiter" ]; then
+        in_span=0
+        masking=0
+        pending=""
+        pending_first=1
+        if [ "$first" -eq 1 ]; then
+          out="$line"
+          first=0
+        else out+=$'\n'"$line"; fi
+      elif [ "$masking" -eq 1 ]; then
+        # Buffer rather than drop: appended back below only if the
+        # heredoc turns out never to close.
+        if [ "$pending_first" -eq 1 ]; then
+          pending="$line"
+          pending_first=0
+        else pending+=$'\n'"$line"; fi
+      else
+        # Unquoted heredoc: pass the body through unmasked (real bash
+        # expands it as live syntax) -- and, critically, do NOT run
+        # extract_heredoc_delimiters on it. Heredoc extent is tracked
+        # unconditionally via `in_span` regardless of quoting; only the
+        # MASKING decision depends on the quoted flag. A prior version
+        # tracked extent only for quoted delimiters, so an unquoted body
+        # line that itself looked like a heredoc opener (e.g. a quoted
+        # `<<'EOF'` appearing as plain body text) was misread as a real
+        # nested opener, and text between that false opener and its false
+        # closer was masked away -- even though it was ordinary body text
+        # bash would expand and the receiving command would see verbatim.
+        if [ "$first" -eq 1 ]; then
+          out="$line"
+          first=0
+        else out+=$'\n'"$line"; fi
+      fi
+      continue
+    fi
+
+    if [ "$first" -eq 1 ]; then
+      out="$line"
+      first=0
+    else out+=$'\n'"$line"; fi
+
+    line_delims_raw="$(extract_heredoc_delimiters "$line")"
+    line_delims=()
+    if [ -n "$line_delims_raw" ]; then
+      while IFS= read -r line_delim_entry; do
+        line_delims+=("$line_delim_entry")
+      done <<<"$line_delims_raw"
+    fi
+    if [ "${#line_delims[@]}" -ge 2 ]; then
+      fallback_queue=("${line_delims[@]}")
+    elif [ "${#line_delims[@]}" -eq 1 ]; then
+      IFS=$'\t' read -r delim_word strip_flag quoted_flag <<<"${line_delims[0]}"
+      in_span=1
+      delimiter="$delim_word"
+      strip_tabs="$strip_flag"
+      pending=""
+      pending_first=1
+      if [ "$quoted_flag" = "1" ]; then
+        masking=1
+      else
+        masking=0
+      fi
+    fi
+  done <<<"$command_text"
+
+  if [ "$in_span" -eq 1 ] && [ "$masking" -eq 1 ] && [ -n "$pending" ]; then
+    # Heredoc never closed -- do not hide the unmatched trailing lines
+    # from the risky-construct/allow/deny scanners.
+    if [ "$first" -eq 1 ]; then
+      out="$pending"
+      first=0
+    else out+=$'\n'"$pending"; fi
+  fi
+
+  printf '%s' "$out"
 }
 
 emit_deny_payload() {
@@ -516,17 +831,23 @@ check_bash_command_for_denials() {
 
 # ── Decision ───────────────────────────────────────────────────────────
 
-if check_grep_rg_allow "$COMMAND"; then
+# Heredoc body lines are literal data, not live shell syntax -- scan the
+# masked form so a Markdown-formatted message body (backticks, $(...), bare
+# </>) cannot trip the risky-construct guard. The original $COMMAND is kept
+# for the final generic deny message so the agent sees exactly what it sent.
+MASKED_COMMAND="$(mask_heredoc_bodies "$COMMAND")"
+
+if check_grep_rg_allow "$MASKED_COMMAND"; then
   emit_allow_payload "Auto-allowed: single read-only grep/rg command, no chaining/substitution/redirection, no sensitive-path or risky-construct indicators."
   exit 0
 fi
 
-if check_bash_command_for_allow "$COMMAND"; then
+if check_bash_command_for_allow "$MASKED_COMMAND"; then
   emit_allow_payload "Auto-allowed: every part of this command matched the read-only/side-effect-free Bash allowlist."
   exit 0
 fi
 
-if check_bash_command_for_denials "$COMMAND"; then
+if check_bash_command_for_denials "$MASKED_COMMAND"; then
   exit 0
 fi
 

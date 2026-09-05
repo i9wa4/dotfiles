@@ -218,6 +218,25 @@ Claude profile.
 
 ## 4. Shared Policy Versus Runtime-Specific Settings
 
+The governing principle for everything in this section, stated explicitly
+here because the command-approval layer is where it matters most: keep the
+deny/allow design as simple as possible, and keep it common between Codex
+and Claude as much as possible. This is the same principle
+`agent-config-philosophy.md` section 1.2 ("Leverage Shared Configuration")
+argues for at the whole-harness level -- one shared module fed into both
+runtime consumers gives one audit point, forces parity by construction, and
+keeps migration cost low -- restated here because command approval is the
+highest-consequence surface it applies to. Default-deny (section 4.2) is
+one consequence of following this principle, not the principle itself: it
+was chosen because a single explicit allow/deny decision tree is simpler to
+reason about and keep in sync across two runtimes than a default-allow
+model layered with ad hoc exceptions would be. Prefer one shared
+implementation (`pretooluse-deny-bash.sh` plus its generated patterns file)
+over parallel Codex- and Claude-specific logic; add runtime-specific code
+only where the underlying product surfaces genuinely differ (see the table
+below), and treat any proposed divergence as a cost to justify, not a
+default.
+
 | Intent                               | Shared home                                                                          | Runtime-specific home                                                                                                                                            | Current design                                                                                                                                                                                           |
 | ------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Dangerous Bash command denies        | `nix/home-manager/agents/shared/bash-commands-denied.nix`; `pretooluse-deny-bash.sh` | Claude additionally receives selected `permissions.deny` globs for non-bypass permission profiles; Codex receives the shared hook patterns                       | Shared SSOT owns command-deny intent. For the bypass-launched Claude critic, verify the PreToolUse hook separately and do not claim `permissions.deny` enforcement without installed-version evidence.   |
@@ -477,6 +496,131 @@ alone does not cover:
   still expands command substitution there; only single quotes fully
   suppress it. `<` and `>` lose their special meaning inside either quote
   type, so they are not flagged there.
+
+#### 4.2.5. The #355 Fix: Heredoc BODY Content, Not Just The Marker
+
+Issue #352 and PR #354 exempted the `<<`/`<<-`/`<<<` operator *marker* from
+`fragment_has_risky_construct`, but left the heredoc **body** lines that
+follow it unprotected. Since only `;`, `&`, `|` are top-level fragment
+separators, a heredoc's marker line, body lines, and closing delimiter line
+are all one fragment; the risky-construct char-walk continued scanning body
+lines exactly like command text. A postman message body is Markdown-
+formatted, so it routinely contains a bare backtick (inline code spans), a
+literal `<`/`>`, or `$(...)` -- any one of these in the body denied the
+entire `send-heredoc` call before the `tmux-a2a-postman` `ALLOW_PATTERNS`
+entry was ever consulted, forcing operators back to hand-wrapping every such
+call in `execute-bash --command`.
+
+Issue #355 added `mask_heredoc_bodies` (plus the `detect_heredoc_operator`
+helper), run once on `$COMMAND` before all three allow/deny decision paths.
+It line-scans the raw command, recognizes a `<<`/`<<-` operator (excluding
+`<<<` here-strings, which are single-line and have no body) outside quotes,
+and swallows every following line up to and including the line that matches
+the delimiter (tab-stripped first when the operator was `<<-`), while
+leaving the operator line, the delimiter line, and everything else
+unchanged. The masked command -- not the original -- is what
+`check_grep_rg_allow`, `check_bash_command_for_allow`, and
+`check_bash_command_for_denials` all scan; the original `$COMMAND` is still
+what the final generic deny message shows the agent.
+
+This fix does not change fragment splitting: a bare newline still is not a
+top-level fragment separator. That is a separate, known, pre-existing gap
+(a real command placed on the line immediately after a heredoc's closing
+delimiter is not split into its own fragment, so it inherits whatever allow
+decision the heredoc-bearing fragment gets) and is out of scope for #355 --
+tracked as a follow-up rather than folded into this fix.
+
+Two correctness/security findings from the Tier 1 guardian/critic and
+approver review of the initial #355 implementation (commit `e5ab6500`)
+required a follow-up correction before live activation, both fixed in the
+same PR (#356) before merge:
+
+- **Quoted-vs-unquoted delimiter (guardian G1, high, converged with
+  critic):** real bash only treats a heredoc body as inert literal text
+  when the delimiter word is quoted (`<<'DELIM'`, `<<"DELIM"`) or has an
+  escaped character (`<<\DELIM`) -- an **unquoted** delimiter (`<<DELIM`)
+  means bash performs real parameter expansion, command substitution, and
+  backslash processing on the body before the receiving command ever sees
+  it. The initial implementation masked identically regardless of quoting,
+  so a `$(...)` inside an *unquoted* heredoc body -- correctly denied
+  before issue #355 because the risky-construct scan saw it -- became
+  auto-allowed, and bash would have evaluated the substitution for real.
+  `detect_heredoc_operator` now reports whether the delimiter was
+  genuinely quoted (matching closing quote required, not just a leading
+  quote character) or backslash-escaped; `mask_heredoc_bodies` only enters
+  masking mode when that flag is set. An unquoted heredoc's body is left
+  completely unmasked and fully visible to every scanner, exactly as if
+  that issue's fix had never shipped.
+- **Unclosed heredoc (approver, separately confirmed by guardian):** if a
+  detected (quoted) heredoc opener never finds its matching closing
+  delimiter line before the command text ends, the initial implementation
+  silently dropped every buffered body line -- hiding a genuinely dangerous
+  trailing line (one containing a live backtick/`$(`/bare `<`/`>`) from
+  `fragment_has_risky_construct` entirely. `mask_heredoc_bodies` now
+  buffers body lines rather than dropping them immediately, discards the
+  buffer only on a confirmed matching close, and appends the buffer back
+  onto the scanned text if the loop ends while still inside the heredoc --
+  fail safe (scan more) rather than fail open (scan less) on this
+  ambiguous shape.
+
+The `tmux-a2a-postman` entry in `bash-commands-allowed.nix` documents this
+quoted-only masking behavior directly (guardian G6), since heredoc
+redirection is shell syntax resolved before the CLI ever receives stdin,
+not CLI-internal data handling the way the entry's original rationale
+implied.
+
+Guardian and critic found one more shape in a fourth, human-authorized
+review round: a line carrying MORE THAN ONE heredoc operator (for example
+an allowlisted command opening a quoted heredoc and an unquoted one on the
+same line). The single-span tracker above closes span-tracking after the
+FIRST operator's delimiter and then has no memory of the second one at
+all, so a later line that merely looks like a heredoc opener is misread as
+a fresh top-level operator, and text between that false opener and its
+false close -- which is actually still the real second heredoc's live body
+-- can be masked away even though it may contain a substitution bash
+genuinely executes. The fix: when `extract_heredoc_delimiters` finds two or
+more operators on one line, `mask_heredoc_bodies` refuses to mask anything
+opened by that line at all, regardless of quoting, but still tracks extent
+via an ordered queue of the delimiter words in the order bash would
+consume them; operator detection is suppressed for every line in that span
+so nothing can restart the single-span tracker and reintroduce the same
+confusion one level later. This is a false-denial-safe fallback, not an
+attempt to model concurrent heredocs precisely: a legitimate multi-heredoc
+line with benign bodies still allows correctly (the bodies are merely
+visible rather than masked, and clean text still passes the risky-construct
+scan), while a body that would have been masked-and-hidden under the
+single-span model is now visible and, if genuinely risky, correctly denied.
+
+A fifth, human-authorized round found that the round-4 fix itself had
+introduced exactly the class of bug it was meant to prevent, one level
+removed: two separate functions now answered "does this line open a
+heredoc" -- the round-4 multi-operator scanner (`extract_heredoc_delimiters`)
+and the original single-operator detector -- and they disagreed about a
+here-string. The single-operator detector abandoned the whole line the
+moment it saw a run of three or more unquoted `<` (here-string), while the
+multi-operator scanner correctly skipped past it and kept scanning. A line
+with a here-string followed by exactly one real (unquoted) heredoc
+operator therefore produced one delimiter from the multi-operator scanner
+(not enough to trigger the two-or-more fallback) and simultaneously zero
+delimiters from the single-operator detector (which bailed on the
+here-string before ever reaching the real operator) -- so neither code path
+set up tracking for that heredoc at all, reopening the same nested-
+misdetection bug from the earlier rounds one layer down.
+
+Critic diagnosed the root cause as structural, not shape-specific: the
+whole-line scan already computed a correct answer whenever exactly one
+delimiter existed, then discarded it and re-parsed the same line with the
+older, narrower function -- two recognizers with different semantics
+sitting at the same security boundary, selected by counting delimiters.
+The fix collapses to ONE recognizer: `extract_heredoc_delimiters` now also
+carries the quoted flag per delimiter (previously computed only by the
+now-deleted single-operator function), and `mask_heredoc_bodies` drives
+both branches directly from its output -- exactly one delimiter uses that
+record's word/strip-tabs/quoted fields to set up single-span tracking
+exactly as before; two or more still takes the existing refuse-to-mask
+fallback. With only one function ever deciding what a `<<`/`<<-` run
+means, the two-recognizers-disagree bug class is closed by construction
+rather than by patching the specific disagreement found.
 
 ### 4.3. Diplomat Node Status
 
