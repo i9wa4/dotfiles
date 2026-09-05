@@ -61,9 +61,8 @@ Hard gates:
 - Before editing files, verify the target path is writable and respect issue
   worktree safety; stop if an issue branch tracks a shared base.
 - Non-worker roles must not mutate repository files. This is a role contract,
-  not a current runtime hook guarantee; `${SUBDIR}` is not an exception. Every
-  role must follow this contract even when a runtime can technically write to
-  the path.
+  not a current runtime hook guarantee. Every role must follow this contract
+  even when a runtime can technically write to the path.
 - Do not write to, modify, or delete production data without explicit human
   approval at the time of execution.
 - Public and permanent GitHub surfaces must use repo-relative paths or stable
