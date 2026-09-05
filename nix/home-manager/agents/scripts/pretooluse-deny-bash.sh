@@ -237,139 +237,42 @@ fragment_has_risky_construct() {
   return 1
 }
 
-# Detect a heredoc/here-string operator (`<<`, `<<-`) in a single line,
-# outside quotes, that starts a multi-line body -- as opposed to a `<<<`
-# here-string, which is single-line and has no following body. On success,
-# print "<delimiter>\t<strip_tabs_flag>\t<quoted_flag>" and return 0;
-# otherwise return 1. Only the first such operator in the line is detected;
-# multiple heredocs on one line is a real but rare bash shape and is out of
-# scope here.
+# Extract EVERY heredoc/here-string-operator delimiter from a single line,
+# outside quotes, in the order the operators appear (bash consumes heredoc
+# bodies in that same order when a line carries more than one, e.g.
+# `cmd <<'A' <<B`). Only genuine two-character `<<`/`<<-` runs open a
+# heredoc; a run of three or more (`<<<`, here-string) is single-line, has
+# no following body, and is skipped -- but scanning CONTINUES past it
+# rather than abandoning the line, because a here-string can be followed
+# later on the same line by a real heredoc operator (round 5 finding: an
+# earlier version of this logic lived in two places -- this whole-line
+# scan, and a since-deleted single-operator function that `return`ed empty
+# handed on a here-string instead of skipping past it. The two recognizers
+# disagreed on exactly this shape, and the call site picked between them by
+# counting delimiters, so a line with one real heredoc plus a preceding
+# here-string got a different, wrong answer depending on which one ran.
+# Collapsing to this single recognizer, used for both the one-delimiter and
+# multi-delimiter cases, removes that class of disagreement entirely).
 #
-# <quoted_flag> matters more than it looks: real bash only treats a heredoc
+# Prints one `word<TAB>strip_tabs_flag<TAB>quoted_flag` line per operator
+# found to stdout (not a nameref array -- `set -o posix` at the top of this
+# script disables `local -n` at runtime).
+#
+# `quoted_flag` matters more than it looks: real bash only treats a heredoc
 # BODY as inert literal text when the delimiter word is quoted (single- or
-# double-quoted) or has an escaped character (e.g. `<<\WORD`). An UNQUOTED
-# delimiter (`<<WORD`) means the body undergoes real parameter expansion,
-# command substitution, and backslash processing before the receiving
-# command ever sees it -- a bare `$(...)` or backtick in such a body is live
-# shell syntax, not data. The caller must only mask the body when this flag
-# is 1; an unquoted delimiter must be left fully visible to the scanners.
-# shellcheck disable=SC2329 # invoked indirectly via mask_heredoc_bodies
-detect_heredoc_operator() {
-  local line="$1"
-  local char
-  local index
-  local single_quoted=0 double_quoted=0 escaped=0
-  local len=${#line}
-  local run j rest strip_tabs word opener quoted
-
-  for ((index = 0; index < len; index++)); do
-    char="${line:index:1}"
-
-    if [ "$escaped" -eq 1 ]; then
-      escaped=0
-      continue
-    fi
-    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
-      escaped=1
-      continue
-    fi
-    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
-      if [ "$single_quoted" -eq 1 ]; then single_quoted=0; else single_quoted=1; fi
-      continue
-    fi
-    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
-      if [ "$double_quoted" -eq 1 ]; then double_quoted=0; else double_quoted=1; fi
-      continue
-    fi
-    if [ "$single_quoted" -eq 1 ] || [ "$double_quoted" -eq 1 ]; then
-      continue
-    fi
-
-    if [ "$char" = "<" ] && [ "${line:index+1:1}" = "<" ]; then
-      run=2
-      j=$((index + 2))
-      while [ "${line:j:1}" = "<" ]; do
-        run=$((run + 1))
-        j=$((j + 1))
-      done
-      if [ "$run" -ne 2 ]; then
-        # `<<<` here-string (or a degenerate longer run): single-line, no
-        # body follows, nothing to mask.
-        return 1
-      fi
-
-      rest="${line:j}"
-      strip_tabs=0
-      if [ "${rest:0:1}" = "-" ]; then
-        strip_tabs=1
-        rest="${rest:1}"
-      fi
-      while [ "${rest:0:1}" = " " ] || [ "${rest:0:1}" = $'\t' ]; do
-        rest="${rest:1}"
-      done
-
-      opener="${rest:0:1}"
-      word=""
-      # shellcheck disable=SC1003 # the '\' case pattern below matches a single backslash char, not an escape mistake; shfmt's canonical style prefers this quoting over "\\"
-      case "$opener" in
-      "'" | '"')
-        rest="${rest:1}"
-        while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
-          word+="${rest:0:1}"
-          rest="${rest:1}"
-        done
-        # Only genuinely quoted -- i.e. the SAME quote character closes the
-        # word -- disables expansion. An unmatched opener (malformed, or not
-        # actually a quote at all) must not be trusted as quoted.
-        if [ -n "$word" ] && [ "${rest:0:1}" = "$opener" ]; then
-          quoted=1
-        else
-          quoted=0
-        fi
-        ;;
-      '\')
-        rest="${rest:1}"
-        while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
-          word+="${rest:0:1}"
-          rest="${rest:1}"
-        done
-        quoted=1
-        ;;
-      *)
-        while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
-          word+="${rest:0:1}"
-          rest="${rest:1}"
-        done
-        quoted=0
-        ;;
-      esac
-
-      if [ -z "$word" ]; then
-        return 1
-      fi
-      printf '%s\t%s\t%s' "$word" "$strip_tabs" "$quoted"
-      return 0
-    fi
-  done
-
-  return 1
-}
-
-# Extract EVERY heredoc/here-string-operator delimiter word from a single
-# line, in the order the operators appear (bash consumes heredoc bodies in
-# that same order when a line carries more than one, e.g. `cmd <<'A' <<B`).
-# Only genuine two-character `<<`/`<<-` runs count; `<<<` (here-string) is
-# skipped since it has no following body. Prints one `word<TAB>strip_tabs`
-# line per operator found to stdout (not a nameref array -- `set -o posix`
-# at the top of this script disables `local -n` at runtime); quoting is
-# irrelevant here and intentionally not tracked, because the caller
-# (mask_heredoc_bodies) only consults this when a line has more than one
-# operator, and that shape always falls back to never masking any of them
-# regardless of quoting (see the fallback below).
+# double-quoted, with the SAME quote character closing it) or has an
+# escaped character (e.g. `<<\WORD`). An UNQUOTED delimiter (`<<WORD`)
+# means the body undergoes real parameter expansion, command substitution,
+# and backslash processing before the receiving command ever sees it -- a
+# bare `$(...)` or backtick in such a body is live shell syntax, not data.
+# The caller must only mask a single-delimiter body when this flag is 1;
+# an unquoted delimiter must be left fully visible to the scanners. For a
+# multi-delimiter line, the caller ignores this flag and never masks any of
+# them regardless of quoting (see the fallback in mask_heredoc_bodies).
 # shellcheck disable=SC2329 # invoked indirectly via mask_heredoc_bodies
 extract_heredoc_delimiters() {
   local line="$1"
-  local char index run j rest word strip_tabs
+  local char index run j rest word strip_tabs opener quoted
   local single_quoted=0 double_quoted=0 escaped=0
   local len=${#line}
 
@@ -413,19 +316,45 @@ extract_heredoc_delimiters() {
         while [ "${rest:0:1}" = " " ] || [ "${rest:0:1}" = $'\t' ]; do
           rest="${rest:1}"
         done
+
+        opener="${rest:0:1}"
+        word=""
         # shellcheck disable=SC1003 # the '\' case pattern below matches a single backslash char, not an escape mistake; shfmt's canonical style prefers this quoting over "\\"
-        case "${rest:0:1}" in
-        "'" | '"' | '\')
+        case "$opener" in
+        "'" | '"')
           rest="${rest:1}"
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          # Only genuinely quoted -- i.e. the SAME quote character closes
+          # the word -- disables expansion. An unmatched opener (malformed,
+          # or not actually a quote at all) must not be trusted as quoted.
+          if [ -n "$word" ] && [ "${rest:0:1}" = "$opener" ]; then
+            quoted=1
+          else
+            quoted=0
+          fi
+          ;;
+        '\')
+          rest="${rest:1}"
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          quoted=1
+          ;;
+        *)
+          while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
+            word+="${rest:0:1}"
+            rest="${rest:1}"
+          done
+          quoted=0
           ;;
         esac
-        word=""
-        while [[ ${rest:0:1} =~ [A-Za-z0-9_] ]]; do
-          word+="${rest:0:1}"
-          rest="${rest:1}"
-        done
+
         if [ -n "$word" ]; then
-          printf '%s\t%s\n' "$word" "$strip_tabs"
+          printf '%s\t%s\t%s\n' "$word" "$strip_tabs" "$quoted"
         fi
       fi
       index=$((j - 1))
@@ -461,7 +390,7 @@ extract_heredoc_delimiters() {
 # masking must never make the scanned text safer-looking than reality by
 # omission.
 #
-# Only masks when `detect_heredoc_operator` reports a QUOTED delimiter.
+# Only masks when `extract_heredoc_delimiters` reports a QUOTED delimiter.
 # An unquoted delimiter (`<<WORD`, no quotes or escape) means real bash
 # expands `$(...)`/backticks/`$VAR` inside the body as live syntax before
 # the receiving command ever sees it -- that body is exactly as dangerous
@@ -494,7 +423,7 @@ mask_heredoc_bodies() {
   local masking=0
   local strip_tabs=0
   local delimiter=""
-  local detected compare delim_word strip_flag quoted_flag
+  local compare delim_word strip_flag quoted_flag
   local pending="" pending_first=1
   local -a line_delims=()
   local -a fallback_queue=()
@@ -546,7 +475,7 @@ mask_heredoc_bodies() {
       else
         # Unquoted heredoc: pass the body through unmasked (real bash
         # expands it as live syntax) -- and, critically, do NOT run
-        # detect_heredoc_operator on it. Heredoc extent is tracked
+        # extract_heredoc_delimiters on it. Heredoc extent is tracked
         # unconditionally via `in_span` regardless of quoting; only the
         # MASKING decision depends on the quoted flag. A prior version
         # tracked extent only for quoted delimiters, so an unquoted body
@@ -577,8 +506,8 @@ mask_heredoc_bodies() {
     fi
     if [ "${#line_delims[@]}" -ge 2 ]; then
       fallback_queue=("${line_delims[@]}")
-    elif detected="$(detect_heredoc_operator "$line")"; then
-      IFS=$'\t' read -r delim_word strip_flag quoted_flag <<<"$detected"
+    elif [ "${#line_delims[@]}" -eq 1 ]; then
+      IFS=$'\t' read -r delim_word strip_flag quoted_flag <<<"${line_delims[0]}"
       in_span=1
       delimiter="$delim_word"
       strip_tabs="$strip_flag"

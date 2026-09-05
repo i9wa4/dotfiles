@@ -591,6 +591,37 @@ visible rather than masked, and clean text still passes the risky-construct
 scan), while a body that would have been masked-and-hidden under the
 single-span model is now visible and, if genuinely risky, correctly denied.
 
+A fifth, human-authorized round found that the round-4 fix itself had
+introduced exactly the class of bug it was meant to prevent, one level
+removed: two separate functions now answered "does this line open a
+heredoc" -- the round-4 multi-operator scanner (`extract_heredoc_delimiters`)
+and the original single-operator detector -- and they disagreed about a
+here-string. The single-operator detector abandoned the whole line the
+moment it saw a run of three or more unquoted `<` (here-string), while the
+multi-operator scanner correctly skipped past it and kept scanning. A line
+with a here-string followed by exactly one real (unquoted) heredoc
+operator therefore produced one delimiter from the multi-operator scanner
+(not enough to trigger the two-or-more fallback) and simultaneously zero
+delimiters from the single-operator detector (which bailed on the
+here-string before ever reaching the real operator) -- so neither code path
+set up tracking for that heredoc at all, reopening the same nested-
+misdetection bug from the earlier rounds one layer down.
+
+Critic diagnosed the root cause as structural, not shape-specific: the
+whole-line scan already computed a correct answer whenever exactly one
+delimiter existed, then discarded it and re-parsed the same line with the
+older, narrower function -- two recognizers with different semantics
+sitting at the same security boundary, selected by counting delimiters.
+The fix collapses to ONE recognizer: `extract_heredoc_delimiters` now also
+carries the quoted flag per delimiter (previously computed only by the
+now-deleted single-operator function), and `mask_heredoc_bodies` drives
+both branches directly from its output -- exactly one delimiter uses that
+record's word/strip-tabs/quoted fields to set up single-span tracking
+exactly as before; two or more still takes the existing refuse-to-mask
+fallback. With only one function ever deciding what a `<<`/`<<-` run
+means, the two-recognizers-disagree bug class is closed by construction
+rather than by patching the specific disagreement found.
+
 ### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
