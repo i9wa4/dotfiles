@@ -628,6 +628,46 @@ check_grep_rg_allow() {
   return 0
 }
 
+# File-content-reading commands on ALLOW_PATTERNS (bash-commands-allowed.nix)
+# that take an arbitrary path argument with no argument-level check at all
+# (unlike grep/rg/ripgrep, which already reject secret-shaped matches via
+# check_grep_rg_allow below) -- `cat .env`, `head ~/.ssh/id_rsa`,
+# `tail some/secrets/api.key`, and the same shape for wc/sort/uniq/cut, would
+# otherwise be allowed through unconditionally (issue #365). Intentionally
+# excludes `ls` (lists filenames only, does not dump file content) and
+# `echo`/`date`/`whoami`/`which` (do not read files at all).
+SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
+
+# Duplicated, not shared with check_grep_rg_allow's keyword case statement:
+# that function is already approver-reviewed (twice, issue #342) and is kept
+# untouched here to avoid re-opening review on tested logic. Keep this list
+# in sync with check_grep_rg_allow's keyword case by hand if either changes.
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+fragment_has_secret_keyword() {
+  local fragment="$1"
+  local lc
+  lc=$(printf '%s' "$fragment" | tr '[:upper:]' '[:lower:]')
+  case "$lc" in
+  *key* | *token* | *secret* | *.env* | *.ssh* | *credential* | *password*)
+    return 0
+    ;;
+  esac
+  return 1
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+command_is_secret_argument_sensitive() {
+  local fragment="$1"
+  local leading_word="${fragment%%[[:space:]]*}"
+  local cmd
+  for cmd in "${SECRET_ARGUMENT_SENSITIVE_COMMANDS[@]}"; do
+    if [ "$leading_word" = "$cmd" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # shellcheck disable=SC2329 # invoked indirectly via walk_bash_fragments
 check_bash_fragment_for_allow() {
   local fragment="$1"
@@ -648,6 +688,10 @@ check_bash_fragment_for_allow() {
   fi
 
   if fragment_has_risky_construct "$fragment"; then
+    return 1
+  fi
+
+  if command_is_secret_argument_sensitive "$fragment" && fragment_has_secret_keyword "$fragment"; then
     return 1
   fi
 
