@@ -39,14 +39,13 @@ The tmux/vde launcher is the highest-precedence behavior for active panes.
 Today `config/vde/layout.yml` starts Codex panes with:
 
 ```sh
-codex --yolo --add-dir "${SUBDIR}" --model gpt-5.5 --config model_reasoning_effort=xhigh
+codex --yolo --model gpt-5.5 --config model_reasoning_effort=xhigh
 ```
 
 It starts the Claude critic pane with:
 
 ```sh
 claude --allow-dangerously-skip-permissions --dangerously-skip-permissions \
-  --add-dir "${SUBDIR}" \
   --model "opus[1m]" --effort xhigh
 ```
 
@@ -55,9 +54,7 @@ approval prompts and permission-layer prompts are mostly bypassed at launch
 time. Repo-managed PreToolUse hooks are a separate configured guardrail layer
 from runtime permission rules. This design does not count Claude
 `permissions.deny` rules as active for the bypass-launched critic pane unless
-a version-specific verification proves that behavior. The `--add-dir` value
-extends the workspace surface for each session. The exact extra directory is
-chosen by the vde session environment, not by Home Manager agent config.
+a version-specific verification proves that behavior.
 
 The current local tool versions observed during the 2026-07-14 refresh were
 `codex-cli 0.144.3` and `Claude Code 2.1.207`.
@@ -167,12 +164,11 @@ that a specific deny rule still applies in bypass mode.
 
 ### 3.2. Launch Mode And Hooks
 
-The vde launcher starts the Claude critic pane with the two bypass flags
-followed by `--add-dir "${SUBDIR}"`. The allow flag makes bypass mode
-selectable, and the dangerous skip flag selects it. That suppresses normal
-permission prompts and, per the installed help, bypasses permission checks for
-that pane. Do not use the current critic launch as evidence that
-`permissions.deny` is enforced.
+The vde launcher starts the Claude critic pane with the two bypass flags. The
+allow flag makes bypass mode selectable, and the dangerous skip flag selects
+it. That suppresses normal permission prompts and, per the installed help,
+bypasses permission checks for that pane. Do not use the current critic
+launch as evidence that `permissions.deny` is enforced.
 
 The repo configures these Claude hooks:
 
