@@ -165,18 +165,18 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
   isolation here, so this stays off but is documented for awareness
 - [ ] Hook `args: string[]` exec form (v2.1.139) - spawns command directly
   without a shell so path placeholders never need quoting. Migration candidate
-  for the three PreToolUse/UserPromptSubmit hooks in `claude/default.nix` once
+  for hook commands in `claude/default.nix` once
   we audit each script's argv expectations
 - [ ] Hook `continueOnBlock: true` on PostToolUse (v2.1.139) - feed the hook's
   rejection back to Claude and continue the turn. Useful for the
-  pretooluse-deny-write hook if we ever want soft "warn-and-redo" semantics
+  write-deny hook if we ever want soft "warn-and-redo" semantics
   instead of hard deny
 - [ ] `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (v2.1.143) - bounds runaway Stop
   hooks at 8 consecutive blocks. We have no Stop hooks yet; track for future
 - [ ] `terminalSequence` field on hook JSON output (v2.1.141) - hooks can emit
   desktop notifications / window titles / bells without a controlling
-  terminal. Possible future use for tmux pane title updates from
-  `common-userpromptsubmit.sh`
+  terminal. Possible future use for tmux pane title updates from a future hook
+  script.
 - [ ] `settings.autoMode.hard_deny` rules (v2.1.136) - auto-mode classifier
   hard deny that cannot be allow-overridden. We don't use auto mode, but
   worth tracking if we ever migrate away from `dontAsk`

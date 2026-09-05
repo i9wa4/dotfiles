@@ -102,15 +102,10 @@ workspace profile. The generated config does mark owned `ghq` repositories as
 trusted projects, but trust is not a writable-root boundary. It controls
 project trust state, not what the sandbox may modify.
 
-Codex hooks currently add these local checks:
+Codex hooks currently add this local check:
 
 - `PreToolUse` `Bash` runs
   `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh`.
-- `PreToolUse` `apply_patch|Edit|Write` runs
-  `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`.
-
-The write hook is observation-only. Codex has no repo-managed role-aware write
-deny equivalent to Claude's `claude-pretooluse-deny-write.sh`.
 
 `scripts/lazygit/ai-commit.sh` is separate from postman agent panes. It uses
 `codex exec --ephemeral --ignore-rules --sandbox read-only -c
@@ -181,12 +176,8 @@ that pane. Do not use the current critic launch as evidence that
 
 The repo configures these Claude hooks:
 
-- `UserPromptSubmit` runs
-  `nix/home-manager/agents/scripts/common-userpromptsubmit.sh claude`.
 - `PreToolUse` `Bash` runs the shared
   `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh`.
-- `PreToolUse` `Write|Edit|NotebookEdit` runs the Claude-only
-  `nix/home-manager/agents/scripts/claude-pretooluse-deny-write.sh`.
 
 These hooks are distinct from the Claude permission-layer rules above. The
 installed help names `--bare`, not `--dangerously-skip-permissions`, as the
@@ -244,7 +235,7 @@ default.
 | Sensitive file read/write denies     | Policy intent should be shared                                                       | Claude has direct `Read`/`Write` denies for non-bypass permission profiles today; Codex needs sandbox or permission-profile rules in a follow-up                 | Preserve Claude's configured file denies, but do not treat them as enforced for bypass-launched panes unless tested. Add equivalent Codex boundaries only through Codex-native sandbox/profile settings. |
 | Filesystem and network blast radius  | Design principle only                                                                | Codex uses sandbox modes, approval policy, writable roots, or permission profiles. Claude uses permission rules plus optional Bash sandbox or process isolation. | Keep the policy goal aligned, but implement boundaries through each runtime's native controls.                                                                                                           |
 | Human review lane                    | `postman.md` approval route and review skills                                        | Codex `approvals_reviewer = "auto_review"` is Codex-only                                                                                                         | Auto-review may assist Codex approval prompts, but it must not replace guardian/critic/human approval gates.                                                                                             |
-| Role-based write restrictions        | `postman.md` role contract                                                           | Claude has `claude-pretooluse-deny-write.sh`; Codex currently observes write payloads only                                                                       | Keep Claude enforcement. Add Codex enforcement only after the observed write payloads support a reliable rule.                                                                                           |
+| Role-based write restrictions        | `postman.md` role contract                                                           | No active runtime hook enforcement after the 2026-09-05 hook reduction                                                                                           | Keep role restrictions in the postman contract unless a future runtime-specific hook is reintroduced.                                                                                                    |
 
 ### 4.1. Postman Command Approval Layer
 

@@ -48,12 +48,10 @@ that tree as an active loader path by default; `external-references` acts as the
 active routing skill for those dormant packs.
 
 Hooks are also declared in `codex/default.nix`. The runtime scripts they invoke
-are drawn from `nix/home-manager/agents/scripts/` and split as follows:
-runtime-agnostic shared scripts (no prefix, e.g. `pretooluse-deny-bash.sh`),
-shared scripts parameterised by runtime arg (`common-*`, e.g.
-`common-userpromptsubmit.sh`), and Codex-only scripts (`codex-*`, currently the
-write-tool payload observer). All consumed scripts are listed explicitly in
-`codexScriptsDir` so the consumed surface is self-documenting; see
+are drawn from `nix/home-manager/agents/scripts/`; the active Codex hook surface
+currently consumes the runtime-agnostic shared Bash deny hook and generated deny
+patterns. All consumed scripts are listed explicitly in `codexScriptsDir` so the
+consumed surface is self-documenting; see
 `skills/dotfiles/references/agent-hooks-architecture.md` §5 for the prefix
 convention. Scripts are materialized into the Codex scripts directory at switch
 time.
@@ -150,10 +148,8 @@ Ignore any release entries for versions newer than `codex --version`.
   `skills/dotfiles/references/agent-hooks-architecture.md` §5:
   - `<no prefix>` for runtime-agnostic shared scripts (e.g.
     `pretooluse-deny-bash.sh`, invoked by both Claude and Codex)
-  - `common-*` for shared scripts that take a runtime arg (e.g.
-    `common-userpromptsubmit.sh codex`)
-  - `codex-*` only for genuinely Codex-only behavior (e.g. current write-tool
-    payload observation)
+  - `common-*` for shared scripts that take a runtime arg
+  - `codex-*` only for genuinely Codex-only behavior
 - YOU MUST: Reuse `bash-commands-denied.nix` as the SSOT for Bash deny policy
   instead of hand-maintaining separate Codex-only command lists
 - YOU MUST: Reuse `pretooluse-deny-bash.sh` instead of forking a Codex copy.
@@ -167,25 +163,6 @@ Ignore any release entries for versions newer than `codex --version`.
   path distinguishes executable command position from inert message payloads.
 - YOU MUST: Keep shared Bash deny justifications repair-oriented so the
   rejection tells the agent what to do next, not just what was blocked
-- YOU MUST: Treat Codex write-tool control as observational until local hook
-  payloads prove enough structure for reliable deny logic
-- NOTE: As of Codex CLI v0.145.0, official docs say `PreToolUse` can match
-  canonical `Bash`, `apply_patch`, and MCP tool names; `apply_patch` also
-  matches `Edit` and `Write`. The Codex-only `PreToolUse`
-  matcher=`apply_patch|Edit|Write` observer remains observational until local
-  hook payloads prove enough structure for reliable deny logic and blocking
-  behavior. The script is
-  `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`; it
-  appends metadata to
-  `~/.cache/codex/hook-observations/pretooluse-write-tools.jsonl`. Live
-  inspection on 2026-07-25 with
-  `jq -s '{record_count:length, tool_names:([.[].tool_name] | unique), most_recent:.[-1]}'`
-  reported 2,468 records, `tool_names: ["apply_patch"]`, and a most-recent
-  `PreToolUse` record at `2026-07-25T08:18:11Z` from another local repository
-  cwd. Its scalar paths included `cwd`, `tool_input.command`, `tool_name`,
-  `session_id`, and `turn_id`. This proves that real `apply_patch` activity
-  reaches the observer, but does not validate role-to-title mapping or blocking
-  enforcement; do not claim that the hook controls writes.
 - NEVER: Treat `permissionDecision: "ask"` as a supported `PreToolUse`
   outcome. Current Codex documentation establishes that `PreToolUse` can
   inspect JSON arguments and block or rewrite a local tool call. This repo has
@@ -197,8 +174,8 @@ Ignore any release entries for versions newer than `codex --version`.
   `SubagentStart`, `SubagentStop`, and `Stop` as supported events. Matchers are
   event-specific: for example `UserPromptSubmit` and `Stop` ignore matchers,
   while `PreToolUse` can match `Bash`, `apply_patch`, and MCP tool names. This
-  repo currently uses only `PreToolUse` and `UserPromptSubmit`. The others were
-  removed on 2026-04-29 because their consumers (handoff persistence,
+  repo currently uses only `PreToolUse`. The others were
+  removed because their consumers (handoff persistence,
   deterministic-command feedback decoration) were not load-bearing -- see
   `skills/dotfiles/references/agent-hooks-architecture.md` §3 for the
   rationale.

@@ -80,16 +80,6 @@ let
       IS_DEMO = "true";
     };
     hooks = {
-      UserPromptSubmit = [
-        {
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/common-userpromptsubmit.sh claude";
-            }
-          ];
-        }
-      ];
       PreToolUse = [
         {
           matcher = "Bash";
@@ -97,15 +87,6 @@ let
             {
               type = "command";
               command = "$CLAUDE_CONFIG_DIR/scripts/pretooluse-deny-bash.sh";
-            }
-          ];
-        }
-        {
-          matcher = "Write|Edit|NotebookEdit";
-          hooks = [
-            {
-              type = "command";
-              command = "$CLAUDE_CONFIG_DIR/scripts/claude-pretooluse-deny-write.sh";
             }
           ];
         }

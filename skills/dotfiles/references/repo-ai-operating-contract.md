@@ -184,7 +184,6 @@ operating contract.
 Both engines are expected to support these behaviors as closely as their hook
 surfaces allow:
 
-- inject live repo context into prompts
 - deny dangerous Bash actions before execution
 - keep handoff state durable through postman messages and artifacts
 
@@ -192,19 +191,13 @@ surfaces allow:
 
 The Claude runtime currently carries:
 
-- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
-  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for shared Bash denials
-- `PreToolUse` for Claude-only role write denials
 
 ### 4.3. Codex runtime hooks
 
 The Codex runtime currently carries:
 
-- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
-  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for Bash denials
-- `PreToolUse` observer for `apply_patch|Edit|Write` write-tool payloads
 
 The surface is not identical, but the repo is aiming for equivalent operating
 discipline.
