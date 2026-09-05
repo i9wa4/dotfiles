@@ -511,6 +511,45 @@ delimiter is not split into its own fragment, so it inherits whatever allow
 decision the heredoc-bearing fragment gets) and is out of scope for #355 --
 tracked as a follow-up rather than folded into this fix.
 
+Two correctness/security findings from the Tier 1 guardian/critic and
+approver review of the initial #355 implementation (commit `e5ab6500`)
+required a follow-up correction before live activation, both fixed in the
+same PR (#356) before merge:
+
+- **Quoted-vs-unquoted delimiter (guardian G1, high, converged with
+  critic):** real bash only treats a heredoc body as inert literal text
+  when the delimiter word is quoted (`<<'DELIM'`, `<<"DELIM"`) or has an
+  escaped character (`<<\DELIM`) -- an **unquoted** delimiter (`<<DELIM`)
+  means bash performs real parameter expansion, command substitution, and
+  backslash processing on the body before the receiving command ever sees
+  it. The initial implementation masked identically regardless of quoting,
+  so a `$(...)` inside an *unquoted* heredoc body -- correctly denied
+  before issue #355 because the risky-construct scan saw it -- became
+  auto-allowed, and bash would have evaluated the substitution for real.
+  `detect_heredoc_operator` now reports whether the delimiter was
+  genuinely quoted (matching closing quote required, not just a leading
+  quote character) or backslash-escaped; `mask_heredoc_bodies` only enters
+  masking mode when that flag is set. An unquoted heredoc's body is left
+  completely unmasked and fully visible to every scanner, exactly as if
+  that issue's fix had never shipped.
+- **Unclosed heredoc (approver, separately confirmed by guardian):** if a
+  detected (quoted) heredoc opener never finds its matching closing
+  delimiter line before the command text ends, the initial implementation
+  silently dropped every buffered body line -- hiding a genuinely dangerous
+  trailing line (one containing a live backtick/`$(`/bare `<`/`>`) from
+  `fragment_has_risky_construct` entirely. `mask_heredoc_bodies` now
+  buffers body lines rather than dropping them immediately, discards the
+  buffer only on a confirmed matching close, and appends the buffer back
+  onto the scanned text if the loop ends while still inside the heredoc --
+  fail safe (scan more) rather than fail open (scan less) on this
+  ambiguous shape.
+
+The `tmux-a2a-postman` entry in `bash-commands-allowed.nix` documents this
+quoted-only masking behavior directly (guardian G6), since heredoc
+redirection is shell syntax resolved before the CLI ever receives stdin,
+not CLI-internal data handling the way the entry's original rationale
+implied.
+
 ### 4.3. Diplomat Node Status
 
 `diplomat_node` is not part of command approval. It is an open
