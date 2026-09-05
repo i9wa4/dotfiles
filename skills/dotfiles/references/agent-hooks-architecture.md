@@ -26,8 +26,7 @@ Concretely, every behavior should land in exactly one of these tiers:
    both runtimes accept the same JSON-on-stdin / JSON-on-stdout hook
    schema for the events we use.
 3. **Per-runtime transport** — a fork only when the runtimes truly
-   disagree on transport, such as Claude's role-aware write-deny hook
-   versus Codex's `apply_patch`/write-tool observer payload shape.
+   disagree on transport.
 
 Anything in (3) should justify itself in writing. The default is (1)
 or (2).
@@ -81,23 +80,13 @@ One module produces both Claude's `~/.claude/.claude.json` MCP block
 (via activation script) and Codex's `[mcp_servers]` TOML stanza
 (generated into `config.toml`).
 
-### 2.4. Hook Scripts — `common-userpromptsubmit.sh`
-
-The single script invoked from both runtimes' `UserPromptSubmit`
-hook, with the runtime name passed as `argv[1]` (`claude` or `codex`).
-This is the template shape we want every still-duplicated hook to
-adopt.
-
 ## 3. Hook Registration Matrix (Current State)
 
-After the 2026-04-29 reduction, the active hook surface looks like this:
+After the 2026-09-05 reduction, the active hook surface looks like this:
 
-| Event                                            | Claude                              | Codex                               | Symmetric?                   |
-| ------------------------------------------------ | ----------------------------------- | ----------------------------------- | ---------------------------- |
-| `PreToolUse` matcher=`Bash`                      | `pretooluse-deny-bash.sh`           | `pretooluse-deny-bash.sh`           | Shared script (consolidated) |
-| `PreToolUse` matcher=`Write\|Edit\|NotebookEdit` | `claude-pretooluse-deny-write.sh`   | (no equivalent)                     | Claude-only by design        |
-| `PreToolUse` matcher=`apply_patch\|Edit\|Write`  | (no equivalent)                     | `codex-pretooluse-observe-write.sh` | Codex-only observer          |
-| `UserPromptSubmit`                               | `common-userpromptsubmit.sh claude` | `common-userpromptsubmit.sh codex`  | Shared script                |
+| Event                       | Claude                    | Codex                     | Symmetric?                   |
+| --------------------------- | ------------------------- | ------------------------- | ---------------------------- |
+| `PreToolUse` matcher=`Bash` | `pretooluse-deny-bash.sh` | `pretooluse-deny-bash.sh` | Shared script (consolidated) |
 
 Removed from both sides on 2026-04-29 for symmetry:
 
@@ -108,67 +97,35 @@ Removed from both sides on 2026-04-29 for symmetry:
 - Codex: `codex-sessionstart-reload.sh`, `codex-stop-save.sh`,
   `codex-posttooluse-review.sh`.
 
-Both runtimes now share the same minimal enforcement surface: one Bash
-PreToolUse deny plus shared UserPromptSubmit. Codex also has a write-tool
-observer to record the actual `apply_patch` / `Edit` / `Write` hook payload
-shape before this repo decides whether to add Codex write-deny enforcement.
+Removed on 2026-09-05 by user request:
+
+- Claude role-write deny hook.
+- Codex write-tool observer hook.
+- Shared UserPromptSubmit context hook.
+
+Both runtimes now share the same minimal hook surface: one Bash PreToolUse
+deny.
 
 ## 4. Intentional Asymmetries
 
-As of the deny-bash consolidation that landed alongside this doc,
-there is no remaining unintentional drift. The two asymmetries below
-are documented as the persistent shape of the boundary, not as items
-waiting to be unified.
+As of the 2026-09-05 hook reduction, no role/write hook asymmetry remains in
+active configuration.
 
-### 4.1. `claude-pretooluse-deny-write.sh` Has No Codex Equivalent
-
-This script enforces "non-`worker*` / non-`agent*` tmux pane titles
-are read-only" — the role-readonly contract that lets messenger,
-orchestrator, reviewer, etc. roles share the multi-agent surface
-without being able to mutate the repo. It reads `pane_title` via
-`tmux display-message` and emits a deny payload for non-worker
-roles when the target file is outside the allowlisted state
-and temporary directories. The allowlist does not include `${SUBDIR}` or any
-other repository path.
-
-Codex preserves the same tmux `pane_title` role identity by setting
-`tui.terminal_title = []`. It does not yet have comparable enforcement because
-the observed Codex write-hook payload has not supplied a validated mapping from
-that identity to a hook invocation, nor a validated deny/blocking result. This
-asymmetry is deliberate, not drift, and should remain until focused real-write
-validation proves both pieces.
-
-Codex's primary file-edit primitive is `apply_patch` (a single patch-applied
-tool), not the Write/Edit/NotebookEdit triple Claude exposes. The current Codex
-hook observes `apply_patch|Edit|Write` payload shape only and writes metadata to
-`${XDG_CACHE_HOME:-$HOME/.cache}/codex/hook-observations/pretooluse-write-tools.jsonl`
-unless `CODEX_HOOK_OBSERVE_DIR` overrides the directory; it does not deny. If
-enforcement is added later, the matcher and patch-shaped payload differ enough
-that the script body should stay separate from Claude's pane-title-aware
-deny-write hook.
-
-### 4.2. Codex Role Configuration Is Not Role-Based Enforcement
+### 4.1. Codex Role Configuration Is Not Role-Based Enforcement
 
 Codex CLI v0.145.0 stabilizes multi-agent role configuration: `[agents]` can
 set subagent model, reasoning effort, and concurrency, and generated agent
 files provide per-role prompts. That is useful for assigning work, but it is
-not an authorization signal comparable to the tmux pane title consumed by
-`claude-pretooluse-deny-write.sh`.
+not an authorization signal.
 
 Keep the shared policy in `postman.md`, shared prompt sources, and the common
-Bash deny hook. Keep runtime enforcement deliberately different: Claude can
-apply the established pane-title write gate; Codex continues to observe actual
-write-hook payloads. Codex's documented `PreToolUse` matcher covers
-`apply_patch` (with `Edit` and `Write` aliases), but the observer has not yet
-supplied evidence for a dependable role-to-write mapping or blocking behavior.
-Do not convert the observer into a deny hook until a focused, real-write
-validation proves both.
+Bash deny hook. If runtime-level role/write enforcement returns later, document
+the runtime-specific transport reason at that time.
 
 ## 5. Direction We Want To Keep Pulling In
 
-After the deny-bash consolidation, every shared hook script either
-already has no runtime prefix (target shape) or explicitly justifies
-why it stays forked. The same lens applies to anything new:
+After the 2026-09-05 reduction, the active hook surface contains only the
+runtime-agnostic Bash deny hook. The same lens applies to anything new:
 
 - A new hook event that both runtimes can deliver under the same
   schema should ship as one script in `scripts/` with no runtime
@@ -181,14 +138,14 @@ why it stays forked. The same lens applies to anything new:
   `agent-config-philosophy.md` principle 1) should live there
   rather than become a third hook script.
 
-The script directory naming convention we are converging on:
+The script directory naming convention remains:
 
-| Prefix        | Meaning                                                                   |
-| ------------- | ------------------------------------------------------------------------- |
-| `claude-*.sh` | Claude-only by design (e.g. `claude-pretooluse-deny-write.sh`).           |
-| `codex-*.sh`  | Codex-only by design (e.g. `codex-pretooluse-observe-write.sh`).          |
-| `common-*.sh` | Shared, parameterised by runtime arg (e.g. `common-userpromptsubmit.sh`). |
-| `<no prefix>` | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`).                |
+| Prefix        | Meaning                                                    |
+| ------------- | ---------------------------------------------------------- |
+| `claude-*.sh` | Claude-only by design.                                     |
+| `codex-*.sh`  | Codex-only by design.                                      |
+| `common-*.sh` | Shared, parameterised by runtime arg.                      |
+| `<no prefix>` | Shared, runtime-agnostic (e.g. `pretooluse-deny-bash.sh`). |
 
 A script with a `claude-` or `codex-` prefix should be readable as a
 declaration: "this is intentionally not shared, here is the reason."
@@ -202,7 +159,6 @@ sign that we owe a consolidation pass.
 - `skills/dotfiles/references/deny-bash-design.md` — what the Bash deny system
   protects against and why it is a guardrail rather than a security boundary.
 - `skills/dotfiles/references/repo-ai-operating-contract.md` — the multi-agent
-  role contract that justifies `claude-pretooluse-deny-write.sh` as an
-  intentional asymmetry.
+  role contract.
 - `nix/home-manager/agents/README.md` — practical "edit here, get
   installed there" map for the agents source tree.

@@ -102,15 +102,10 @@ workspace profile. The generated config does mark owned `ghq` repositories as
 trusted projects, but trust is not a writable-root boundary. It controls
 project trust state, not what the sandbox may modify.
 
-Codex hooks currently add these local checks:
+Codex hooks currently add this local check:
 
 - `PreToolUse` `Bash` runs
   `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh`.
-- `PreToolUse` `apply_patch|Edit|Write` runs
-  `nix/home-manager/agents/scripts/codex-pretooluse-observe-write.sh`.
-
-The write hook is observation-only. Codex has no repo-managed role-aware write
-deny equivalent to Claude's `claude-pretooluse-deny-write.sh`.
 
 `scripts/lazygit/ai-commit.sh` is separate from postman agent panes. It uses
 `codex exec --ephemeral --ignore-rules --sandbox read-only -c
@@ -181,12 +176,8 @@ that pane. Do not use the current critic launch as evidence that
 
 The repo configures these Claude hooks:
 
-- `UserPromptSubmit` runs
-  `nix/home-manager/agents/scripts/common-userpromptsubmit.sh claude`.
 - `PreToolUse` `Bash` runs the shared
   `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh`.
-- `PreToolUse` `Write|Edit|NotebookEdit` runs the Claude-only
-  `nix/home-manager/agents/scripts/claude-pretooluse-deny-write.sh`.
 
 These hooks are distinct from the Claude permission-layer rules above. The
 installed help names `--bare`, not `--dangerously-skip-permissions`, as the
@@ -194,9 +185,9 @@ mode that skips hooks. This design therefore keeps hook verification separate
 from permission-rule verification: the current bypass launch may rely on the
 configured PreToolUse hook layer only after a scenario proves the hook fires.
 
-The Claude write-deny hook enforces the multi-agent role contract for panes
-that should not mutate the repo. Codex does not have an equivalent role
-contract today.
+The multi-agent role contract still forbids non-worker repository mutation,
+but no current runtime hook enforces that contract after the 2026-09-05 hook
+reduction.
 
 ### 3.3. Sandbox And Writable Surface
 
@@ -244,7 +235,7 @@ default.
 | Sensitive file read/write denies     | Policy intent should be shared                                                       | Claude has direct `Read`/`Write` denies for non-bypass permission profiles today; Codex needs sandbox or permission-profile rules in a follow-up                 | Preserve Claude's configured file denies, but do not treat them as enforced for bypass-launched panes unless tested. Add equivalent Codex boundaries only through Codex-native sandbox/profile settings. |
 | Filesystem and network blast radius  | Design principle only                                                                | Codex uses sandbox modes, approval policy, writable roots, or permission profiles. Claude uses permission rules plus optional Bash sandbox or process isolation. | Keep the policy goal aligned, but implement boundaries through each runtime's native controls.                                                                                                           |
 | Human review lane                    | `postman.md` approval route and review skills                                        | Codex `approvals_reviewer = "auto_review"` is Codex-only                                                                                                         | Auto-review may assist Codex approval prompts, but it must not replace guardian/critic/human approval gates.                                                                                             |
-| Role-based write restrictions        | `postman.md` role contract                                                           | Claude has `claude-pretooluse-deny-write.sh`; Codex currently observes write payloads only                                                                       | Keep Claude enforcement. Add Codex enforcement only after the observed write payloads support a reliable rule.                                                                                           |
+| Role-based write restrictions        | `postman.md` role contract                                                           | No active runtime hook enforcement after the 2026-09-05 hook reduction                                                                                           | Keep role restrictions in the postman contract unless a future runtime-specific hook is reintroduced.                                                                                                    |
 
 ### 4.1. Postman Command Approval Layer
 
@@ -775,7 +766,7 @@ from a disposable issue worktree or scratch repository, not from `main`.
 
 | Scenario                 | Codex expectation                                                                                                                                                                                                      | Claude expectation                                                                                                                                                                                  | Evidence to capture                                                                                                                                                                        |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Normal repo edits        | Current `--yolo` pane can edit as before. Opt-in profile can edit files inside the current workspace under `workspace-write` without widening to full access.                                                          | Worker-like panes can edit according to their permission mode. Non-worker panes should be tested against the write-deny hook separately from permission rules.                                      | Create, edit, and remove a scratch file under the issue worktree; capture status line mode and `git status --short`; record whether denial came from a hook or a permission rule.          |
+| Normal repo edits        | Current `--yolo` pane can edit as before. Opt-in profile can edit files inside the current workspace under `workspace-write` without widening to full access.                                                          | Worker-like panes can edit according to their permission mode. Non-worker role restrictions currently live in the postman contract unless a future hook or native policy reintroduces enforcement.  | Create, edit, and remove a scratch file under the issue worktree; capture status line mode and `git status --short`; record whether denial came from a hook, permission rule, or contract. |
 | Cross-directory reads    | Reads from the launch directory and explicit `--add-dir` roots work. Reads outside those roots should prompt, fail, or be denied depending on the selected sandbox profile.                                            | Reads from launch directory and `--add-dir` roots work. Sensitive `Read(...)` denies are expected for a non-bypass profile; bypass mode must not claim them unless tested on the installed version. | Attempt a normal read in the worktree, a read from the added directory, and a denied sensitive-path read; record permission mode and whether the denial came from `permissions.deny`.      |
 | Package operations       | Routine local checks such as `nix run '.#check'` work in the intended profile. Networked package or cache operations either work only when intentionally allowed or route through approval.                            | Package checks follow the selected permission mode. If sandboxing is enabled, Bash child processes stay inside the configured filesystem and network boundary.                                      | Run the repo check surface and one package-manager command with expected network behavior documented.                                                                                      |
 | Denied commands          | `git push`, `git reset`, `git rebase`, `git commit --amend`, `rm`, `sudo`, `aws sso login`, `git -C`, and `tmux select-pane -T` remain blocked by the shared hook or future Codex-native forbidden rules.              | The shared PreToolUse hook should block the same command set when hooks run. The high-consequence `permissions.deny` subset is a non-bypass expectation unless a bypass-mode test proves otherwise. | Execute harmless dry forms where possible, or use hook/unit command checks that prove the deny rule fires without side effects; record hook-layer and permission-layer results separately. |
@@ -793,8 +784,8 @@ Version-bounded Codex deny probe recorded on 2026-09-03:
 - Interpretation: this proves that the current shared Bash deny hook executes
   and its denial is honored in this installed Codex `--yolo` runtime. It does
   not prove default-deny allow-list behavior, filesystem/write enforcement, or
-  parity with Claude's role-based write-deny hook; those remain separate
-  scenarios for any opt-in implementation.
+  any non-worker role write boundary; those remain separate scenarios for any
+  opt-in implementation.
 
 Postman command approval scenario:
 

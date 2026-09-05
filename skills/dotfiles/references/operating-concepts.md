@@ -217,35 +217,24 @@ The repo treats hooks as part of the operating model.
 
 Across Claude and Codex, hooks currently do two load-bearing jobs:
 
-- inject local session context such as role, cwd, and git state
 - deny dangerous Bash commands before they run
 
 ### 4.2. Claude shape
 
-The Claude side has the richer hook surface, so it carries one additional
-role-readonly guard:
+The Claude side currently carries:
 
-- `common-userpromptsubmit.sh claude` injects time, role, cwd, git, launch
-  command, and add-dir path/context
 - `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
-- `claude-pretooluse-deny-write.sh` prevents non-worker role panes from
-  mutating repository files; it allows only the Postman and mkmd state roots
-  plus `/tmp/` for local temporary output
 
 ### 4.3. Codex shape
 
-The Codex side uses the hooks it has to approximate the same contract:
+The Codex side currently carries:
 
-- `common-userpromptsubmit.sh codex` injects time, role, cwd, git, launch
-  command, and add-dir path/context
 - `pretooluse-deny-bash.sh` enforces the shared Bash deny policy
-- `codex-pretooluse-observe-write.sh` observes and logs `apply_patch|Edit|Write`
-  write-tool payloads; it is non-enforcing and does not provide locally
-  validated role-based write denial
 
-The hook surfaces are intentionally small after the 2026-04-29 reduction. The
+The hook surfaces are intentionally small after the 2026-09-05 reduction. The
 repo relies on durable artifacts and postman traffic for handoff state
-rather than separate SessionStart, Stop, or PreCompact hook scripts.
+rather than separate prompt/context, SessionStart, Stop, or PreCompact hook
+scripts.
 
 ## 5. Claude/Codex quality parity is a design goal
 

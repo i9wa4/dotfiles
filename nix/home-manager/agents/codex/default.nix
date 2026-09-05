@@ -28,17 +28,15 @@ let
   # Shared Bash deny surface includes aws sso login; see shared/bash-commands-denied.nix.
   deniedBash = import ../shared/bash-commands-denied.nix { inherit pkgs; };
 
-  # Codex consumes runtime-agnostic shared scripts, one Codex-only observer,
-  # and generated Bash deny patterns. The shared PreToolUse hook is the
-  # repo-owned command-deny authority for Codex; filesystem and network
-  # boundaries remain Codex sandbox/approval settings.
+  # Codex consumes runtime-agnostic shared scripts and generated Bash deny
+  # patterns. The shared PreToolUse hook is the repo-owned command-deny
+  # authority for Codex; filesystem and network boundaries remain Codex
+  # sandbox/approval settings.
   # List each script explicitly; do not use wildcards, because this makes the
   # consumed hook surface reviewable in this file.
   codexScriptsDir = pkgs.runCommand "codex-scripts" { } ''
     mkdir -p $out
     ln -s ${../scripts}/pretooluse-deny-bash.sh $out/pretooluse-deny-bash.sh
-    ln -s ${../scripts}/common-userpromptsubmit.sh $out/common-userpromptsubmit.sh
-    ln -s ${../scripts}/codex-pretooluse-observe-write.sh $out/codex-pretooluse-observe-write.sh
     ln -s ${deniedBash.claudeCode.patternsFile} $out/deny-bash-patterns.sh
   '';
 
@@ -55,26 +53,6 @@ let
               type = "command";
               command = "$HOME/.codex/scripts/pretooluse-deny-bash.sh";
               statusMessage = "Checking Bash policy";
-            }
-          ];
-        }
-        {
-          matcher = "apply_patch|Edit|Write";
-          hooks = [
-            {
-              type = "command";
-              command = "$HOME/.codex/scripts/codex-pretooluse-observe-write.sh";
-              statusMessage = "Observing write-tool hook payload";
-            }
-          ];
-        }
-      ];
-      UserPromptSubmit = [
-        {
-          hooks = [
-            {
-              type = "command";
-              command = "$HOME/.codex/scripts/common-userpromptsubmit.sh codex";
             }
           ];
         }

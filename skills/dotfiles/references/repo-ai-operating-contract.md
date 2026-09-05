@@ -184,7 +184,6 @@ operating contract.
 Both engines are expected to support these behaviors as closely as their hook
 surfaces allow:
 
-- inject live repo context into prompts
 - deny dangerous Bash actions before execution
 - keep handoff state durable through postman messages and artifacts
 
@@ -192,19 +191,13 @@ surfaces allow:
 
 The Claude runtime currently carries:
 
-- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
-  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for shared Bash denials
-- `PreToolUse` for Claude-only role write denials
 
 ### 4.3. Codex runtime hooks
 
 The Codex runtime currently carries:
 
-- `UserPromptSubmit` for time, role, cwd, git, launch-command, and add-dir
-  path/context; `common-userpromptsubmit.sh` owns the complete payload
 - `PreToolUse` for Bash denials
-- `PreToolUse` observer for `apply_patch|Edit|Write` write-tool payloads
 
 The surface is not identical, but the repo is aiming for equivalent operating
 discipline.
@@ -354,13 +347,12 @@ Shared policy that must stay aligned across Claude and Codex
 
 The shared policy line above is the part that must not drift. Both engines are
 still expected to inherit the same repo-local operating core, deny policy,
-review topology, resumable handoff discipline, and launch-command visibility in
-`UserPromptSubmit`.
+review topology, and resumable handoff discipline.
 
 Within that shared policy, the repo currently treats these differences as
 intentional:
 
-- Claude-only role write-deny hook
+- Claude-only native secret-path `permissions.deny` entries
 - Codex denser installed rules artifact
 
 These differences are acceptable only so long as they keep the same local
