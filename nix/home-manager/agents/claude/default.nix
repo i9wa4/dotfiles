@@ -96,20 +96,31 @@ let
     language = "English";
     outputStyle = "Explanatory";
     permissions = {
-      deny = deniedBash.claudeCode.denyPermissions ++ [
-        # v2.1.200 made AskUserQuestion dialogs no longer auto-continue by
-        # default, so in headless / tmux-a2a-postman panes a question stalls
-        # the turn indefinitely with no human to answer. Deny the tool so the
-        # agent proceeds on its own judgement instead.
-        # (see claude-optimization-tracking.md §1.1)
-        "AskUserQuestion"
-        "Read(**/*key*)"
-        "Read(**/*token*)"
-        "Read(.env*)"
-        "Read(~/.ssh/**)"
-        "Edit(**/secrets/**)"
-        "Edit(.env*)"
-      ];
+      # Read/Edit-scoped secret-path deny entries (Read(**/*key*),
+      # Read(**/*token*), Read(.env*), Read(~/.ssh/**), Edit(**/secrets/**),
+      # Edit(.env*)) were deliberately removed here (issue #362). This is a
+      # confirmed protection-loss tradeoff, not dead-code cleanup: live
+      # testing in-session and current Claude Code documentation/changelog
+      # both confirmed this Read/Edit-tool-level enforcement is still
+      # active as of this change. It was removed anyway, by explicit
+      # informed user decision, in favor of relying solely on the shared
+      # Bash-hook layer (pretooluse-deny-bash.sh, byte-identical across
+      # Claude Code and Codex CLI) for command-level protection -- matching
+      # #363's direction of keeping this surface Bash-deny-only rather than
+      # adding a Codex-side enforcing write hook with no Claude equivalent.
+      # v2.1.200 made AskUserQuestion dialogs no longer auto-continue by
+      # default, so in headless / tmux-a2a-postman panes a question stalls
+      # the turn indefinitely with no human to answer. Denying the tool made
+      # the agent proceed on its own judgement instead.
+      # (see claude-optimization-tracking.md §1.1)
+      # Commented out (not deleted) per issue #362 follow-up instruction: a
+      # deliberate wait-and-see safety margin, user-confirmed -- if nothing
+      # breaks with it disabled, it will be deleted outright in a later
+      # pass. NOTE: disabling this reintroduces the exact headless/postman
+      # stall this entry existed to prevent; unrelated to #362's actual
+      # scope (Read/Edit secret-path deny).
+      # deny = deniedBash.claudeCode.denyPermissions ++ [ "AskUserQuestion" ];
+      deny = deniedBash.claudeCode.denyPermissions;
     };
     showThinkingSummaries = true;
   };
