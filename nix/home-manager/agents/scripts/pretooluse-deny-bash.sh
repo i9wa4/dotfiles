@@ -427,12 +427,22 @@ mask_heredoc_bodies() {
   local pending="" pending_first=1
   local -a line_delims=()
   local -a fallback_queue=()
-  local fq_word fq_strip fq_compare
+  local fq_word fq_strip fq_quoted fq_compare
   local line_delims_raw line_delim_entry
 
   while IFS= read -r line || [ -n "$line" ]; do
     if [ "${#fallback_queue[@]}" -gt 0 ]; then
-      IFS=$'\t' read -r fq_word fq_strip <<<"${fallback_queue[0]}"
+      # Read all three fields the record carries (word/strip_tabs/quoted).
+      # Reading only two here previously let $fq_strip silently absorb
+      # "strip_tabs<TAB>quoted" as one leftover string (read's last named
+      # variable gets everything remaining) -- a value that can never
+      # equal the literal "1" the check below compares against, so the
+      # leading-tab-stripping for a `<<-` operator's queued delimiter
+      # never activated (guardian finding C5). quoted_flag is unused here
+      # since the fallback never masks regardless of quoting; it must
+      # still be consumed so it does not get folded into fq_strip.
+      # shellcheck disable=SC2034 # fq_quoted deliberately unused: consumed only to keep fq_strip isolated to its own field
+      IFS=$'\t' read -r fq_word fq_strip fq_quoted <<<"${fallback_queue[0]}"
       fq_compare="$line"
       if [ "$fq_strip" = "1" ]; then
         while [ "${fq_compare:0:1}" = $'\t' ]; do
