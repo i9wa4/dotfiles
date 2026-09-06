@@ -106,14 +106,7 @@ let
       # the turn indefinitely with no human to answer. Denying the tool made
       # the agent proceed on its own judgement instead.
       # (see claude-optimization-tracking.md §1.1)
-      # Commented out (not deleted) per issue #362 follow-up instruction: a
-      # deliberate wait-and-see safety margin, user-confirmed -- if nothing
-      # breaks with it disabled, it will be deleted outright in a later
-      # pass. NOTE: disabling this reintroduces the exact headless/postman
-      # stall this entry existed to prevent; unrelated to #362's actual
-      # scope (Read/Edit secret-path deny).
-      # deny = deniedBash.claudeCode.denyPermissions ++ [ "AskUserQuestion" ];
-      deny = deniedBash.claudeCode.denyPermissions;
+      deny = deniedBash.claudeCode.denyPermissions ++ [ "AskUserQuestion" ];
     };
     showThinkingSummaries = true;
   };
