@@ -311,11 +311,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1788657779,
-        "narHash": "sha256-G0QST3LXVGAMobNeYQ99Nwm/rUDpnXME4rJ8ZbtSW0g=",
+        "lastModified": 1788720730,
+        "narHash": "sha256-ayYZ2BuGiQ1UKXXor83UiQbq59q4jXd3JFIjyGVvcpU=",
         "owner": "google",
         "repo": "skills",
-        "rev": "134ba0655f1f6db621800a01dfd7c6925152fa40",
+        "rev": "d56d145e512dca644a3b7ba8332da523c9a60e3c",
         "type": "github"
       },
       "original": {
@@ -386,11 +386,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1788684345,
-        "narHash": "sha256-+3tYyzbgr5LdaqPDQ9tHM1JuXx7DVQqZH8MeQ7ooStI=",
+        "lastModified": 1788735733,
+        "narHash": "sha256-npkzAcX/J3995/MvyWANeSHGBbt20JcIesPLHpHR/uI=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "76e610601903fd31e82b996b28a49c6d1adb559c",
+        "rev": "1934b1c8633923a327ef4491be44e7a424379e6d",
         "type": "github"
       },
       "original": {
