@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Implement, fix, add, or otherwise change any code — read this BEFORE starting, and before any git or GitHub action (issue, branch, commit, push, PR create/review) — sets the issue-first, worktree-based default via issue-worktree-create. GitHub/Jira/Confluence: gh CLI, PR/commit/issue management, review style, public path hygiene; Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
+  USE FOR: Implement, fix, add, or otherwise change any code in this repository — read this BEFORE starting, and before any git or GitHub action (issue, branch, commit, push, PR create/review) — sets the issue-first, worktree-based default via issue-worktree-create. GitHub/Jira/Confluence: gh CLI, PR/commit/issue management, review style, public path hygiene; Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
 ---
 
 # Dev Platform Workflow
