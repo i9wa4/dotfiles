@@ -11,7 +11,9 @@ Last reviewed Claude Code version: v2.1.277 (2026-09-19)
 Review confirmation (2026-09-19): local `claude --version` reported
 `2.1.277 (Claude Code)` after `nix flake update`, and the official
 `anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.277`
-section. This pass reviewed 2.1.221 through 2.1.277 (57 releases). See
+section. This pass reviewed 2.1.221 through 2.1.277 (47 versioned changelog
+entries; 46 have a matching GitHub Release object, since v2.1.243 is
+changelog-only). See
 §1.2.8 for the headline finding (AGENTS.md support, contradicted between
 the changelog and official docs) and the rest of the catch-up.
 
@@ -336,7 +338,9 @@ the changelog and official docs) and the rest of the catch-up.
 
 #### 1.2.8. v2.1.220 -> v2.1.277 candidates (added 2026-09-19)
 
-57 releases landed in this range. Reviewed the full official `CHANGELOG.md`
+47 versioned changelog entries landed in this range (2.1.221 through 2.1.277;
+46 have a matching GitHub Release object, since v2.1.243 is changelog-only).
+Reviewed the full official `CHANGELOG.md`
 (`anthropics/claude-code`) for this span and scanned it for
 deprecation/removal/breaking entries and settings this repo's generated
 config touches (`permissions.deny`, hooks, `ENABLE_TOOL_SEARCH`,

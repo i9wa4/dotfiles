@@ -105,7 +105,7 @@ Local decisions from this catch-up:
 
 ### 1.2. Release Catch-up (v0.145.0 -> v0.154.0)
 
-18 stable releases landed in this range (v0.146.0 through v0.154.0, plus
+17 stable releases landed in this range (v0.146.0 through v0.154.0, plus
 several `.1`-`.4` patches), consolidated here rather than itemized
 per-release given the volume. Scanned every release body in range for
 config-relevant keywords (sandbox, approval, hook, permission, deprecation,
