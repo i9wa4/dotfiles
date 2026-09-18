@@ -69,7 +69,7 @@ the worktree-tool evaluation decision record (private vault).
    upstream before reporting the worktree ready. First publication through
    lazygit is the expected happy path when lazygit publishes to `origin` with
    the same branch name; the equivalent command-line refspec is documented in
-   `dev-platform-workflow/references/github-workflow.md` section 5.
+   `skills/dev-platform-workflow/references/github-workflow.md` section 5.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`. If the worktree already exists, re-running the
@@ -110,8 +110,8 @@ publishing: the branch should show no upstream, or it should show
 For the upstream verification command, the same-name publication refspec,
 the branch-protection expectation for shared branches, and PR base/head
 verification before PR creation, see
-`dev-platform-workflow/references/github-workflow.md` section 5 ("Branch
-Publication and PR Creation").
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 ## 4. Current PR review workflow
 

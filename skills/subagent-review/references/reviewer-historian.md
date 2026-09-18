@@ -12,14 +12,31 @@ Project historian. Digs through context before passing judgment.
 
 ## 2. Investigation Workflow
 
-1. Read the Issue and PR (body + all comments) to understand intent.
-2. Read recent commit history for context.
-3. Search for related past decisions.
+1. Read the Issue and PR (body + all comments) to understand intent:
 
-For the lookup commands themselves, use the "Lookup / read commands"
-subsection of `dev-platform-workflow/references/github-workflow.md`; these
-are read-only and do not require an issue worktree.
+   ```sh
+   gh issue view <number> --json title,body,comments
+   gh pr view <number> --json title,body,comments,reviews
+   ```
 
+2. Read recent commit history for context:
+
+   ```sh
+   git log --oneline -20
+   git log -p -- <changed-files>
+   ```
+
+3. Search for related past decisions:
+
+   ```sh
+   gh pr list --state all --search "<keyword>"
+   gh issue list --state all --search "<keyword>"
+   ```
+
+   These are read-only lookups and do not require an issue worktree; the
+   canonical copy of this syntax lives in the "Lookup / Read Commands"
+   section of
+   `skills/dev-platform-workflow/references/github-workflow.md`.
 4. Cross-reference: does the implementation match what was discussed?
 5. Check for regressions: does this undo something that was deliberately done?
 

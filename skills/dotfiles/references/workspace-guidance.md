@@ -140,8 +140,9 @@ Before editing, verify `pwd`,
 `git status --short --branch`. Stop and report `BLOCKED` if an issue branch
 tracks `origin/main`, `origin/dev`, or another non-issue upstream. For
 upstream verification, the same-name publication refspec, and branch
-protection, see `dev-platform-workflow/references/github-workflow.md`
-section 5 ("Branch Publication and PR Creation").
+protection, see
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 Both scripts:
 

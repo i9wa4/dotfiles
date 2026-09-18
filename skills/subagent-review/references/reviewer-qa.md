@@ -11,10 +11,17 @@ Acceptance criteria expert. Traces requirements to implementation.
 
 ## 2. Investigation Workflow
 
-1. Extract requirements from Issue/PR. For the lookup commands, use the
-   "Lookup / read commands" subsection of
-   `dev-platform-workflow/references/github-workflow.md`; these are
-   read-only and do not require an issue worktree.
+1. Extract requirements from Issue/PR:
+
+   ```sh
+   gh issue view <number> --json title,body,comments
+   gh pr view <number> --json title,body,comments
+   ```
+
+   These are read-only lookups and do not require an issue worktree; the
+   canonical copy of this syntax lives in the "Lookup / Read Commands"
+   section of
+   `skills/dev-platform-workflow/references/github-workflow.md`.
 2. List concrete acceptance criteria (explicit and implied)
 3. Read the implementation and trace each criterion to code
 4. Identify gaps: which criteria have no corresponding implementation?

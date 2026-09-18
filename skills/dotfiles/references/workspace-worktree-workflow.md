@@ -40,8 +40,9 @@ For GitHub issue implementation in this repo:
   `origin/dev`, or another non-issue upstream; an issue branch must not push
   into shared base branches.
 - For upstream verification before publication and the same-name publication
-  refspec, see `dev-platform-workflow/references/github-workflow.md`
-  section 5 ("Branch Publication and PR Creation").
+  refspec, see
+  `skills/dev-platform-workflow/references/github-workflow.md` section 5
+  ("Branch Publication and PR Creation").
 
 ### 2.2. Issue Execution
 
@@ -55,7 +56,7 @@ Expect it to:
   `origin/issue-<number>-*` branch when present
 - set existing same-name remote issue branches as upstream
 - leave new local issue branches without an upstream until explicit same-name
-  publication (see `dev-platform-workflow/references/github-workflow.md`
+  publication (see `skills/dev-platform-workflow/references/github-workflow.md`
   section 5 for the refspec)
 - clear unsafe or stale issue branch upstreams after branch preparation. Issue
   branches must not track `origin/main`, `origin/dev`, or any other upstream
@@ -107,8 +108,9 @@ Before asking a human to push, check how far the branch is ahead of or behind
 its upstream with `git rev-list --left-right --count HEAD...@{u}`. For
 upstream verification, the same-name publication refspec, PR base/head
 verification before PR creation, and the branch-protection expectation for
-shared branches, see `dev-platform-workflow/references/github-workflow.md`
-section 5 ("Branch Publication and PR Creation").
+shared branches, see
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 ### 2.3. No-Issue Branch Work
 
