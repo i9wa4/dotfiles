@@ -155,3 +155,20 @@ Start every review comment with one of these tags:
   blocks, one concern per comment.
 <!-- private-content-scan: allow-next-line -- preserved source guidance references the owner's private writing corpus. -->
 - Tone: match @~/ghq/github.com/i9wa4/i9wa4.github.io/blog/ and zenn/
+
+## 11. Lookup / Read Commands
+
+These are read-only information lookups, not mutating actions. They do NOT
+require an issue worktree first; the worktree-before-editing rule at the top
+of this file applies only to mutating actions (issue/branch/commit/push/PR
+creation), not to reading existing issues, PRs, or history.
+
+- Read an issue's full conversation:
+  `gh issue view <number> --json title,body,comments`
+- Read a PR's full conversation, including reviews:
+  `gh pr view <number> --json title,body,comments,reviews`
+- Read recent commit history for context:
+  `git log --oneline -20` and `git log -p -- <changed-files>`
+- Search past issues or PRs for related prior decisions:
+  `gh pr list --state all --search "<keyword>"` and
+  `gh issue list --state all --search "<keyword>"`
