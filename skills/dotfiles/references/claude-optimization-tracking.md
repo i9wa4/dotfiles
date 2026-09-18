@@ -6,15 +6,14 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.220 (2026-07-25)
+Last reviewed Claude Code version: v2.1.277 (2026-09-19)
 
-Review confirmation (2026-07-25): local `claude --version` reported
-`2.1.220 (Claude Code)`, and the official
-`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.220`
-section. This pass reviewed 2.1.211 through 2.1.220. The prior pass migrated
-file-edit deny rules from invalid `Write(path)` syntax to `Edit(path)` after
-v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
-`Glob(path)` permission rules.
+Review confirmation (2026-09-19): local `claude --version` reported
+`2.1.277 (Claude Code)` after `nix flake update`, and the official
+`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.277`
+section. This pass reviewed 2.1.221 through 2.1.277 (57 releases). See
+§1.2.8 for the headline finding (AGENTS.md support, contradicted between
+the changelog and official docs) and the rest of the catch-up.
 
 ### 1.1. Applied Optimizations
 
@@ -334,6 +333,48 @@ v2.1.210 added startup warnings for `Write(path)`, `NotebookEdit(path)`, and
   that could silently break MCP, package, or documentation
   access.
 - [x] 2.1.220 bug-fix-only release - no source migration.
+
+#### 1.2.8. v2.1.220 -> v2.1.277 candidates (added 2026-09-19)
+
+57 releases landed in this range. Reviewed the full official `CHANGELOG.md`
+(`anthropics/claude-code`) for this span and scanned it for
+deprecation/removal/breaking entries and settings this repo's generated
+config touches (`permissions.deny`, hooks, `ENABLE_TOOL_SEARCH`,
+`CLAUDE_CODE_DISABLE_FAST_MODE`, `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`, MCP
+servers). Consolidated rather than itemized per-release given the volume.
+
+- [x] **AGENTS.md support (v2.1.277, exactly the installed version)** -
+  `CHANGELOG.md` states: "Added AGENTS.md support: in a project with no
+  CLAUDE.md, Claude Code reads AGENTS.md instead." However, the live
+  official docs (`code.claude.com/docs/en/memory`, "AGENTS.md" section)
+  explicitly say "Claude Code reads `CLAUDE.md`, not `AGENTS.md`," and
+  document `@AGENTS.md` import or a `CLAUDE.md -> AGENTS.md` symlink as the
+  supported way to combine them without duplication. These two official
+  Anthropic sources contradict each other as of this review. No config
+  change made: consolidating this repo's generated
+  <!-- private-content-scan: allow-next-line -->
+  `~/.claude/CLAUDE.md` (already derived from the single-authored
+  `shared/AGENTS.md` source, see §6 of `claude-code.md`) down to a bare
+  `AGENTS.md` is deferred until this is resolved. The changelog's own
+  wording ("in a project with...") also reads as project-level
+  `./CLAUDE.md` scope, not the global
+  <!-- private-content-scan: allow-next-line -->
+  `~/.claude/CLAUDE.md` this repo manages -- a second open question, not
+  just the source contradiction.
+- [x] Removed the deprecated `TaskOutput` tool and its `taskOutputMaxChars`
+  setting/`TASK_MAX_OUTPUT_LENGTH` env var (mid-range). No local config
+  change: neither is set anywhere in `nix/home-manager/agents/`.
+- [x] Removed the 200-subagent-per-session spawn cap; removed "Default
+  teammate model" from `/config`; removed the ultraplan feature (various,
+  mid-late range). All product/UX changes with no generated-config
+  counterpart in this repo.
+- [ ] `sandbox.excludedCommands` glob-matching fix (a compound Bash command
+  now requires every part to match, not just one) - no local config uses
+  `sandbox.excludedCommands` today, consistent with the deferred sandbox
+  posture noted in §1.2.7; no action needed, left as a note for whenever
+  sandbox config is revisited.
+- [x] No other deprecation/removal/breaking entry in this range touches a
+  setting or env var this repo's `claude/default.nix` currently generates.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
