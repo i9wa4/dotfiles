@@ -49,7 +49,7 @@ let
       BASH_DEFAULT_TIMEOUT_MS = "3000000";
       BASH_MAX_TIMEOUT_MS = "3000000";
       CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70";
-      CLAUDE_CODE_DISABLE_AUTO_MEMORY = "true";
+      CLAUDE_CODE_DISABLE_AUTO_MEMORY = "1";
       CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
       # Keep the conversation in the terminal's native scrollback (tmux
       # copy-mode / wheel) instead of the fullscreen alt-screen renderer, so
@@ -58,11 +58,11 @@ let
       # (v2.1.132; see claude-optimization-tracking.md §1.1)
       CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1";
       CLAUDE_CODE_DISABLE_FAST_MODE = "1";
-      CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "true";
-      CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "true";
+      CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY = "1";
+      CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "1";
       CLAUDE_CODE_ENABLE_TELEMETRY = "false";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "20000";
-      CLAUDE_CODE_ENABLE_PROMPT_SUGGESTIONS = "false";
+      CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION = "false";
       # `1` forces permission mode to "default" and silently overrides
       # `--dangerously-skip-permissions`, so every Bash call falls back to
       # an "ask" prompt -- which the user can never auto-approve, hence the
