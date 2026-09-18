@@ -1,0 +1,17 @@
+id: positive-trigger-002
+name: Positive Trigger 2 - Implementation Intent
+description: >-
+  Trigger-accuracy prompt for a coding task with no git-action verb, locking
+  in the broadened description wording (implement/fix/add).
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Start a code implementation task to fix this bug, without any git or GitHub action mentioned yet."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/dev-platform-workflow/SKILL.md
+      mode: positive
