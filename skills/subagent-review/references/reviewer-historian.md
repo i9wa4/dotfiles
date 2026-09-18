@@ -38,12 +38,15 @@ Project historian. Digs through context before passing judgment.
 
 ### 2.1. Blind-review channel
 
-When Guardian supplies a blind packet, use only its projected aliases and
-bounded neutral history digest. Do not request, infer, or emit real repository
-paths, filenames, issue/PR identifiers, URLs, commits, authors, branches,
-timestamps, or candidate identity. Report history evidence with the supplied
-alias and line reference (or `no file applicable`) so Guardian can bind it via
-the private control envelope.
+When Guardian supplies a blind packet, treat it as a token-efficient starting
+point, not an investigative ceiling. Use its projected aliases and bounded
+neutral history digest as the default evidence base, but independently look
+up real repository paths, identifiers, and issue/PR/commit history (per the
+lookup commands in section 2) whenever you judge that necessary for your
+perspective. Report evidence that came from the supplied packet with its
+alias and line reference so Guardian can bind it via the private control
+envelope; report evidence from your own independent lookup directly (real
+path, issue/PR/commit reference).
 
 ## 3. Review Focus
 
@@ -71,7 +74,7 @@ Issue/PR/commit identifiers and repository paths are permitted.
 ### 4.2. Blind mode
 
 For a blind packet, return the same confidence, evidence, problem, and
-suggestion fields, but use only the supplied alias path and line reference (or
-`no file applicable`). Do not emit or infer Issue/PR/commit identifiers, real
-repository paths, filenames, URLs, authors, branches, timestamps, or candidate
-identity.
+suggestion fields. Use the supplied alias path and line reference (or `no
+file applicable`) for evidence that came from the packet; use real
+identifiers (Issue/PR/commit, repository path) directly for evidence you
+independently looked up.

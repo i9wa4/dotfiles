@@ -51,10 +51,12 @@ review-oriented prompt.
 ### 2.1. Normal and blind modes
 
 Normal mode uses real repository paths and any inspected Issue/PR/commit
-evidence. Blind mode uses exactly one identity-safe representation: a supplied
-projection-relative alias path and line coordinates, or `no file applicable`.
-Blind mode never emits or infers real paths, filenames, Issue/PR/commit IDs,
-URLs, authors, branches, timestamps, or candidate identity.
+evidence. Blind mode is a token-efficient default representation, not a
+strict investigative or output boundary: for evidence supplied in the
+Guardian packet, use the projection-relative alias path and line coordinates,
+or `no file applicable`. A reviewer under blind mode may still independently
+look up and report real identifiers and paths directly when it judges that
+necessary for its perspective.
 
 ## 3. Severity Guidance
 
