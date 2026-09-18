@@ -1,0 +1,18 @@
+id: negative-trigger-002
+name: Negative Trigger 2 - Close-Boundary Read-Only Inspection
+description: >-
+  Close-boundary negative case near the new implementation-intent boundary:
+  read-only code inspection/explanation with no actual code change, git
+  action, or GitHub action.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Explain what this function does and why it returns null in this edge case, without changing any code."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/dev-platform-workflow/SKILL.md
+      mode: negative
