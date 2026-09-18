@@ -82,7 +82,6 @@ let
     feedback.enabled = false;
 
     features = {
-      apps = true;
       fast_mode = false;
     };
 
@@ -94,19 +93,15 @@ let
       };
 
       slack = {
-        enabled = true;
         default_tools_approval_mode = "prompt";
       };
       gmail = {
-        enabled = true;
         default_tools_approval_mode = "prompt";
       };
       google_calendar = {
-        enabled = true;
         default_tools_approval_mode = "prompt";
       };
       google_drive = {
-        enabled = true;
         default_tools_approval_mode = "prompt";
       };
     };

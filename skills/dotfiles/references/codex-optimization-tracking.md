@@ -187,6 +187,12 @@ incident runbook is archived in the private vault
       large fully-checkpointed WAL to zero after logging holder PIDs. The
       managed policy is storage relief only: process lifecycle stays outside the
       timer.
+- [x] Removed `features.apps = true` and the four `apps.*.enabled = true`
+  entries (slack, gmail, google_calendar, google_drive) on 2026-09-19 --
+  confirmed via `codex features list` on a clean `CODEX_HOME` and the shared
+  `default_enabled()` function that both default to `true` already, so the
+  explicit settings were redundant. `apps._default.enabled = false` and each
+  app's `default_tools_approval_mode = "prompt"` are unchanged.
 
 ### 1.4. Pending Considerations
 
