@@ -52,22 +52,36 @@ the changelog and official docs) and the rest of the catch-up.
   usage
 - [x] `includeGitInstructions = false` - disables built-in git instructions;
   custom `skills/dev-platform-workflow/SKILL.md` is sole authority (v2.1.69)
-- [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0"` - DISABLED (was "1"). At "1"
-  the harness silently forces `permissionMode = "default"` and overrides
-  `--dangerously-skip-permissions`, producing an "ask" prompt for every
-  Bash tool call; with no human present to approve, every call returns
-  `exit 126 — Request interrupted by user`. The "ask" path is also where
-  the deny-bash hook's silent failures (broken `\s` regex, sed delimiter
-  collision) became visible: hooks looked dead because the harness
-  never even reached them. Restore to "1" only after declaring an
-  explicit `allowedTools` set so Bash auto-approves without prompts.
-  **Do not leave this unset as a "matches the default" simplification**:
-  on 2026-09-19 this was briefly removed on the theory that unset behaves
-  like `"0"`, but guardian found (via binary decompilation) that unset and
-  explicit `"0"` diverge to scrub-ON under `GITHUB_ACTIONS` or
-  `CLAUDE_CODE_ENTRYPOINT === "local-agent"` -- exactly the failure mode this
-  bullet exists to prevent. The explicit `"0"` is a deliberate guard, not a
-  redundant default restatement.
+- [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` left unset (2026-09-19; was explicit
+  `"0"` before that, DISABLED). At "1" the harness silently forces
+  `permissionMode = "default"` and overrides `--dangerously-skip-permissions`,
+  producing an "ask" prompt for every Bash tool call; with no human present to
+  approve, every call returns `exit 126 — Request interrupted by user`. The
+  "ask" path is also where the deny-bash hook's silent failures (broken `\s`
+  regex, sed delimiter collision) became visible: hooks looked dead because
+  the harness never even reached them.
+
+  For **permission-mode** purposes (the incident above), unset and explicit
+  `"0"` are equivalent: guardian confirmed the permission-forcing mechanism is
+  gated on an explicitly-truthy check (`"1"`/`"true"`/`"yes"`/`"on"`), so
+  leaving it unset cannot trigger it -- an earlier version of this note
+  claimed otherwise and was wrong; that claim is retracted.
+
+  For this variable's **separate credential-scrubbing** effect, unset and
+  explicit `"0"` are only conditionally equivalent: they diverge to scrub-ON
+  when `GITHUB_ACTIONS` is set, or when `CLAUDE_CODE_ENTRYPOINT ===
+  "local-agent"`. Checked both against this fleet's actual launch path:
+  `CLAUDE_CODE_ENTRYPOINT` is never set anywhere in this repo, and every
+  Claude Code launch here goes through the plain `claude` CLI binary
+  (`config/vde/layout.yml`) with no Agent SDK wrapper, so a `"local-agent"`
+  entrypoint does not apply today. Neither `ci.yaml` nor `release.yaml`
+  invokes `claude` at all, so `GITHUB_ACTIONS` never coincides with a Claude
+  Code launch in this repo's own CI either. Re-check this note if either
+  invocation pattern changes (for example, adopting the Claude Agent SDK for
+  programmatic use, or running `claude` from a GitHub Actions job).
+
+  Restore to "1" only after declaring an explicit `allowedTools` set so Bash
+  auto-approves without prompts.
 - [x] `CLAUDE_CODE_ENABLE_TELEMETRY` left unset (2026-09-19; was explicit
   `"false"` before that). Matches the documented default (telemetry off
   unless explicitly set to `"1"`).
@@ -113,8 +127,8 @@ the changelog and official docs) and the rest of the catch-up.
 - [ ] Re-enable `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1"` together with an
   explicit `allowedTools` set (per the v2.1.83 release-note remediation
   path) so credential scrubbing stays on AND `--dangerously-skip-permissions`
-  remains effective for whitelisted Bash patterns. Until then it stays at
-  "0" — see §1.1.
+  remains effective for whitelisted Bash patterns. Until then it stays
+  unset (no scrubbing, no permission-mode forcing) — see §1.1.
 - [x] SQL schema validation - moved to databricks skill (Section 8)
 - [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
 - [ ] Agent memory frontmatter - `memory: user|project|local` for stateful

@@ -62,12 +62,12 @@ let
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "1";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "20000";
       CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION = "false";
-      # `1` forces permission mode to "default" and silently overrides
-      # `--dangerously-skip-permissions`, so every Bash call falls back to
-      # an "ask" prompt -- which the user can never auto-approve, hence the
-      # exit 126 storm we just debugged. Disable until we can declare an
-      # explicit `allowedTools` set.
-      CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0";
+      # Left unset: the permission-mode-forcing mechanism behind the
+      # exit-126 incident is gated on an explicitly-truthy check, so unset
+      # is safe there. See claude-optimization-tracking.md §1.1 and §1.2
+      # for the incident history and a caveat about env-var *scrubbing*
+      # (a separate effect of this same variable) under GITHUB_ACTIONS or
+      # CLAUDE_CODE_ENTRYPOINT=="local-agent" before setting this again.
       ENABLE_TOOL_SEARCH = "auto";
       IS_DEMO = "true";
     };
