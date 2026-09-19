@@ -62,10 +62,12 @@ let
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE = "1";
       CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS = "20000";
       CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION = "false";
-      # Left unset (matches the documented default: telemetry off, no
-      # scrubbing). CLAUDE_CODE_SUBPROCESS_ENV_SCRUB in particular has a
-      # documented history at "1" -- see claude-optimization-tracking.md
-      # §1.1 and §1.2 before setting it again.
+      # `1` forces permission mode to "default" and silently overrides
+      # `--dangerously-skip-permissions`, so every Bash call falls back to
+      # an "ask" prompt -- which the user can never auto-approve, hence the
+      # exit 126 storm we just debugged. Disable until we can declare an
+      # explicit `allowedTools` set.
+      CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "0";
       ENABLE_TOOL_SEARCH = "auto";
       IS_DEMO = "true";
     };
