@@ -265,7 +265,7 @@ Key rules:
 - `tmux list-sessions` is authoritative for session existence; postman routing
   may lag
 - Codex logs WAL bloat was fixed upstream in 0.142.0; see
-  `skills/dotfiles/references/codex-optimization-tracking.md` §1.2 for the
+  `skills/dotfiles/references/codex-optimization-tracking.md` §1.3 for the
   resolution
   note and the archived runbook pointer
 
