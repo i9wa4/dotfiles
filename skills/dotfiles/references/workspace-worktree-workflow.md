@@ -36,18 +36,13 @@ For GitHub issue implementation in this repo:
   git status --short --branch
   ```
 
-- Check upstream before asking a human to push or before assuming a branch is
-  safe to publish:
-
-  ```bash
-  git rev-parse --abbrev-ref --symbolic-full-name @{u}
-  ```
-
 - Stop and report `BLOCKED` if an issue branch tracks `origin/main`,
   `origin/dev`, or another non-issue upstream; an issue branch must not push
   into shared base branches.
-- First publication must use the explicit same-name destination refspec:
-  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
+- For upstream verification before publication and the same-name publication
+  refspec, see
+  `skills/dev-platform-workflow/references/github-workflow.md` section 5
+  ("Branch Publication and PR Creation").
 
 ### 2.2. Issue Execution
 
@@ -61,8 +56,8 @@ Expect it to:
   `origin/issue-<number>-*` branch when present
 - set existing same-name remote issue branches as upstream
 - leave new local issue branches without an upstream until explicit same-name
-  publication with:
-  `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`
+  publication (see `skills/dev-platform-workflow/references/github-workflow.md`
+  section 5 for the refspec)
 - clear unsafe or stale issue branch upstreams after branch preparation. Issue
   branches must not track `origin/main`, `origin/dev`, or any other upstream
   except an existing `origin/<same-branch-name>` branch.
@@ -92,15 +87,13 @@ For GitHub issue implementation, use this wrapper flow. Do not create issue
 branches or issue worktrees manually, and do not use raw `git worktree add` as
 the issue entrypoint.
 
-After entering the issue worktree and before editing or asking a human to push,
-verify the current branch and upstream:
+After entering the issue worktree and before editing, verify the current
+branch and worktree location:
 
 ```bash
 pwd
 git branch --show-current
 git status --short --branch
-git rev-parse --abbrev-ref --symbolic-full-name @{u}
-git rev-list --left-right --count HEAD...@{u}
 ```
 
 For a reused remote issue branch, the upstream must be
@@ -111,13 +104,13 @@ explicit publication; verify they started from current `main` before editing.
 First publication from lazygit is allowed and expected when it publishes to
 `origin/<same-branch-name>`.
 
-Before creating a PR, verify `origin/<feature-branch>` exists, the PR base is
-the intended base branch, and the PR head is the feature branch.
-
-Local Git config is only a safety default, not a remote trust boundary. Protect
-shared remote branches such as `main` and `dev` with GitHub rulesets or branch
-protection so direct pushes to those refs are blocked or require the normal
-reviewed path.
+Before asking a human to push, check how far the branch is ahead of or behind
+its upstream with `git rev-list --left-right --count HEAD...@{u}`. For
+upstream verification, the same-name publication refspec, PR base/head
+verification before PR creation, and the branch-protection expectation for
+shared branches, see
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 ### 2.3. No-Issue Branch Work
 

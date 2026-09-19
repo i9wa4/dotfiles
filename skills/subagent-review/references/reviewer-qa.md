@@ -18,6 +18,10 @@ Acceptance criteria expert. Traces requirements to implementation.
    gh pr view <number> --json title,body,comments
    ```
 
+   These are read-only lookups and do not require an issue worktree; the
+   canonical copy of this syntax lives in the "Lookup / Read Commands"
+   section of
+   `skills/dev-platform-workflow/references/github-workflow.md`.
 2. List concrete acceptance criteria (explicit and implied)
 3. Read the implementation and trace each criterion to code
 4. Identify gaps: which criteria have no corresponding implementation?

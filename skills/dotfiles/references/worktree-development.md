@@ -68,8 +68,8 @@ the worktree-tool evaluation decision record (private vault).
    `origin/dev`, or another non-matching upstream, the wrapper clears that
    upstream before reporting the worktree ready. First publication through
    lazygit is the expected happy path when lazygit publishes to `origin` with
-   the same branch name. The equivalent command-line shape is:
-   `git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
+   the same branch name; the equivalent command-line refspec is documented in
+   `skills/dev-platform-workflow/references/github-workflow.md` section 5.
 8. It resolves an existing branch worktree with `git worktree list
    --porcelain`. If no worktree exists, it creates one under `.worktrees/`
    with `git worktree add`. If the worktree already exists, re-running the
@@ -100,30 +100,18 @@ the worktree-tool evaluation decision record (private vault).
    exists.
 
 Before asking a human to publish an issue branch, verify that the current
-branch is the intended feature branch, that any existing upstream is either
-absent or `origin/<same-branch-name>`, and that the remote destination is
-neither `refs/heads/main` nor `refs/heads/dev`.
+branch is the intended feature branch with `git branch --show-current` and
+`git status --short --branch`. For a brand-new local issue branch, the
+upstream check should fail with "no upstream configured" until first
+publication; in lazygit, check the branch panel or status header before
+publishing: the branch should show no upstream, or it should show
+`origin/<same-branch-name>` for an already existing remote issue branch.
 
-```sh
-git branch --show-current
-git status --short --branch
-git rev-parse --abbrev-ref --symbolic-full-name @{u}
-```
-
-For a brand-new local issue branch, the upstream command should fail with "no
-upstream configured" until first publication. In lazygit, check the branch panel
-or status header before publishing: the branch should show no upstream, or it
-should show `origin/<same-branch-name>` for an already existing remote issue
-branch.
-
-Local Git config is only a safety default, not a remote trust boundary. Protect
-shared remote branches such as `main` and `dev` with GitHub rulesets or branch
-protection so direct pushes to those refs are blocked or require the reviewed
-path.
-
-Before creating a PR, verify that `origin/<feature-branch>` exists, the PR base
-is the intended base branch, and the PR head is the feature branch. Do not
-create a PR from an unverified local-only branch or mismatched base/head pair.
+For the upstream verification command, the same-name publication refspec,
+the branch-protection expectation for shared branches, and PR base/head
+verification before PR creation, see
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 ## 4. Current PR review workflow
 

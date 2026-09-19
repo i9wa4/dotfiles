@@ -33,6 +33,10 @@ Project historian. Digs through context before passing judgment.
    gh issue list --state all --search "<keyword>"
    ```
 
+   These are read-only lookups and do not require an issue worktree; the
+   canonical copy of this syntax lives in the "Lookup / Read Commands"
+   section of
+   `skills/dev-platform-workflow/references/github-workflow.md`.
 4. Cross-reference: does the implementation match what was discussed?
 5. Check for regressions: does this undo something that was deliberately done?
 
