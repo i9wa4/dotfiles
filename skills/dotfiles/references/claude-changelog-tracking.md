@@ -108,7 +108,7 @@ This reference preserves older review notes that support current
 - `terminalSequence` hook output (v2.1.141) - no use case yet for desktop
   notifications / bells from hooks
 - `CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL` (v2.1.136) - feedback survey
-  already disabled globally via `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=true`
+  already disabled globally via `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1`
 - `settings.autoMode.hard_deny` (v2.1.136) - not using auto mode; deny-list
   is the strict permission boundary
 - `sandbox.bwrapPath` / `sandbox.socatPath` managed settings (v2.1.133) -

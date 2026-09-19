@@ -235,6 +235,22 @@ incident runbook is archived in the private vault
       large fully-checkpointed WAL to zero after logging holder PIDs. The
       managed policy is storage relief only: process lifecycle stays outside the
       timer.
+- [x] Removed `features.apps = true` and the four `apps.*.enabled = true`
+  entries (slack, gmail, google_calendar, google_drive) on 2026-09-19 --
+  both already default to `true` without the explicit setting, so it was
+  redundant. `codex features list` on a clean `CODEX_HOME` cannot verify this
+  (it is a feature-flag inspector blind to per-app state and cannot exercise
+  the `apps._default` inheritance question); the actual evidence is the
+  `openai/codex` source at the installed `rust-v0.154.0` tag:
+  `codex-rs/connectors/src/app_tool_policy.rs:107-118`'s `app_is_enabled()`
+  only falls back to `apps._default.enabled` when an app has no `[apps.<id>]`
+  table at all, and `codex-rs/config/src/types.rs:483-486`'s `AppConfig.enabled`
+  field independently defaults to `true` via `default_enabled()`
+  (`types.rs:59`) whenever that app's own table is present but omits
+  `enabled` -- exactly this repo's case, since `[apps.slack]` etc. still exist
+  for their `default_tools_approval_mode` setting. `apps._default.enabled =
+  false` and each app's `default_tools_approval_mode = "prompt"` are
+  unchanged.
 
 ### 1.5. Pending Considerations
 
