@@ -137,14 +137,12 @@ or worktrees manually, and do not use the generic worktree tool
 (`EnterWorktree`) as the entrypoint for issue implementation or PR review.
 Before editing, verify `pwd`,
 `git branch --show-current`, and
-`git status --short --branch`. Before asking a human to push, verify upstream
-with `git rev-parse --abbrev-ref --symbolic-full-name @{u}`. Stop and report
-`BLOCKED` if an issue branch tracks `origin/main`, `origin/dev`, or another
-non-issue upstream. First publication must use the explicit same-name
-destination refspec:
-`git push --set-upstream origin HEAD:refs/heads/<same-branch-name>`.
-GitHub rulesets or branch protection must protect shared remote branches such
-as `main` and `dev`.
+`git status --short --branch`. Stop and report `BLOCKED` if an issue branch
+tracks `origin/main`, `origin/dev`, or another non-issue upstream. For
+upstream verification, the same-name publication refspec, and branch
+protection, see
+`skills/dev-platform-workflow/references/github-workflow.md` section 5
+("Branch Publication and PR Creation").
 
 Both scripts:
 
