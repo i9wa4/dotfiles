@@ -14,6 +14,21 @@ commands, the no-issue-branch fallback, and entrypoint restrictions.
 - Always fetch the full conversation (body plus comments) for issues and PRs.
 - Cite issue and PR numbers with a `#` prefix, for example `#240`.
 
+### 1.1. Review Modes and Isolation
+
+- A read-only review uses `gh pr view` and `gh pr diff`; do not create a local
+  checkout merely to inspect a PR.
+- A review that runs tests, builds, or other commands uses a dedicated PR
+  worktree created from the PR ref with `pr-worktree-create <pr_number>`.
+  The reviewer uses and removes that worktree; never check out the shared main
+  directory during a review.
+- A request for review must say explicitly when the reviewer is expected to run
+  tests, builds, or other commands, so the required worktree is unambiguous.
+- A script that changes directory before a stateful command, such as
+  `git checkout` or `rm`, must use `set -euo pipefail` or chain the directory
+  change with `&&`. A failed `cd` must stop the script rather than allow a
+  later command to run in the caller's directory.
+
 ## 2. Issue Creation
 
 - Check `.github/ISSUE_TEMPLATE/` first and follow the template when one
