@@ -5,12 +5,14 @@ and version history for Codex CLI. The runtime overview lives in `codex-cli.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.145.0 (2026-07-25)
+Last reviewed Codex CLI version: v0.154.0 (2026-09-19)
 
-Review confirmation (2026-07-25): local `codex --version` reported
-`codex-cli 0.145.0`, and the official stable `openai/codex` release
-`rust-v0.145.0` was published on 2026-07-21. This pass excludes only releases
-newer than that installed version.
+Review confirmation (2026-09-19): local `codex --version` reported
+`codex-cli 0.154.0` after `nix flake update`, and the official stable
+`openai/codex` release `rust-v0.154.0` was published on 2026-09-09. A newer
+`rust-v0.155.0` (2026-09-17) exists upstream but is excluded, along with a
+`python-v0.154.0` release, since this pass excludes anything newer than the
+installed Rust-CLI version.
 
 ### 1.1. Release Catch-up (v0.136.0 -> v0.145.0)
 
@@ -96,12 +98,58 @@ Local decisions from this catch-up:
   rationale that launch-time model/reasoning pins should not be swapped by
   `/fast`.
 - The Codex WAL checkpoint and storage-pressure timers were removed on
-  2026-07-05 after the v0.142.0 log-write fixes (see §1.2).
+  2026-07-05 after the v0.142.0 log-write fixes (see §1.3).
 - Treat Code Mode, rollout token budgets, multi-agent delegation controls,
   system-proxy auth, and custom API/Bedrock/admin surfaces as product features
   until a local harness workflow needs explicit config.
 
-### 1.2. WAL Bloat (resolved upstream)
+### 1.2. Release Catch-up (v0.145.0 -> v0.154.0)
+
+17 stable releases landed in this range (v0.146.0 through v0.154.0, plus
+several `.1`-`.4` patches), consolidated here rather than itemized
+per-release given the volume. Scanned every release body in range for
+config-relevant keywords (sandbox, approval, hook, permission, deprecation,
+removal, AGENTS.md); most matches are internal refactors
+(`@copyberry`-authored PRs migrating permission/sandbox/approval plumbing
+between Codex's own internal modules) with no user-facing config surface.
+User-facing highlights from the range:
+
+- Removed the deprecated `codex exec --full-auto` flag; use
+  `--sandbox workspace-write` instead. No local config change: this repo's
+  vde-layout panes launch with `--yolo`, not `--full-auto`.
+- Removed the deprecated `codex mcp-server` entry point. No local config
+  change: not referenced anywhere in this repo's generated config.
+- Added `--approve-for-me` for automatically reviewed approvals, and applied
+  safer automatic-review defaults for cyber-capable models. No local config
+  change: this repo does not set `approvals_reviewer` or an approval-review
+  profile (see §2.1 in the shared design doc); Codex panes stay at
+  `approval_policy = never` via `--yolo`.
+- Sandbox restrictions now fail closed for denied/unreadable paths on Linux
+  and Windows (was previously inconsistent). No local config change needed;
+  this is a behavior hardening in Codex's favor.
+- "Untrusted projects no longer supply project-level `AGENTS.md`
+  instructions, and managed deny-read rules remain enforced after permission
+  changes." This governs Codex's own project-trust gating for
+  project-checked-in `AGENTS.md` files, not this repo's home-directory
+  <!-- private-content-scan: allow-next-line -->
+  `~/.codex/AGENTS.md` (installed from `shared/AGENTS.md`, a trusted,
+  Nix-managed file, not a project-local untrusted one). No local config
+  change.
+- Hooks can now run commands asynchronously and invoke MCP tools; new
+  `Interrupt` hooks fire when an active top-level turn is interrupted. This
+  repo's only Codex hook (`pretooluse-deny-bash.sh`) is a synchronous
+  `PreToolUse` hook and is unaffected; no local config change.
+- The plugin CLI can list, install, and remove plugins from remote
+  marketplaces, and existing sessions now pick up newly installed plugin
+  tools automatically after upgrades. Product feature; no local config
+  change.
+
+Local decisions from this catch-up: no generated `config.toml` change is
+needed anywhere in this range. All matches were either internal refactors
+with no external config surface, or hardening/behavior changes consistent
+with this repo's existing `--yolo`/advisory posture.
+
+### 1.3. WAL Bloat (resolved upstream)
 
 Codex logs SQLite WAL growth (observed at 32-35 GB locally in 2026-05) was
 fixed upstream: openai/codex #29432 and #29457 landed in v0.142.0 and #29599
@@ -113,7 +161,7 @@ incident runbook is archived in the private vault
 `~/.codex/sessions/` still have no upstream auto-retention
 (openai/codex #20230); use `codex delete` / archive for manual cleanup.
 
-### 1.3. Applied Optimizations
+### 1.4. Applied Optimizations
 
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
   now flow through `config/tmux-a2a-postman/postman.md`. A minimal
@@ -187,8 +235,24 @@ incident runbook is archived in the private vault
       large fully-checkpointed WAL to zero after logging holder PIDs. The
       managed policy is storage relief only: process lifecycle stays outside the
       timer.
+- [x] Removed `features.apps = true` and the four `apps.*.enabled = true`
+  entries (slack, gmail, google_calendar, google_drive) on 2026-09-19 --
+  both already default to `true` without the explicit setting, so it was
+  redundant. `codex features list` on a clean `CODEX_HOME` cannot verify this
+  (it is a feature-flag inspector blind to per-app state and cannot exercise
+  the `apps._default` inheritance question); the actual evidence is the
+  `openai/codex` source at the installed `rust-v0.154.0` tag:
+  `codex-rs/connectors/src/app_tool_policy.rs:107-118`'s `app_is_enabled()`
+  only falls back to `apps._default.enabled` when an app has no `[apps.<id>]`
+  table at all, and `codex-rs/config/src/types.rs:483-486`'s `AppConfig.enabled`
+  field independently defaults to `true` via `default_enabled()`
+  (`types.rs:59`) whenever that app's own table is present but omits
+  `enabled` -- exactly this repo's case, since `[apps.slack]` etc. still exist
+  for their `default_tools_approval_mode` setting. `apps._default.enabled =
+  false` and each app's `default_tools_approval_mode = "prompt"` are
+  unchanged.
 
-### 1.4. Pending Considerations
+### 1.5. Pending Considerations
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
@@ -235,7 +299,7 @@ incident runbook is archived in the private vault
   script should land as a runtime-agnostic shared script (no prefix)
   with a runtime-arg shim, not as a fresh `codex-stop-save.sh` fork.
 
-### 1.5. Not Adopting
+### 1.6. Not Adopting
 
 - `personality` setting - keep default ("friendly"); no benefit from changing
 - `log_dir` config - default log location is fine
@@ -275,7 +339,7 @@ incident runbook is archived in the private vault
 - `profile-v2` layered configs - generated Codex config remains the single
   managed base plus preserved project trust/hook state
 
-### 1.6. Version Notes
+### 1.7. Version Notes
 
 - v0.145.0 (2026-07-21): Latest stable at review time; local `codex --version`
   reported `codex-cli 0.145.0`. Stabilized multi-agent V2 with configurable
