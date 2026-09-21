@@ -125,28 +125,32 @@ let
         "git"
         "status"
       ];
-      note = "Read-only repository inspection.";
+      hookRegex = "a^";
+      note = "Read-only repository inspection. Git allow is implemented procedurally in pretooluse-deny-bash.sh so command-local config, aliases, and global options are parsed before any allow decision.";
     }
     {
       argv = [
         "git"
         "diff"
       ];
-      note = "Read-only repository inspection.";
+      hookRegex = "a^";
+      note = "Read-only repository inspection. Git allow is implemented procedurally in pretooluse-deny-bash.sh so diff output modes and pathspecs are classified before any allow decision.";
     }
     {
       argv = [
         "git"
         "log"
       ];
-      note = "Read-only repository inspection.";
+      hookRegex = "a^";
+      note = "Read-only repository inspection. Git allow is implemented procedurally in pretooluse-deny-bash.sh so patch-producing options and pathspecs are classified before any allow decision.";
     }
     {
       argv = [
         "git"
         "show"
       ];
-      note = "Read-only repository inspection.";
+      hookRegex = "a^";
+      note = "Read-only repository inspection. Git allow is implemented procedurally in pretooluse-deny-bash.sh so blob, patch, and metadata-only forms are classified before any allow decision.";
     }
     {
       argv = [
@@ -162,8 +166,8 @@ let
       # immediately (after an optional "--list") makes this match ONLY
       # the bare no-argument list form or "git branch --list", never a
       # form carrying -d/-D/--delete, which stay denied.
-      hookRegex = "^git[[:space:]]+branch([[:space:]]+--list)?[[:space:]]*$";
-      note = "Read-only branch listing only -- deliberately excludes -d/-D/--delete, which stay denied.";
+      hookRegex = "a^";
+      note = "Read-only branch listing only, implemented procedurally in pretooluse-deny-bash.sh alongside the other Git allow decisions.";
     }
   ];
 

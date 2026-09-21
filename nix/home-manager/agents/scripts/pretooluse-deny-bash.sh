@@ -667,16 +667,14 @@ SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
 # identifiers such as `token_bucket` and `key_binding`; the few
 # high-confidence underscore compounds are explicit below. All five keywords
 # accept a plural `s` so plural directory and filename forms are handled
-# consistently. Quotes are removed before matching because they only delimit
-# one shell word; this preserves a quoted path while leaving path boundaries
-# intact. `.env` and `.ssh` are anchored to a path segment
-# (start-of-string/space/`/`, or `:` for git's `<rev>:<path>` syntax on the
+# consistently. `.env` and `.ssh` are anchored to a path segment
+# (start-of-string/space/`/`, plus `:` for git's `<rev>:<path>` syntax on the
 # left, and on the right either the same set, end-of-string, or a literal `.`
-# so `.env.local`/`.env.production` still match) rather than a
-# bare substring, and `.envrc`/`.env.example` are stripped out before the
-# test runs so they cannot match at all -- `.envrc` is a direnv config file,
-# not a secret store, and `.env.example` is a placeholder template committed
-# to the repo, not real secret values.
+# so `.env.local`/`.env.production` still match) rather than a bare substring,
+# and `.envrc`/`.env.example` are stripped out before the test runs so they
+# cannot match at all -- `.envrc` is a direnv config file, not a secret store,
+# and `.env.example` is a placeholder template committed to the repo, not
+# real secret values.
 # shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
 fragment_has_secret_keyword() {
   local fragment="$1"
@@ -718,44 +716,66 @@ command_is_secret_argument_sensitive() {
 
 # Git's read-only allow entries can still print file contents from history:
 # `git show HEAD:.env`, `git log -p -- .env`, and `git diff -- secrets/key`.
-# Parse only the shell words needed for these read shapes; this is deliberately
-# not an evaluator. It removes quote syntax and supports quote concatenation
-# while preserving escaped literals and splitting only on unquoted whitespace.
+# Keep this separate from the generic command list above because only some
+# git subcommand shapes expose blob/patch content from a path argument.
+#
+# Parsed argv is intentionally small-shell, not eval: it removes quote syntax,
+# supports quote concatenation like `HEAD:".env"`, preserves escaped literal
+# characters, and splits only on unquoted whitespace. Risky shell syntax was
+# already rejected before this runs.
 PARSED_BASH_WORDS=()
+GIT_SUBCOMMAND=""
+GIT_SUBCOMMAND_INDEX=0
 
-# shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
 parse_bash_words_quote_aware() {
-  local input="$1" current="" char
-  local index in_single=0 in_double=0 escaped=0 saw_word=0
+  local input="$1"
+  local current=""
+  local char
+  local index
+  local in_single=0
+  local in_double=0
+  local escaped=0
+  local saw_word=0
 
   PARSED_BASH_WORDS=()
+
   for ((index = 0; index < ${#input}; index++)); do
     char="${input:index:1}"
+
     if [ "$escaped" -eq 1 ]; then
       current+="$char"
       saw_word=1
       escaped=0
       continue
     fi
+
     if [ "$in_single" -eq 0 ] && [[ $char == \\ ]]; then
       escaped=1
       saw_word=1
       continue
     fi
+
     if [ "$in_double" -eq 0 ] && [ "$char" = "'" ]; then
-      if [ "$in_single" -eq 1 ]; then in_single=0; else
+      if [ "$in_single" -eq 1 ]; then
+        in_single=0
+      else
         in_single=1
         saw_word=1
       fi
       continue
     fi
+
     if [ "$in_single" -eq 0 ] && [ "$char" = '"' ]; then
-      if [ "$in_double" -eq 1 ]; then in_double=0; else
+      if [ "$in_double" -eq 1 ]; then
+        in_double=0
+      else
         in_double=1
         saw_word=1
       fi
       continue
     fi
+
     if [ "$in_single" -eq 0 ] && [ "$in_double" -eq 0 ] && [[ $char =~ [[:space:]] ]]; then
       if [ "$saw_word" -eq 1 ]; then
         PARSED_BASH_WORDS+=("$current")
@@ -764,85 +784,322 @@ parse_bash_words_quote_aware() {
       fi
       continue
     fi
+
     current+="$char"
     saw_word=1
   done
-  if [ "$escaped" -eq 1 ]; then current+=$'\\'; fi
-  if [ "$saw_word" -eq 1 ]; then PARSED_BASH_WORDS+=("$current"); fi
+
+  if [ "$escaped" -eq 1 ]; then
+    current+=$'\\'
+  fi
+
+  if [ "$saw_word" -eq 1 ]; then
+    PARSED_BASH_WORDS+=("$current")
+  fi
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+fragment_has_unsafe_dollar_quote() {
+  local fragment="$1"
+  local char
+  local next_char
+  local index
+  local single_quoted=0
+  local double_quoted=0
+  local escaped=0
+
+  for ((index = 0; index < ${#fragment}; index++)); do
+    char="${fragment:index:1}"
+
+    if [ "$escaped" -eq 1 ]; then
+      escaped=0
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 0 ] && [[ $char == \\ ]]; then
+      escaped=1
+      continue
+    fi
+
+    if [ "$double_quoted" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$single_quoted" -eq 1 ]; then
+        single_quoted=0
+      else
+        single_quoted=1
+      fi
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$double_quoted" -eq 1 ]; then
+        double_quoted=0
+      else
+        double_quoted=1
+      fi
+      continue
+    fi
+
+    if [ "$single_quoted" -eq 0 ] && [ "$double_quoted" -eq 0 ] && [ "$char" = "$" ]; then
+      next_char="${fragment:index+1:1}"
+      if [ "$next_char" = "'" ] || [ "$next_char" = '"' ]; then
+        return 0
+      fi
+    fi
+  done
+
+  return 1
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via git_token_has_secret_path
 strip_git_pathspec_magic() {
   local path="$1"
   local magic_regex='^:\([^)]*\)(.*)$'
-  if [[ $path =~ $magic_regex ]]; then path="${BASH_REMATCH[1]}"; fi
+
+  if [[ $path =~ $magic_regex ]]; then
+    path="${BASH_REMATCH[1]}"
+  fi
+
   printf '%s' "$path"
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via git_token_has_unsafe_path_pattern
+git_token_has_nonliteral_pathspec_magic() {
+  local token="$1"
+  local magic_regex='^:\(([^)]*)\).*$'
+  local magic
+
+  if [[ ! $token =~ $magic_regex ]]; then
+    return 1
+  fi
+
+  magic="${BASH_REMATCH[1]}"
+  case "$magic" in
+  literal | top,literal | literal,top)
+    return 1
+    ;;
+  esac
+
+  return 0
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via git_token_is_protected_path_candidate
+git_token_has_unsafe_path_pattern() {
+  local token="$1"
+
+  if git_token_has_nonliteral_pathspec_magic "$token"; then
+    return 0
+  fi
+
+  case "$token" in
+  *'*'* | *'?'* | *'['* | *']'* | *'{'* | *'}'*)
+    return 0
+    ;;
+  esac
+
+  return 1
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
 git_path_like_token() {
   local token="$1"
+
   case "$token" in
-  -- | -*) return 1 ;;
-  /* | ./* | ../* | ~/* | *'/'* | *.* | :\(*) return 0 ;;
+  -- | -*)
+    return 1
+    ;;
+  /* | ./* | ../* | ~/* | *'/'* | *.* | :\(*)
+    return 0
+    ;;
   esac
+
   return 1
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
+git_token_is_protected_path_candidate() {
+  local token="$1"
+
+  if [ -z "$token" ]; then
+    return 1
+  fi
+
+  case "$token" in
+  -- | -*)
+    return 1
+    ;;
+  esac
+
+  git_token_has_secret_path "$token" || git_token_has_unsafe_path_pattern "$token"
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
 git_token_has_secret_path() {
-  local token="$1" path
+  local token="$1"
+  local path
+
   path="$(strip_git_pathspec_magic "$token")"
-  if fragment_has_secret_keyword "$path"; then return 0; fi
+  if fragment_has_secret_keyword "$path"; then
+    return 0
+  fi
+
   case "$token" in
   *:*)
     path="${token#*:}"
     path="$(strip_git_pathspec_magic "$path")"
-    fragment_has_secret_keyword "$path"
-    return
+    if fragment_has_secret_keyword "$path"; then
+      return 0
+    fi
     ;;
   esac
+
   return 1
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
 git_patch_option() {
-  case "$1" in -p | -u | --patch | --patch=* | --patch-with-*) return 0 ;; esac
+  local token="$1"
+
+  case "$token" in
+  -p | -u | -U | -U* | --patch | --patch=* | --patch-with-* | --unified | --unified=*)
+    return 0
+    ;;
+  esac
+
   return 1
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
 git_show_metadata_only_option() {
-  case "$1" in
-  --no-patch | -s | --stat | --shortstat | --numstat | --name-only | --name-status | --summary | --raw | --format | --format=*) return 0 ;;
+  local token="$1"
+
+  case "$token" in
+  --no-patch | -s | --stat | --shortstat | --numstat | --name-only | --name-status | --summary | --raw)
+    return 0
+    ;;
   esac
+
   return 1
 }
 
-# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
-git_fragment_reads_secret_path_argument() {
-  local fragment="$1" argc index subcommand token
-  local after_paths=0 patch_output=0 metadata_only=0
+# shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
+git_diff_metadata_only_option() {
+  local token="$1"
+
+  case "$token" in
+  --name-only | --name-status | --stat | --shortstat | --numstat | --summary | --raw | --quiet)
+    return 0
+    ;;
+  esac
+
+  return 1
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via parse_git_effective_argv
+git_config_value_rejects_allow() {
+  local value="$1"
+  local lc
+
+  lc=$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]')
+  case "$lc" in
+  alias.*=*)
+    return 0
+    ;;
+  esac
+
+  return 1
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via git_fragment_reads_secret_path_argument
+parse_git_effective_argv() {
+  local fragment="$1"
+  local argc
+  local index
+  local token
+  local value
 
   parse_bash_words_quote_aware "$fragment"
   argc="${#PARSED_BASH_WORDS[@]}"
-  if [ "$argc" -lt 2 ] || [ "${PARSED_BASH_WORDS[0]}" != "git" ]; then return 1; fi
+  GIT_SUBCOMMAND=""
+  GIT_SUBCOMMAND_INDEX=0
+
+  if [ "$argc" -lt 2 ] || [ "${PARSED_BASH_WORDS[0]}" != "git" ]; then
+    return 1
+  fi
 
   index=1
   while [ "$index" -lt "$argc" ]; do
     token="${PARSED_BASH_WORDS[$index]}"
     case "$token" in
-    --no-pager | --paginate | -p | --no-replace-objects | --no-optional-locks | --bare) index=$((index + 1)) ;;
-    -c | --git-dir | --work-tree | --namespace | --config-env) index=$((index + 2)) ;;
-    -c* | --git-dir=* | --work-tree=* | --namespace=* | --config-env=*) index=$((index + 1)) ;;
-    --) return 1 ;;
-    -*) index=$((index + 1)) ;;
-    *) break ;;
+    --no-pager | --paginate | -p | --no-replace-objects | --no-optional-locks | --bare)
+      index=$((index + 1))
+      ;;
+    -C | -c | --git-dir | --work-tree | --namespace | --config-env | --exec-path)
+      if [ "$((index + 1))" -ge "$argc" ]; then
+        return 2
+      fi
+      value="${PARSED_BASH_WORDS[$((index + 1))]}"
+      if [ "$token" = "-c" ] && git_config_value_rejects_allow "$value"; then
+        return 2
+      fi
+      index=$((index + 2))
+      ;;
+    -c*)
+      value="${token#-c}"
+      if [ -z "$value" ] || git_config_value_rejects_allow "$value"; then
+        return 2
+      fi
+      index=$((index + 1))
+      ;;
+    --git-dir=* | --work-tree=* | --namespace=* | --config-env=* | --exec-path=*)
+      index=$((index + 1))
+      ;;
+    --)
+      return 2
+      ;;
+    -*)
+      return 2
+      ;;
+    *)
+      break
+      ;;
     esac
   done
-  if [ "$index" -ge "$argc" ]; then return 1; fi
-  subcommand="${PARSED_BASH_WORDS[$index]}"
-  index=$((index + 1))
+
+  if [ "$index" -ge "$argc" ]; then
+    return 2
+  fi
+
+  GIT_SUBCOMMAND="${PARSED_BASH_WORDS[$index]}"
+  GIT_SUBCOMMAND_INDEX="$index"
+  return 0
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+git_fragment_is_git_command() {
+  local fragment="$1"
+
+  parse_bash_words_quote_aware "$fragment"
+  [ "${#PARSED_BASH_WORDS[@]}" -gt 0 ] && [ "${PARSED_BASH_WORDS[0]}" = "git" ]
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+git_fragment_reads_secret_path_argument() {
+  local fragment="$1"
+  local argc
+  local index
+  local subcommand
+  local token
+  local after_paths=0
+  local patch_output=0
+  local metadata_only=0
+
+  if ! parse_git_effective_argv "$fragment"; then
+    return 1
+  fi
+
+  argc="${#PARSED_BASH_WORDS[@]}"
+  subcommand="$GIT_SUBCOMMAND"
+  index=$((GIT_SUBCOMMAND_INDEX + 1))
 
   case "$subcommand" in
   show)
@@ -853,9 +1110,19 @@ git_fragment_reads_secret_path_argument() {
         index=$((index + 1))
         continue
       fi
-      if git_patch_option "$token"; then patch_output=1; elif git_show_metadata_only_option "$token"; then metadata_only=1; fi
-      if [[ $token == *:* ]] && git_token_has_secret_path "$token"; then return 0; fi
-      if [ "$after_paths" -eq 1 ] && git_token_has_secret_path "$token" && { [ "$metadata_only" -eq 0 ] || [ "$patch_output" -eq 1 ]; }; then return 0; fi
+      if [ "$after_paths" -eq 0 ]; then
+        if git_patch_option "$token"; then
+          patch_output=1
+        elif git_show_metadata_only_option "$token"; then
+          metadata_only=1
+        fi
+      fi
+      if [[ $token == *:* ]] && { git_token_has_secret_path "$token" || git_token_has_unsafe_path_pattern "$token"; }; then
+        return 0
+      fi
+      if [ "$after_paths" -eq 1 ] && git_token_is_protected_path_candidate "$token" && { [ "$metadata_only" -eq 0 ] || [ "$patch_output" -eq 1 ]; }; then
+        return 0
+      fi
       index=$((index + 1))
     done
     ;;
@@ -867,8 +1134,12 @@ git_fragment_reads_secret_path_argument() {
         index=$((index + 1))
         continue
       fi
-      if git_patch_option "$token"; then patch_output=1; fi
-      if [ "$patch_output" -eq 1 ] && git_token_has_secret_path "$token" && { [ "$after_paths" -eq 1 ] || git_path_like_token "$token"; }; then return 0; fi
+      if [ "$after_paths" -eq 0 ] && git_patch_option "$token"; then
+        patch_output=1
+      fi
+      if [ "$patch_output" -eq 1 ] && { git_token_is_protected_path_candidate "$token" || { git_token_has_secret_path "$token" && git_path_like_token "$token"; }; }; then
+        return 0
+      fi
       index=$((index + 1))
     done
     ;;
@@ -880,11 +1151,57 @@ git_fragment_reads_secret_path_argument() {
         index=$((index + 1))
         continue
       fi
-      if git_token_has_secret_path "$token" && { [ "$after_paths" -eq 1 ] || git_path_like_token "$token"; }; then return 0; fi
+      if [ "$after_paths" -eq 0 ]; then
+        if git_patch_option "$token"; then
+          patch_output=1
+        elif git_diff_metadata_only_option "$token" && [ "$patch_output" -eq 0 ]; then
+          metadata_only=1
+        fi
+      fi
+      if { git_token_is_protected_path_candidate "$token" || { git_token_has_secret_path "$token" && git_path_like_token "$token"; }; } && { [ "$metadata_only" -eq 0 ] || [ "$patch_output" -eq 1 ]; }; then
+        return 0
+      fi
       index=$((index + 1))
     done
     ;;
   esac
+
+  return 1
+}
+
+# shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
+git_fragment_is_safe_allow() {
+  local fragment="$1"
+  local argc
+  local index
+  local subcommand
+  local token
+
+  if ! parse_git_effective_argv "$fragment"; then
+    return 1
+  fi
+
+  argc="${#PARSED_BASH_WORDS[@]}"
+  subcommand="$GIT_SUBCOMMAND"
+  index=$((GIT_SUBCOMMAND_INDEX + 1))
+
+  case "$subcommand" in
+  status | show | log | diff)
+    if git_fragment_reads_secret_path_argument "$fragment"; then
+      return 1
+    fi
+    return 0
+    ;;
+  branch)
+    if [ "$index" -ge "$argc" ]; then
+      return 0
+    fi
+    token="${PARSED_BASH_WORDS[$index]}"
+    [ "$token" = "--list" ] && [ "$((index + 1))" -ge "$argc" ]
+    return
+    ;;
+  esac
+
   return 1
 }
 
@@ -911,6 +1228,10 @@ check_bash_fragment_for_allow() {
     return 1
   fi
 
+  if fragment_has_unsafe_dollar_quote "$fragment"; then
+    return 1
+  fi
+
   if command_is_secret_argument_sensitive "$fragment" && fragment_has_secret_keyword "$fragment"; then
     emit_deny_payload "$fragment" "secret-shaped path argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a file-reading command (cat/head/tail/wc/sort/uniq/cut). If this path is not actually secret, request it via tmux-a2a-postman execute-bash instead of retrying directly."
     exit 0
@@ -919,6 +1240,11 @@ check_bash_fragment_for_allow() {
   if git_fragment_reads_secret_path_argument "$fragment"; then
     emit_deny_payload "$fragment" "secret-shaped path/ref argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a git command that can print file contents from history or diffs (git show <rev>:<path>, git log -p/--patch, git diff). If this path is not actually secret, request it via tmux-a2a-postman execute-bash instead of retrying directly."
     exit 0
+  fi
+
+  if git_fragment_is_git_command "$fragment"; then
+    git_fragment_is_safe_allow "$fragment"
+    return $?
   fi
 
   original_fragment="$fragment"
