@@ -33,10 +33,10 @@ Why prompt over config:
 - Portable. The same rule, when phrased as agent guidance, applies to
   both Codex and Claude (and any future tool that reads markdown
   contracts).
-- No restart. Updating a prompt file takes effect on the next session
-  reload (the `SessionStart` hook reloads instructions). Updating
-  settings.json requires a Nix switch and may not apply to a live
-  session.
+- Lower restart cost. Updating the postman role contract takes effect on the
+  next `tmux-a2a-postman pop`, and markdown prompt or skill guidance stays
+  inspectable at the source. Updating settings.json requires a Nix switch and
+  may not apply to a live session.
 - Debuggable. Behavior changes show up as text diffs in a tracked
   contract file rather than as silent settings.json toggles.
 
@@ -47,7 +47,9 @@ When the config path is the right place (not avoidance):
 - Settings the engine reads at startup that are not exposed to prompts
   (model, effort, output style, language).
 - Hooks that automate behavior the engine cannot express through a
-  prompt (PreToolUse denial, PreCompact save, SessionStart reload).
+  prompt. The current shared hook surface is Bash `PreToolUse` denial;
+  handoff state and live role context flow through durable artifacts and
+  postman traffic instead of separate save/reload hooks.
 
 The trade-off the prompt path accepts: prompt rules are best-effort. An
 agent under stress may break them. That is acceptable when the cost of a
@@ -154,10 +156,12 @@ What this looks like in the current repo:
 - The same intent can take different mechanisms: native terminal scrollback is
   an env var on Claude (`CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`) and a launch
   flag on Codex (`--no-alt-screen` in `config/vde/layout.yml`).
-- Hooks are configured for both engines with the same five jobs:
-  context injection, deny enforcement, observation, handoff save,
-  handoff reload. The hook surfaces differ but the intent mirrors.
-  See section 3 of `skills/dotfiles/references/operating-concepts.md`.
+- Hooks are configured for both engines with the same load-bearing job:
+  shared Bash deny enforcement through `pretooluse-deny-bash.sh`. Context
+  injection, skills, and handoff state are carried by postman, skill
+  installation, and durable artifacts rather than by observation or
+  save/reload hook scripts. See section 4 of
+  `skills/dotfiles/references/operating-concepts.md`.
 - Skills work in both engines (`/skill <name>` for Claude,
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
@@ -225,7 +229,7 @@ Before adding agent configuration, walk this checklist:
 ## 4. References
 
 - `skills/dotfiles/references/operating-concepts.md` — descriptive operating
-  model (section 4 covers Claude/Codex parity in detail).
+  model (section 5 covers Claude/Codex parity in detail).
 - `skills/dotfiles/references/agent-hooks-architecture.md` — current hook
   surface in Claude and Codex, where they are aligned, where they still drift,
   and the direction we want to keep pulling in.

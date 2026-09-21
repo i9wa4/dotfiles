@@ -4,48 +4,44 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Reference-only external provider packs and dormant source
-  inventory — Cloudflare product/platform skills, dbt, Azure, Databricks,
-  AWS, Terraform/HashiCorp, Google Workspace, Streamlit — plus provider-pack
-  lookup and promotion decisions. DO NOT USE FOR: repo-local guardrails,
-  harness implementation, activating packs without explicit promotion, or
-  Cloudflare security audits; use security-audit for security-audit-skill.
+  USE FOR: Reference-only provider-pack lookup and promotion decisions for
+  Cloudflare, dbt, Azure, Databricks, AWS, Terraform/HashiCorp, Google
+  Workspace, and Streamlit. DO NOT USE FOR: repo guardrails, harness work,
+  active promotion without explicit request, or Cloudflare security audits.
 ---
 
 # External References
 
-Route external provider-pack requests to dormant references without activating
-the broad packs by default. The generated reference tree is
-`~/.local/share/skills`.
+Dormant provider-pack references live under `~/.local/share/skills`. Direct
+reads from `~/.local/share/skills/<skill-name>/*` need no promotion; promote
+only when the user asks to make a pack active/invokable.
 
 ## 1. Workflow
 
-1. Inspect `nix/home-manager/agents/shared/agent-skills.nix`.
-2. Inspect matching bodies under `~/.local/share/skills/<skill-name>`.
-3. Use `referenceOnlySources` as the dormant provider-pack inventory when the
-   generated tree is missing or needs source-level verification.
+1. Read matching bodies under `~/.local/share/skills/<skill-name>`.
+2. Enumerate available reference skill names from
+   `~/.local/share/skills/.i9wa4-agent-skills-reference-only.manifest` when the
+   generated name is unclear.
+3. Use `nix/home-manager/agents/shared/agent-skills.nix` `referenceOnlySources`
+   only when the generated tree is missing or source verification is needed.
 4. Prefer local owner skills for guardrails: `data-platform`, `programming`,
    or `dotfiles`.
-5. For provider syntax not covered locally, inspect the pinned source or
-   upstream docs without adding it to loader paths.
-6. Promote only on an explicit active-provider-pack request.
+5. Promote only on an explicit active-provider-pack request.
 
 ## 2. Dormant Packs
 
-- `cloudflare-skills`: Cloudflare product/platform skills. Reference-only;
-  `security-audit` is active.
-- `databricks-official`: Databricks.
-- `dbt`: dbt, dbt Labs.
-- `azure`: Azure, Microsoft Foundry, Entra.
-- `google`: Google Cloud, GCP, BigQuery, GKE, AlloyDB.
-- `aws`: AWS, Amazon Web Services.
-- `hashicorp-terraform`: Terraform, HashiCorp.
-- `googleworkspace-cli`: Google Workspace CLI skills (Gmail, Calendar, Docs,
-  Sheets, and more), plus persona and recipe templates.
-- `streamlit`: Streamlit apps.
+`cloudflare-skills`, `databricks-official`, `dbt`, `azure`, `google`, `aws`,
+`hashicorp-terraform`, `googleworkspace-cli`, and `streamlit`. Use active
+`security-audit` for Cloudflare security audits.
 
-## 3. Promotion Rules
+## 3. Direct Read Example
 
-For Claude, add a source through `i9wa4.agentSkills.extraSources` or make an
-explicit repo decision to move it active. For Codex, also update both
-`codexMinimalSourceNames` and `codexMinimalAllowlist`.
+For Terraform, read `~/.local/share/skills/terraform-style-guide/SKILL.md` and
+use the manifest for related Terraform names. `hashicorp-terraform` is an
+inventory group, not necessarily a directory.
+
+## 4. Promotion Rules
+
+For Claude, add a source through `i9wa4.agentSkills.extraSources` or an
+explicit repo decision. For Codex, also update `codexMinimalSourceNames` and
+`codexMinimalAllowlist`.
