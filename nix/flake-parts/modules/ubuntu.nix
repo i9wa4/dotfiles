@@ -2,39 +2,22 @@
 # This module is imported by flake.nix via flake-parts
 {
   inputs,
+  lib,
   commonNixSettings,
   ...
 }:
 let
   inherit (inputs) nixpkgs home-manager nix-index-database;
-in
-{
-  # home-manager switch --flake '.#ubuntu' --impure
-  # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
-  flake.homeConfigurations."ubuntu" =
+  mkHomeConfiguration =
+    {
+      username ? getUsername,
+    }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         localSystem = system;
         config.allowUnfree = true;
       };
-      # SSM sessions set USER=root even for non-root users (EUID != 0).
-      # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)
-      username =
-        let
-          user = builtins.getEnv "USER";
-          logname = builtins.getEnv "LOGNAME";
-          home = builtins.getEnv "HOME";
-          homeUser = baseNameOf home;
-        in
-        if logname != "" then
-          logname
-        else if homeUser != "" && homeUser != "root" then
-          homeUser
-        else if user != "" then
-          user
-        else
-          abort "Cannot determine username: set LOGNAME environment variable";
     in
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
@@ -86,5 +69,53 @@ in
         )
         ../../home-manager
       ];
+    };
+
+  # SSM sessions set USER=root even for non-root users (EUID != 0).
+  # Fallback chain: LOGNAME -> HOME basename -> USER (least reliable)
+  getUsername =
+    let
+      user = builtins.getEnv "USER";
+      logname = builtins.getEnv "LOGNAME";
+      home = builtins.getEnv "HOME";
+      homeUser = baseNameOf home;
+    in
+    if logname != "" then
+      logname
+    else if homeUser != "" && homeUser != "root" then
+      homeUser
+    else if user != "" then
+      user
+    else
+      abort "Cannot determine username: set LOGNAME environment variable";
+
+  homeConfigurations = {
+    ubuntu = mkHomeConfiguration { };
+  };
+
+  homeCheckConfigurations = {
+    ubuntu = mkHomeConfiguration { username = "flake-check"; };
+  };
+in
+{
+  # home-manager switch --flake '.#ubuntu' --impure
+  # For Ubuntu / WSL2 (standalone home-manager without nix-darwin)
+  flake.homeConfigurations = homeConfigurations;
+
+  perSystem =
+    { pkgs, system, ... }:
+    lib.optionalAttrs (system == "x86_64-linux") {
+      checks = lib.mapAttrs' (
+        hostname: configuration:
+        lib.nameValuePair "homeConfigurations-${hostname}-config" (
+          pkgs.runCommandLocal "check-homeConfigurations-${hostname}-config"
+            {
+              checkedUsername = configuration.config.home.username;
+            }
+            ''
+              printf '%s\n' "$checkedUsername" > "$out"
+            ''
+        )
+      ) homeCheckConfigurations;
     };
 }
