@@ -663,8 +663,9 @@ SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
 # `cat .env.example`), which is exactly what issue #365's own acceptance
 # criterion says must stay allowed. key/token/secret(s)/credential(s)/
 # password must appear as a whole word (bounded by start/end-of-string or a
-# non-alnum/non-underscore character on both sides; `secrets?`/`credentials?`
-# so a `secrets/`- or `credentials/`-named directory still matches).
+# non-alnum character on both sides; `_` is deliberately a boundary, so
+# `api_key` is treated as secret-shaped). All five keywords accept a plural
+# `s` so plural directory and filename forms are handled consistently.
 # `.env` and `.ssh` are anchored to a path segment (start-of-string/space/`/`
 # on the left, and on the right either the same set, end-of-string, or a
 # literal `.` so `.env.local`/`.env.production` still match) rather than a
@@ -685,9 +686,12 @@ fragment_has_secret_keyword() {
   lc="${lc//.envrc/}"
   lc="${lc//.env.example/}"
 
-  regex='(^|[^[:alnum:]_])(key|token|secrets?|credentials?|password)([^[:alnum:]_]|$)'
+  regex='(^|[^[:alnum:]])(keys?|tokens?|secrets?|credentials?|passwords?)([^[:alnum:]]|$)'
   regex+='|(^|[[:space:]/])\.env([[:space:]/]|$|\.[^[:space:]/]*)'
   regex+='|(^|[[:space:]/])\.ssh([[:space:]/]|$)'
+  regex+='|(^|[[:space:]/])(id_rsa|id_ed25519|\.netrc|\.pgpass|\.npmrc|server\.pem)([[:space:]/]|$)'
+  regex+='|(^|[[:space:]])/etc/shadow([[:space:]]|$)'
+  regex+='|(^|[[:space:]/])\.kube/config([[:space:]]|$)'
 
   [[ $lc =~ $regex ]]
 }
