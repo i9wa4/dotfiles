@@ -5,11 +5,11 @@ metadata:
   version: "1.0.0"
 description: |
   USE FOR: Reference-only external provider packs and dormant source
-  inventory — dbt, Azure/Microsoft Foundry, Databricks, Google Cloud/GCP, AWS,
-  Terraform/HashiCorp, Google Workspace, Streamlit — plus provider-pack
-  lookup and promotion questions. DO NOT USE FOR: repo-local guardrails,
-  harness implementation, or making provider packs active without explicit
-  promotion.
+  inventory — Cloudflare product/platform skills, dbt, Azure, Databricks,
+  AWS, Terraform/HashiCorp, Google Workspace, Streamlit — plus provider-pack
+  lookup and promotion decisions. DO NOT USE FOR: repo-local guardrails,
+  harness implementation, activating packs without explicit promotion, or
+  Cloudflare security audits; use security-audit for security-audit-skill.
 ---
 
 # External References
@@ -21,7 +21,7 @@ the broad packs by default. The generated reference tree is
 ## 1. Workflow
 
 1. Inspect `nix/home-manager/agents/shared/agent-skills.nix`.
-2. Inspect matching skill bodies under `~/.local/share/skills/<skill-name>`.
+2. Inspect matching bodies under `~/.local/share/skills/<skill-name>`.
 3. Use `referenceOnlySources` as the dormant provider-pack inventory when the
    generated tree is missing or needs source-level verification.
 4. Prefer local owner skills for guardrails: `data-platform`, `programming`,
@@ -32,6 +32,8 @@ the broad packs by default. The generated reference tree is
 
 ## 2. Dormant Packs
 
+- `cloudflare-skills`: Cloudflare product/platform skills. Reference-only;
+  `security-audit` is active.
 - `databricks-official`: Databricks.
 - `dbt`: dbt, dbt Labs.
 - `azure`: Azure, Microsoft Foundry, Entra.
