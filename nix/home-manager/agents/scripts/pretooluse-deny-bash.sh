@@ -440,7 +440,7 @@ mask_heredoc_bodies() {
   local -a line_delims=()
   local -a fallback_queue=()
   local fq_word fq_strip fq_quoted fq_compare
-  local line_delims_raw line_delim_entry
+  local line_delims_raw line_delim_entry scan_line
 
   while IFS= read -r line || [ -n "$line" ]; do
     if [ "${#fallback_queue[@]}" -gt 0 ]; then
@@ -495,9 +495,13 @@ mask_heredoc_bodies() {
           pending_first=0
         else pending+=$'\n'"$line"; fi
       else
-        # Unquoted heredoc: pass the body through unmasked (real bash
-        # expands it as live syntax) -- and, critically, do NOT run
-        # extract_heredoc_delimiters on it. Heredoc extent is tracked
+        # Unquoted heredoc: keep the body visible (real bash expands
+        # command substitutions there) -- and, critically, do NOT run
+        # extract_heredoc_delimiters on it. Quotes inside a heredoc body are
+        # literal data, not shell quote syntax, so neutralize them before
+        # the shared scanner sees this line; otherwise an odd quote in body
+        # text can hide a later live `$(...)` or backtick from issue #353's
+        # quote-aware risky-construct check. Heredoc extent is tracked
         # unconditionally via `in_span` regardless of quoting; only the
         # MASKING decision depends on the quoted flag. A prior version
         # tracked extent only for quoted delimiters, so an unquoted body
@@ -506,10 +510,12 @@ mask_heredoc_bodies() {
         # nested opener, and text between that false opener and its false
         # closer was masked away -- even though it was ordinary body text
         # bash would expand and the receiving command would see verbatim.
+        scan_line="${line//\'/_}"
+        scan_line="${scan_line//\"/_}"
         if [ "$first" -eq 1 ]; then
-          out="$line"
+          out="$scan_line"
           first=0
-        else out+=$'\n'"$line"; fi
+        else out+=$'\n'"$scan_line"; fi
       fi
       continue
     fi
