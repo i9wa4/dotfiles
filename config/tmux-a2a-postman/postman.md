@@ -299,12 +299,14 @@ requests and policy questions about command approval.
 
 The approver owns keeping its command-approval backlog actionable during an
 active session. At session start and after each decision, inspect
-`tmux-a2a-postman get-status` for this node's
-`flow.input_requests.input_required_count`,
-`request_satisfaction.longest_open_age_seconds`, and
-`request_satisfaction.stale_open_count`. These are the queue-depth and
-oldest-pending signals; use `inspect-input` to inspect a specific request
-without opening unrelated mail.
+`tmux-a2a-postman get-status` for this node's status paths:
+
+- `flow.input_requests.input_required_count`
+- `flow.input_requests.request_satisfaction.longest_open_age_seconds`
+- `flow.input_requests.request_satisfaction.stale_open_count`
+
+These are the queue-depth and oldest-pending signals; use `inspect-input` to
+inspect a specific request without opening unrelated mail.
 
 - Start triage when five required inputs are open or the oldest is 15 minutes
   old. Decide requests in this order: public or production writes, hook or
