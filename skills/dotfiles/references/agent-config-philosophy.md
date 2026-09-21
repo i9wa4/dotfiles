@@ -229,7 +229,7 @@ Before adding agent configuration, walk this checklist:
 ## 4. References
 
 - `skills/dotfiles/references/operating-concepts.md` — descriptive operating
-  model (section 4 covers Claude/Codex parity in detail).
+  model (section 5 covers Claude/Codex parity in detail).
 - `skills/dotfiles/references/agent-hooks-architecture.md` — current hook
   surface in Claude and Codex, where they are aligned, where they still drift,
   and the direction we want to keep pulling in.
