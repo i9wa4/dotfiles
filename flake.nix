@@ -82,6 +82,14 @@
       url = "github:upstash/context7";
       flake = false;
     };
+    cloudflare-security-audit-skill = {
+      url = "github:cloudflare/security-audit-skill";
+      flake = false;
+    };
+    cloudflare-skills = {
+      url = "github:cloudflare/skills";
+      flake = false;
+    };
     dbt-agent-skills = {
       url = "github:dbt-labs/dbt-agent-skills";
       flake = false;

@@ -11,15 +11,14 @@ set -o posix
 # and allowed-bash-commands.nix; despite the filename, this now carries
 # both ALLOW_PATTERNS and DENY_PATTERNS -- renaming it is a separate,
 # larger diff across both Nix modules and is left for a follow-up).
-# Same JSON-in / JSON-out schema (`hookSpecificOutput.permissionDecision`)
-# is accepted by both Claude Code and Codex CLI hook runtimes.
+# Denies emit JSON (`hookSpecificOutput.permissionDecision=deny`). Allowlist
+# matches exit 0 with no JSON payload, which is the compatible "continue"
+# signal across the active Claude Code and Codex CLI hook runtimes.
 #
 # ── Model ──────────────────────────────────────────────────────────────
 #
-# Default-deny: every command is denied unless it matches an allow path.
-# Every decision is explicit -- this script never silently exits 0 with
-# no JSON output the way its default-allow predecessor did, because
-# under default-deny a silent "no opinion" would mean "nothing works."
+# Default-deny: every command is denied unless it matches an allow path. A
+# silent exit 0 means an explicit allowlist match, not "no opinion."
 #
 # Allow paths, checked in this order:
 #   1. check_grep_rg_allow: a dedicated, already approver-reviewed
@@ -565,12 +564,10 @@ emit_deny_payload() {
     '{ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason } }'
 }
 
-emit_allow_payload() {
-  local reason="$1"
-
-  jq -n \
-    --arg reason "$reason" \
-    '{ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "allow", permissionDecisionReason: $reason } }'
+emit_allow_success() {
+  # Codex rejects `permissionDecision: "allow"` in PreToolUse output. Exit 0
+  # without a payload for allowlist matches; deny paths still emit JSON.
+  :
 }
 
 # Ported verbatim (behavior-for-behavior) from the already approver-reviewed
@@ -920,12 +917,12 @@ check_bash_command_for_denials() {
 MASKED_COMMAND="$(mask_heredoc_bodies "$COMMAND")"
 
 if check_grep_rg_allow "$MASKED_COMMAND"; then
-  emit_allow_payload "Auto-allowed: single read-only grep/rg command, no chaining/substitution/redirection, no sensitive-path or risky-construct indicators."
+  emit_allow_success
   exit 0
 fi
 
 if check_bash_command_for_allow "$MASKED_COMMAND"; then
-  emit_allow_payload "Auto-allowed: every part of this command matched the read-only/side-effect-free Bash allowlist."
+  emit_allow_success
   exit 0
 fi
 

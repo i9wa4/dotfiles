@@ -153,8 +153,20 @@ let
       subdir = "skills";
       filter.nameRegex = "context7-cli";
     };
+    # Cloudflare security audit skill. Keep this active rather than
+    # reference-only so security-audit is installed into normal loader paths.
+    cloudflare-security-audit = {
+      path = inputs.cloudflare-security-audit-skill;
+      subdir = "skills";
+    };
   };
   referenceOnlySources = {
+    # Cloudflare official product and platform skills. Keep this broad pack
+    # reference-only; only security-audit is promoted to active loader paths.
+    cloudflare-skills = {
+      path = inputs.cloudflare-skills;
+      subdir = "skills";
+    };
     # dbt-labs official agent skills.
     dbt = {
       path = inputs.dbt-agent-skills;
@@ -234,6 +246,7 @@ let
     "tmux-a2a-postman"
     "anthropic"
     "context7"
+    "cloudflare-security-audit"
   ];
   codexMinimalSources = lib.getAttrs codexMinimalSourceNames activeSources;
   codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
@@ -243,6 +256,7 @@ let
     enableAll = [
       "local"
       "tmux-a2a-postman"
+      "cloudflare-security-audit"
     ];
     enable = [
       "claude-api"
