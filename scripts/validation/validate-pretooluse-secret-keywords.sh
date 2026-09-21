@@ -12,7 +12,7 @@ chmod +x "$hook"
 
 cat >"$tmp_dir/deny-bash-patterns.sh" <<'PATTERNS'
 declare -a ALLOW_PATTERNS=(
-  '^(cat|head|tail|wc|sort|uniq|cut)([[:space:]]|$)'
+  '^(cat|head|tail|wc|sort|uniq|cut|rg)([[:space:]]|$)'
 )
 declare -a DENY_PATTERNS=()
 declare -a DENY_JUSTIFICATIONS=()
@@ -78,6 +78,11 @@ done
 for plural in keys tokens passwords; do
   assert_denied "plural secret keyword: $plural" "cat ${plural}.txt"
 done
+
+assert_denied 'split quote secret path for cat' "cat .e''nv"
+assert_denied 'escaped secret keyword for cat' 'cat k\ey.txt'
+assert_denied 'split quote secret path for rg' "rg .e''nv"
+assert_denied 'escaped secret keyword for rg' 'rg k\ey'
 
 for nonsecret_path in \
   token_bucket.md \

@@ -628,6 +628,16 @@ check_grep_rg_allow() {
   esac
 
   lc=$(printf '%s' "$c" | tr '[:upper:]' '[:lower:]')
+  # The shell removes quotes and escape markers before forming an argv word,
+  # so normalise those syntactic characters before the deliberately simple
+  # grep/rg keyword screen. This closes shapes such as `.e''nv` and `k\\ey`
+  # without evaluating expansions.
+  lc="${lc//\"/}"
+  lc="${lc//\'/}"
+  lc="${lc//\\/}"
+  if fragment_has_secret_keyword "$c"; then
+    return 1
+  fi
   case "$lc" in
   *key* | *token* | *secret* | *.env* | *.ssh* | *credential* | *password*)
     return 1
@@ -649,7 +659,7 @@ check_grep_rg_allow() {
 # otherwise be allowed through unconditionally (issue #365). Intentionally
 # excludes `ls` (lists filenames only, does not dump file content) and
 # `echo`/`date`/`whoami`/`which` (do not read files at all).
-SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
+SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut grep rg ripgrep)
 
 # Duplicated, not shared with check_grep_rg_allow's keyword case statement:
 # that function is already approver-reviewed (twice, issue #342) and is kept
@@ -689,6 +699,7 @@ fragment_has_secret_keyword() {
   lc="${lc//.env.example/}"
   lc="${lc//\"/}"
   lc="${lc//\'/}"
+  lc="${lc//\\/}"
 
   regex='(^|[^[:alnum:]_])(keys?|tokens?|secrets?|credentials?|passwords?)([^[:alnum:]_]|$)'
   regex+='|(^|[^[:alnum:]_])(api_key|secret_key|private_key|access_token)([^[:alnum:]_]|$)'
