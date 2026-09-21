@@ -12,7 +12,7 @@ chmod +x "$hook"
 
 cat >"$tmp_dir/deny-bash-patterns.sh" <<'PATTERNS'
 declare -a ALLOW_PATTERNS=(
-  '^(cat|head|tail|wc|sort|uniq|cut|rg)([[:space:]]|$)'
+  '^(cat|head|tail|wc|sort|uniq|cut|grep|rg|ripgrep)([[:space:]]|$)'
 )
 declare -a DENY_PATTERNS=()
 declare -a DENY_JUSTIFICATIONS=()
@@ -79,10 +79,18 @@ for plural in keys tokens passwords; do
   assert_denied "plural secret keyword: $plural" "cat ${plural}.txt"
 done
 
-assert_denied 'split quote secret path for cat' "cat .e''nv"
-assert_denied 'escaped secret keyword for cat' 'cat k\ey.txt'
-assert_denied 'split quote secret path for rg' "rg .e''nv"
-assert_denied 'escaped secret keyword for rg' 'rg k\ey'
+for reader in cat grep rg ripgrep; do
+  assert_denied "split quote secret path for $reader" "$reader .e''nv"
+  assert_denied "escaped secret keyword for $reader" "$reader k\\ey.txt"
+
+  printf -v lf_continuation '%s\\\n%s' "$reader .e" 'nv'
+  assert_denied "LF continuation secret path for $reader" "$lf_continuation"
+  printf -v crlf_continuation '%s\\\r\n%s' "$reader .e" 'nv'
+  assert_denied "CRLF continuation secret path for $reader" "$crlf_continuation"
+
+  assert_allowed "safe .env example for $reader" "$reader .env.example"
+  assert_allowed "quoted literal backslash for $reader" "$reader \"\\\\.env\""
+done
 
 for nonsecret_path in \
   token_bucket.md \
