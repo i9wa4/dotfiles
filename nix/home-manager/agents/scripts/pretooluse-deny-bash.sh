@@ -463,11 +463,21 @@ mask_heredoc_bodies() {
       fi
       if [ "$fq_compare" = "$fq_word" ]; then
         fallback_queue=("${fallback_queue[@]:1}")
+        if [ "$first" -eq 1 ]; then
+          out="$line"
+          first=0
+        else out+=$'\n'"$line"; fi
+      else
+        # Multi-heredoc fallback keeps every body visible so live
+        # substitutions still deny, but body quotes are literal data just as
+        # in the single-heredoc path and must not carry scanner quote state.
+        scan_line="${line//\'/_}"
+        scan_line="${scan_line//\"/_}"
+        if [ "$first" -eq 1 ]; then
+          out="$scan_line"
+          first=0
+        else out+=$'\n'"$scan_line"; fi
       fi
-      if [ "$first" -eq 1 ]; then
-        out="$line"
-        first=0
-      else out+=$'\n'"$line"; fi
       continue
     fi
 

@@ -64,9 +64,21 @@ printf -v quoted_heredoc_with_literal_metacharacters '%s\n%s\n%s' \
   'hello <node> $(literal) `literal`' \
   'EOF'
 
+# shellcheck disable=SC2016 # literal command substitution text for the hook to inspect
+printf -v two_unquoted_heredocs_with_odd_quote_before_substitution '%s\n%s\n%s\n%s\n%s' \
+  'tmux-a2a-postman send-heredoc --to orchestrator <<FIRST <<SECOND' \
+  "one apostrophe '" \
+  'FIRST' \
+  '$(whoami)' \
+  'SECOND'
+
 assert_denied \
   'unquoted heredoc command substitution after literal apostrophe' \
   "$unquoted_heredoc_with_odd_quote_before_substitution"
+
+assert_denied \
+  'two unquoted heredocs keep body quote state isolated' \
+  "$two_unquoted_heredocs_with_odd_quote_before_substitution"
 
 assert_allowed \
   'quoted heredoc body keeps literal metacharacters inert' \
