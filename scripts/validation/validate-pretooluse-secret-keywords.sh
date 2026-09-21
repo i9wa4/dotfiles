@@ -51,23 +51,40 @@ assert_allowed() {
   fi
 }
 
-for secret_path in \
-  id_rsa \
-  id_ed25519 \
-  /etc/shadow \
-  ~/.netrc \
-  ~/.pgpass \
-  ~/.npmrc \
-  server.pem \
-  ~/.kube/config \
-  keys.txt \
-  tokens.json \
-  passwords.txt \
-  api_key.txt; do
+protected_paths=(
+  id_rsa
+  id_ed25519
+  /etc/shadow
+  ~/.netrc
+  ~/.pgpass
+  ~/.npmrc
+  server.pem
+  ~/.kube/config
+)
+
+for secret_path in "${protected_paths[@]}"; do
   assert_denied "secret-shaped path: $secret_path" "cat $secret_path"
+  assert_denied "double-quoted secret path: $secret_path" "cat \"$secret_path\""
+  assert_denied "single-quoted secret path: $secret_path" "cat '$secret_path'"
+  assert_denied "multiple arguments include secret path: $secret_path" "cat README.md \"$secret_path\""
+done
+
+assert_denied 'nested secret path' 'cat nested/id_rsa'
+
+for compound in api_key secret_key private_key access_token; do
+  assert_denied "high-confidence secret compound: $compound" "cat ${compound}.txt"
+done
+
+for plural in keys tokens passwords; do
+  assert_denied "plural secret keyword: $plural" "cat ${plural}.txt"
 done
 
 for nonsecret_path in \
+  token_bucket.md \
+  key_bind.md \
+  key_binding.md \
+  tokenizer.md \
+  monkey_patch.md \
   .envrc \
   .env.example \
   config/zsh/keybind.zsh; do
