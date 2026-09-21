@@ -295,7 +295,35 @@ requests and policy questions about command approval.
   postman decision only. The requester owns execution after the recorded
   decision.
 
-### 7.3. Command-Approval-Mechanism Changes
+### 7.3. Active-Session Backlog Triage
+
+The approver owns keeping its command-approval backlog actionable during an
+active session. At session start and after each decision, inspect
+`tmux-a2a-postman get-status` for this node's
+`flow.input_requests.input_required_count`,
+`request_satisfaction.longest_open_age_seconds`, and
+`request_satisfaction.stale_open_count`. These are the queue-depth and
+oldest-pending signals; use `inspect-input` to inspect a specific request
+without opening unrelated mail.
+
+- Start triage when five required inputs are open or the oldest is 15 minutes
+  old. Decide requests in this order: public or production writes, hook or
+  command-policy changes, blocking requests, then oldest remaining request.
+- Treat 20 required inputs or any request open for 60 minutes as overload.
+  Send `BLOCKED: approver backlog overloaded` to orchestrator with the count
+  and oldest age, so dispatch can pause or re-scope work instead of adding
+  unbounded approval traffic.
+- At 60 minutes, expire an undecided approval request by replying
+  `NOT APPROVED: expired because the approver backlog exceeded the active
+  session limit`; do not silently close it. Expiry is a decision on the
+  approval thread, not retroactive authorization or reversal of a command.
+- An overloaded or advisory lane never authorizes a safety-critical operation.
+  Public GitHub writes, production-data writes, and approval-mechanism changes
+  remain blocked until their existing explicit human-approval and approver
+  requirements are satisfied. Report the overload rather than letting such a
+  request remain unresolved advisory noise.
+
+### 7.4. Command-Approval-Mechanism Changes
 
 In addition to individual `execute-bash` approval decisions, `approver`
 owns decisions about the command-approval mechanism itself: changes to
