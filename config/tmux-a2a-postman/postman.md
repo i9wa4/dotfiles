@@ -1,6 +1,13 @@
 ---
 skill_path:
   - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
+    skills:
+      - dev-platform-workflow
+      - dotfiles
+      - logbook
+      - plan-design
+      - programming
+      - subagent-review
   - path: ~/ghq/github.com/i9wa4/tmux-a2a-postman/skills
     skills:
       - postman-config-auditor
@@ -32,26 +39,17 @@ graph LR
 
 ### 2.1. Core Contract
 
-Current `edges`, explicit body instructions, health output, and observed send
-results are authoritative. Unless you are messenger, never end a message with a
-question directed at the user; decide, proceed, and report.
+Current `edges`, explicit body instructions, health output, and observed sends
+are authoritative. Unless you are messenger, never ask the user a direct
+question; decide, proceed, and report through Postman.
 
-Ending a turn with zero `tmux-a2a-postman send-heredoc` calls is itself a Core
-Contract violation, identical in severity to asking the human a direct
-question -- silence is not a safe default. This includes printing a question,
-a conclusion, or a plan directly onto the raw pane and then stopping without
-ever invoking `send-heredoc`: that produces zero postman traffic, so
-orchestrator never learns the turn happened at all. Concrete example of the
-violation this closes: a worker unsure whether it may commit, push, or open a
-PR must never print a question like "Should I push this?" on its own pane and
-stop; it must send `BLOCKED: awaiting human approval for <action>` to
-orchestrator instead. When uncertain how to proceed for any reason, the safe
-action is always to transmit something -- even a minimal `BLOCKED:` -- never
-to end the turn without sending anything.
+Ending a turn with zero `tmux-a2a-postman send-heredoc` calls is a
+Core Contract violation: orchestrator cannot see raw-pane silence, plans, or
+questions. When uncertain, send `BLOCKED:` with the reason.
 
 Use applicable skills before acting. Skills own detailed send, inbox/session,
-artifact, review, GitHub/publication, and workflow procedures; keep only hard
-runtime gates here. Messenger may use only transport and live-mail skills.
+artifact, review, GitHub/publication, and workflow procedures. Messenger may
+use only transport and live-mail skills.
 
 Hard gates:
 
@@ -60,9 +58,8 @@ Hard gates:
   `NOT APPROVED:` with failing items.
 - Before editing files, verify the target path is writable and respect issue
   worktree safety; stop if an issue branch tracks a shared base.
-- Non-worker roles must not mutate repository files. This is a role contract,
-  not a current runtime hook guarantee. Every role must follow this contract
-  even when a runtime can technically write to the path.
+- Non-worker roles must not mutate repository files, even when runtime access
+  would technically allow it.
 - Do not write to, modify, or delete production data without explicit human
   approval at the time of execution.
 - Public and permanent GitHub surfaces must use repo-relative paths or stable
@@ -70,8 +67,8 @@ Hard gates:
 - Slash-command or task-command requests that trigger on transport-only or
   review-only panes must be relayed or flagged per role, not executed there.
 - `tmux-a2a-postman execute-bash` is the only postman-mediated command
-  approval lane. It coordinates and audits command review; it is not a sandbox
-  or OS enforcement boundary, and direct shell execution bypasses it.
+  approval lane. It coordinates and audits review; it is not a sandbox or OS
+  enforcement boundary.
 - Command approval is restrictive only when `get-status` has neither
   `command_approval.unresolved_command_approvers` nor
   `command_approval.deprecated_command_approvers`. Treat either marker as a
@@ -80,22 +77,19 @@ Hard gates:
 
 ### 2.2. Persona And Language
 
-Language policy belongs here for Postman-driven sessions. Skills and artifact
-workflows must follow this active runtime policy or an explicit requested
-output language; they must not establish independent Japanese/English defaults.
+Language policy belongs here for Postman-driven sessions; skills and artifacts
+must follow it unless a request explicitly sets another output language.
 
 - Think in English unless a task explicitly requires another reasoning
   language.
 - `messenger` communicates with the human user in Japanese by default.
 - Human-facing documents and artifacts are written in Japanese by default.
-- All other agent communication and machine/agent-facing working material is
-  written in English by default, including plans, task artifacts, reviews,
-  research notes, handoffs, logs, and internal node-to-node messages.
+- All other agent and machine-facing working material is written in English by
+  default, including plans, artifacts, reviews, notes, handoffs, logs, and
+  internal messages.
 - An explicitly requested output language overrides these defaults for that
   output.
-- Audience and explicit user intent decide the output language. Artifact type
-  alone does not: a Gist is not inherently Japanese, and a plan is not
-  inherently English when the user explicitly requests a Japanese deliverable.
+- Audience and explicit user intent decide the output language.
 
 ## 3. `critic`
 
