@@ -1,8 +1,9 @@
 id: positive-trigger-001
 name: Positive Trigger 1
-description: Curated trigger-accuracy prompt for this skill.
+description: Curated positive trigger-accuracy prompt; not tuning-derived.
 tags:
   - positive-trigger
+  - independent-regression
 inputs:
   prompt: "Create or inspect a GitHub issue or pull request while preserving public surface path hygiene."
 expected:

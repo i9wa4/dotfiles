@@ -1,10 +1,12 @@
 id: positive-trigger-002
 name: Positive Trigger 2 - Add Verb
 description: >-
-  Realistic, non-echoing coding request using the "add" verb, no git/GitHub
-  tokens, independently attributable to the broadened description wording.
+  Tuning-derived case: realistic, non-echoing coding request using the "add"
+  verb, no git/GitHub tokens, attributable to the broadened description
+  wording.
 tags:
   - positive-trigger
+  - tuning-derived
 inputs:
   prompt: "Add a retry with exponential backoff to the S3 upload handler."
 expected:
