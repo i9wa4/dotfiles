@@ -12,7 +12,7 @@ chmod +x "$hook"
 
 cat >"$tmp_dir/deny-bash-patterns.sh" <<'PATTERNS'
 declare -a ALLOW_PATTERNS=(
-  '^(cat|head|tail|wc|sort|uniq|cut)([[:space:]]|$)'
+  '^(cat|head|tail|wc|sort|uniq|cut|grep|rg|ripgrep)([[:space:]]|$)'
 )
 declare -a DENY_PATTERNS=()
 declare -a DENY_JUSTIFICATIONS=()
@@ -77,6 +77,24 @@ done
 
 for plural in keys tokens passwords; do
   assert_denied "plural secret keyword: $plural" "cat ${plural}.txt"
+done
+
+for reader in cat grep rg ripgrep; do
+  assert_denied "split quote secret path for $reader" "$reader .e''nv"
+  assert_denied "escaped secret keyword for $reader" "$reader k\\ey.txt"
+
+  printf -v lf_continuation '%s\\\n%s' "$reader .e" 'nv'
+  assert_denied "LF continuation secret path for $reader" "$lf_continuation"
+  printf -v crlf_continuation '%s\\\r\n%s' "$reader .e" 'nv'
+  assert_denied "CRLF continuation secret path for $reader" "$crlf_continuation"
+
+  printf -v escaped_apostrophe_lf '%s\\%s README.md .e\\\n%s' "$reader" "'" 'nv'
+  assert_denied "escaped apostrophe before LF continuation for $reader" "$escaped_apostrophe_lf"
+  printf -v escaped_apostrophe_crlf '%s\\%s README.md .e\\\r\n%s' "$reader" "'" 'nv'
+  assert_denied "escaped apostrophe before CRLF continuation for $reader" "$escaped_apostrophe_crlf"
+
+  assert_allowed "safe .env example for $reader" "$reader .env.example"
+  assert_allowed "quoted literal backslash for $reader" "$reader \"\\\\.env\""
 done
 
 for nonsecret_path in \

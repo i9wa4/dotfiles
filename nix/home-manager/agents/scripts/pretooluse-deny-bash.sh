@@ -627,7 +627,16 @@ check_grep_rg_allow() {
   *) return 1 ;;
   esac
 
-  lc=$(printf '%s' "$c" | tr '[:upper:]' '[:lower:]')
+  # Use the same quote-aware shell-word boundary as the general file-reader
+  # screen.  In particular, do not remove backslashes blindly: a backslash
+  # inside double quotes is literal unless it quotes one of Bash's special
+  # characters.  Safe filename exceptions are applied by that boundary too.
+  lc="$(normalise_shell_words "$c" | tr '[:upper:]' '[:lower:]')"
+  lc="${lc//.envrc/}"
+  lc="${lc//.env.example/}"
+  if fragment_has_secret_keyword "$c"; then
+    return 1
+  fi
   case "$lc" in
   *key* | *token* | *secret* | *.env* | *.ssh* | *credential* | *password*)
     return 1
@@ -649,7 +658,7 @@ check_grep_rg_allow() {
 # otherwise be allowed through unconditionally (issue #365). Intentionally
 # excludes `ls` (lists filenames only, does not dump file content) and
 # `echo`/`date`/`whoami`/`which` (do not read files at all).
-SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut)
+SECRET_ARGUMENT_SENSITIVE_COMMANDS=(cat head tail wc sort uniq cut grep rg ripgrep)
 
 # Duplicated, not shared with check_grep_rg_allow's keyword case statement:
 # that function is already approver-reviewed (twice, issue #342) and is kept
@@ -680,16 +689,13 @@ fragment_has_secret_keyword() {
   local fragment="$1"
   local lc
   local regex
-  lc=$(printf '%s' "$fragment" | tr '[:upper:]' '[:lower:]')
+  lc="$(normalise_shell_words "$fragment" | tr '[:upper:]' '[:lower:]')"
 
   # Known non-secret filenames that would otherwise match the `.env`
   # path-segment check below; strip them so their mere presence cannot
   # trigger a false positive.
   lc="${lc//.envrc/}"
   lc="${lc//.env.example/}"
-  lc="${lc//\"/}"
-  lc="${lc//\'/}"
-
   regex='(^|[^[:alnum:]_])(keys?|tokens?|secrets?|credentials?|passwords?)([^[:alnum:]_]|$)'
   regex+='|(^|[^[:alnum:]_])(api_key|secret_key|private_key|access_token)([^[:alnum:]_]|$)'
   regex+='|(^|[[:space:]/:])\.env([[:space:]/:]|$|\.[^[:space:]/:]*)'
@@ -731,7 +737,7 @@ GIT_SUBCOMMAND_INDEX=0
 parse_bash_words_quote_aware() {
   local input="$1"
   local current=""
-  local char
+  local char next_char
   local index
   local in_single=0
   local in_double=0
@@ -751,6 +757,16 @@ parse_bash_words_quote_aware() {
     fi
 
     if [ "$in_single" -eq 0 ] && [[ $char == \\ ]]; then
+      next_char="${input:index+1:1}"
+      # Within double quotes Bash only treats backslash as syntax before
+      # $, `, \", \\, or a newline.  Preserve it literally for every other
+      # following character so a quoted filename such as "literal\\key" is
+      # not silently rewritten into a secret-shaped path.
+      if [ "$in_double" -eq 1 ] && [ "$next_char" != '$' ] && [ "$next_char" != '`' ] && [ "$next_char" != '"' ] && [ "$next_char" != $'\\' ] && [ "$next_char" != $'\n' ]; then
+        current+=$'\\'
+        saw_word=1
+        continue
+      fi
       escaped=1
       saw_word=1
       continue
@@ -796,6 +812,86 @@ parse_bash_words_quote_aware() {
   if [ "$saw_word" -eq 1 ]; then
     PARSED_BASH_WORDS+=("$current")
   fi
+}
+
+# Print the shell words that Bash forms from a fragment, joined by spaces.
+# This is the one normalization boundary for argument-sensitive checks:
+# quote concatenation and ordinary unquoted escapes are resolved, while
+# literal backslashes inside double quotes are retained.  It deliberately
+# does not evaluate expansions; risky expansion syntax is rejected earlier.
+normalise_shell_words() {
+  local fragment="$1"
+  local word
+  local out=""
+
+  parse_bash_words_quote_aware "$fragment"
+  for word in "${PARSED_BASH_WORDS[@]}"; do
+    if [ -n "$out" ]; then
+      out+=" "
+    fi
+    out+="$word"
+  done
+  printf '%s' "$out"
+}
+
+# Bash removes an unquoted or double-quoted backslash-newline pair before it
+# tokenizes words.  Do that before heredoc masking and all allow screens so
+# `cat .e\\\
+# nv` cannot turn into two harmless-looking fragments.  CRLF is accepted as
+# the same transport-level line-continuation spelling.  A backslash inside
+# single quotes remains literal.
+normalise_shell_line_continuations() {
+  local input="$1"
+  local out=""
+  local char next_char after_next
+  local index
+  local in_single=0
+  local in_double=0
+
+  for ((index = 0; index < ${#input}; index++)); do
+    char="${input:index:1}"
+    next_char="${input:index+1:1}"
+    after_next="${input:index+2:1}"
+
+    if [ "$in_single" -eq 0 ] && [[ $char == \\ ]]; then
+      if [ "$next_char" = $'\n' ] || { [ "$next_char" = $'\r' ] && [ "$after_next" = $'\n' ]; }; then
+        if [ "$next_char" = $'\r' ]; then
+          index=$((index + 2))
+        else
+          index=$((index + 1))
+        fi
+        continue
+      fi
+
+      # A non-newline escape consumes its next character before quote-state
+      # handling.  Otherwise `\\'` outside quotes is misread as a real
+      # single-quote opener and a later genuine continuation is left intact.
+      out+="$char"
+      if [ -n "$next_char" ]; then
+        out+="$next_char"
+        index=$((index + 1))
+      fi
+      continue
+    fi
+
+    if [ "$in_single" -eq 0 ] && [ "$char" = '"' ]; then
+      if [ "$in_double" -eq 1 ]; then
+        in_double=0
+      else
+        in_double=1
+      fi
+    elif [ "$in_double" -eq 0 ] && [ "$char" = "'" ]; then
+      if [ "$in_single" -eq 1 ]; then
+        in_single=0
+      else
+        in_single=1
+      fi
+    fi
+
+    out+="$char"
+  done
+
+  printf '%s' "$out"
 }
 
 # shellcheck disable=SC2329 # invoked indirectly via check_bash_fragment_for_allow
@@ -1440,11 +1536,13 @@ check_bash_command_for_denials() {
 
 # ── Decision ───────────────────────────────────────────────────────────
 
-# Heredoc body lines are literal data, not live shell syntax -- scan the
-# masked form so a Markdown-formatted message body (backticks, $(...), bare
-# </>) cannot trip the risky-construct guard. The original $COMMAND is kept
-# for the final generic deny message so the agent sees exactly what it sent.
-MASKED_COMMAND="$(mask_heredoc_bodies "$COMMAND")"
+# First collapse real shell line continuations, then mask literal quoted
+# heredoc bodies.  The ordering matters: a protected filename can otherwise
+# be split across a backslash-LF/CRLF boundary before any secret screen sees
+# it.  The original $COMMAND is kept for the final generic deny message so
+# the agent sees exactly what it sent.
+NORMALISED_COMMAND="$(normalise_shell_line_continuations "$COMMAND")"
+MASKED_COMMAND="$(mask_heredoc_bodies "$NORMALISED_COMMAND")"
 
 if check_grep_rg_allow "$MASKED_COMMAND"; then
   emit_allow_success
