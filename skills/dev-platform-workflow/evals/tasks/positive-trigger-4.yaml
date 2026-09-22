@@ -1,11 +1,12 @@
 id: positive-trigger-004
 name: Positive Trigger 4 - Implement Verb
 description: >-
-  Realistic, non-echoing coding request using the "implement" verb, no
-  git/GitHub tokens, independently attributable to the broadened description
-  wording.
+  Tuning-derived case: realistic, non-echoing coding request using the
+  "implement" verb, no git/GitHub tokens, attributable to the broadened
+  description wording.
 tags:
   - positive-trigger
+  - tuning-derived
 inputs:
   prompt: "Implement a caching layer for the user profile endpoint."
 expected:

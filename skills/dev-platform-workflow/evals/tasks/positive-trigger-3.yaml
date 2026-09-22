@@ -1,10 +1,12 @@
 id: positive-trigger-003
 name: Positive Trigger 3 - Fix Verb
 description: >-
-  Realistic, non-echoing coding request using the "fix" verb, no git/GitHub
-  tokens, independently attributable to the broadened description wording.
+  Tuning-derived case: realistic, non-echoing coding request using the "fix"
+  verb, no git/GitHub tokens, attributable to the broadened description
+  wording.
 tags:
   - positive-trigger
+  - tuning-derived
 inputs:
   prompt: "Fix the off-by-one error in the pagination helper."
 expected:
