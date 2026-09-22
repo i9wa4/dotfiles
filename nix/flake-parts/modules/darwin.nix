@@ -53,14 +53,12 @@ let
   mkDarwinConfiguration =
     {
       hostname,
+      username ? getUsername,
       system ? "aarch64-darwin",
       taps ? homebrewTaps,
       brews ? commonHomebrewBrews,
       casks ? [ ],
     }:
-    let
-      username = getUsername;
-    in
     nix-darwin.lib.darwinSystem {
       inherit system;
       specialArgs = {
@@ -214,12 +212,42 @@ let
         }
       ];
     };
+
+  darwinConfigurations = lib.mapAttrs (
+    hostname: hostConfig: mkDarwinConfiguration ({ inherit hostname; } // hostConfig)
+  ) darwinHosts;
+
+  darwinCheckConfigurations = lib.mapAttrs (
+    hostname: hostConfig:
+    mkDarwinConfiguration (
+      {
+        inherit hostname;
+        username = "flake-check";
+      }
+      // hostConfig
+    )
+  ) darwinHosts;
 in
 {
   # darwin-rebuild switch --flake '.#macos-p' --impure
   # darwin-rebuild switch --flake '.#macos-w' --impure
   # Requires --impure because we use builtins.getEnv to read SUDO_USER
-  flake.darwinConfigurations = lib.mapAttrs (
-    hostname: hostConfig: mkDarwinConfiguration ({ inherit hostname; } // hostConfig)
-  ) darwinHosts;
+  flake.darwinConfigurations = darwinConfigurations;
+
+  perSystem =
+    { pkgs, system, ... }:
+    lib.optionalAttrs (system == "aarch64-darwin") {
+      checks = lib.mapAttrs' (
+        hostname: configuration:
+        lib.nameValuePair "darwinConfigurations-${hostname}-system" (
+          pkgs.runCommandLocal "check-darwinConfigurations-${hostname}-system"
+            {
+              checkedDrvPath = builtins.unsafeDiscardStringContext configuration.system.drvPath;
+            }
+            ''
+              printf '%s\n' "$checkedDrvPath" > "$out"
+            ''
+        )
+      ) darwinCheckConfigurations;
+    };
 }
