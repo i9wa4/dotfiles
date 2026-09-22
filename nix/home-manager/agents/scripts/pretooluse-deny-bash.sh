@@ -853,10 +853,22 @@ normalise_shell_line_continuations() {
     next_char="${input:index+1:1}"
     after_next="${input:index+2:1}"
 
-    if [ "$in_single" -eq 0 ] && [[ $char == \\ ]] && { [ "$next_char" = $'\n' ] || { [ "$next_char" = $'\r' ] && [ "$after_next" = $'\n' ]; }; }; then
-      if [ "$next_char" = $'\r' ]; then
-        index=$((index + 2))
-      else
+    if [ "$in_single" -eq 0 ] && [[ $char == \\ ]]; then
+      if [ "$next_char" = $'\n' ] || { [ "$next_char" = $'\r' ] && [ "$after_next" = $'\n' ]; }; then
+        if [ "$next_char" = $'\r' ]; then
+          index=$((index + 2))
+        else
+          index=$((index + 1))
+        fi
+        continue
+      fi
+
+      # A non-newline escape consumes its next character before quote-state
+      # handling.  Otherwise `\\'` outside quotes is misread as a real
+      # single-quote opener and a later genuine continuation is left intact.
+      out+="$char"
+      if [ -n "$next_char" ]; then
+        out+="$next_char"
         index=$((index + 1))
       fi
       continue

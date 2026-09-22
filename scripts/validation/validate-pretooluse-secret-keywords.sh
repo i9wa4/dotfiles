@@ -88,6 +88,11 @@ for reader in cat grep rg ripgrep; do
   printf -v crlf_continuation '%s\\\r\n%s' "$reader .e" 'nv'
   assert_denied "CRLF continuation secret path for $reader" "$crlf_continuation"
 
+  printf -v escaped_apostrophe_lf '%s\\%s README.md .e\\\n%s' "$reader" "'" 'nv'
+  assert_denied "escaped apostrophe before LF continuation for $reader" "$escaped_apostrophe_lf"
+  printf -v escaped_apostrophe_crlf '%s\\%s README.md .e\\\r\n%s' "$reader" "'" 'nv'
+  assert_denied "escaped apostrophe before CRLF continuation for $reader" "$escaped_apostrophe_crlf"
+
   assert_allowed "safe .env example for $reader" "$reader .env.example"
   assert_allowed "quoted literal backslash for $reader" "$reader \"\\\\.env\""
 done
