@@ -1,7 +1,4 @@
 ---
-# Maintenance note: keep "otherwise change any code in the current repository"
-# last in the implementation-intent enumeration. The trigger grader constrains
-# its final enumerated phrase, so reordering or removing it can reduce coverage.
 name: dev-platform-workflow
 license: MIT
 metadata:
@@ -9,6 +6,12 @@ metadata:
 description: |
   USE FOR: Implement, fix, add, or otherwise change any code in the current repository — read this BEFORE starting, and before any git or GitHub action (issue, branch, commit, push, PR create/review) — sets the issue-first, worktree-based default via issue-worktree-create. GitHub/Jira/Confluence: gh CLI, PR/commit/issue management, review style, public path hygiene; Atlassian Cloud when env vars are confirmed. DO NOT USE FOR: guessing credentials, unrelated tasks, broad rewrites, or generated runtime outputs.
 ---
+
+<!--
+Maintenance note: keep "otherwise change any code in the current repository"
+last in the implementation-intent enumeration. The trigger grader constrains
+its final enumerated phrase, so reordering or removing it can reduce coverage.
+-->
 
 # Dev Platform Workflow
 
