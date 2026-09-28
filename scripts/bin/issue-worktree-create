@@ -4,9 +4,11 @@ set -o nounset
 set -o pipefail
 set -o posix
 
+gpt="gpt-6-luna"
+
 # Create a git worktree for the specified GitHub issue(s).
-# Uses Claude to generate a descriptive branch name from the issue content.
-# Falls back to title-based naming if Claude is not available.
+# Uses Codex to generate a descriptive branch name from the issue content.
+# Falls back to the issue number if Codex is unavailable or fails.
 #
 # Usage:
 #   issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number> [issue_number2 ...]
@@ -14,7 +16,7 @@ set -o posix
 # Dependencies:
 #   - gh (GitHub CLI)
 #   - jq
-#   - claude (Anthropic CLI, optional)
+#   - codex (OpenAI Codex CLI, optional)
 #   - repo-setup (optional)
 #   - direnv (required by repo-setup when allowing generated or copied .envrc)
 
@@ -218,8 +220,8 @@ for issue_number in "$@"; do
     echo "-> Generating branch name..."
     branch_slug=""
 
-    # Try Claude first if available
-    if command -v claude &>/dev/null; then
+    # Use Codex when available
+    if command -v codex &>/dev/null; then
       prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
 - Maximum 5 words
 - Lowercase alphabet, number and hyphens only
@@ -238,14 +240,18 @@ Issue comments:
 ${issue_comments}
 ---"
 
-      branch_slug=$(claude --print \
-        --system-prompt "Output ONLY the raw slug. No decorations, insights, or explanations." \
-        "$prompt" 2>/dev/null \
-        | tail -n 1 \
-        | tr '[:upper:]' '[:lower:]' \
-        | tr -cd 'a-z0-9-' \
-        | sed 's/--*/-/g; s/^-//; s/-$//' \
-        | cut -c 1-50) || true
+      slug_response=$(mktemp /tmp/issue-worktree-slug.XXXXXX)
+      if codex exec -m "$gpt" --ephemeral --ignore-rules --sandbox read-only \
+        -c approval_policy='"never"' -c model_reasoning_effort='"low"' \
+        --color never --output-last-message "$slug_response" \
+        "$prompt" </dev/null >/dev/null 2>/dev/null; then
+        branch_slug=$(tail -n 1 "$slug_response" \
+          | tr '[:upper:]' '[:lower:]' \
+          | tr -cd 'a-z0-9-' \
+          | sed 's/--*/-/g; s/^-//; s/-$//' \
+          | cut -c 1-50) || true
+      fi
+      rm -f "$slug_response"
     fi
 
     # Fallback: use issue number only
