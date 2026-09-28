@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-gpt="gpt-6"
+gpt="gpt-6-luna"
 
 editor=$(mktemp /tmp/lazygit-ai-commit-editor.XXXXXX)
 staged_diff=$(mktemp /tmp/lazygit-ai-commit-staged-diff.XXXXXX)
