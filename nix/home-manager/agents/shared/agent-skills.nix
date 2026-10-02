@@ -159,6 +159,17 @@ let
       path = inputs.cloudflare-security-audit-skill;
       subdir = "skills";
     };
+    # mizchi/explainer: verified explanations for human readers. Only the
+    # explainer skill is active; the sibling skills (book, figure, animation,
+    # slides, first-reader) need extra tooling (D2, vlmkit, Playwright) not
+    # provisioned here. Claude only; Codex stays minimal (see
+    # codexMinimalSourceNames).
+    # cf. https://github.com/mizchi/explainer
+    mizchi-explainer = {
+      path = inputs.mizchi-explainer;
+      subdir = "skills";
+      filter.nameRegex = "^explainer$";
+    };
   };
   referenceOnlySources = {
     # Cloudflare official product and platform skills. Keep this broad pack
