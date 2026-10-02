@@ -159,16 +159,23 @@ let
       path = inputs.cloudflare-security-audit-skill;
       subdir = "skills";
     };
-    # mizchi/explainer: verified explanations for human readers. Only the
-    # explainer skill is active; the sibling skills (book, figure, animation,
-    # slides, first-reader) need extra tooling (D2, vlmkit, Playwright) not
-    # provisioned here. Claude only; Codex stays minimal (see
+    # mizchi/explainer: verified explanations for human readers. Active:
+    # explainer, and first-reader because explainer step 8 hands the draft to
+    # it (Python 3 stdlib only). Excluded: explainer-book, explain-with-anim,
+    # explanatory-animation, d2-diagram and d2-slides, which are separate
+    # book, figure, animation and slide workflows that were not requested.
+    # Installing this source runs nothing. When the explainer skill is used,
+    # it needs Node 24 and per-document npm packages (@mizchi/vlmkit,
+    # @mizchi/vlmkit-anim, marked, playwright) plus D2 for figures; this
+    # repo does not provision them. Its verify-doc.mjs script also runs the
+    # commands a document lists in checks.json through sh -c.
+    # Claude only by repo policy; Codex stays minimal (see
     # codexMinimalSourceNames).
     # cf. https://github.com/mizchi/explainer
     mizchi-explainer = {
       path = inputs.mizchi-explainer;
       subdir = "skills";
-      filter.nameRegex = "^explainer$";
+      filter.nameRegex = "^(explainer|first-reader)$";
     };
   };
   referenceOnlySources = {
