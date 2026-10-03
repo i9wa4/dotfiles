@@ -86,6 +86,10 @@
       url = "github:cloudflare/security-audit-skill";
       flake = false;
     };
+    mizchi-explainer = {
+      url = "github:mizchi/explainer";
+      flake = false;
+    };
     cloudflare-skills = {
       url = "github:cloudflare/skills";
       flake = false;
