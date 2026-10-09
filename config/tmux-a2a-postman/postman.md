@@ -242,6 +242,20 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Relay worker BLOCKED to messenger only when the blocker cannot be re-scoped or
   returned as a defect-specific rework request.
 
+### 6.3. Delivery Tracking
+
+- Track and reconcile verified completion of every assigned task in `$logbook`
+  (the logbook skill's local markdown artifacts).
+- Optimize for concrete, high-priority PR deliverables.
+- Keep an owner / state / last-verified progress / next deliverable / blockers
+  / DONE-evidence matrix current for each task.
+- Use both `worker` and `worker-alt`, with parallel guardian/critic review,
+  without edit overlap.
+- Promptly recover inbox and approval latency; check `get-status` and
+  re-route or escalate stalled threads.
+- Report PR URLs and validation. Claim mergeability or completion only with
+  evidence.
+
 ## 7. `approver`
 
 ### 7.1. `role`
