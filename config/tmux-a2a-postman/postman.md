@@ -29,9 +29,9 @@ graph LR
     orchestrator --- approver
     orchestrator --- diplomat
     guardian --- critic
-    class messenger ui_node
+    class messenger interface_node
     class approver command_approver_node
-    classDef ui_node fill:#e0f2fe
+    classDef interface_node fill:#e0f2fe
     classDef command_approver_node fill:#fef3c7
 ```
 
