@@ -7,19 +7,19 @@
   system,
 }:
 let
-  version = "0.38.9";
+  version = "0.38.10";
   sources = {
     aarch64-darwin = {
       asset = "waza-darwin-arm64";
-      hash = "sha256-1Rf/nvcM4LPsx5c6QRCCkBc40GWpoW+powSUK8ueLA0=";
+      hash = "sha256-ynCGMIDnMuuRV8CqHWkvRB4RWmoHQLgFyihFj0M6twY=";
     };
     aarch64-linux = {
       asset = "waza-linux-arm64";
-      hash = "sha256-a6qDsd9iaSReGq4agY5MvF2qrRXU/YMWqo5nqQ8wkk8=";
+      hash = "sha256-A3Hn0x2kqp1d30VY6jzUFJDHpMp9FMpPE/hC6Zdw6Ck=";
     };
     x86_64-linux = {
       asset = "waza-linux-amd64";
-      hash = "sha256-eJP0DQsTMypwtLF7otWoFzZ7f0gkoHkgLmz13399yF4=";
+      hash = "sha256-+uRprzsgymO3ia1k6PLAB6Bp0IQ8yI2eg9Ik3k9wd7M=";
     };
   };
   source = sources.${system} or (throw "waza: unsupported system ${system}");
