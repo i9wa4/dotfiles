@@ -196,16 +196,20 @@ let
                     done
 
                     if [[ ''${#missing[@]} -gt 0 ]]; then
-                      tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")"
+                      (
+                        tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")" || exit 1
+                        trap 'rm -rf "$tmpDir"' EXIT
 
-                      ${git} clone --depth 1 https://github.com/skk-dev/dict "$tmpDir/skk-dev-dict"
-                      ${git} clone --depth 1 https://github.com/uasi/skk-emoji-jisyo "$tmpDir/skk-emoji-jisyo"
+                        # Keep these public clones independent of user and system Git URL rewrites.
+                        export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
+                        ${git} -C "$tmpDir" clone --depth 1 https://github.com/skk-dev/dict skk-dev-dict || exit 1
+                        ${git} -C "$tmpDir" clone --depth 1 https://github.com/uasi/skk-emoji-jisyo skk-emoji-jisyo || exit 1
 
-                      [[ -f "$macSkkDir/SKK-JISYO.L" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L"
-                      [[ -f "$macSkkDir/SKK-JISYO.jinmei" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei"
-                      [[ -f "$macSkkDir/SKK-JISYO.assoc" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc"
-                      [[ -f "$macSkkDir/SKK-JISYO.emoji.utf8" ]] || cp "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8"
-                      rm -rf "$tmpDir"
+                        [[ -f "$macSkkDir/SKK-JISYO.L" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L" || exit 1
+                        [[ -f "$macSkkDir/SKK-JISYO.jinmei" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei" || exit 1
+                        [[ -f "$macSkkDir/SKK-JISYO.assoc" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc" || exit 1
+                        [[ -f "$macSkkDir/SKK-JISYO.emoji.utf8" ]] || cp "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8" || exit 1
+                      ) || exit 1
                     fi
                   '';
               };
