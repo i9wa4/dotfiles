@@ -30,6 +30,8 @@ Environment:
 - [Machine Setup](references/machine-setup.md) — new-machine bootstrap
 - [Nix Operations](references/nix-operations.md) — daily ops, upgrade,
   recovery
+- [Tailscale Operations](references/tailscale-operations.md) — start the
+  installed daemon and check tailnet connection
 - [Missing Tools](references/missing-tools.md) — command not found
   workflow
 - [Operating Concepts](references/operating-concepts.md) — repo map and
