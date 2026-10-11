@@ -11,6 +11,7 @@ let
   mkHomeConfiguration =
     {
       username ? getUsername,
+      extraModules ? [ ],
     }:
     let
       system = "x86_64-linux";
@@ -68,7 +69,8 @@ let
           }
         )
         ../../home-manager
-      ];
+      ]
+      ++ extraModules;
     };
 
   # SSM sessions set USER=root even for non-root users (EUID != 0).
@@ -104,18 +106,39 @@ in
 
   perSystem =
     { pkgs, system, ... }:
-    lib.optionalAttrs (system == "x86_64-linux") {
-      checks = lib.mapAttrs' (
-        hostname: configuration:
-        lib.nameValuePair "homeConfigurations-${hostname}-config" (
+    lib.optionalAttrs (system == "x86_64-linux") (
+      let
+        mkHomeCheck =
+          hostname: configuration:
           pkgs.runCommandLocal "check-homeConfigurations-${hostname}-config"
             {
+              checkedActivationPackageName = configuration.activationPackage.name;
+              checkedPackageCount = toString (builtins.length configuration.config.home.packages);
               checkedUsername = configuration.config.home.username;
             }
             ''
-              printf '%s\n' "$checkedUsername" > "$out"
-            ''
-        )
-      ) homeCheckConfigurations;
-    };
+              printf '%s\n' "$checkedActivationPackageName" "$checkedPackageCount" "$checkedUsername" > "$out"
+            '';
+
+        # Username-only evaluation succeeds, but the full check must reject
+        # an unrelated broken Home Manager option.
+        brokenConfiguration = mkHomeConfiguration {
+          username = "flake-check";
+          extraModules = [
+            { home.packages = lib.mkForce (throw "home.packages negative regression"); }
+          ];
+        };
+        usernameOnly = builtins.tryEval brokenConfiguration.config.home.username;
+        fullCheck = builtins.tryEval (mkHomeCheck "ubuntu-negative" brokenConfiguration).drvPath;
+      in
+      {
+        checks = lib.mapAttrs' (
+          hostname: configuration:
+          lib.nameValuePair "homeConfigurations-${hostname}-config" (
+            assert usernameOnly.success && !fullCheck.success;
+            mkHomeCheck hostname configuration
+          )
+        ) homeCheckConfigurations;
+      }
+    );
 }
