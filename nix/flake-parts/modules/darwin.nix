@@ -198,17 +198,32 @@ let
                     if [[ ''${#missing[@]} -gt 0 ]]; then
                       (
                         tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")" || exit 1
-                        trap 'rm -rf "$tmpDir"' EXIT
+                        staged=""
+                        trap 'rm -rf "$tmpDir"; [[ -z "$staged" ]] || rm -f "$staged"' EXIT
+
+                        installDict() {
+                          local source="$1" target="$2"
+                          [[ -f "$target" ]] && return 0
+
+                          # Copy beside the final path, then publish without replacing a concurrent install.
+                          staged="$(mktemp "$macSkkDir/.macskk-dict.XXXXXX")" || return 1
+                          cp "$source" "$staged" || return 1
+                          if ! ln "$staged" "$target" 2>/dev/null && [[ ! -f "$target" ]]; then
+                            return 1
+                          fi
+                          rm -f "$staged" || return 1
+                          staged=""
+                        }
 
                         # Keep these public clones independent of user and system Git URL rewrites.
                         export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
                         ${git} -C "$tmpDir" clone --depth 1 https://github.com/skk-dev/dict skk-dev-dict || exit 1
                         ${git} -C "$tmpDir" clone --depth 1 https://github.com/uasi/skk-emoji-jisyo skk-emoji-jisyo || exit 1
 
-                        [[ -f "$macSkkDir/SKK-JISYO.L" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.jinmei" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.assoc" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.emoji.utf8" ]] || cp "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc" || exit 1
+                        installDict "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8" || exit 1
                       ) || exit 1
                     fi
                   '';
