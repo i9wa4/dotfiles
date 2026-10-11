@@ -27,7 +27,8 @@ let
   ];
   darwinHosts = {
     "macos-p" = {
-      casks = commonHomebrewCasks ++ [ "clamav" ];
+      brews = commonHomebrewBrews ++ [ "clamav" ];
+      casks = commonHomebrewCasks;
     };
     "macos-w" = {
       casks = commonHomebrewCasks ++ [ "openvpn-connect" ];
