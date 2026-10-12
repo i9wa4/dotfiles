@@ -105,12 +105,6 @@
     pkgs.udev-gothic
   ];
 
-  # Power management
-  power.sleep = {
-    computer = "never"; # Idle time until the computer sleeps; "never" disables computer sleep. Nix default is null.
-    display = 30; # Idle time in minutes until displays sleep. Nix default is null.
-  };
-
   # ============================================================================
   # System settings (consolidated to avoid statix W20 warning)
   # ============================================================================
@@ -377,10 +371,14 @@
     };
 
     # ==========================================================================
-    # Additional settings via defaults write (not supported by nix-darwin options)
+    # Additional settings without nix-darwin options
     # Note: postUserActivation was removed, now using postActivation with sudo -u
     # ==========================================================================
     activationScripts.postActivation.text = ''
+      # Power source-specific idle timers (minutes); 0 disables computer sleep.
+      /usr/bin/pmset -b displaysleep 15 sleep 30
+      /usr/bin/pmset -c displaysleep 30 sleep 0
+
       # Run as user (not root)
       sudo -u ${username} bash -c '
         # ------------------------------------------
