@@ -199,7 +199,23 @@ let
                       (
                         tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")" || exit 1
                         staged=""
-                        trap 'rm -rf "$tmpDir"; [[ -z "$staged" ]] || rm -f "$staged"' EXIT
+                        cleanup() {
+                          local status=$? cleanupFailed=0
+                          trap - EXIT
+                          if ! rm -rf -- "$tmpDir"; then
+                            echo "macSKK: failed to remove temporary clone directory: $tmpDir" >&2
+                            cleanupFailed=1
+                          fi
+                          if [[ -n "$staged" ]] && ! rm -f -- "$staged"; then
+                            echo "macSKK: failed to remove staged dictionary: $staged" >&2
+                            cleanupFailed=1
+                          fi
+                          if [[ "$status" -eq 0 && "$cleanupFailed" -ne 0 ]]; then
+                            status=1
+                          fi
+                          exit "$status"
+                        }
+                        trap cleanup EXIT
 
                         installDict() {
                           local source="$1" target="$2"
@@ -208,10 +224,13 @@ let
                           # Copy beside the final path, then publish without replacing a concurrent install.
                           staged="$(mktemp "$macSkkDir/.macskk-dict.XXXXXX")" || return 1
                           cp "$source" "$staged" || return 1
-                          if ! ln "$staged" "$target" 2>/dev/null && [[ ! -f "$target" ]]; then
+                          if ! ${pkgs.coreutils}/bin/ln -T -- "$staged" "$target" 2>/dev/null && [[ ! -f "$target" ]]; then
                             return 1
                           fi
-                          rm -f "$staged" || return 1
+                          if ! rm -f -- "$staged"; then
+                            echo "macSKK: failed to remove staged dictionary: $staged" >&2
+                            return 1
+                          fi
                           staged=""
                         }
 
