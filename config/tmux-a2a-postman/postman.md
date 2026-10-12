@@ -51,6 +51,17 @@ Use applicable skills before acting. Skills own detailed send, inbox/session,
 artifact, review, GitHub/publication, and workflow procedures. Messenger may
 use only transport and live-mail skills.
 
+After each `pop` with `status=message`, read the complete archived body, then
+take one `tmux-a2a-postman get-status` snapshot of every node's `inbox_count`.
+This event-triggered snapshot is an exception to the general no-status-polling
+rule. Compare counts with the previous snapshot in this session; the first
+snapshot establishes a baseline. When another node's unread count grows, send
+one no-reply alert with its previous and current counts asking it to inspect,
+`pop`, and process pending mail before its inbox cap. Send directly only when
+the configured edge permits; otherwise ask orchestrator to relay. Do not
+repeat alerts for unchanged or lower counts. Do not claim another node's mail
+or turn these snapshots into a polling loop.
+
 Hard gates:
 
 - Completion or approval for tracked/checklist work requires `Task artifact:`
