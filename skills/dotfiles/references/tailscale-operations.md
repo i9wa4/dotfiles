@@ -1,83 +1,41 @@
 # Tailscale Operations
 
-The repository installs `tailscaled` as a system service on macOS and Ubuntu.
-These commands start the installed service without rebuilding the machine.
-Run them on the affected host, one command at a time. The service definitions
-live in `nix/flake-parts/modules/apps.nix`.
+Run these commands on the PC after `nix run '.#switch'` has completed. The
+service should already be running. On a new PC, you still need to sign in to
+your tailnet.
 
-## 1. macOS: LaunchDaemon
+## 1. First Setup
 
-The service label is `com.tailscale.tailscaled`; its installed plist is
-`/Library/LaunchDaemons/com.tailscale.tailscaled.plist`.
+1. Check the connection:
 
-First check whether launchd knows the service:
+   ```sh
+   tailscale status
+   ```
 
-```sh
-sudo launchctl print system/com.tailscale.tailscaled
-```
+2. If the CLI cannot contact the daemon, start the installed service for your
+   system, then run `tailscale status` again:
 
-If it is registered but stopped, start it and inspect the result:
+   - macOS: `sudo launchctl kickstart -k system/com.tailscale.tailscaled`
+   - Ubuntu: `sudo systemctl start tailscaled.service`
 
-```sh
-sudo launchctl enable system/com.tailscale.tailscaled
-sudo launchctl kickstart -k system/com.tailscale.tailscaled
-sudo launchctl print system/com.tailscale.tailscaled
-```
+3. Connect and authenticate:
 
-If launchd reports that the service is missing, check that the installed plist
-exists. When it does, register and start it:
+   ```sh
+   sudo tailscale up
+   ```
 
-```sh
-ls -l /Library/LaunchDaemons/com.tailscale.tailscaled.plist
-sudo launchctl bootstrap system /Library/LaunchDaemons/com.tailscale.tailscaled.plist
-sudo launchctl enable system/com.tailscale.tailscaled
-sudo launchctl kickstart -k system/com.tailscale.tailscaled
-sudo launchctl print system/com.tailscale.tailscaled
-```
+   Open the URL printed by the command and sign in to your tailnet. Then run
+   `tailscale status` to confirm the PC is connected.
 
-If the plist is missing, the service cannot be bootstrapped from these
-commands. The human operator must run the repository's `nix run '.#switch'`
-workflow to install it. Agents must not run that activation command.
+## 2. Sign in Again
 
-## 2. Ubuntu: systemd
-
-Start the installed unit now, enable it at boot, and check both states:
+If `tailscale status` shows that the PC is logged out, run `sudo tailscale up`
+and complete the browser sign-in. If its device key has expired, run:
 
 ```sh
-sudo systemctl start tailscaled.service
-sudo systemctl enable tailscaled.service
-systemctl is-active tailscaled.service
-systemctl is-enabled tailscaled.service
+sudo tailscale up --force-reauth
 ```
 
-If `tailscaled.service` is missing, the human operator must run the
-repository's `nix run '.#switch'` workflow to install it. Agents must not run
-that activation command.
-
-## 3. Check the tailnet connection separately
-
-A running daemon does not mean the host is connected to its tailnet. After
-the service starts, ask the CLI for its connection state:
-
-```sh
-tailscale status
-```
-
-If the CLI cannot contact the local daemon, return to the service checks
-above. If it can contact the daemon but reports that Tailscale is stopped,
-logged out, or needs authentication, connect it and follow the login prompt:
-
-```sh
-sudo tailscale up
-tailscale status
-```
-
-Do not use `tailscale up` to repair a daemon that is unavailable.
-
-## 4. Foreground workaround
-
-Issue [#422](https://github.com/i9wa4/dotfiles/issues/422) used
-`sudo tailscaled` as a temporary foreground workaround. That process is not
-managed by launchd or systemd. Stop it before starting the installed service
-so two daemons do not contend for the same socket or state. These service
-commands do not establish that the issue in #422 has been fixed.
+Open the printed URL, sign in, and confirm with `tailscale status`. Run this
+command at the PC or with another way to reach it: the tailnet connection can
+drop during this step.
