@@ -46,8 +46,8 @@ jobs:
       - name: Cache Nix store
         uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
         with:
-          primary-key: nix-quick-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock') }}
-          restore-prefixes-first-match: nix-quick-${{ runner.os }}-${{ runner.arch }}-
+          primary-key: nix-gc6g-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock') }}
+          gc-max-store-size-linux: 6G
 
       - name: Run nix flake check
         run: nix flake check --print-build-logs
@@ -59,3 +59,6 @@ jobs:
 
       - name: Run leak history scans
         run: nix develop .#ci --command bash -c 'gitleaks detect --verbose --redact && betterleaks git --verbose --redact'
+
+      - name: Report Nix store size before cache save
+        run: du -sh /nix
