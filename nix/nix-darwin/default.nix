@@ -394,12 +394,11 @@
 
         # ------------------------------------------
         # Dictation: press the Fn/Globe key twice to start Dictation.
-        # macOS 26 user template default is enabled with this modifier entry.
+        # macOS 27.0.1 writes this modifier entry for Fn/Globe twice.
         # Note: dict-add updates only key 164, preserving other shortcuts.
-        # Note: macOS 26 uses a modifier hotkey entry for Fn/Globe twice.
         # ------------------------------------------
         defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "164" \
-          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>262144</integer><integer>9223372036854775807</integer></array><key>type</key><string>modifier</string></dict></dict>'"'"'
+          '"'"'<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>8388608</integer><integer>18446744073701163007</integer></array><key>type</key><string>modifier</string></dict></dict>'"'"'
 
         # ------------------------------------------
         # Lock Screen: Screensaver idle time. macOS default is 1200 seconds.
