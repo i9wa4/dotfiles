@@ -60,7 +60,7 @@ presets:
               command: codex --yolo --no-alt-screen --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
-          ratio: [1, 1, 1, 1]
+          ratio: [1, 1, 1]
           panes:
             - name: approver
               title: approver
@@ -73,10 +73,6 @@ presets:
             - name: critic
               title: critic
               command: codex --yolo --no-alt-screen --model gpt-5.6-sol --config model_reasoning_effort=high
-              delay: 500
-            - name: diplomat
-              title: diplomat
-              command: codex --yolo --no-alt-screen --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
 
   preset-w:
@@ -107,7 +103,7 @@ presets:
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
         - type: vertical
-          ratio: [1, 1, 1, 1]
+          ratio: [1, 1, 1]
           panes:
             - name: approver
               title: approver
@@ -120,8 +116,4 @@ presets:
             - name: critic
               title: critic
               command: codex --yolo --no-alt-screen --model gpt-6-sol --config model_reasoning_effort=high
-              delay: 500
-            - name: diplomat
-              title: diplomat
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
