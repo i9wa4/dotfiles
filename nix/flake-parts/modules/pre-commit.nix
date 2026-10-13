@@ -72,6 +72,7 @@
           gitleaks = {
             enable = true;
             entry = "${pkgs.gitleaks}/bin/gitleaks protect --verbose --redact --staged";
+            args = [ ];
             pass_filenames = false;
           };
 
