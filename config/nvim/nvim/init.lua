@@ -40,11 +40,9 @@ require("lazy").setup({
     opts = {
       default_file_explorer = true,
       keymaps = {
+        ["`"] = { "actions.cd", mode = "n" },
         ["t"] = { "actions.select", opts = { tab = true } },
       },
-      -- win_options = {
-      --   statusline = "%<%{substitute(expand('%'), '^oil://\\zs.*', '\\=fnamemodify(submatch(0), \":~\")', '')}%h%m%r%=%-14.(%l,%c%V%) %P",
-      -- },
       view_options = {
         show_hidden = true,
       },
@@ -67,17 +65,9 @@ vim.api.nvim_create_user_command("R", function(opts)
   send_tmux_clipboard(content)
 end, { nargs = "?" })
 
-local function open_url_under_cursor()
-  if vim.fn.expand("<cfile>"):match("^https?://") then
-    vim.fn.maparg("gx", "n", false, true).callback()
-  end
-end
-
-vim.api.nvim_create_user_command("OpenUrlUnderCursor", open_url_under_cursor, {})
-
 local function highlight_define()
-  vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
   for _, group in ipairs({
     "EndOfBuffer",
@@ -125,6 +115,7 @@ vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
 
+vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
