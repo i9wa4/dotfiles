@@ -131,6 +131,15 @@ vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 --
 local augroup = vim.api.nvim_create_augroup("MyAutocmd", { clear = true })
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = augroup,
+  callback = function()
+    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
+      send_tmux_clipboard(vim.fn.getreg(""))
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup,
   callback = function()
@@ -147,6 +156,16 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
 })
 
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = augroup,
+  callback = highlight_define,
+})
+
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
+  group = augroup,
+  callback = highlight_match,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
   callback = function()
@@ -157,25 +176,6 @@ vim.api.nvim_create_autocmd("FileType", {
       vim.opt_local.spell = true
     end
   end,
-})
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-  group = augroup,
-  callback = function()
-    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
-      send_tmux_clipboard(vim.fn.getreg(""))
-    end
-  end,
-})
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  group = augroup,
-  callback = highlight_define,
-})
-
-vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
-  group = augroup,
-  callback = highlight_match,
 })
 
 vim.api.nvim_create_autocmd("BufWritePost", {
