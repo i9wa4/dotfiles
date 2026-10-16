@@ -69,6 +69,8 @@
     };
   };
 
+  networking.applicationFirewall.enable = true;
+
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
   # NOTE: All features disabled - home-manager zsh.nix handles user config
   programs.zsh = {
