@@ -8,6 +8,7 @@ vim.g.auto_reload = vim.fn.timer_start(1000, function()
   vim.cmd("silent! checktime")
 end, { ["repeat"] = -1 })
 
+vim.opt.cursorline = true
 vim.opt.ignorecase = true
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
@@ -36,9 +37,12 @@ require("lazy").setup({
     lazy = false,
     opts = {
       default_file_explorer = true,
-      win_options = {
-        statusline = "%<%{substitute(expand('%'), '^oil://\\zs.*', '\\=fnamemodify(submatch(0), \":~\")', '')}%h%m%r%=%-14.(%l,%c%V%) %P",
+      keymaps = {
+        ["t"] = { "actions.select", opts = { tab = true } },
       },
+      -- win_options = {
+      --   statusline = "%<%{substitute(expand('%'), '^oil://\\zs.*', '\\=fnamemodify(submatch(0), \":~\")', '')}%h%m%r%=%-14.(%l,%c%V%) %P",
+      -- },
       view_options = {
         show_hidden = true,
       },
@@ -119,13 +123,6 @@ vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
 
-vim.keymap.set({ "n", "i" }, "<LeftMouse>", "<LeftMouse><Cmd>OpenUrlUnderCursor<CR>", {
-  desc = "Open URL under mouse",
-  silent = true,
-})
-
-vim.keymap.set("n", "<Space>sl", "<Cmd>setlocal list! list?<CR>")
-vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
