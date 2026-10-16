@@ -12,6 +12,8 @@ vim.opt.cursorline = true
 vim.opt.ignorecase = true
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
+vim.opt.spell = true
+vim.opt.spelllang:append("cjk")
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 
@@ -166,18 +168,6 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
   callback = highlight_match,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-  group = augroup,
-  callback = function()
-    if vim.wo.diff then
-      vim.opt_local.spell = false
-    else
-      vim.opt_local.spelllang:append("cjk")
-      vim.opt_local.spell = true
-    end
-  end,
-})
-
 vim.api.nvim_create_autocmd("BufWritePost", {
   group = augroup,
   pattern = { "*.md", "*.mdx", "*.qmd" },
@@ -190,7 +180,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 -- --------------------------------------
--- End of settings
+-- Filetype, syntax, and colorscheme
 --
 vim.cmd("filetype plugin indent on")
 vim.api.nvim_create_autocmd("FileType", {
