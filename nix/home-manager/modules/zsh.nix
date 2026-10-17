@@ -109,11 +109,7 @@ in
     # .zshrc (initContent)
     # ========================================================================
     initContent = ''
-      # tmux auto-start (not in VSCode, not already in tmux)
       export SHELL="$(command -v zsh)"
-      # if [[ -z "$TMUX" && "''${TERM_PROGRAM}" != "vscode" ]]; then
-      #   command -v tmux &>/dev/null && exec tmux new-session -A -s main
-      # fi
 
       # Disable Ctrl-D to exit
       setopt IGNORE_EOF
@@ -122,20 +118,20 @@ in
       # Allow comments in interactive shell (useful for pasting commands with #)
       setopt INTERACTIVE_COMMENTS
 
-      # direnv (immediate loading - needs to run before first prompt for .envrc)
-      eval "$(direnv hook zsh)"
-
       # tirith (interactive-shell command guard; human terminal sessions only -
       # AI-agent Bash-tool invocations spawn non-interactive zsh and never
       # source this file, see bash-commands-denied.nix for that path instead)
       eval "$(tirith init --shell zsh)"
 
+      # direnv (immediate loading - needs to run before first prompt for .envrc)
+      eval "$(direnv hook zsh)"
+
       # Source modular configs
       source "${zshDir}/aws.zsh"
-      source "${zshDir}/keybind.zsh"
-      source "${zshDir}/prompt.zsh"
       source "${zshDir}/completion.zsh"
       source "${zshDir}/history-fzf.zsh"
+      source "${zshDir}/keybind.zsh"
+      source "${zshDir}/prompt.zsh"
       source "${zshDir}/snippet.zsh"
       source "${zshDir}/zoxide.zsh"
 

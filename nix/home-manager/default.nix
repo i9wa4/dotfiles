@@ -88,7 +88,6 @@ in
       pkgs.awscli2
       pkgs.azure-cli
       pkgs.databricks-cli
-      pkgs.emacs
       pkgs.fd
       pkgs.fzf
       pkgs.ghq
