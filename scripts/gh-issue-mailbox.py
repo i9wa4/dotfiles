@@ -21,8 +21,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib.error
-import urllib.request
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -321,14 +319,12 @@ class Mailbox:
         root: Path | None = None,
         import_from: Path | None = None,
         export_to: Path | None = None,
-        webhook: str | None = None,
     ) -> None:
         self.issue = issue
         self.root = root or state_root(issue)
         self.import_from = Path(os.path.abspath(import_from)) if import_from else None
         self.import_identity: tuple[int, int] | None = None
         self.export_to = export_to.resolve() if export_to else None
-        self.webhook = webhook
         self.inbox = self.root / "inbox"
         self.outbox = self.root / "outbox"
         self.sent = self.root / "sent"
@@ -591,14 +587,6 @@ class Mailbox:
             {"id": comment_id, "html_url": comment_url, "sha256": intent["sha256"]},
         )
         self.archive_post(claim, name, comment_id, intent, pending)
-        if self.webhook:
-            try:
-                self.notify_slack(comment_url)
-            except (OSError, urllib.error.URLError, ValueError):
-                print(
-                    f"Slack notification failed after confirmed POST {comment_id}",
-                    file=sys.stderr,
-                )
         self.reject_public_collision(
             name, claim, "outbox file appeared during confirmed POST"
         )
@@ -836,22 +824,6 @@ class Mailbox:
             raise UncertainDelivery("POST returned an invalid response")
         return value
 
-    def notify_slack(self, comment_url: str) -> None:
-        """Send only the confirmed comment URL to the optional webhook."""
-        assert self.webhook is not None
-        payload = json.dumps(
-            {"text": comment_url, "unfurl_links": False, "unfurl_media": False}
-        ).encode("utf-8")
-        request = urllib.request.Request(
-            self.webhook,
-            data=payload,
-            headers={"Content-Type": "application/json"},
-            method="POST",
-        )
-        with urllib.request.urlopen(request, timeout=10) as response:
-            if response.status >= 400:
-                raise ValueError(f"HTTP {response.status}")
-
     def fetch_page(
         self, page: int, etag: str | None
     ) -> tuple[int, dict[str, str], str]:
@@ -1000,7 +972,6 @@ def main(argv: list[str] | None = None) -> int:
             issue,
             import_from=args.import_from,
             export_to=args.export_to,
-            webhook=os.environ.get("GH_ISSUE_MAILBOX_SLACK_WEBHOOK_URL"),
         )
         os.umask(0o077)
         mailbox.prepare()
