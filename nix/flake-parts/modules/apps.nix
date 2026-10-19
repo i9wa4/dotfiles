@@ -60,10 +60,25 @@
       # cf. nix-darwin's modules/services/tailscale.nix (launchd.daemons.tailscaled),
       # reimplemented directly here to keep the nix-darwin-specific surface at zero.
       # lib.generators.toPlist renders the XML; only this attrset needs editing.
+      #
+      # /nix is a separate APFS volume that can mount after launchd first
+      # evaluates a boot-time job. A job whose ProgramArguments[0] is a
+      # /nix/store path can then fail with "Missing executable"; in the
+      # observed incident the job did not come back until it was manually
+      # booted out and bootstrapped again. Start through /bin/sh and wait for
+      # /nix/store first, like the other Nix LaunchDaemons (nix-daemon,
+      # activate-system, nix-gc). The waiting program must live outside /nix,
+      # so no wrapper script in the store here. /bin/wait4path has no timeout
+      # and only checks the /nix/store directory, not the tailscaled path
+      # itself.
       tailscaledPlist = pkgs.writeText "com.tailscale.tailscaled.plist" (
         lib.generators.toPlist { escape = true; } {
           Label = tailscaledLabel;
-          ProgramArguments = [ "${pkgs.tailscale}/bin/tailscaled" ];
+          ProgramArguments = [
+            "/bin/sh"
+            "-c"
+            "/bin/wait4path /nix/store && exec ${lib.escapeShellArg "${pkgs.tailscale}/bin/tailscaled"}"
+          ];
           RunAtLoad = true;
           KeepAlive = true;
         }
