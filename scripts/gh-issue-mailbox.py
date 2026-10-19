@@ -1,4 +1,10 @@
-"""Synchronize GitHub Issue comments with a local Markdown mailbox."""
+"""Synchronize GitHub Issue comments with a local Markdown mailbox.
+
+From the repository root, run with uv:
+    uv run scripts/gh-issue-mailbox.py ISSUE_URL
+
+Add --import-from and --export-to paths to use external Markdown directories.
+"""
 
 from __future__ import annotations
 
@@ -971,7 +977,7 @@ class Mailbox:
 
 def main(argv: list[str] | None = None) -> int:
     """Parse CLI options and run foreground synchronization."""
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("issue_url", metavar="ISSUE_URL")
     parser.add_argument(
         "--interval",
