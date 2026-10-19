@@ -1,7 +1,7 @@
 """Create a fixed-style YouTube thumbnail from a selected video frame.
 
 Usage:
-    uv run scripts/bin/ytthumb.py --path movie.mp4 --time 1:00 --text '["有線イヤホン","への回帰"]'
+    uv run scripts/ytthumb.py --path movie.mp4 --time 1:00 --text '["有線イヤホン","への回帰"]'
 
 The --path option selects a video; --time accepts MM:SS or HH:MM:SS; and --text
 accepts a JSON array of one to three lines. uv supplies Pillow through the
