@@ -121,7 +121,7 @@ in
       # tirith (interactive-shell command guard; human terminal sessions only -
       # AI-agent Bash-tool invocations spawn non-interactive zsh and never
       # source this file, see bash-commands-denied.nix for that path instead)
-      eval "$(tirith init --shell zsh)"
+      # eval "$(tirith init --shell zsh)"
 
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
