@@ -169,3 +169,69 @@ macOS updates can break nix-darwin in two ways:
 1. Open a new terminal
 
 cf. <https://github.com/nix-darwin/nix-darwin/issues/149>
+
+## 5. Recover the macOS Tailscale LaunchDaemon
+
+The macOS `switch` app installs
+`/Library/LaunchDaemons/com.tailscale.tailscaled.plist` and reloads its
+system job. At one boot, launchd reported `Missing executable` for the
+Nix-store `tailscaled` path before the service became available. The plist now
+starts `/bin/sh`, waits for `/nix/store` with `/bin/wait4path`, then executes
+`tailscaled` ([PR #451](https://github.com/i9wa4/dotfiles/pull/451)). The
+boot-time mount ordering is the likely cause of that observation; a successful
+switch and reboot with the new plist have not yet been verified.
+
+### 5.1. Diagnose before recovery
+
+Run these on the affected Mac without a manually started `tailscaled`:
+
+```sh
+sudo launchctl print system/com.tailscale.tailscaled
+pgrep -alf tailscaled
+tailscale status
+sudo plutil -lint /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+sudo plutil -p /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+log show --last 1h --style compact \
+  --predicate 'process == "launchd" AND eventMessage CONTAINS[c] "tailscaled"'
+log show --last 1h --style compact --predicate 'process == "tailscaled"'
+```
+
+Record the time of the failed `switch` or reboot alongside the launchd output
+and logs. `launchctl print` proves that the job is registered, not that the
+daemon has finished waiting, is running, or answers the CLI. A login-required
+response from `tailscale status` differs from `failed to connect to local
+Tailscale service`; investigate authentication separately if the daemon is
+responsive. If the installed plist still starts a Nix-store executable
+directly, the merged fix has not been activated on this Mac.
+
+### 5.2. Recover an unavailable daemon
+
+First confirm `/nix/store` is mounted and stop any foreground `sudo tailscaled`
+used as a temporary workaround. Run recovery locally: restarting the job can
+briefly disconnect a remote Tailscale session. If the installed plist is old,
+have the operator run `nix run '.#switch'` to install the current version;
+agents must not run system activation themselves (section 1).
+
+With the current plist installed, unload the system job first:
+
+```sh
+sudo launchctl bootout system /Library/LaunchDaemons/com.tailscale.tailscaled.plist
+```
+
+Continue only if `bootout` succeeded or launchctl explicitly reports that the
+job was already not loaded. Stop and inspect any other error; do not run the
+following commands after an unexpected failure. Then bootstrap, enable, and
+start the job in order. The `&&` chain stops at the first failed command:
+
+```sh
+sudo launchctl bootstrap system \
+  /Library/LaunchDaemons/com.tailscale.tailscaled.plist &&
+  sudo launchctl enable system/com.tailscale.tailscaled &&
+  sudo launchctl kickstart -k system/com.tailscale.tailscaled
+```
+
+Repeat the checks in section 5.1. Confirm that `tailscaled` is running and
+`tailscale status` can contact it. If it still cannot, preserve the launchd
+and daemon logs before trying another reload. Verify the same checks after
+the next successful `switch` and after reboot; manual reloading alone does
+not close [#422](https://github.com/i9wa4/dotfiles/issues/422).
