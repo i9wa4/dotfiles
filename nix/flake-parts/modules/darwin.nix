@@ -198,17 +198,51 @@ let
                     if [[ ''${#missing[@]} -gt 0 ]]; then
                       (
                         tmpDir="$(mktemp -d "''${TMPDIR:-/tmp}/macskk-dict.XXXXXX")" || exit 1
-                        trap 'rm -rf "$tmpDir"' EXIT
+                        staged=""
+                        cleanup() {
+                          local status=$? cleanupFailed=0
+                          trap - EXIT
+                          if ! rm -rf -- "$tmpDir"; then
+                            echo "macSKK: failed to remove temporary clone directory: $tmpDir" >&2
+                            cleanupFailed=1
+                          fi
+                          if [[ -n "$staged" ]] && ! rm -f -- "$staged"; then
+                            echo "macSKK: failed to remove staged dictionary: $staged" >&2
+                            cleanupFailed=1
+                          fi
+                          if [[ "$status" -eq 0 && "$cleanupFailed" -ne 0 ]]; then
+                            status=1
+                          fi
+                          exit "$status"
+                        }
+                        trap cleanup EXIT
+
+                        installDict() {
+                          local source="$1" target="$2"
+                          [[ -f "$target" ]] && return 0
+
+                          # Copy beside the final path, then publish without replacing a concurrent install.
+                          staged="$(mktemp "$macSkkDir/.macskk-dict.XXXXXX")" || return 1
+                          cp "$source" "$staged" || return 1
+                          if ! ${pkgs.coreutils}/bin/ln -T -- "$staged" "$target" 2>/dev/null && [[ ! -f "$target" ]]; then
+                            return 1
+                          fi
+                          if ! rm -f -- "$staged"; then
+                            echo "macSKK: failed to remove staged dictionary: $staged" >&2
+                            return 1
+                          fi
+                          staged=""
+                        }
 
                         # Keep these public clones independent of user and system Git URL rewrites.
                         export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
                         ${git} -C "$tmpDir" clone --depth 1 https://github.com/skk-dev/dict skk-dev-dict || exit 1
                         ${git} -C "$tmpDir" clone --depth 1 https://github.com/uasi/skk-emoji-jisyo skk-emoji-jisyo || exit 1
 
-                        [[ -f "$macSkkDir/SKK-JISYO.L" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.jinmei" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.assoc" ]] || cp "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc" || exit 1
-                        [[ -f "$macSkkDir/SKK-JISYO.emoji.utf8" ]] || cp "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.L" "$macSkkDir/SKK-JISYO.L" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.jinmei" "$macSkkDir/SKK-JISYO.jinmei" || exit 1
+                        installDict "$tmpDir/skk-dev-dict/SKK-JISYO.assoc" "$macSkkDir/SKK-JISYO.assoc" || exit 1
+                        installDict "$tmpDir/skk-emoji-jisyo/SKK-JISYO.emoji.utf8" "$macSkkDir/SKK-JISYO.emoji.utf8" || exit 1
                       ) || exit 1
                     fi
                   '';

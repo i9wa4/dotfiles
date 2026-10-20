@@ -244,17 +244,34 @@ cf. <https://brew.sh/>
 
 ### 4.3. Initial darwin-rebuild
 
+Section 2.3 enables `nix-command` and `flakes` for your user. The first
+macOS activation runs Nix as root, before nix-darwin has installed its
+system-wide Nix settings, so enable both features on this invocation.
+`sudo -H` sets HOME to root's home and avoids the mismatched-HOME warning;
+the target macOS user is still selected from `SUDO_USER`.
+
+Personal Mac:
+
 ```sh
-sudo nix run nix-darwin -- switch --flake '.#macos-p' --impure --no-update-lock-file
+sudo -H nix --extra-experimental-features 'nix-command flakes' \
+  run nix-darwin -- switch \
+  --flake '.#macos-p' \
+  --impure \
+  --no-update-lock-file
 ```
 
-or
+Work Mac:
 
 ```sh
-sudo nix run nix-darwin -- switch --flake '.#macos-w' --impure --no-update-lock-file
+sudo -H nix --extra-experimental-features 'nix-command flakes' \
+  run nix-darwin -- switch \
+  --flake '.#macos-w' \
+  --impure \
+  --no-update-lock-file
 ```
 
-Open a new terminal after completion.
+After a successful activation, nix-darwin manages the system-wide
+`nix-command flakes` settings. Open a new terminal after completion.
 
 ## 5. Post Installation
 
