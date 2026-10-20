@@ -25,6 +25,7 @@ to kitty also did not change the observed behavior. Keep the native SKK
 `Ctrl-J` convention; changing to macOS `Ctrl-Space` is unnecessary for
 this workaround.
 
-Related upstream context: [macSKK #119](https://github.com/mtgto/macSKK/issues/119),
+Related upstream context:
+[macSKK #119](https://github.com/mtgto/macSKK/issues/119),
 [macSKK #362](https://github.com/mtgto/macSKK/pull/362), and
 [macSKK #364](https://github.com/mtgto/macSKK/pull/364).
