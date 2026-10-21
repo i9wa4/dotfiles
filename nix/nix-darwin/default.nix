@@ -71,6 +71,9 @@
 
   networking.applicationFirewall.enable = true;
 
+  # Remote Login (Apple's built-in sshd). null would leave it to macOS.
+  services.openssh.enable = true;
+
   # Enable zsh (creates /etc/zshenv for nix-darwin environment)
   # NOTE: All features disabled - home-manager zsh.nix handles user config
   programs.zsh = {

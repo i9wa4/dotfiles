@@ -28,6 +28,7 @@ Owner skill for this machine, this repository, and the agent harness.
 Environment:
 
 - [Machine Setup](references/machine-setup.md) — new-machine bootstrap
+- [macSKK and kitty](references/macskk.md) — Ctrl-J newline troubleshooting
 - [Nix Operations](references/nix-operations.md) — daily ops, upgrade,
   recovery
 - [Tailscale Operations](references/tailscale-operations.md) — start the
