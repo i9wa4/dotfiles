@@ -28,6 +28,16 @@ Reviewer prompt mapping:
   launched`, and `Self-review: complete`; incomplete coverage is
   `BLOCKED: fewer than required perspectives completed`.
 - Use the data reviewer only for specialized questions.
+- For every Historian or QA reviewer launch, Guardian or critic explicitly adds
+  `skills/dev-platform-workflow/references/github-workflow.md` to that
+  reviewer's bounded read-only path set and names its "Lookup / Read Commands"
+  section in the launch input. This single file is an authorized reference for
+  lookup syntax; it does not grant access to other paths or expand the frozen
+  review target. In blind mode, the reference contains no candidate identity,
+  so the blind lookup restrictions in section 2 still apply. Have the reviewer
+  confirm it could read that section before relying on lookup commands. If it
+  cannot, repair the launch input and rerun the reviewer; do not treat a prose
+  pointer or an inaccessible file as delivered context.
 
 ## 2. Blind Projection and Reviewer Packet
 
