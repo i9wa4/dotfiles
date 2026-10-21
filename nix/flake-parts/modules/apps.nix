@@ -111,6 +111,29 @@
                   sudo launchctl enable system/${tailscaledLabel}
                   sudo launchctl kickstart -k system/${tailscaledLabel}
                   sudo launchctl print system/${tailscaledLabel} >/dev/null
+
+                  # Registration is not readiness: the wrapper may still be
+                  # waiting for /nix/store, or tailscaled may have exited.
+                  tailscale_ready=false
+                  tailscale_status_error=
+                  for (( attempt = 1; attempt <= 12; attempt++ )); do
+                    if tailscale_status_error=$(
+                      ${pkgs.coreutils}/bin/timeout --kill-after=2s 5s \
+                        ${pkgs.tailscale}/bin/tailscale status --json 2>&1 >/dev/null
+                    ); then
+                      tailscale_ready=true
+                      break
+                    fi
+                    [ "$attempt" -eq 12 ] || sleep 1
+                  done
+                  if [ "$tailscale_ready" != true ]; then
+                    printf 'tailscaled did not answer the local CLI after 12 attempts\n' >&2
+                    if [ -n "$tailscale_status_error" ]; then
+                      printf 'Last tailscale status error: %s\n' "$tailscale_status_error" >&2
+                    fi
+                    sudo launchctl print system/${tailscaledLabel} >&2 || true
+                    exit 1
+                  fi
                 ''
               else
                 ''
