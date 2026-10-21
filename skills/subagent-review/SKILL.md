@@ -8,37 +8,37 @@ description: "USE FOR: Guardian/critic native multi-perspective review workflow,
 
 # Subagent Review
 
-## 1. Ledger
+## 1. Ledger and authority
 
-1. Before review, guardian freezes target, criteria, scope, and the
-   design/public boundary. Broadening is recorded, never inferred.
-2. Guardian owns a never-reused ledger (`F-001`); use the
-   [contract](references/review-topology.md) for required fields and reports.
-3. Guardian alone decides materiality and convergence; packets supply
-   observations, evidence, and risk signals. Nits never gate rework. Invalid
-   packets, missing evidence, authority gaps, cap exhaustion, and criterion
-   changes are guardian-recorded states.
+Guardian freezes target, scope, criteria, baseline, mode, and boundary. The
+task owner declares mitigation mode before this freeze.
+Guardian owns never-reused IDs (`F-001`), applies the
+[materiality and risk rules](references/review-topology.md), and decides
+convergence. Packets supply evidence; nits do not gate rework. Record gaps.
 
-## 2. Review to Convergence
+## 2. Review loop
 
-1. Run cheapest verification. Guardian defines the required perspective set;
-   critic is guardian-specified and never self-selects. Waves are parallel.
-2. Deduplicate. Guardian MUST request critic for substantive review; critic
-   returns its set plus self-review; guardian aggregates both sets. Reviewers
-   never edit, commit, push, approve, or decide materiality. See the packet
-   schema and blind-projection contract in
-   [contract](references/review-topology.md).
-3. Each round reconciles every prior ID: recurrence, regression, new discovery,
-   closure, supersession, accepted risk, or unchanged; record changed criteria.
-4. Review the full change, then deduplicate material findings and freeze IDs,
-   closure conditions, and reproducible verification in one executor batch.
-   After rework, verify and review only that set unless scope/criteria changed.
-5. Repeat batched fix → verification → diff-review until closure, then final
-   confirmation. Cap: initial plus two failed reworks. At cap/unavailable
-   evidence, `BLOCKED` includes IDs, gap, authority needed, and next owner.
-   Quarantine invalid packets before a round; they consume no rework slot.
+1. Run cheapest verification. Guardian MUST request critic for substantive
+   review; deduplicate its set and self-review. Reviewers cannot edit, commit,
+   push, approve, or decide materiality. Follow the
+   [packet contract](references/review-topology.md).
+2. Give each prior ID exactly one round disposition: recurrence, regression,
+   closure, supersession, accepted risk, unchanged, or changed criterion.
+   Record new discoveries separately. Record changed/tightened criteria as
+   old/new/reason/owner; never portray them as previously frozen.
+3. Review the full change; freeze material IDs, observable closure outcomes,
+   and named verification in one batch. Separate design suggestions. Attribute
+   reviewer prescriptions and `prescription-induced` regressions; reassess the
+   prescription and gate regressions by materiality. Re-review that batch.
+4. Repeat fix, verification, and diff review through confirmation.
+   Count `initial`, `rework 1 of 2`, `rework 2 of 2`; invalid packets consume no
+   slot. At cap or unavailable proof, report `BLOCKED` with IDs and gaps. Only
+   the human user through the interface node may extend the rework cap. This
+   cap is separate from the Tier 1 attempt cap.
 
-## 3. Round Report
+## 3. Round report
 
-Each round follows the [contract](references/review-topology.md): frozen
-scope/criteria/targets, ledger, evidence, batch, verdict, and next action.
+Use the [contract's report](references/review-topology.md): counter, frozen
+criteria/baseline/mode, criterion changes, accepted-risk authority and owners,
+reviewer-reachable proof, base-versus-head latency/liveness check, ledger,
+verdict, and next action.
