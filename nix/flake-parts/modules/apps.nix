@@ -183,7 +183,9 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "apt-upgrade" ''
             set -euo pipefail
-            sudo apt-get update && sudo apt-get upgrade -y
+            sudo apt-get update
+            sudo apt-get upgrade -y
+            sudo apt-get upgrade ca-certificates
           ''}/bin/apt-upgrade";
         };
 

@@ -13,6 +13,7 @@ let
   ];
   commonHomebrewBrews = [
     "asmvik/formulae/skhd"
+    "ca-certificates"
     "macmon"
     "mise"
     "podman"
@@ -78,10 +79,10 @@ let
           networking.hostName = hostname;
 
           # Homebrew-managed macOS tools and GUI apps.
-          # Allow activation-time metadata updates so Homebrew's cask API and
-          # portable Ruby stay in sync before `brew bundle` resolves casks.
-          # Keep upgrades disabled so `nix run '.#switch'` does not force app
-          # version bumps.
+          # Refresh Homebrew metadata during activation, then upgrade outdated
+          # managed formulae and Mac App Store apps during switch. Upgrades can
+          # change dependency resolution; cleanup below removes undeclared
+          # formulae and casks.
           homebrew = {
             enable = true;
             inherit
@@ -91,7 +92,7 @@ let
               ;
             onActivation = {
               autoUpdate = true;
-              upgrade = false;
+              upgrade = true;
               # Remove Homebrew packages and casks not declared in this module
               # during `nix run '.#switch'`.
               cleanup = "uninstall";
