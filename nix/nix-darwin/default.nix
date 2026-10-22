@@ -16,6 +16,31 @@
       # Reproduced on multiple MacBooks. Runtime binary is fine; only the
       # upstream post-build test suite is broken, so skipping doCheck is safe.
       (_: prev: {
+        # Fabric 3.2.3 is broken with Invoke 3; Azure CLI requires Fabric.
+        # Keep Invoke 2.2.1 inside Azure CLI's Python package set only.
+        # Remove this once Fabric supports Invoke 3:
+        # https://github.com/fabric/fabric/issues/2376
+        azure-cli = prev.azure-cli.override {
+          python3 = prev.python3 // {
+            override =
+              args:
+              prev.python3.override (
+                args
+                // {
+                  packageOverrides = prev.lib.composeExtensions (_: pyPrev: {
+                    invoke = pyPrev.invoke.overridePythonAttrs {
+                      version = "2.2.1";
+                      src = prev.fetchPypi {
+                        pname = "invoke";
+                        version = "2.2.1";
+                        hash = "sha256-UVv0m0pIkyt5sCRZA0jaIvOcSULf+ZGtH7i4uuob5wc=";
+                      };
+                    };
+                  }) (args.packageOverrides or (_: _: { }));
+                }
+              );
+          };
+        };
         direnv = prev.direnv.overrideAttrs (_: {
           doCheck = false;
         });
