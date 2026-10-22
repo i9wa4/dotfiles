@@ -24,17 +24,22 @@ Use this precedence:
 
 1. A path supplied by the user, orchestrator, reviewer, or task artifact.
 2. The already-active artifact recorded in the current task or handoff.
-3. A discovered recent artifact that clearly matches the same repo, branch,
+3. A discovered artifact that clearly matches the same repo, branch,
    task, and purpose.
 4. A new artifact created with the installed logbook `mkmd` script.
 
 Do not create a second tracker because the current artifact is inconvenient.
 Update or rename only when the requester explicitly changes the canonical path.
+For `orchestration` artifacts only, a verified active SSOT for the same repo
+and full branch remains canonical despite a later supplied path or completion
+of a subordinate task. A new subordinate task on that branch reuses it.
+Replacing that path requires current explicit human approval naming the old
+and new paths; otherwise reconcile the conflicting reference.
 
 ## 2. Work-Start And Resume Discovery
 
-Before creating a new artifact, search the local state root for recent
-candidates. Use this search root:
+Before creating a new artifact, search the local state root for candidates
+across all dates. Use this search root:
 
 ```sh
 mkmd_root="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
@@ -53,7 +58,7 @@ When the current directory is inside a Git worktree, map candidates by:
 Use this command as the default candidate list:
 
 ```sh
-find "$mkmd_root" -type f -name '*.md' -mtime -14 -print 2>/dev/null |
+find "$mkmd_root" -type f -name '*.md' -print 2>/dev/null |
   sort -r
 ```
 
@@ -65,15 +70,21 @@ Inspect candidates in this order:
 4. Same owner/repo directory with matching task title, issue number, PR number,
    or filename label.
 
-Reject stale candidates when the branch, task, or purpose no longer matches, or
-when the evidence log says the work was completed and the current task is a new
-scope. If several candidates tie, choose the one referenced by the latest
-trusted message; otherwise choose the newest candidate only after inspecting
-the title, task paragraph, checklist, and most recent evidence entry. When two
-files are both live for the same repo and task but different purposes, keep
-both and name their roles in the handoff. When two files claim the same role,
-reuse the clearer or newer canonical file and record the rejected path in the
-evidence log instead of merging content ad hoc.
+Reject stale candidates when the repository, branch, worktree, task, or purpose
+no longer matches, or when the evidence log says the work was completed and
+the current task is a new scope. If several candidates tie, choose the one
+referenced by the latest trusted message; otherwise choose the newest
+candidate only after inspecting the title, task paragraph, checklist, most
+recent evidence entry, and creation provenance. Path sort order alone does
+not establish creation order. When two files are both live for the same repo
+and task but different purposes, keep both and name their roles in the handoff.
+When two files claim the same role, reuse the clearer or newer canonical file
+and record the rejected path in the evidence log instead of merging content
+ad hoc.
+For `orchestration` artifacts without a verified active path, choose among
+same-role candidates only when repo, full branch, purpose, and creation
+provenance make the newest candidate clear. Otherwise preserve the candidates
+and halt for reconciliation; the ordinary clearer/newer rule does not decide.
 
 Create a new artifact only when no candidate clearly matches the same repo,
 branch, task, and purpose. Create multiple artifacts only for distinct purposes,
@@ -133,13 +144,14 @@ dots, underscores, and hyphens. Do not use path separators or `..`.
 
 ## 5. Directory Labels
 
-| Label      | Use when                                                 |
-| ---------- | -------------------------------------------------------- |
-| `plans`    | The artifact is an execution plan or milestone tracker.  |
-| `research` | The work is investigation, synthesis, or decision notes. |
-| `reviews`  | The artifact records review findings or approvals.       |
-| `draft`    | The artifact is temporary text for a handoff or message. |
-| `tmp`      | The artifact is scratch output with low retention value. |
+| Label           | Use when                                                     |
+| --------------- | ------------------------------------------------------------ |
+| `plans`         | The artifact is an execution plan or milestone tracker.      |
+| `orchestration` | The artifact is canonical branch-scoped orchestration state. |
+| `research`      | The work is investigation, synthesis, or decision notes.     |
+| `reviews`       | The artifact records review findings or approvals.           |
+| `draft`         | The artifact is temporary text for a handoff or message.     |
+| `tmp`           | The artifact is scratch output with low retention value.     |
 
 Prefer the narrowest label that fits. Use `tmp` only when the output can be
 discarded without losing task state.
