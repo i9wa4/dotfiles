@@ -10,6 +10,7 @@
     config.allowUnfree = true;
     hostPlatform = "aarch64-darwin";
     overlays = [
+      (import ../overlays/gh.nix)
       # TODO: Revert once nixpkgs-25.11-darwin ships a working direnv build.
       # WORKAROUND: direnv-2.37.1 checkPhase hangs at `fish ./test/direnv-test.fish`
       # in the Nix sandbox on aarch64-darwin, blocking darwin-rebuild switch.
