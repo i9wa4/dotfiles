@@ -21,16 +21,8 @@
         headings = false
         reflow = true
       '';
-      hasActrun = builtins.elem system [
-        "aarch64-darwin"
-        "x86_64-linux"
-      ];
       hasBetterleaks = pkgs ? betterleaks;
       inherit (pkgs) betterleaks;
-      actrun = pkgs.callPackage ../../packages/actrun.nix {
-        inherit system;
-      };
-      opensslLib = pkgs.lib.getLib pkgs.openssl;
       pinactRun = pkgs.writeShellScript "pinact-run" ''
         # `nix flake check` runs pre-commit in a sandbox without GitHub API access.
         # Keep local dev-shell hooks on full `pinact run` behavior.
@@ -46,9 +38,7 @@
       };
     in
     {
-      packages =
-        (if hasBetterleaks then { inherit betterleaks; } else { })
-        // (if hasActrun then { inherit actrun; } else { });
+      packages = if hasBetterleaks then { inherit betterleaks; } else { };
 
       pre-commit = {
         check.enable = true;
@@ -104,16 +94,6 @@
           zizmor = {
             enable = true;
             entry = "${pkgs.zizmor}/bin/zizmor";
-            files = ghWorkflowFiles;
-          };
-
-          actrun-lint = {
-            enable = hasActrun;
-            entry =
-              if hasActrun then
-                "${pkgs.bash}/bin/bash -c 'LD_LIBRARY_PATH=${opensslLib}/lib exec ${actrun}/bin/actrun lint \"$@\"' --"
-              else
-                "";
             files = ghWorkflowFiles;
           };
 
