@@ -19,6 +19,40 @@ let
   pnpmPackage = pkgs.pnpm;
   system = pkgs.stdenv.hostPlatform.system;
 
+  # Local workaround for the pinned CA data, matching nix-darwin's distrust
+  # policy without a global overlay. NSS >=3.131.1 removes ECC G3 upstream.
+  # Retain AAA while its label exists; revisit/remove this override when an
+  # upstream bundle excludes these trust paths and fingerprint checks pass.
+  clientCa = pkgs.cacert.override (previous: {
+    blacklist = lib.unique (
+      (previous.blacklist or [ ])
+      ++ [ "Comodo AAA Services root" ]
+      ++ lib.optional (lib.versionOlder pkgs.cacert.version "3.131.1") "emSign ECC Root CA - G3"
+    );
+  });
+  # The extended bundle/hashed output also carries rejected trust records;
+  # use the TLS-only PEM so consumers cannot discard their rejection metadata.
+  clientCaFile = "${clientCa}/etc/ssl/certs/ca-no-trust-rules-bundle.crt";
+  clientCaDir = pkgs.emptyDirectory;
+  # Routing workaround: Node and uv still select bundled roots. Revisit these
+  # entrypoints/session defaults only after actual Node, Python, Nix and uv
+  # checks use mitigated stores without them; a data update alone is insufficient.
+  clientNode = pkgs.writeShellScript "node" ''
+    exec ${pnpmPackage.nodejs-slim}/bin/node --use-openssl-ca "$@"
+  '';
+
+  # Scope uv's generic CA file to uv/descendants, without a session export.
+  # Descendants inherit it; keep deliberate empty/nonempty overrides and argv.
+  clientUv = pkgs.symlinkJoin {
+    name = "uv-filtered-ca-${pkgs.uv.version}";
+    paths = [ pkgs.uv ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram "$out/bin/uv" \
+        --run 'if [ "''${SSL_CERT_FILE+x}" != x ]; then export SSL_CERT_FILE="''${NIX_SSL_CERT_FILE-}"; fi'
+    '';
+  };
+
   # AI agent CLIs from llm-agents.nix flake input
   # (uses upstream nixpkgs pin to match cache.numtide.com binaries)
   llmAgents = inputs.llm-agents.packages.${system};
@@ -76,6 +110,19 @@ in
       "${dotfilesDir}/scripts/bin"
     ];
 
+    # Darwin user-session defaults only; Linux retains its existing trust policy.
+    # Nix OpenSSL/certifi use NIX_SSL_CERT_FILE; uv alone needs the generic file.
+    # Ordinary Apple curl keeps its observed OpenSSL/LibreSSL backend and
+    # /etc/ssl/cert.pem CAfile without a generic SSL_CERT_FILE session export.
+    # Its CApath changes from none to this empty directory; this also prevents
+    # uv/OpenSSL from merging a second default store through that directory.
+    # Explicit per-command overrides remain possible; replace both file variables
+    # together for consistent Nix OpenSSL/uv behavior. Inherited values persist.
+    sessionVariables = lib.optionalAttrs isDarwin {
+      NIX_SSL_CERT_FILE = clientCaFile;
+      SSL_CERT_DIR = clientCaDir;
+    };
+
     # User packages (managed by home-manager)
     # For project-specific tools, use devShell or mise instead
     packages = [
@@ -102,7 +149,7 @@ in
       pkgs.shellcheck
       pkgs.tirith
       pkgs.tmux
-      pkgs.uv
+      (if isDarwin then clientUv else pkgs.uv)
       pkgs.vale
       pkgs.vim
       pkgs.zoxide
@@ -135,7 +182,7 @@ in
       ".vale.ini".source = symlink "${dotfilesDir}/config/vale/.vale.ini";
       # pnpm global shims look for ~/.local/bin/node before falling back to PATH.
       # Expose pnpm's own Node runtime without adding a separate Node package.
-      ".local/bin/node".source = "${pnpmPackage.nodejs-slim}/bin/node";
+      ".local/bin/node".source = if isDarwin then clientNode else "${pnpmPackage.nodejs-slim}/bin/node";
     };
   };
 
