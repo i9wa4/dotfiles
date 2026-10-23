@@ -20,11 +20,9 @@
       isDarwin = lib.hasSuffix "darwin" system;
       isLinux = lib.hasSuffix "linux" system;
       gh = lib.getExe pkgs.gh;
-      jq = lib.getExe pkgs.jq;
       nix = lib.getExe pkgs.nix;
       tmuxA2aPostmanUpdateScript = ./../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh;
       wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
-      actrunUpdateScript = ./../../../scripts/nix/package-update-actrun.sh;
       tailscaledLabel = "com.tailscale.tailscaled";
 
       # Neither standalone home-manager (Ubuntu) nor a plain nix-darwin
@@ -165,8 +163,6 @@
             ${nix} flake update --access-tokens "github.com=$access_token"
             WAZA_GH=${gh} WAZA_NIX=${nix} \
               ${pkgs.bash}/bin/bash ${wazaUpdateScript}
-            ACTRUN_GH=${gh} ACTRUN_NIX=${nix} ACTRUN_JQ=${jq} \
-              ${pkgs.bash}/bin/bash ${actrunUpdateScript}
           ''}/bin/update";
         };
 
