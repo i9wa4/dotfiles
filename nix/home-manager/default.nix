@@ -182,6 +182,18 @@ in
       llmAgents.codex
       llmAgents.herdr
     ]
+    ++ lib.optionals isDarwin [
+      # Nix curl (OpenSSL; version pinned by flake.lock) is installed as the
+      # intended normal `curl`. Whether `curl` resolves to it depends on the
+      # effective PATH: nix-darwin places the profiles before /usr/bin, but
+      # Homebrew, direnv or local shell config can change that (check with
+      # `command -v curl`). It has no compiled-in CA bundle or path but keeps
+      # OpenSSL's default-store fallback; the tested trust source is the filtered
+      # SSL_CERT_FILE plus the empty SSL_CERT_DIR from the session variables above.
+      # Apple's /usr/bin/curl stays available by absolute path or whenever PATH
+      # selects it; the same SSL_CERT_FILE covers it in session shells.
+      pkgs.curl
+    ]
     ++ lib.optionals (!isDarwin) [
       pkgs.mise
       pkgs.podman
