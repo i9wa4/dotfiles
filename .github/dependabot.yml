@@ -10,6 +10,10 @@ updates:
       github-actions:
         patterns:
           - "*"
+      github-actions-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
     commit-message:
       prefix: "chore(deps)"
   - package-ecosystem: "nix"
