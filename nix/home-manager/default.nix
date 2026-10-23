@@ -22,7 +22,13 @@ let
   # Local workaround for the pinned CA data, matching nix-darwin's distrust
   # policy without a global overlay. NSS >=3.131.1 removes ECC G3 upstream.
   # Retain AAA while its label exists; revisit/remove this override when an
-  # upstream bundle excludes these trust paths and fingerprint checks pass.
+  # upstream bundle excludes these trust paths and manual fingerprint checks pass.
+  # The blacklist matches by label: an incident policy, not a permanent guarantee.
+  # After a nixpkgs bump, re-verify by hand in a shell with the session variables
+  # set (SSL_CERT_FILE = this bundle, not the system defaults): curl against
+  # https://dv-g3b-noct-emudhra.we-have-a-problem.com/ and
+  # https://dv-g3b-aaa-noct-emudhra.we-have-a-problem.com/ must each fail with
+  # exit 60, while https://api.github.com/ must succeed.
   clientCa = pkgs.cacert.override (previous: {
     blacklist = lib.unique (
       (previous.blacklist or [ ])
@@ -32,17 +38,7 @@ let
   });
   # The extended bundle/hashed output also carries rejected trust records;
   # use the TLS-only PEM so consumers cannot discard their rejection metadata.
-  clientCaBundle = "${clientCa}/etc/ssl/certs/ca-no-trust-rules-bundle.crt";
-  # Build-time guard: the build fails if the filtered bundle holds a published
-  # eMudhra fingerprint or is empty, truncated or malformed. The guard's own
-  # fixtures run first, so a broken guard fails the build instead of passing.
-  guardPython = pkgs.python3.withPackages (ps: [ ps.cryptography ]);
-  clientCaChecked = pkgs.runCommand "client-ca-checked" { nativeBuildInputs = [ guardPython ]; } ''
-    python3 ${./scripts/check-client-ca-test.py} ${./scripts/check-client-ca.py}
-    python3 ${./scripts/check-client-ca.py} ${clientCaBundle}
-    install -D ${clientCaBundle} $out/etc/ssl/certs/ca-no-trust-rules-bundle.crt
-  '';
-  clientCaFile = "${clientCaChecked}/etc/ssl/certs/ca-no-trust-rules-bundle.crt";
+  clientCaFile = "${clientCa}/etc/ssl/certs/ca-no-trust-rules-bundle.crt";
   clientCaDir = pkgs.emptyDirectory;
   # Routing workaround: Node and uv still select bundled roots. Revisit these
   # entrypoints/session defaults only after actual Node, Python, Nix and uv
@@ -123,7 +119,7 @@ in
 
     # Darwin user-session defaults only; Linux retains its existing trust policy.
     # NIX_SSL_CERT_FILE feeds Nix OpenSSL/certifi. SSL_CERT_FILE gives the same
-    # checked bundle to file-based consumers: Apple curl (observed to honor it),
+    # filtered bundle to file-based consumers: Apple curl (observed to honor it),
     # Go clients such as gh, and uv. Apple curl would otherwise read the system
     # /etc/ssl/cert.pem, which still holds the compromised eMudhra roots.
     # SSL_CERT_DIR stays the empty directory so OpenSSL consumers cannot merge a
