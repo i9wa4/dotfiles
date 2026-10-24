@@ -277,22 +277,36 @@ After a successful activation, nix-darwin manages the system-wide
 
 ### 5.1. gh (GitHub CLI)
 
+有効期限付きで自動更新される OAuth 認証には gh 2.103.0 以降が必要です。 Home
+Manager は `expiring_credentials = "enabled"` を設定します。設定の反映後は
+`gh config get expiring_credentials` が `enabled` を返すことを確認してください。
+初回のログインでは `--expiring` を明示します。Home Manager
+の設定が反映された後は、
+将来のログインで毎回このフラグを指定する必要はありません。
+
+各マシンで個別に認証します。既存の認証は自動で移行されないため、必要なら
+`gh auth logout -h github.com`
+で古いセッションを終了してから再認証してください。このコマンドは当該マシンの
+認証情報だけを削除し、GitHub 側の OAuth アプリの許可は取り消しません。
+
 ```sh
-gh auth login
-# Choose SSH for Git operation protocol
-# Skip uploading SSH public key
-# Login with a web browser
+gh auth login --expiring
+# Git の操作プロトコルに SSH を選ぶ
+# SSH 公開鍵のアップロードをスキップする
+# Web ブラウザーでログインする
+gh auth status
 ```
 
-To copy auth to another machine:
+`gh auth status` で認証状態と有効期限を確認します。GitHub の設定で GitHub CLI
+アプリの許可を取り消すと、全マシンの CLI 認証が無効になります。許可を取り消す
+場合は新しいログインの前に行い、その後すべてのマシンで再認証してください。
+不要な PAT は GitHub の設定で個別に取り消します。Git の SSH 運用はそのままです。
 
-```sh
-gh auth status --show-token
-```
-
-```sh
-gh auth login --with-token
-```
+別のマシンへ認証トークンをコピーせず、そのマシンでも上記のログインを実行します。
+スクリプトが GitHub API のトークンを必要とする場合は、実行のたびに
+`gh auth token` から取得し、古い値を保存して再利用しないでください。 `GH_TOKEN`
+や `gh auth login --with-token` で手動指定するトークンは別の認証経路であり、
+この自動更新の対象ではありません。
 
 ### 5.2. AWS CLI
 

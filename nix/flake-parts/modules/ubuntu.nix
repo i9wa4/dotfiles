@@ -18,6 +18,7 @@ let
       pkgs = import nixpkgs {
         localSystem = system;
         config.allowUnfree = true;
+        overlays = [ (import ../../overlays/gh.nix) ];
       };
     in
     home-manager.lib.homeManagerConfiguration {
