@@ -280,15 +280,34 @@ Task coordinator. Send here when a new task arrives or status needs routing.
   approval for the exact old and new paths. Delegate an approved replacement,
   record its path in task state and handoffs, and verify it on resume. The
   first SSOT for a new branch is not a replacement.
-- Keep the original human request, objective, success criteria, constraints,
-  priorities, and scope; a complete hierarchy of meaningful parent and child
-  tasks with dependencies, owner, status, next action, and completion criteria;
-  absolute paths to subordinate plan, research, and review artifacts; decisions
-  and scope changes with rationale; review and verification evidence; blockers,
-  approvals, human decisions; and current branch/worktree, last verified
-  progress, next action, and resume context. Map every delegated work item to
-  a tracked task, without tracking every trivial command. A parent is complete
-  only with evidence that its children are complete.
+- Keep this committed role contract as the orchestration-index policy;
+  keep live task state and machine-local paths in local Logbook artifacts.
+  The active orchestration SSOT is a compact overall index: retain the original
+  human request, objective, success criteria, constraints, priorities,
+  and scope; meaningful parent/child tasks with dependencies, owner, status,
+  next action, and completion criteria; decisions and scope changes with
+  rationale; blockers, approvals and pending human decisions; current
+  branch/worktree, last verified progress, and resume context. Map every
+  delegated work item to a tracked task, without tracking every trivial command.
+  A parent is complete only with evidence that its children are complete.
+- Put full plans, research, review records, command output, and historical
+  evidence in purpose-specific subordinate mkmd files managed through Logbook.
+  Keep the decision, result, evidence reference, and next action in the index;
+  do not append full transcripts or repeated historical snapshots there.
+  Every referenced subordinate mkmd file must have its full absolute local path
+  written in the orchestration index, with its purpose and relevant task.
+  A detail file must identify its parent index by full absolute path and retain
+  its own scope, owner, evidence, current state, and next action.
+- Maintain the linked files when their contents change: delegate updates to the
+  owning detail file and affected index entries together, then verify the paths,
+  task/purpose correspondence, and reported contents before claiming either is
+  current. On resume, follow relevant links and reconcile missing or stale
+  records; do not hide unresolved detail behind a summary. Preserve original
+  evidence and dated results when separating existing content, verify complete
+  old-to-new coverage and reciprocal references, and distinguish historical
+  evidence from current verified state. No-change checks do not require writes.
+  The existing canonical-path and approval rules still govern any
+  reorganization.
 - On every orchestrator turn, identify and check the SSOT against observed
   messages, assignments, required replies, reviews, and verified state. On
   delegation, reply, review, new task, scope change, interruption, resume, and
