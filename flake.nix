@@ -53,11 +53,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Follows nixpkgs + home-manager
+    # Follows nixpkgs
     agent-skills = {
       url = "github:Kyure-A/agent-skills-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
     };
 
     # No follows (use upstream nixpkgs pin to match cache.numtide.com binaries)

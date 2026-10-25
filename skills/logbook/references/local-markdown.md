@@ -4,10 +4,10 @@ Use local markdown artifacts when work must survive chat compaction, handoff,
 review loops, or terminal DONE/BLOCKED evidence. They are operational records,
 not source changes or test substitutes.
 
-These files are AI/agent-facing working memory kept locally, not a
-human-facing delivery format and not claude.ai's rendered Artifact/canvas
-feature. For an approved human-facing delivery copy, see
-[Secret-Gist Delivery](gist-delivery.md) instead.
+Working records are AI/agent-facing memory kept locally, separate from
+claude.ai's rendered Artifact/canvas feature. Human-facing Markdown can also
+be prepared locally; use the readability guidance below. A readable document
+does not require external publication.
 
 This reference is the single deterministic location convention for where
 working artifacts live in this environment: the path template in
@@ -24,17 +24,22 @@ Use this precedence:
 
 1. A path supplied by the user, orchestrator, reviewer, or task artifact.
 2. The already-active artifact recorded in the current task or handoff.
-3. A discovered recent artifact that clearly matches the same repo, branch,
+3. A discovered artifact that clearly matches the same repo, branch,
    task, and purpose.
 4. A new artifact created with the installed logbook `mkmd` script.
 
 Do not create a second tracker because the current artifact is inconvenient.
 Update or rename only when the requester explicitly changes the canonical path.
+For `orchestration` artifacts only, a verified active SSOT for the same repo
+and full branch remains canonical despite a later supplied path or completion
+of a subordinate task. A new subordinate task on that branch reuses it.
+Replacing that path requires current explicit human approval naming the old
+and new paths; otherwise reconcile the conflicting reference.
 
 ## 2. Work-Start And Resume Discovery
 
-Before creating a new artifact, search the local state root for recent
-candidates. Use this search root:
+Before creating a new artifact, search the local state root for candidates
+across all dates. Use this search root:
 
 ```sh
 mkmd_root="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
@@ -53,7 +58,7 @@ When the current directory is inside a Git worktree, map candidates by:
 Use this command as the default candidate list:
 
 ```sh
-find "$mkmd_root" -type f -name '*.md' -mtime -14 -print 2>/dev/null |
+find "$mkmd_root" -type f -name '*.md' -print 2>/dev/null |
   sort -r
 ```
 
@@ -65,15 +70,21 @@ Inspect candidates in this order:
 4. Same owner/repo directory with matching task title, issue number, PR number,
    or filename label.
 
-Reject stale candidates when the branch, task, or purpose no longer matches, or
-when the evidence log says the work was completed and the current task is a new
-scope. If several candidates tie, choose the one referenced by the latest
-trusted message; otherwise choose the newest candidate only after inspecting
-the title, task paragraph, checklist, and most recent evidence entry. When two
-files are both live for the same repo and task but different purposes, keep
-both and name their roles in the handoff. When two files claim the same role,
-reuse the clearer or newer canonical file and record the rejected path in the
-evidence log instead of merging content ad hoc.
+Reject stale candidates when the repository, branch, worktree, task, or purpose
+no longer matches, or when the evidence log says the work was completed and
+the current task is a new scope. If several candidates tie, choose the one
+referenced by the latest trusted message; otherwise choose the newest
+candidate only after inspecting the title, task paragraph, checklist, most
+recent evidence entry, and creation provenance. Path sort order alone does
+not establish creation order. When two files are both live for the same repo
+and task but different purposes, keep both and name their roles in the handoff.
+When two files claim the same role, reuse the clearer or newer canonical file
+and record the rejected path in the evidence log instead of merging content
+ad hoc.
+For `orchestration` artifacts without a verified active path, choose among
+same-role candidates only when repo, full branch, purpose, and creation
+provenance make the newest candidate clear. Otherwise preserve the candidates
+and halt for reconciliation; the ordinary clearer/newer rule does not decide.
 
 Create a new artifact only when no candidate clearly matches the same repo,
 branch, task, and purpose. Create multiple artifacts only for distinct purposes,
@@ -133,13 +144,14 @@ dots, underscores, and hyphens. Do not use path separators or `..`.
 
 ## 5. Directory Labels
 
-| Label      | Use when                                                 |
-| ---------- | -------------------------------------------------------- |
-| `plans`    | The artifact is an execution plan or milestone tracker.  |
-| `research` | The work is investigation, synthesis, or decision notes. |
-| `reviews`  | The artifact records review findings or approvals.       |
-| `draft`    | The artifact is temporary text for a handoff or message. |
-| `tmp`      | The artifact is scratch output with low retention value. |
+| Label           | Use when                                                     |
+| --------------- | ------------------------------------------------------------ |
+| `plans`         | The artifact is an execution plan or milestone tracker.      |
+| `orchestration` | The artifact is canonical branch-scoped orchestration state. |
+| `research`      | The work is investigation, synthesis, or decision notes.     |
+| `reviews`       | The artifact records review findings or approvals.           |
+| `draft`         | The artifact is temporary text for a handoff or message.     |
+| `tmp`           | The artifact is scratch output with low retention value.     |
 
 Prefer the narrowest label that fits. Use `tmp` only when the output can be
 discarded without losing task state.
@@ -167,10 +179,8 @@ history. This is the same canonical-file rule as
 [Canonical Path Selection](#1-canonical-path-selection): reuse one file
 across the task rather than creating a new snapshot per update.
 
-This pattern stays local, AI/agent-facing working memory. It is not, and
-must not become, a substitute for [Secret-Gist Delivery](gist-delivery.md):
-a Gist is a human-facing delivery copy, created only with current explicit
-approval, and never a checkpoint or task-memory mechanism.
+Keep the local artifact canonical and current, including after preparing or
+sharing a human-facing copy. Delivery does not replace the task record.
 
 ## 8. Suggested Artifact Shape
 
@@ -219,3 +229,25 @@ One paragraph describing the requested outcome.
 
 For resume, record the current branch, dirty/clean status, last completed
 action, next action, blockers, and validation still required.
+
+## 9. Human-Facing Markdown
+
+Make the document concise, scannable, and sufficiently explanatory. Lead with
+the main conclusion, then include necessary context, evidence, and action
+items. Preserve critical reasoning, constraints, and findings; adjust length
+to the request and task complexity without fixed word or line limits.
+
+Keep detailed working history in the canonical local artifact when needed.
+A delivery copy can summarize that history rather than reproduce raw
+operational logs or every working note verbatim. Do not proactively create
+or propose a Gist merely because the requester wants readable Markdown.
+
+Use Mermaid when a diagram materially improves understanding. Large
+end-to-end diagrams are welcome for architecture or workflow context; add
+smaller, focused diagrams of important parts when those close-ups help,
+especially on a phone. There is no node-count limit or required number of
+diagrams. Detailed authoring belongs to the separate `diagramming` skill.
+
+GitHub's web experience can render Mermaid; do not assume GitHub Mobile can.
+Keep important relationships, findings, and actions understandable from the
+surrounding prose and labels even when a diagram does not render.

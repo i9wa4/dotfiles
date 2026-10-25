@@ -256,6 +256,80 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Report PR URLs and validation. Claim mergeability or completion only with
   evidence.
 
+### 6.4. Orchestration SSOT and Autonomous Decision-Making
+
+- Own exactly one active orchestration SSOT per repository and branch. Verify
+  repository, branch, and worktree identity so different branches never share
+  one; a later date alone does not create a new SSOT. Use the Logbook
+  `mkmd --dir orchestration` convention and keep its returned absolute path in
+  task state and handoffs. The Logbook skill owns location and discovery
+  details.
+- On start or resume, reuse the known canonical path first. Otherwise discover
+  matching artifacts across dates and inspect their repository, branch,
+  worktree, task purpose, contents, and provenance. If several valid candidates
+  remain without a known canonical path, choose the most recently created only
+  when that identity and creation provenance are clear. Coordinate creation
+  and updates through a worker, one at a time, and verify the returned path
+  and content before assigning another update or reporting the SSOT current
+  or branch work DONE. Conflicting or unverifiable candidates halt those
+  reports for reconciliation.
+  A later supplied path cannot override a verified active path. Never silently
+  replace an established canonical SSOT. Missing or contradictory state
+  requires recovery and reconciliation; replacing, abandoning, or
+  intentionally switching an established SSOT requires current explicit human
+  approval for the exact old and new paths. Delegate an approved replacement,
+  record its path in task state and handoffs, and verify it on resume. The
+  first SSOT for a new branch is not a replacement.
+- Keep this committed role contract as the orchestration-index policy;
+  keep live task state and machine-local paths in local Logbook artifacts.
+  The active orchestration SSOT is a compact overall index: retain the original
+  human request, objective, success criteria, constraints, priorities,
+  and scope; meaningful parent/child tasks with dependencies, owner, status,
+  next action, and completion criteria; decisions and scope changes with
+  rationale; blockers, approvals and pending human decisions; current
+  branch/worktree, last verified progress, and resume context. Map every
+  delegated work item to a tracked task, without tracking every trivial command.
+  A parent is complete only with evidence that its children are complete.
+- Put full plans, research, review records, command output, and historical
+  evidence in purpose-specific subordinate mkmd files managed through Logbook.
+  Keep the decision, result, evidence reference, and next action in the index;
+  do not append full transcripts or repeated historical snapshots there.
+  Every referenced subordinate mkmd file must have its full absolute local path
+  written in the orchestration index, with its purpose and relevant task.
+  A detail file must identify its parent index by full absolute path and retain
+  its own scope, owner, evidence, current state, and next action.
+- Maintain the linked files when their contents change: delegate updates to the
+  owning detail file and affected index entries together, then verify the paths,
+  task/purpose correspondence, and reported contents before claiming either is
+  current. On resume, follow relevant links and reconcile missing or stale
+  records; do not hide unresolved detail behind a summary. Preserve original
+  evidence and dated results when separating existing content, verify complete
+  old-to-new coverage and reciprocal references, and distinguish historical
+  evidence from current verified state. No-change checks do not require writes.
+  The existing canonical-path and approval rules still govern any
+  reorganization.
+- On every orchestrator turn, identify and check the SSOT against observed
+  messages, assignments, required replies, reviews, and verified state. On
+  delegation, reply, review, new task, scope change, interruption, resume, and
+  completion, delegate needed updates to the appropriate worker and verify them
+  before reporting DONE or that the SSOT is current. A no-change turn requires
+  inspection, not a worker write. Reconcile stale or inconsistent state before
+  proceeding; never invent progress or evidence. Compare work and completion
+  with the original purpose, reject unnecessary scope drift, and obtain
+  authorization for changes to human objectives or scope where required.
+- Own escalation decisions without expanding worker authority: first check
+  alignment with the original purpose, then authority, then impact or blast
+  radius, reversibility, and verifiability together. These are qualitative
+  factors, not a formal scoring framework. Route research, evidence gathering,
+  and safe in-scope decisions to existing roles. Escalate high-stakes, unclear,
+  out-of-authority, or human-gated decisions with the objective, context,
+  options, recommendation, evidence, risks, and exact decision needed; report
+  urgent safety blockers promptly. Preserve Guardian/Critic/Approver review and
+  explicit human approval for public GitHub and production-data writes. Never
+  approve commands for the designated approver or treat Postman approval as OS
+  enforcement. The SSOT records coordination; Git, approval ledgers, and test
+  evidence remain their own sources of truth.
+
 ## 7. `approver`
 
 ### 7.1. `role`

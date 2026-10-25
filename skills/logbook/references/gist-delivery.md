@@ -9,8 +9,8 @@ to resume tomorrow's work), use
 [Local Markdown Artifacts](local-markdown.md) (`mkmd`) instead. A Gist is
 also not claude.ai's rendered Artifact/canvas feature.
 
-Use this reference only when a local artifact is intended for approved human
-viewing outside the local workspace.
+Use this reference only when the human explicitly requests Gist delivery.
+A request for human-readable Markdown alone does not request publication.
 
 ## 1. Approval And Source
 
