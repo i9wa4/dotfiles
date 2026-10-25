@@ -7,22 +7,20 @@ description: |
   USE FOR: Non-code working artifacts: local markdown task trackers, plans,
   research notes, review packets, drafts, scratch outputs, supplied artifact
   paths, work-start/resume discovery and reuse, canonical-vs-multiple
-  artifact decisions, cwd-independent mkmd invocation, and human-facing
-  Secret-Gist delivery. DO NOT USE FOR: code/config changes, planning
-  semantics, public publication without approval, cross-machine agent
-  memory, or claude.ai's `/artifacts` feature (see `artifact-design`).
+  artifact decisions, cwd-independent mkmd invocation, and readable
+  human-facing Markdown delivery copies.
+  DO NOT USE FOR: code/config changes, planning semantics, public publication
+  without approval, cross-machine agent memory, or claude.ai's `/artifacts`
+  feature (see `artifact-design`).
 ---
 
 # Logbook
 
-Owns non-code artifact lifecycle and delivery: where working artifacts live,
-when to create or reuse them, how to discover them on resume, and how to
-prepare approved human-facing Secret-Gist delivery.
+Owns local Markdown artifact creation, discovery, reuse, and lifecycle.
 
-A logbook entry is a local Markdown file (`mkmd`) or a Secret Gist — never
-claude.ai's Artifact/canvas feature (hence this skill's name, not
-`artifacts`). Route `/artifacts` questions to `artifact-design`; see
-references below for `mkmd` vs. Gist.
+A logbook entry is a local Markdown file (`mkmd`). It remains the canonical
+task source throughout the work, including after a delivery copy is prepared.
+Route claude.ai's `/artifacts` feature to `artifact-design`.
 
 Follow the active runtime/session language policy or explicit request. This
 skill does not define its own output language defaults.
@@ -37,13 +35,13 @@ skill does not define its own output language defaults.
    purpose; create a separate file only for a genuinely separate purpose.
 4. If durable state is needed and no path exists, create a markdown artifact
    with the cwd-independent `mkmd` contract in the local markdown reference.
-5. For human-facing Secret-Gist delivery, read
-   [Secret-Gist Delivery](references/gist-delivery.md) and require current
-   approval before any external mutation.
-6. Keep local artifacts as task state. Treat Gists as approved delivery copies,
-   not task memory, source of truth, or cross-machine persistence.
+5. Keep updating the canonical local artifact as task state. For human-facing
+   Markdown, follow the readability guidance in the same reference. A request
+   for a readable document does not authorize external publication.
 
 ## 2. References
 
 - [Local Markdown Artifacts](references/local-markdown.md)
-- [Secret-Gist Delivery](references/gist-delivery.md)
+
+For explicitly requested Gist delivery only, follow
+[Secret-Gist Delivery](references/gist-delivery.md).
