@@ -4,10 +4,10 @@ Use local markdown artifacts when work must survive chat compaction, handoff,
 review loops, or terminal DONE/BLOCKED evidence. They are operational records,
 not source changes or test substitutes.
 
-These files are AI/agent-facing working memory kept locally, not a
-human-facing delivery format and not claude.ai's rendered Artifact/canvas
-feature. For an approved human-facing delivery copy, see
-[Secret-Gist Delivery](gist-delivery.md) instead.
+Working records are AI/agent-facing memory kept locally, separate from
+claude.ai's rendered Artifact/canvas feature. Human-facing Markdown can also
+be prepared locally; use the readability guidance below. A readable document
+does not require external publication.
 
 This reference is the single deterministic location convention for where
 working artifacts live in this environment: the path template in
@@ -179,10 +179,8 @@ history. This is the same canonical-file rule as
 [Canonical Path Selection](#1-canonical-path-selection): reuse one file
 across the task rather than creating a new snapshot per update.
 
-This pattern stays local, AI/agent-facing working memory. It is not, and
-must not become, a substitute for [Secret-Gist Delivery](gist-delivery.md):
-a Gist is a human-facing delivery copy, created only with current explicit
-approval, and never a checkpoint or task-memory mechanism.
+Keep the local artifact canonical and current, including after preparing or
+sharing a human-facing copy. Delivery does not replace the task record.
 
 ## 8. Suggested Artifact Shape
 
@@ -231,3 +229,25 @@ One paragraph describing the requested outcome.
 
 For resume, record the current branch, dirty/clean status, last completed
 action, next action, blockers, and validation still required.
+
+## 9. Human-Facing Markdown
+
+Make the document concise, scannable, and sufficiently explanatory. Lead with
+the main conclusion, then include necessary context, evidence, and action
+items. Preserve critical reasoning, constraints, and findings; adjust length
+to the request and task complexity without fixed word or line limits.
+
+Keep detailed working history in the canonical local artifact when needed.
+A delivery copy can summarize that history rather than reproduce raw
+operational logs or every working note verbatim. Do not proactively create
+or propose a Gist merely because the requester wants readable Markdown.
+
+Use Mermaid when a diagram materially improves understanding. Large
+end-to-end diagrams are welcome for architecture or workflow context; add
+smaller, focused diagrams of important parts when those close-ups help,
+especially on a phone. There is no node-count limit or required number of
+diagrams. Detailed authoring belongs to the separate `diagramming` skill.
+
+GitHub's web experience can render Mermaid; do not assume GitHub Mobile can.
+Keep important relationships, findings, and actions understandable from the
+surrounding prose and labels even when a diagram does not render.
