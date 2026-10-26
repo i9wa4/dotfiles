@@ -126,6 +126,9 @@ in
       # direnv (immediate loading - needs to run before first prompt for .envrc)
       eval "$(direnv hook zsh)"
 
+      # mise
+      eval "$(mise activate zsh)"
+
       # Source modular configs
       source "${zshDir}/aws.zsh"
       source "${zshDir}/completion.zsh"
