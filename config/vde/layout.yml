@@ -49,15 +49,15 @@ presets:
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: worker
               title: worker
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
@@ -68,11 +68,11 @@ presets:
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: critic
               title: critic
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-5.6-sol --config model_reasoning_effort=high
               delay: 500
 
   preset-w:
@@ -92,7 +92,7 @@ presets:
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: worker
               title: worker
@@ -115,5 +115,5 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6.1-sol --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
