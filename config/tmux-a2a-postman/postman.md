@@ -1,18 +1,24 @@
 ---
 skill_path:
-  - path: ~/ghq/github.com/i9wa4/dotfiles/skills/
+# private-content-scan: allow-next-line
+  - path: ~/.codex/skills/
     skills:
+      - clarify-concepts
+      - create-review-comment
+      - data-platform
       - dev-platform-workflow
+      - diagramming
       - dotfiles
+      - external-references
       - logbook
       - plan-design
-      - programming
-      - subagent-review
-  - path: ~/ghq/github.com/i9wa4/tmux-a2a-postman/skills
-    skills:
       - postman-config-auditor
       - postman-send-message
       - postman-session-operator
+      - programming
+      - subagent-review
+      - technical-research
+      - technical-writing
 ---
 
 # tmux-a2a-postman Node Templates
