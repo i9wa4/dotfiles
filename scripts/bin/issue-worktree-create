@@ -4,7 +4,7 @@ set -o nounset
 set -o pipefail
 set -o posix
 
-gpt="gpt-6-luna"
+gpt="gpt-6.1-luna"
 
 # Create a git worktree for the specified GitHub issue(s).
 # Uses Codex to generate a descriptive branch name from the issue content.
