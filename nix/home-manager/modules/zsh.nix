@@ -48,6 +48,14 @@ in
                 . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
               fi
             fi
+
+            # Home Manager's sourced marker can outlive one of its CA variables
+            # in an inherited shell (for example, a tmux pane). Keep the
+            # filtered bundle paired with the intentionally empty CA directory.
+            if [[ "''${SSL_CERT_DIR-}" == ${lib.escapeShellArg config.home.sessionVariables.SSL_CERT_DIR} \
+              && -z "''${SSL_CERT_FILE-}" ]]; then
+              export SSL_CERT_FILE=${lib.escapeShellArg config.home.sessionVariables.SSL_CERT_FILE}
+            fi
           ''
         else
           ''
