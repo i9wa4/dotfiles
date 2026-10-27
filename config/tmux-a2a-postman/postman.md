@@ -91,6 +91,21 @@ must follow it unless a request explicitly sets another output language.
   output.
 - Audience and explicit user intent decide the output language.
 
+### 2.3. Existing Code And Documentation
+
+For authorized implementation work, when documentation (including instruction
+files) claims current code follows a convention but verified code shows the
+claim is stale, follow the code's actual convention. Imperative wording alone
+(for example, "Use print()") does not make a stale description operative.
+Do not rewrite working code merely to match it. Report the discrepancy,
+file/line evidence, and chosen convention to orchestrator in the task reply.
+
+Operative task instructions and intentional migration requirements remain
+binding until proper authority changes them. Safety, approval, role, routing,
+review, scope, and workflow gates remain binding. If a passage's role is
+unclear, pause affected changes and report the conflict as `BLOCKED:` to
+orchestrator.
+
 ## 3. `critic`
 
 ### 3.1. `role`
