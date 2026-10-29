@@ -308,27 +308,43 @@ gh auth status
 や `gh auth login --with-token` で手動指定するトークンは別の認証経路であり、
 この自動更新の対象ではありません。
 
-### 5.2. AWS CLI
+### 5.2. Tailnet Lock の確認（必須）
+
+新しい端末を利用可能と判断する前に、CLI が使える場合は
+`tailscale lock status`、それ以外は対応するクライアント画面と管理画面の
+**Machines** で Tailnet Lock の状態を確認します。**Locked out**
+なら、既に信頼された署名担当による端末鍵への署名を人間が承認し、許可された
+相手との通信を確認してください。事前確認、承認、結果検証の手順は
+[Tailscale Operations の運用手順](tailscale-operations.md#3-tailnet-lock-for-three-intended-devices)
+に従います。
+
+この端末が署名担当を交換する場合は、**旧端末の消去・売却・廃止より前に**
+署名権限を移行します。最後の信頼済み CLI 対応の署名担当を移行完了前に
+消去してはいけません。交換先と署名担当の状態を確認し、旧端末の削除には
+別途人間の承認を得て、利用予定の3台に戻します。端末交換を理由に
+`tailscale lock init` を再実行してはいけません。
+
+### 5.3. AWS CLI
 
 - [Configuring IAM Identity Center authentication with the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html)
 - [Configuration and credential file settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 
-### 5.3. Web Browser
+### 5.4. Web Browser
 
-#### 5.3.1. Setting Synchronization
+#### 5.4.1. Setting Synchronization
 
 - Password: No
 - Address: No
 - Google Pay: No
 - The Others: Yes
 
-#### 5.3.2. Search Engine
+#### 5.4.2. Search Engine
 
 - Google Japanese: `https://www.google.com/search?q=%s`
 - Google English:
   `https://www.google.com/search?q=%s&gl=us&hl=en&gws_rd=cr&pws=0`
 
-#### 5.3.3. Extensions
+#### 5.4.3. Extensions
 
 - Okta Browser Plugin
 - Slack Channels Grouping
