@@ -115,5 +115,5 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort medium
               delay: 500
