@@ -40,15 +40,15 @@ fire after the target pane has finished zsh initialization and is sitting at an
 interactive prompt. `tmux send-keys` injects keystrokes into a pane's input
 buffer, so snippet expansion is not a reliable automation boundary.
 
-**Symptom:** Sending `va` then Space via `tmux send-keys` does not expand to
-`vde-layout messenger-codex && vde-layout preset-a`; the literal characters
-`va` are sent.
+**Symptom:** Sending `vp` then Space via `tmux send-keys` does not expand to
+`vde-layout preset-p`; the literal characters
+`vp` are sent.
 
 **Mitigation:** Use direct vde-layout invocation for all agent-driven
 automation:
 
 ```bash
-tmux send-keys -t "$PANE_ID" 'vde-layout messenger-codex && vde-layout preset-a' Enter
+tmux send-keys -t "$PANE_ID" 'vde-layout preset-p' Enter
 ```
 
 This produces identical end state to the interactive snippet path.

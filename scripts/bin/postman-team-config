@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Compile one explicitly declared team tree into a copy of the role config."""
+
+import argparse
+import json
+import os
+import pathlib
+import re
+import runpy
+import tempfile
+
+
+def compile_config(template, tree):
+    if not isinstance(tree, dict) or set(tree) != {"sessions"}:
+        raise ValueError("tree must contain only a sessions list")
+    sessions = tree["sessions"]
+    if not isinstance(sessions, list) or not sessions:
+        raise ValueError("sessions must be nonempty")
+    parents = {}
+    for entry in sessions:
+        if not isinstance(entry, dict) or set(entry) - {"name", "parent"}:
+            raise ValueError("each session accepts name and optional parent")
+        name, parent = entry.get("name"), entry.get("parent")
+        if not isinstance(name, str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}", name):
+            raise ValueError("session names must be 1-128 letters/digits/dash/underscore")
+        if name in parents or (parent is not None and not isinstance(parent, str)):
+            raise ValueError("duplicate session or invalid parent")
+        parents[name] = parent
+    roots = [name for name, parent in parents.items() if parent is None]
+    if len(roots) != 1:
+        raise ValueError("one team config needs exactly one root")
+    for name, parent in parents.items():
+        if parent is not None and (parent == name or parent not in parents):
+            raise ValueError("missing/self parent")
+    children = {name: [] for name in parents}
+    for name, parent in parents.items():
+        if parent is not None:
+            children[parent].append(name)
+    todo, seen = roots[:], set()
+    while todo:
+        name = todo.pop()
+        seen.add(name)
+        todo.extend(children[name])
+    if len(seen) != len(parents):
+        raise ValueError("cycle/disconnected team tree")
+    if not template.startswith("---\n"):
+        raise ValueError("template needs YAML frontmatter")
+    front, separator, body = template[4:].partition("\n---\n")
+    if not separator or re.search(r"^(workspace_tree|interface_node):", front, re.MULTILINE):
+        raise ValueError("template must not already declare a workspace tree/interface override")
+    lines = ["interface_node: messenger", "workspace_tree:"]
+    for name, parent in parents.items():
+        lines += ["  - session_name: " + json.dumps(name), "    interface_node: messenger"]
+        if parent is not None:
+            lines.append("    parent_session_name: " + json.dumps(parent))
+    result = "---\n" + front + "\n" + "\n".join(lines) + "\n---\n" + body
+    if len(result.encode()) > 256 * 1024:
+        raise ValueError("compiled config exceeds 256 KiB")
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    default = pathlib.Path(os.environ.get("XDG_CONFIG_HOME", pathlib.Path.home() / ".config"))
+    parser.add_argument("--template", type=pathlib.Path, default=default / "tmux-a2a-postman/postman.md")
+    parser.add_argument("--tree", type=pathlib.Path, required=True)
+    parser.add_argument("--output", type=pathlib.Path, required=True)
+    args = parser.parse_args()
+    try:
+        if not all(path.is_absolute() for path in [args.template, args.tree, args.output]):
+            raise ValueError("template/tree/output must be absolute")
+        if args.tree.stat().st_size > 128 * 1024 or args.template.stat().st_size > 256 * 1024:
+            raise ValueError("tree/template exceeds input bound")
+        launcher = runpy.run_path(str(pathlib.Path(__file__).resolve().with_name("postman-agent")))
+        launcher["role_prompt"](args.template, "messenger")
+        output = compile_config(args.template.read_text(), json.loads(args.tree.read_text()))
+        # Publish a complete private copy without clobbering the user's existing
+        # config, creating directories, or changing their active runtime state.
+        with tempfile.NamedTemporaryFile(dir=args.output.parent, delete=False) as staged:
+            temp = pathlib.Path(staged.name)
+            try:
+                staged.write(output.encode())
+                staged.flush()
+                os.fsync(staged.fileno())
+                os.link(temp, args.output)
+            finally:
+                temp.unlink(missing_ok=True)
+        print(args.output)
+    except (OSError, ValueError) as error:
+        parser.exit(1, "postman-team-config: " + str(error) + "\n")
+
+
+if __name__ == "__main__":
+    main()

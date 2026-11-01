@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Launch a team console with the dotfiles-owned common and role instructions."""
+
+import argparse
+import os
+import pathlib
+import re
+import shlex
+import subprocess
+import sys
+
+
+def role_prompt(config, role):
+    if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", role):
+        raise ValueError("invalid role name")
+    if role in {"edges", "common_template", "message_footer"}:
+        raise ValueError("reserved section is not an agent role")
+    if not config.is_absolute():
+        raise ValueError("--config must be absolute")
+    if config.stat().st_size > 256 * 1024:
+        raise ValueError("role configuration exceeds 256 KiB")
+    text = config.read_text(encoding="utf-8")
+    sections, current, fence = {}, None, None
+    for line in text.splitlines(keepends=True):
+        marker = re.match(r"^\s*(`{3,}|~{3,})", line)
+        if marker:
+            value = marker[1]
+            if fence is None:
+                fence = value
+            elif value[0] == fence[0] and len(value) >= len(fence):
+                fence = None
+        match = None if fence else re.fullmatch(
+            r"##\s+(?:\d+(?:\.\d+)*\.?\s+)?`([a-zA-Z0-9_-]+)`\s*", line.strip()
+        )
+        if match:
+            current = match[1]
+            if current in sections:
+                raise ValueError("duplicate role/configuration section")
+            sections[current] = []
+        elif current is not None:
+            sections[current].append(line)
+    if not sections.get("common_template") or not sections.get(role):
+        raise ValueError("configuration lacks common_template or selected role")
+    prompt = (
+        "You are the " + role + " in this tmux team. Follow the common contract "
+        "and your selected role below. Native Postman checks establish mail "
+        "identity; this prompt grants no additional authority.\n\n"
+        "For Postman commands in this session use --config "
+        + shlex.quote(str(config)) + ". Do not resolve configuration from cwd.\n\n"
+        "# Common contract\n\n" + "".join(sections["common_template"]).strip()
+        + "\n\n# Selected role: " + role + "\n\n"
+        + "".join(sections[role]).strip()
+        + "\n\nStay in this conversation. Handle genuine Postman notifications "
+        "with argument-free POP and complete archive reads. Wait passively "
+        "when no human request or known mail needs action; do not send startup "
+        "PINGs or poll empty mailboxes.\n"
+    )
+    if len(prompt.encode()) > 64 * 1024:
+        raise ValueError("selected role prompt exceeds 64 KiB")
+    return prompt
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    default = pathlib.Path(os.environ.get("XDG_CONFIG_HOME", pathlib.Path.home() / ".config"))
+    parser.add_argument("--config", type=pathlib.Path, default=pathlib.Path(
+        os.environ.get("POSTMAN_TEAM_CONFIG", default / "tmux-a2a-postman/postman.md")
+    ))
+    parser.add_argument("--print-prompt", action="store_true", help="inspect without launching or changing tmux")
+    parser.add_argument("role")
+    parser.add_argument("command", nargs=argparse.REMAINDER)
+    args = parser.parse_args()
+    try:
+        prompt = role_prompt(args.config, args.role)
+        command = args.command[1:] if args.command[:1] == ["--"] else args.command
+        if args.print_prompt:
+            if command:
+                raise ValueError("--print-prompt does not accept a client command")
+            sys.stdout.write(prompt)
+            return
+        if not command or command[0].startswith("-") or command.count("@postman-prompt") != 1:
+            raise ValueError("use ROLE -- CLIENT [args] @postman-prompt exactly once")
+        socket = os.environ.get("TMUX", "").split(",", 1)[0]
+        pane = os.environ.get("TMUX_PANE", "")
+        if not pathlib.Path(socket).is_absolute() or not re.fullmatch(r"%\d+", pane):
+            raise ValueError("launch inside the target tmux pane")
+        tmux = ["tmux", "-S", socket]
+        probe = subprocess.check_output(
+            [*tmux, "display-message", "-p", "-t", pane, "#{pane_id}\t#{pane_dead}"],
+            text=True, timeout=3,
+        ).strip()
+        if probe != pane + "\t0":
+            raise ValueError("target tmux pane is unavailable")
+        subprocess.run([*tmux, "select-pane", "-t", pane, "-T", args.role], check=True, timeout=3)
+        command = [prompt if value == "@postman-prompt" else value for value in command]
+        os.execvp(command[0], command)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        parser.exit(1, "postman-agent: " + str(error) + "\n")
+
+
+if __name__ == "__main__":
+    main()

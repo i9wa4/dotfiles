@@ -32,6 +32,19 @@ if [[ ! $tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
+# A landed commit can be newer than the latest stable release. Do not roll
+# the six-command consumer back to the retired daemon/session-operator API.
+for required_path in skills/postman-usage/SKILL.md docs/cli-spec.md; do
+  if ! "$gh_bin" api --silent "repos/$repo/contents/$required_path?ref=$tag"; then
+    if [[ -n ${TMUX_A2A_POSTMAN_TAG:-} ]]; then
+      echo "flake-input-update-tmux-a2a-postman: $tag lacks $required_path; keeping the current pin" >&2
+      exit 1
+    fi
+    echo "latest stable $tag lacks the current Postman contract; keeping the landed commit pin"
+    exit 0
+  fi
+done
+
 if [[ ! -f $target ]]; then
   echo "flake-input-update-tmux-a2a-postman: target not found: $target" >&2
   exit 1

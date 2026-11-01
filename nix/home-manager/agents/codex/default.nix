@@ -139,7 +139,7 @@ in
 {
   home.file = {
     # Persona / language / scope is delivered through postman.md
-    # common_template on each tmux-a2a-postman pop. Dotfiles-owned skills are
+    # common_template by postman-agent at client launch. Dotfiles-owned skills are
     # listed by the generated skill_path catalog; catch-all repository
     # background intentionally lives in docs rather than a `skills/repo-local`
     # catch-all skill.

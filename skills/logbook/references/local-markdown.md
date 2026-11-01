@@ -251,3 +251,25 @@ diagrams. Detailed authoring belongs to the separate `diagramming` skill.
 GitHub's web experience can render Mermaid; do not assume GitHub Mobile can.
 Keep important relationships, findings, and actions understandable from the
 surrounding prose and labels even when a diagram does not render.
+
+## 10. Recursive Team Scope Composition
+
+Each child team's orchestrator uses the same canonical-path rules for its own
+verified repo/full-branch/worktree scope. Keep the original delegated goal,
+constraints, acceptance criteria, owner and exact parent request/return
+references in that index. Its children can delegate again; depth does not
+select another artifact convention or a special role prompt.
+
+The parent index links child scope evidence and preserves its own original
+acceptance criteria. Child detail files retain their parent reference, current
+scope, owner, evidence, result and next action. Different workspaces/branches
+do not share one mutable global index. Parallel tasks in one verified scope
+can share its canonical index while keeping separate task/request IDs and
+artifact owners. A parent is not complete merely because a child ACKed or a
+mail reply obligation closed.
+
+On restart, reuse and reconcile the same verified index and retained own mail.
+Never replace it with a newly convenient file, manufacture missing progress,
+apply an old result to a new request, or bypass canonical-path reconciliation.
+The live Postman role contract owns delegation/review behavior; this reference
+owns artifact location and composition, not a second scheduler.

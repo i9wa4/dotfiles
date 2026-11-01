@@ -170,7 +170,9 @@
           type = "app";
           program = "${pkgs.writeShellScriptBin "check" ''
             set -euo pipefail
-            nix flake check --all-systems
+            # Match PR CI on the current platform. Cross-platform builds need
+            # configured builders and remain opt-in through --all-systems.
+            nix flake check "$@"
           ''}/bin/check";
         };
       }

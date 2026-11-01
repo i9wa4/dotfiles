@@ -68,9 +68,13 @@ After resolving the snippet, boot the session:
 
    ```bash
    tmux send-keys -t "$PANE_ID" \
-     'vde-layout messenger-codex && vde-layout preset-p' Enter
+     'vde-layout preset-p' Enter
    ```
 
+   Each team preset already includes its messenger and uses postman-agent to
+   deliver common/role instructions. Do not prepend a second messenger preset.
+   For a recursive team, retain the declared session name and shared
+   POSTMAN_TEAM_CONFIG; see orchestrator-runbook.md.
 8. Wait 8-12s for vde-layout to materialize all panes.
 9. Verify topology:
 
@@ -90,10 +94,10 @@ See also: `workspace-boot-failure-modes.md`
 
 ## 2. Current Boot Snippets
 
-| Snippet | Expansion                                            | Team                |
-| ------- | ---------------------------------------------------- | ------------------- |
-| `vp`    | `vde-layout messenger-codex && vde-layout preset-p`  | codex-featured team |
-| `vw`    | `vde-layout messenger-claude && vde-layout preset-w` | claude team         |
+| Snippet | Expansion             | Team                |
+| ------- | --------------------- | ------------------- |
+| `vp`    | `vde-layout preset-p` | codex-featured team |
+| `vw`    | `vde-layout preset-w` | claude team         |
 
 Per-pane models and reasoning efforts are defined in
 `config/vde/layout.yml` and change often; resolve them from the config at
