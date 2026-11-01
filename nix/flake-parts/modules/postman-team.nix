@@ -8,13 +8,14 @@
         root = ../../..;
         fileset = lib.fileset.unions [
           ../../../config/tmux-a2a-postman/postman.md
+          ../../../config/tmux/tmux.conf
           ../../../scripts/bin/postman-agent
           ../../../scripts/bin/postman-team-config
           ../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh
           ../../../scripts/validation/postman-team
           ../../../scripts/validation/test-postman-team-config.py
           ../../../scripts/validation/validate-postman-team.py
-          ../../../skills/logbook
+          ../../../skills
         ];
       };
       runtime = [

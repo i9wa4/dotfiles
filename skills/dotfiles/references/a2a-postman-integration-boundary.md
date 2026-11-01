@@ -6,16 +6,17 @@ reviewed execution. This does not claim an A2A server or a task database.
 
 ## 1. Ownership
 
-| Surface                                                                            | Owner                                                    | Consumer obligation                                                                              |
-| ---------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Durable mail, workspace/native identity, exact replies, notification and snapshots | tmux-a2a-postman                                         | Use the installed help and pinned docs/cli-spec.md; do not manipulate mailbox files              |
-| Six operational commands and their JSON/stream/exit contract                       | tmux-a2a-postman                                         | Consume success and compact self; preserve unknown outcomes and recovery IDs                     |
-| Role graph, policy, persona, review route and recursive delegation                 | dotfiles postman.md                                      | Use the same common/role template at every configured finite depth                               |
-| Initial role prompt                                                                | dotfiles postman-agent and vde-layout                    | Supply common_template plus the selected role at client launch; POP does not render templates    |
-| Skills                                                                             | Each owning repository, installed by agent-skills.nix    | Use normal Claude/Codex skill discovery; keep workflow skills separate from CLI help             |
-| Task/progress source of truth                                                      | Orchestrator's verified local Logbook scope              | Retain original goals and exact parent/child handoffs; no global mutable task tracker in Postman |
-| Runtime permissions and Bash deny hook                                             | Claude/Codex controls and shared dotfiles policy         | Review coordination is not an OS sandbox                                                         |
-| External human filesystem channel                                                  | Postman #767; top-level interface configured by dotfiles | Install/configure only when the pinned version supports it; descendants use parents              |
+| Surface                                                                            | Owner                                                     | Consumer obligation                                                                              |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Durable mail, workspace/native identity, exact replies, notification and snapshots | tmux-a2a-postman                                          | Use the installed help and pinned docs/cli-spec.md; do not manipulate mailbox files              |
+| Six operational commands and their JSON/stream/exit contract                       | tmux-a2a-postman                                          | Consume success and compact self; preserve unknown outcomes and recovery IDs                     |
+| Role graph, policy, persona, review route and recursive delegation                 | dotfiles postman.md                                       | Use the same common/role template at every configured finite depth                               |
+| Initial role prompt                                                                | dotfiles postman-agent and vde-layout                     | Supply common_template plus the selected role at client launch                                   |
+| Archived recipient instructions                                                    | Postman renderer using dotfiles policy and skill metadata | Preserve full common/selected role, skill catalog, recipient contacts and exact reply guidance   |
+| Skills                                                                             | Each owning repository, installed by agent-skills.nix     | Use normal Claude/Codex skill discovery; keep workflow skills separate from CLI help             |
+| Task/progress source of truth                                                      | Orchestrator's verified local Logbook scope               | Retain original goals and exact parent/child handoffs; no global mutable task tracker in Postman |
+| Runtime permissions and Bash deny hook                                             | Claude/Codex controls and shared dotfiles policy          | Review coordination is not an OS sandbox                                                         |
+| External human filesystem channel                                                  | Postman #767; top-level interface configured by dotfiles  | Install/configure only when the pinned version supports it; descendants use parents              |
 
 The landed upstream source is pinned by full public commit in flake.nix and
 flake.lock. It contains postman-usage, postman-send-message and
@@ -27,7 +28,10 @@ revision pin, not a claim that the target machine already activated it.
 - get-status reads saved file facts: all local nodes, plus direct parent/child
   interface rows only for the interface caller. It does not POP or capture.
 - pop takes no ID and claims one own message. Read the returned absolute
-  markdown_absolute_path completely. Empty POP has a null path. Use a known
+  markdown_absolute_path completely through EOF as its instruction requires.
+  Every new archive includes recipient context before the exact sender body;
+  catalog metadata does not replace reading applicable skill files. Empty POP
+  has a null path. Use a known
   positive self.unread_count for the next finite batch; do not poll emptiness.
 - send-heredoc --to node creates a reply-required request. Reply with a POP'd
   ID; the tool derives correlation and return route. A reply adds no new duty.
@@ -36,6 +40,13 @@ revision pin, not a claim that the target machine already activated it.
   Its captured cwd and tmux default shell identify the reviewed invocation.
 - approve-execution and decline-execution choose one fixed action with the
   actual own POP'd execution request ID and a reason. The requester executes.
+- get-status-oneline is a read-only human overview of the explicitly selected
+  tmux server; its #() job passes the native socket and needs no agent pane.
+  Shapes show unread/inbound work, outbound waits or zero counts; colors show
+  sampled screen-change age only with a capture less than 120 seconds old.
+  Unknown counts use '?'; stale/missing screen evidence uses black.
+  Both status-left and overview labels use native session $N IDs, including
+  gaps after sessions close; they do not renumber the remaining sessions.
 
 Mail success and notification diagnostics are separate. Do not resend a body
 because notification or supplemental capture is unknown. Delivery, POP, full

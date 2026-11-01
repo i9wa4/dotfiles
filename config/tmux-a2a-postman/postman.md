@@ -58,10 +58,14 @@ reply obligation. Read the complete archived Markdown; notification IDs are
 hints and do not select the next POP. Use the fixed execution decision helpers
 for typed command-approval requests.
 
-Role/persona instructions are supplied by dotfiles `postman-agent` at client
-launch. POP returns an archive path and self counts; it does not inject this
-template or a skill catalog. Skills remain separate, installed through the
-runtime's normal discovery. No Postman start command or startup PING is needed.
+The same common/selected-role instructions are supplied by dotfiles
+`postman-agent` at client launch and included in each recipient's archived
+Markdown by Postman. Each archive also carries the configured skill catalog,
+recipient-viewpoint contacts and exact handling/reply guidance. POP returns the
+archive path, self counts and an instruction to read that complete Markdown
+through EOF before handling or deciding no action is needed. Read applicable
+skill files through the runtime's normal discovery; a catalog is not their
+full content. No Postman start command or startup PING is needed.
 
 Use applicable skills before acting. Skills own detailed send, inbox/session,
 artifact, review, GitHub/publication, and workflow procedures. Messenger may

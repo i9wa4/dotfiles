@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shlex
 import shutil
 import subprocess
@@ -71,6 +72,24 @@ def run_case(case):
     home, evidence = root / "home", root / "evidence"
     home.mkdir(mode=0o700)
     evidence.mkdir(mode=0o700)
+    # Match the actual configured catalog using owned copies of real source
+    # metadata. Never read or modify the user's installed skill directory.
+    catalog = home / ".codex/skills"
+    catalog.mkdir(parents=True, mode=0o700)
+    selected = re.findall(
+        r"^      - ([a-z0-9][a-z0-9-]*)$", template.read_text(), re.MULTILINE
+    )
+    for name in selected:
+        sources = [
+            repo / "skills" / name / "SKILL.md",
+            args.upstream_fixtures.parents[1] / "skills" / name / "SKILL.md",
+        ]
+        source = next((path for path in sources if path.is_file()), None)
+        if source is None:
+            raise RuntimeError("configured fixture skill metadata is missing: " + name)
+        destination = catalog / name
+        destination.mkdir(mode=0o700)
+        (destination / "SKILL.md").write_bytes(source.read_bytes())
     socket = str(root / "s")
     parents = case_tree(case)
     active = [name for name in parents if name != "team-missing"]
@@ -261,6 +280,19 @@ def run_case(case):
             env=env,
             capture_output=True,
         )
+        # Leave a hole before the first real session ID. The status bar must
+        # use native $N labels rather than renumbering the remaining sessions.
+        tmux(
+            "-f",
+            "/dev/null",
+            "new-session",
+            "-d",
+            "-s",
+            "numbering-gap",
+            "-c",
+            str(home),
+            "exec sleep 3600",
+        )
         for session in active:
             work = home / "scopes" / session
             work.mkdir(parents=True)
@@ -352,6 +384,44 @@ def run_case(case):
                     "role bootstrap " + session + "/" + role,
                     lambda p=role_evidence / (role + ".ready.json"): p.exists(),
                 )
+
+        tmux("kill-session", "-t", "numbering-gap")
+        native = tmux("display-message", "-p", "-t", "team-root:", "#{session_id}")
+        label = "[" + native[1:] + "]"
+        format_line = next(
+            line
+            for line in (repo / "config/tmux/tmux.conf").read_text().splitlines()
+            if line.startswith("set-option -g status-left ")
+        )
+        left = tmux(
+            "display-message", "-p", "-t", "team-root:", shlex.split(format_line)[-1]
+        )
+        state = pathlib.Path(env["XDG_STATE_HOME"]) / "tmux-a2a-postman"
+        existed = state.exists()
+        overview = subprocess.run(
+            [postman, "get-status-oneline", "--config", str(config)],
+            env={**env, "TMUX": socket + ",0,0"},
+            text=True,
+            capture_output=True,
+            check=True,
+            timeout=5,
+        )
+        if (
+            label == "[0]"
+            or not left.startswith(label + " ")
+            or not overview.stdout.startswith(label)
+        ):
+            raise RuntimeError(
+                "tmux status-left and Postman overview use different session labels"
+            )
+        if not existed and (
+            any(char not in "[]0123456789?: \n" for char in overview.stdout)
+            or state.exists()
+        ):
+            raise RuntimeError(
+                "cold operator overview invented healthy mail state or initialized storage"
+            )
+        report["operator_session_label"] = label
 
         # Initial negative sends exercise the actual parser/route admission.
         # The controller never supplies a recipient POP, read, reply or decision.

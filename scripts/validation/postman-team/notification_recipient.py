@@ -5,6 +5,7 @@ import json
 import os
 import pathlib
 import re
+import runpy
 import shlex
 import subprocess
 import sys
@@ -465,15 +466,41 @@ def receive():
     output = cli(["pop"])
     if output["markdown_absolute_path"] is None:
         return 0
+    if "through EOF" not in output.get("instruction", ""):
+        raise RuntimeError(
+            "recipient parity requires the full-read POP instruction (upstream #960)"
+        )
     archive = pathlib.Path(output["markdown_absolute_path"])
     raw = archive.read_bytes()
     msg = read_archive(archive)
+    context = msg.get("recipient_context", "")
+    required = [
+        "## Recipient Instructions",
+        "### Available Skills",
+        "You can talk to:",
+        "## Sender Message",
+        "Read this complete archived Markdown through EOF",
+    ]
+    if any(part not in context for part in required):
+        raise RuntimeError(
+            "received archive omitted historical recipient policy/catalog/contact guidance"
+        )
+    loader = pathlib.Path(__file__).resolve().parents[3] / "scripts/bin/postman-agent"
+    sections = runpy.run_path(str(loader))["role_sections"](pathlib.Path(config))
+    if any(sections[name] not in context for name in ["common_template", role]):
+        raise RuntimeError(
+            "received archive truncated or substituted full common/selected-role instructions"
+        )
+    if msg["to"] != role or (msg.get("to_session") and msg["to_session"] != session):
+        raise RuntimeError("archive belongs to another recipient")
     proof = {
         "role": role,
         "session": session,
         "nonce": nonce,
         "archive": str(archive),
         "sha256": hashlib.sha256(raw).hexdigest(),
+        "pop_instruction": output["instruction"],
+        "recipient_context_sha256": hashlib.sha256(context.encode()).hexdigest(),
         "message": msg,
     }
     if role == "approver" and msg.get("kind") == "execution-request":

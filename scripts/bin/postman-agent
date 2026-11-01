@@ -10,11 +10,7 @@ import subprocess
 import sys
 
 
-def role_prompt(config, role):
-    if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", role):
-        raise ValueError("invalid role name")
-    if role in {"edges", "common_template", "message_footer"}:
-        raise ValueError("reserved section is not an agent role")
+def role_sections(config):
     if not config.is_absolute():
         raise ValueError("--config must be absolute")
     if config.stat().st_size > 256 * 1024:
@@ -39,6 +35,15 @@ def role_prompt(config, role):
             sections[current] = []
         elif current is not None:
             sections[current].append(line)
+    return {name: "".join(lines).strip() for name, lines in sections.items()}
+
+
+def role_prompt(config, role):
+    if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", role):
+        raise ValueError("invalid role name")
+    if role in {"edges", "common_template", "message_footer"}:
+        raise ValueError("reserved section is not an agent role")
+    sections = role_sections(config)
     if not sections.get("common_template") or not sections.get(role):
         raise ValueError("configuration lacks common_template or selected role")
     prompt = (
@@ -47,9 +52,9 @@ def role_prompt(config, role):
         "identity; this prompt grants no additional authority.\n\n"
         "For Postman commands in this session use --config "
         + shlex.quote(str(config)) + ". Do not resolve configuration from cwd.\n\n"
-        "# Common contract\n\n" + "".join(sections["common_template"]).strip()
+        "# Common contract\n\n" + sections["common_template"]
         + "\n\n# Selected role: " + role + "\n\n"
-        + "".join(sections[role]).strip()
+        + sections[role]
         + "\n\nStay in this conversation. Handle genuine Postman notifications "
         "with argument-free POP and complete archive reads. Wait passively "
         "when no human request or known mail needs action; do not send startup "
