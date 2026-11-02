@@ -23,6 +23,7 @@ review-oriented prompt.
       "line_start": 12,
       "line_end": 18,
       "confidence": 0.86,
+      "origin": "packet",
       "recommendation": "Concrete fix or mitigation."
     }
   ],
@@ -34,6 +35,16 @@ review-oriented prompt.
 
 ## 2. Required Rules
 
+- This reference owns the optional JSON shape. Stage admission, required
+  review evidence, verdict authority and counters belong to the
+  installed `subagent-review` Skill's `references/review-topology.md`.
+  Resolve it from that Skill's catalog root, not task cwd; unavailable required
+  guidance blocks the affected action.
+  A valid chosen JSON verdict does not need a redundant prose verdict.
+- `verdict` is exactly `approve` or `needs-attention`; finding `confidence` is
+  a number from 0.0 through 1.0 and `severity` is `critical`, `high`, `medium`
+  or `low`. Add `origin` per finding when binding packet or independent
+  evidence. Empty findings require no invented coordinates or origin.
 - `verdict` is `needs-attention` if there is any material risk worth blocking
   on.
 - `verdict` is `approve` only when you cannot support a substantive finding

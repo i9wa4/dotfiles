@@ -141,7 +141,9 @@ independent review evidence that guardian aggregates.
   degraded path. Include `Required perspectives: [list]` and `Perspectives
   launched: [list]` in every substantive reply.
 - Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`,
-  including evidence and any blocking defects.
+  including evidence and any blocking defects. This is a bounded review
+  recommendation; guardian alone decides materiality and convergence under
+  `subagent-review`'s mandatory review contract.
 - If a direct orchestrator-to-critic review request arrives, reject it as
   `BLOCKED: direct critic route disabled; resubmit through guardian`.
 
@@ -168,8 +170,9 @@ internal approval before orchestrator reports completion.
   `NOT APPROVED:`, or `BLOCKED:` verdict, including critic evidence when
   applicable. This internal verdict does not replace explicit human approval
   for public writes, production-data changes, or external side effects.
-- Reject a critic review result lacking evidence of a complete required-set
-  launch unless the request was explicitly labeled trivial. Minimum
+- Reject a critic review result lacking evidence of the recorded required-set
+  launch/completion unless guardian explicitly authorized a trivial or bounded
+  degraded path. Minimum
   attestation: critic's substantive reply must include `Required perspectives:
   [list]` and `Perspectives launched: [list]` lines; reject when the attested
   perspectives do not match the required set or fall below it without a
@@ -271,21 +274,17 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Treat worker DONE as internal artifact readiness. Advance it through
   guardian and critic before any messenger-facing DONE.
 - Before advancing any final guardian verdict, run the Tier 1 structural
-  quality gate locally. This is a checklist gate, not an extra agent review:
-  use Track A for prose verdicts and Track B only when the guardian returns a
-  JSON object with a `"verdict"` key following `review-output-contract.md`.
-  Track A requires an `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:` verdict with
-  justification, representation of security, architecture, historian, code, and
-  QA perspectives unless explicitly labeled `TRIVIAL DIRECT REVIEW:`, file
-  paths for each material finding or `no file applicable`, and consolidated
-  duplicates. Track B applies those checks plus `verdict` value `approve` or
-  `needs-attention`, confidence scores from 0.0 to 1.0, and severity exactly
-  `critical`, `high`, `medium`, or `low`. For Track B, the JSON `verdict` field
-  supersedes the prose verdict phrase requirement and satisfies Track A's
-  verdict-presence check.
-- If the Tier 1 gate is flagged, return `NOT APPROVED:` to guardian with the
-  structural defects and count it against the 3-attempt approval cap. If it
-  passes, continue the approval chain.
+  gate locally under `skills/subagent-review/references/review-topology.md`.
+  It owns stage admission, recorded perspective coverage, evidence, verdict
+  mapping and separate bounded correction/rework counters. It is a checklist,
+  not an extra substantive source review. Use prose or the explicitly chosen
+  JSON rendering; `skills/dotfiles/references/review-output-contract.md` alone
+  owns that optional JSON shape.
+- Return structural defects to guardian for report correction, without ordering
+  worker reimplementation or spending a substantive rework slot. Record the
+  stable report lineage and stop at its structural cap. Pass only an admissible,
+  evidenced guardian decision through the existing approval chain; missing
+  proof never becomes a pass merely by filling a field.
 - Run Tier 2 meta-review only when explicitly requested by orchestrator:
   guardian assigns one bounded meta-reviewer, returns
   `Tier 2 quality audit: complete`, and does not start another guardian/critic

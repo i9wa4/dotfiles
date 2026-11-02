@@ -1,5 +1,9 @@
 # Review Contract
 
+Contract version: `1.1.0`. This reference owns review admission, evidence,
+materiality, rendering, stage owners and counters. Apply changes at the next
+authorized freeze; do not rewrite frozen in-flight criteria or counters.
+
 ## 1. Perspective Set and Routing
 
 Reviewer prompt mapping:
@@ -25,8 +29,13 @@ Reviewer prompt mapping:
 - A Postman request authorizes critic launch; otherwise return
   `BLOCKED: perspective launch not permitted`. Critic sends guardian, not
   orchestrator. Critic reports `Required perspectives`, `Perspectives
-  launched`, and `Self-review: complete`; incomplete coverage is
-  `BLOCKED: fewer than required perspectives completed`.
+  launched`, completed perspectives, and self-review evidence. Validate against
+  Guardian's recorded set, not a fixed count. Incomplete coverage is
+  `BLOCKED: fewer than required perspectives completed` unless Guardian
+  explicitly pre-authorized and recorded a bounded degraded path. Record its
+  missing coverage, authority and limitations; it cannot waive frozen outcomes
+  or grant risk acceptance. A trivial exception also needs Guardian's recorded
+  label and reason; an unexplained omitted perspective is not an exception.
 - Use the data reviewer only for specialized questions.
 - For every Historian or QA reviewer launch, Guardian or critic explicitly adds
   `skills/dev-platform-workflow/references/github-workflow.md` to that
@@ -175,6 +184,7 @@ externally supplied text.
 | Field                   | Required content                                                                                                                                                              |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Round                   | `initial`, `rework 1 of 2`, or `rework 2 of 2`; initial is not a rework.                                                                                                      |
+| Stage counters          | Packet and final-report lineages, stage owner, initial/correction number, reason and previous submission; keep blind linkage in Guardian's private control record.            |
 | Freeze                  | Contract version, scope, criteria, targets, baseline, mode, mode owner/reason, and design/public boundary.                                                                    |
 | Criterion changes       | Finding ID, old condition, new condition, reason, owner; never relabel a new or tightened condition as previously frozen.                                                     |
 | Prior ID dispositions   | Every prior ID exactly once with one of the seven dispositions; list new discoveries separately with fresh IDs and link supersession or changed criterion to its predecessor. |
@@ -184,7 +194,7 @@ externally supplied text.
 | Ledger and decision     | All ID reconciliations, material batch, named verification results, verdict, and next action.                                                                                 |
 
 - For substantive verdicts, apply the `decision_quality_check` prompt block in
-  `skills/dotfiles/references/prompt-blocks.md`. Only Guardian/critic synthesis
+  `skills/dotfiles/references/prompt-blocks.md`. Only Guardian's synthesis
   may update or close the authoritative ledger; reviewer use is packet-local.
 
 ## 4. Failure-Mode Handling
@@ -209,10 +219,105 @@ externally supplied text.
   IDs, remaining evidence gaps, and the human user through the interface node
   as the only owner who can authorize another round. Name the separate
   authority and owner needed to accept or defer each risk. This
-  review rework cap is distinct from the orchestrator's Tier 1 attempt cap;
-  neither counter changes the other.
+  three stage caps are independent as specified below; neither structural
+  correction nor quarantine spends a substantive rework slot.
 - Every criterion change creates a fresh successor ID and gives the retained
   predecessor a `changed criterion` round disposition. Link both entries with
   old and new closure conditions, reason, and owner. A same-ID criterion update
   is invalid; never describe a tightened condition as frozen in an earlier
   batch.
+
+## 5. Admission, Rendering and Bounded Stages
+
+| Stage                                    | Owner                                       | Admissibility or decision                                                                                                                                                                                                                                         | Allowance                                                         |
+| ---------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Reviewer packet admission                | Guardian                                    | Required packet fields, valid source/identity representation, evidence reachable by assigned reviewers, and recorded perspective coverage. Quarantine malformed input and return exact defects to its producer.                                                   | Initial submission plus two corrections per packet lineage.       |
+| Guardian final-report structure (Tier 1) | Orchestrator                                | Chosen rendering is valid; required round record and evidence are readable; Guardian decision and next action are explicit; recorded coverage and prior-ID dispositions reconcile. Return structural defects to Guardian, without ordering worker implementation. | Initial submission plus two corrections per final-report lineage. |
+| Substantive work review                  | Guardian, synthesizing independent evidence | Material findings against frozen criteria/baseline require worker rework of the frozen batch. Only Guardian decides materiality and convergence.                                                                                                                  | Initial review, rework 1 of 2, rework 2 of 2.                     |
+
+Record each stage's owner, reason, current count and predecessor in the existing
+review/task artifact. No additional ledger service is needed. Structural checks
+verify the report and its evidence references; they do not authorize
+Orchestrator to take over source review. Tier 2 is only an explicitly requested,
+bounded meta-review, not a recursive response to a Tier 1 defect.
+
+### 5.1. Stable Lineage and Exhaustion
+
+Guardian binds packet corrections privately to the frozen target, substantive
+round, required perspective and packet purpose. Orchestrator binds final-report
+corrections to that target, round and authorized report purpose. Keep real
+identities and correction linkage in Guardian's private control envelope, never
+in a blind packet. Every corrected blind packet still gets a fresh alias.
+
+A new alias, filename, message, producer restart, rewritten report or new code
+head for the same batch does not create a new lineage. A substantive rework
+advances the work round only when Guardian requires and the worker submits an
+actual material-batch correction; it is not a formatting escape. Its newly
+required packet/report has a new round-scoped lineage, linked to the prior one.
+A genuinely new target needs an explicitly authorized distinct scope/outcome
+and a new recorded freeze. Merely renaming or splitting the same unfinished
+target does not qualify. Unrelated concurrent tasks have independent counters.
+
+After an initial submission and two structural corrections, another invalid
+submission exhausts that structural stage. After rework 2, remaining material
+findings exhaust the substantive stage. Stop with `BLOCKED`, name the exhausted
+loop, attempted counts, affected IDs/evidence gaps, responsible owner and
+smallest next decision. Only the human through the interface may authorize an
+extension; record it explicitly rather than resetting a lineage. A genuine
+correction within an allowance does not itself consume another work round.
+
+Missing evidence has two possible causes: a missing reference to an already
+performed, accessible verification can be corrected structurally; a test never
+run or evidence inaccessible to its reviewer remains unverified. Filling a
+field with an assertion cannot close it. Route actual material defects through
+substantive review, and unavailable proof through `BLOCKED` with the evidence
+owner. Neither is a cosmetic success or an automatic risk acceptance.
+
+### 5.2. Prose, Optional JSON and Verdict Authority
+
+Track A is ordinary findings-first prose with a justified caller-facing verdict.
+Track B is explicitly chosen structured JSON under the sole shape owner:
+the installed `dotfiles` Skill's `references/review-output-contract.md`.
+Resolve required procedures from their owning installed Skill roots through
+the catalog, independently of task cwd; failure to read them blocks the
+affected action. Loading that reference does not start dotfiles maintenance.
+For valid Track B the JSON verdict is authoritative for its report; no second
+prose verdict is required. Both tracks supply or reference the readable required
+round record, recorded perspective set/coverage, material finding coordinates
+(or `no file applicable`), reconciled duplicates and concrete evidence. A valid
+JSON object alone does not excuse missing review evidence. Do not copy its
+schema into role templates or force JSON on prose consumers.
+
+Reviewer/critic `APPROVED` or JSON `approve` is a recommendation based on its
+bounded evidence, never Guardian authority. `NOT APPROVED`/`needs-attention`
+flags findings; `BLOCKED` identifies missing authority or evidence. Guardian
+reconciles these inputs, records disagreements and alone decides `CONVERGED`,
+`REWORK`, or `BLOCKED`/`ESCALATE`. The caller-facing mapping is respectively
+`APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`. A structured Guardian final report
+uses `approve` for convergence and `needs-attention` otherwise; its linked round
+record distinguishes rework from blocking and names the next owner/action.
+Orchestrator may reject its structure, but cannot convert a reviewer's opinion
+or a format repair into Guardian convergence or worker reimplementation.
+
+## 6. Reviewed Regression Scenarios
+
+These are authored policy examples for review, not proof of model compliance.
+Static link/schema checks and authorized real-agent trials are separate
+evidence.
+
+| Input                                              | Expected owner, count and outcome                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Packet lacks required fields                       | Guardian quarantines it; packet correction 1, work remains initial.                              |
+| Referenced proof cannot be read                    | Evidence remains unverified/open; producer repairs access or names the gap; no asserted pass.    |
+| Valid prose and complete round record              | Track A passes structural admission without JSON.                                                |
+| Valid chosen JSON and complete linked record       | Track B passes without an extra prose verdict.                                                   |
+| Guardian explicitly requires code and QA           | Validate that recorded set; do not add three default perspectives.                               |
+| Guardian omits the set                             | Use security, architecture, historian, code and QA.                                              |
+| Explicit trivial or pre-authorized degraded path   | Verify recorded authority, reason and limits; never infer an exception from absent coverage.     |
+| Admissible evidence proves an unmet frozen outcome | Guardian requires a frozen material batch; the submitted fix advances to rework 1.               |
+| Guardian report malformed after rework 1           | Orchestrator requests report correction 1 from Guardian; work stays rework 1.                    |
+| Corrected blind packet uses a fresh alias/message  | Guardian links the private predecessor; correction count does not reset or leak into the packet. |
+| Two unrelated targets reviewed concurrently        | Separate frozen targets and lineage counters; neither consumes the other's allowance.            |
+| Third structural submission still invalid          | That stage is exhausted; BLOCKED with count, defects and smallest human decision.                |
+| Material findings remain after rework 2            | Substantive stage is exhausted; no new filename, head or format starts another initial round.    |
+| Contract changes during an existing freeze         | Retain the recorded version/criteria/counters; apply changes only at the next authorized freeze. |

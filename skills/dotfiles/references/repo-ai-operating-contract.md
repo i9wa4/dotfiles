@@ -299,7 +299,8 @@ Reviewer prompt guidance lives in `skills/subagent-review/references/*.md`.
 The normal guardian/critic workflow does not expose ad hoc model or tier
 selection; reviewers inherit the active runtime/account defaults and no model
 directive is emitted or maintained by this repository.
-For substantive reviews, the active role defaults to the five perspectives
+When Guardian omitted an explicit required set, substantive review defaults
+to the five perspectives
 documented by `subagent-review`: security, architecture, historian, code, and
 QA. Each role uses the plain Markdown references for guidance, owns its
 synthesis and evidence quality, and returns the same logical review evidence;
@@ -384,8 +385,11 @@ guidance. A checked native route still does not grant new human authorization.
 This section records artifact-review policy, separately from typed command
 execution approval in
 [Command Approval Design](agent-command-approval-design.md).
-`config/tmux-a2a-postman/postman.md` should point here or restate this section
-faithfully instead of drifting into separate policy variants.
+Role routing and completion gates remain in
+`config/tmux-a2a-postman/postman.md`. The canonical
+installed `subagent-review` Skill's `references/review-topology.md` owns
+admission, required perspectives, materiality, rendering and stage counters;
+this local lane must not redefine them.
 
 ### 9.1. Approval route
 
@@ -408,8 +412,9 @@ An approval-lane pass means all of the following are true:
 - the worker reports `DONE:` with the artifact verified against the plan and
   intended file set
 - guardian completed its review and sent evidence to critic
-- critic returned `APPROVED:` review evidence to guardian with no remaining
-  BLOCKING defects
+- critic returned admissible independent evidence covering guardian's recorded
+  required set or an explicitly authorized exception; guardian reconciled its
+  recommendations and remaining material findings under the review contract
 - guardian relayed the final guardian verdict to orchestrator after
   aggregating critic evidence and enforcing the completion contract
 - orchestrator has no pending review cycle before sending `DONE:` onward
@@ -423,23 +428,25 @@ external side effects.
 
 Approval failure must stay defect-specific.
 
-- `NOT APPROVED:` from guardian must name the concrete blocking defects;
-  guardian must include critic `NOT APPROVED:` recommendations in its defect
-  list
-- orchestrator returns that exact defect list to the worker instead of vague
-  "try again" wording
+- guardian must reconcile critic recommendations and name concrete material
+  defects, evidence gaps and disagreements with reasons; reviewer
+  recommendations do not decide guardian convergence
+- orchestrator routes an admitted substantive rework batch to the worker,
+  structural report defects to guardian, and unavailable proof to its evidence
+  owner instead of vague "try again" wording
 - a reopened attempt must address the cited defects or explicitly explain why
   they no longer apply
 
-### 9.4. Hard iteration cap
+### 9.4. Separate bounded stages
 
-The approval loop is bounded.
-
-- each artifact gets at most 3 approval attempts: the initial review plus 2
-  rework attempts
-- any guardian `NOT APPROVED:` consumes one attempt
-- if the third attempt still fails, stop the loop and report `BLOCKED:` with
-  the blocking defect list instead of restarting again
+Use the canonical review contract's three independent allowances: reviewer
+packet admission, Guardian final-report structure and substantive work rework.
+Record their stable lineages in the existing artifact. Structural correction
+does not spend substantive work rounds, and substantive failures or missing
+proof cannot pass as format repairs. Stop the exhausted stage with `BLOCKED:`
+and its smallest human decision; renaming a submission never resets it. See
+the canonical contract's reviewed regression scenarios, including correction
+after rework 1, concurrent targets and frozen-version changes.
 
 ### 9.5. Watchdog and fallback behavior
 
@@ -479,9 +486,11 @@ treat a role-node approval as a substitute.
 
 Reusable review material belongs outside the live template:
 
-- `skills/subagent-review/SKILL.md` owns the detailed review procedure,
-  reviewer perspectives, guardian/critic handoff mechanics, evidence
-  synthesis, severity handling, and review-output expectations.
+- `skills/subagent-review/SKILL.md` is the review entry point; its mandatory
+  `references/review-topology.md` owns stages, counters, perspectives,
+  guardian/critic evidence synthesis, materiality and verdict authority.
+- `skills/dotfiles/references/review-output-contract.md` owns the optional JSON
+  shape; neither the role template nor this local lane copies its schema.
 - `skills/create-review-comment/SKILL.md` owns the thin user-facing PR
   review-comment trigger, target inference, Japanese draft-comment workflow,
   and no-post-without-explicit-approval gate.
