@@ -486,7 +486,7 @@ zero or unknown ends the batch. Do not poll an empty inbox.
 In addition to individual `execute-heredoc` approval decisions, `approver`
 owns decisions about the command-approval mechanism itself: changes to
 Bash permission hooks (PreToolUse/PostToolUse), deny-list or allow-list
-rule changes (`denied-bash-commands.nix` and any settings.json-level
+rule changes (`bash-commands-denied.nix` and any settings.json-level
 allow/deny hooks), and equivalent changes to how commands get
 ask/allow/deny decisions across the fleet. Route these proposals to
 `approver` for a yes/no decision before any worker role applies them, the
