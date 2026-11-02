@@ -484,6 +484,9 @@ The guardian verdict is part of the internal approval lane. When a rule says
 explicit human approval is required, get approval from the human user; do not
 treat a role-node approval as a substitute.
 
+The installed `orchestration` Skill owns generic coordination procedures;
+Logbook owns artifact mechanics. Neither changes the local role/review gates.
+
 Reusable review material belongs outside the live template:
 
 - `skills/subagent-review/SKILL.md` is the review entry point; its mandatory

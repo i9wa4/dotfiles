@@ -1,0 +1,15 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Deterministic routing example; not a model-behavior trial.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Recover our team coordination after restart: preserve the original goal, reconcile pending tasks and exact parent/child handoffs, then resume delegation."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/orchestration/SKILL.md
+      mode: positive

@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Negative Trigger 2
+description: Deterministic routing example; not a model-behavior trial.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Implement an HTTP cache in this Python library and test expiry behavior."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/orchestration/SKILL.md
+      mode: negative

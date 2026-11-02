@@ -1,0 +1,15 @@
+id: negative-trigger-001
+name: Negative Trigger 1
+description: Deterministic routing example; not a model-behavior trial.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Fix the syntax error in this Nix module and run its package build."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/orchestration/SKILL.md
+      mode: negative
