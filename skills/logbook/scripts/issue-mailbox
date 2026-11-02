@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""Explicit snapshot delivery; local Logbook files remain canonical."""
+
+import argparse
+import os
+import re
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+REPOSITORY = r"[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9_.-]{1,100}"
+ISSUE = re.compile(rf"https://github\.com/({REPOSITORY})/issues/([1-9][0-9]*)")
+COMMENT = re.compile(
+    rf"https://github\.com/({REPOSITORY})/issues/([1-9][0-9]*)#issuecomment-[1-9][0-9]*"
+)
+
+
+class Once(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        if getattr(namespace, self.dest, None) is not None:
+            parser.error(f"{option_string} may be supplied only once")
+        setattr(namespace, self.dest, values)
+
+
+def valid_repository(value):
+    return re.fullmatch(REPOSITORY, value) is not None and value.split("/")[1] not in (
+        ".",
+        "..",
+    )
+
+
+def creation_repository():
+    root = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    if not root.is_absolute():
+        raise ValueError("XDG_CONFIG_HOME must be absolute")
+    path = (root / "logbook" / "issue-mailbox.conf").resolve(strict=True)
+    if path.is_relative_to("/nix/store") or any(
+        (parent / ".git").exists() for parent in path.parents
+    ):
+        raise ValueError(
+            "creation config must be machine-local, outside Git worktrees and /nix/store"
+        )
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as source:
+        if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+            raise ValueError("creation config must be a regular file")
+        raw = source.read(1025)
+    if len(raw) > 1024:
+        raise ValueError("creation config exceeds 1024 bytes")
+    try:
+        repository = raw.decode("ascii").strip()
+    except UnicodeDecodeError as error:
+        raise ValueError("creation config must contain one owner/repo value") from error
+    if not valid_repository(repository):
+        raise ValueError(
+            "creation config must contain one owner/repo value; no shell syntax or comments"
+        )
+    return repository
+
+
+def issue_target(value):
+    match = ISSUE.fullmatch(value)
+    if match and valid_repository(match[1]):
+        return value
+    match = re.fullmatch(rf"({REPOSITORY})#([1-9][0-9]*)", value)
+    if match and valid_repository(match[1]):
+        return f"https://github.com/{match[1]}/issues/{match[2]}"
+    raise ValueError(
+        "provide one exact https://github.com/owner/repo/issues/123 URL or owner/repo#123"
+    )
+
+
+def local_title():
+    stamp = subprocess.run(
+        ["date", "+%Y-%m-%d %H:%M"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    ).stdout.strip()
+    host = subprocess.run(
+        ["hostname", "-s"], check=True, capture_output=True, text=True, timeout=10
+    ).stdout.strip()
+    if (
+        not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}", stamp)
+        or not host
+        or any(ord(c) < 32 or ord(c) == 127 for c in host)
+    ):
+        raise ValueError("cannot obtain a one-line local timestamp and hostname -s")
+    return f"{stamp} {host}"
+
+
+def deliver(args):
+    if args.operation == "create":
+        repository = creation_repository()
+        command = [
+            "gh",
+            "issue",
+            "create",
+            "--repo",
+            repository,
+            "--title",
+            local_title(),
+            "--body-file",
+            "-",
+        ]
+        target = None
+    else:
+        target = issue_target(args.issue)
+        repository = ISSUE.fullmatch(target)[1]
+        command = ["gh", "issue", "comment", target, "--body-file", "-"]
+    if args.body_file == "-":
+        body = sys.stdin.buffer.read()
+    elif args.body_file is not None:
+        body = Path(args.body_file).read_bytes()
+    else:
+        body = b"Logbook delivery.\n"
+    try:
+        result = subprocess.run(
+            command, input=body, capture_output=True, check=False, timeout=60
+        )
+    except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
+        raise ValueError(
+            "remote outcome may be unknown; inspect the intended Issue before retrying"
+        ) from error
+    if result.returncode:
+        raise ValueError(
+            f"gh issue {command[2]} failed (exit {result.returncode}); inspect authentication, permissions and the intended target before retrying; remote outcome may be unknown"
+        )
+    url = result.stdout.decode("utf-8", errors="strict").strip()
+    match = (ISSUE if target is None else COMMENT).fullmatch(url)
+    if (
+        not match
+        or match[1].casefold() != repository.casefold()
+        or (target is not None and match[2] != ISSUE.fullmatch(target)[2])
+    ):
+        raise ValueError(
+            "gh returned an unexpected URL; inspect the intended Issue before retrying; remote outcome may be unknown"
+        )
+    print(url)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    operations = parser.add_subparsers(dest="operation", required=True)
+    create = operations.add_parser(
+        "create", help="explicitly create an Issue at the machine-local destination"
+    )
+    create.add_argument(
+        "--body-file",
+        action=Once,
+        help="reviewed Markdown path, or - for exact stdin; default: minimal body",
+    )
+    post = operations.add_parser(
+        "post", help="post selected reviewed Markdown to one supplied Issue"
+    )
+    post.add_argument(
+        "--issue", action=Once, required=True, help="exact Issue URL or owner/repo#123"
+    )
+    post.add_argument(
+        "--body-file",
+        action=Once,
+        required=True,
+        help="reviewed Markdown path, or - for exact stdin",
+    )
+    args = parser.parse_args()
+    try:
+        deliver(args)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        print(f"issue mailbox: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
