@@ -67,13 +67,13 @@ Skill; it does not inline the runbook.
 
 | Recipient    | Before | After | Difference |
 | ------------ | -----: | ----: | ---------: |
-| orchestrator | 23152  | 16989 | -6163      |
-| worker       | 12689  | 13063 | +374       |
-| worker-alt   | 13015  | 13389 | +374       |
-| guardian     | 13004  | 13378 | +374       |
-| critic       | 13197  | 13571 | +374       |
-| messenger    | 13868  | 14242 | +374       |
-| approver     | 17416  | 17790 | +374       |
+| orchestrator | 23152  | 16999 | -6153      |
+| worker       | 12689  | 13073 | +384       |
+| worker-alt   | 13015  | 13399 | +384       |
+| guardian     | 13004  | 13388 | +384       |
+| critic       | 13197  | 13581 | +384       |
+| messenger    | 13868  | 14252 | +384       |
+| approver     | 17416  | 17800 | +384       |
 
 For representative first-use manager turns, add all applicable owner bodies and
 required references once. Start/resume includes Logbook entry/selection
@@ -84,8 +84,8 @@ counts are not model tokens.
 
 | Cold reading case            | Before | After | Difference |
 | ---------------------------- | -----: | ----: | ---------: |
-| Start/resume                 | 41060  | 46562 | +5502      |
-| Structured review/completion | 72398  | 77900 | +5502      |
+| Start/resume                 | 41060  | 47306 | +6246      |
+| Structured review/completion | 72398  | 78644 | +6246      |
 
 The manager's repeated message policy shrinks; other recipients pay the added
 catalog entry. Cold first-use reading grows because the reusable procedure is
