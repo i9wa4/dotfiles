@@ -25,6 +25,12 @@ revision pin, not a claim that the target machine already activated it.
 
 ## 2. Live command contract
 
+The workspace comes from the verified native agent pane's current directory,
+not the tmux session's creation directory or a tool subprocess's cwd. Agents
+started in different repositories use separate mailboxes even if their tmux
+sessions were created in HOME. This requires no launcher setup. A configured
+role present in another directory is not verified absent for approval purposes.
+
 - get-status reads saved file facts: all local nodes, plus direct parent/child
   interface rows only for the interface caller. It does not POP or capture.
 - pop takes no ID and claims one own message. Read the returned absolute
