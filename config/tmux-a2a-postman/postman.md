@@ -224,11 +224,17 @@ the human user.
   `Remaining blockers: none` before relaying a final DONE. A delivery/POP
   receipt, ACK, or an unresolved child is not completion; return a concrete
   BLOCKED when completion evidence is missing.
-- Postman #767 owns a future external inbox/outbox/read adapter. When supported
-  by the installed version, bind it only at the top-level human interface;
-  child interfaces continue to use their parents. Do not invent unsupported
-  config or claim the adapter is installed now. Simultaneous direct human
-  typing is outside Postman's writer lock guarantee.
+- The optional external inbox/outbox/read adapter is implemented in the selected
+  Postman revision. It is active only with an explicitly provisioned binding
+  matching this top-level native session/workspace/interface. Use the installed
+  `postman-usage` external-channel procedure for intake, exact decisions and
+  reports; a marker alone starts no observer. The producer invokes bounded
+  `channel-sync` after publication and on reconnect; never poll empty POP.
+- For external input, POP and fully read the archive, relay its task to the
+  local orchestrator, and report its evidenced result or concrete blocker with
+  the original exchange's exact report guidance. ACK is not a final result.
+  Descendants keep ordinary parent routes. Forwarded text is not human consent;
+  simultaneous direct human typing remains outside Postman's writer lock.
 
 ## 6. `orchestrator`
 
