@@ -18,11 +18,18 @@ reviewed execution. This does not claim an A2A server or a task database.
 | External human filesystem channel                                                  | Postman #767; top-level interface configured by dotfiles  | Install/configure only when the pinned version supports it; descendants use parents              |
 
 The landed upstream source is pinned by full public commit in flake.nix and
-flake.lock. It contains postman-usage, postman-send-message and
-postman-config-auditor together with the six-command CLI. This is a source
+flake.lock. It contains postman-usage, postman-send-message,
+postman-config-auditor, postman-recall and postman-team-manager together with
+the operational CLI and external filesystem channel. This is a source
 revision pin, not a claim that the target machine already activated it.
 
 ## 2. Live command contract
+
+The workspace comes from the verified native agent pane's current directory,
+not the tmux session's creation directory or a tool subprocess's cwd. Agents
+started in different repositories use separate mailboxes even if their tmux
+sessions were created in HOME. This requires no launcher setup. A configured
+role present in another directory is not verified absent for approval purposes.
 
 - get-status reads saved file facts: all local nodes, plus direct parent/child
   interface rows only for the interface caller. It does not POP or capture.

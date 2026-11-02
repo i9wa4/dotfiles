@@ -33,8 +33,12 @@ if [[ ! $tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 fi
 
 # A landed commit can be newer than the latest stable release. Do not roll
-# the six-command consumer back to the retired daemon/session-operator API.
-for required_path in skills/postman-usage/SKILL.md docs/cli-spec.md; do
+# the consumer back to retired APIs or drop its configured workflow skills.
+for required_path in \
+  skills/postman-usage/SKILL.md \
+  skills/postman-recall/SKILL.md \
+  skills/postman-team-manager/SKILL.md \
+  docs/cli-spec.md; do
   if ! "$gh_bin" api --silent "repos/$repo/contents/$required_path?ref=$tag"; then
     if [[ -n ${TMUX_A2A_POSTMAN_TAG:-} ]]; then
       echo "flake-input-update-tmux-a2a-postman: $tag lacks $required_path; keeping the current pin" >&2
