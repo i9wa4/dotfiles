@@ -68,8 +68,16 @@ After resolving the snippet, boot the session:
 
    ```bash
    tmux send-keys -t "$PANE_ID" \
-     'vde-layout preset-p' Enter
+     '__snippet_vde_team preset-p' Enter
    ```
+
+   This explicit boot helper first sets the current native session directory
+   to the physical repository directory. A session created in HOME otherwise
+   keeps HOME as session_path after navigation, causing unrelated repositories
+   to contend for the same Postman workspace. The helper refuses an existing
+   team or an agent whose native root would change; use a fresh session in the
+   intended directory. It does not change the root on later cd, move/delete
+   mail, start a daemon, or supply an initial role message.
 
    Each team preset already includes its messenger and starts clients directly
    without an initial role message. Read common/role instructions in complete
@@ -95,10 +103,10 @@ See also: `workspace-boot-failure-modes.md`
 
 ## 2. Current Boot Snippets
 
-| Snippet | Expansion             | Team                |
-| ------- | --------------------- | ------------------- |
-| `vp`    | `vde-layout preset-p` | codex-featured team |
-| `vw`    | `vde-layout preset-w` | claude team         |
+| Snippet | Expansion                     | Team                |
+| ------- | ----------------------------- | ------------------- |
+| `vp`    | `__snippet_vde_team preset-p` | codex-featured team |
+| `vw`    | `__snippet_vde_team preset-w` | claude team         |
 
 Per-pane models and reasoning efforts are defined in
 `config/vde/layout.yml` and change often; resolve them from the config at

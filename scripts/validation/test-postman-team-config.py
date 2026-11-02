@@ -1,9 +1,11 @@
 """Config, direct default starts and complete archived-policy source."""
 
+import hashlib
 import json
 import os
 import pathlib
 import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -152,6 +154,221 @@ class TeamConfigTests(unittest.TestCase):
             self.assertEqual(
                 {p.name for p in root.iterdir()}, {"tree.json", "postman.md"}
             )
+
+
+class NativeTeamBootTests(unittest.TestCase):
+    def setUp(self):
+        self.binary = os.environ.get("POSTMAN_TEST_BINARY")
+        if not self.binary or not shutil.which("tmux") or not shutil.which("zsh"):
+            self.skipTest("native boot regression requires Postman, tmux and zsh")
+        self.temporary = tempfile.TemporaryDirectory(prefix="pm-boot-", dir="/tmp")
+        self.addCleanup(self.temporary.cleanup)
+        self.root = pathlib.Path(self.temporary.name).resolve()
+        self.home = self.root / "home"
+        self.home.mkdir()
+        self.socket = str(self.root / "s")
+        self.config = self.root / "postman.md"
+        self.config.write_text(
+            "## `edges`\n```mermaid\ngraph LR\nworker --- peer\n```\n## `worker`\nWorker\n## `peer`\nPeer\n"
+        )
+        self.bin = self.root / "bin"
+        self.bin.mkdir()
+        stub = self.bin / "vde-layout"
+        stub.write_text(
+            "#!"
+            + sys.executable
+            + "\nimport json,os,pathlib,sys\npathlib.Path(os.environ['BOOT_TRACE']).write_text(json.dumps(sys.argv[1:]))\n"
+        )
+        stub.chmod(0o700)
+        self.env = {
+            **os.environ,
+            "HOME": str(self.home),
+            "XDG_STATE_HOME": str(self.root / "state"),
+            "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
+            "TMUX": self.socket + ",0,0",
+            "BOOT_TRACE": str(self.root / "boot.json"),
+        }
+        self.addCleanup(
+            lambda: subprocess.run(
+                ["tmux", "-S", self.socket, "kill-server"],
+                capture_output=True,
+                timeout=3,
+                check=False,
+            )
+        )
+
+    def tmux(self, *args):
+        result = subprocess.run(
+            ["tmux", "-S", self.socket, *args],
+            input="",
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout.strip()
+
+    def session_at_home(self, name):
+        directory = self.home / name
+        directory.mkdir()
+        pane = self.tmux(
+            "-f",
+            "/dev/null",
+            "new-session",
+            "-d",
+            "-s",
+            name,
+            "-c",
+            str(self.home),
+            "-P",
+            "-F",
+            "#{pane_id}",
+            "exec sleep 120",
+        )
+        self.tmux("select-pane", "-t", pane, "-T", "pane")
+        return directory, pane
+
+    def roles(self, name, directory):
+        worker = self.tmux(
+            "new-window",
+            "-d",
+            "-t",
+            name,
+            "-c",
+            str(directory),
+            "-P",
+            "-F",
+            "#{pane_id}",
+            "exec sleep 120",
+        )
+        peer = self.tmux(
+            "split-window",
+            "-d",
+            "-t",
+            worker,
+            "-c",
+            str(directory),
+            "-P",
+            "-F",
+            "#{pane_id}",
+            "exec sleep 120",
+        )
+        self.tmux("select-pane", "-t", worker, "-T", "worker")
+        self.tmux("select-pane", "-t", peer, "-T", "peer")
+        return worker
+
+    def boot(self, pane, directory):
+        return subprocess.run(
+            [
+                "zsh",
+                "-f",
+                "-c",
+                'source "$1"; __snippet_vde_team "$2"',
+                "fixture",
+                str(REPO / "config/zsh/snippet.zsh"),
+                "preset-p",
+            ],
+            cwd=directory,
+            env={**self.env, "TMUX_PANE": pane},
+            capture_output=True,
+            text=True,
+            timeout=8,
+            check=False,
+        )
+
+    def send(self, pane, directory, body):
+        result = subprocess.run(
+            [self.binary, "send-heredoc", "--config", str(self.config), "--to", "peer"],
+            cwd=directory,
+            env={**self.env, "TMUX_PANE": pane},
+            input=body,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        return result.returncode, json.loads(result.stdout)
+
+    def test_home_creation_navigation_and_boot_do_not_collide_or_move_old_mail(self):
+        old, old_pane = self.session_at_home("old-repo")
+        old_worker = self.roles("old-repo", old)
+        code, initial = self.send(old_worker, old, "old workspace evidence")
+        self.assertEqual(
+            (code, initial["workspace"], initial["success"]), (0, "~", True)
+        )
+        fresh, fresh_pane = self.session_at_home("new-repo")
+        # Before boot both sessions still have HOME as their native root.
+        self.assertEqual(
+            self.tmux("display-message", "-p", "-t", fresh_pane, "#{session_path}"),
+            str(self.home),
+        )
+        old_root = self.root / "state/tmux-a2a-postman/%00"
+        snapshot = lambda: {
+            str(p.relative_to(old_root)): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in old_root.rglob("*")
+            if p.is_file()
+        }
+        before = snapshot()
+        geometry = self.tmux(
+            "display-message", "-p", "-t", fresh_pane, "#{pane_width} #{pane_height}"
+        )
+        result = self.boot(fresh_pane, fresh)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(
+            json.loads((self.root / "boot.json").read_text()), ["preset-p"]
+        )
+        self.assertEqual(
+            self.tmux("display-message", "-p", "-t", fresh_pane, "#{session_path}"),
+            str(fresh),
+        )
+        self.assertEqual(
+            self.tmux(
+                "display-message",
+                "-p",
+                "-t",
+                fresh_pane,
+                "#{pane_width} #{pane_height}",
+            ),
+            geometry,
+        )
+        self.assertEqual(self.tmux("list-clients", "-F", "#{client_name}"), "")
+        worker = self.roles("new-repo", fresh)
+        code, sent = self.send(worker, fresh, "fresh workspace evidence")
+        self.assertEqual(
+            (code, sent["workspace"], sent["success"]), (0, "~/new-repo", True)
+        )
+        # Later command cwd is not a boot and must not choose another mailbox.
+        code, later = self.send(worker, old, "later cd retains native workspace")
+        self.assertEqual(
+            (code, later["workspace"], later["success"]), (0, "~/new-repo", True)
+        )
+        self.assertEqual(snapshot(), before)
+        blocked = self.boot(fresh_pane, old)
+        self.assertNotEqual(blocked.returncode, 0)
+        self.assertIn("team role already exists", blocked.stderr)
+        self.assertEqual(
+            self.tmux("display-message", "-p", "-t", fresh_pane, "#{session_path}"),
+            str(fresh),
+        )
+        # Another live owner is still protected; boot never rewrites its state.
+        self.assertEqual(
+            self.tmux("display-message", "-p", "-t", old_pane, "#{session_path}"),
+            str(self.home),
+        )
+
+    def test_existing_generic_agent_cannot_be_rebound_to_a_different_root(self):
+        fresh, pane = self.session_at_home("new-repo")
+        self.tmux("select-pane", "-t", pane, "-T", "agent")
+        result = self.boot(pane, fresh)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("agent already exists", result.stderr)
+        self.assertEqual(
+            self.tmux("display-message", "-p", "-t", pane, "#{session_path}"),
+            str(self.home),
+        )
+        self.assertFalse((self.root / "boot.json").exists())
 
 
 if __name__ == "__main__":

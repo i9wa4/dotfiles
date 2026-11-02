@@ -58,6 +58,12 @@ Postman saves bounded text across its verified session's eligible panes on
 send/POP, without a resident monitor. Logs and snapshots stay until user
 removal. Human drafts and unrelated input writers are outside its writer lock.
 
+Team boot uses the vp/vw native-directory preparation in
+config/zsh/snippet.zsh. A HOME-created session keeps HOME as session_path after
+cd; the helper aligns that native directory once before starting roles and
+refuses to rebind an existing team. Normal Postman CLI calls still ignore cwd
+for workspace selection, preserve live-owner checks and never move old mail.
+
 ## 3. Recursive lifecycle
 
 Human -> top-level messenger -> local orchestrator -> local worker or declared
