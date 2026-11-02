@@ -1,0 +1,15 @@
+id: negative-trigger-003
+name: Generic GitHub project management
+description: Issue triage and project fields are outside Logbook delivery.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Triage GitHub Issues, change their labels and project milestones, and update assignees. This is generic project management, not Markdown artifact delivery."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/logbook/SKILL.md
+      mode: negative
