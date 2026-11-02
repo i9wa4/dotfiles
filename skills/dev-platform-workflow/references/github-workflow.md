@@ -29,6 +29,54 @@ commands, the no-issue-branch fallback, and entrypoint restrictions.
   change with `&&`. A failed `cd` must stop the script rather than allow a
   later command to run in the caller's directory.
 
+### 1.2. GitHub Actions dependency lockfile
+
+Dotfiles onboards both workflows to `.github/workflows/actions.lock`. This
+machine-generated file records action commits and repository identities,
+including transitive actions. Existing full-SHA `uses:` pins and the pinact
+hook remain in place; the lockfile adds dependency coverage to that policy.
+It does not lock reusable workflow calls (`jobs.<job>.uses`) or container
+images, which still need their own SHA or digest pins.
+
+Use the repository-pinned CLI, without installing or upgrading an extension:
+
+```sh
+# Check coverage offline, without credentials or file writes.
+nix run '.#gh-actions-lock' -- --verify-local
+# Check the locked commits and source identities through the GitHub API.
+nix run '.#gh-actions-lock' -- --verify
+# Generate/update after reviewing changes to workflow dependencies.
+nix run '.#gh-actions-lock'
+```
+
+Network modes use the existing GitHub CLI authentication. CI supplies its
+read-only job token. The same version is declared as a Home Manager `gh`
+extension, so `gh actions-lock` is available after normal human-owned
+activation. Running the Nix commands above requires no activation.
+
+The generator can rewrite SHA-plus-version-comment references to tag notation;
+the existing pinact commit hook restores explicit SHA pins. Review and restage
+those workflow edits together with `actions.lock`, then rerun the commit. Both
+forms are accepted by the lockfile verifier. Expected `sha-as-ref` warnings do
+not invalidate verified SHA pins; inspect actual errors rather than suppressing
+all output. Do not edit the lockfile by hand.
+
+The pre-commit/Nix gate runs the upstream offline coverage check whenever a
+workflow or `actions.lock` changes. The PR CI additionally runs `--verify` to
+check upstream provenance; offline coverage alone does not establish it.
+Dependabot's existing `github-actions` entry also updates the lockfile in its
+dependency PRs; keep its current schedule, grouping and cooldown. Review those
+diffs, and rerun the generator if dependency changes are made manually. Routine
+checks never relock or accept moved references automatically.
+
+Background: [the trial article][actions-lock-trial],
+[GitHub's dependency lockfile contract][actions-lock-contract], and
+[the pinned CLI documentation][actions-lock-cli].
+
+[actions-lock-trial]: https://zenn.dev/shunsuke_suzuki/scraps/f3aacea7584784
+[actions-lock-contract]: https://docs.github.com/en/actions/concepts/security/workflow-dependency-lockfiles
+[actions-lock-cli]: https://github.com/github/gh-actions-lock/blob/v0.4.0/README.md
+
 ## 2. Issue Creation
 
 - Check `.github/ISSUE_TEMPLATE/` first and follow the template when one
