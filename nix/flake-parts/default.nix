@@ -24,6 +24,7 @@ in
   perSystem =
     { pkgs, system, ... }:
     {
+      packages.gh-actions-lock = pkgs.callPackage ../packages/gh-actions-lock.nix { };
       packages.waza = pkgs.callPackage ../packages/waza.nix {
         inherit system;
       };
