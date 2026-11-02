@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Coordination reads are not harness maintenance
+description: Keep routine team coordination out of the machine-maintenance workflow.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "For routine team coordination, read my known in-scope canonical index and Guardian report, reconcile missing evidence, and delegate the record update."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/dotfiles/SKILL.md
+      mode: negative
