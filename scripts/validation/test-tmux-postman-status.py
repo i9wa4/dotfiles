@@ -226,6 +226,7 @@ class NativeTests(unittest.TestCase):
         )
         self.environment.pop("TMUX", None)
         self.sockets = []
+        self.servers = {}
         self.clients = []
         self.pty_fds = []
         self.wrapper = str(Path(PACKAGE) / "bin/tmux-postman-status")
@@ -238,12 +239,35 @@ class NativeTests(unittest.TestCase):
     def start(self, name, keep):
         socket = self.root / name
         self.sockets.append(socket)
+        server = subprocess.Popen(
+            ["tmux", "-D", "-u", "-S", str(socket), "-f", "/dev/null"],
+            env=self.environment,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.servers[socket] = server
+        deadline = time.monotonic() + 5
+        while True:
+            if server.poll() is not None:
+                self.fail("fixture tmux exited: " + server.stderr.read())
+            ready = subprocess.run(
+                ["tmux", "-S", str(socket), "show-options", "-g"],
+                env=self.environment,
+                text=True,
+                capture_output=True,
+                timeout=2,
+                check=False,
+            )
+            if ready.returncode == 0:
+                break
+            if time.monotonic() >= deadline:
+                self.fail("fixture tmux did not become ready: " + ready.stderr)
+            time.sleep(0.01)
         for index in range(max(keep) + 1):
             if index == 0:
                 self.tm(
                     socket,
-                    "-f",
-                    "/dev/null",
                     "new-session",
                     "-d",
                     "-s",
@@ -267,7 +291,9 @@ class NativeTests(unittest.TestCase):
         for index in range(max(keep) + 1):
             if index not in keep:
                 self.tm(socket, "kill-session", "-t", "scope-" + str(index))
-        return socket, self.tm(socket, "display-message", "-p", "#{pid}")
+        pid = self.tm(socket, "display-message", "-p", "#{pid}")
+        self.assertEqual(str(server.pid), pid)
+        return socket, pid
 
     def status(self, socket, pid, command="get-status"):
         environment = dict(self.environment, TMUX=str(socket) + "," + str(pid) + ",0")
@@ -304,6 +330,12 @@ class NativeTests(unittest.TestCase):
                 env=self.environment,
                 capture_output=True,
             )
+        for server in self.servers.values():
+            try:
+                server.communicate(timeout=3)
+            except subprocess.TimeoutExpired:
+                server.kill()
+                server.communicate()
         for descriptor in self.pty_fds:
             os.close(descriptor)
         self.temp.cleanup()
@@ -401,6 +433,7 @@ class NativeTests(unittest.TestCase):
             ],
         )
         self.tm(first, "kill-server")
+        self.servers[first].communicate(timeout=5)
         self.sockets.remove(first)
         first, new_pid = self.start("first.sock", {0})
         self.assertNotEqual(pid, new_pid)
