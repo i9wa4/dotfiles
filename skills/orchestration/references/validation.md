@@ -58,6 +58,9 @@ saving.
 
 ### 3.1. Measured Policy and Cold Reading Cost
 
+This is the extraction snapshot at #495 revision `6064da22`; later procedure
+additions are not included in these historical measurements.
+
 Compared the #494 baseline with this extraction using the actual selected
 Postman revision `a0d7290`'s topology/recipient-policy parser. Values are UTF-8
 bytes of common + recipient instructions + generated catalog; fixed archive
@@ -94,3 +97,88 @@ for smaller repeated manager policy and one procedure owner, not a claim of
 universal token savings, better model compliance or an arbitrary size target.
 Reused, already-read current procedures need no invented repeated load, while
 changed or missing guidance still requires reconciliation.
+
+## 4. Event-Driven Reporting Verification
+
+### 4.1. Covered, Missing and Conflicting Guidance
+
+The inherited post-#490 common contract already allows quiet turns, requires
+exact replies/new requests/material results/blockers and rejects quota traffic.
+Its complete-archive reading and fixed approval helpers also remain in force.
+No second quota-removal change is needed. The operating-contract status section
+correctly says informational node mail still requires an exact reply; the old
+`Reply:` footer is mentioned only as historical guidance not to reuse.
+
+The residual gap was the relationship between an intermediate exchange, the
+original task's mail obligation and unfinished acceptance criteria. Runbook
+section 6.1 now gives that relationship one owner, including parallel requests,
+helper-only decisions and uncertain-send recovery. It adds no local no-reply
+flag, CLI schema, automatic resend or notification success heuristic.
+
+| Required scenario                          | Existing duty / residual clarification                                                                                         | Deterministic native trace                                                                                                                                                                                                                                       |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Delegated work finishes                    | Exact evidence-backed response and local review gates precede user-facing DONE.                                                | One request plus one exact result: 2 archives, no ACK-of-ACK. Review quality remains a separate gate.                                                                                                                                                            |
+| Cannot continue / authority blocker        | Report specific impact, owner and needed decision promptly.                                                                    | One request plus exact BLOCKED response: 2; no command effect.                                                                                                                                                                                                   |
+| Material change affects another actor      | Send a meaningful delta, retaining original goals and task state.                                                              | Independent change/answer exchange plus original request/final result: 4.                                                                                                                                                                                        |
+| Successful approve/decline helper          | Helper resolves the exact typed request; no quota-only approver message. The worker still owes its genuine parent-task result. | Each case has task request, execution request, one helper decision and task result: 4. Approval makes one harmless effect; decline makes none.                                                                                                                   |
+| Failed or unknown send/decision            | Preserve IDs/evidence; no delivery claim or blind replay.                                                                      | Invalid route creates 0 archives. Absorbed Enter produces unknown notification but one durable request; recovering the original hint yields one exact reply, 2 total and 0 mail resends. Existing pinned decision-failure tests cover the typed lane separately. |
+| Exact answer with no further work/question | Reconcile without another response obligation.                                                                                 | Final answers are consumed without ACK-of-ACK; the 2-archive completion case terminates.                                                                                                                                                                         |
+| Duplicate notification / empty POP         | No empty announcement or polling.                                                                                              | Duplicate hint causes an empty POP and 0 additional archives.                                                                                                                                                                                                    |
+| Unchanged wait                             | Passive unless an explicit management/workflow event calls for investigation.                                                  | Bounded quiet observation makes 0 additional archives. This does not prove model patience over arbitrary durations.                                                                                                                                              |
+| Several parallel requests                  | Close only the exact answered obligations; keep intermediate questions separate.                                               | Two held tasks: finishing A leaves B outbound. Finishing B closes it. Four explicit requests (two tasks and two finish instructions) plus four exact replies: 8. Intermediate-question case preserves original inbound until its final answer, 4.                |
+
+### 4.2. Tested Transport and Evidence Limits
+
+The native trial uses the selected `git-a0d7290` binary, Linux tmux 3.8, the
+complete candidate role policy and all 19 selected Skill metadata entries.
+No startup message is injected. Deterministic terminal editors respond only
+after notification input is submitted; recipients perform real POP/read/tool
+actions. The controller initiates requests and observes evidence, not recipient
+POPs. Use the upstream editor with fixture-callback support and archive reader;
+the older selected editor lacks that callback extension, so it is not silently
+treated as the newer harness. Binary/protocol assertions match the selected pin.
+
+The completed trace has 11 bounded cases, 30 archived messages and 28 receiver
+POP/full-file SHA-256 proofs. The other two messages are typed decisions
+consumed by the execution CLI. Every recorded full-read hash matches its
+retained archive. All three participating roles finish with
+unread/inbound/outbound/draft/failed counts zero and exactly one harmless
+command effect. Notification acceptance, durable mail, exact reply closure and
+task result are recorded separately.
+
+Existing selected-pin tests already executed for #499 additionally verify
+waiting failures never downgrade, unknown initial identity never runs,
+unknown results identify their audit, late decisions cannot authorize fresh
+invocations, and cancellation/changing reviewers do not grant execution. Those
+unit/process results are distinct from this notification-driven terminal trace.
+
+Fixed actors are scripted choices: they prove actual terminal/mail behavior,
+correlations and counts, not model understanding, spontaneous reporting,
+substantive Guardian review, human receipt or installed fleet activation.
+Authorized real-agent behavior and installed rollout remain separate evidence;
+do not mark those passed from these fixtures. Metadata/link/trigger/Nix results
+and the exact tested revision belong in the PR. Private raw transcripts and
+synthetic mailbox records remain local; public summaries contain no real paths.
+
+### 4.3. Reproduction Outline for an AI Developer
+
+1. Use the existing cloud-development procedure and an isolated private tmux
+   socket/HOME/state tree. Build or select the intended Postman revision and
+   matching protocol evidence reader; retain the full candidate role policy
+   and catalog instead of replacing it with two bare node names.
+2. Start the terminal editors for manager, worker and command approver without
+   initial prompt injection. Supply temporary deterministic callbacks for the
+   cases above, using upstream fixture helpers rather than a new installed
+   Dotfiles test engine. Record full-file hashes before handling each POP.
+3. Exercise the exact request/question/change/decision/parallel flows in the
+   table. Compare archived-message deltas and original obligation state, not
+   only a lower send count. The declared scripted outcomes are not AI verdicts.
+4. For unknown notification, absorb Enter in the worker editor, verify one
+   durable original request, restore the editor and recover that same hint/ID.
+   Do not send the mail again or replay a command. Duplicate and quiet cases
+   must leave archive counts unchanged.
+5. Check final counts, independent correlations, archive hashes and the single
+   harmless approval effect. Retain raw evidence and label source/static,
+   scripted-native, real-model and installed observations separately.
+6. Stop only the owned server after verifying its process/start identity;
+   leave live sessions/configuration and user mail untouched.

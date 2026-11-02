@@ -2,7 +2,7 @@
 name: orchestration
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 description: |
   USE FOR: Team-manager coordination, task decomposition and delegation,
   start/resume recovery, canonical task-index reconciliation, parent/child

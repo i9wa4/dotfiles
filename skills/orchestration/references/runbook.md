@@ -134,6 +134,32 @@ polling loop. Known positive unread counts permit the upstream finite POP/read
 batch, not an endless loop. Quiet turns remain responsible for unfinished task
 state.
 
+### 6.1. Exact Obligations and Intermediate Reports
+
+Do not spend the original task's exact reply on an early receipt merely to
+reduce inbound counts. A necessary question or material update may be a
+separate node-addressed exchange; it creates its own required response. Keep
+the original acceptance criteria, pending work and final-report route explicit.
+If an intermediate reply already closed the original transport obligation,
+reconcile that fact and preserve the unfinished task/final route; do not replay
+work or invent a local no-reply option to repair a count.
+
+A successful dedicated approval/decline helper resolves only that exact typed
+request. It does not require an additional ordinary message to meet a quota,
+nor does it complete the requester's parent task. Report a separately genuine
+blocker or needed decision to its accountable owner. For a failed or unknown
+send/decision, preserve actual IDs/evidence, distinguish durable delivery from
+notification acceptance and use the matching supported recovery guidance;
+neither claim delivery nor blindly resend an uncertain operation.
+
+An exact answer without further work or a question needs reconciliation, not
+an ACK-of-ACK. Parallel requests retain separate correlations: one arbitrary
+send cannot discharge all outstanding duties. Empty POP and duplicate hints
+do not generate announcements; an unchanged wait remains passive unless an
+explicit management check or workflow event authorizes investigation.
+
+### 6.2. Recovery and Decision Escalation
+
 After interruption, reconcile the same verified index and retained own read/sent
 evidence. Late replies belong to their original task; they cannot close a fresh
 request or authorize replay of an unknown command. Use supported
