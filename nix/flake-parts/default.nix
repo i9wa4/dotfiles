@@ -16,7 +16,6 @@ in
     inputs.treefmt-nix.flakeModule
     ./modules/apps.nix
     ./modules/pre-commit.nix
-    ./modules/tmux-postman-status.nix
     ./modules/treefmt.nix
     ./modules/darwin.nix
     ./modules/ubuntu.nix

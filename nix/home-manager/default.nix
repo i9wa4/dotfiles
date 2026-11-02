@@ -65,9 +65,6 @@ let
   llmAgents = inputs.llm-agents.packages.${system};
   markdownFormatter = inputs.markdown-formatter.packages.${system}.default;
   tmuxA2aPostman = inputs.tmux-a2a-postman.packages.${system}.default;
-  tmuxPostmanStatus = pkgs.callPackage ../packages/tmux-postman-status.nix {
-    postman = tmuxA2aPostman;
-  };
   wazaPackage = pkgs.callPackage ../packages/waza.nix {
     inherit system;
   };
@@ -175,7 +172,6 @@ in
       markdownFormatter
       pnpmPackage
       tmuxA2aPostman
-      tmuxPostmanStatus
       wazaPackage
       # AI agent CLIs (versions tracked by flake.lock; was previously installed via nix profile)
       # ccusage includes Codex usage subcommands.

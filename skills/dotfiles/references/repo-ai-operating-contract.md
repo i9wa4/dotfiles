@@ -534,11 +534,7 @@ Do not treat unread mail, quiet panes, or old wait terminology as proof of
 stuck delivery by themselves.
 
 At a concrete workflow boundary, inspect the selected version's `get-status`
-and operation `self` evidence using the upstream usage Skill. The saved overview
-covers a server; select the assigned session/pane/workspace and verified scope.
-It does not grant authority over other visible rows. Request one explicit
-`refresh-status` when newer observations are needed, then read the saved view.
-Publication time and the actual capture time are separate. Unknown counts
+and operation `self` evidence using the upstream usage Skill. Unknown counts
 are not zero; sampled screen changes and quiet panes do not establish task
 progress, liveness, delivery failure or completion. The getters' schema and
 refresh behavior belong to matching installed help, not this policy reference.
