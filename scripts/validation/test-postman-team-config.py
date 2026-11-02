@@ -38,7 +38,9 @@ class TeamConfigTests(unittest.TestCase):
             target, gh = root / "flake.nix", root / "gh"
             original = 'tmux-a2a-postman = {\n  url = "github:i9wa4/tmux-a2a-postman/landed";\n};\n'
             gh.write_text(
-                '#!/bin/sh\ncase "$*" in\n*--paginate*) echo v0.9.5;;\n*) test "$FIXTURE_COMPATIBLE" = yes;;\nesac\n'
+                '#!/bin/sh\ncase "$*" in\n*--paginate*) echo v0.9.5;;\n'
+                '*skills/postman-team-manager/SKILL.md*) test "$FIXTURE_MANAGER" = yes;;\n'
+                '*) test "$FIXTURE_COMPATIBLE" = yes;;\nesac\n'
             )
             gh.chmod(0o700)
             env = {
@@ -47,12 +49,16 @@ class TeamConfigTests(unittest.TestCase):
                 "TMUX_A2A_POSTMAN_FLAKE_NIX": str(target),
             }
             updater = REPO / "scripts/nix/flake-input-update-tmux-a2a-postman.sh"
-            for compatible, explicit, expected in [
-                ("no", "", 0),
-                ("no", "v0.9.5", 1),
-                ("yes", "v0.9.5", 0),
+            for compatible, manager, explicit, expected, update in [
+                ("no", "no", "", 0, False),
+                ("no", "no", "v0.9.5", 1, False),
+                ("yes", "no", "", 0, False),
+                ("yes", "no", "v0.9.5", 1, False),
+                ("yes", "yes", "v0.9.5", 0, True),
             ]:
-                with self.subTest(compatible=compatible, explicit=explicit):
+                with self.subTest(
+                    compatible=compatible, manager=manager, explicit=explicit
+                ):
                     target.write_text(original)
                     result = subprocess.run(
                         ["bash", str(updater)],
@@ -61,15 +67,14 @@ class TeamConfigTests(unittest.TestCase):
                         env={
                             **env,
                             "FIXTURE_COMPATIBLE": compatible,
+                            "FIXTURE_MANAGER": manager,
                             "TMUX_A2A_POSTMAN_TAG": explicit,
                         },
                     )
                     self.assertEqual(result.returncode, expected, result.stderr)
                     self.assertEqual(
                         target.read_text(),
-                        original
-                        if compatible == "no"
-                        else original.replace("/landed", "/v0.9.5"),
+                        original.replace("/landed", "/v0.9.5") if update else original,
                     )
 
     def test_every_role_has_its_complete_archived_policy_source(self):

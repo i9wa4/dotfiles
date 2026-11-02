@@ -608,11 +608,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1792116957,
-        "narHash": "sha256-EjZqHKObBfIOeHZnMRVV87HB3pPq/WBkmRJWyFxmZu8=",
+        "lastModified": 1793494649,
+        "narHash": "sha256-Thn0OE71NF80ZfOMGCgJvKtbCcnnz0fToT/qsvb/Gtc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f20cd90e28fe0403873f473b29e42662cd86e8c4",
+        "rev": "d357a2b54f0b6dc4aeb4e993190a52cf151b6f24",
         "type": "github"
       },
       "original": {
@@ -691,17 +691,17 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1793545218,
-        "narHash": "sha256-hxZiL44SFT5BHDyXWrIFJwMiCIDWOF7M69QV1CbsACI=",
+        "lastModified": 1793579442,
+        "narHash": "sha256-3J/SX91UISmODt21RL3f7vlu0yW46vA4OXD7dWJh5P0=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "904c9910a7f06d53ce67f41c6bcd737d2d857d7f",
+        "rev": "73787791c5594381b7018660090cda0bab399a54",
         "type": "github"
       },
       "original": {
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "904c9910a7f06d53ce67f41c6bcd737d2d857d7f",
+        "rev": "73787791c5594381b7018660090cda0bab399a54",
         "type": "github"
       }
     },

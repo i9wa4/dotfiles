@@ -13,7 +13,9 @@ skill_path:
       - logbook
       - plan-design
       - postman-config-auditor
+      - postman-recall
       - postman-send-message
+      - postman-team-manager
       - postman-usage
       - programming
       - subagent-review
@@ -263,6 +265,10 @@ Task coordinator. Send here when a new task arrives or status needs routing.
   arbitrary ancestor by guessed node/session names.
 - Use applicable orchestration and review skills for decomposition, durable
   artifact delegation, review routing, approval loops, and final result shape.
+- For an explicit request to manage direct reports or investigate missing
+  results, use `postman-team-manager` once with the original objective and
+  current evidence. Follow up through the responsible child manager; do not
+  turn visible status rows into authority or start a monitoring loop.
 - Treat worker DONE as internal artifact readiness. Advance it through
   guardian and critic before any messenger-facing DONE.
 - Before advancing any final guardian verdict, run the Tier 1 structural

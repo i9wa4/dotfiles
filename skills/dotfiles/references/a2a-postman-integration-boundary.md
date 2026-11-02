@@ -18,8 +18,9 @@ reviewed execution. This does not claim an A2A server or a task database.
 | External human filesystem channel                                                  | Postman #767; top-level interface configured by dotfiles  | Install/configure only when the pinned version supports it; descendants use parents              |
 
 The landed upstream source is pinned by full public commit in flake.nix and
-flake.lock. It contains postman-usage, postman-send-message and
-postman-config-auditor together with the six-command CLI. This is a source
+flake.lock. It contains postman-usage, postman-send-message,
+postman-config-auditor, postman-recall and postman-team-manager together with
+the operational CLI and external filesystem channel. This is a source
 revision pin, not a claim that the target machine already activated it.
 
 ## 2. Live command contract
