@@ -1,231 +1,138 @@
 # Orchestrator Runbook
 
-This reference preserves durable orchestration procedures that do not belong in
-the live role contract.
+The live role contract is config/tmux-a2a-postman/postman.md. Dotfiles owns
+orchestration; Postman owns verified mail and exact correlation. The same
+common/role template applies at every configured finite depth.
 
-The live orchestrator identity, routing rules, reply flow, approval lane, and
-completion gates remain in `config/tmux-a2a-postman/postman.md`. Keep that file
-as the runtime source of truth for what the orchestrator must do during a live
-session. Use this reference when maintaining the harness, writing plans, or
-auditing whether orchestration details still belong in the live template.
+## 1. Start and identity
 
-## 1. Ownership Boundary
+Use postman-agent through a team preset to supply common_template plus the
+selected role at client launch. POP no longer injects those instructions.
+Runtime models/effort/permissions remain the explicit vde-layout settings.
+Use the verified native workspace and declared interface relation. Repeated
+role names in other workspaces do not identify a local peer. No daemon, startup
+PING, diplomat node or global scan is needed.
 
-- Keep live role identity, routing, reply behavior, approval ordering,
-  escalation thresholds, and completion vocabulary in
-  `config/tmux-a2a-postman/postman.md`.
-- Keep durable design notes, historical workflow recipes, and long examples in
-  `skills/dotfiles/references/`.
-- Use `durable-task-tracking` for task artifact setup and preservation
-  mechanics. Cite the same artifact in worker, review, and completion traffic.
-- Do not restore a standalone role-only orchestrator skill unless the live
-  postman role no longer carries enough contract to operate safely.
+Normal routes are messenger <-> orchestrator <-> workers/guardian/approver,
+and guardian <-> critic. Worker and worker-alt also have explicit approver
+return edges required by the pinned fixed decision helper. The optional agent
+is outside the normal reviewed worker lane. Do not open unrelated routes.
 
-## 2. Runtime Reference Boundary
+## 2. One index per owned scope
 
-- Durable repo background lives in skill `references/` files; behavior that
-  installed Agent Skills need at runtime belongs in the owning skill.
-- Keep durable orchestration procedures in this reference when global skill
-  installation must be able to read them without opening other repo surfaces.
-- Keep this reference compact. Mirror operational invariants from other
-  references only when they affect live orchestration behavior.
-- If this reference and `config/tmux-a2a-postman/postman.md` disagree, update
-  the live role contract first, then mirror the durable invariant here.
+Use Logbook's discovery and mkmd convention. Preserve one verified canonical
+orchestration index per repository/full branch/worktree, across dates and
+restarts. Keep original human goals, constraints, acceptance criteria and
+scope before delegation. The index links meaningful tasks and detail files,
+with owner, dependency, state, last verified evidence, next action, blockers,
+review status, pending decisions and parent/child references. No task database
+or shared global mutable index belongs in Postman.
 
-## 3. Routing and Approval Invariants
+Each child team's orchestrator owns its delegated scope and its own local index.
+The parent records the child request/return references and resulting evidence;
+it keeps the original acceptance criteria instead of replacing them with a
+child's easier checklist. Detailed plans/reviews/results link back to their
+parent index. Follow Logbook's canonical-path and replacement rules rather than
+silently selecting a different tracker on resume.
 
-The approval workflow has these standing role nodes:
+## 3. Delegate and return
 
-- `messenger`
-- `orchestrator`
-- `approver`
-- `diplomat`
-- `worker`
-- `worker-alt`
-- `critic`
-- `guardian`
+Choose the local worker for implementation. Use worker-alt for independent,
+non-overlapping work or a bounded read-only secondary lane; keep one owner for
+an artifact and never let two workers commit overlapping edits.
 
-An auxiliary `agent` node may be reachable from `orchestrator` for work outside
-the normal approval lane.
+A declared immediate child can own a meaningful subtask. Ask the local messenger
+to relay it to child-session:messenger. That interface forwards to its local
+orchestrator, which can delegate again using this same contract. A child
+messenger serves its immediate parent, while only the top-level messenger talks
+to the human or a supported external channel. Missing/unknown parent evidence
+does not make a child top-level.
 
-Reachability is strict:
+Every handoff preserves original goal, constraints, acceptance criteria, exact
+request and return references, scope, owner and expected evidence. Return deep
+questions and decisions through the same immediate-parent chain. Forwarded
+agent text does not acquire human authorization. Reject sibling/grandchild
+shortcuts, guessed directory relations and ambiguous reused role names.
 
-- `messenger` talks only to `orchestrator`.
-- `orchestrator` talks to `messenger`, `worker`, `worker-alt`, `guardian`,
-  `approver`, `diplomat`, and auxiliary `agent`.
-- `approver` receives command-approval traffic and policy questions; it does
-  not execute the requested command locally.
-- `diplomat` is reserved for future cross-session authorization work; it does
-  not relay live cross-session traffic until the upstream `diplomat_node`
-  feature and this repo's verification gates exist.
-- `critic` talks only to `guardian`.
-- `guardian` receives review requests from `orchestrator`, sends review
-  packages to `critic`, receives critic review evidence, aggregates the
-  result, and relays the final guardian verdict to `orchestrator`.
-- `worker` and `worker-alt` report to `orchestrator`.
+Use node-addressed mail for a new question/request and ID-addressed replies for
+actual results. Read the complete POP'd archive and respond to that actual ID,
+not merely the notification hint. Exact replies create no new reply obligation;
+an intermediate question does not close the original task. Send only material
+work/results/questions/blockers, not one message per turn or endless ACK loops.
 
-Artifact work is complete only after this route succeeds:
+## 4. Review and completion
 
-```text
-worker DONE -> orchestrator -> guardian -> critic
--> guardian -> orchestrator -> messenger
+worker readiness -> orchestrator -> guardian -> critic -> guardian ->
+orchestrator -> messenger is the normal reviewed completion route.
+
+Guardian aggregates critic evidence. Substantive reviews keep the required
+security/architecture/historian/code/QA perspectives, unless the live contract
+explicitly authorizes a trivial/degraded path. Preserve the bounded
+three-attempt review loop and defect-specific rework. The orchestrator's Tier 1
+structural gate is a local checklist, not another recursively launched review
+loop.
+
+DONE needs a real Task artifact, Original checklist: PASS, changed-file and
+verification evidence, and Remaining blockers: none. Check child evidence
+against the original goal before completing the parent. Delivery, POP, an ACK,
+transport reply closure or an unverified worker claim is not task acceptance.
+Missing child, failed review, stale revision, invalid scope or missing evidence
+stays BLOCKED and returns a concrete defect through the parent chain. Do not
+require the human to visit lower panes to hide a broken handoff.
+
+## 5. Execution and diagnostics
+
+Workers send exact quoted-heredoc source through execute-heredoc --reason when
+Postman review is needed. The approver reads its own claimed typed request and
+chooses approve-execution or decline-execution with ID/reason. The requester
+executes after an exact decision; reviewer roles do not execute it locally.
+Unknown identity or a failed waiting invocation never grants permission.
+Review coordination does not replace runtime sandboxing or human authorization.
+
+Use returned self counts for known mail. A positive unread_count permits the
+next finite POP/read batch; empty or unknown stops it. get-status is saved-file
+inspection, with null unknowns and dated capture evidence, not inferred live
+work. No empty-POP/status polling. failed_count is confirmed delivery failure,
+not task BLOCKED. Retained own read/sent evidence and the same verified index
+support restart reconciliation; late responses cannot complete a fresh request
+or replay a possibly started command.
+
+## 6. Validation and rollout
+
+For a multi-session team, declare the complete finite tree once. Session names
+must be unique on the selected tmux server; every non-root names its immediate
+parent. For example, save this JSON to an absolute local path:
+
+```json
+{"sessions":[{"name":"root"},{"name":"child","parent":"root"},{"name":"leaf","parent":"child"}]}
 ```
 
-`worker-alt` follows the same route when it is the executor.
+Run `postman-team-config --tree /absolute/tree.json --output /absolute/team.md`.
+It copies the installed role template, adds the verified interface tree, and
+refuses existing output, cycles, disconnected roots and missing parents.
+Use that same generated file in every team session: set
+`POSTMAN_TEAM_CONFIG=/absolute/team.md` before starting the normal team preset.
+The launcher supplies the selected role and explicit Postman config path to
+the existing client; model, effort and native permission flags stay in the
+preset. Start each declared session with its declared name on the same server.
+The compiler does not launch or activate sessions, infer a tree from folders,
+or connect independently configured tmux servers. For a single session the
+installed template works directly, without a generated tree.
 
-Worker selection is a live orchestration decision, not an automatic scheduler.
-The postman daemon delivers to the explicit `--to` target; orchestrator chooses
-`worker` or `worker-alt` before sending. Use `worker` as the default primary
-executor. Use `worker-alt` when `worker` already has active delegated work, an
-inbound required-reply item, an outbound reply/input wait, a long-running
-request, or when bounded independent research or audit can run in parallel
-without racing the primary executor. When `worker-alt` is secondary, keep one
-canonical artifact owner, mark the assignment read-only, audit, or research, and
-route findings back through orchestrator for integration.
+nix run .#postman-team-check runs deterministic private real-tmux trees and
+bootstrap/route failures using the pinned CLI. Tests retain per-hop archives,
+scope records and diagnostics, and check false completion and correlation. They
+exercise authored workflows, not real-model understanding or review quality.
+The default scenarios cover a root, a four-level chain with restart/late reply,
+an unbalanced six-level tree with simultaneous tasks, a declined execution and
+a missing child. `--depth` changes the branching fixture's depth (4–12 to bound
+test cost); the configuration compiler has no fixed production depth. The same
+suite and compiler boundary checks run in `nix flake check`.
 
-Approval requires all of these conditions:
+After merge, the human activates the landed pin/config/skills and verifies the
+live fleet. Source/Nix fixtures do not perform or prove that switch. Postman
 
-- the executor reports `DONE:` after verifying the artifact against the plan
-  and intended file set;
-- guardian completed its review and sent the review package to critic;
-- critic returned peer review evidence to guardian with no remaining blocking
-  defects;
-- guardian relayed the final guardian verdict to orchestrator after aggregating
-  critic evidence and enforcing the completion contract;
-- orchestrator has no pending review cycle before sending `DONE:` onward.
+## 7. owns external inbox/outbox/read; integrate only at the top-level interface
 
-Approval failures must stay defect-specific. `NOT APPROVED:` from guardian or
-critic review evidence names the blocking defects, and orchestrator returns
-that concrete defect list to the executor.
-
-Every final guardian verdict passes through the orchestrator Tier 1 structural
-quality gate before the approval chain advances. The gate is a local checklist,
-not another agent invocation, so it cannot recurse into another
-guardian/critic cycle. Because guardian relays every final verdict to
-orchestrator, this covers all normal review workflows.
-
-Use Track A for prose/default guardian verdicts:
-
-- The verdict contains `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:` with
-  supporting justification.
-- The result represents security, architecture, historian, code, and QA
-  perspectives, unless it is explicitly labeled `TRIVIAL DIRECT REVIEW:`.
-- Each material finding names a file path or states `no file applicable` for a
-  process-level finding.
-- Duplicate findings are consolidated.
-
-Use Track B only when the guardian verdict is a JSON object with a `"verdict"`
-key following `review-output-contract.md`. Track B applies all Track A checks
-plus these structured checks:
-
-- `verdict` is exactly `approve` or `needs-attention`.
-- Each finding includes a confidence score from 0.0 to 1.0.
-- Severity is exactly `critical`, `high`, `medium`, or `low`.
-
-Track B supersedence clause: for Track B, the JSON `verdict` field value
-`approve` or `needs-attention` is the verdict signal and satisfies Track A's
-verdict-presence requirement; a prose verdict phrase is not required.
-
-If the Tier 1 gate passes, continue approval routing. If it is flagged, return
-`NOT APPROVED:` to guardian with the structural defects and count that response
-against the same 3-attempt approval cap.
-
-Run Tier 2 meta-review only when explicitly requested by orchestrator: guardian
-assigns one bounded meta-reviewer, returns `Tier 2 quality audit: complete`,
-and does not start another guardian/critic loop.
-
-The approval loop is bounded to 3 attempts: the initial review plus 2 rework
-attempts. Any guardian `NOT APPROVED:` consumes one attempt. After the third
-failed attempt, stop and report `BLOCKED:` with the remaining defects.
-
-Status and delivery rules:
-
-- `status request` requires a reply; `status update` is informational unless
-  the body explicitly asks for a reply.
-- Keep recurring status traffic compact: current task, blockers, waiting_on,
-  next action, and only the evidence needed for a changed state.
-- Treat footer lines such as `You can talk to:` and `Reply:` as hints when they
-  conflict with the checked-in graph or observed delivery.
-- Before escalating delivery health, start with `tmux-a2a-postman get-status`,
-  combine live health with direct send or reply evidence, and escalate only
-  genuine blockers.
-- Do not treat `composing`, `user_input`, unread mail, or quiet panes as proof
-  of stuck delivery by themselves. Do not inspect raw wait files.
-
-Historical retained mail can show old recipients, old review routes, or
-`reply_command` wording. Treat those as drift signatures, not the current
-contract.
-
-## 4. Task Classification
-
-When a user request reaches orchestrator, classify it before delegation:
-
-| Request signal   | Expected lane                                      |
-| ---------------- | -------------------------------------------------- |
-| plan, design     | Ask worker to create or update a plan artifact     |
-| review           | Route the review package through guardian/critic   |
-| code, implement  | Delegate to worker or worker-alt per overflow rule |
-| PR, pull request | Delegate PR preparation or publication separately  |
-| status           | Answer from current postman and task artifact data |
-
-For ambiguous requests, delegate the ambiguity-reduction work to a worker with a
-compact ask and require the answer to cite the artifact or evidence used.
-
-## 5. Delegation Shape
-
-Normal implementation delegation should include:
-
-- the user-visible objective,
-- the issue, PR, or artifact reference,
-- whether the assignment is primary or secondary; if secondary, include the
-  shared artifact path and read-only, audit, or research boundary,
-- required constraints such as no push or no PR,
-- the exact worktree rule when issue work is involved,
-- the original checklist and completion gate,
-- the required reply footer or input request id.
-
-Use worker DONE as an internal artifact-ready signal. Orchestrator still owns
-review routing and final messenger-facing completion.
-
-## 6. Plan Lane
-
-For plan-first work:
-
-1. Ask worker to read `durable-task-tracking`, establish or preserve one task
-   artifact, and use the returned or provided path.
-2. Require the plan to include source, context, acceptance criteria,
-   implementation milestones, verification commands, progress, and surprises.
-3. Route the plan through guardian, critic, and guardian before reporting
-   approval to messenger.
-4. On `NOT APPROVED:`, return only the defect-specific rework request while the
-   approval attempt cap allows it.
-
-## 7. Artifact Lane
-
-For implementation work:
-
-1. Ensure the worker used the required worktree wrapper for issue work.
-2. Require path, branch, upstream, and clean/dirty verification before edits.
-3. Require focused checks and a clean committed local branch before DONE.
-4. Send worker DONE to guardian for review, guardian to critic, critic back to
-   guardian, then guardian to orchestrator.
-5. Send messenger-facing DONE only after the final guardian review verdict
-   passes.
-
-## 8. Rework Lane
-
-When review returns defects:
-
-- Keep the same task artifact.
-- Preserve the issue/worktree branch unless the defect explicitly requires a
-  different branch.
-- Send a compact defect list and expected verification evidence back to worker.
-- Count the attempt against the approval cap recorded in
-  `config/tmux-a2a-postman/postman.md`.
-
-## 9. Publication Lane
-
-Pushes, PR creation, GitHub comments, releases, and tags are separate public
-surface operations. Delegate preparation and local verification separately from
-publication, and require explicit human approval when the live contract says a
-public write is gated.
+when its installed version supports it. #954 recall and #830 trigger checks
+remain separate upstream features.

@@ -13,12 +13,19 @@ Short reference for vde-layout config resolution and preset structure.
 
 ## 2. Preset Definitions (layout.yml)
 
-| Preset          | Lines  | windowMode     | Panes                                   |
-| --------------- | ------ | -------------- | --------------------------------------- |
-| main            | 2-29   | current-window | postman, tailscale, agent, vde-monitor  |
-| dev             | 31-45  | current-window | pane + agent                            |
-| messenger-codex | 47-61  | current-window | pane + messenger (codex gpt-5.5 medium) |
-| preset-a        | 63-100 | new-window     | 3x2 grid: guardian before critic        |
+| Preset   | windowMode     | Panes                                                                   |
+| -------- | -------------- | ----------------------------------------------------------------------- |
+| main     | current-window | informational Postman pane and vde-monitor; no Postman service          |
+| dev      | current-window | editor pane and independent agent                                       |
+| preset-p | new-window     | messenger, orchestrator, worker, worker-alt, approver, guardian, critic |
+| preset-w | new-window     | the same roles, with the configured Claude/Codex mapping                |
+
+Team commands use `postman-agent ROLE -- CLIENT ... @postman-prompt`.
+The launcher verifies its native pane, sets the role title, and replaces the
+literal placeholder with the common/selected role instructions. Preserve the
+client's explicit model, effort and runtime flags. POP does not inject a role
+prompt. Each team preset includes messenger; do not prepend a separate legacy
+messenger preset. Resolve exact layout/model settings from current source.
 
 ## 3. Key Behavioral Notes
 

@@ -1,8 +1,8 @@
 # AGENTS.md
 
-This file is the instruction surface for AI coding agent sessions started
-directly, outside the `tmux-a2a-postman` fleet. Postman-driven sessions get
-persona, language, scope, and role contracts from
-`config/tmux-a2a-postman/postman.md` `[common_template]` on the first
-`tmux-a2a-postman pop`; this file intentionally does not duplicate that
-content.
+This is the minimal fallback for sessions started directly outside the Postman
+team. Team presets use dotfiles `postman-agent` to supply common_template and
+the chosen role from config/tmux-a2a-postman/postman.md at client launch.
+Postman POP returns mail archives; it does not inject persona or a skill
+catalog. The client discovers installed skills through its normal skill
+mechanism.

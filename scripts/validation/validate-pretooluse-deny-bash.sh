@@ -44,6 +44,10 @@ assert_denied() {
     printf 'not ok - %s\nexpected deny JSON, got:\n%s\n' "$name" "${output:-<empty>}" >&2
     return 1
   fi
+  if ! jq -e '.hookSpecificOutput.permissionDecisionReason | contains("execute-heredoc") and (contains("execute-bash") | not)' >/dev/null <<<"$output"; then
+    printf 'not ok - %s: denial must describe the current execution lane\n' "$name" >&2
+    return 1
+  fi
 }
 
 assert_allowed() {

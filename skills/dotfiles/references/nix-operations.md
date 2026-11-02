@@ -11,7 +11,7 @@
 **Agents must not run `nix run '.#switch'` (or any other system activation
 command) themselves.** On macOS this triggers an interactive `sudo` password
 prompt that no automated agent can supply -- both direct execution and the
-postman `execute-bash` approval lane hang or must be cancelled at the
+postman `execute-heredoc` approval lane hang or must be cancelled at the
 prompt, and the activation never completes. This is not merely a permission
 gap to route around; the human running the switch is a durable part of the
 workflow. When a task needs the merged changes live on a machine, hand
