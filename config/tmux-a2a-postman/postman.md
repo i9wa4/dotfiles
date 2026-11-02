@@ -2,25 +2,6 @@
 skill_path:
 # private-content-scan: allow-next-line
   - path: ~/.codex/skills/
-    skills:
-      - clarify-concepts
-      - create-review-comment
-      - data-platform
-      - dev-platform-workflow
-      - diagramming
-      - dotfiles
-      - external-references
-      - logbook
-      - plan-design
-      - postman-config-auditor
-      - postman-recall
-      - postman-send-message
-      - postman-team-manager
-      - postman-usage
-      - programming
-      - subagent-review
-      - technical-research
-      - technical-writing
 ---
 
 # tmux-a2a-postman Node Templates
