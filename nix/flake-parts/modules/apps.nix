@@ -173,6 +173,14 @@
           ''}/bin/check";
         };
       }
+      // lib.optionalAttrs isDarwin {
+        macskk-upgrade = {
+          type = "app";
+          program = "${pkgs.writeShellScriptBin "macskk-upgrade" ''
+            exec ${pkgs.bash}/bin/bash ${../../../scripts/nix/macskk-maintenance.sh} upgrade
+          ''}/bin/macskk-upgrade";
+        };
+      }
       // lib.optionalAttrs isLinux {
         apt-upgrade = {
           type = "app";

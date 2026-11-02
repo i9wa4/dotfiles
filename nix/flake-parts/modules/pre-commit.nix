@@ -197,6 +197,15 @@
             files = "^skills/logbook/(SKILL\\.md|references/issue-mailbox\\.md|scripts/(issue-mailbox|test-issue-mailbox\\.py))$";
             pass_filenames = false;
           };
+          macskk-maintenance = {
+            enable = true;
+            entry = "${pkgs.writeShellScript "macskk-maintenance-test" ''
+              export PATH=${pkgs.lib.makeBinPath [ pkgs.bash ]}:$PATH
+              exec ${pkgs.python3}/bin/python3 scripts/nix/test-macskk-maintenance.py
+            ''}";
+            files = "^(scripts/nix/(macskk-maintenance\\.sh|test-macskk-maintenance\\.py)|nix/flake-parts/modules/(apps|darwin)\\.nix)$";
+            pass_filenames = false;
+          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===
