@@ -45,34 +45,34 @@ presets:
           panes:
             - name: messenger
               title: messenger
-              command: postman-agent messenger -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: postman-agent orchestrator -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: worker
               title: worker
-              command: postman-agent worker -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: postman-agent worker-alt -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: approver
               title: approver
-              command: postman-agent approver -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
             - name: guardian
               title: guardian
-              command: postman-agent guardian -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: critic
               title: critic
-              command: postman-agent critic -- codex --yolo --no-alt-screen --no-daemon --model gpt-5.6-sol --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-5.6-sol --config model_reasoning_effort=high
               delay: 500
 
   preset-w:
@@ -88,32 +88,32 @@ presets:
           panes:
             - name: messenger
               title: messenger
-              command: postman-agent messenger -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: postman-agent orchestrator -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
             - name: worker
               title: worker
-              command: postman-agent worker -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
             - name: worker-alt
               title: worker-alt
-              command: postman-agent worker-alt -- claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium @postman-prompt
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
         - type: vertical
           ratio: [1, 1, 1]
           panes:
             - name: approver
               title: approver
-              command: postman-agent approver -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
             - name: guardian
               title: guardian
-              command: postman-agent guardian -- codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high @postman-prompt
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: critic
               title: critic
-              command: postman-agent critic -- claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort medium @postman-prompt
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort medium
               delay: 500

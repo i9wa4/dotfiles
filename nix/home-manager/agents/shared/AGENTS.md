@@ -1,8 +1,10 @@
 # AGENTS.md
 
-This is the minimal fallback for sessions started directly outside the Postman
-team. Team presets use dotfiles `postman-agent` to supply common_template and
-the chosen role from config/tmux-a2a-postman/postman.md at client launch.
-Postman POP returns mail archives; it does not inject persona or a skill
-catalog. The client discovers installed skills through its normal skill
-mechanism.
+This is the minimal runtime fallback. Team presets launch clients directly
+without an initial role message. The client discovers installed skills through
+its normal skill mechanism.
+
+For Postman mail, argument-free `tmux-a2a-postman pop` returns an archive path.
+Read that Markdown completely through EOF: it contains the common contract,
+recipient-role instructions, skill catalog, contacts and exact reply guidance.
+The authored policy is config/tmux-a2a-postman/postman.md.

@@ -1,4 +1,4 @@
-"""Boundary checks for config compilation and launch-time role delivery."""
+"""Config, direct default starts and complete archived-policy source."""
 
 import json
 import os
@@ -10,14 +10,28 @@ import tempfile
 import unittest
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
-LAUNCHER = REPO / "scripts/bin/postman-agent"
 COMPILER = REPO / "scripts/bin/postman-team-config"
 TEMPLATE = REPO / "config/tmux-a2a-postman/postman.md"
 compile_config = runpy.run_path(str(COMPILER))["compile_config"]
-role_prompt = runpy.run_path(str(LAUNCHER))["role_prompt"]
+role_sections = runpy.run_path(str(COMPILER))["role_sections"]
 
 
 class TeamConfigTests(unittest.TestCase):
+    def test_default_team_layout_never_injects_an_initial_prompt(self):
+        lines = (REPO / "config/vde/layout.yml").read_text().splitlines()
+        commands = [
+            line.split("command:", 1)[1].strip() for line in lines if "command:" in line
+        ]
+        self.assertFalse(
+            any(
+                "postman-agent" in line or "@postman-prompt" in line
+                for line in commands
+            )
+        )
+        self.assertEqual(
+            sum(line.startswith(("codex ", "claude ")) for line in commands), 15
+        )
+
     def test_release_updater_keeps_landed_pin_until_a_compatible_tag_exists(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -58,7 +72,8 @@ class TeamConfigTests(unittest.TestCase):
                         else original.replace("/landed", "/v0.9.5"),
                     )
 
-    def test_every_role_has_its_policy_and_explicit_config(self):
+    def test_every_role_has_its_complete_archived_policy_source(self):
+        sections = role_sections(TEMPLATE.read_text())
         for role in [
             "messenger",
             "orchestrator",
@@ -69,21 +84,17 @@ class TeamConfigTests(unittest.TestCase):
             "critic",
         ]:
             with self.subTest(role=role):
-                prompt = role_prompt(TEMPLATE, role)
-                self.assertIn("# Selected role: " + role, prompt)
-                self.assertIn("# Common contract", prompt)
-                self.assertIn("--config " + str(TEMPLATE), prompt)
+                self.assertTrue(sections[role])
+                self.assertTrue(sections["common_template"])
 
-    def test_configuration_sections_are_not_roles(self):
-        for role in [
-            "common_template",
-            "message_footer",
-            "edges",
-            "unknown",
-            "../worker",
+    def test_compiler_rejects_missing_or_duplicate_common_policy(self):
+        original = TEMPLATE.read_text()
+        for template in [
+            original.replace("`common_template`", "`missing_common`"),
+            original + "\n## `common_template`\nduplicate\n",
         ]:
-            with self.subTest(role=role), self.assertRaises(ValueError):
-                role_prompt(TEMPLATE, role)
+            with self.subTest(template=template[:30]), self.assertRaises(ValueError):
+                compile_config(template, {"sessions": [{"name": "root"}]})
 
     def test_no_fixed_production_depth(self):
         sessions = [{"name": "t0", "parent": None}]
@@ -141,29 +152,6 @@ class TeamConfigTests(unittest.TestCase):
             self.assertEqual(
                 {p.name for p in root.iterdir()}, {"tree.json", "postman.md"}
             )
-
-    def test_launch_requires_native_pane_and_one_literal_placeholder(self):
-        for command in [
-            ["echo"],
-            ["echo", "@postman-prompt", "@postman-prompt"],
-            ["echo", "@postman-prompt"],
-        ]:
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(LAUNCHER),
-                    "--config",
-                    str(TEMPLATE),
-                    "worker",
-                    "--",
-                    *command,
-                ],
-                check=False,
-                env={"PATH": "/usr/bin:/bin"},
-                capture_output=True,
-            )
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn(b"postman-agent:", result.stderr)
 
 
 if __name__ == "__main__":

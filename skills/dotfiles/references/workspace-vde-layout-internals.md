@@ -20,12 +20,12 @@ Short reference for vde-layout config resolution and preset structure.
 | preset-p | new-window     | messenger, orchestrator, worker, worker-alt, approver, guardian, critic |
 | preset-w | new-window     | the same roles, with the configured Claude/Codex mapping                |
 
-Team commands use `postman-agent ROLE -- CLIENT ... @postman-prompt`.
-The launcher verifies its native pane, sets the role title, and replaces the
-literal placeholder with the common/selected role instructions. Preserve the
-client's explicit model, effort and runtime flags. POP does not inject a role
-prompt. Each team preset includes messenger; do not prepend a separate legacy
-messenger preset. Resolve exact layout/model settings from current source.
+Team presets start Codex/Claude directly without injecting an initial message.
+vde-layout sets native pane role titles; preserve the client's explicit model,
+effort and runtime flags. Full POP archives supply common and recipient-role
+instructions. Each team preset
+includes messenger; do not prepend a separate legacy messenger preset. Resolve
+exact layout/model settings from current source.
 
 ## 3. Key Behavioral Notes
 

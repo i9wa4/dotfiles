@@ -6,11 +6,39 @@ import json
 import os
 import pathlib
 import re
-import runpy
 import tempfile
 
 
+def role_sections(text):
+    """Read authored Markdown sections for config validation and fixture checks."""
+    if len(text.encode()) > 256 * 1024:
+        raise ValueError("role configuration exceeds 256 KiB")
+    sections, current, fence = {}, None, None
+    for line in text.splitlines(keepends=True):
+        marker = re.match(r"^\s*(`{3,}|~{3,})", line)
+        if marker:
+            value = marker[1]
+            if fence is None:
+                fence = value
+            elif value[0] == fence[0] and len(value) >= len(fence):
+                fence = None
+        match = None if fence else re.fullmatch(
+            r"##\s+(?:\d+(?:\.\d+)*\.?\s+)?`([a-zA-Z0-9_-]+)`\s*", line.strip()
+        )
+        if match:
+            current = match[1]
+            if current in sections:
+                raise ValueError("duplicate role/configuration section")
+            sections[current] = []
+        elif current is not None:
+            sections[current].append(line)
+    return {name: "".join(lines).strip() for name, lines in sections.items()}
+
+
 def compile_config(template, tree):
+    sections = role_sections(template)
+    if not sections.get("common_template") or not sections.get("messenger"):
+        raise ValueError("template lacks common_template or messenger instructions")
     if not isinstance(tree, dict) or set(tree) != {"sessions"}:
         raise ValueError("tree must contain only a sessions list")
     sessions = tree["sessions"]
@@ -71,8 +99,6 @@ def main():
             raise ValueError("template/tree/output must be absolute")
         if args.tree.stat().st_size > 128 * 1024 or args.template.stat().st_size > 256 * 1024:
             raise ValueError("tree/template exceeds input bound")
-        launcher = runpy.run_path(str(pathlib.Path(__file__).resolve().with_name("postman-agent")))
-        launcher["role_prompt"](args.template, "messenger")
         output = compile_config(args.template.read_text(), json.loads(args.tree.read_text()))
         # Publish a complete private copy without clobbering the user's existing
         # config, creating directories, or changing their active runtime state.

@@ -71,8 +71,9 @@ After resolving the snippet, boot the session:
      'vde-layout preset-p' Enter
    ```
 
-   Each team preset already includes its messenger and uses postman-agent to
-   deliver common/role instructions. Do not prepend a second messenger preset.
+   Each team preset already includes its messenger and starts clients directly
+   without an initial role message. Read common/role instructions in complete
+   POP archives. Do not prepend a second messenger preset.
    For a recursive team, retain the declared session name and shared
    POSTMAN_TEAM_CONFIG; see orchestrator-runbook.md.
 8. Wait 8-12s for vde-layout to materialize all panes.

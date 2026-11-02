@@ -89,9 +89,10 @@ and stop on empty/unknown; do not add empty-POP/status loops or auto-expiry.
 
 ## 4. Launch and scope
 
-postman-agent supplies the common contract and selected role at launch through
-an explicit prompt argv placeholder. vde-layout retains the existing per-pane
-clients, models, reasoning effort and runtime flags. Codex's disabled terminal
+vde-layout starts clients directly without injecting common/role text into
+their first input. Read that policy from complete recipient POP archives.
+vde-layout retains the existing per-pane clients, models, reasoning effort
+and runtime flags. Codex's disabled terminal
 title feature and Claude's terminal-title disable setting preserve role titles.
 Model authentication and permissions remain the client's responsibility.
 
@@ -103,8 +104,8 @@ See orchestrator-runbook.md and a2a-postman-integration-boundary.md.
 ## 5. Evidence and limits
 
 The deterministic team fixture uses real isolated tmux and the pinned CLI. It
-proves mail correlation, role bootstrap, authored workflow routes, scope
-records and fixed execution decisions, including failures. It does not prove
-real-model decision quality, security sandboxing, Claude compatibility from a
-fake console, or activation of the user's live fleet. Keep #474/#480 runtime
-work separate and retain their policy until explicitly changed.
+proves mail correlation, direct starts, full archived policy, authored workflow
+routes, scope records and fixed execution decisions, including failures. It does
+not prove real-model decision quality, security sandboxing, Claude compatibility
+from a fake console, or activation of the user's live fleet. Keep #474/#480
+runtime work separate and retain their policy until explicitly changed.

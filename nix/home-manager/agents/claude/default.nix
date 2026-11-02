@@ -116,7 +116,7 @@ in
   home = {
     file = {
       # Persona / language / scope is delivered through postman.md
-      # common_template (§2.2) by postman-agent at client launch. Skill bodies
+      # common_template (§2.2) in the complete Postman POP archive. Skill bodies
       # are loaded from ~/.claude/skills/ at session start. CLAUDE.md is only
       # the minimal fallback for direct, non-postman invocations, derived from
       # the single authored source shared/AGENTS.md (see codex/default.nix).
