@@ -2,7 +2,7 @@
 name: logbook
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 description: |
   USE FOR: Non-code working artifacts: local markdown task trackers, plans,
   research notes, review packets, drafts, scratch outputs, supplied artifact
@@ -27,10 +27,13 @@ skill does not define its own output language defaults.
 
 ## 1. Workflow
 
-1. If the requester supplied an artifact path, use that path as canonical.
-2. If no path was supplied, use
-   [Local Markdown Artifacts](references/local-markdown.md) to discover
-   work-start or resume candidates before creating a file.
+1. Before using any supplied, discovered or new path, read the required
+   [canonical-selection procedure](references/local-markdown.md). Identify
+   purpose, owning scope and any active canonical record. A verified active
+   orchestration index is protected from later supplied paths; ordinary plans
+   and research retain requester-path precedence.
+2. Resolve that reference from the installed/current Logbook root, not task
+   cwd. If it cannot be read, block selection instead of bypassing it.
 3. Reuse one matching active artifact for the same repo, branch, task, and
    purpose; create a separate file only for a genuinely separate purpose.
 4. If durable state is needed and no path exists, create a markdown artifact

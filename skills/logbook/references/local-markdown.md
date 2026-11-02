@@ -20,76 +20,106 @@ changes when the convention changes.
 
 ## 1. Canonical Path Selection
 
-Use this precedence:
+This section is the sole selection/replacement procedure. Read it before any
+supplied, discovered or newly created path is adopted. Identify purpose and
+owning scope first: repository identity, full unsanitized branch, relevant
+worktree relationship and task. Directory labels are discovery hints, not
+proof of that identity. Do not add another registry or storage convention.
 
-1. A path supplied by the user, orchestrator, reviewer, or task artifact.
-2. The already-active artifact recorded in the current task or handoff.
-3. A discovered artifact that clearly matches the same repo, branch,
-   task, and purpose.
-4. A new artifact created with the installed logbook `mkmd` script.
+### 1.1. Ordinary Artifacts
 
-Do not create a second tracker because the current artifact is inconvenient.
-Update or rename only when the requester explicitly changes the canonical path.
-For `orchestration` artifacts only, a verified active SSOT for the same repo
-and full branch remains canonical despite a later supplied path or completion
-of a subordinate task. A new subordinate task on that branch reuses it.
-Replacing that path requires current explicit human approval naming the old
-and new paths; otherwise reconcile the conflicting reference.
+For plans, research and other non-orchestration purposes, preserve this order:
+
+1. The path supplied by the requester or trusted task/handoff.
+2. The already-active artifact for that task and purpose.
+3. A discovered artifact verified to match repository, branch, task and purpose.
+4. A new artifact through the installed Logbook mechanism when none matches.
+
+A requester may intentionally name a new ordinary plan path; it does not need
+the protected orchestration replacement approval below. Preserve that intent
+within existing write authority, and do not manufacture evidence for missing
+contents. A genuinely different purpose may have its own file. Never split one
+original checklist into competing trackers or combine distinct-purpose records
+merely because their names look similar.
+
+### 1.2. Protected Orchestration Index
+
+For an orchestration index, identify the verified active canonical path before
+applying ordinary supplied-path precedence. An active index remains canonical
+for its verified repository/full-branch/worktree scope across dates and
+subordinate-task completion. A later supplied path is not a replacement.
+
+- If active A is readable, reuse it. For supplied B, determine whether B is a
+  different-purpose reference, a mistaken pointer or an explicitly authorized
+  replacement. Keep A while resolving the conflict; do not silently migrate.
+- If A is known but missing/unreadable or its identity conflicts, preserve the
+  known pointer and report recovery/conflict. This is not proof of absence and
+  does not authorize creating or adopting B to continue affected work.
+- Replacement requires current explicit human authorization naming A and B.
+  Delegate the authorized migration to the existing writer: preserve contents,
+  checklist/evidence and references with an old-to-new coverage map, verify the
+  resulting content and reciprocal links, then record B in task state and
+  handoffs. A proposal or authorization alone is not evidence of migration.
+- If no active canonical path is known, use discovery below. Adopt a candidate
+  only after checking repository, full branch, purpose, relevant worktree,
+  contents and creation provenance. Ambiguous same-purpose candidates require
+  reconciliation before affected work or completion claims; mtime, filename
+  ordering or a newly supplied pointer alone cannot choose a winner.
+- If no valid candidate exists and no known-path recovery is outstanding,
+  create one index once through the installed Logbook mechanism under existing
+  update ownership. A new branch's first index is not a replacement.
+
+Managers own the decision; existing delegated one-writer rules govern all
+creation, migration and updates. Verify the returned path/content and relevant
+links before reporting records current. Selection supplies artifact mechanics,
+not authority to change objectives, delegate tasks or implement source work.
 
 ## 2. Work-Start And Resume Discovery
 
-Before creating a new artifact, search the local state root for candidates
-across all dates. Use this search root:
+Search across dates before creating a new artifact, using the existing root:
 
 ```sh
 mkmd_root="${MKMD_BASE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/mkmd}"
-```
-
-When the current directory is inside a Git worktree, map candidates by:
-
-- repo: remote owner and repository name, or `local/<repo-dir>` when no origin
-  remote exists;
-- branch: current branch with `/` rendered as `-`;
-- worktree: the Git top-level directory and whether it matches the active
-  checkout;
-- purpose: directory label, filename label, title, task paragraph, checklist,
-  and evidence log.
-
-Use this command as the default candidate list:
-
-```sh
 find "$mkmd_root" -type f -name '*.md' -print 2>/dev/null |
   sort -r
 ```
 
-Inspect candidates in this order:
+Sorting is only a candidate listing. Inspect trusted supplied/active references
+first, then matching repo/branch sessions, related branch/worktree records and
+matching task/issue labels. The repo key is remote owner/repository, or
+`local/<repo-dir>` without origin. Branch directories render `/` as `-`, so
+verify the full branch from trusted task state and contents; different full
+branches can have the same rendered name. Verify Git top-level/worktree
+relationship and purpose from the title, task, checklist, evidence and creation
+provenance. A related worktree is not automatically the same owning scope.
 
-1. Supplied path or active artifact from the latest handoff.
-2. Same repo and same branch session directory.
-3. Same repo with a related branch or PR branch name.
-4. Same owner/repo directory with matching task title, issue number, PR number,
-   or filename label.
+Reject nonmatching candidates. A completed ordinary task may be stale for a
+new task; subordinate completion does not retire its persistent orchestration
+index. For ordinary same-purpose candidates, a trusted current canonical
+reference wins; otherwise adopt a clearer/newer candidate only after inspecting
+contents and provenance, and record the rejected pointer. Protected-index
+ambiguity follows section 1.2 instead: preserve candidates and reconcile.
+Keep distinct-purpose files and name their roles in handoffs. Do not merge
+content ad hoc, choose solely by path/mtime or create another tracker simply
+because recovery is inconvenient.
 
-Reject stale candidates when the repository, branch, worktree, task, or purpose
-no longer matches, or when the evidence log says the work was completed and
-the current task is a new scope. If several candidates tie, choose the one
-referenced by the latest trusted message; otherwise choose the newest
-candidate only after inspecting the title, task paragraph, checklist, most
-recent evidence entry, and creation provenance. Path sort order alone does
-not establish creation order. When two files are both live for the same repo
-and task but different purposes, keep both and name their roles in the handoff.
-When two files claim the same role, reuse the clearer or newer canonical file
-and record the rejected path in the evidence log instead of merging content
-ad hoc.
-For `orchestration` artifacts without a verified active path, choose among
-same-role candidates only when repo, full branch, purpose, and creation
-provenance make the newest candidate clear. Otherwise preserve the candidates
-and halt for reconciliation; the ordinary clearer/newer rule does not decide.
+### 2.1. Reviewed Selection Scenarios
 
-Create a new artifact only when no candidate clearly matches the same repo,
-branch, task, and purpose. Create multiple artifacts only for distinct purposes,
-for example a `research` digest plus a `plans` tracker. Do not split one
-original checklist across multiple canonical trackers.
+These are authored contract examples, not behavioral proof of an agent.
+
+| Context                                                         | Selection and required action                                                                                                     |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Verified active orchestration A; later supplied same-purpose B  | Keep A; classify B and reconcile before affected work.                                                                            |
+| Human explicitly authorizes A to B                              | Delegate migration with coverage/evidence map; B becomes canonical only after verification and recorded handoff.                  |
+| Known A missing or unreadable; B happens to exist               | Recovery/conflict, not absence; neither adopt B nor create another index.                                                         |
+| Midnight passes while the scope is unchanged                    | Reuse A across date directories.                                                                                                  |
+| A child task completes and a new subordinate task starts        | Reuse A and reconcile its task entries; no fresh branch tracker.                                                                  |
+| Candidate is from another full branch or unrelated worktree     | Reject scope mismatch; verify that scope's own record instead of sharing A.                                                       |
+| Full branches render to the same directory label                | Compare full identities and provenance; the rendered name cannot establish sameness.                                              |
+| Two same-purpose candidates remain equally plausible            | Reconcile before adoption or completion; newest mtime is insufficient.                                                            |
+| No active pointer or valid candidate exists                     | One authorized writer creates one artifact via Logbook; manager verifies the returned path.                                       |
+| Supplied ordinary research B while orchestration A is active    | B is a distinct-purpose artifact, not replacement of A.                                                                           |
+| Requester supplies ordinary plan B while ordinary plan A exists | Preserve ordinary supplied-path intent and existing write authority; do not impose orchestration-only human replacement approval. |
 
 ## 3. Cwd-Independent Mkmd Contract
 
