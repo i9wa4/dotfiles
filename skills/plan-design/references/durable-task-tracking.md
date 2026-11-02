@@ -1,158 +1,74 @@
-# Durable Task Tracking
+# Durable Task Evidence
 
-Durable task tracking is needed when work must survive chat compaction, node
-handoff, review loops, or original-checklist completion gates. The artifact is
-an operational record, not a replacement for source changes or tests.
+Use durable evidence when planning/checklist work must survive compaction,
+handoff, independent review or completion gates. This reference owns planning
+and evidence quality, not artifact creation, selection or storage.
 
-Leave a durable artifact of your work; its creation, reuse, discovery, and
-delivery mechanics are governed elsewhere in this environment and are not
-restated here. This reference defines what a task tracker must prove.
+## 1. Required Artifact Owner
 
-## 1. Choosing An Artifact Category
+Before using a supplied, discovered or new path, load the installed `logbook`
+Skill and its required `references/local-markdown.md` from the catalog root,
+independently of task cwd. It alone owns canonical selection, creation,
+structure, reuse, retention and delivery mechanics. Missing required guidance
+blocks the affected action; do not substitute an ad hoc tracker or copy its
+Markdown template here. Coordination and index/detail procedures belong to
+`orchestration`; review admission and counters belong to `subagent-review`.
 
-Match the artifact to the work type — an execution plan, an investigation or
-decision-support record, a review record, or a temporary draft — and prefer
-the narrowest category that fits. For implementation tasks that already have
-a supplied markdown path, preserve that path instead of creating a new one.
+Use the selected canonical path consistently in worker, review, handoff, DONE
+and BLOCKED traffic. A supplied ordinary plan keeps its intended role under
+Logbook's rules; do not turn it into a second competing orchestration index.
 
-## 2. Creating A Tracker
+## 2. Preserve the Original Checklist
 
-Create a new artifact before deep work only when no canonical markdown path
-was provided. Use the absolute path the creation step returns as the
-canonical path going forward. Do not hand-create ad hoc repo-local `plans/`
-or `research/` directories or files unless the user explicitly provided that
-repo path as the original checklist.
+- Preserve every original requested outcome, constraint and checklist item.
+  Clarifying subitems do not replace or silently weaken the original criteria.
+- Record scope corrections, changed interpretations and their authorization in
+  decisions. Never present a newly tightened condition as previously frozen.
+- If no checklist was supplied, derive one from assigned success criteria before
+  implementation. Plan-specific sections belong to `plan-authoring.md`.
+- Keep one selected task artifact through rework. A generated implementation
+  plan does not replace the original request or its acceptance checklist.
 
-## 3. Preserving The Original Checklist
+## 3. Evidence Quality
 
-When a user, orchestrator, or reviewer supplies a markdown path, treat that file
-as the canonical original checklist:
+Record the facts another actor needs to assess or resume the work:
 
-- keep updating that file rather than creating a competing tracker;
-- preserve every original checklist item, even if you add clarifying subitems;
-- record any scope correction or changed interpretation under decisions;
-- use the same artifact path in worker, review, handoff, DONE, and BLOCKED
-  traffic.
+- Relevant skill/file reads, selected source revisions and artifact provenance.
+- Changes and why they satisfy the original criteria; decisions and rationale.
+- Actual verifier/command, result, important failures and independently
+  reachable evidence. Worker claims, local tests, external read-back and
+  installed behavior are different evidence, not interchangeable assertions.
+- Review defects addressed, authorized dispositions, unresolved gaps, next
+  accountable action and required validation.
 
-If the task has no explicit checklist, create one from the assigned success
-checks before implementation begins.
+Use milestone/verification checkboxes, but close an item only with evidence.
+Retain dated results and distinguish historical observations from current
+verified state. A summary cannot hide missing detail evidence.
 
-## 4. Recommended Artifact Shape
+## 4. Handoff and Resume
 
-Use headings like these. Keep the artifact compact, but make the evidence
-sufficient for resume and review.
+Apply Logbook's required resume record and keep the selected path in the
+handoff. Read that artifact before continuing, preserve its evidence log and
+original criteria, and reconcile current revision/state rather than rebuilding
+history from memory. Pending review/approval and unresolved blockers remain
+visible; an ACK or closed mail obligation is not completion.
 
-```markdown
-# <Task Title>
+## 5. DONE and BLOCKED
 
-## Task
+Local role/review/human gates remain authoritative. A tracked task's DONE needs
+all original criteria passing with evidence, `Task artifact: <path>`,
+`Original checklist: PASS` and no remaining blockers. Edited files alone do not
+prove completion.
 
-One paragraph describing the requested outcome.
+BLOCKED names the failing item or exact command/permission/tool/policy/input
+blocker, artifact, last useful evidence and the next decision/action needed.
+Do not disguise an unavailable verifier as a passed checklist item.
 
-## Original Checklist
+## 6. Publication and Delivery Boundary
 
-- [ ] Required item from user or orchestrator.
-
-## Plan And Progress
-
-- [ ] Milestone or active work item.
-
-## Evidence Log
-
-- YYYY-MM-DD HH:MM TZ: Read files or skills.
-- YYYY-MM-DD HH:MM TZ: Ran command and result.
-
-## Decisions
-
-- Decision and reason.
-
-## Surprises And Discoveries
-
-- Unexpected finding and impact.
-
-## Verification
-
-- Command/result or inspection evidence.
-
-## Blockers
-
-- None, or exact blocker.
-
-## Completion Verdict
-
-- Original checklist: PASS/BLOCKED.
-```
-
-## 5. Progress And Evidence Logs
-
-Log the facts another node needs to resume:
-
-- timestamped skill reads and file inspections;
-- paths created or preserved;
-- edits made and why they satisfy the checklist;
-- command names, exit results, and important failures;
-- review defects addressed or intentionally left blocked;
-- remaining next action when handing off.
-
-Use checkboxes for milestones and verification items. Do not mark a checkbox
-complete until there is evidence in the artifact or source tree.
-
-## 6. Handoff And Resume
-
-For handoff or compaction, add:
-
-- active artifact path;
-- current branch and dirty/clean status if source files changed;
-- last completed action;
-- next action;
-- blockers or external waits;
-- validation still required.
-
-For resumed work, read the artifact before acting. Continue the same evidence
-log rather than reconstructing history from memory.
-
-## 7. DONE And BLOCKED Verification
-
-DONE requires:
-
-- every original checklist item passing with evidence;
-- the report includes `Task artifact: <path>`;
-- the report includes `Original checklist: PASS`;
-- remaining blockers are `none`.
-
-BLOCKED requires:
-
-- the failing checklist item or exact command, permission, tool, policy, or
-  missing-input blocker;
-- the artifact path;
-- evidence of the last useful action;
-- the next action that would unblock progress.
-
-Do not report DONE because code was edited. Report DONE only when the artifact
-proves the original checklist passed.
-
-## 8. Public Surface Hygiene
-
-Local absolute artifact paths are fine in internal chat, mailbox traffic, and
-local task artifacts. Public GitHub surfaces such as commits, issues, PRs, and
-reviews should use repo-relative paths or stable URLs.
-
-## 9. Human-Facing Delivery
-
-When a task tracker must become a human-facing delivery copy, follow the
-active output language policy and keep this task tracker as the local
-canonical source. A delivery copy is a copy only, produced with current
-explicit approval; it is never task-state storage or cross-machine agent
-memory.
-
-## 10. Common Mistakes
-
-- Creating a repo-local `plans/` or `research/` file by hand instead of
-  leaving a durable artifact through the established convention.
-- Creating multiple trackers after a markdown path was already supplied.
-- Treating a generated plan as the original checklist and dropping user items.
-- Marking DONE without evidence for every original checklist item.
-- Putting local absolute paths on public GitHub surfaces.
-- Treating a Secret Gist as task memory or reporting its URL before approval
-  and verification pass.
-- Copying the full tracker method into live postman routing text.
+Use private local paths for internal task records and source-relative paths or
+stable URLs on public surfaces. Follow Logbook's delivery procedure and current
+human/publication gates for a readable copy; it never replaces local canonical
+state. Do not treat a Secret Gist as task memory, publish without authorization
+or claim a delivery URL before its verification. Reuse owner procedures instead
+of copying this method into live Postman routing text.
