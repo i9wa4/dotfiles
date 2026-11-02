@@ -1,0 +1,15 @@
+id: positive-trigger-008
+name: Explicit Markdown and Mermaid Issue delivery
+description: Post a selected delivery snapshot to an exact supplied Issue.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Post this reviewed Markdown summary and fenced Mermaid diagram to the concrete GitHub Issue URL supplied for this Logbook task. Keep the local artifact canonical and preserve the selected bytes."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/logbook/SKILL.md
+      mode: positive
