@@ -46,20 +46,24 @@ nix run '.#gh-actions-lock' -- --verify-local
 # Check the locked commits and source identities through the GitHub API.
 nix run '.#gh-actions-lock' -- --verify
 # Generate/update after reviewing changes to workflow dependencies.
-nix run '.#gh-actions-lock'
+nix run '.#gh-actions-lock' -- --no-narrow
 ```
 
 Network modes use the existing GitHub CLI authentication. CI supplies its
 read-only job token. The same version is declared as a Home Manager `gh`
-extension, so `gh actions-lock` is available after normal human-owned
-activation. Running the Nix commands above requires no activation.
+extension, so `gh actions-lock --no-narrow` is available after normal
+human-owned activation. Running the Nix commands above requires no activation.
 
-The generator can rewrite SHA-plus-version-comment references to tag notation;
-the existing pinact commit hook restores explicit SHA pins. Review and restage
-those workflow edits together with `actions.lock`, then rerun the commit. Both
-forms are accepted by the lockfile verifier. Expected `sha-as-ref` warnings do
-not invalidate verified SHA pins; inspect actual errors rather than suppressing
-all output. Do not edit the lockfile by hand.
+Update the normal full-SHA pins first, then generate with `--no-narrow`. This
+keeps each lockfile key identical to its workflow's literal `uses:` reference
+while recording the upstream tag and repository identity. Without this flag,
+the generator can rewrite workflows to tags; subsequently restoring SHA pins
+can leave a lockfile that the CLI accepts but GitHub rejects at job startup.
+If pinact edits a workflow, restage it and regenerate the lockfile before the
+next commit. Do not edit the lockfile by hand.
+
+Expected `sha-as-ref` warnings do not invalidate verified SHA pins; inspect
+actual errors rather than suppressing all output.
 
 The pre-commit/Nix gate runs the upstream offline coverage check whenever a
 workflow or `actions.lock` changes. The PR CI additionally runs `--verify` to
