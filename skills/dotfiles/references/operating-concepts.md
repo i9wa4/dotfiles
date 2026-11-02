@@ -128,8 +128,9 @@ Three details matter:
 - the pane title is surfaced in the border format, so role identity stays
   visible while working
 - the tmux status line includes
-  `tmux-a2a-postman get-status-oneline`, which makes control-plane
-  state part of the normal terminal view
+  `tmux-postman-status`, which invokes one upstream refresh and then the pinned
+  cached renderer. Redraws are best-effort triggers; detached sessions do not
+  establish a continuous schedule. Private diagnostics live outside the bar.
 
 So the repo is not treating agent orchestration as a hidden sidecar. It is a
 first-class part of the tmux workspace.

@@ -8,7 +8,8 @@ Postman owns its CLI, configuration format, mailbox/native identity,
 notifications, execution coordination, diagnostics and transport tests. Use
 its installed help, shipped Skills and upstream documentation for those
 contracts. Dotfiles does not provide another Postman command, launcher,
-configuration compiler, test framework or update program.
+configuration compiler, transport test framework or update program. The thin
+tmux status compositor below owns invocation and local diagnostic routing.
 
 Edit topology and declared parent/child relationships in `postman.md` using
 Postman's configuration reference. Starting an agent is independent of that
@@ -25,7 +26,76 @@ Keep the explicit compatible Postman revision in `flake.nix` and refresh its
 lock entry with ordinary Nix commands when choosing a new revision. Source
 checks do not activate the installed configuration or prove a live-fleet switch.
 
-## 1. Optional top-level external channel
+## 1. Optional tmux status integration
+
+The selected public Postman revision is
+`7733696a83ed5aac3f3ab74f7b32e61b22c07144`, containing the landed shared-server
+refresh contract. The package and its five upstream Skills come from this same
+input. Home Manager also installs `tmux-postman-status`; it embeds that exact
+Postman executable, independently of another binary earlier on PATH.
+
+The second status row passes the actual client's socket and server PID using
+tmux's shell-quoting format. The compositor removes inherited `TMUX_PANE`,
+uses one explicit context for both upstream commands, and invokes
+`refresh-status` once followed by `get-status-oneline`. It always attempts the
+saved display after refresh or diagnostic failure. Only the renderer's compact
+line, or `?` when unavailable, reaches status stdout. Upstream owns all native
+discovery, exclusion, capture cadence, publication and glyph ordering.
+
+Redraw is a best-effort external trigger. Multiple clients can request work;
+upstream busy admission skips immediately. Detached sessions or clients that
+do not draw this row do not establish periodic collection. There is no separate
+service, timer, retry loop, local queue or force-unlock command.
+
+Getters read a saved whole-server overview. Select the assigned native
+server/session/pane/workspace and the saved configuration scope. Role names or
+visible peers alone do not confer management or communication authority. Infer
+an interface's immediate relations from its matching scope and declared tree,
+not obsolete top-level parent/children fields. Direct reports and routes stay
+governed by the role policy and exact claimed mail. Publication time, actual
+capture time and screen change time are different observations; unknown counts
+are not zero and sampled screens are not proof of task completion. At a concrete
+workflow boundary, request one explicit refresh if newer evidence is needed.
+Use installed upstream help/usage/recall/team-manager guidance for the full
+schema and procedures.
+
+Refresh outcomes and renderer warnings/errors go to
+`$XDG_STATE_HOME/dotfiles/tmux-postman-status/events.jsonl`, defaulting below
+`$HOME/.local/state`. This owned diagnostic directory is mode 0700 and its
+append-only file is mode 0600; the parent state/application directories keep
+their existing permissions. Normal successful refreshes and ordinary busy skips
+add no log entry. Actionable reasons, including suspicious long-held owner
+metadata, partial/capture failures, bad context or snapshot errors, preserve the
+upstream response, exit code and stderr in a dated JSON line. A logging failure
+still allows cached rendering and prints an error during a manual invocation.
+Repeated actionable failures can append on every redraw. Records remain until
+explicit user cleanup; investigate the cause before removing that evidence.
+
+For a manual check in the intended tmux server:
+
+```sh
+tmux-postman-status "$(tmux display-message -p '#{socket_path}')" \
+  "$(tmux display-message -p '#{pid}')"
+```
+
+Inspect the private JSONL when observations fail. Recorded PID/phase/age/target
+are diagnostic evidence, not permission to kill a process or delete a lock.
+A lock file on disk does not establish a held OS lock. Preserve the selected
+server context when diagnosing; a failed refresh never selects another socket.
+
+Consumer checks cover failure-to-cached-display behavior, quiet busy admission,
+diagnostic privacy/failure, and actual tmux status-job quoting. Native fixtures
+compare session IDs, status-left labels, saved JSON and upstream oneline labels
+with gaps and IDs above 9, multiple servers, renamed sessions and server
+restart; the ordinary getter remains a pure read. Upstream owns the transport
+actors; the retired dotfiles team-validation driver is not restored.
+
+Before installed rollout, record the actual loaded `status-format[1]`, resolved
+wrapper/Postman paths and binary revision on the target machine. Passing source
+checks does not reload a live tmux server or activate a user profile; installed
+activation and machine verification remain the #485 owner.
+
+## 2. Optional top-level external channel
 
 The selected Postman source implements `channel-sync` and
 `channel-report-heredoc`. A provisioned binding activates them only for the
@@ -74,7 +144,7 @@ installed activation and physical-client receipt. Follow the established
 operator rollout procedure for a live binding; do not edit a private mailbox or
 reload live sessions as a development check.
 
-## 2. Consumer verification snapshot — 2026-11-02
+## 3. Consumer verification snapshot — 2026-11-02
 
 The selected public revision `a0d729094c089840559cecc5b716b6100a37ca06`
 supplies the implemented channel, matching help/Skills and native transport
