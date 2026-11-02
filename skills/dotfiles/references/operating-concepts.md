@@ -38,9 +38,8 @@ to the private knowledge vault, not this repository.
 - Skill authoring and validation belong to `skills/dotfiles/`.
 - Markdown formatting belongs to the `markdown` skill.
 - Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
-- Generic team coordination belongs to `skills/orchestration/` and its one
-  required runbook. Dotfiles owns maintenance of the harness, not daily team
-  work.
+- Durable orchestration runbooks belong to
+  `skills/dotfiles/references/`.
 
 Do not leave runtime behavior that installed Agent Skills need only in docs.
 Mirror the operational part into the owning skill reference and keep docs as

@@ -284,7 +284,7 @@ surrounding prose and labels even when a diagram does not render.
 
 ## 10. Recursive Team Scope Composition
 
-Each child team's manager uses the same canonical-path rules for its own
+Each child team's orchestrator uses the same canonical-path rules for its own
 verified repo/full-branch/worktree scope. Keep the original delegated goal,
 constraints, acceptance criteria, owner and exact parent request/return
 references in that index. Its children can delegate again; depth does not
@@ -301,7 +301,5 @@ mail reply obligation closed.
 On restart, reuse and reconcile the same verified index and retained own mail.
 Never replace it with a newly convenient file, manufacture missing progress,
 apply an old result to a new request, or bypass canonical-path reconciliation.
-The role contract owns authority and local gates; the installed `orchestration`
-Skill owns delegation/reconciliation procedure and the review contract owns
-review semantics. This reference owns artifact location and composition, not a
-scheduler.
+The live Postman role contract owns delegation/review behavior; this reference
+owns artifact location and composition, not a second scheduler.

@@ -1,6 +1,6 @@
 # Plan Design
 
-Extend (not replace) the generic `orchestration` workflow for high-rigor plan
+Extend (not replace) the base `orchestrator` workflow for high-rigor plan
 authoring.
 
 Use this skill when the output is a plan artifact requiring:
@@ -12,10 +12,9 @@ Use this skill when the output is a plan artifact requiring:
 
 ## 1. Relationship to Existing Skills
 
-- Shared coordination: use installed `orchestration` and its required runbook.
-  The live role contract owns authority/gates; Logbook owns durable artifacts.
-  Resolve required references from each installed Skill root, not task cwd;
-  unreadable guidance blocks affected work.
+- Shared orchestration mechanics: use `config/tmux-a2a-postman/postman.md` for
+  the live role contract and
+  `skills/logbook/SKILL.md` for durable task artifacts.
 - Native guardian/critic review mechanics: reuse `subagent-review` concepts
   selectively.
 - GitHub fetch/comment commands: follow `dev-platform-workflow` rule where
@@ -38,17 +37,19 @@ Use this skill when one or more apply:
 
 ## 3. Pre-Step: Overlap Check (Mandatory)
 
-Before drafting, inspect the current installed Skill catalog and read the
-applicable owners independently of task cwd:
+Before drafting, run the following and read the results:
 
-1. Identify planning, review, artifact and coordination Skills in that catalog.
-2. Read the current role contract plus `orchestration`, Logbook and the required
-   review procedure from their installed roots. Missing required guidance blocks
-   the affected action. For a scoped harness-installation plan, additionally
-   read that target's installation manifest through its maintenance owner;
-   generic planning does not require a dotfiles checkout or start Nix
-   maintenance.
-3. Read any additional applicable Skill identified by the overlap check.
+1. List existing skills:
+   ls skills/
+
+2. Read at minimum:
+   - config/tmux-a2a-postman/postman.md
+   - skills/logbook/SKILL.md
+   - nix/home-manager/agents/shared/install-manifest.nix
+   - skills/subagent-review/references/
+
+3. Read any skill whose name suggests planning, review, or session workflow.
+
 4. Record the overlap matrix in the research artifact:
    - Already covered by existing skills
    - New behavior unique to this plan-design session
@@ -88,10 +89,12 @@ When activated, complete all of the following before writing the main plan:
 
 ## 5. 5-Step Workflow
 
-For plan authoring, bounded worker investigation (Step 2) supplies the inputs
-for synthesis (Step 3), then the formal review gate (Step 4). This specialized
-sequence does not override role authority, the generic coordination procedure
-or canonical review/admission counters.
+NOTE: This workflow departs from the base orchestrator order by dispatching
+workers (Step 2) BEFORE the annotation cycle (Step 3). This is intentional for
+plan authoring: workers provide raw investigation inputs that the annotation
+cycle then synthesizes. This overrides the base order documented in
+`config/tmux-a2a-postman/postman.md` for plan-design tasks only. In all other
+contexts, follow the live role contract and durable runbook.
 
 ### 5.1. Step 1: Fetch Source and Build Ground Truth
 
@@ -150,17 +153,20 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 2. If guardian rejects, including based on critic evidence: revise the
    plan artifact, resubmit to guardian. Repeat until guardian approves after
    aggregating critic evidence.
-   - Apply the canonical review contract's separate packet/report/substantive
-     allowances and stable lineages; no additional plan-specific revision cap.
-     Exhaustion is BLOCKED with the smallest human decision through the
-     interface.
+   - Maximum 3 revision rounds per gate pass.
+   - If consensus is not reached after 3 rounds: a. Record the disagreement in
+     the Decision Log. b. Notify messenger: "BLOCKED: review deadlock
+     after 3 rounds -- human decision required." c. Wait for messenger to
+     resolve the deadlock.
 3. Do not finalize or send to messenger until guardian approves after
    aggregating critic evidence.
 
 ### 5.5. Step 5: Beginner-Friendly Final Plan Packaging
 
-Use Logbook's artifact mechanics and retain these plan-specific sections
-(Purpose, Source, Context, Investigation Summary, Acceptance
+This step augments the base plan sections from the live role contract in
+`config/tmux-a2a-postman/postman.md` and the artifact conventions in
+`skills/logbook/SKILL.md`. Keep the
+base sections (Purpose, Source, Context, Investigation Summary, Acceptance
 Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises), and add the
 sections below for beginner-friendly plan outputs.
 

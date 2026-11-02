@@ -49,6 +49,11 @@ jobs:
           primary-key: nix-gc6g-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock') }}
           gc-max-store-size-linux: 6G
 
+      - name: Verify GitHub Actions lockfile provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: nix run .#gh-actions-lock -- --verify
+
       - name: Run nix flake check
         run: nix flake check --print-build-logs
 
