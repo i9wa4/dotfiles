@@ -28,17 +28,19 @@ skill does not define its own output language defaults.
 
 ## 1. Workflow
 
-1. If the requester supplied an artifact path, use that path as canonical.
-2. If no path was supplied, use
-   [Local Markdown Artifacts](references/local-markdown.md) to discover
-   work-start or resume candidates before creating a file.
-3. Reuse one matching active artifact for the same repo, branch, task, and
-   purpose; create a separate file only for a genuinely separate purpose.
-4. If durable state is needed and no path exists, create a markdown artifact
-   with the cwd-independent `mkmd` contract in the local markdown reference.
-5. Keep updating the canonical local artifact as task state. For human-facing
-   Markdown, follow the readability guidance in the same reference. A request
-   for a readable document does not authorize external publication.
+1. Before choosing a supplied, discovered or new path, read the required
+   [canonical-selection procedure](references/local-markdown.md). Identify
+   purpose, scope and active record. Protect verified active orchestration
+   indexes; otherwise prefer requester paths for ordinary plans/research.
+2. Read that reference from the installed/current Logbook root, independently
+   of task cwd. An unavailable reference blocks selection.
+3. Reuse the active file for the same repo, branch, task and purpose. Create a
+   separate file only for a genuinely separate purpose.
+4. When durable state needs a new file, use the reference's cwd-independent
+   `mkmd` contract.
+5. Update the canonical record as work proceeds. Apply the reference's
+   readability guidance for human output; a readable-document request does
+   not authorize external publication.
 
 ## 2. References
 
