@@ -52,15 +52,16 @@ remain responsible for filesystem and network blast radius.
 
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
-The persona / language / scope directives live as `[common_template]`
-sections inside `config/tmux-a2a-postman/postman.md` (§2.2 persona).
-Dotfiles-owned skill bodies stay in top-level `skills/`, and
-Dotfiles postman-agent supplies the common contract and selected role at client
-launch. Skills use normal runtime discovery; POP returns the archived mail path
-and does not render templates. postman.md remains the authored source for
-orchestrated sessions. `shared/AGENTS.md` is the single authored source for
-the runtime-root fallback: installed as generated Codex `AGENTS.md` directly,
-and Claude's `CLAUDE.md` is derived from the same source rather than a second
+The persona / language / scope directives live as `[common_template]` sections
+inside `config/tmux-a2a-postman/postman.md` (§2.2 persona). Dotfiles-owned skill
+bodies stay in top-level `skills/`, and Default clients start without a
+common/role message. Postman includes that policy in recipient archives; POP
+returns the archive path and requires a complete read. Skills use normal runtime
+discovery. Launch-time injection is available only as an explicit user-selected
+option, not a default hook. postman.md remains the authored source for
+orchestrated sessions. `shared/AGENTS.md` is the single authored source for the
+runtime-root fallback: installed as generated Codex `AGENTS.md` directly, and
+Claude's `CLAUDE.md` is derived from the same source rather than a second
 hand-written file. It is only a minimal skill-catalog pointer for direct,
 non-postman invocations — it does not carry the persona / language / scope
 contract.

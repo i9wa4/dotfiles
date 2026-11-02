@@ -58,9 +58,9 @@ reply obligation. Read the complete archived Markdown; notification IDs are
 hints and do not select the next POP. Use the fixed execution decision helpers
 for typed command-approval requests.
 
-The same common/selected-role instructions are supplied by dotfiles
-`postman-agent` at client launch and included in each recipient's archived
-Markdown by Postman. Each archive also carries the configured skill catalog,
+Default team consoles start without an injected initial message. Postman
+includes these common/selected-role instructions in each recipient's archived
+Markdown. Each archive also carries the configured skill catalog,
 recipient-viewpoint contacts and exact handling/reply guidance. POP returns the
 archive path, self counts and an instruction to read that complete Markdown
 through EOF before handling or deciding no action is needed. Read applicable

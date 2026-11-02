@@ -6,8 +6,8 @@ common/role template applies at every configured finite depth.
 
 ## 1. Start and identity
 
-Use postman-agent through a team preset to supply common_template plus the
-selected role at client launch. POP no longer injects those instructions.
+Team presets launch clients directly without an injected role message.
+Read the complete POP archive for common_template and recipient-role policy.
 Runtime models/effort/permissions remain the explicit vde-layout settings.
 Use the verified native workspace and declared interface relation. Repeated
 role names in other workspaces do not identify a local peer. No daemon, startup
@@ -120,7 +120,7 @@ or connect independently configured tmux servers. For a single session the
 installed template works directly, without a generated tree.
 
 nix run .#postman-team-check runs deterministic private real-tmux trees and
-bootstrap/route failures using the pinned CLI. Tests retain per-hop archives,
+direct-start/route failures using the pinned CLI. Tests retain per-hop archives,
 scope records and diagnostics, and check false completion and correlation. They
 exercise authored workflows, not real-model understanding or review quality.
 The default scenarios cover a root, a four-level chain with restart/late reply,

@@ -485,8 +485,12 @@ def receive():
         raise RuntimeError(
             "received archive omitted historical recipient policy/catalog/contact guidance"
         )
-    loader = pathlib.Path(__file__).resolve().parents[3] / "scripts/bin/postman-agent"
-    sections = runpy.run_path(str(loader))["role_sections"](pathlib.Path(config))
+    loader = (
+        pathlib.Path(__file__).resolve().parents[3] / "scripts/bin/postman-team-config"
+    )
+    sections = runpy.run_path(str(loader))["role_sections"](
+        pathlib.Path(config).read_text()
+    )
     if any(sections[name] not in context for name in ["common_template", role]):
         raise RuntimeError(
             "received archive truncated or substituted full common/selected-role instructions"
@@ -501,6 +505,9 @@ def receive():
         "sha256": hashlib.sha256(raw).hexdigest(),
         "pop_instruction": output["instruction"],
         "recipient_context_sha256": hashlib.sha256(context.encode()).hexdigest(),
+        "policy_sha256": hashlib.sha256(
+            (sections["common_template"] + "\n" + sections[role]).encode()
+        ).hexdigest(),
         "message": msg,
     }
     if role == "approver" and msg.get("kind") == "execution-request":

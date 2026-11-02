@@ -9,7 +9,7 @@
         fileset = lib.fileset.unions [
           ../../../config/tmux-a2a-postman/postman.md
           ../../../config/tmux/tmux.conf
-          ../../../scripts/bin/postman-agent
+          ../../../config/vde/layout.yml
           ../../../scripts/bin/postman-team-config
           ../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh
           ../../../scripts/validation/postman-team

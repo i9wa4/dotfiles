@@ -11,7 +11,6 @@ reviewed execution. This does not claim an A2A server or a task database.
 | Durable mail, workspace/native identity, exact replies, notification and snapshots | tmux-a2a-postman                                          | Use the installed help and pinned docs/cli-spec.md; do not manipulate mailbox files              |
 | Six operational commands and their JSON/stream/exit contract                       | tmux-a2a-postman                                          | Consume success and compact self; preserve unknown outcomes and recovery IDs                     |
 | Role graph, policy, persona, review route and recursive delegation                 | dotfiles postman.md                                       | Use the same common/role template at every configured finite depth                               |
-| Initial role prompt                                                                | dotfiles postman-agent and vde-layout                     | Supply common_template plus the selected role at client launch                                   |
 | Archived recipient instructions                                                    | Postman renderer using dotfiles policy and skill metadata | Preserve full common/selected role, skill catalog, recipient contacts and exact reply guidance   |
 | Skills                                                                             | Each owning repository, installed by agent-skills.nix     | Use normal Claude/Codex skill discovery; keep workflow skills separate from CLI help             |
 | Task/progress source of truth                                                      | Orchestrator's verified local Logbook scope               | Retain original goals and exact parent/child handoffs; no global mutable task tracker in Postman |
@@ -82,12 +81,12 @@ An interrupted possibly started command must not be automatically repeated.
 ## 4. Verification and rollout
 
 Run nix run .#postman-team-check for isolated real-tmux deterministic team
-trees, role bootstrap and negative routes. It exercises authored workflows and
-actual mail/terminal behavior; it does not prove model comprehension or review
-quality. Installed-fleet verification is separate: after review/merge the human
-owner activates the configuration and checks current role prompts, skill
-inventory, communication and command decisions. Do not claim an installed switch
-from source or fixture evidence.
+trees, direct starts, full archived policy and negative routes. It exercises
+authored workflows and actual mail/terminal behavior; it does not prove model
+comprehension or review quality. Installed-fleet verification is separate: after
+review/merge the human owner activates the configuration and checks current role
+prompts, skill inventory, communication and command decisions. Do not claim an
+installed switch from source or fixture evidence.
 
 Postman #954 owns recall, #830 owns its skill-trigger evaluation, and #767 owns
 the external mailbox implementation. The retired diplomat/input-coordinator

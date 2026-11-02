@@ -35,7 +35,6 @@ if not 4 <= args.depth <= 12:
         "--depth must be between 4 and 12; this bounds fixture cost, not production trees"
     )
 repo = pathlib.Path(__file__).resolve().parents[2]
-launcher = repo / "scripts/bin/postman-agent"
 compiler = repo / "scripts/bin/postman-team-config"
 terminal = repo / "scripts/validation/postman-team/terminal.py"
 template = repo / "config/tmux-a2a-postman/postman.md"
@@ -336,16 +335,9 @@ def run_case(case):
                     "env",
                     *(key + "=" + value for key, value in extra.items()),
                     sys.executable,
-                    str(launcher),
-                    "--config",
-                    str(config),
-                    role,
-                    "--",
-                    sys.executable,
                     str(terminal),
                     nonce,
                     "plain" if case == "root" else "bracketed",
-                    "@postman-prompt",
                 ]
                 command = "exec " + shlex.join(cmd)
                 commands[(session, role)] = command
@@ -378,10 +370,11 @@ def run_case(case):
                         "#{pane_id}",
                         command,
                     )
+                tmux("select-pane", "-t", pane, "-T", role)
                 panes[(session, role)] = pane
                 tmux("resize-window", "-t", pane, "-x", "240", "-y", "60")
                 wait_for(
-                    "role bootstrap " + session + "/" + role,
+                    "direct console startup " + session + "/" + role,
                     lambda p=role_evidence / (role + ".ready.json"): p.exists(),
                 )
 
@@ -522,11 +515,11 @@ def run_case(case):
         policies = {}
         claims = []
         wait_for("all submitted terminal actions completed", actors_finished)
-        for path in evidence.glob("*/*.bootstrap.json"):
+        for path in evidence.glob("*/*.claim.*.json"):
             value = json.loads(path.read_text())
             policies.setdefault(value["role"], set()).add(value["policy_sha256"])
         if any(len(values) != 1 for values in policies.values()):
-            raise RuntimeError("role prompt changed with depth")
+            raise RuntimeError("archived recipient policy changed with depth")
         for path in evidence.glob("*/*.claim.*.json"):
             proof = json.loads(path.read_text())
             if (
