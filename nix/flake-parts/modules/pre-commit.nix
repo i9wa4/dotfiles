@@ -7,6 +7,7 @@
 {
   perSystem =
     {
+      config,
       pkgs,
       system,
       ...
@@ -78,6 +79,16 @@
 
           # === GitHub Actions linters ===
           actionlint.enable = true;
+
+          actions-lock = {
+            enable = true;
+            entry = "${pkgs.writeShellScript "actions-lock-verify-local" ''
+              export GH_ACTIONS_LOCK_REPO_ROOT="$PWD"
+              exec ${config.packages.gh-actions-lock}/bin/gh-actions-lock --verify-local
+            ''}";
+            files = "^\\.github/workflows/(.*\\.(yml|yaml)|actions\\.lock)$";
+            pass_filenames = false;
+          };
 
           ghalint = {
             enable = true;

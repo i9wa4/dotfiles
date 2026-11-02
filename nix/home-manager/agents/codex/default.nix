@@ -143,8 +143,8 @@ in
     # listed by the generated skill_path catalog; catch-all repository
     # background intentionally lives in docs rather than a `skills/repo-local`
     # catch-all skill.
-    # AGENTS.md is the single authored source for the minimal local-invocation
-    # fallback: installed here for `codex` directly, and reused byte-for-byte
+    # AGENTS.md is the single authored notification bootstrap:
+    # installed here for Codex and reused byte-for-byte
     # as ~/.claude/CLAUDE.md in claude/default.nix (no second hand-written
     # file). See shared/AGENTS.md.
     ".codex/AGENTS.md".source = ../shared/AGENTS.md;
