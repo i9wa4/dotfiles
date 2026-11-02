@@ -66,20 +66,7 @@ renamed session.
 
 **Mitigation:** Wait 3-4s after sending `z <dir>` before checking session name.
 
-## 4. Postman Status Visibility Lag
-
-**Root cause:** tmux-a2a-postman status can lag briefly behind freshly-created
-tmux panes because pane discovery is asynchronous.
-
-**Symptom:** `tmux-a2a-postman get-status` does not list the newly-created
-session's panes even though `tmux list-panes -a` shows them correctly.
-
-**Mitigation:** Wait briefly and retry `tmux-a2a-postman get-status`.
-`tmux list-sessions` is authoritative for session existence — use it rather than
-postman status for session confirmation. Do not run infrastructure repair or
-low-level checks from this workspace skill.
-
-## 5. WAL Bloat from Codex Multi-Pane Sessions
+## 4. WAL Bloat from Codex Multi-Pane Sessions
 
 **Root cause:** Each codex pane appends to
 `$HOME/.codex/logs_2.sqlite-wal`. With

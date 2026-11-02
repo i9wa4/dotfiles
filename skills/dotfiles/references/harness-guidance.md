@@ -131,4 +131,3 @@ Full diagnosis and commands live in
 - [Codex CLI Optimization Tracking](codex-optimization-tracking.md)
 - [Herdr](herdr.md)
 - [Claude Changelog Tracking](claude-changelog-tracking.md)
-- [Orchestrator Runbook](orchestrator-runbook.md)

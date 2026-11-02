@@ -7,10 +7,10 @@ creation, vde-layout preset boot, worktree lifecycle, and pane operations.
 
 ### 1.1. Agent-Driven Boot (9 steps)
 
-For a `tmux-a2a-postman` agent session, the expected end-user flow is:
+For a vde-layout workspace, the expected end-user flow is:
 
 ```text
-new tmux session -> z tmux-a2a-postman -> <boot snippet>
+new tmux session -> target directory -> <boot snippet>
 ```
 
 The boot snippet is a short zsh keyword (currently `vp` for the codex-featured
@@ -40,12 +40,9 @@ After resolving the snippet, boot the session:
 2. Wait 5s minimum for zsh init, zoxide.zsh, and snippet widgets to fully
    initialize in the new pane. (Empirically confirmed: 2s is insufficient; see
    `workspace-boot-failure-modes.md`)
-3. Navigate to the postman workspace, or to the target repo for non-postman
-   workspaces:
+3. Navigate to the target directory:
 
    ```bash
-   tmux send-keys -t "$PANE_ID" "z tmux-a2a-postman" Enter
-   # or, for a non-postman workspace:
    tmux send-keys -t "$PANE_ID" "z <repo-basename-or-dir>" Enter
    ```
 
@@ -74,8 +71,8 @@ After resolving the snippet, boot the session:
    Each team preset already includes its messenger and starts clients directly
    without an initial role message. Read common/role instructions in complete
    POP archives. Do not prepend a second messenger preset.
-   For a recursive team, retain the declared session name and shared
-   POSTMAN_TEAM_CONFIG; see orchestrator-runbook.md.
+   Postman configuration is independent of this launcher and is authored in
+   `config/tmux-a2a-postman/postman.md`.
 8. Wait 8-12s for vde-layout to materialize all panes.
 9. Verify topology:
 
@@ -263,12 +260,8 @@ Key rules:
 - For hook-blocked content: write to file, then
   `tmux load-buffer <file> && tmux paste-buffer -t %N && tmux send-keys -t %N Enter`
 
-## 8. Postman Integration Caveats
+## 8. Runtime Notes
 
-- Freshly-booted sessions may not appear in `tmux-a2a-postman get-status` even
-  when tmux topology is correct; wait briefly and retry status
-- `tmux list-sessions` is authoritative for session existence; postman routing
-  may lag
 - Codex logs WAL bloat was fixed upstream in 0.142.0; see
   `skills/dotfiles/references/codex-optimization-tracking.md` §1.3 for the
   resolution

@@ -219,7 +219,7 @@ the changelog and official docs) and the rest of the catch-up.
 - [ ] `Skill(name *)` permission rules now match as prefix (v2.1.139 fix) -
   informational; current deny list does not use Skill() patterns
 - [ ] `/goal` command (v2.1.139) - completion-condition driven, multi-turn.
-  User-invokable, no config; flag for orchestrator-runbook awareness
+  User-invokable, no config; flag for role-policy awareness
 - [ ] `claude agents --json` (v2.1.145) - script-friendly session list for
   tmux statusline / postman dashboards. Possible integration with our
   postman session operator
@@ -297,7 +297,7 @@ the changelog and official docs) and the rest of the catch-up.
   (v2.1.202) - product fix; benefits sessions automatically.
 - [ ] `/review` reverted to single-pass; `/code-review <level> <pr#>` for the
   multi-agent pass (v2.1.202) - user-invoked commands only; flag for
-  orchestrator-runbook awareness. Remaining background-agent / Remote Control /
+  role-policy awareness. Remaining background-agent / Remote Control /
   workflow-parse fixes through v2.1.202 are product reliability; no source
   change.
 
