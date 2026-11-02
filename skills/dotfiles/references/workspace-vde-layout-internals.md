@@ -27,28 +27,7 @@ instructions. Each team preset
 includes messenger; do not prepend a separate legacy messenger preset. Resolve
 exact layout/model settings from current source.
 
-## 3. Native workspace directory at team boot
-
-Use the vp/vw snippet expansion from config/zsh/snippet.zsh for team starts.
-Its __snippet_vde_team helper runs once before vde-layout: it selects the
-caller's native socket/session, sets session_path to physical pwd through a
-finite control client, verifies the result, then starts the requested preset.
-The control client has ignore-size/read-only/no-output flags, does not update
-the client environment, consumes closed stdin and exits; it is not a daemon
-or a model-message injector. Existing team roles block duplicate boot/rebinding;
-a generic agent blocks a change to its native root. This guard matches the
-roles owned by these dotfiles presets, not a generic Postman role taxonomy.
-
-Postman intentionally reads native session_path rather than each command's
-cwd. Creating a session in HOME then navigating to a repository does not
-update that field. Before this boot fix, separate repositories could both be
-reported as workspace ~ and the later one correctly refused another live
-owner. Never fix that by deleting its state or bypassing ownership checks.
-Ordinary later cd leaves the selected native root and mailbox unchanged.
-Direct vde-layout invocation bypasses this preparation; it is suitable when
-the session was already created in the intended directory with new-session -c.
-
-## 4. Key Behavioral Notes
+## 3. Key Behavioral Notes
 
 - Env var references in command strings are NOT interpolated by vde-layout —
   they are passed as-is to `tmux send-keys` and expanded by the destination

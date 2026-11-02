@@ -10,7 +10,6 @@
           ../../../config/tmux-a2a-postman/postman.md
           ../../../config/tmux/tmux.conf
           ../../../config/vde/layout.yml
-          ../../../config/zsh/snippet.zsh
           ../../../scripts/bin/postman-team-config
           ../../../scripts/nix/flake-input-update-tmux-a2a-postman.sh
           ../../../scripts/validation/postman-team
@@ -22,7 +21,6 @@
       runtime = [
         pkgs.python3
         pkgs.bash
-        pkgs.zsh
         pkgs.tmux
         pkgs.git
         pkgs.coreutils
@@ -46,7 +44,6 @@
       checks.postman-team = pkgs.runCommand "postman-team" { nativeBuildInputs = runtime; } ''
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
-        export POSTMAN_TEST_BINARY=${lib.getExe' postman "tmux-a2a-postman"}
         python3 ${teamSource}/scripts/validation/test-postman-team-config.py
         ${lib.getExe validate} --output "$TMPDIR/team-results.json"
         mkdir -p "$out"

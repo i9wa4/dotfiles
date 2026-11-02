@@ -27,56 +27,8 @@ __snippet_add "(ghq) update" "gup" "ghq-repo-repair && ghq list | ghq get --upda
 __snippet_add "(macOS) caffeinate" "caffeinate" "sudo pmset disablesleep" ""
 __snippet_add "(vde-layout) dev" "vd" "vde-layout dev" ""
 __snippet_add "(vde-layout) main" "vm" "vde-layout main" ""
-# Team boot fixes native session_path once, before any team role is started.
-# It neither injects a model prompt nor changes roots during later navigation.
-__snippet_vde_team() {
-  local preset="$1"
-  case "$preset" in
-    preset-p|preset-w) ;;
-    *) print -u2 -- "Unsupported team preset: $preset"; return 1 ;;
-  esac
-  local native_socket="${TMUX%%,*}"
-  local native_pane="$TMUX_PANE"
-  if [[ "$native_socket" != /* || ! "$native_pane" =~ '^%[0-9]+$' ]]; then
-    print -u2 -- "Start the team inside its target tmux pane."
-    return 1
-  fi
-  local native_session workspace_directory previous_directory titles pane_title
-  native_session=$(command tmux -S "$native_socket" display-message -p -t "$native_pane" '#{session_id}') || return $?
-  [[ "$native_session" =~ '^\$[0-9]+$' ]] || return 1
-  workspace_directory=$(builtin pwd -P) || return $?
-  previous_directory=$(command tmux -S "$native_socket" display-message -p -t "$native_pane" '#{session_path}') || return $?
-  titles=$(command tmux -S "$native_socket" list-panes -s -t "$native_session" -F '#{pane_title}') || return $?
-  for pane_title in "${(@f)titles}"; do
-    case "$pane_title" in
-      messenger|orchestrator|worker|worker-alt|approver|guardian|critic)
-        print -u2 -- "A team role already exists in this session; do not rebind or start a duplicate team."
-        return 1
-        ;;
-      agent)
-        if [[ "$previous_directory" != "$workspace_directory" ]]; then
-          print -u2 -- "An agent already exists; start a fresh session in the intended directory instead of rebinding it."
-          return 1
-        fi
-        ;;
-    esac
-  done
-  # A finite control client updates the native directory without attaching the
-  # user's terminal, changing environment/size, or remaining resident.
-  command tmux -S "$native_socket" -C attach-session -E \
-    -f ignore-size,read-only,no-output -t "$native_session" \
-    -c "$workspace_directory" </dev/null >/dev/null || return $?
-  local verified_directory
-  verified_directory=$(command tmux -S "$native_socket" display-message -p -t "$native_pane" '#{session_path}') || return $?
-  if [[ "$verified_directory" != "$workspace_directory" ]]; then
-    print -u2 -- "The tmux session directory did not match the requested workspace."
-    return 1
-  fi
-  command vde-layout "$preset"
-}
-
-__snippet_add "(vde-layout) preset-p" "vp" "__snippet_vde_team preset-p" ""
-__snippet_add "(vde-layout) preset-w" "vw" "__snippet_vde_team preset-w" ""
+__snippet_add "(vde-layout) preset-p" "vp" "vde-layout preset-p" ""
+__snippet_add "(vde-layout) preset-w" "vw" "vde-layout preset-w" ""
 
 __snippet_find_index() {
   local keyword="$1"
