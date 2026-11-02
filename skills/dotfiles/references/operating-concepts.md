@@ -399,7 +399,6 @@ When you need to understand the operating concept, read these in order:
 - `skills/dotfiles/references/repo-ai-operating-contract.md`
 - `skills/dotfiles/references/agent-config-philosophy.md`
 - `skills/dotfiles/references/deny-bash-design.md`
-- `skills/dotfiles/references/orchestrator-runbook.md`
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/install-manifest.nix`
 - `nix/home-manager/agents/shared/bash-commands-denied.nix`

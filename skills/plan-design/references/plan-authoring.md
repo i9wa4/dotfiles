@@ -14,8 +14,7 @@ Use this skill when the output is a plan artifact requiring:
 
 - Shared orchestration mechanics: use `config/tmux-a2a-postman/postman.md` for
   the live role contract and
-  `skills/dotfiles/references/orchestrator-runbook.md` for
-  durable orchestration runbooks.
+  `skills/logbook/SKILL.md` for durable task artifacts.
 - Native guardian/critic review mechanics: reuse `subagent-review` concepts
   selectively.
 - GitHub fetch/comment commands: follow `dev-platform-workflow` rule where
@@ -44,7 +43,8 @@ Before drafting, run the following and read the results:
    ls skills/
 
 2. Read at minimum:
-   - skills/dotfiles/references/orchestrator-runbook.md
+   - config/tmux-a2a-postman/postman.md
+   - skills/logbook/SKILL.md
    - nix/home-manager/agents/shared/install-manifest.nix
    - skills/subagent-review/references/
 
@@ -164,8 +164,8 @@ Do NOT dispatch to critic or guardian here -- that is Step 4's responsibility.
 ### 5.5. Step 5: Beginner-Friendly Final Plan Packaging
 
 This step augments the base plan sections from the live role contract in
-`config/tmux-a2a-postman/postman.md` and the durable orchestration details in
-`skills/dotfiles/references/orchestrator-runbook.md`. Keep the
+`config/tmux-a2a-postman/postman.md` and the artifact conventions in
+`skills/logbook/SKILL.md`. Keep the
 base sections (Purpose, Source, Context, Investigation Summary, Acceptance
 Criteria, Decision Log, Risks, Test Strategy, Progress, Surprises), and add the
 sections below for beginner-friendly plan outputs.

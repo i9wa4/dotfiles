@@ -15,7 +15,6 @@ in
     inputs.git-hooks.flakeModule
     inputs.treefmt-nix.flakeModule
     ./modules/apps.nix
-    ./modules/postman-team.nix
     ./modules/pre-commit.nix
     ./modules/treefmt.nix
     ./modules/darwin.nix

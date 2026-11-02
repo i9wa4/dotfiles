@@ -65,7 +65,7 @@
     };
 
     tmux-a2a-postman = {
-      url = "github:i9wa4/tmux-a2a-postman/89ab9baf816576bf6420c83840b79ba985e01dd0";
+      url = "github:i9wa4/tmux-a2a-postman/a3e4f210bc03344fe61807e7b39daa1fc4b504c3";
     };
 
     # Non-flake sources

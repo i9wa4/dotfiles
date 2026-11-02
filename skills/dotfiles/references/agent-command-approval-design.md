@@ -99,13 +99,12 @@ Model authentication and permissions remain the client's responsibility.
 The former diplomat role is retired. Declared native parent/child interface
 routes handle team delegation; task ownership and local Logbook composition
 belong to the orchestrator at each depth, not a Postman hierarchy engine.
-See orchestrator-runbook.md and a2a-postman-integration-boundary.md.
+See postman.md and a2a-postman-integration-boundary.md.
 
 ## 5. Evidence and limits
 
-The deterministic team fixture uses real isolated tmux and the pinned CLI. It
-proves mail correlation, direct starts, full archived policy, authored workflow
-routes, scope records and fixed execution decisions, including failures. It does
-not prove real-model decision quality, security sandboxing, Claude compatibility
-from a fake console, or activation of the user's live fleet. Keep #474/#480
-runtime work separate and retain their policy until explicitly changed.
+Postman's own repository maintains the isolated native terminal and execution
+fixtures. Dotfiles supplies role policy and runtime configuration. Neither a
+fake console nor source validation proves real-model decision quality, a
+security sandbox or activation of the user's live fleet. Keep #474/#480 runtime
+work separate and retain their policy until explicitly changed.
