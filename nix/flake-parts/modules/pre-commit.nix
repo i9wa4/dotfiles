@@ -7,6 +7,7 @@
 {
   perSystem =
     {
+      config,
       pkgs,
       system,
       ...
@@ -78,6 +79,16 @@
 
           # === GitHub Actions linters ===
           actionlint.enable = true;
+
+          actions-lock = {
+            enable = true;
+            entry = "${pkgs.writeShellScript "actions-lock-verify-local" ''
+              export GH_ACTIONS_LOCK_REPO_ROOT="$PWD"
+              exec ${config.packages.gh-actions-lock}/bin/gh-actions-lock --verify-local
+            ''}";
+            files = "^\\.github/workflows/(.*\\.(yml|yaml)|actions\\.lock)$";
+            pass_filenames = false;
+          };
 
           ghalint = {
             enable = true;
@@ -178,6 +189,12 @@
               exec ${pkgs.bash}/bin/bash skills/logbook/scripts/validate-gist-delivery-contract.sh
             ''}";
             files = "^skills/logbook/(references/gist-delivery\\.md|scripts/(validate-gist-delivery-contract\\.sh|verify-gist-delivery))$";
+            pass_filenames = false;
+          };
+          logbook-issue-mailbox-contract = {
+            enable = true;
+            entry = "${pkgs.python3}/bin/python3 skills/logbook/scripts/test-issue-mailbox.py";
+            files = "^skills/logbook/(SKILL\\.md|references/issue-mailbox\\.md|scripts/(issue-mailbox|test-issue-mailbox\\.py))$";
             pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.

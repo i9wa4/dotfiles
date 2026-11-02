@@ -2,26 +2,26 @@
 name: dotfiles
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 description: |
   USE FOR: This dotfiles environment and agent harness: machine setup, Nix
   operations/recovery, missing tools, operating concepts, clipboard,
   Claude/Codex config, hooks, MCP, skills, Postman routing/runbooks,
   tmux/worktrees/panes, prompt/review/resume-handoff contracts, and Agent
   Skills authoring/validation/Waza.
-  DO NOT USE FOR: Nix package authoring (programming).
+  DO NOT USE FOR: routine team coordination, or Nix package authoring (programming).
 ---
 
 # Dotfiles Environment
 
-Owner skill for this machine, this repository, and the agent harness.
-
 ## 1. Workflow
 
-1. Inspect the relevant files and `git status`.
-2. Open the owner reference below; make the smallest scoped change.
-3. Run the nearest check (`nix run '.#check'` for flake changes); report
-   verification and remaining risk.
+Maintenance follows current role authority. Coordination-only roles may read
+required references; investigation, tests and all writes remain delegated.
+
+1. Read the owner reference below and inspect relevant files and `git status`.
+2. Run its checks (`nix run '.#check'` for flake changes); report verification
+   and remaining risk.
 
 ## 2. References
 
@@ -39,7 +39,7 @@ Environment:
   module ownership boundaries
 - [Clipboard](references/clipboard-strategy.md) — Vim/Neovim/tmux/host
 
-Agent harness (hubs link their siblings):
+Agent harness:
 
 - [Harness](references/harness-guidance.md) — Claude/Codex config, hooks,
   deny rules, contracts, runbook
