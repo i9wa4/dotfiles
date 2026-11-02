@@ -191,6 +191,12 @@
             files = "^skills/logbook/(references/gist-delivery\\.md|scripts/(validate-gist-delivery-contract\\.sh|verify-gist-delivery))$";
             pass_filenames = false;
           };
+          logbook-issue-mailbox-contract = {
+            enable = true;
+            entry = "${pkgs.python3}/bin/python3 skills/logbook/scripts/test-issue-mailbox.py";
+            files = "^skills/logbook/(SKILL\\.md|references/issue-mailbox\\.md|scripts/(issue-mailbox|test-issue-mailbox\\.py))$";
+            pass_filenames = false;
+          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===
