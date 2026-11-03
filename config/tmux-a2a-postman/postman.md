@@ -2,6 +2,8 @@
 skill_path:
 # private-content-scan: allow-next-line
   - path: ~/.codex/skills/
+# private-content-scan: allow-next-line
+  - path: ~/.claude/skills/
 ---
 
 # tmux-a2a-postman Node Templates
