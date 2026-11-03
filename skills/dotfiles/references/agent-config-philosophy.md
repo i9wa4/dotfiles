@@ -71,8 +71,8 @@ Concrete examples already in the repo:
   set; emits Claude's built-in `permissions.deny` glob and the generated
   deny-patterns file consumed by the shared `pretooluse-deny-bash.sh` hook
   in both runtimes.
-- `tmux-a2a-postman help config default` — the selected binary's complete
-  standard team and common/role policy; each POP archive carries the selected
+- Postman's builtin standard team — the common and role policy shown by the
+  lookup above; each POP archive carries the selected
   recipient policy. A custom `postman.md` replaces that default in full.
   `nix/home-manager/agents/shared/AGENTS.md` is the
   single authored source for the local-invocation fallback:
@@ -85,7 +85,7 @@ Concrete examples already in the repo:
   skill policy, keeps broad provider packs in `referenceOnlySources`, generates
   their flat reference tree at `~/.local/share/skills`, and installs the active
   `external-references` router for dormant packs.
-- `tmux-a2a-postman help postman-review` and its named references — own generic
+- Postman's installed review HelpDoc and its named references — own generic
   review procedures and prompts. The local `subagent-review` Skill remains a
   compatibility entry; reviewers inherit active runtime/account model defaults.
 
@@ -163,7 +163,7 @@ What this looks like in the current repo:
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
 - Review perspective selection, coverage and Guardian aggregation belong to
-  the installed `tmux-a2a-postman help postman-review`. Local compatibility
+  the installed review HelpDoc. Local compatibility
   entries delegate to that owner without model/tier dispatch flags.
 
 When deviating from cross-engine equivalence is acceptable:
@@ -232,7 +232,7 @@ Before adding agent configuration, walk this checklist:
   these principles in the Bash deny system.
 - `skills/dotfiles/references/repo-ai-operating-contract.md` — AI operation
   rules.
-- `tmux-a2a-postman help config default` — complete builtin agent contract
-  selected for recipients when no custom `postman.md` replaces it.
+- Postman's builtin standard team contract — selected for recipients when no
+  custom `postman.md` replaces it; see the lookup in section 1.1.
 - `nix/home-manager/agents/shared/bash-commands-denied.nix` — example of a
   shared SSOT emitting to multiple engines.

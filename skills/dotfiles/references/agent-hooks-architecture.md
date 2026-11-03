@@ -52,8 +52,8 @@ remain responsible for filesystem and network blast radius.
 
 ### 2.2. Foundational Contract — Postman's builtin configuration
 
-The common and role directives live in Postman's builtin standard team;
-`tmux-a2a-postman help config default` shows the complete selected policy.
+The common and role directives live in Postman's builtin standard team. The
+installed policy lookup is listed in `agent-config-philosophy.md` section 1.1.
 Dotfiles-owned skill bodies stay in top-level `skills/`, and Default clients
 start without a common/role message. Postman includes that policy in recipient
 archives; POP returns the archive path and requires a complete read. Skills use
@@ -67,7 +67,7 @@ notification, POP and help bootstrap; it does not carry the Postman role
 contract.
 
 Generic reviewer procedures and prompts come from the selected Postman binary's
-`help postman-review` and named references. The local `subagent-review` Skill is
+review HelpDoc and named references. The local `subagent-review` Skill is
 an installed compatibility entry; reviewers inherit the active runtime and
 account defaults.
 
