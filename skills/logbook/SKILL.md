@@ -19,9 +19,10 @@ description: |
 # Logbook
 
 For local Markdown selection, canonical-index recovery, creation, resume and
-retention, read and follow the complete installed
-`tmux-a2a-postman help records`. Existing known records remain canonical; a
-package upgrade never authorizes replacing or moving them. A missing topic is an
+retention, read the complete installed entry
+`tmux-a2a-postman skills postman-records` and follow every matching reference
+through EOF. Existing known records remain canonical; a package upgrade never
+authorizes replacing or moving them. A missing Skill or reference is an
 incompatible installation. The optional helper is supplied by Postman resources.
 
 This local entry also owns personal delivery adapters, only when explicitly
