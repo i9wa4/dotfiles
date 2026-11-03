@@ -289,18 +289,48 @@ in
 
   perSystem =
     { pkgs, system, ... }:
-    lib.optionalAttrs (system == "aarch64-darwin") {
-      checks = lib.mapAttrs' (
-        hostname: configuration:
-        lib.nameValuePair "darwinConfigurations-${hostname}-system" (
-          pkgs.runCommandLocal "check-darwinConfigurations-${hostname}-system"
+    let
+      dictionaryActivation =
+        darwinCheckConfigurations.macos-p.config.home-manager.users."flake-check".home.activation.setupMacSkkDict.data;
+      otherDictionaryActivation =
+        darwinCheckConfigurations.macos-w.config.home-manager.users."flake-check".home.activation.setupMacSkkDict.data;
+    in
+    {
+      checks = {
+        macskk-dictionaries =
+          assert dictionaryActivation == otherDictionaryActivation;
+          pkgs.runCommand "macskk-dictionary-atomicity"
             {
-              checkedDrvPath = builtins.unsafeDiscardStringContext configuration.system.drvPath;
+              nativeBuildInputs = [
+                pkgs.python3
+                pkgs.bash
+                pkgs.coreutils
+                pkgs.git
+              ];
+              # The test substitutes the rendered Darwin Git/ln executables
+              # with controlled native tools. Do not build Darwin binaries to
+              # run this filesystem regression check on Linux.
+              activation = builtins.unsafeDiscardStringContext dictionaryActivation;
+              passAsFile = [ "activation" ];
             }
             ''
-              printf '%s\n' "$checkedDrvPath" > "$out"
-            ''
-        )
-      ) darwinCheckConfigurations;
+              python3 ${../../../scripts/nix/test-macskk-dictionaries.py} --activation "$activationPath"
+              touch "$out"
+            '';
+      }
+      // lib.optionalAttrs (system == "aarch64-darwin") (
+        lib.mapAttrs' (
+          hostname: configuration:
+          lib.nameValuePair "darwinConfigurations-${hostname}-system" (
+            pkgs.runCommandLocal "check-darwinConfigurations-${hostname}-system"
+              {
+                checkedDrvPath = builtins.unsafeDiscardStringContext configuration.system.drvPath;
+              }
+              ''
+                printf '%s\n' "$checkedDrvPath" > "$out"
+              ''
+          )
+        ) darwinCheckConfigurations
+      );
     };
 }
