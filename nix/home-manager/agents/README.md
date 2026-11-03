@@ -154,11 +154,13 @@ graph LR
 ## 7. Standard-team adoption
 
 The declarative input pins Postman commit
-`c9c22a6aef34abea0efae3e7d0a972f8efe260c5` (upstream PR #1003). It supplies the
+`d98c7958fa3dc6cb7441131832fd33a771cce4bf` (upstream PR #1003). It supplies the
 standard team, nine thin entries, detailed HelpDocs, review prompts and optional
 record helper. Dotfiles no longer installs a complete custom postman.md that
 would shadow those defaults. User-authored configuration remains an explicit
 complete override; no user file, live session or old work record is migrated.
+The same builtin `postman.md` contains the existing vde-layout `preset-p` and
+`preset-w`, preserving their role layout and exact startup commands.
 
 Detailed owners: `help orchestration`, `help planning`, `help records`,
 `help reviews` and `help review-report`. Legacy local Skill/reference names
