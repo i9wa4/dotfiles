@@ -1,7 +1,7 @@
 # Agent skills declarative management via agent-skills-nix.
 # Edit top-level skills/ for hand-authored, publishable skills. Reviewer
-# prompts live as Markdown references under skills/subagent-review/;
-# `subagent-review` is a normal local skill. This file
+# generic review prompts and procedures come from the pinned Postman resources.
+# Local legacy Skill names are compatibility references. This file
 # consumes install-manifest.nix for the shared skill installation targets.
 # Do not edit ~/.claude/skills or ~/.codex/skills directly.
 # cf. https://github.com/Kyure-A/agent-skills-nix

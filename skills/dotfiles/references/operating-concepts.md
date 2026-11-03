@@ -12,7 +12,7 @@ That is why the repo keeps:
 - checked-in Nix modules for agent configuration
 - checked-in hook scripts under `nix/home-manager/agents/scripts/`
 - checked-in `tmux-a2a-postman` role templates under
-  `config/tmux-a2a-postman/`
+  `config/tmux/`
 - generated instruction and review artifacts assembled from shared sources
 
 AI-specific operating rules live separately in
@@ -37,10 +37,11 @@ to the private knowledge vault, not this repository.
   migration, but their detailed guidance should point back to this owner.
 - Skill authoring and validation belong to `skills/dotfiles/`.
 - Markdown formatting belongs to the `markdown` skill.
-- Live role contracts belong to `config/tmux-a2a-postman/postman.md`.
-- Generic team coordination belongs to `skills/orchestration/` and its one
-  required runbook. Dotfiles owns maintenance of the harness, not daily team
-  work.
+- Live role contracts belong to the selected Postman configuration;
+  inspect `tmux-a2a-postman help config`.
+- Generic team coordination belongs to the installed Postman
+  `help orchestration` topic; the legacy local entry is a compatibility pointer.
+  Dotfiles owns maintenance of the harness, not daily team work.
 
 Do not leave runtime behavior that installed Agent Skills need only in docs.
 Mirror the operational part into the owning skill reference and keep docs as
@@ -84,7 +85,7 @@ files, generated review artifacts, and live hook scripts synchronized.
 
 Two different delivery patterns are used on purpose:
 
-- editable repo config such as `config/tmux-a2a-postman/` is exposed through
+- editable repo config such as `config/tmux/` is exposed through
   direct symlinks so changes reflect immediately
 - installed skills and hook configuration are materialized by Nix and refreshed
   on rebuild
@@ -135,58 +136,24 @@ Three details matter:
 So the repo is not treating agent orchestration as a hidden sidecar. It is a
 first-class part of the tmux workspace.
 
-### 3.3. `tmux-a2a-postman` is the persistent control plane
+### 3.3. Postman supplies finite transport and the standard team
 
-In this repo, `tmux-a2a-postman` is not just a messaging utility. It is the
-control plane that connects role identity, routing, approval flow, and health
-inspection inside a tmux session.
+The pinned upstream binary owns the builtin team, complete Markdown HelpDocs,
+thin discovery entries and optional resources. User configuration replaces that
+team completely; no default file is installed by dotfiles. Each CLI invocation
+is finite. Mail, receipts and sampled captures persist; no Postman service or
+continuous supervisor is required. Status-line collection is the existing
+explicit refresh plus cached presentation, not task acceptance.
 
-That shows up in three places:
+### 3.4. The local harness owns personal integration
 
-- `config/tmux-a2a-postman/postman.md` defines the role templates, graph, and
-  routing semantics
-- embedded `tmux-a2a-postman` defaults cover runtime timing unless a local
-  override is intentionally added
-- `nix/home-manager/default.nix` exposes the checked-in config as the live
-  XDG config directory
-
-Because the config is live and the status line shows session state
-continuously, the control plane is persistent in day-to-day operation rather
-than only being consulted during failure analysis.
-
-### 3.4. `nix/home-manager/agents` is the harness-engineering layer
-
-The agent tree is where repo policy becomes executable behavior.
-
-This repo does not rely on a single monolithic prompt file. Instead it builds
-the harness from several smaller sources:
-
-- `config/tmux-a2a-postman/postman.md` `[common_template]` is the canonical
-  persona / language / scope contract and compact skill-use rule. Its
-  `skill_path` frontmatter injects a generated catalog of configured
-  skills into every postman-driven role on each `tmux-a2a-postman pop`.
-  `shared/AGENTS.md` is the single authored source for the local-invocation
-  <!-- private-content-scan: allow-next-line -->
-  fallback: `~/.codex/AGENTS.md` installs it directly, and
-  <!-- private-content-scan: allow-next-line -->
-  `~/.claude/CLAUDE.md` is derived from the same source rather than a second
-  hand-written file. It is only a minimal skill-catalog pointer for direct,
-  non-postman invocations; it does not duplicate the postman contract.
-- `shared/agent-skills.nix` owns the curated active-source policy, installs
-  that source set for Claude, keeps broad upstream provider packs in
-  `referenceOnlySources`, generates their flat reference tree at
-  `~/.local/share/skills`, and materializes Codex separately from its source and
-  skill-selection allowlists. The active `external-references` skill routes
-  lookup and promotion decisions to that generated reference tree.
-- `skills/subagent-review/references/*.md` is the plain Markdown reviewer
-  prompt source of truth; reviewers inherit active runtime/account defaults
-- `skills/subagent-review/SKILL.md` documents reviewer usage through the normal
-  local skill pipeline
-- `shared/bash-commands-denied.nix` is the single source of truth for
-  dangerous Bash denials across both engines
-
-That is the repo's harness-engineering philosophy: keep policy declarative,
-shared, inspectable, and generated from a small number of sources of truth.
+`nix/home-manager/agents` owns client setup, shared hook intent, declarative
+Skill installation and personal/domain adapters. Its shared AGENTS/CLAUDE source
+only acknowledges notifications and POP/help. Runtime role policy arrives in
+the full archive. Postman archives index its own embedded entries; additional
+personal Skills use normal client discovery, without a required personal catalog
+inside every message. Generic planning, records, orchestration and review have
+one upstream HelpDoc owner; local legacy entry names remain thin pointers.
 
 ### 3.5. Skill responsibility boundaries
 
@@ -201,7 +168,7 @@ large fallback skill:
   publish-readiness checks
 - `skills/dotfiles/references/skills-management.md` owns the Agent Skills
   management procedure
-- `skills/dotfiles/references/repo-ai-operating-contract.md` owns durable
+- `skills/dotfiles/references/repo-ai-operating-contract.md` documents local
   operating rules and task artifact workflow
 - `skills/repo-local/` is only a pointer for finding the focused owner when no
   narrower skill is obvious
@@ -242,13 +209,13 @@ different.
 Parity is visible in several places:
 
 - both postman-driven engines receive the same common contract from
-  `config/tmux-a2a-postman/postman.md`
+  `tmux-a2a-postman help config`
 - both derive policy from the same `shared/bash-commands-denied.nix`
 - both receive skills from `shared/agent-skills.nix`; Claude follows the
   curated active source graph, while Codex follows the explicit source
   allowlist documented there
-- both receive the `subagent-review` skill and its plain Markdown reviewer
-  references through `shared/agent-skills.nix`
+- both receive upstream Postman entries and the local compatibility review
+  pointer through `shared/agent-skills.nix`
 - both use durable artifacts and postman routing for resumable handoff
 
 The result is parity of intent rather than byte-for-byte sameness. The repo is
@@ -293,28 +260,18 @@ Intentional product-surface differences (not drift): Claude MCP servers vs Codex
 Apps (both fed from `shared/mcp-servers.nix`), `outputStyle` vs `personality`,
 and Codex sandbox surfaces (`network_access`, `web_search`).
 
-## 6. The review stack is part of the operating concept
+## 6. Review procedures have one upstream owner
 
-This repo treats review as a built artifact, not ad hoc human ceremony.
+Read `tmux-a2a-postman help reviews`; its resource bundle supplies complete
+read-only perspective prompts. Guardian owns the final substantive verdict and
+Critic supplies the recorded required independent evidence. Native launch
+permissions/model defaults belong to the runtime. A local alias or personal VDE
+layout does not redefine coverage, authority, counters or fallback.
 
-`skills/subagent-review/references/*.md` defines reviewer prompt guidance as
-plain Markdown. The active Claude or Codex runtime supplies model and effort
-defaults; no generated reviewer agent directory is maintained.
-
-- no review dispatcher; `skills/subagent-review/SKILL.md` describes how
-  guardian and critic each default to five native reviewer perspectives
-  without ad hoc model or tier flags
-
-That means reviewer topology and naming stay in sync from a shared source.
-Review is therefore another example of the same repo philosophy: one concept,
-declaratively materialized into multiple runtime targets.
-
-The role contract is engine-neutral: guardian owns the final internal verdict
-and critic supplies independent evidence. `config/vde/layout.yml` separately
-defines supported launch mappings. `preset-p` is the Codex-featured mapping,
-with both reviewer roles in Codex; `preset-w` is the Claude-team mapping, with
-guardian in Claude and critic in Codex. Neither mapping changes the review
-route or the responsibility of either role.
+Both client trees receive upstream thin entries through the shared declarative
+source graph. Existing local review-reference paths are compatibility pointers,
+not another maintained prompt set. Personal engine/layout mappings remain in
+`config/vde/layout.yml`, independently of Postman's optional standard launcher.
 
 ## 7. Why `tmux-a2a-postman` remains central
 
@@ -392,7 +349,7 @@ When you need to understand the operating concept, read these in order:
 4. `nix/home-manager/agents/README.md`
 5. `nix/home-manager/agents/claude/default.nix`
 6. `nix/home-manager/agents/codex/default.nix`
-7. `config/tmux-a2a-postman/postman.md`
+7. `tmux-a2a-postman help config`
 8. `skills/dotfiles/references/repo-ai-operating-contract.md`
 
 ## 11. Related files
@@ -403,4 +360,4 @@ When you need to understand the operating concept, read these in order:
 - `nix/home-manager/agents/shared/agent-skills.nix`
 - `nix/home-manager/agents/shared/install-manifest.nix`
 - `nix/home-manager/agents/shared/bash-commands-denied.nix`
-- `config/tmux-a2a-postman/postman.md`
+- `tmux-a2a-postman help config`

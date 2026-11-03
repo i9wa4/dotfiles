@@ -45,7 +45,7 @@ installed, validated, or explained.
 - Claude optimization tracking: `claude-optimization-tracking.md`
 - Claude changelog decisions: `claude-changelog-tracking.md`
 - Codex optimization tracking: `codex-optimization-tracking.md`
-- Postman role contract: `config/tmux-a2a-postman/postman.md`
+- Postman role contract: `tmux-a2a-postman help config`
 
 ## 3. Design Workflow
 

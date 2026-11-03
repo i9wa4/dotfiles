@@ -16,15 +16,15 @@ Source of truth:
 - `nix/home-manager/agents/shared/`
 - `nix/home-manager/agents/`
 
-| Destination                                        | Source                                                               | Managed by                           |
-| -------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------ |
-| Claude settings file                               | Generated from Nix attributes                                        | `claude/default.nix`                 |
-| root instruction file (persona / language / scope) | postman common blocks                                                | `config/tmux-a2a-postman/postman.md` |
-| root CLAUDE.md (derived from shared/AGENTS.md)     | `shared/AGENTS.md` (single authored source)                          | `claude/default.nix`                 |
-| Reviewer prompts                                   | Plain Markdown references under `skills/subagent-review/references/` | `skills/subagent-review/SKILL.md`    |
-| Claude scripts directory                           | `nix/home-manager/agents/scripts/`                                   | `claude/default.nix`                 |
-| Claude skills directory                            | Multiple flake inputs + local skills                                 | `shared/agent-skills.nix`            |
-| MCP servers                                        | `shared/mcp-servers.nix`                                             | `claude/default.nix`                 |
+| Destination                                        | Source                                                               | Managed by                        |
+| -------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------- |
+| Claude settings file                               | Generated from Nix attributes                                        | `claude/default.nix`              |
+| root instruction file (persona / language / scope) | postman common blocks                                                | `tmux-a2a-postman help config`    |
+| root CLAUDE.md (derived from shared/AGENTS.md)     | `shared/AGENTS.md` (single authored source)                          | `claude/default.nix`              |
+| Reviewer prompts                                   | Plain Markdown references under `skills/subagent-review/references/` | `skills/subagent-review/SKILL.md` |
+| Claude scripts directory                           | `nix/home-manager/agents/scripts/`                                   | `claude/default.nix`              |
+| Claude skills directory                            | Multiple flake inputs + local skills                                 | `shared/agent-skills.nix`         |
+| MCP servers                                        | `shared/mcp-servers.nix`                                             | `claude/default.nix`              |
 
 ## 2. Fetch CHANGELOG
 
@@ -44,7 +44,7 @@ Do NOT report features or changes from versions newer than the local install.
 
 ```sh
 : "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-FILE=$("${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir tmp --label claude-code-changelog)
+: "${FILE:?select an absolute changelog record with tmux-a2a-postman help records}"
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
   --jq '.content' | base64 -d > "$FILE"
 ```
@@ -112,7 +112,7 @@ This section is general Claude Code guidance. The installed root
 source, also installed as Codex's `~/.codex/AGENTS.md`) and is intentionally
 minimal — a skill-catalog pointer for direct, non-postman invocations only.
 Dotfiles-local persona and scope are delivered through
-`config/tmux-a2a-postman/postman.md` instead, not through this file.
+`tmux-a2a-postman help config` instead, not through this file.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Split detailed rules into `skills/<name>/SKILL.md`

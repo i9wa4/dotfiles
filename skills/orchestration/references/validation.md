@@ -1,96 +1,113 @@
-# Orchestration Migration and Verification
+# Upstream orchestration adoption evidence
 
-## 1. Rule Ownership Map
+The generic procedure lives in installed `tmux-a2a-postman help orchestration`.
+`help planning`, `help records`, `help reviews` and `help review-report` own the
+other selected procedures. This file records consumer migration evidence; it is
+not a second operating runbook.
 
-Baseline: the post-#490 role contract, with #498 coordination reads, #496 review
-semantics and #494 canonical selection applied. The old dotfiles
-`orchestrator-runbook.md` is already absent at this baseline; do not resurrect a
-second copy. This Skill's `runbook.md` is the sole generic procedure.
+## 1. Rule-to-owner disposition
 
-| Existing requirement                                                              | Disposition and authoritative owner                                                                                                                |
-| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Role identity, contacts, topology, read/write authority and no bypass             | Retain short common/recipient role contracts.                                                                                                      |
-| Original goals, constraints, owners, no overlap, truthful outcomes                | Retain manager responsibility; runbook sections 2–5 supply procedure.                                                                              |
-| Coordination reading versus source investigation/tests/all writes                 | Retain role boundary from #498; runbook section 2 applies it.                                                                                      |
-| Supplied/discovered/new paths, active index protection and authorized replacement | Replace role algorithm with required Logbook invocation; its selection procedure remains sole owner.                                               |
-| Compact index fields, detail purpose/path/task and reciprocal parent links        | Move procedure from role section 6.4 to runbook section 4; no layout or private-record change.                                                     |
-| Update index/details together, verify links, evidence and old-to-new coverage     | Move to runbook section 4, retaining delegated one-writer and exact replacement authorization.                                                     |
-| Start/resume, delegation/reply/review/scope-change and completion reconciliation  | Retain mandatory role triggers; runbook sections 2–5 own steps. No-change inspection is not a write.                                               |
-| Recursive finite-depth scopes, exact return routes and independent correlations   | Retain role duties; runbook sections 3, 4 and 6 own mechanics.                                                                                     |
-| Review procedure, perspectives, materiality, caps and prose/JSON admission        | Replace copied recipes with mandatory #496 review contract; local route and completion gates remain visible.                                       |
-| Mail/approval CLI schemas and recovery                                            | Required matching upstream Postman guidance; no local protocol copy.                                                                               |
-| Escalation and original-goal decisions                                            | Retain manager authority/gates; runbook section 6 supplies decision packet procedure.                                                              |
-| Explicit team-management inquiry                                                  | Retain one-shot upstream team-manager trigger; no background monitoring.                                                                           |
-| Worker versus worker-alt instructions                                             | Retain standalone recipient contracts: their shared duties must not be put in common text that could grant execution to reviewers/transport roles. |
-| Default startup and full per-message policy                                       | Retain no initial injection, complete archived common/recipient policy and read-through-EOF guidance.                                              |
-| Dotfiles environment maintenance                                                  | Remains with Dotfiles; routine coordination routes to Orchestration.                                                                               |
+| Previous source                                             | Current owner and retained requirement                                                                                                                                                             |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local postman common/role bodies                            | Postman builtin default; same eight roles, seven explicit templates, contacts, full-read/exact-reply guidance, language/audience defaults and distinct authority                                   |
+| Local orchestration runbook                                 | `help orchestration`; original requests/follow-ups, one writer, coordination reads, linked evidence, bounded reporting, direct parent/child routes and actionable recovery                         |
+| Logbook local-markdown and mkmd                             | `help records` plus optional resource helper; known active indices remain canonical, missing known state blocks, exact authorized replacement, full scope/provenance and user-controlled retention |
+| Plan authoring/brainstorming/task tracking                  | `help planning`, referencing the record/review owners; original acceptance and evidence without duplicated local milestone bookkeeping                                                             |
+| Review topology and perspective bodies                      | `help reviews` and bundled review prompts; Guardian convergence, recorded required coverage and separate bounded lineages/counters                                                                 |
+| Optional JSON and decision-quality block                    | `help review-report`; one shape/block owner, honest evidence and no extra authority                                                                                                                |
+| Personal GitHub/Gist/Issue delivery, hooks, Nix and domains | Remain in dotfiles; the generic default does not require them                                                                                                                                      |
 
-## 2. Reviewed Procedure Scenarios
+Legacy Skill/reference paths remain thin compatibility pointers. The upstream
+entry names are installed by the existing declarative source graph. No new
+installer, product transport wrapper, task database or supervisor is introduced.
 
-These are authored acceptance examples, not model-behavior evidence.
+## 2. Tested upstream source
 
-| Event                                                   | Expected procedure and retained gate                                                                                       |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Start/resume with an active index                       | Required Skill/Logbook loading, verify same scope/path and reconcile relevant links; no new dated index or startup PING.   |
-| Unknown index or unreadable required reference          | Bounded delegated discovery or specific BLOCKED; no task-cwd fallback or silent skip.                                      |
-| Delegate to a busy primary and free secondary           | Verify current state; assign explicit non-overlapping ownership/criteria and retain one artifact writer.                   |
-| Reply reports changed detail evidence                   | Reconcile original criteria, delegate affected detail/index updates together and verify reciprocal links/read-back.        |
-| No reportable state change                              | Inspect relevant records; no fabricated update, message or worker write.                                                   |
-| Guardian returns a malformed report after work rework 1 | Return report structure to Guardian under its own counter; do not order worker reimplementation or spend rework 2.         |
-| New supplied B conflicts with active index A            | Apply Logbook; preserve A and require exact authorization/verified migration for replacement.                              |
-| Nested child delegates to its child                     | Preserve each immediate interface, original criteria and exact correlations at every hop; no fixed three-level assumption. |
-| Parent receives ACK or intermediate answer              | Retain unfinished task criteria and final route; no user-facing DONE from transport closure.                               |
-| Completion or out-of-authority decision                 | Verify original outcomes, review/evidence and local human gates; otherwise report concrete owner/decision/blocker.         |
+The consumer pins published Postman commit:
 
-## 3. Evidence Boundaries
+`c9c22a6aef34abea0efae3e7d0a972f8efe260c5`.
 
-Record the tested revision and checks in the PR. Metadata/trigger/link checks,
-actual parser/terminal fixtures, installed-bundle reads, substantive instruction
-review and separately authorized real-agent trials provide different evidence.
-No paid account, live fleet activation, artifact migration or automatic prompt
-injection is part of this change. A shorter role is not proof of better
-behavior.
+See [upstream PR #1003](https://github.com/i9wa4/tmux-a2a-postman/pull/1003).
+The workflow-only follow-up widens the macOS CI budget; product code and bundle
+bytes match tested product source:
 
-Compare common-plus-recipient bytes and representative total required reading
-before/after this extraction. Include this Skill and applicable owner references
-in the latter; do not hide newly deferred reading cost behind a role-only
-saving.
+`0f5d65b100a62a110044c23348635cfd92ec972c`.
 
-### 3.1. Measured Policy and Cold Reading Cost
+The reporting trace below used that exact Nix binary (`git-0f5d65b`). Consumer
+layout read-back separately checks the selected current binary. Both use bundle:
 
-Compared the #494 baseline with this extraction using the actual selected
-Postman revision `a0d7290`'s topology/recipient-policy parser. Values are UTF-8
-bytes of common + recipient instructions + generated catalog; fixed archive
-headings, contacts, guidance and user message bodies are excluded. The private
-catalog roots have equal pathname lengths. The catalog adds one discoverable
-Skill; it does not inline the runbook.
+`53140069ec6c000fa09eeecc14a238c5b398d5c30c83871528ff12b038daece4`.
 
-| Recipient    | Before | After | Difference |
-| ------------ | -----: | ----: | ---------: |
-| orchestrator | 23152  | 16999 | -6153      |
-| worker       | 12689  | 13073 | +384       |
-| worker-alt   | 13015  | 13399 | +384       |
-| guardian     | 13004  | 13388 | +384       |
-| critic       | 13197  | 13581 | +384       |
-| messenger    | 13868  | 14252 | +384       |
-| approver     | 17416  | 17800 | +384       |
+Full Nix build/check passed on Linux, including 30 native terminal cases,
+five explicit recursive cases and three builtin entry paths: existing consoles,
+Codex preset and Claude preset. The presets start eight private fixed-client
+stubs without an initial prompt; actual terminal input drives recipient-owned
+POP/full reads/exact replies, execution decisions, review routing and results.
+The binary's configuration/source-change and complete-override controls also
+pass. Linux/macOS CI status is recorded on the upstream PR.
 
-For representative first-use manager turns, add all applicable owner bodies and
-required references once. Start/resume includes Logbook entry/selection
-guidance; structured review/completion additionally includes the review
-entry/contract and optional JSON shape. After extraction both also include
-Orchestration entry and runbook. Task artifacts are excluded equally; byte
-counts are not model tokens.
+A private rerun of the existing eleven reporting scenarios used this exact Nix
+binary and builtin default without a user config or personal Skill tree:
 
-| Cold reading case            | Before | After | Difference |
-| ---------------------------- | -----: | ----: | ---------: |
-| Start/resume                 | 41060  | 47306 | +6246      |
-| Structured review/completion | 72398  | 78644 | +6246      |
+| Scenario                                        | New archived messages | Observed obligation/result                                        |
+| ----------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
+| Completed task                                  | 2                     | Exact final reply                                                 |
+| Blocked task                                    | 2                     | Explicit blocker and needed decision                              |
+| Intermediate question                           | 4                     | Original obligation retained until the actual answer/final result |
+| Material change                                 | 4                     | Independent exchange plus original completion                     |
+| Approved execution                              | 4                     | Exact fixed helper, one harmless effect                           |
+| Declined execution                              | 4                     | No command effect                                                 |
+| Two independent requests and final instructions | 8                     | Completing A leaves B outstanding until its own exact result      |
+| Duplicate hint / empty POP                      | 0                     | No empty-POP announcement or ACK                                  |
+| Unchanged wait                                  | 0                     | No heartbeat/quota mail                                           |
+| Failed route                                    | 0                     | No fabricated delivery or blind resend                            |
+| Unknown notification then recovery              | 2                     | Same durable request ID, no resent mail                           |
 
-The manager's repeated message policy shrinks; other recipients pay the added
-catalog entry. Cold first-use reading grows because the reusable procedure is
-explicit, complete and independently discoverable. This trades initial reading
-for smaller repeated manager policy and one procedure owner, not a claim of
-universal token savings, better model compliance or an arbitrary size target.
-Reused, already-read current procedures need no invented repeated load, while
-changed or missing guidance still requires reconciliation.
+There were 30 archives, 28 receiver full-file SHA256 proofs and one harmless
+approved effect. Two typed decisions were consumed by execution. All three
+participating roles finished with unread/inbound/outbound/draft/failed counts
+zero. The old harness needed a completion barrier and explicit diagnostic
+refresh because getters are now cache-only; it was corrected privately rather
+than changing product counts to hide an observation race. Original failed
+traces and subsequent evidence remain private.
+
+These are fixed-actor protocol tests, not model understanding, autonomous review
+quality, a human acceptance benchmark or installed fleet activation. Source,
+installed-layout, real-model behavior and rollout are distinct observations.
+The existing upstream cloud/tmux development runbook explains reproducing and
+extending bounded private scenarios; no dotfiles test engine is installed.
+
+## 3. Consumer acceptance
+
+The consumer PR records final metadata/link/trigger/Nix results, actual
+configured Claude/Codex bundle read-back, effective source/pin and measured
+before/after bytes. Compatibility links must reach the complete installed
+HelpDoc/resource from an unrelated directory. Missing required topics block the
+workflow. Neither these source changes nor a passed build activates a machine,
+rewrites an old canonical record or restarts a live team; the existing installed
+rollout issue remains its sole owner.
+
+## 4. Instruction size and reading cost
+
+UTF-8 authored common-plus-recipient policy bytes, before at dotfiles
+`5aaeb8f8901812ef026c53b5d032c4d93b924251` and after at upstream product
+`0f5d65b100a62a110044c23348635cfd92ec972c`:
+
+| Recipient    | Before bytes | After bytes |
+| ------------ | -----------: | ----------: |
+| Critic       | 6,443        | 4,066       |
+| Guardian     | 6,250        | 4,048       |
+| Messenger    | 7,114        | 4,291       |
+| Orchestrator | 16,398       | 4,959       |
+| Approver     | 10,662       | 4,807       |
+| Worker       | 5,935        | 4,204       |
+| Worker-alt   | 6,261        | 3,909       |
+
+These exclude catalog/contact/header overhead; they are not model token counts.
+On-demand HelpDocs still require complete reads: orchestration 6,667 bytes,
+records 16,248, planning 5,009, reviews 25,867, review-report 5,415 and
+read-only review lookup 1,201. Representative first-use reading includes the
+applicable role, entry pointer and complete owning topics plus selected
+resources; shorter mail alone does not prove lower total cost or better
+behavior. Four legacy reference pointers total 1,637 bytes and do not reproduce
+those procedures.

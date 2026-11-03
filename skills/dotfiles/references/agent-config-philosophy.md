@@ -18,7 +18,7 @@ mechanism.
 
 What "prompt path" means in this repo:
 
-- `config/tmux-a2a-postman/postman.md` — multi-agent role contract,
+- `tmux-a2a-postman help config` — multi-agent role contract,
   delivered into every postman session as the live operating contract.
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
@@ -56,11 +56,9 @@ agent under stress may break them. That is acceptable when the cost of a
 broken rule is friction (an agent retries with a different phrasing) and
 unacceptable when the cost is unbounded (a destructive command runs).
 
-`config/tmux-a2a-postman/postman.md` section 2.16 (non-interactive bash
-discipline) is the canonical example of the prompt path winning over a
-config knob: the rule lives in the agent contract rather than as a
-`permissions.deny` glob, because the goal is to teach the agent to write
-single-step commands, not to add another deny entry to the SSOT.
+The upstream standard team and HelpDocs carry cooperative workflow guidance;
+local hooks enforce actual runtime boundaries. A helpful instruction does not
+supply OS enforcement or replace required user authorization.
 
 ### 1.2. Leverage Shared Configuration
 
@@ -73,7 +71,7 @@ Concrete examples already in the repo:
   set; emits Claude's built-in `permissions.deny` glob and the generated
   deny-patterns file consumed by the shared `pretooluse-deny-bash.sh` hook
   in both runtimes.
-- `config/tmux-a2a-postman/postman.md` `[common_template]` — single
+- `tmux-a2a-postman help config` `[common_template]` — single
   authoritative location for the persona / language / scope contract
   and the compact skill-use rule; delivered to every postman role on each
   `tmux-a2a-postman pop`. The `skill_path` frontmatter generates a catalog
@@ -165,11 +163,9 @@ What this looks like in the current repo:
 - Skills work in both engines (`/skill <name>` for Claude,
   `@<name>` for Codex). Skill files live in shared sources and are
   installed into both engine trees.
-- Review pipelines use five runtime-native reviewer perspectives by default
-  for guardian and five for critic. The `skills/subagent-review/SKILL.md`
-  skill documents usage without ad hoc engine, model, or tier dispatcher
-  flags, while guardian aggregates the final verdict using critic's peer
-  review evidence.
+- Review perspective selection, coverage and Guardian aggregation belong to
+  the installed `tmux-a2a-postman help reviews`. Local compatibility entries
+  delegate to that owner without model/tier dispatch flags.
 
 When deviating from cross-engine equivalence is acceptable:
 
@@ -237,7 +233,7 @@ Before adding agent configuration, walk this checklist:
   these principles in the Bash deny system.
 - `skills/dotfiles/references/repo-ai-operating-contract.md` — AI operation
   rules.
-- `config/tmux-a2a-postman/postman.md` — agent contract that carries
+- `tmux-a2a-postman help config` — agent contract that carries
   the prompt-path rules into every postman session.
 - `nix/home-manager/agents/shared/bash-commands-denied.nix` — example of a
   shared SSOT emitting to multiple engines.

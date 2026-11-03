@@ -164,7 +164,7 @@ incident runbook is archived in the private vault
 ### 1.4. Applied Optimizations
 
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
-  now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  now flow through `tmux-a2a-postman help config`. A minimal
   <!-- private-content-scan: allow-next-line -->
   direct-invocation fallback remains at `~/.codex/AGENTS.md`, derived from
   `nix/home-manager/agents/shared/AGENTS.md`; applicable skills flow through

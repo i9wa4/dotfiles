@@ -20,7 +20,7 @@ the changelog and official docs) and the rest of the catch-up.
 ### 1.1. Applied Optimizations
 
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
-  now flow through `config/tmux-a2a-postman/postman.md`. A minimal
+  now flow through `tmux-a2a-postman help config`. A minimal
   <!-- private-content-scan: allow-next-line -->
   direct-invocation fallback remains at `~/.claude/CLAUDE.md`, derived from
   `nix/home-manager/agents/shared/AGENTS.md`.

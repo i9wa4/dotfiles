@@ -10,11 +10,11 @@ artifacts.
 
 | If you want to change...    | Edit here                                                   | Installed result                                                                                                                                  |
 | --------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Persona / language / scope  | `config/tmux-a2a-postman/postman.md` `[common_template]`    | Delivered into every postman role on each `tmux-a2a-postman pop`                                                                                  |
+| Persona / language / scope  | Pinned Postman builtin team (`help config`)                 | Delivered into every postman role on each `tmux-a2a-postman pop`                                                                                  |
 | Local-invocation fallback   | `shared/AGENTS.md` (single authored source)                 | Installed as `~/.codex/AGENTS.md` directly and `~/.claude/CLAUDE.md` derived from the same source; does not duplicate the postman contract        |
-| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines and indexed by postman.md `skill_path`                                                                                  |
+| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines through normal client discovery                                                                                         |
 | Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers                                                                  |
-| Reviewer prompt references  | `skills/subagent-review/references/*.md`                    | Plain Markdown reviewer guidance; runtime model defaults are inherited                                                                            |
+| Reviewer prompt references  | `skills/subagent-review/references/*.md`                    | Compatibility pointers to Postman resource prompts; runtime defaults are inherited                                                                |
 | Shared install targets      | `shared/install-manifest.nix`                               | Resolves shared skill destinations only                                                                                                           |
 | Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/` through the curated active source set                                                     |
 | External reference router   | `skills/external-references/SKILL.md`                       | Active local skill that routes Databricks/dbt/Azure/Google/AWS/Terraform/Google Workspace/Streamlit provider-pack questions to dormant references |
@@ -36,10 +36,10 @@ next to it (see `skills/dotfiles/references/agent-config-philosophy.md`).
 
 ```mermaid
 graph LR
-    subgraph sources [Author here]
-        P[postman.md role contract]
+    subgraph sources [Sources with declared owners]
+        P[Postman builtin role contract]
         S[skills/]
-        A[skills/subagent-review/references/*.md]
+        A[Postman bundled review prompts]
         H[agents/scripts/ hooks]
         D[shared/bash-commands-denied.nix]
         M[shared/mcp-servers.nix]
@@ -84,15 +84,12 @@ graph LR
 ## 3. How Changes Flow
 
 1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
-2. The persona / language / scope contract is delivered through
-   `config/tmux-a2a-postman/postman.md` `[common_template]` on each
-   `tmux-a2a-postman pop`. Dotfiles-owned skill bodies stay in
-   `skills/<skill>/SKILL.md`; postman traffic gets only the generated
-   `skill_path` catalog. `shared/AGENTS.md` is the single authored source for
-   direct, non-postman invocations: `~/.codex/AGENTS.md` installs it directly
-   and `~/.claude/CLAUDE.md` is derived from the same source, not a second
-   hand-written file. It points at the skill catalog and does not duplicate
-   the postman contract.
+2. The pinned Postman binary supplies the standard policy and complete HelpDocs.
+   Its full POP archives deliver common/selected-role instructions without an
+   initial prompt. Dotfiles installs upstream thin entries and personal/domain
+   Skills through the shared source graph; the builtin mail catalog does not
+   depend on a personal Skill root. The shared AGENTS/CLAUDE source contains
+   only the optional notification acknowledgement and POP/help guidance.
 3. `skills/subagent-review/references/*.md` is the plain Markdown source of
    truth for reviewer prompt guidance. Reviewers inherit the active runtime
    model and effort defaults; no generated agent files are installed.
@@ -153,3 +150,18 @@ graph LR
   composition or shared data code rather than final installed prompt text.
 - Treat `~/.claude/` and `~/.codex/` as outputs of this tree, not as the
   editing surface.
+
+## 7. Standard-team adoption
+
+The declarative input pins Postman commit
+`c9c22a6aef34abea0efae3e7d0a972f8efe260c5` (upstream PR #1003). It supplies the
+standard team, nine thin entries, detailed HelpDocs, review prompts and optional
+record helper. Dotfiles no longer installs a complete custom postman.md that
+would shadow those defaults. User-authored configuration remains an explicit
+complete override; no user file, live session or old work record is migrated.
+
+Detailed owners: `help orchestration`, `help planning`, `help records`,
+`help reviews` and `help review-report`. Legacy local Skill/reference names
+remain reachable pointers. Gist/Issue delivery, domain Skills, runtime setup,
+Nix and personal permission hooks stay local. Actual machine activation remains
+in the existing rollout procedure; source changes alone are not fleet adoption.
