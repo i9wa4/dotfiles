@@ -144,7 +144,9 @@ independent review evidence that guardian aggregates.
   degraded path. Include `Required perspectives: [list]` and `Perspectives
   launched: [list]` in every substantive reply.
 - Reply only to guardian with `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:`,
-  including evidence and any blocking defects.
+  including evidence and any blocking defects. This is a bounded review
+  recommendation; guardian alone decides materiality and convergence under
+  `subagent-review`'s mandatory review contract.
 - If a direct orchestrator-to-critic review request arrives, reject it as
   `BLOCKED: direct critic route disabled; resubmit through guardian`.
 
@@ -171,8 +173,9 @@ internal approval before orchestrator reports completion.
   `NOT APPROVED:`, or `BLOCKED:` verdict, including critic evidence when
   applicable. This internal verdict does not replace explicit human approval
   for public writes, production-data changes, or external side effects.
-- Reject a critic review result lacking evidence of a complete required-set
-  launch unless the request was explicitly labeled trivial. Minimum
+- Reject a critic review result lacking evidence of the recorded required-set
+  launch/completion unless guardian explicitly authorized a trivial or bounded
+  degraded path. Minimum
   attestation: critic's substantive reply must include `Required perspectives:
   [list]` and `Perspectives launched: [list]` lines; reject when the attested
   perspectives do not match the required set or fall below it without a
@@ -276,21 +279,17 @@ Task coordinator. Send here when a new task arrives or status needs routing.
 - Treat worker DONE as internal artifact readiness. Advance it through
   guardian and critic before any messenger-facing DONE.
 - Before advancing any final guardian verdict, run the Tier 1 structural
-  quality gate locally. This is a checklist gate, not an extra agent review:
-  use Track A for prose verdicts and Track B only when the guardian returns a
-  JSON object with a `"verdict"` key following `review-output-contract.md`.
-  Track A requires an `APPROVED:`, `NOT APPROVED:`, or `BLOCKED:` verdict with
-  justification, representation of security, architecture, historian, code, and
-  QA perspectives unless explicitly labeled `TRIVIAL DIRECT REVIEW:`, file
-  paths for each material finding or `no file applicable`, and consolidated
-  duplicates. Track B applies those checks plus `verdict` value `approve` or
-  `needs-attention`, confidence scores from 0.0 to 1.0, and severity exactly
-  `critical`, `high`, `medium`, or `low`. For Track B, the JSON `verdict` field
-  supersedes the prose verdict phrase requirement and satisfies Track A's
-  verdict-presence check.
-- If the Tier 1 gate is flagged, return `NOT APPROVED:` to guardian with the
-  structural defects and count it against the 3-attempt approval cap. If it
-  passes, continue the approval chain.
+  gate locally under `skills/subagent-review/references/review-topology.md`.
+  It owns stage admission, recorded perspective coverage, evidence, verdict
+  mapping and separate bounded correction/rework counters. It is a checklist,
+  not an extra substantive source review. Use prose or the explicitly chosen
+  JSON rendering; `skills/dotfiles/references/review-output-contract.md` alone
+  owns that optional JSON shape.
+- Return structural defects to guardian for report correction, without ordering
+  worker reimplementation or spending a substantive rework slot. Record the
+  stable report lineage and stop at its structural cap. Pass only an admissible,
+  evidenced guardian decision through the existing approval chain; missing
+  proof never becomes a pass merely by filling a field.
 - Run Tier 2 meta-review only when explicitly requested by orchestrator:
   guardian assigns one bounded meta-reviewer, returns
   `Tier 2 quality audit: complete`, and does not start another guardian/critic
@@ -320,28 +319,17 @@ results; delegate disputed implementation claims rather than independently
 debugging source or repeating tests. Root responsibility does not grant direct
 access to every descendant's private records.
 
-- Own exactly one active orchestration SSOT per repository and branch. Verify
-  repository, branch, and worktree identity so different branches never share
-  one; a later date alone does not create a new SSOT. Use the Logbook
-  `mkmd --dir orchestration` convention and keep its returned absolute path in
-  task state and handoffs. The Logbook skill owns location and discovery
-  details.
-- On start or resume, reuse the known canonical path first. Otherwise discover
-  matching artifacts across dates and inspect their repository, branch,
-  worktree, task purpose, contents, and provenance. If several valid candidates
-  remain without a known canonical path, choose the most recently created only
-  when that identity and creation provenance are clear. Coordinate creation
-  and updates through a worker, one at a time, and verify the returned path
-  and content before assigning another update or reporting the SSOT current
-  or branch work DONE. Conflicting or unverifiable candidates halt those
-  reports for reconciliation.
-  A later supplied path cannot override a verified active path. Never silently
-  replace an established canonical SSOT. Missing or contradictory state
-  requires recovery and reconciliation; replacing, abandoning, or
-  intentionally switching an established SSOT requires current explicit human
-  approval for the exact old and new paths. Delegate an approved replacement,
-  record its path in task state and handoffs, and verify it on resume. The
-  first SSOT for a new branch is not a replacement.
+- Preserve one active canonical orchestration index for each verified owning
+  repository/full-branch/worktree scope. A date change, subordinate completion
+  or supplied alternative must not silently replace it. Known missing state
+  requires recovery; replacement needs current explicit human authorization
+  naming the old and new paths.
+- On start/resume and before adopting any supplied, discovered or new index,
+  invoke Logbook and read its required `references/local-markdown.md` from the
+  installed Skill root. It alone owns selection, discovery and migration
+  mechanics. If guidance is unreadable or candidates conflict, block affected
+  work/claims for reconciliation. Delegate creation/migration/updates to one
+  worker at a time; verify path, contents and links before reporting current.
 - Keep this committed role contract as the orchestration-index policy;
   keep live task state and machine-local paths in local Logbook artifacts.
   The active orchestration SSOT is a compact overall index: retain the original
