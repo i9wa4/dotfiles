@@ -50,28 +50,26 @@ denies as embedded `prefix_rule(...)` rules; the shared PreToolUse hook is
 the repo-owned command-deny authority, while Codex sandbox/approval settings
 remain responsible for filesystem and network blast radius.
 
-### 2.2. Foundational Contract — `postman.md` `[common_template]`
+### 2.2. Foundational Contract — Postman's builtin configuration
 
-The persona / language / scope directives live as `[common_template]` sections
-inside `tmux-a2a-postman help config` (§2.2 persona). Dotfiles-owned skill
-bodies stay in top-level `skills/`, and Default clients start without a
-common/role message. Postman includes that policy in recipient archives; POP
-returns the archive path and requires a complete read. Skills use normal runtime
-discovery. Launch-time injection is available only as an explicit user-selected
-option, not a default hook. postman.md remains the authored source for
-orchestrated sessions. `shared/AGENTS.md` is the single authored source for the
-runtime-root fallback: installed as generated Codex `AGENTS.md` directly, and
-Claude's `CLAUDE.md` is derived from the same source rather than a second
-hand-written file. It is only a minimal skill-catalog pointer for direct,
-non-postman invocations — it does not carry the persona / language / scope
+The common and role directives live in Postman's builtin standard team;
+`tmux-a2a-postman help config default` shows the complete selected policy.
+Dotfiles-owned skill bodies stay in top-level `skills/`, and Default clients
+start without a common/role message. Postman includes that policy in recipient
+archives; POP returns the archive path and requires a complete read. Skills use
+normal runtime discovery. Launch-time injection is available only as an explicit
+user-selected option, not a default hook. An explicit custom `postman.md`
+replaces the builtin default rather than extending it. `shared/AGENTS.md` is the
+single authored source for the runtime-root fallback: installed as generated
+Codex `AGENTS.md` directly, and Claude's `CLAUDE.md` is derived from the same
+source rather than a second hand-written file. It contains only the
+notification, POP and help bootstrap; it does not carry the Postman role
 contract.
 
-Reviewer prompt guidance lives as tool-agnostic Markdown references under
-`skills/subagent-review/references/`. Reviewers inherit the active runtime and
-account defaults; no runtime-specific generated agent files or install fork is
-needed.
-The `subagent-review` skill is hand-authored under `skills/subagent-review/`
-and installed through the normal skill pipeline.
+Generic reviewer procedures and prompts come from the selected Postman binary's
+`help postman-review` and named references. The local `subagent-review` Skill is
+an installed compatibility entry; reviewers inherit the active runtime and
+account defaults.
 
 ### 2.3. MCP Servers — `shared/mcp-servers.nix`
 
@@ -118,7 +116,8 @@ set subagent model, reasoning effort, and concurrency, and generated agent
 files provide per-role prompts. That is useful for assigning work, but it is
 not an authorization signal.
 
-Keep the shared policy in `postman.md`, shared prompt sources, and the common
+Keep the shared policy in Postman's builtin default or an explicit complete
+custom `postman.md`, the local fallback prompt, and the common
 Bash deny hook. If runtime-level role/write enforcement returns later, document
 the runtime-specific transport reason at that time.
 
