@@ -51,8 +51,6 @@ chmod +x "$editor"
 if command -v codex >/dev/null 2>&1; then
   {
     prompt='Generate ONLY a one-line Git commit message following Conventional Commits format (type(scope): description). Types: feat, fix, docs, style, refactor, test, chore. Based strictly on the diff from stdin. Output ONLY the message, nothing else.'
-    # Use the user's selected Codex model (or the CLI default). Model access
-    # differs between accounts; a fixed API-only alias can break ChatGPT login.
     if codex exec --ephemeral --ignore-rules --sandbox read-only -c approval_policy='"never"' -c model_reasoning_effort='"low"' --color never --output-last-message "$ai_message" "$prompt" <"$staged_diff" >/dev/null 2>"$ai_stderr"; then
       msg=$(head -n 1 "$ai_message")
       if [ -n "$msg" ]; then
@@ -62,14 +60,8 @@ if command -v codex >/dev/null 2>&1; then
         printf '%s\n' 'AI commit message generation returned an empty message; opening editor without AI message.' >"$ai_status"
       fi
     else
-      codex_status=$?
-      # A failed generation can still leave a partial output file. Never use it
-      # as a successful suggestion just because it contains some text.
       : >"$ai_message"
-      {
-        printf 'AI commit message generation failed (exit %s); opening editor without AI message.\n' "$codex_status"
-        tail -n 12 "$ai_stderr"
-      } >"$ai_status"
+      printf '%s\n' 'AI commit message generation failed; opening editor without AI message.' "$(cat "$ai_stderr")" >"$ai_status"
     fi
   } &
   ai_pid=$!

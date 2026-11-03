@@ -197,21 +197,6 @@
             files = "^skills/logbook/(SKILL\\.md|references/issue-mailbox\\.md|scripts/(issue-mailbox|test-issue-mailbox\\.py))$";
             pass_filenames = false;
           };
-          lazygit-ai-commit = {
-            enable = true;
-            entry = "${pkgs.writeShellScript "lazygit-ai-commit-test" ''
-              export PATH=${
-                pkgs.lib.makeBinPath [
-                  pkgs.bash
-                  pkgs.coreutils
-                  pkgs.git
-                ]
-              }:$PATH
-              exec ${pkgs.python3}/bin/python3 scripts/lazygit/test-ai-commit.py
-            ''}";
-            files = "^scripts/lazygit/(ai-commit\\.sh|test-ai-commit\\.py)$";
-            pass_filenames = false;
-          };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
           # === Markdown linter ===
