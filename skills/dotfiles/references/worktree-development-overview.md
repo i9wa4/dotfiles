@@ -1,119 +1,66 @@
-# Worktree Development Overview
+# Worktree Architecture and History
 
-This document summarizes the overall worktree-based development approach used
-in this repository. For command-level details, see
-`skills/dotfiles/references/worktree-development.md`.
+Use [Worktree Workflow](workspace-worktree-workflow.md) as the single
+operational entrypoint. This overview explains the design and provenance; it
+does not own a second command/setup procedure.
 
-## 1. Core Idea
+## 1. Architecture
 
-The main checkout stays as the stable base for repository maintenance, while
-feature work, issue work, and PR review happen in linked worktrees under the
-same repository. Each worktree has its own branch and working tree, so one task
-can be edited, tested, paused, or reviewed without disturbing another task.
+The base checkout supports repository maintenance while independent issues,
+features and PR reviews use linked worktrees. Each has its own branch, files and
+index while sharing Git repository metadata. Isolation protects unrelated work,
+including small documentation changes; a shared index is not a concurrency tool.
 
-The approach is wrapper-first. Humans provide issue numbers or PR numbers, and
-repo scripts translate those numbers into branches, worktree paths, bootstrap
-steps, and navigation entries. Native `git worktree` remains the backend, but
-the normal user interface is the repository's checked-in commands.
+Native Git owns linked-checkout mechanics and the canonical worktree inventory.
+Checked-in wrappers own local issue/PR naming, source/upstream selection,
+cross-repository PR support, environment bootstrap and navigation registration.
+There is no separate worktree backend package or hidden per-machine task
+database.
 
-## 2. Operating Model
+Managed `.worktrees/` roots are relative to the invoking checkout. That
+relationship matters when invoking a wrapper from an existing linked checkout or
+intentionally stacking a dependent issue. Off-main invocation preserves the
+stable main branch; the workflow reference gives exact base-selection behavior
+and safety checks.
 
-The workflow has five recurring phases:
+## 2. Trust and Responsibility
 
-1. Start from a task identifier.
-   For implementation work, create or choose the GitHub issue first, then run
-   `issue-worktree-create <issue_number>` and develop inside that issue
-   worktree. Use `pr-worktree-create <pr_number>` for PR review. If there is
-   deliberately no issue or PR number, create a dedicated no-issue branch
-   worktree under `.worktrees/` before editing.
-2. Create or reuse a linked worktree.
-   Managed worktrees live under repo-local `.worktrees/`, with branches and
-   directory names derived from the issue or PR.
-3. Bootstrap the task environment.
-   New worktrees copy the source checkout's `.envrc` when available and the
-   checked-out branch did not already provide one, including for non-Nix
-   repositories, then run `repo-setup` when available and register the final
-   path with `zoxide`. `repo-setup` attempts to install the repo devshell hooks
-   and generated per-worktree pre-commit config. Newly created issue worktrees
-   allow copied source-checkout `.envrc` files by default. If no `.envrc` exists
-   and the worktree has `flake.nix`, default setup lets `repo-setup` create and
-   allow the generated `use flake` fallback. Whenever `repo-setup` allows a
-   trusted `.envrc`, it also evaluates it once with
-   `direnv exec <worktree-root> true`. Re-running the issue command remediates
-   an existing issue worktree only when invoked from a distinct source checkout
-   and that worktree `.envrc` still matches the source checkout file, unless
-   the caller explicitly passes `--allow-direnv` after review. Use
-   `issue-worktree-create --no-allow-direnv` to create an issue worktree
-   without allowing `.envrc`. Issue-branch-provided `.envrc` files are left
-   unchanged and require explicit review, as do PR review worktrees, because the
-   checked-out branch controls `flake.nix`; pass `--allow-direnv` to the
-   creation command only after reviewing the file and branch. If the one-shot
-   direnv load, Nix, or devshell setup fails, it warns and continues; re-run
-   `repo-setup` or enter the devshell before pushing so
-   `.pre-commit-config.yaml` is generated.
-4. Re-enter quickly.
-   Use `z <keyword>`, `zi [keywords...]`, or Ctrl-G to jump back to a repo or
-   worktree from normal shell use. Inside tmux, re-entry also keeps session
-   naming aligned with the selected repo or worktree.
-5. Clean up explicitly.
-   Use `worktree-status` to inspect every registered worktree for the current
-   repository. Delete confirmed clean, unlocked, merged worktrees manually with
-   native Git cleanup.
+A branch-controlled environment can execute code while loading. The operational
+owner therefore distinguishes copied/generated issue setup from branch-provided,
+existing or PR-review files and preserves their different authorization gates.
+A returned checkout path is not evidence of successful hook/devshell setup.
 
-## 3. Why This Shape Works
+Zsh navigation changes the current pane's directory and aligns tmux naming with
+its repository/worktree. Agent Workspace owns that navigation detail. It does
+not change worktree ownership or make a shared checkout safe for overlapping
+edits.
 
-The design keeps the boring parts boring and the policy parts reviewable.
-Native Git owns the linked-checkout mechanics, while repo scripts own local
-policy:
+Inspection and deletion remain separate. Native inventory and `worktree-status`
+provide evidence; confirmed clean, unlocked and merged/obsolete checkouts can be
+removed explicitly. No background cleanup or generic backend replacement is part
+of this design. Runtime activation and Postman transport have their own owners.
 
-- issue and PR lookup through `gh`
-- branch reuse and upstream tracking
-- cross-repository PR review support
-- `.envrc`, devshell hook, and `repo-setup` bootstrap: copy source `.envrc`
-  only when the new worktree does not already have one, generate `use flake`
-  only as the Nix flake fallback, allow copied or generated issue worktree files
-  by default and evaluate allowed files once with `direnv exec`, keep existing
-  issue worktree remediation limited to matching source `.envrc` files from a
-  distinct checkout, and require explicit review for issue-branch-provided
-  `.envrc`, PR review worktrees, or other pre-existing `.envrc`
-- zoxide registration for fast re-entry
-- tmux-aware session naming
-- explicit cleanup inspection before manual removal
+## 3. Historical Context
 
-That split keeps the workflow portable across machines without adding another
-worktree backend package or hidden per-machine state.
+These are retained implementation changes, not an alternate current recipe:
 
-## 4. Day-to-Day Practice
+- Sibling layouts such as `../dotfiles-issue-123` are legacy; managed roots
+  moved to checkout-local `.worktrees/`.
+- The npm-managed backend was removed; wrappers now use native Git directly.
+- Jump functions moved into `config/zsh/zoxide.zsh`, sourced by
+  `nix/home-manager/modules/zsh.nix`. Re-entry now changes the current pane's
+  directory rather than switching tmux sessions; ghq supplements zoxide results.
+- Issue/PR flows learned to preserve local main off-main, and PR review learned
+  to fetch cross-repository heads without rewriting divergent local branches.
+- Worktree status became a read-only inventory of every registered checkout,
+  with remote issue/PR state only where naming rules identify it.
+- Old "approved target after migration" descriptions ceased being runtime
+  authority. Current code is authoritative; the adoption evaluation remains a
+  private-vault decision record, not a public private-path pointer.
 
-Keep the base checkout clean enough to launch and maintain worktrees. Do active
-task edits inside the task worktree, not by stacking unrelated changes in the
-base checkout. This applies to small docs-only and single-line changes too: if
-the change may become a commit, make or enter a dedicated worktree first.
+## 4. Related Ownership
 
-Use issue and PR numbers as the stable human entrypoints. Avoid ad hoc branch
-or directory naming when a repository wrapper already covers the task. When no
-issue or PR number exists by design, use an explicit no-issue branch worktree
-instead of falling back to the base checkout:
-
-```sh
-branch_name=<short-branch-name>
-git worktree add -b "$branch_name" ".worktrees/$branch_name" main
-cd ".worktrees/$branch_name"
-```
-
-Use `z` and `zi` for re-entry instead of raw `zoxide` calls, because the repo
-wrappers keep the current shell and tmux session state aligned.
-
-Before removing a worktree, inspect the candidate through `worktree-status` or
-`git worktree list --porcelain`. Delete only when the worktree is clean,
-unlocked, and merged or otherwise confirmed obsolete.
-
-## 5. Related Files
-
-- `skills/dotfiles/references/worktree-development.md`
-- the worktree-tool evaluation decision record (private vault)
-- `scripts/bin/issue-worktree-create`
-- `scripts/bin/pr-worktree-create`
-- `scripts/bin/worktree-status`
-- `config/zsh/zoxide.zsh`
-- `skills/dotfiles/references/workspace-worktree-workflow.md`
+The workflow reference links executable sources and publication guidance.
+[Agent Workspace](workspace-guidance.md) owns boot, session naming, navigation,
+lock diagnosis and pane references. Preserve their distinct scopes instead of
+replicating issue/PR setup here.

@@ -1,7 +1,7 @@
 # Postman Integration Boundary
 
 Dotfiles supplies the authored role policy in
-`config/tmux-a2a-postman/postman.md`. Package and Skill installation use the
+`tmux-a2a-postman help config`. Package and Skill installation use the
 ordinary pinned flake input and shared agent-Skill configuration.
 
 Postman owns its CLI, configuration format, mailbox/native identity,

@@ -18,37 +18,21 @@ description: |
 
 # Logbook
 
-Owns local Markdown artifact creation, discovery, reuse, and lifecycle.
+For local Markdown selection, canonical-index recovery, creation, resume and
+retention, read the complete installed entry
+`tmux-a2a-postman help postman-records` and follow every matching reference
+through EOF. Existing known records remain canonical; a package upgrade never
+authorizes replacing or moving them. A missing Skill or reference is an
+incompatible installation. The optional helper is supplied by Postman resources.
 
-A Logbook entry is a local Markdown file (`mkmd`) and remains canonical after
-delivery.
+This local entry also owns personal delivery adapters, only when explicitly
+requested. Issue Mailbox creation uses this machine's private configured
+repository, local timestamp and hostname, and returns the actual Issue URL.
+That creation destination stays private and untracked. Markdown/Mermaid posting
+uses the exact supplied GitHub Issue. Read the complete applicable reference:
 
-Follow the active runtime/session language policy or explicit request. This
-skill does not define its own output language defaults.
+- [Secret-Gist delivery](references/gist-delivery.md)
+- [Issue Mailbox delivery](references/issue-mailbox.md)
 
-## 1. Workflow
-
-1. Before choosing a supplied, discovered or new path, read the required
-   [canonical-selection procedure](references/local-markdown.md). Identify
-   purpose, scope and active record. Protect verified active orchestration
-   indexes; otherwise prefer requester paths for ordinary plans/research.
-2. Read that reference from the installed/current Logbook root, independently
-   of task cwd. An unavailable reference blocks selection.
-3. Reuse the active file for the same repo, branch, task and purpose. Create a
-   separate file only for a genuinely separate purpose.
-4. When durable state needs a new file, use the reference's cwd-independent
-   `mkmd` contract.
-5. Update the canonical record as work proceeds. Apply the reference's
-   readability guidance for human output; a readable-document request does
-   not authorize external publication.
-
-## 2. References
-
-- [Local Markdown Artifacts](references/local-markdown.md)
-
-For explicitly requested Gist delivery only, follow
-[Secret-Gist Delivery](references/gist-delivery.md).
-
-For explicitly requested Issue creation or posting to a supplied Issue, follow
-[Issue Mailbox delivery](references/issue-mailbox.md). Local artifacts remain
-canonical; each machine's creation destination stays private and untracked.
+Keep adapters and credentials in dotfiles; local records stay canonical.
+Respect publication authority and the requested language and audience.

@@ -223,5 +223,5 @@ special cases on top of regex.
 - `nix/home-manager/agents/codex/default.nix` — wires the shared hook and
   <!-- private-content-scan: allow-next-line -->
   generated patterns into `~/.codex/scripts/` and `~/.codex/hooks.json`.
-- `config/tmux-a2a-postman/postman.md` section 2.16 — multi-agent
+- `tmux-a2a-postman help config` section 2.16 — multi-agent
   bash discipline that complements this hook system on the agent side.
