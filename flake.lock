@@ -691,17 +691,17 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1793696544,
-        "narHash": "sha256-eaWIYXgAfVeabK/I7o8xEis1RNT9Jm5nkNMHxjpnqk4=",
+        "lastModified": 1793700177,
+        "narHash": "sha256-nYQIvqsFOEYomUo6tqig1rQIKz1i9Hf025/+GIc/ys0=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "e245b22154f176bfd457cf97bc1948951671210b",
+        "rev": "a613d6c203fbdc3e096109d79ea171dfa787746e",
         "type": "github"
       },
       "original": {
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "e245b22154f176bfd457cf97bc1948951671210b",
+        "rev": "a613d6c203fbdc3e096109d79ea171dfa787746e",
         "type": "github"
       }
     },
