@@ -72,7 +72,7 @@ After resolving the snippet, boot the session:
    without an initial role message. Read common/role instructions in complete
    POP archives. Do not prepend a second messenger preset.
    Postman configuration is independent of this launcher and is authored in
-   `config/tmux-a2a-postman/postman.md`.
+   `tmux-a2a-postman help config`.
 8. Wait 8-12s for vde-layout to materialize all panes.
 9. Verify topology:
 
@@ -109,8 +109,8 @@ boot time instead of trusting any snapshot here. Zsh snippets:
 Trigger paths:
 
 - `z <dir>` calls `__z_cd()` which calls `__z_tmux_rename_for_dir()`
-- `^g` (`__zoxide_zi_widget`) calls `__z_tmux_rename_for_dir()` directly at
-  `zoxide.zsh:71`, bypassing `__z_cd()` entirely
+- `^g` (`__zoxide_zi_widget`) calls `__z_tmux_rename_for_dir()` directly,
+  bypassing `__z_cd()`
 
 Rename rules:
 
@@ -125,64 +125,18 @@ session by name in tmux commands.
 
 ## 4. Worktree Lifecycle
 
-Primary creation entrypoints:
-`scripts/bin/issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
-and `scripts/bin/pr-worktree-create [--allow-direnv] <pr_number>`. For cleanup
-inspection in the current repository, use `scripts/bin/worktree-status` to list
-every registered worktree with issue/PR state when the naming rules expose a
-number, plus local Git state. The command is read-only; use native
-`git worktree remove` manually after inspection.
+Read [Worktree Workflow](workspace-worktree-workflow.md) before issue/PR
+worktree creation, reuse, bootstrap, publication preparation or cleanup. It
+alone owns commands, invoking-checkout/base selection, upstream invariants,
+envrc trust and hook readiness. Use its wrapper-first entry, including for small
+changes; never replace issue/PR isolation with a generic worktree tool or shared
+index.
 
-For issue implementation, agents must create or choose the GitHub issue first,
-then use `issue-worktree-create <issue_number>`. Do not create issue branches
-or worktrees manually, and do not use the generic worktree tool
-(`EnterWorktree`) as the entrypoint for issue implementation or PR review.
-Before editing, verify `pwd`,
-`git branch --show-current`, and
-`git status --short --branch`. Stop and report `BLOCKED` if an issue branch
-tracks `origin/main`, `origin/dev`, or another non-issue upstream. For
-upstream verification, the same-name publication refspec, and branch
-protection, see
-`skills/dev-platform-workflow/references/github-workflow.md` section 5
-("Branch Publication and PR Creation").
-
-Both scripts:
-
-- Copy `.envrc` from repo root when available and the checked-out branch did not
-  already provide one, including for non-Nix repositories
-- Run `repo-setup` if available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees allow copied source-checkout `.envrc` files by default and evaluate
-  them once with `direnv exec <worktree-root> true`. If no `.envrc` exists and
-  the worktree has `flake.nix`, default setup lets `repo-setup` create, allow,
-  and evaluate the generated `use flake` fallback once; use
-  `issue-worktree-create --no-allow-direnv` to opt out. Issue-branch-provided
-  `.envrc` files are left unchanged and not allowed by default; review and run
-  `repo-setup --allow-direnv` manually or pass `--allow-direnv` explicitly.
-  Re-running an existing issue worktree can remediate `direnv allow` only when
-  invoked from a distinct source checkout and the existing worktree `.envrc`
-  still matches that source checkout `.envrc`, unless `--allow-direnv` is passed
-  explicitly after review. Re-running from inside the issue worktree itself does
-  not make that branch-owned `.envrc` trusted. PR review worktrees preserve the
-  trust gate by creating the generated `.envrc` without allowing it unless
-  `pr-worktree-create --allow-direnv` is used after review. When `.envrc` is
-  explicitly allowed, `repo-setup` evaluates it once with
-  `direnv exec <worktree-root> true`. If the one-shot direnv load, Nix, or
-  devshell setup fails, `repo-setup` warns and continues; re-run `repo-setup`
-  or enter the devshell before pushing.
-- Register path with `zoxide add "$worktree_path"` as the last step
-
-Issue worktrees use the issue branch name as the worktree directory name.
-Existing remote issue branches are configured as upstream. New local issue
-branches intentionally have no upstream until explicit same-name publication.
-PR worktrees keep the local branch name equal to the PR head branch, but use a
-directory name like
-`.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`.
-
-Re-entry after creation: `z <branch>` or `^g` (`__zoxide_zi_widget`).
-
-See `workspace-worktree-workflow.md` for full command reference including
-inspection, cleanup, and baseline verification.
+[Worktree Architecture and History](worktree-development-overview.md) explains
+the design without a competing procedure. A path returned by a wrapper does not
+prove devshell/hook setup succeeded. Stop for unsafe upstream configuration;
+retain explicit inspection before any cleanup. Runtime activation remains
+outside this lifecycle.
 
 ## 5. Git Lock Diagnostics
 
@@ -242,11 +196,19 @@ separate issue or PR worktrees first.
 - `z <keyword>` — zoxide wrapper (`config/zsh/zoxide.zsh`); triggers session
   rename on cd
 - `^g` / `__zoxide_zi_widget` — fzf picker merging zoxide + ghq sources; calls
-  `__z_tmux_rename_for_dir` directly at `zoxide.zsh:71`
+  `__z_tmux_rename_for_dir` directly
 - `zi [keywords...]` — interactive fzf version of `z`
 - `worktree-status` — read-only inventory of every worktree registered to the
   current repository, with issue/PR state when available from naming rules,
   local flags, dirty state, upstream status, branch, HEAD, and path
+
+`z` and `zi` are current-shell wrappers, including inside tmux; they do not
+switch sessions. `zi` merges zoxide order with missing `ghq list -p` paths into
+plain fzf rows. `z` without arguments opens `zi`; `z -` is `cd -`; a directory
+argument jumps directly, otherwise keyword lookup falls back to `zi` when
+needed. Ctrl-G runs the same picker and directory/session-name path. Worktree
+creation registers paths with zoxide; raw zoxide is not the outer navigation
+command.
 
 ## 7. Common tmux Pane Operations
 
@@ -270,7 +232,6 @@ Key rules:
 ## 9. Reference Index
 
 - [Worktree Workflow](workspace-worktree-workflow.md)
-- [Worktree Development](worktree-development.md)
 - [Worktree Development Overview](worktree-development-overview.md)
 - [Pane Operations](workspace-tmux-pane-operations.md)
 - [Boot Failure Modes](workspace-boot-failure-modes.md)

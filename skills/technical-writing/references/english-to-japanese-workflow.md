@@ -1,10 +1,8 @@
 # English-to-Japanese Technical Translation Workflow
 
-This reference is a packaged copy of
-[English-to-Japanese Technical Translation](english-to-japanese-technical-translation.md).
-The docs page is canonical; update both files in the same change so the
-technical-writing skill can use the workflow without loading repository
-documentation context.
+This installed Skill reference is the sole owner of the translation procedure.
+Keep the workflow here rather than maintaining a synchronized documentation
+copy.
 
 This workflow translates English technical articles into natural Japanese while
 preserving technical accuracy, Markdown structure, code, commands, links,

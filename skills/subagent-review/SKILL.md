@@ -8,38 +8,12 @@ description: "USE FOR: Guardian/critic native multi-perspective review workflow,
 
 # Subagent Review
 
-## 1. Ledger and authority
+This compatible discovery name delegates its complete procedure to the installed
+Postman binary. Read the complete entry and follow every matching reference
+through EOF using `tmux-a2a-postman help postman-review` before this workflow.
+A missing Skill or reference is an incompatible installation; do not substitute
+a stale local procedure.
 
-Guardian freezes target, scope, criteria, baseline, mode, and boundary. The
-task owner declares mitigation mode before this freeze.
-Guardian owns never-reused IDs, applies the
-[materiality and risk rules](references/review-topology.md), and decides
-convergence. Packets supply evidence; nits do not gate rework. Record gaps.
-
-## 2. Review loop
-
-1. Run cheapest verification. Guardian MUST request critic for substantive
-   review; deduplicate its set and self-review. Reviewers cannot edit, commit,
-   push, approve, or decide materiality. Follow the
-   [packet contract](references/review-topology.md).
-2. Give each prior ID one disposition: recurrence, regression, closure,
-   supersession, accepted risk, unchanged, or changed criterion. Record new
-   discoveries separately; changed criteria need old/new/reason/owner, never
-   retrospective freezing.
-3. Review the full change; freeze material IDs, observable closure outcomes,
-   and named verification in one batch. Separate design suggestions. Attribute
-   reviewer prescriptions and `prescription-induced` regressions; reassess the
-   prescription and gate regressions by materiality. Re-review that batch.
-4. Fix, verify, and review through confirmation.
-   Count `initial`, `rework 1 of 2`, `rework 2 of 2`; invalid packets consume no
-   slot. At cap or unavailable proof, report `BLOCKED` with IDs and gaps. Only
-   the human through the interface may extend caps. Packet admission and Tier 1
-   corrections have separate bounded lineages under the mandatory
-   [stage contract](references/review-topology.md).
-
-## 3. Round report
-
-Use the [contract's report](references/review-topology.md): counter, frozen
-criteria/baseline/mode, criterion changes, accepted-risk authority and owners,
-reviewer-reachable proof, base-versus-head latency/liveness check, ledger,
-verdict, and next action.
+The declarative Postman input supplies the canonical `postman-*` entry points.
+This alias does not install assets, grant runtime permissions or start work
+outside the current request.
