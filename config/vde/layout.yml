@@ -8,7 +8,7 @@ presets:
       ratio: [1, 1]
       panes:
         - name: postman
-          command: printf "Postman is daemonless. Start a team preset; use get-status in a configured role pane.\n"
+          command: printf "Postman is daemonless. For this server, run refresh-status then get-status. Team startup is separate.\n"
           delay: 500
           focus: true
         - name: vde-monitor

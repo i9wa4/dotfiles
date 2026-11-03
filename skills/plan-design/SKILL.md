@@ -14,36 +14,12 @@ description: |
 
 # Plan Design
 
-Owns implementation-plan authoring and durable task tracking for plan-ready
-tasks: ambiguity reduction, option framing, multi-source synthesis, review
-gates, task artifacts, evidence logs, and handoff/resume.
+This compatible discovery name delegates its complete procedure to the installed
+Postman binary. Read the complete entry and follow every matching reference
+through EOF using `tmux-a2a-postman help postman-plan` before this workflow. A
+missing Skill or reference is an incompatible installation; do not substitute a
+stale local procedure.
 
-This skill owns planning semantics and evidence expectations, not artifact
-storage or delivery mechanics. Leave a durable artifact of your work; where
-and how it is created, reused, discovered, and delivered is governed
-elsewhere in this environment.
-
-Follow the output language designated by the active runtime/session policy or
-explicit request. Do not establish an independent language policy in this
-skill.
-
-## 1. Workflow
-
-1. Inspect the relevant files, current repo conventions, and `git status`.
-2. Read [Plan Authoring](references/plan-authoring.md) before changing
-   behavior or giving detailed instructions.
-3. If the task is fuzzy or has multiple viable approaches, read
-   [Brainstorming](references/brainstorming.md) and stabilize the direction
-   before drafting the execution plan.
-4. If plan terms, states, conditions, cause categories, or mitigation names are
-   ambiguous, use `clarify-concepts` before the plan language hardens.
-5. Make the smallest scoped change that satisfies the request.
-6. Run the checks named in the plan authoring guide or the nearest repo
-   harness.
-7. Report verification results and any remaining risk.
-
-## 2. References
-
-- [Plan Authoring](references/plan-authoring.md)
-- [Brainstorming](references/brainstorming.md)
-- [Durable Task Tracking](references/durable-task-tracking.md)
+The declarative Postman input supplies the canonical `postman-*` entry points.
+This alias does not install assets, grant runtime permissions or start work
+outside the current request.

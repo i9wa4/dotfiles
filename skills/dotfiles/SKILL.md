@@ -4,7 +4,7 @@ license: MIT
 metadata:
   version: "1.0.1"
 description: |
-  USE FOR: This dotfiles environment and agent harness: machine setup, Nix
+  USE FOR: Dotfiles and agent harness: machine setup, Nix
   operations/recovery, missing tools, operating concepts, clipboard,
   Claude/Codex config, hooks, MCP, skills, Postman routing/runbooks,
   tmux/worktrees/panes, prompt/review/resume-handoff contracts, and Agent
@@ -19,7 +19,7 @@ description: |
 Maintenance follows current role authority. Coordination-only roles may read
 required references; investigation, tests and all writes remain delegated.
 
-1. Read the owner reference below and inspect relevant files and `git status`.
+1. Read the owner reference; inspect relevant files and `git status`.
 2. Run its checks (`nix run '.#check'` for flake changes); report verification
    and remaining risk.
 

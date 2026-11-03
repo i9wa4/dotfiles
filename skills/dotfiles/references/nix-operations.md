@@ -30,6 +30,31 @@ sudo bash ./scripts/ubuntu/extend-root-lvm.sh --apply
 
 Use `--apply` only after reviewing the VG/LV target printed by `--check`.
 
+### 1.1. macSKK Updates
+
+Both macOS profiles keep macSKK managed by Homebrew and pinned during normal
+`nix run '.#switch'`. Activation pins an existing installation before Bundle
+can upgrade it; a failed query or pin stops activation. A fresh installation
+is pinned by its postinstall action. Other Homebrew packages retain the normal
+upgrade policy.
+
+Choose an appropriate time for an intentional macSKK update:
+
+```sh
+nix run '.#macskk-upgrade'
+```
+
+This Darwin-only app temporarily unpins and upgrades macSKK alone, then restores
+its pin. Failure and catchable interruption also attempt to re-pin; a re-pin
+failure is reported and returns a failure status. Homebrew must support
+`pin --cask`; unsupported versions fail rather than proceeding unprotected.
+
+A successful package upgrade does not prove that Japanese input works in the
+current login session. Verify macSKK in a native application and kitty
+afterward; logout/login may still be needed. The app never logs out, reboots, or
+activates an input source automatically. No update or activation is required to
+inspect or test the source change.
+
 ## 2. Scheduled Nix Cleanup
 
 Cleanup uses the same 30 day retention threshold on Ubuntu/WSL and macOS, but

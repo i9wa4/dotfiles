@@ -20,8 +20,7 @@ Use this reference for Bash scripts and shell command design in this repo.
 ## 3. Example
 
 ```sh
-: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-FILE=$("${LOGBOOK_SKILL_ROOT}/scripts/mkmd" --dir tmp --label output)
+: "${FILE:?select the absolute output record using tmux-a2a-postman help records}"
 { git branch -r | rg issue; } >"$FILE" 2>&1
 ```
 

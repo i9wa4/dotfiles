@@ -23,7 +23,12 @@ let
     "drawio"
     "google-chrome"
     "kitty"
-    "macskk"
+    {
+      name = "macskk";
+      # Also protect the first installation; unchanged installations are pinned
+      # before Bundle runs by the activation preflight below.
+      postinstall = "HOMEBREW_NO_AUTO_UPDATE=1 /opt/homebrew/bin/brew pin --cask macskk";
+    }
     "zoom"
   ];
   darwinHosts = {
@@ -104,6 +109,14 @@ let
           # activation.
           system.activationScripts.extraActivation.text = lib.mkAfter ''
             if [ -x /opt/homebrew/bin/brew ]; then
+              if ! sudo \
+                --user=${lib.escapeShellArg username} \
+                --set-home \
+                env PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+                /bin/bash ${../../../scripts/nix/macskk-maintenance.sh} pin-existing /opt/homebrew/bin/brew; then
+                echo >&2 "macSKK pin preflight failed; refusing an unprotected Homebrew Bundle run"
+                exit 1
+              fi
               echo >&2 "trusting Homebrew taps..."
               ${lib.concatMapStringsSep "\n" (tap: ''
                 sudo \

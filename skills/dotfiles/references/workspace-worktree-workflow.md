@@ -1,247 +1,185 @@
 # Worktree Workflow
 
-Full reference for git worktree lifecycle in this repo.
-Migrated from `skills/using-git-worktrees/SKILL.md`.
+This is the sole operational entrypoint for worktree creation, reuse,
+bootstrap, publication preparation and cleanup in this environment. The
+[overview](worktree-development-overview.md) owns architecture and historical
+context. Checked-in scripts remain the source of truth; correct stale prose
+rather than changing working code to match it.
 
-## 1. Core Defaults
+## 1. Choose the Entry and Verify Scope
 
-- Prefer repo wrappers before generic `git worktree` creation flows.
-- For implementation work, follow the issue-first flow: create or choose a
-  GitHub issue, run `issue-worktree-create <issue_number>`, then develop inside
-  that issue worktree.
-- For deliberately no-issue branch work, still create a dedicated worktree
-  under `.worktrees/` before editing or committing.
-- Assume the managed root is `.worktrees`, even if generic tool help mentions a
-  different default.
-- Report the final worktree path and branch in handoff or status messages.
-- Keep this reference focused on workspace isolation and inspection, not runtime
-  activation or Nix switching.
+- For implementation, create or choose the GitHub issue first, then use
+  `issue-worktree-create`; for PR review use `pr-worktree-create`. Do not
+  replace these with manual issue branches, raw `git worktree add`,
+  `EnterWorktree` or another backend. Deliberate no-issue work has its own flow
+  below.
+- Even docs-only and one-line commit work uses a dedicated linked worktree.
+  Keep unrelated changes out of the base checkout and report final path/branch
+  in handoffs. Managed paths are under the invoking checkout's `.worktrees/`.
+- Resolve the invoking checkout, current branch and intended base first. From
+  `main`, both wrappers fetch and fast-forward `main` with `git pull --ff-only`;
+  off-main they preserve local `main`. New issue branches start from the
+  invoking checkout's current branch, including an explicitly intended stack.
+  Invoking from a subdirectory resolves that checkout's root; invoking from a
+  linked worktree uses that worktree's root and can create a nested
+  `.worktrees/`. Do not assume every invocation starts from main or another
+  checkout's root.
+- Before edits, verify the returned worktree and intended branch/base:
 
-## 2. Primary Repo Flows
-
-### 2.1. Issue Implementation Safety
-
-For GitHub issue implementation in this repo:
-
-- Create or choose the GitHub issue first. Do not start implementation from an
-  ad hoc branch.
-- Run `issue-worktree-create <issue_number>` from the base repository.
-- Do not create issue branches or issue worktrees manually.
-- Do not use raw `git worktree add` as the issue implementation entrypoint.
-- Before editing, verify the worktree path, current branch, and status:
-
-  ```bash
+  ```sh
   pwd
   git branch --show-current
   git status --short --branch
+  git worktree list --porcelain
   ```
 
-- Stop and report `BLOCKED` if an issue branch tracks `origin/main`,
-  `origin/dev`, or another non-issue upstream; an issue branch must not push
-  into shared base branches.
-- For upstream verification before publication and the same-name publication
-  refspec, see
-  `skills/dev-platform-workflow/references/github-workflow.md` section 5
-  ("Branch Publication and PR Creation").
+- An issue branch may track only an existing `origin/<same-branch-name>`.
+  New local issue branches intentionally have no upstream before same-name
+  publication. Stop with BLOCKED if it tracks `origin/main`, `origin/dev` or
+  another non-matching upstream; do not push through that configuration.
 
-### 2.2. Issue Execution
+## 2. Issue Implementation
 
-Run `issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number>`
-from the repo.
-Expect it to:
+From the checkout whose branch and managed root you intend to use:
 
-- fetch `origin`
-- refresh `main`
-- reuse `origin/issue-<number>` when present, otherwise reuse the first
-  `origin/issue-<number>-*` branch when present
-- set existing same-name remote issue branches as upstream
-- leave new local issue branches without an upstream until explicit same-name
-  publication (see `skills/dev-platform-workflow/references/github-workflow.md`
-  section 5 for the refspec)
-- clear unsafe or stale issue branch upstreams after branch preparation. Issue
-  branches must not track `origin/main`, `origin/dev`, or any other upstream
-  except an existing `origin/<same-branch-name>` branch.
-- create a new linked worktree when needed
-- copy the source checkout's `.envrc` when available and the checked-out branch
-  did not already provide one, including for non-Nix repositories
-- run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. Newly created issue
-  worktrees allow copied source-checkout `.envrc` files by default and evaluate
-  them once with `direnv exec <worktree-root> true`. If no `.envrc` exists and
-  the worktree has `flake.nix`, default setup lets `repo-setup` create, allow,
-  and evaluate the generated `use flake` fallback once. Use
-  `issue-worktree-create --no-allow-direnv` to create the worktree without
-  allowing `.envrc`. If the issue branch already provides `.envrc`, the file is
-  left unchanged and default setup does not allow it; review the file and run
-  `repo-setup --allow-direnv` manually or pass `--allow-direnv` explicitly. If
-  an issue worktree already exists, re-run the command to remediate a missing
-  `direnv allow` only when invoked from a distinct source checkout and the
-  worktree `.envrc` still matches that source checkout `.envrc`; otherwise
-  review and run `repo-setup --allow-direnv` manually, or pass `--allow-direnv`
-  to explicitly allow an existing issue worktree. Re-running from inside the
-  issue worktree itself does not make that branch-owned `.envrc` trusted. If the
-  one-shot direnv load, Nix, or devshell setup fails, `repo-setup` warns and
-  continues; re-run `repo-setup` or enter the devshell before pushing.
-
-For GitHub issue implementation, use this wrapper flow. Do not create issue
-branches or issue worktrees manually, and do not use raw `git worktree add` as
-the issue entrypoint.
-
-After entering the issue worktree and before editing, verify the current
-branch and worktree location:
-
-```bash
-pwd
-git branch --show-current
-git status --short --branch
+```sh
+issue-worktree-create [--allow-direnv|--no-allow-direnv] <issue_number> [issue_number2 ...]
 ```
 
-For a reused remote issue branch, the upstream must be
-`origin/issue-<number>` or `origin/issue-<number>-*`. Stop if an issue branch
-tracks `origin/main`, `origin/dev`, or another non-issue upstream. New local
-issue branches created by the wrapper intentionally have no upstream until
-explicit publication; verify they started from current `main` before editing.
-First publication from lazygit is allowed and expected when it publishes to
-`origin/<same-branch-name>`.
+The wrapper fetches origin and applies section 1's main/off-main behavior. For
+each issue it reads title, body and comments with `gh issue view`, reuses
+`origin/issue-<number>` when present or the first matching
+`origin/issue-<number>-*`, and otherwise creates an issue branch from the
+invoking branch. It optionally asks an available Codex CLI for a short
+descriptive slug; if unavailable or unusable, it falls back to `issue-<number>`.
+The executable script owns model/options; documentation does not select a model.
 
-Before asking a human to push, check how far the branch is ahead of or behind
-its upstream with `git rev-list --left-right --count HEAD...@{u}`. For
-upstream verification, the same-name publication refspec, PR base/head
-verification before PR creation, and the branch-protection expectation for
-shared branches, see
-`skills/dev-platform-workflow/references/github-workflow.md` section 5
-("Branch Publication and PR Creation").
+It locates existing branch worktrees via native `git worktree list --porcelain`,
+creates a linked checkout when absent, and enforces the same-name upstream
+invariant after preparation, clearing stale/unsafe upstreams. Reused same-name
+remote branches get that upstream; new local branches do not inherit a base
+upstream. Do not manually create a competing issue branch/worktree.
 
-### 2.3. No-Issue Branch Work
+For new worktrees it preserves a branch-provided `.envrc`, otherwise copies the
+source checkout's when available, including non-Nix repositories. It attempts
+`repo-setup` when available, follows the trust rules in section 4, and registers
+the final path with zoxide. For an existing worktree, default remediation may
+allow its `.envrc` only from a distinct source checkout whose `.envrc` still
+matches it. Invoking inside that issue worktree does not make its own file
+trusted. Otherwise review it and explicitly use `--allow-direnv` or
+`repo-setup --allow-direnv`; `--no-allow-direnv` opts out.
 
-If a task deliberately has no GitHub issue or PR number, do not edit or commit
-from the main checkout. Create a dedicated branch worktree under `.worktrees/`
-before editing:
+## 3. PR Review
 
-```bash
+```sh
+pr-worktree-create [--allow-direnv] <pr_number> [pr_number2 ...]
+```
+
+After fetching and section 1's base handling, the wrapper reads PR head name,
+repository owner/name and cross-repository status. For a cross-repository head,
+it creates/refreshes a PR-specific remote targeting the actual source repo;
+otherwise it uses origin. It fetches the PR head, keeps the local branch name
+identical to the PR head and sets its upstream to that source branch.
+
+The review directory is
+`.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`. Existing branch
+worktrees may be reused. An existing local review branch fast-forwards only
+when safe; ahead/diverged branches are refused rather than rewritten. New
+worktrees preserve branch `.envrc` or copy the source checkout's, attempt
+`repo-setup` under section 4 and register the final path with zoxide.
+
+PR review does not automatically allow `.envrc`. Use `--allow-direnv` only after
+reviewing the branch-controlled file and `flake.nix`. If any requested PR is
+invalid, skipped, refused or fails, the wrapper exits nonzero without the
+all-ready success message. Do not treat a partial batch as complete.
+
+## 4. Bootstrap and Envrc Trust
+
+`repo-setup` attempts devshell hook installation and the generated per-worktree
+`.pre-commit-config.yaml`. Source `.envrc` copying applies only when the
+checked-out branch did not provide one. If no file exists and the checkout has
+`flake.nix`, setup may generate the `use flake` fallback.
+
+For newly created issue worktrees, copied source `.envrc` and generated
+fallbacks are allowed by default and evaluated once with
+`direnv exec <worktree-root> true`. `--no-allow-direnv` creates/prepares without
+allowing them. Branch-provided files remain unchanged and are not implicitly
+allowed. Existing issue remediation has the distinct-source/matching-file
+restriction in section 2. PR review defaults also preserve explicit review
+before allow. An explicit allowed file is loaded once, not merely marked allowed
+without evaluation.
+
+Nix, one-shot direnv loading or devshell failures warn and continue. Creation
+success therefore does not prove hooks are ready. If hooks are missing or a
+linked checkout reports no `.pre-commit-config.yaml`, repair the failure and
+rerun `repo-setup` or enter the devshell in that worktree before publication.
+Do not change the wrapper's trust policy, skip hooks or allow an unreviewed
+branch file merely to make setup pass.
+
+## 5. Deliberate No-Issue Work
+
+Only when the task deliberately has no issue/PR identifier, create a dedicated
+branch checkout before edits:
+
+```sh
 branch_name=<short-branch-name>
 git worktree add -b "$branch_name" ".worktrees/$branch_name" main
 cd ".worktrees/$branch_name"
-pwd
-git branch --show-current
-git status --short --branch
 ```
 
-Use a branch name that describes the task and is safe as a directory name. If
-the branch already exists, attach it to a worktree instead of creating it again:
+Use a descriptive directory-safe name. If the branch already exists, attach it
+instead of recreating it:
 
-```bash
+```sh
 branch_name=<existing-branch-name>
 git worktree add ".worktrees/$branch_name" "$branch_name"
 cd ".worktrees/$branch_name"
 ```
 
-This is the normal native `git worktree add` use case in this repository. It is
-not a replacement for `issue-worktree-create` or `pr-worktree-create` when an
-issue or PR number exists.
+Verify path/branch/status as in section 1. This native Git use does not replace
+issue/PR wrappers when their identifiers exist.
 
-### 2.4. PR Review
+## 6. Re-entry and Publication Preparation
 
-Run `pr-worktree-create [--allow-direnv] <pr_number>` from the repo. Expect it
-to:
+Use `z <branch-or-keyword>`, `zi [keywords...]` or Ctrl-G for shell-local
+re-entry. Do not use raw zoxide as the outer selector. The exact
+navigation/session naming flow belongs to
+[Agent Workspace](workspace-guidance.md#6-navigation-primitives).
 
-- fetch `origin`
-- refresh `main`
-- resolve the PR head branch from GitHub
-- keep the local review branch name equal to the PR head branch name
-- use a review directory named
-  `.worktrees/pr-<number>-<head-branch-with-slashes-replaced>/`
-- keep the local review branch connected to the PR source branch as upstream
-- fast-forward an existing local review branch to the PR source branch when safe
-- refuse to rewrite an existing local review branch that is ahead of or diverged
-  from the PR source branch
-- create or reuse a linked review worktree
-- copy the source checkout's `.envrc` when available, including for non-Nix
-  repositories
-- run `repo-setup` when available to attempt devshell hook installation and
-  generate per-worktree `.pre-commit-config.yaml`. If no `.envrc` was copied
-  and the checkout has `flake.nix`, default PR review setup creates
-  `use flake` but does not run `direnv allow`; use
-  `pr-worktree-create --allow-direnv` only after reviewing the PR branch
-  `.envrc` and `flake.nix`. When `.envrc` is explicitly allowed, `repo-setup`
-  evaluates it once with `direnv exec <worktree-root> true`. If the one-shot
-  direnv load, Nix, or devshell setup fails, `repo-setup` warns and continues;
-  re-run `repo-setup` or enter the devshell before pushing.
-- exit nonzero and avoid the all-ready success message when any requested PR is
-  invalid, skipped, refused, or otherwise fails
+Before publication, confirm the intended branch/upstream and current worktree
+state. If an upstream exists, inspect ahead/behind with
+`git rev-list --left-right --count HEAD...@{u}`. No-upstream is expected for a
+new issue branch. First lazygit publication is appropriate only to origin with
+the same branch name. The installed `dev-platform-workflow` Skill's
+`references/github-workflow.md` section 5 alone owns exact publication refspec,
+PR base/head verification and shared-branch protection; load it from its Skill
+root rather than a guessed task-repository path.
 
-Both scripts register the worktree path with `zoxide add "$worktree_path"` as
-their final step.
+## 7. Inspection and Explicit Cleanup
 
-## 3. Re-Entry Navigation
+Use `worktree-status` to inspect every registered checkout for the current repo,
+including primary and detached worktrees. It is read-only and reports local
+flags, dirty/upstream state, branch, HEAD and path. It consults GitHub only when
+issue/PR IDs can be derived from managed naming rules; other rows retain `-`.
+Native `git worktree list --porcelain` is the canonical backend inspection view.
 
-After worktree creation, navigate to the worktree via:
+Confirm clean, unlocked, merged/obsolete state before manual `git worktree
+remove`. Clean merged PR worktrees are candidates; issue worktrees additionally
+need confirmation that the issue is closed and branch merged/obsolete. No
+automatic deletion is authorized by this reference. If a manually registered
+zoxide entry remains afterward, remove that confirmed obsolete entry with
+`zoxide remove <path>`. Never assume every linked checkout is a simple branch.
 
-- `z <branch-name>` — zoxide wrapper; calls `__z_cd()` →
-  `__z_tmux_rename_for_dir()`
-- `^g` (`__zoxide_zi_widget`) — fzf picker merging zoxide + ghq sources; calls
-  `__z_tmux_rename_for_dir()` directly at `config/zsh/zoxide.zsh:71`, bypassing
-  `__z_cd()` entirely
-- `zi [keywords...]` — interactive fzf version of `z`
+Do not edit `.gitignore` or wrapper scripts unless the task concerns them. If
+changing scripts/config, read the affected sources fully and treat it as code
+work. Git-lock diagnosis belongs to Agent Workspace; workspace isolation cannot
+be replaced by lock cleanup. Notification/daemon behavior belongs to Postman,
+and runtime activation/Nix switching is outside worktree lifecycle guidance.
 
-Session rename mechanics on re-entry: `__z_tmux_rename_for_dir` detects
-`/.worktrees/` in the path and renames the tmux session to `<repo>-<worktree>`
-(e.g., `dotfiles-feature-foo`).
+## 8. Source Owners
 
-Do not use raw `zoxide` alone as the outermost worktree selector; use the repo
-`z` or `zi` wrapper functions that keep navigation in the current shell.
-
-## 4. Supporting Generic Tooling
-
-Use native Git only after checking whether the wrapper flow already covers the
-task.
-
-- Inspect all worktrees: `git worktree list --porcelain`
-- Resolve a branch to its absolute path:
-  `git worktree list --porcelain` and match `branch refs/heads/<branch>`
-- Inspect every worktree registered to the current repo:
-  `worktree-status`
-
-Do not use raw `git worktree add` as the primary issue or PR entrypoint in this
-repo. Use it only for explicit no-issue branch work when no wrapper applies.
-
-## 5. Baseline Verification
-
-After entering the chosen worktree, run the cheapest checks that prove you are
-in the right place before changing files:
-
-```bash
-pwd
-git branch --show-current
-git status --short
-```
-
-For broader worktree visibility:
-
-```bash
-git worktree list --porcelain
-```
-
-## 6. Repo Fit Notes
-
-- Cleanup should be explicit: inspect current-repo worktrees with
-  `worktree-status` or `git worktree list --porcelain`, then delete selected
-  linked worktrees manually with native Git commands.
-- `worktree-status` is read-only. It reports GitHub issue or PR state only when
-  the issue/PR number can be derived from this repo's worktree naming rules,
-  and otherwise leaves those fields as `-`. It does not remove worktrees.
-- The repo may contain detached linked worktrees; do not assume every linked
-  worktree is a simple branch-only case.
-- If the task is about changing worktree scripts or config, read those files in
-  full and treat that as a code-change task, not a normal use of this reference.
-- If a worktree has shared Git hooks but lacks `.pre-commit-config.yaml`, run
-  `repo-setup` in that worktree before pushing.
-
-## 7. Do Not Do These By Default
-
-- Do not ask the user to choose an arbitrary worktree directory.
-- Do not teach raw `git worktree add` as the issue or PR creation path.
-- Do not treat small or docs-only changes as permission to commit from the main
-  checkout.
-- Do not edit `.gitignore` or the wrapper scripts unless the task is explicitly
-  about those files.
+- `scripts/bin/issue-worktree-create`
+- `scripts/bin/pr-worktree-create`
+- `scripts/bin/worktree-status`
+- `scripts/bin/repo-setup` and `scripts/lib/worktree-common.sh`
+- `config/zsh/zoxide.zsh` for navigation, sourced by the zsh Nix module
