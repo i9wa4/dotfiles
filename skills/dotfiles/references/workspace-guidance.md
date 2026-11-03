@@ -72,7 +72,7 @@ After resolving the snippet, boot the session:
    without an initial role message. Read common/role instructions in complete
    POP archives. Do not prepend a second messenger preset.
    Postman configuration is independent of this launcher and is authored in
-   `config/tmux-a2a-postman/postman.md`.
+   `tmux-a2a-postman help config`.
 8. Wait 8-12s for vde-layout to materialize all panes.
 9. Verify topology:
 

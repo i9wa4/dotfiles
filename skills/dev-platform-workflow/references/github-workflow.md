@@ -196,7 +196,7 @@ Track commit and push as explicit task items that require permission:
 
 "Requires permission" means asking the human directly only in a plain,
 non-postman session. When operating as a postman node (worker, worker-alt, or
-any future node with push/PR ability, per `config/tmux-a2a-postman/postman.md`
+any future node with push/PR ability, per `tmux-a2a-postman help config`
 `common_template`), never ask the human user directly for this permission,
 even though this phrasing is generic. Instead, reply
 `BLOCKED: awaiting human approval for <action>` to orchestrator so approval

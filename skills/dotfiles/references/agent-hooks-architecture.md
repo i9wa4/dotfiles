@@ -53,7 +53,7 @@ remain responsible for filesystem and network blast radius.
 ### 2.2. Foundational Contract — `postman.md` `[common_template]`
 
 The persona / language / scope directives live as `[common_template]` sections
-inside `config/tmux-a2a-postman/postman.md` (§2.2 persona). Dotfiles-owned skill
+inside `tmux-a2a-postman help config` (§2.2 persona). Dotfiles-owned skill
 bodies stay in top-level `skills/`, and Default clients start without a
 common/role message. Postman includes that policy in recipient archives; POP
 returns the archive path and requires a complete read. Skills use normal runtime
