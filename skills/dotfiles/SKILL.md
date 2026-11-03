@@ -9,7 +9,7 @@ description: |
   Claude/Codex config, hooks, MCP, skills, Postman routing/runbooks,
   tmux/worktrees/panes, prompt/review/resume-handoff contracts, and Agent
   Skills authoring/validation/Waza.
-  DO NOT USE FOR: routine team coordination (orchestration), or Nix package authoring (programming).
+  DO NOT USE FOR: routine team coordination, or Nix package authoring (programming).
 ---
 
 # Dotfiles Environment

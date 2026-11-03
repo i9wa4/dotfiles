@@ -40,7 +40,7 @@ to the private knowledge vault, not this repository.
 - Live role contracts belong to the selected Postman configuration;
   inspect `tmux-a2a-postman help config`.
 - Generic team coordination belongs to the installed Postman
-  `help orchestration` topic; the legacy local entry is a compatibility pointer.
+  `help orchestration` topic and upstream `postman-orchestrate` entry.
   Dotfiles owns maintenance of the harness, not daily team work.
 
 Do not leave runtime behavior that installed Agent Skills need only in docs.
