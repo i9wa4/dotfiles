@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-gpt="gpt-6.1-luna"
-
 editor=$(mktemp /tmp/lazygit-ai-commit-editor.XXXXXX)
 staged_diff=$(mktemp /tmp/lazygit-ai-commit-staged-diff.XXXXXX)
 ai_message=$(mktemp /tmp/lazygit-ai-commit-ai-message.XXXXXX)
@@ -53,7 +51,7 @@ chmod +x "$editor"
 if command -v codex >/dev/null 2>&1; then
   {
     prompt='Generate ONLY a one-line Git commit message following Conventional Commits format (type(scope): description). Types: feat, fix, docs, style, refactor, test, chore. Based strictly on the diff from stdin. Output ONLY the message, nothing else.'
-    if codex exec -m "$gpt" --ephemeral --ignore-rules --sandbox read-only -c approval_policy='"never"' -c model_reasoning_effort='"low"' --color never --output-last-message "$ai_message" "$prompt" <"$staged_diff" >/dev/null 2>"$ai_stderr"; then
+    if codex exec --ephemeral --ignore-rules --sandbox read-only -c approval_policy='"never"' -c model_reasoning_effort='"low"' --color never --output-last-message "$ai_message" "$prompt" <"$staged_diff" >/dev/null 2>"$ai_stderr"; then
       msg=$(head -n 1 "$ai_message")
       if [ -n "$msg" ]; then
         printf '%s\n' "$msg" >"$ai_message"
@@ -62,7 +60,8 @@ if command -v codex >/dev/null 2>&1; then
         printf '%s\n' 'AI commit message generation returned an empty message; opening editor without AI message.' >"$ai_status"
       fi
     else
-      printf '%s\n' 'AI commit message generation failed; opening editor without AI message.' >"$ai_status"
+      : >"$ai_message"
+      printf '%s\n' 'AI commit message generation failed; opening editor without AI message.' "$(cat "$ai_stderr")" >"$ai_status"
     fi
   } &
   ai_pid=$!
