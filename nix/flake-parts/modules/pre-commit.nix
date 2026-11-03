@@ -212,6 +212,15 @@
           };
 
           # === Shell ===
+          macskk-maintenance = {
+            enable = true;
+            entry = "${pkgs.writeShellScript "macskk-maintenance-test" ''
+              export PATH=${pkgs.lib.makeBinPath [ pkgs.bash ]}:$PATH
+              exec ${pkgs.python3}/bin/python3 scripts/nix/test-macskk-maintenance.py
+            ''}";
+            files = "^(scripts/nix/(macskk-maintenance\\.sh|test-macskk-maintenance\\.py)|nix/flake-parts/modules/(apps|darwin)\\.nix)$";
+            pass_filenames = false;
+          };
           shellcheck.enable = true;
 
           # === Unified formatter ===
