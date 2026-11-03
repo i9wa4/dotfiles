@@ -154,7 +154,7 @@ graph LR
 ## 7. Standard-team adoption
 
 The declarative input pins Postman commit
-`dcb4dc4328fd8a70d4345e9b7656d35328d73193` (upstream PR #1003). It supplies the
+`a22e83991d82b5f92577f0b2b9a35cc70c9620c3` (upstream PR #1003). It supplies the
 standard team and canonical HelpDocs, review prompts and optional record helper.
 Only nine generated one-line discovery entries are installed as upstream Skills;
 detailed references and helpers stay with the binary. Dotfiles no longer
