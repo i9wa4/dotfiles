@@ -154,18 +154,20 @@ graph LR
 ## 7. Standard-team adoption
 
 The declarative input pins Postman commit
-`a613d6c203fbdc3e096109d79ea171dfa787746e` (upstream PR #1003). It supplies the
-standard team, nine thin entries, detailed Skill references, review prompts and
-optional record helper. Dotfiles no longer installs a complete custom postman.md
+`513b703026ea4d8560183e655dc50733325205b6` (upstream PR #1003). It supplies the
+standard team and canonical HelpDocs, review prompts and optional record helper.
+Only nine generated one-line discovery entries are installed as upstream Skills;
+detailed references and helpers stay with the binary. Dotfiles no longer
+installs a complete custom postman.md
 that would shadow those defaults. User-authored configuration remains an
 explicit complete override; no user file, live session or old work record is
 migrated. The same builtin `postman.md` contains the existing vde-layout
 `preset-p` and `preset-w`, preserving their role layout and exact startup
 commands.
 
-Detailed owners: `skills postman-orchestrate`, `skills postman-plan`,
-`skills postman-records`, `skills postman-review` and
-`skills postman-review report`. Legacy local Skill/reference names remain
+Detailed owners: `help postman-orchestrate`, `help postman-plan`,
+`help postman-records`, `help postman-review` and
+`help postman-review report`. Legacy local Skill/reference names remain
 reachable pointers. Gist/Issue delivery, domain Skills, runtime setup, Nix and
 personal permission hooks stay local. Actual machine activation remains in the
 existing rollout procedure; source changes alone are not fleet adoption.

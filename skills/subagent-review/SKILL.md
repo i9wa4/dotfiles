@@ -10,7 +10,7 @@ description: "USE FOR: Guardian/critic native multi-perspective review workflow,
 
 This compatible discovery name delegates its complete procedure to the installed
 Postman binary. Read the complete entry and follow every matching reference
-through EOF using `tmux-a2a-postman skills postman-review` before this workflow.
+through EOF using `tmux-a2a-postman help postman-review` before this workflow.
 A missing Skill or reference is an incompatible installation; do not substitute
 a stale local procedure.
 

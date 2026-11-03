@@ -16,7 +16,7 @@ description: |
 
 This compatible discovery name delegates its complete procedure to the installed
 Postman binary. Read the complete entry and follow every matching reference
-through EOF using `tmux-a2a-postman skills postman-plan` before this workflow. A
+through EOF using `tmux-a2a-postman help postman-plan` before this workflow. A
 missing Skill or reference is an incompatible installation; do not substitute a
 stale local procedure.
 

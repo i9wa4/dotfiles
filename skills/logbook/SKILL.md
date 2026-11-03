@@ -20,7 +20,7 @@ description: |
 
 For local Markdown selection, canonical-index recovery, creation, resume and
 retention, read the complete installed entry
-`tmux-a2a-postman skills postman-records` and follow every matching reference
+`tmux-a2a-postman help postman-records` and follow every matching reference
 through EOF. Existing known records remain canonical; a package upgrade never
 authorizes replacing or moving them. A missing Skill or reference is an
 incompatible installation. The optional helper is supplied by Postman resources.
