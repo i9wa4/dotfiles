@@ -5,7 +5,7 @@
 #   nix run '.#switch'       -- rebuild and activate configuration
 #                               (Linux expires Home Manager generations older than 1 day;
 #                                macOS expires system generations older than 1 day)
-#   nix run '.#update'       -- update flake inputs and Waza release pins
+#   nix run '.#update'       -- select the latest stable Postman release, update flake inputs and Waza release pins
 #   nix run '.#check'        -- check flake configuration
 #   nix run '.#apt-upgrade'  -- apt-get update && upgrade (Linux only)
 { lib, ... }:
@@ -21,6 +21,7 @@
       isLinux = lib.hasSuffix "linux" system;
       gh = lib.getExe pkgs.gh;
       nix = lib.getExe pkgs.nix;
+      postmanUpdateScript = ./../../../scripts/nix/input-update-postman.sh;
       wazaUpdateScript = ./../../../scripts/nix/package-update-waza.sh;
       tailscaledLabel = "com.tailscale.tailscaled";
 
@@ -157,6 +158,8 @@
           program = "${pkgs.writeShellScriptBin "update" ''
             set -euo pipefail
             access_token=$(${gh} auth token)
+            POSTMAN_GH=${gh} POSTMAN_JQ=${lib.getExe pkgs.jq} POSTMAN_PYTHON=${lib.getExe pkgs.python3} \
+              ${pkgs.bash}/bin/bash ${postmanUpdateScript}
             ${nix} flake update --access-tokens "github.com=$access_token"
             WAZA_GH=${gh} WAZA_NIX=${nix} \
               ${pkgs.bash}/bin/bash ${wazaUpdateScript}

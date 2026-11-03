@@ -5,7 +5,7 @@
 | Command              | Description                                                                                                                                                                                                      |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `nix run '.#switch'` | Rebuild and activate configuration. After a successful switch, Linux expires Home Manager generations older than 1 day and macOS expires system generations older than 1 day; scheduled cleanup remains separate |
-| `nix run '.#update'` | Update flake inputs                                                                                                                                                                                              |
+| `nix run '.#update'` | Pin Postman to the latest published stable release tag, update all flake inputs, then update Waza release pins. This changes sources and lock data; it does not activate the machine.                            |
 | `nix run '.#check'`  | Check flake configuration                                                                                                                                                                                        |
 
 **Agents must not run `nix run '.#switch'` (or any other system activation

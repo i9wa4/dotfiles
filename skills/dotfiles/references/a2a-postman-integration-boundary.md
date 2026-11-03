@@ -1,8 +1,10 @@
 # Postman Integration Boundary
 
-Dotfiles supplies the authored role policy in
-`tmux-a2a-postman help config`. Package and Skill installation use the
-ordinary pinned flake input and shared agent-Skill configuration.
+Postman supplies the standard role policy in its builtin configuration. Inspect
+the selected binary's complete default with
+`tmux-a2a-postman help config default`. Dotfiles selects the Postman package
+through its flake input and installs the matching Skills through the shared
+agent-Skill configuration.
 
 Postman owns its CLI, configuration format, mailbox/native identity,
 notifications, execution coordination, diagnostics and transport tests. Use
@@ -10,26 +12,28 @@ its installed help, shipped Skills and upstream documentation for those
 contracts. Dotfiles does not provide another Postman command, launcher,
 configuration compiler, transport test framework or update program.
 
-Edit topology and declared parent/child relationships in `postman.md` using
-Postman's configuration reference. Starting an agent is independent of that
+For custom topology or declared parent/child relationships, copy the complete
+builtin default to a chosen `postman.md`, edit that copy using Postman's
+configuration reference, and select it explicitly. A custom file replaces the
+default; it is not an overlay. Starting an agent is independent of that
 configuration. Clients start directly; the complete Markdown returned by POP
-carries the common and recipient-role policy.
+carries the selected common and recipient-role policy.
 
-Develop and validate Postman in its own repository. Its
-[contributor guide](https://github.com/i9wa4/tmux-a2a-postman/blob/main/CONTRIBUTING.md)
-owns native terminal and recursive transport verification. Dotfiles checks its
-own declarative configuration and role-policy source, without duplicating the
-transport implementation or test driver.
+Develop and validate Postman in its own repository. Its installed help and
+development runbook own native terminal and recursive transport verification.
+Dotfiles checks its declarative package and Skill selection and local
+integration, without duplicating the role policy, transport implementation or
+test driver.
 
-Keep the explicit compatible Postman revision in `flake.nix` and refresh its
-lock entry with ordinary Nix commands when choosing a new revision. Source
-checks do not activate the installed configuration or prove a live-fleet switch.
+`nix run '.#update'` selects the latest published stable Postman release tag in
+`flake.nix` before updating all flake inputs. The lock entry keeps its resolved
+revision and hash between updates. Source checks do not activate the installed
+configuration or prove a live-fleet switch.
 
 ## 1. Optional tmux status integration
 
-The selected public Postman revision is
-`7733696a83ed5aac3f3ab74f7b32e61b22c07144`. Its package and upstream Skills come
-from the same input. The second tmux status row directly composes two commands:
+The Postman package and upstream Skills come from the same flake input. The
+second tmux status row directly composes two commands:
 
 ```sh
 tmux-a2a-postman refresh-status >/dev/null
@@ -54,17 +58,17 @@ Installed rollout and verification remain with #485.
 
 The selected Postman source implements `channel-sync` and
 `channel-report-heredoc`. A provisioned binding activates them only for the
-exact top-level native interface/session/workspace. The public role template
+exact top-level native interface/session/workspace. The builtin standard team
 does not guess a live session or a machine's mailbox path. Keep machine bindings
-in an explicit local `postman.md` copy and pass that absolute config
-consistently to the producer and consoles; do not add a generated-config program
-or shell substitutions to YAML.
+in an explicit custom `postman.md` copied from the complete builtin default.
+Pass that absolute config consistently to the producer and consoles; do not add
+a generated-config program or shell substitutions to YAML.
 
 For setup, read the installed config-auditor reference and
-`postman-usage/references/external-channel.md`, plus the selected revision's
-[filesystem contract](https://github.com/i9wa4/tmux-a2a-postman/blob/main/docs/design/external-filesystem-channel.md).
-Add its supported external root/workspace/session scalar fields to a copy of
-the complete role template, preserving the catalog, common policy, local edges
+`tmux-a2a-postman help postman-usage external` for the selected revision's
+filesystem contract.
+Add its supported external root/workspace/session scalar fields to the custom
+copy of the builtin default, preserving the catalog, common policy, local edges
 and any explicit parent/child tree. The workspace is the canonical HOME-relative
 agent-pane directory. The mailbox root must be canonical, persistent, private
 and separate from internal Postman state; do not repurpose the main state root.
@@ -135,11 +139,12 @@ stages retain their existing authorization and rollout owners.
 
 For a later AI-led check, use Postman's
 [cloud/tmux development runbook](https://github.com/i9wa4/tmux-a2a-postman/blob/main/docs/development/cloud-tmux-debugging.md).
-Build the selected input, make a private copy of this complete policy with
-literal fixture bindings/catalog roots, and start fixed consoles in owned
-native role panes. Publish one atomic external file; let submitted notifications
-drive receiver tools and retain archive hashes, exact reply/report references
-and effect counters. Repeat reconnect/duplicate/decision/failure cases, verify
+Build the selected input, export its complete builtin default into a private
+fixture configuration with literal bindings/catalog roots, and start fixed
+consoles in owned native role panes. Publish one atomic external file; let
+submitted notifications drive receiver tools and retain archive hashes, exact
+reply/report references and effect counters. Repeat
+reconnect/duplicate/decision/failure cases, verify
 native ownership before cleanup, and report the source/binary/platform and
 evidence limits. Keep this a consumer trial of upstream primitives, rather than
 adding another dotfiles launcher, compiler or transport test framework.
