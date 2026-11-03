@@ -8,7 +8,7 @@ Postman owns its CLI, configuration format, mailbox/native identity,
 notifications, execution coordination, diagnostics and transport tests. Use
 its installed help, shipped Skills and upstream documentation for those
 contracts. Dotfiles does not provide another Postman command, launcher,
-configuration compiler, test framework or update program.
+configuration compiler, transport test framework or update program.
 
 Edit topology and declared parent/child relationships in `postman.md` using
 Postman's configuration reference. Starting an agent is independent of that
@@ -25,7 +25,32 @@ Keep the explicit compatible Postman revision in `flake.nix` and refresh its
 lock entry with ordinary Nix commands when choosing a new revision. Source
 checks do not activate the installed configuration or prove a live-fleet switch.
 
-## 1. Optional top-level external channel
+## 1. Optional tmux status integration
+
+The selected public Postman revision is
+`7733696a83ed5aac3f3ab74f7b32e61b22c07144`. Its package and upstream Skills come
+from the same input. The second tmux status row directly composes two commands:
+
+```sh
+tmux-a2a-postman refresh-status >/dev/null
+tmux-a2a-postman get-status-oneline
+```
+
+One shell passes the actual socket/server PID to both commands and removes
+inherited `TMUX_PANE`; tmux shell-quotes the socket path. A semicolon keeps the
+cached renderer running after a busy or failed refresh. Upstream owns capture,
+locking, publication, rendering and diagnostics; no extra consumer program is
+installed. To inspect a failure, run the commands directly in that server and
+read their stderr and upstream diagnostics.
+
+Redraw is a best-effort trigger, not a scheduler for detached clients. Getters
+read the saved server overview; match the assigned native session/pane/workspace
+and declared scope before acting. Visibility adds no routing or management
+authority. Publication and capture times differ, and unknown is not zero.
+Use the installed usage/recall/team-manager guidance for the full contract.
+Installed rollout and verification remain with #485.
+
+## 2. Optional top-level external channel
 
 The selected Postman source implements `channel-sync` and
 `channel-report-heredoc`. A provisioned binding activates them only for the
@@ -74,7 +99,7 @@ installed activation and physical-client receipt. Follow the established
 operator rollout procedure for a live binding; do not edit a private mailbox or
 reload live sessions as a development check.
 
-## 2. Consumer verification snapshot — 2026-11-02
+## 3. Consumer verification snapshot — 2026-11-02
 
 The selected public revision `a0d729094c089840559cecc5b716b6100a37ca06`
 supplies the implemented channel, matching help/Skills and native transport

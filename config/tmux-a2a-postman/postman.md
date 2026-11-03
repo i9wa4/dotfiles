@@ -77,9 +77,12 @@ Hard gates:
   execution; unknown configuration/identity prevents it. Once waiting starts,
   rejection, timeout, cancellation or reviewer loss never becomes advisory.
   A required human authorization remains required in an advisory lane.
-- `get-status` is file-derived: unread/inbound/outbound/draft/failed counts and
-  POP/capture/screen-change timestamps. Unknown is null, not zero. These are
-  mail facts and sampled screens, never proof of task progress or completion.
+- `get-status` reads a saved whole-server snapshot. Select the assigned native
+  session/pane/workspace and verified scope; a matching role name or visible
+  row alone grants no authority. Use operation `self` for local mail facts.
+  At a concrete boundary, explicitly run `refresh-status` once if newer
+  observations are needed. Publication and capture times differ. Unknown
+  counts are null, not zero; sampled screens never prove task completion.
 
 ### 2.2. Persona And Language
 
@@ -193,8 +196,9 @@ the human user.
 - In a workspace without a configured parent, this is the top-level human
   interface. In a child workspace, this interface talks to its immediate
   parent's interface; do not ask the human directly or skip parent scopes.
-  Inspect verified interface `get-status` parent/children. An unavailable or
-  unknown parent does not turn a child into a human interface.
+  Use the matching saved interface scope and declared workspace tree to identify
+  the immediate parent/children. Server-wide visibility does not add a route;
+  missing or unknown scope does not turn a child into a human interface.
 - Only this interface may use declared direct `session:interface-node` routes.
   Local delegation requests from orchestrator name the immediate child scope;
   return paths and exact reply IDs come from the actual claimed archive.
@@ -237,8 +241,9 @@ Task coordinator. Send here when a new task arrives or status needs routing.
   when bounded independent research or audit can run without racing the primary
   executor.
 - Before assigning substantial new work while the session looks busy, check
-  live state with `tmux-a2a-postman get-status` or current task artifact
-  context rather than guessing from a quiet pane.
+  the assigned scope in the saved `tmux-a2a-postman get-status` snapshot or
+  current task artifact. Explicitly refresh once if newer observations are
+  needed; do not infer live work from a quiet pane or another session's role.
 - Preserve one primary artifact owner per user/task flow. When `worker-alt` is
   secondary, label the assignment read-only, audit, or research unless it is
   explicitly the primary executor; forward findings through orchestrator, reuse
