@@ -154,7 +154,7 @@ graph LR
 ## 7. Standard-team adoption
 
 The declarative input pins Postman commit
-`d98c7958fa3dc6cb7441131832fd33a771cce4bf` (upstream PR #1003). It supplies the
+`cb14835a9d79736f26116998560452eb9e50170b` (upstream PR #1003). It supplies the
 standard team, nine thin entries, detailed HelpDocs, review prompts and optional
 record helper. Dotfiles no longer installs a complete custom postman.md that
 would shadow those defaults. User-authored configuration remains an explicit
