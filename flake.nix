@@ -65,7 +65,7 @@
     };
 
     tmux-a2a-postman = {
-      url = "github:i9wa4/tmux-a2a-postman/v0.11.0";
+      url = "github:i9wa4/tmux-a2a-postman/v0.11.1";
     };
 
     # Non-flake sources

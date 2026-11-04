@@ -39,11 +39,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1793709689,
-        "narHash": "sha256-7vKBsG/d7zYXCBMT9HygkHNk/UCWpUi+Taq3Z3BQ0HY=",
+        "lastModified": 1793749013,
+        "narHash": "sha256-AIwYT3rLNyIhkn+Qs9fgqas3cS7e56p3iNvsED7u+sk=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "8b32dfe0f91144b0e5d3fef487c515cb93ce0fb2",
+        "rev": "174379354c7c93f9e80249265f3fffa67a42f0c1",
         "type": "github"
       },
       "original": {
@@ -317,11 +317,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793727944,
-        "narHash": "sha256-25ZO+lHbv0gjN3bx7ZbwMlht/v5YWSQ4jM6yYfEExII=",
+        "lastModified": 1793746044,
+        "narHash": "sha256-IhRxsOsqYENFG6xCZB7FZr+/CR2f8/UcDMXUYL5K9ts=",
         "owner": "google",
         "repo": "skills",
-        "rev": "071c4f7eba880767a647ce778650db8dbf7e16fc",
+        "rev": "496fbede89dac1faf0d180a936bfc472b6fbf886",
         "type": "github"
       },
       "original": {
@@ -349,11 +349,11 @@
     "hashicorp-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793211660,
-        "narHash": "sha256-JYWOiyTgMeu8NLsUxkk56/GyeEA2GDV2vUhU8p+WZtk=",
+        "lastModified": 1793755596,
+        "narHash": "sha256-xypoVCxhxgQdoUcy7HyD27r80JZsMqJOfrKhDizT+/k=",
         "owner": "hashicorp",
         "repo": "agent-skills",
-        "rev": "bc6b14b77481c3cbfbb06a0166be7245ed45798c",
+        "rev": "5e30fa5c867ba6777c37e4206babfd08049c396f",
         "type": "github"
       },
       "original": {
@@ -392,11 +392,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1793708775,
-        "narHash": "sha256-TCztCGO7C7rgg3S4JscvKm4lA5b1R3zy5MPKfYirOHI=",
+        "lastModified": 1793750192,
+        "narHash": "sha256-ueNHsKFN7SA7Lzk4DPnjWgpIET+IaJZ8uIIeDszen+Y=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "a854ddf4456f5fd67474e2d844cb4a29c32702d0",
+        "rev": "78f777ba4f6141fca604a5cee3f6ff8dfab09f48",
         "type": "github"
       },
       "original": {
@@ -691,16 +691,16 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1793723087,
-        "narHash": "sha256-HkQNCR6iMiDiMeIRsBQJBoIn/x6hrC2nQ4ocSoiXZrM=",
+        "lastModified": 1793754579,
+        "narHash": "sha256-3CsmyFDmvljRFX6dXoTHfxkviBBD4bk902MJaK9pXR4=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "a63f76cc89c08bfde0ceb8f0586ebbcf5e68f70a",
+        "rev": "183cd33fe83b507ee24cecdd803957b86dc781d5",
         "type": "github"
       },
       "original": {
         "owner": "i9wa4",
-        "ref": "v0.11.0",
+        "ref": "v0.11.1",
         "repo": "tmux-a2a-postman",
         "type": "github"
       }
