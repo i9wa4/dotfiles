@@ -1,14 +1,14 @@
 presets:
   main:
     name: main
-    description: main control plane, review_first state
+    description: main control plane
     windowMode: current-window
     layout:
       type: horizontal
       ratio: [1, 1]
       panes:
-        - name: postman
-          command: printf "Postman is daemonless. For this server, run refresh-status then get-status. Team startup is separate.\n"
+        - name: caffeinate
+          command: caffeinate -i
           delay: 500
           focus: true
         - name: vde-monitor
