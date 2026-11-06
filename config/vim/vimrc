@@ -9,3 +9,4 @@ nnoremap - <Cmd>edit %:p:h<CR>
 
 filetype plugin indent on
 syntax enable
+colorscheme habamax
