@@ -41,6 +41,11 @@ require("lazy").setup({
     lazy = false,
     opts = {
       default_file_explorer = true,
+      columns = {
+        "permissions",
+        "size",
+        { "mtime", format = "%Y-%m-%d %H:%M:%S" },
+      },
       keymaps = {
         ["`"] = { "actions.cd", mode = "n" },
         ["t"] = { "actions.select", opts = { tab = true } },
@@ -53,24 +58,14 @@ require("lazy").setup({
 })
 
 -- --------------------------------------
--- Helper
---
-local function send_tmux_clipboard(content)
-  if vim.fn.executable("tmux") == 1 and vim.env.TMUX and vim.env.TMUX ~= "" then
-    vim.system({ "tmux", "load-buffer", "-w", "-" }, { stdin = content }):wait()
-  end
-end
-
-vim.api.nvim_create_user_command("R", function(opts)
-  local content = vim.fn.getreg(opts.args)
-  pcall(vim.fn.setreg, "+", content)
-  send_tmux_clipboard(content)
-end, { nargs = "?" })
-
--- --------------------------------------
 -- Keymap
 --
 vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
+vim.keymap.set("n", "<Space>pt", "<Cmd>let @+ = expand('%:p:~')<CR>")
+vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
+vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
+vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
+
 vim.keymap.set("i", ",now", function()
   return vim.fn.strftime("%Y-%m-%d %X +0900")
 end, { expr = true })
@@ -78,45 +73,40 @@ vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
 
-vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
-vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
-vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
-
 -- --------------------------------------
 -- Autocmd
 --
 local augroup = vim.api.nvim_create_augroup("MyAutocmd", { clear = true })
 
+vim.api.nvim_create_autocmd("BufReadPost", {
+  group = augroup,
+  command = [[silent! normal! g`"]],
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup,
   callback = function()
-    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
-      send_tmux_clipboard(vim.fn.getreg(""))
+    if vim.v.event.operator ~= "y" or vim.v.event.regname ~= "" then
+      return
     end
-  end,
-})
 
-vim.api.nvim_create_autocmd("BufReadPost", {
-  group = augroup,
-  callback = function()
-    pcall(vim.cmd, [[normal! g`"]])
-  end,
-})
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = augroup,
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.fn.setreg("a", vim.fn.fnamemodify(vim.fn.expand("%"), ":p:~"))
+    if not vim.env.TMUX or vim.env.TMUX == "" or vim.fn.executable("tmux") ~= 1 then
+      return
     end
+
+    vim
+      .system({ "tmux", "load-buffer", "-w", "-" }, {
+        stdin = vim.fn.getreg(""),
+      })
+      :wait()
   end,
 })
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
   callback = function()
-    -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-    -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
 
     for _, group in ipairs({
       "EndOfBuffer",
@@ -124,7 +114,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
       "LineNr",
       "NonText",
       "Normal",
-      "VertSplit",
+      "WinSeparator",
     }) do
       local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
       hl.bg = nil
@@ -134,7 +124,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 -- --------------------------------------
--- Filetype, syntax, and colorscheme
+-- FileType, Syntax and ColorScheme
 --
 vim.cmd("filetype plugin indent on")
 vim.api.nvim_create_autocmd("FileType", {
