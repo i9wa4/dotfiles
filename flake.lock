@@ -39,11 +39,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1793960607,
-        "narHash": "sha256-AcGeRP4MRttvJtq+e1JNilzrEW2iJ1Fc9AQzGM5ZuX0=",
+        "lastModified": 1793984258,
+        "narHash": "sha256-kLAE16aJkYVBDDYxlNgyfmzSx/H4is/4FUTVFdaiSus=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "e5b169de713857a5ffb4e8588a45e640525bd08a",
+        "rev": "9fb9e12c06c8f31bc1fea5ebf4b4153f3d2f2999",
         "type": "github"
       },
       "original": {
@@ -55,11 +55,11 @@
     "azure-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793911746,
-        "narHash": "sha256-1SoZTLNPiJEU0dABjJIGcTQjCpUREcyvxe69Inj+ocg=",
+        "lastModified": 1793987705,
+        "narHash": "sha256-bq/qrBLKeuBUzSPS/uE/L1m6nbDCZBcKDAvZnZrHvUw=",
         "owner": "microsoft",
         "repo": "azure-skills",
-        "rev": "f5ae01d7d0d790528b336431d78e4063397505f5",
+        "rev": "299b16bf063bdf37c783e08bcae27ca57fface38",
         "type": "github"
       },
       "original": {
@@ -121,11 +121,11 @@
     "cloudflare-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1793966594,
-        "narHash": "sha256-CQsfj0OUmGj8BpMKyRwXulp720S1Ya64ywKk/nWYBtA=",
+        "lastModified": 1793988238,
+        "narHash": "sha256-EBfpwv3mns3cQvyaVATaQOU+cqCjXq/i5OgzMcxTb9s=",
         "owner": "cloudflare",
         "repo": "skills",
-        "rev": "7de59bfd40b36c64d5d2dd8f01d11d419b2c66e6",
+        "rev": "1820a51dda1c1ed8f849ad355cd56e62a6ec395f",
         "type": "github"
       },
       "original": {
