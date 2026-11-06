@@ -92,11 +92,11 @@ presets:
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
             - name: worker
               title: worker
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
             - name: worker-alt
               title: worker-alt
@@ -115,5 +115,5 @@ presets:
               delay: 500
             - name: critic
               title: critic
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort medium
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort low
               delay: 500
