@@ -4,12 +4,10 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
-
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
+vim.opt.list = true
+vim.opt.listchars = { tab = ">-", trail = "_" }
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
 vim.opt.spell = true
@@ -23,6 +21,10 @@ if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
 else
   vim.opt.clipboard:prepend("unnamedplus")
 end
+
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
 
 -- --------------------------------------
 -- Plugin
@@ -64,45 +66,6 @@ vim.api.nvim_create_user_command("R", function(opts)
   pcall(vim.fn.setreg, "+", content)
   send_tmux_clipboard(content)
 end, { nargs = "?" })
-
-local function highlight_define()
-  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
-
-  for _, group in ipairs({
-    "EndOfBuffer",
-    "Folded",
-    "LineNr",
-    "NonText",
-    "Normal",
-    "VertSplit",
-  }) do
-    local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-    hl.bg = nil
-    vim.api.nvim_set_hl(0, group, hl)
-  end
-end
-
-local function highlight_match()
-  for _, id in ipairs(vim.w.my_highlight_match_ids or {}) do
-    pcall(vim.fn.matchdelete, id)
-  end
-
-  local ids = {}
-  local function add(group, pattern)
-    ids[#ids + 1] = vim.fn.matchadd(group, pattern)
-  end
-
-  add("TermCursor", [[# %%\|# COMMAND ----------]])
-  add("TermCursor", [[\[ \]])
-  add("TermCursor", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
-  add("Error", [[\%u3000]])
-  add("Error", [[\s\+$]])
-
-  vim.w.my_highlight_match_ids = ids
-end
 
 -- --------------------------------------
 -- Keymap
@@ -151,21 +114,21 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
-  callback = highlight_define,
-})
-
-vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
-  group = augroup,
-  callback = highlight_match,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = augroup,
-  pattern = { "*.md", "*.mdx", "*.qmd" },
   callback = function()
-    if vim.fn.executable("mdfmt") == 1 then
-      vim.system({ "mdfmt", "--write", vim.fn.expand("%:p") }):wait()
-      vim.cmd("silent noautocmd edit!")
+    -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+    -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+
+    for _, group in ipairs({
+      "EndOfBuffer",
+      "Folded",
+      "LineNr",
+      "NonText",
+      "Normal",
+      "VertSplit",
+    }) do
+      local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+      hl.bg = nil
+      vim.api.nvim_set_hl(0, group, hl)
     end
   end,
 })
