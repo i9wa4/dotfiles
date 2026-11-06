@@ -4,6 +4,7 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
 vim.opt.list = true
@@ -15,13 +16,7 @@ vim.opt.spelllang:append("cjk")
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 
-vim.opt.clipboard = ""
-if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-  vim.opt.clipboard:prepend("unnamed")
-else
-  vim.opt.clipboard:prepend("unnamedplus")
-end
-
+vim.fn.timer_stop(vim.g.auto_reload or -1)
 vim.g.auto_reload = vim.fn.timer_start(1000, function()
   vim.cmd("silent! checktime")
 end, { ["repeat"] = -1 })
@@ -40,14 +35,12 @@ require("lazy").setup({
     "stevearc/oil.nvim",
     lazy = false,
     opts = {
-      default_file_explorer = true,
       columns = {
         "permissions",
         "size",
         { "mtime", format = "%Y-%m-%d %H:%M:%S" },
       },
       keymaps = {
-        ["`"] = { "actions.cd", mode = "n" },
         ["t"] = { "actions.select", opts = { tab = true } },
       },
       view_options = {
@@ -67,7 +60,7 @@ vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
 vim.keymap.set("i", ",now", function()
-  return vim.fn.strftime("%Y-%m-%d %X +0900")
+  return vim.fn.strftime("%Y-%m-%d %H:%M:%S %z")
 end, { expr = true })
 vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
@@ -123,10 +116,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
--- --------------------------------------
--- FileType, Syntax and ColorScheme
---
-vim.cmd("filetype plugin indent on")
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
   callback = function()
@@ -138,5 +127,8 @@ vim.api.nvim_create_autocmd("FileType", {
     end)
   end,
 })
-vim.cmd("syntax enable")
+
+-- --------------------------------------
+-- ColorScheme
+--
 vim.cmd.colorscheme(vim.g.colors_name or "retrobox")
