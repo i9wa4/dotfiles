@@ -8,7 +8,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
 vim.opt.list = true
-vim.opt.listchars = { tab = ">-", trail = "_" }
+vim.opt.listchars = { tab = ">-", trail = "~", leadmultispace = "-+" }
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
 vim.opt.spell = true
