@@ -4,12 +4,11 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
-
+vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 vim.opt.ignorecase = true
+vim.opt.list = true
+vim.opt.listchars = { trail = "~", leadmultispace = "-+" }
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
 vim.opt.spell = true
@@ -17,12 +16,10 @@ vim.opt.spelllang:append("cjk")
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 
-vim.opt.clipboard = ""
-if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-  vim.opt.clipboard:prepend("unnamed")
-else
-  vim.opt.clipboard:prepend("unnamedplus")
-end
+vim.fn.timer_stop(vim.g.auto_reload or -1)
+vim.g.auto_reload = vim.fn.timer_start(1000, function()
+  vim.cmd("silent! checktime")
+end, { ["repeat"] = -1 })
 
 -- --------------------------------------
 -- Plugin
@@ -38,9 +35,12 @@ require("lazy").setup({
     "stevearc/oil.nvim",
     lazy = false,
     opts = {
-      default_file_explorer = true,
+      columns = {
+        "permissions",
+        "size",
+        { "mtime", format = "%Y-%m-%d %H:%M:%S" },
+      },
       keymaps = {
-        ["`"] = { "actions.cd", mode = "n" },
         ["t"] = { "actions.select", opts = { tab = true } },
       },
       view_options = {
@@ -51,129 +51,71 @@ require("lazy").setup({
 })
 
 -- --------------------------------------
--- Helper
---
-local function send_tmux_clipboard(content)
-  if vim.fn.executable("tmux") == 1 and vim.env.TMUX and vim.env.TMUX ~= "" then
-    vim.system({ "tmux", "load-buffer", "-w", "-" }, { stdin = content }):wait()
-  end
-end
-
-vim.api.nvim_create_user_command("R", function(opts)
-  local content = vim.fn.getreg(opts.args)
-  pcall(vim.fn.setreg, "+", content)
-  send_tmux_clipboard(content)
-end, { nargs = "?" })
-
-local function highlight_define()
-  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
-
-  for _, group in ipairs({
-    "EndOfBuffer",
-    "Folded",
-    "LineNr",
-    "NonText",
-    "Normal",
-    "VertSplit",
-  }) do
-    local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-    hl.bg = nil
-    vim.api.nvim_set_hl(0, group, hl)
-  end
-end
-
-local function highlight_match()
-  for _, id in ipairs(vim.w.my_highlight_match_ids or {}) do
-    pcall(vim.fn.matchdelete, id)
-  end
-
-  local ids = {}
-  local function add(group, pattern)
-    ids[#ids + 1] = vim.fn.matchadd(group, pattern)
-  end
-
-  add("TermCursor", [[# %%\|# COMMAND ----------]])
-  add("TermCursor", [[\[ \]])
-  add("TermCursor", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
-  add("Error", [[\%u3000]])
-  add("Error", [[\s\+$]])
-
-  vim.w.my_highlight_match_ids = ids
-end
-
--- --------------------------------------
 -- Keymap
 --
 vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
+vim.keymap.set("n", "<Space>pt", "<Cmd>let @+ = expand('%:p:~')<CR>")
+vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
+vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
+vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
+
 vim.keymap.set("i", ",now", function()
-  return vim.fn.strftime("%Y-%m-%d %X +0900")
+  return vim.fn.strftime("%Y-%m-%d %H:%M:%S %z")
 end, { expr = true })
 vim.keymap.set("i", ",today", function()
   return vim.fn.strftime("%Y-%m-%d")
 end, { expr = true })
-
-vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
-vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
-vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
 -- --------------------------------------
 -- Autocmd
 --
 local augroup = vim.api.nvim_create_augroup("MyAutocmd", { clear = true })
 
+vim.api.nvim_create_autocmd("BufReadPost", {
+  group = augroup,
+  command = [[silent! normal! g`"]],
+})
+
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup,
   callback = function()
-    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
-      send_tmux_clipboard(vim.fn.getreg(""))
+    if vim.v.event.operator ~= "y" or vim.v.event.regname ~= "" then
+      return
     end
-  end,
-})
 
-vim.api.nvim_create_autocmd("BufReadPost", {
-  group = augroup,
-  callback = function()
-    pcall(vim.cmd, [[normal! g`"]])
-  end,
-})
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = augroup,
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.fn.setreg("a", vim.fn.fnamemodify(vim.fn.expand("%"), ":p:~"))
+    if not vim.env.TMUX or vim.env.TMUX == "" or vim.fn.executable("tmux") ~= 1 then
+      return
     end
+
+    vim
+      .system({ "tmux", "load-buffer", "-w", "-" }, {
+        stdin = vim.fn.getreg(""),
+      })
+      :wait()
   end,
 })
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
-  callback = highlight_define,
-})
-
-vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
-  group = augroup,
-  callback = highlight_match,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = augroup,
-  pattern = { "*.md", "*.mdx", "*.qmd" },
   callback = function()
-    if vim.fn.executable("mdfmt") == 1 then
-      vim.system({ "mdfmt", "--write", vim.fn.expand("%:p") }):wait()
-      vim.cmd("silent noautocmd edit!")
+    vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+    vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+
+    for _, group in ipairs({
+      "EndOfBuffer",
+      "Folded",
+      "LineNr",
+      "NonText",
+      "Normal",
+      "WinSeparator",
+    }) do
+      local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+      hl.bg = nil
+      vim.api.nvim_set_hl(0, group, hl)
     end
   end,
 })
 
--- --------------------------------------
--- Filetype, syntax, and colorscheme
---
-vim.cmd("filetype plugin indent on")
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
   callback = function()
@@ -185,5 +127,8 @@ vim.api.nvim_create_autocmd("FileType", {
     end)
   end,
 })
-vim.cmd("syntax enable")
-vim.cmd.colorscheme(vim.g.colors_name or "retrobox")
+
+-- --------------------------------------
+-- ColorScheme
+--
+vim.cmd.colorscheme("retrobox")
