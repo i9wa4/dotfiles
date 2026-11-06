@@ -131,4 +131,4 @@ vim.api.nvim_create_autocmd("FileType", {
 -- --------------------------------------
 -- ColorScheme
 --
-vim.cmd.colorscheme(vim.g.colors_name or "retrobox")
+vim.cmd.colorscheme("retrobox")
