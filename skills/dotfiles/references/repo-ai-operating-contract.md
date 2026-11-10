@@ -131,7 +131,7 @@ milestone state. The selected role/common contract supplies immediate duties.
 
 ### 3.4. Coordination reads
 
-`tmux-a2a-postman help orchestration` owns scope, read-back and one-writer
+`tmux-a2a-postman help postman-orchestrate` owns scope, read-back and one-writer
 procedures. A coordinator reads relevant records and verifies delegated record
 updates; implementation investigation, tests and every write stay delegated.
 Incoming paths or logs do not grant access to peer inboxes, unrelated private
@@ -250,7 +250,7 @@ The selected Postman configuration owns roles and actual edges. Use
 complete override. Full archives expose recipient contacts and exact reply
 commands. Native route verification does not grant human or runtime authority.
 Worker ownership, recursive interfaces and result routing follow the complete
-installed `help orchestration` topic, not another local node list.
+installed `help postman-orchestrate` entry, not another local node list.
 
 ## 9. Review and command-approval boundaries
 
