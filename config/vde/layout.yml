@@ -107,13 +107,13 @@ presets:
           panes:
             - name: approver
               title: approver
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
             - name: guardian
               title: guardian
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
               delay: 500
             - name: critic
               title: critic
-              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort low
+              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
