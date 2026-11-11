@@ -98,8 +98,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
   callback = function()
-    vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-    vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+    -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
+    -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+    -- vim.api.nvim_set_hl(0, "@markup.strikethrough.markdown_inline", { link = "Normal" })
 
     for _, group in ipairs({
       "EndOfBuffer",
