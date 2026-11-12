@@ -21,14 +21,11 @@ require("oil").setup({
 -- Option
 --
 vim.opt.clipboard = "unnamedplus"
-vim.opt.cursorline = true
 vim.opt.ignorecase = true
 vim.opt.list = true
 vim.opt.listchars = { trail = "~", leadmultispace = "-+" }
 vim.opt.nrformats = { "unsigned" }
 vim.opt.number = true
-vim.opt.spell = true
-vim.opt.spelllang:append("cjk")
 vim.opt.swapfile = false
 vim.opt.termguicolors = true
 
