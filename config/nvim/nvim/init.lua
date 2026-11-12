@@ -12,9 +12,6 @@ require("oil").setup({
     "size",
     { "mtime", format = "%Y-%m-%d %H:%M:%S" },
   },
-  keymaps = {
-    ["t"] = { "actions.select", opts = { tab = true } },
-  },
   view_options = {
     show_hidden = true,
   },
