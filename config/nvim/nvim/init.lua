@@ -81,10 +81,14 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   command = 'silent! normal! g`"',
 })
 
--- Remove selected background colors whenever a color scheme is loaded.
+-- Remove selected backgrounds when a dark color scheme is loaded.
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
   callback = function()
+    if vim.o.background == "light" then
+      return
+    end
+
     for _, name in ipairs({
       "EndOfBuffer",
       "Folded",
