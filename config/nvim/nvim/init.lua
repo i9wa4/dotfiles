@@ -43,9 +43,6 @@ vim.opt.number = true
 -- Disable swap files to avoid temporary recovery files.
 vim.opt.swapfile = false
 
--- Enable 24-bit RGB colors in supported terminals.
-vim.opt.termguicolors = true
-
 -- Use tmux as the clipboard provider.
 vim.g.clipboard = "tmux"
 
@@ -84,23 +81,28 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   command = 'silent! normal! g`"',
 })
 
+-- Remove selected background colors whenever a color scheme is loaded.
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = augroup,
+  callback = function()
+    for _, name in ipairs({
+      "EndOfBuffer",
+      "Folded",
+      "LineNr",
+      "NonText",
+      "Normal",
+      "WinSeparator",
+    }) do
+      local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+      hl.bg = nil
+      vim.api.nvim_set_hl(0, name, hl)
+    end
+  end,
+})
+
 -- =============================================================================
 -- Colorscheme
 -- =============================================================================
 
 -- Apply the built-in Retrobox color scheme.
 vim.cmd.colorscheme("retrobox")
-
--- Remove selected highlight backgrounds to preserve terminal transparency.
-for _, name in ipairs({
-  "EndOfBuffer",
-  "Folded",
-  "LineNr",
-  "NonText",
-  "Normal",
-  "WinSeparator",
-}) do
-  local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-  hl.bg = nil
-  vim.api.nvim_set_hl(0, name, hl)
-end
