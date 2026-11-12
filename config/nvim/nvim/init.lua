@@ -7,9 +7,17 @@ vim.g.loaded_netrwPlugin = 1
 vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
 
 require("oil").setup({
-  columns = { "permissions", "size", { "mtime", format = "%Y-%m-%d %H:%M:%S" } },
-  keymaps = { ["t"] = { "actions.select", opts = { tab = true } } },
-  view_options = { show_hidden = true },
+  columns = {
+    "permissions",
+    "size",
+    { "mtime", format = "%Y-%m-%d %H:%M:%S" },
+  },
+  keymaps = {
+    ["t"] = { "actions.select", opts = { tab = true } },
+  },
+  view_options = {
+    show_hidden = true,
+  },
 })
 
 -- --------------------------------------
