@@ -1,9 +1,6 @@
 -- --------------------------------------
 -- Plugin
 --
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
 
 require("oil").setup({
@@ -43,7 +40,6 @@ vim.keymap.set("i", ",now", [[<C-R><C-O>=strftime("%Y-%m-%d %H:%M:%S %z")<CR>]])
 vim.keymap.set("i", ",today", [[<C-R><C-O>=strftime("%Y-%m-%d")<CR>]])
 vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
 vim.keymap.set("n", "<Space>pt", "<Cmd>let @+ = expand('%:p:~')<CR>")
-vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
 vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
 vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
