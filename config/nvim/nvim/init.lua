@@ -1,63 +1,97 @@
--- --------------------------------------
--- Plugin
---
+-- =============================================================================
+-- Plugins
+-- =============================================================================
+
+-- Use Oil to browse and manage files as editable buffers.
 vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
 
 require("oil").setup({
+  -- Show file permissions, size, and modification time.
   columns = {
     "permissions",
     "size",
     { "mtime", format = "%Y-%m-%d %H:%M:%S" },
   },
   view_options = {
+    -- Show hidden files and directories.
     show_hidden = true,
   },
 })
 
--- --------------------------------------
--- Option
---
+-- =============================================================================
+-- Options
+-- =============================================================================
+
+-- Use the system clipboard for yank, delete, and paste operations.
 vim.opt.clipboard = "unnamedplus"
+
+-- Search without distinguishing uppercase and lowercase letters.
 vim.opt.ignorecase = true
+
+-- Display whitespace characters defined by 'listchars'.
 vim.opt.list = true
+
+-- Mark trailing spaces with ~ and leading spaces with alternating - and +.
 vim.opt.listchars = { trail = "~", leadmultispace = "-+" }
+
+-- Treat numbers as unsigned when incrementing or decrementing.
 vim.opt.nrformats = { "unsigned" }
+
+-- Display absolute line numbers.
 vim.opt.number = true
+
+-- Disable swap files to avoid temporary recovery files.
 vim.opt.swapfile = false
+
+-- Enable 24-bit RGB colors in supported terminals.
 vim.opt.termguicolors = true
 
+-- Use tmux as the clipboard provider.
 vim.g.clipboard = "tmux"
 
-vim.fn.timer_stop(vim.g.auto_reload or -1)
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
+-- =============================================================================
+-- Keymaps
+-- =============================================================================
 
--- --------------------------------------
--- Keymap
---
+-- Insert the current timestamp with the timezone offset.
 vim.keymap.set("i", ",now", [[<C-R><C-O>=strftime("%Y-%m-%d %H:%M:%S %z")<CR>]])
-vim.keymap.set("i", ",today", [[<C-R><C-O>=strftime("%Y-%m-%d")<CR>]])
-vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
-vim.keymap.set("n", "<Space>pt", "<Cmd>let @+ = expand('%:p:~')<CR>")
-vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
-vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
 
--- --------------------------------------
--- Autocmd
---
+-- Insert the current date in ISO 8601 format.
+vim.keymap.set("i", ",today", [[<C-R><C-O>=strftime("%Y-%m-%d")<CR>]])
+
+-- Open the directory containing the current file.
+vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
+
+-- Copy the current file path, replacing the home directory with ~.
+vim.keymap.set("n", "<Space>cp", "<Cmd>let @+ = expand('%:p:~')<CR>")
+
+-- Toggle between tabs and spaces for indentation in the current buffer.
+vim.keymap.set("n", "<Space>tt", "<Cmd>setlocal expandtab! expandtab?<CR>")
+
+-- Toggle line wrapping in the current window.
+vim.keymap.set("n", "<Space>tw", "<Cmd>setlocal wrap! wrap?<CR>")
+
+-- =============================================================================
+-- Autocommands
+-- =============================================================================
+
+-- Clear existing autocommands in this group when reloading the configuration.
 local augroup = vim.api.nvim_create_augroup("MyAutocmd", { clear = true })
 
+-- Restore the last cursor position when reopening a file.
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup,
-  command = [[silent! normal! g`"]],
+  command = 'silent! normal! g`"',
 })
 
--- --------------------------------------
--- ColorScheme
---
+-- =============================================================================
+-- Colorscheme
+-- =============================================================================
+
+-- Apply the built-in Retrobox color scheme.
 vim.cmd.colorscheme("retrobox")
 
+-- Remove selected highlight backgrounds to preserve terminal transparency.
 for _, name in ipairs({
   "EndOfBuffer",
   "Folded",
