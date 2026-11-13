@@ -256,8 +256,10 @@ current whenever an interfering vendor default is neutralized on either engine.
 | Auto-memory off             | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`                | not yet disabled                        | open                                  |
 | Bundled skills              | on; `disableBundledSkills` available               | on; disable available (v0.114.0)        | accepted; revisit if surfaces diverge |
 
-Intentional product-surface differences (not drift): Claude MCP servers vs Codex
-Apps (both fed from `shared/mcp-servers.nix`), `outputStyle` vs `personality`,
+Intentional product-surface differences (not drift): local Claude MCP servers
+from `nix/home-manager/agents/shared/mcp-servers.nix` and separate Claude.ai
+account connectors vs Codex Apps configured in
+`nix/home-manager/agents/codex/default.nix`, `outputStyle` vs `personality`,
 and Codex sandbox surfaces (`network_access`, `web_search`).
 
 ## 6. Review procedures have one upstream owner
