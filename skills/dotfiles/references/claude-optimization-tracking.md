@@ -437,10 +437,12 @@ authentication, sandboxing, and settings generated here.
   workflow intentionally uses issue worktrees and writes task records outside
   a worktree, so enabling this without a path review would block supported
   work. Leave the current permission posture unchanged.
-- [x] Other changes in this span, including MCP background tasks and fast-mode
-  behavior, do not require a generated config change: local MCP server config
-  is empty and fast mode is already disabled. Revisit only when those local
-  choices change.
+- [x] [v2.1.319](https://github.com/anthropics/claude-code/releases/tag/v2.1.319)
+  runs MCP tasks in the background by client default. This repo generates no
+  override for that behavior, so no settings migration is needed. Empty local
+  MCP registrations do not exclude Claude.ai account connectors; issue #555
+  tracks their separate failures. Revisit if backgrounded calls affect the
+  harness or connector diagnostics. Fast mode remains disabled independently.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
