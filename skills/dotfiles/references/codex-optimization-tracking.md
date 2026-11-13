@@ -5,9 +5,15 @@ and version history for Codex CLI. The runtime overview lives in `codex-cli.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.154.0 (2026-09-19)
+Last reviewed Codex CLI version: v0.167.1 (2026-11-14)
 
-Review confirmation (2026-09-19): local `codex --version` reported
+Review confirmation (2026-11-14): local `codex --version` reported
+`codex-cli 0.167.1`. Reviewed official Rust CLI releases after v0.154.0
+through the installed v0.167.1 hotfix and compared changes with generated
+config and vde launch commands. See §1.2.1. Releases newer than v0.167.1
+are outside this review.
+
+Earlier review (2026-09-19): local `codex --version` reported
 `codex-cli 0.154.0` after `nix flake update`, and the official stable
 `openai/codex` release `rust-v0.154.0` was published on 2026-09-09. A newer
 `rust-v0.155.0` (2026-09-17) exists upstream but is excluded, along with a
@@ -148,6 +154,39 @@ Local decisions from this catch-up: no generated `config.toml` change is
 needed anywhere in this range. All matches were either internal refactors
 with no external config surface, or hardening/behavior changes consistent
 with this repo's existing `--yolo`/advisory posture.
+
+#### 1.2.1. Release Catch-up (v0.154.0 -> v0.167.1)
+
+Reviewed official
+[Rust CLI releases](https://github.com/openai/codex/releases)
+through the installed v0.167.1 hotfix. Changes affecting this repo's launchers,
+generated settings, or tmux workflow are:
+
+- [x] [v0.157.0](https://github.com/openai/codex/releases/tag/rust-v0.157.0)
+  enables automatic background-server startup in eligible interactive
+  sessions. The vde launchers already pass `--no-daemon`, retaining their
+  explicit tmux-pane lifecycle.
+- [x] [v0.159.0](https://github.com/openai/codex/releases/tag/rust-v0.159.0)
+  removes `tui.prompt_suggestions`. This repo does not set it, so there is no
+  generated-config migration.
+- [x] [v0.163.0](https://github.com/openai/codex/releases/tag/rust-v0.163.0)
+  replaces the bundled patched Zsh with the standard shell executor and
+  reports deprecated shell flags. The generated config and launchers do not
+  set the retired flags; the shared Bash deny hook remains the local control.
+- [x] [v0.166.0](https://github.com/openai/codex/releases/tag/rust-v0.166.0)
+  improves permission recovery when resuming sessions. This is an upstream
+  behavior fix; the repo's `--yolo` launch flags and apps approval setting
+  need no change.
+- [x] [v0.167.0](https://github.com/openai/codex/releases/tag/rust-v0.167.0)
+  adds an agents command center and connected backends. Existing role and
+  tmux-pane identity remain defined by the vde layout and Postman topology;
+  no global agent or connection defaults are warranted. The
+  [v0.167.1 hotfix](https://github.com/openai/codex/releases/tag/rust-v0.167.1)
+  lists no further configuration migration.
+
+No generated config or launcher change is required for the installed version.
+The vde layout pins model, effort, `--no-daemon`, and `--yolo` explicitly;
+new product defaults in this range do not replace those choices.
 
 ### 1.3. WAL Bloat (resolved upstream)
 
