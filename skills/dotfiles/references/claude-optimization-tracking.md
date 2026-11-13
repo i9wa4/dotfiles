@@ -6,9 +6,15 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.277 (2026-09-19)
+Last reviewed Claude Code version: v2.1.325 (2026-11-14)
 
-Review confirmation (2026-09-19): local `claude --version` reported
+Review confirmation (2026-11-14): local `claude --version` reported
+`2.1.325 (Claude Code)`. Reviewed upstream releases after v2.1.277 through
+the installed version and compared their settings and behavior changes with
+`nix/home-manager/agents/claude/default.nix` and the vde launchers. See
+§1.2.9. No generated config change is required.
+
+Earlier review (2026-09-19): local `claude --version` reported
 `2.1.277 (Claude Code)` after `nix flake update`, and the official
 `anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.277`
 section. This pass reviewed 2.1.221 through 2.1.277 (47 versioned changelog
@@ -403,6 +409,40 @@ servers). Consolidated rather than itemized per-release given the volume.
   sandbox config is revisited.
 - [x] No other deprecation/removal/breaking entry in this range touches a
   setting or env var this repo's `claude/default.nix` currently generates.
+
+#### 1.2.9. v2.1.277 -> v2.1.325 candidates (added 2026-11-14)
+
+Reviewed the official
+[releases](https://github.com/anthropics/claude-code/releases)
+through the locally installed v2.1.325, with emphasis on permissions, hooks, MCP
+authentication, sandboxing, and settings generated here.
+
+- [x] [v2.1.323](https://github.com/anthropics/claude-code/releases/tag/v2.1.323)
+  prompts for sign-in again when an MCP tool call encounters an expired token,
+  instead of surfacing `TOKEN_EXPIRED` alone. This is a client recovery change;
+  it does not confirm that the separate Claude.ai account connector failures
+  tracked in issue #555 are resolved.
+- [x] [v2.1.325](https://github.com/anthropics/claude-code/releases/tag/v2.1.325)
+  changes permission handling for sandboxed Bash by default. These panes use
+  explicit bypass permission flags and do not configure Claude's sandbox, so
+  there is no launcher or generated-settings migration to make. The release
+  also includes a zstd decoder security fix that arrives with the installed
+  client, without a local setting change.
+- [ ] [v2.1.295](https://github.com/anthropics/claude-code/releases/tag/v2.1.295)
+  adds hook `onFailure: "block"`. Consider it only with a tested failure
+  contract for the shared Bash deny hook; adding it during a release catch-up
+  could turn a hook infrastructure failure into a blanket tool denial.
+- [ ] [v2.1.314](https://github.com/anthropics/claude-code/releases/tag/v2.1.314)
+  adds `permissions.blockWritesOutsideWorkingDirectories`. The dotfiles
+  workflow intentionally uses issue worktrees and writes task records outside
+  a worktree, so enabling this without a path review would block supported
+  work. Leave the current permission posture unchanged.
+- [x] [v2.1.319](https://github.com/anthropics/claude-code/releases/tag/v2.1.319)
+  runs MCP tasks in the background by client default. This repo generates no
+  override for that behavior, so no settings migration is needed. Empty local
+  MCP registrations do not exclude Claude.ai account connectors; issue #555
+  tracks their separate failures. Revisit if backgrounded calls affect the
+  harness or connector diagnostics. Fast mode remains disabled independently.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
