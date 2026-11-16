@@ -127,11 +127,12 @@ the changelog and official docs) and the rest of the catch-up.
   `--dangerously-skip-permissions` still selects bypass mode, but bypassing is
   disabled by default until the allow flag is also present. Updated
   `config/vde/layout.yml` so every Claude pane passes both flags.
-- [x] v2.1.210 permission path-rule review - migrated sensitive write denies
-  from `Write(**/secrets/**)` / `Write(.env*)` to
+- [x] v2.1.210 permission path-rule review - at the time, migrated sensitive
+  write denies from `Write(**/secrets/**)` / `Write(.env*)` to
   `Edit(**/secrets/**)` / `Edit(.env*)`. Claude Code now warns that
   `Write(path)` permission rules are not matched by file permission checks;
-  `Edit(path)` covers file-editing tools.
+  `Edit(path)` covers file-editing tools. Issue #362 later removed those
+  Read/Edit-scoped secret-path denies; they are not active in current settings.
 
 ### 1.2. Pending Considerations
 
@@ -299,7 +300,8 @@ the changelog and official docs) and the rest of the catch-up.
   informational. `default` / `"defaultMode": "manual"` both still accepted;
   this repo runs bypass permissions, so no config change.
 - [ ] Claude Sonnet 5 is now the default model (v2.1.197) - informational;
-  model is pinned at launch (`--model opus`), so the default does not apply.
+  launchers select `sonnet` or `opus[1m]` explicitly, so the runtime default
+  does not apply to those panes.
 - [x] Subagents background-by-default; Explore inherits opus (v2.1.198) -
   matches current usage, no config. `/dataviz` ships as a bundled skill.
 - [x] `claude mcp list`/`get` no longer spawn self-approved `.mcp.json`
@@ -337,8 +339,8 @@ the changelog and official docs) and the rest of the catch-up.
 - [x] Permission path-rule warnings (v2.1.210) - config change applied.
   `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules now
   warn at startup; use `Edit(path)` for write restrictions and `Read(path)` for
-  read/glob restrictions. This repo's sensitive write denies now use
-  `Edit(**/secrets/**)` and `Edit(.env*)`.
+  read/glob restrictions. At the time, this repo's sensitive write denies used
+  `Edit(**/secrets/**)` and `Edit(.env*)`; issue #362 later removed them.
 - [x] Hook callback timeout no longer reported as user rejection (v2.1.210) -
   product reliability for unattended panes; no config change.
 - [x] Worktree-isolated subagents no longer run git-mutating commands against
