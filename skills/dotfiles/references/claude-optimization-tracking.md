@@ -428,10 +428,24 @@ generated settings and launchers, not itemized as a general product history.
   `opus[1m]` family alias rather than a dated model ID, so this can advance
   its effective model. This is an intended alias choice, not a required
   config migration; use an exact model ID only if a fixed version is needed.
+- [x] [v2.1.281](https://github.com/anthropics/claude-code/releases/tag/v2.1.281),
+  [v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287),
+  and
+  [.288](https://github.com/anthropics/claude-code/releases/tag/v2.1.288)
+  repair dangerous-`rm` prompts in bypass mode, including shell substitution and
+  nested `bash -c` commands. The vde panes launch in bypass mode, but the shared
+  Bash hook remains the repo-owned command guard; these upstream fixes do not
+  justify changing its rules or claiming all built-in prompts survive bypass
+  mode.
 - [x] [v2.1.286](https://github.com/anthropics/claude-code/releases/tag/v2.1.286)
   fixes a case where MCP connectors listed no tools after an older handshake.
   This client fix does not establish that the separate Claude.ai account
   connector failures in issue #555 are resolved.
+- [x] v2.1.287 also makes 1M context the default for Opus 4.7+ and Fable on
+  supported providers. The repo's `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"`
+  remains a percentage of the active context window, so the token threshold
+  can rise when the model or provider gains 1M context. Keep the 70% choice;
+  verify the active window in a session before tuning an absolute limit.
 - [ ] [v2.1.295](https://github.com/anthropics/claude-code/releases/tag/v2.1.295)
   adds hook `onFailure: "block"`. Consider it only with a tested failure
   contract for the shared Bash deny hook; adding it during a release catch-up

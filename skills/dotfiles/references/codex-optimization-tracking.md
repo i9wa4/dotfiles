@@ -210,8 +210,10 @@ from that incomplete note. Relevant decisions follow in release order:
   version, and launch-time effort pins remain explicit; no config edit is
   justified without a measured workflow need.
 - [x] [v0.166.0](https://github.com/openai/codex/releases/tag/rust-v0.166.0)
-  improves permission recovery when resuming sessions. This is an upstream
-  behavior fix; the repo's `--yolo` launch flags and apps approval setting
+  improves permission recovery when resuming sessions and reports the local
+  command working directory to `PreToolUse` hooks. The shared Bash hook reads
+  only `.tool_input.command`, so the new field needs no rule or config change;
+  the repo's `--yolo` launch flags and apps approval setting
   need no change.
 - [x] [v0.167.0](https://github.com/openai/codex/releases/tag/rust-v0.167.0)
   adds an agents command center and connected backends. Existing role and
