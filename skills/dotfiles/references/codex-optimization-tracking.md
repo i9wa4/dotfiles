@@ -5,7 +5,12 @@ and version history for Codex CLI. The runtime overview lives in `codex-cli.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Codex CLI version: v0.167.1 (2026-11-14)
+Last reviewed Codex CLI version: v0.167.1 (2026-11-16)
+
+Coverage audit (2026-11-16): checked all 22 stable Rust CLI release objects
+from v0.155.0 through the installed v0.167.1 (13 `.0` releases and nine patch
+releases). Alpha tags and later versions are excluded. This section records
+repo-relevant changes and decisions, not every product feature. See §1.2.1.
 
 Review confirmation (2026-11-14): local `codex --version` reported
 `codex-cli 0.167.1`. Reviewed official Rust CLI releases after v0.154.0
@@ -157,11 +162,21 @@ with this repo's existing `--yolo`/advisory posture.
 
 #### 1.2.1. Release Catch-up (v0.154.0 -> v0.167.1)
 
-Reviewed official
-[Rust CLI releases](https://github.com/openai/codex/releases)
-through the installed v0.167.1 hotfix. Changes affecting this repo's launchers,
-generated settings, or tmux workflow are:
+Reviewed the official
+[releases](https://github.com/openai/codex/releases) through the
+installed v0.167.1 hotfix. The 22 stable bodies were checked for launcher,
+generated-setting, MCP, worktree, and tmux effects. The v0.157.1
+[release notes](https://github.com/openai/codex/releases/tag/rust-v0.157.1)
+say its highlights could not be determined; no migration claim is inferred
+from that incomplete note. Relevant decisions follow in release order:
 
+- [x] [v0.155.0](https://github.com/openai/codex/releases/tag/rust-v0.155.0)
+  fixes tmux resize behavior and improves MCP expired-OAuth reconnect
+  guidance. Both arrive as client fixes, without a generated-setting change.
+- [x] [v0.156.0](https://github.com/openai/codex/releases/tag/rust-v0.156.0)
+  enables managed worktree support by default and adds `--no-daemon`. The
+  repo's issue-first `issue-worktree-create` flow still owns branch/worktree
+  setup, and the vde launchers already pass `--no-daemon`.
 - [x] [v0.157.0](https://github.com/openai/codex/releases/tag/rust-v0.157.0)
   enables automatic background-server startup in eligible interactive
   sessions. The vde launchers already pass `--no-daemon`, retaining their
@@ -169,10 +184,31 @@ generated settings, or tmux workflow are:
 - [x] [v0.159.0](https://github.com/openai/codex/releases/tag/rust-v0.159.0)
   removes `tui.prompt_suggestions`. This repo does not set it, so there is no
   generated-config migration.
+- [x] [v0.159.1](https://github.com/openai/codex/releases/tag/rust-v0.159.1)
+  makes GPT-6.1 Sol the bundled default. Vde panes explicitly name their
+  models and efforts, so this default does not silently replace their pins.
+- [x] [v0.161.0](https://github.com/openai/codex/releases/tag/rust-v0.161.0)
+  adds `/mcp login <name>` for an active terminal session. This is a recovery
+  option when a configured MCP server needs authentication; it does not call
+  for a new local server registration in this repo.
+- [x] [v0.162.0](https://github.com/openai/codex/releases/tag/rust-v0.162.0)
+  adds managed worktree create/list tools for trusted projects. They do not
+  replace this repo's issue-first worktree wrapper or its branch checks. The
+  [v0.162.1 patch](https://github.com/openai/codex/releases/tag/rust-v0.162.1)
+  fixes a background-server startup compatibility check; vde uses
+  `--no-daemon`, so no launcher change is required.
 - [x] [v0.163.0](https://github.com/openai/codex/releases/tag/rust-v0.163.0)
   replaces the bundled patched Zsh with the standard shell executor and
   reports deprecated shell flags. The generated config and launchers do not
   set the retired flags; the shared Bash deny hook remains the local control.
+- [x] [v0.164.0](https://github.com/openai/codex/releases/tag/rust-v0.164.0)
+  masks credentials in supported remote Bash and Zsh snapshot sessions.
+  This is upstream hardening and has no generated-setting migration here.
+- [x] [v0.165.0](https://github.com/openai/codex/releases/tag/rust-v0.165.0)
+  enables memory v2 by default for fresh profiles and allows effort changes
+  during a conversation on supported models. The repo does not set a memory
+  version, and launch-time effort pins remain explicit; no config edit is
+  justified without a measured workflow need.
 - [x] [v0.166.0](https://github.com/openai/codex/releases/tag/rust-v0.166.0)
   improves permission recovery when resuming sessions. This is an upstream
   behavior fix; the repo's `--yolo` launch flags and apps approval setting

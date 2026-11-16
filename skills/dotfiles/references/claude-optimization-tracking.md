@@ -6,7 +6,12 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.325 (2026-11-14)
+Last reviewed Claude Code version: v2.1.325 (2026-11-16)
+
+Coverage audit (2026-11-16): the official `CHANGELOG.md` and GitHub Releases
+both have 41 versioned entries from v2.1.278 through the installed v2.1.325.
+This document selects changes that affect this repo's runtime decisions; it is
+not a per-release product changelog. See §1.2.9 for the decisions and sources.
 
 Review confirmation (2026-11-14): local `claude --version` reported
 `2.1.325 (Claude Code)`. Reviewed upstream releases after v2.1.277 through
@@ -412,22 +417,21 @@ servers). Consolidated rather than itemized per-release given the volume.
 
 #### 1.2.9. v2.1.277 -> v2.1.325 candidates (added 2026-11-14)
 
-Reviewed the official
-[releases](https://github.com/anthropics/claude-code/releases)
-through the locally installed v2.1.325, with emphasis on permissions, hooks, MCP
-authentication, sandboxing, and settings generated here.
+Compared the
+[official log](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+and [releases](https://github.com/anthropics/claude-code/releases) through the
+installed v2.1.325. The 41 entries are summarized by their effect on the
+generated settings and launchers, not itemized as a general product history.
 
-- [x] [v2.1.323](https://github.com/anthropics/claude-code/releases/tag/v2.1.323)
-  prompts for sign-in again when an MCP tool call encounters an expired token,
-  instead of surfacing `TOKEN_EXPIRED` alone. This is a client recovery change;
-  it does not confirm that the separate Claude.ai account connector failures
-  tracked in issue #555 are resolved.
-- [x] [v2.1.325](https://github.com/anthropics/claude-code/releases/tag/v2.1.325)
-  changes permission handling for sandboxed Bash by default. These panes use
-  explicit bypass permission flags and do not configure Claude's sandbox, so
-  there is no launcher or generated-settings migration to make. The release
-  also includes a zstd decoder security fix that arrives with the installed
-  client, without a local setting change.
+- [x] [v2.1.280](https://github.com/anthropics/claude-code/releases/tag/v2.1.280)
+  makes Opus 5.5 the default Opus model. The vde launcher uses the
+  `opus[1m]` family alias rather than a dated model ID, so this can advance
+  its effective model. This is an intended alias choice, not a required
+  config migration; use an exact model ID only if a fixed version is needed.
+- [x] [v2.1.286](https://github.com/anthropics/claude-code/releases/tag/v2.1.286)
+  fixes a case where MCP connectors listed no tools after an older handshake.
+  This client fix does not establish that the separate Claude.ai account
+  connector failures in issue #555 are resolved.
 - [ ] [v2.1.295](https://github.com/anthropics/claude-code/releases/tag/v2.1.295)
   adds hook `onFailure: "block"`. Consider it only with a tested failure
   contract for the shared Bash deny hook; adding it during a release catch-up
@@ -437,12 +441,31 @@ authentication, sandboxing, and settings generated here.
   workflow intentionally uses issue worktrees and writes task records outside
   a worktree, so enabling this without a path review would block supported
   work. Leave the current permission posture unchanged.
+- [x] [v2.1.316](https://github.com/anthropics/claude-code/releases/tag/v2.1.316)
+  deprecates fast mode on Opus 4.8. Fast mode is already disabled by
+  `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`, so no migration is needed.
 - [x] [v2.1.319](https://github.com/anthropics/claude-code/releases/tag/v2.1.319)
   runs MCP tasks in the background by client default. This repo generates no
   override for that behavior, so no settings migration is needed. Empty local
   MCP registrations do not exclude Claude.ai account connectors; issue #555
   tracks their separate failures. Revisit if backgrounded calls affect the
-  harness or connector diagnostics. Fast mode remains disabled independently.
+  harness or connector diagnostics.
+- [ ] v2.1.319 also adds `permissions.denyInsteadOfPrompting` for calls that
+  would wait on a permission prompt. Current vde panes use explicit bypass
+  flags and already deny `AskUserQuestion`, so adopting it would change other
+  interactive permission behavior without a demonstrated headless stall.
+  Defer a global setting until that behavior is tested.
+- [x] [v2.1.323](https://github.com/anthropics/claude-code/releases/tag/v2.1.323)
+  prompts for sign-in again when an MCP tool call encounters an expired token,
+  instead of surfacing `TOKEN_EXPIRED` alone. This is a client recovery change;
+  it does not confirm issue #555's account-side connector state.
+- [x] [v2.1.325](https://github.com/anthropics/claude-code/releases/tag/v2.1.325)
+  changes permission handling for sandboxed Bash by default. These panes use
+  explicit bypass permission flags and do not configure Claude's sandbox, so
+  no launcher migration is needed. Read-only git commands in an unrelated,
+  untrusted repository may now ask first; use project trust or `--add-dir`
+  when that workflow occurs. The zstd decoder security fix arrives with the
+  installed client and needs no local setting.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).
