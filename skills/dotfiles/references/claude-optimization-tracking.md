@@ -6,9 +6,20 @@ in `claude-changelog-tracking.md`.
 
 ## 1. Optimization Tracking
 
-Last reviewed Claude Code version: v2.1.277 (2026-09-19)
+Last reviewed Claude Code version: v2.1.325 (2026-11-16)
 
-Review confirmation (2026-09-19): local `claude --version` reported
+Coverage audit (2026-11-16): the official `CHANGELOG.md` and GitHub Releases
+both have 41 versioned entries from v2.1.278 through the installed v2.1.325.
+This document selects changes that affect this repo's runtime decisions; it is
+not a per-release product changelog. See §1.2.9 for the decisions and sources.
+
+Review confirmation (2026-11-14): local `claude --version` reported
+`2.1.325 (Claude Code)`. Reviewed upstream releases after v2.1.277 through
+the installed version and compared their settings and behavior changes with
+`nix/home-manager/agents/claude/default.nix` and the vde launchers. See
+§1.2.9. No generated config change is required.
+
+Earlier review (2026-09-19): local `claude --version` reported
 `2.1.277 (Claude Code)` after `nix flake update`, and the official
 `anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.277`
 section. This pass reviewed 2.1.221 through 2.1.277 (47 versioned changelog
@@ -116,11 +127,12 @@ the changelog and official docs) and the rest of the catch-up.
   `--dangerously-skip-permissions` still selects bypass mode, but bypassing is
   disabled by default until the allow flag is also present. Updated
   `config/vde/layout.yml` so every Claude pane passes both flags.
-- [x] v2.1.210 permission path-rule review - migrated sensitive write denies
-  from `Write(**/secrets/**)` / `Write(.env*)` to
+- [x] v2.1.210 permission path-rule review - at the time, migrated sensitive
+  write denies from `Write(**/secrets/**)` / `Write(.env*)` to
   `Edit(**/secrets/**)` / `Edit(.env*)`. Claude Code now warns that
   `Write(path)` permission rules are not matched by file permission checks;
-  `Edit(path)` covers file-editing tools.
+  `Edit(path)` covers file-editing tools. Issue #362 later removed those
+  Read/Edit-scoped secret-path denies; they are not active in current settings.
 
 ### 1.2. Pending Considerations
 
@@ -288,7 +300,8 @@ the changelog and official docs) and the rest of the catch-up.
   informational. `default` / `"defaultMode": "manual"` both still accepted;
   this repo runs bypass permissions, so no config change.
 - [ ] Claude Sonnet 5 is now the default model (v2.1.197) - informational;
-  model is pinned at launch (`--model opus`), so the default does not apply.
+  launchers select `sonnet` or `opus[1m]` explicitly, so the runtime default
+  does not apply to those panes.
 - [x] Subagents background-by-default; Explore inherits opus (v2.1.198) -
   matches current usage, no config. `/dataviz` ships as a bundled skill.
 - [x] `claude mcp list`/`get` no longer spawn self-approved `.mcp.json`
@@ -326,8 +339,8 @@ the changelog and official docs) and the rest of the catch-up.
 - [x] Permission path-rule warnings (v2.1.210) - config change applied.
   `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules now
   warn at startup; use `Edit(path)` for write restrictions and `Read(path)` for
-  read/glob restrictions. This repo's sensitive write denies now use
-  `Edit(**/secrets/**)` and `Edit(.env*)`.
+  read/glob restrictions. At the time, this repo's sensitive write denies used
+  `Edit(**/secrets/**)` and `Edit(.env*)`; issue #362 later removed them.
 - [x] Hook callback timeout no longer reported as user rejection (v2.1.210) -
   product reliability for unattended panes; no config change.
 - [x] Worktree-isolated subagents no longer run git-mutating commands against
@@ -403,6 +416,85 @@ servers). Consolidated rather than itemized per-release given the volume.
   sandbox config is revisited.
 - [x] No other deprecation/removal/breaking entry in this range touches a
   setting or env var this repo's `claude/default.nix` currently generates.
+
+#### 1.2.9. v2.1.277 -> v2.1.325 candidates (added 2026-11-14)
+
+Compared the
+[official log](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+and [releases](https://github.com/anthropics/claude-code/releases) through the
+installed v2.1.325. The 41 entries are summarized by their effect on the
+generated settings and launchers, not itemized as a general product history.
+
+- [x] [v2.1.280](https://github.com/anthropics/claude-code/releases/tag/v2.1.280)
+  makes Opus 5.5 the default Opus model. The vde launcher uses the
+  `opus[1m]` family alias rather than a dated model ID, so this can advance
+  its effective model. This is an intended alias choice, not a required
+  config migration; use an exact model ID only if a fixed version is needed.
+- [x] [v2.1.281](https://github.com/anthropics/claude-code/releases/tag/v2.1.281)
+  makes dangerous `rm` using command substitution ask even in bypass mode.
+  Its prompt now denies with a rewrite hint after two minutes without an
+  answer; `CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT=1` opts out. Keep the
+  default timeout for unattended vde panes.
+- [x] [v2.1.286](https://github.com/anthropics/claude-code/releases/tag/v2.1.286)
+  fixes a case where MCP connectors listed no tools after an older handshake.
+  This client fix does not establish that the separate Claude.ai account
+  connector failures in issue #555 are resolved.
+- [x] [v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287)
+  preserves the dangerous-`rm` prompt when output redirects to `~` or a wildcard
+  path;
+  [.288](https://github.com/anthropics/claude-code/releases/tag/v2.1.288)
+  also catches dangerous `rm` inside `bash -c` or `sh -c` under bypass mode. Vde
+  panes launch in bypass mode, but the shared Bash hook remains the repo-owned
+  command guard; these upstream fixes do not justify changing its rules or
+  claiming all built-in prompts survive bypass mode.
+- [x] v2.1.287 also makes 1M context the default for Opus 4.7+ and Fable on
+  supported providers. The repo's `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"`
+  remains a percentage of the active context window, so the token threshold
+  can rise when the model or provider gains 1M context. Keep the 70% choice;
+  verify the active window in a session before tuning an absolute limit.
+- [ ] [v2.1.295](https://github.com/anthropics/claude-code/releases/tag/v2.1.295)
+  adds hook `onFailure: "block"`. Consider it only with a tested failure
+  contract for the shared Bash deny hook; adding it during a release catch-up
+  could turn a hook infrastructure failure into a blanket tool denial.
+- [x] [v2.1.299](https://github.com/anthropics/claude-code/releases/tag/v2.1.299)
+  adds default-on terminal idle compaction: a conversation above 200K tokens
+  idle for about 54 minutes is summarized before the one-hour prompt cache
+  expires. This is separate from the repo's 70% active-window autocompact
+  setting and can compact a long 1M-context session before that threshold.
+  Keep the default for long-lived vde/Postman panes to avoid reprocessing an
+  expired cache; no observed workflow failure warrants disabling it or changing
+  `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`. v2.1.314 extends idle compaction to
+  telemetry-off subscribers and more providers when prompt caching is on.
+- [ ] [v2.1.314](https://github.com/anthropics/claude-code/releases/tag/v2.1.314)
+  adds `permissions.blockWritesOutsideWorkingDirectories`. The dotfiles
+  workflow intentionally uses issue worktrees and writes task records outside
+  a worktree, so enabling this without a path review would block supported
+  work. Leave the current permission posture unchanged.
+- [x] [v2.1.316](https://github.com/anthropics/claude-code/releases/tag/v2.1.316)
+  deprecates fast mode on Opus 4.8. Fast mode is already disabled by
+  `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`, so no migration is needed.
+- [x] [v2.1.319](https://github.com/anthropics/claude-code/releases/tag/v2.1.319)
+  runs MCP tasks in the background by client default. This repo generates no
+  override for that behavior, so no settings migration is needed. Empty local
+  MCP registrations do not exclude Claude.ai account connectors; issue #555
+  tracks their separate failures. Revisit if backgrounded calls affect the
+  harness or connector diagnostics.
+- [ ] v2.1.319 also adds `permissions.denyInsteadOfPrompting` for calls that
+  would wait on a permission prompt. Current vde panes use explicit bypass
+  flags and already deny `AskUserQuestion`, so adopting it would change other
+  interactive permission behavior without a demonstrated headless stall.
+  Defer a global setting until that behavior is tested.
+- [x] [v2.1.323](https://github.com/anthropics/claude-code/releases/tag/v2.1.323)
+  prompts for sign-in again when an MCP tool call encounters an expired token,
+  instead of surfacing `TOKEN_EXPIRED` alone. This is a client recovery change;
+  it does not confirm issue #555's account-side connector state.
+- [x] [v2.1.325](https://github.com/anthropics/claude-code/releases/tag/v2.1.325)
+  changes permission handling for sandboxed Bash by default. These panes use
+  explicit bypass permission flags and do not configure Claude's sandbox, so
+  no launcher migration is needed. Read-only git commands in an unrelated,
+  untrusted repository may now ask first; use project trust or `--add-dir`
+  when that workflow occurs. The zstd decoder security fix arrives with the
+  installed client and needs no local setting.
 
 For decision log ("Not Adopting") and per-version changelog,
 see [Claude Changelog Tracking](claude-changelog-tracking.md).

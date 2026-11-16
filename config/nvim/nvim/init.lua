@@ -1,189 +1,112 @@
--- --------------------------------------
--- Option
---
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- =============================================================================
+-- Plugins
+-- =============================================================================
 
-vim.g.auto_reload = vim.fn.timer_start(1000, function()
-  vim.cmd("silent! checktime")
-end, { ["repeat"] = -1 })
+-- Use Oil to browse and manage files as editable buffers.
+vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
 
-vim.opt.cursorline = true
-vim.opt.ignorecase = true
-vim.opt.nrformats = { "unsigned" }
-vim.opt.number = true
-vim.opt.spell = true
-vim.opt.spelllang:append("cjk")
-vim.opt.swapfile = false
-vim.opt.termguicolors = true
-
-vim.opt.clipboard = ""
-if vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
-  vim.opt.clipboard:prepend("unnamed")
-else
-  vim.opt.clipboard:prepend("unnamedplus")
-end
-
--- --------------------------------------
--- Plugin
---
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-  vim.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim", lazypath }):wait()
-end
-vim.opt.runtimepath:prepend(lazypath)
-
-require("lazy").setup({
-  {
-    "stevearc/oil.nvim",
-    lazy = false,
-    opts = {
-      default_file_explorer = true,
-      keymaps = {
-        ["`"] = { "actions.cd", mode = "n" },
-        ["t"] = { "actions.select", opts = { tab = true } },
-      },
-      view_options = {
-        show_hidden = true,
-      },
-    },
+require("oil").setup({
+  -- Show file permissions, size, and modification time.
+  columns = {
+    "permissions",
+    "size",
+    { "mtime", format = "%Y-%m-%d %H:%M:%S" },
+  },
+  view_options = {
+    -- Show hidden files and directories.
+    show_hidden = true,
   },
 })
 
--- --------------------------------------
--- Helper
---
-local function send_tmux_clipboard(content)
-  if vim.fn.executable("tmux") == 1 and vim.env.TMUX and vim.env.TMUX ~= "" then
-    vim.system({ "tmux", "load-buffer", "-w", "-" }, { stdin = content }):wait()
-  end
-end
+-- =============================================================================
+-- Options
+-- =============================================================================
 
-vim.api.nvim_create_user_command("R", function(opts)
-  local content = vim.fn.getreg(opts.args)
-  pcall(vim.fn.setreg, "+", content)
-  send_tmux_clipboard(content)
-end, { nargs = "?" })
+-- Use the system clipboard for yank, delete, and paste operations.
+vim.opt.clipboard = "unnamedplus"
 
-local function highlight_define()
-  -- vim.api.nvim_set_hl(0, "markdownError", { link = "Normal" })
-  -- vim.api.nvim_set_hl(0, "markdownItalic", { link = "Normal" })
+-- Search without distinguishing uppercase and lowercase letters.
+vim.opt.ignorecase = true
 
-  for _, group in ipairs({
-    "EndOfBuffer",
-    "Folded",
-    "LineNr",
-    "NonText",
-    "Normal",
-    "VertSplit",
-  }) do
-    local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-    hl.bg = nil
-    vim.api.nvim_set_hl(0, group, hl)
-  end
-end
+-- Display whitespace characters defined by 'listchars'.
+vim.opt.list = true
 
-local function highlight_match()
-  for _, id in ipairs(vim.w.my_highlight_match_ids or {}) do
-    pcall(vim.fn.matchdelete, id)
-  end
+-- Mark trailing spaces with ~ and leading spaces with alternating - and +.
+vim.opt.listchars = { trail = "~", leadmultispace = "-+" }
 
-  local ids = {}
-  local function add(group, pattern)
-    ids[#ids + 1] = vim.fn.matchadd(group, pattern)
-  end
+-- Treat numbers as unsigned when incrementing or decrementing.
+vim.opt.nrformats = { "unsigned" }
 
-  add("TermCursor", [[# %%\|# COMMAND ----------]])
-  add("TermCursor", [[\[ \]])
-  add("TermCursor", vim.fn.strftime("%Y%m%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y-%m-%d", vim.fn.localtime()))
-  add("TermCursor", vim.fn.strftime("%Y/%m/%d", vim.fn.localtime()))
-  add("Error", [[\%u3000]])
-  add("Error", [[\s\+$]])
+-- Display absolute line numbers.
+vim.opt.number = true
 
-  vim.w.my_highlight_match_ids = ids
-end
+-- Disable swap files to avoid temporary recovery files.
+vim.opt.swapfile = false
 
--- --------------------------------------
--- Keymap
---
+-- Use tmux as the clipboard provider.
+vim.g.clipboard = "tmux"
+
+-- =============================================================================
+-- Keymaps
+-- =============================================================================
+
+-- Insert the current timestamp with the timezone offset.
+vim.keymap.set("i", ",now", [[<C-R><C-O>=strftime("%Y-%m-%d %H:%M:%S %z")<CR>]])
+
+-- Insert the current date in ISO 8601 format.
+vim.keymap.set("i", ",today", [[<C-R><C-O>=strftime("%Y-%m-%d")<CR>]])
+
+-- Open the directory containing the current file.
 vim.keymap.set("n", "-", "<Cmd>edit %:p:h<CR>")
-vim.keymap.set("i", ",now", function()
-  return vim.fn.strftime("%Y-%m-%d %X +0900")
-end, { expr = true })
-vim.keymap.set("i", ",today", function()
-  return vim.fn.strftime("%Y-%m-%d")
-end, { expr = true })
 
-vim.keymap.set("n", "<Space>sn", "<Cmd>setlocal number! number?<CR>")
-vim.keymap.set("n", "<Space>st", "<Cmd>setlocal expandtab! expandtab?<CR>")
-vim.keymap.set("n", "<Space>sw", "<Cmd>setlocal wrap! wrap?<CR>")
+-- Copy the current file path, replacing the home directory with ~.
+vim.keymap.set("n", "<Space>cp", "<Cmd>let @+ = expand('%:p:~')<CR>")
 
--- --------------------------------------
--- Autocmd
---
+-- Toggle between tabs and spaces for indentation in the current buffer.
+vim.keymap.set("n", "<Space>tt", "<Cmd>setlocal expandtab! expandtab?<CR>")
+
+-- Toggle line wrapping in the current window.
+vim.keymap.set("n", "<Space>tw", "<Cmd>setlocal wrap! wrap?<CR>")
+
+-- =============================================================================
+-- Autocommands
+-- =============================================================================
+
+-- Clear existing autocommands in this group when reloading the configuration.
 local augroup = vim.api.nvim_create_augroup("MyAutocmd", { clear = true })
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  group = augroup,
-  callback = function()
-    if vim.v.event.operator == "y" and vim.v.event.regname == "" then
-      send_tmux_clipboard(vim.fn.getreg(""))
-    end
-  end,
-})
-
+-- Restore the last cursor position when reopening a file.
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup,
-  callback = function()
-    pcall(vim.cmd, [[normal! g`"]])
-  end,
+  command = 'silent! normal! g`"',
 })
 
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = augroup,
-  callback = function()
-    if vim.bo.buftype == "" then
-      vim.fn.setreg("a", vim.fn.fnamemodify(vim.fn.expand("%"), ":p:~"))
-    end
-  end,
-})
-
+-- Remove selected backgrounds when a dark color scheme is loaded.
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
-  callback = highlight_define,
-})
-
-vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter", "FileType" }, {
-  group = augroup,
-  callback = highlight_match,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-  group = augroup,
-  pattern = { "*.md", "*.mdx", "*.qmd" },
   callback = function()
-    if vim.fn.executable("mdfmt") == 1 then
-      vim.system({ "mdfmt", "--write", vim.fn.expand("%:p") }):wait()
-      vim.cmd("silent noautocmd edit!")
+    if vim.o.background == "light" then
+      return
+    end
+
+    for _, name in ipairs({
+      "EndOfBuffer",
+      "Folded",
+      "LineNr",
+      "NonText",
+      "Normal",
+      "WinSeparator",
+    }) do
+      local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+      hl.bg = nil
+      vim.api.nvim_set_hl(0, name, hl)
     end
   end,
 })
 
--- --------------------------------------
--- Filetype, syntax, and colorscheme
---
-vim.cmd("filetype plugin indent on")
-vim.api.nvim_create_autocmd("FileType", {
-  group = augroup,
-  callback = function()
-    pcall(function()
-      -- Keep literal ':' insertion from triggering insert-mode reindent,
-      -- e.g. the time separators inserted by the ",now" mapping.
-      vim.opt_local.indentkeys:remove({ ":", "<:>" })
-      vim.opt_local.cinkeys:remove({ ":", "<:>" })
-    end)
-  end,
-})
-vim.cmd("syntax enable")
-vim.cmd.colorscheme(vim.g.colors_name or "retrobox")
+-- =============================================================================
+-- Colorscheme
+-- =============================================================================
+
+-- Apply the built-in Retrobox color scheme.
+vim.cmd.colorscheme("retrobox")
