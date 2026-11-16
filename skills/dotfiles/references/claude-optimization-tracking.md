@@ -430,19 +430,23 @@ generated settings and launchers, not itemized as a general product history.
   `opus[1m]` family alias rather than a dated model ID, so this can advance
   its effective model. This is an intended alias choice, not a required
   config migration; use an exact model ID only if a fixed version is needed.
-- [x] [v2.1.281](https://github.com/anthropics/claude-code/releases/tag/v2.1.281),
-  [v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287),
-  and
-  [.288](https://github.com/anthropics/claude-code/releases/tag/v2.1.288)
-  repair dangerous-`rm` prompts in bypass mode, including shell substitution and
-  nested `bash -c` commands. The vde panes launch in bypass mode, but the shared
-  Bash hook remains the repo-owned command guard; these upstream fixes do not
-  justify changing its rules or claiming all built-in prompts survive bypass
-  mode.
+- [x] [v2.1.281](https://github.com/anthropics/claude-code/releases/tag/v2.1.281)
+  makes dangerous `rm` using command substitution ask even in bypass mode.
+  Its prompt now denies with a rewrite hint after two minutes without an
+  answer; `CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT=1` opts out. Keep the
+  default timeout for unattended vde panes.
 - [x] [v2.1.286](https://github.com/anthropics/claude-code/releases/tag/v2.1.286)
   fixes a case where MCP connectors listed no tools after an older handshake.
   This client fix does not establish that the separate Claude.ai account
   connector failures in issue #555 are resolved.
+- [x] [v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287)
+  preserves the dangerous-`rm` prompt when output redirects to `~` or a wildcard
+  path;
+  [.288](https://github.com/anthropics/claude-code/releases/tag/v2.1.288)
+  also catches dangerous `rm` inside `bash -c` or `sh -c` under bypass mode. Vde
+  panes launch in bypass mode, but the shared Bash hook remains the repo-owned
+  command guard; these upstream fixes do not justify changing its rules or
+  claiming all built-in prompts survive bypass mode.
 - [x] v2.1.287 also makes 1M context the default for Opus 4.7+ and Fable on
   supported providers. The repo's `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"`
   remains a percentage of the active context window, so the token threshold
@@ -452,6 +456,15 @@ generated settings and launchers, not itemized as a general product history.
   adds hook `onFailure: "block"`. Consider it only with a tested failure
   contract for the shared Bash deny hook; adding it during a release catch-up
   could turn a hook infrastructure failure into a blanket tool denial.
+- [x] [v2.1.299](https://github.com/anthropics/claude-code/releases/tag/v2.1.299)
+  adds default-on terminal idle compaction: a conversation above 200K tokens
+  idle for about 54 minutes is summarized before the one-hour prompt cache
+  expires. This is separate from the repo's 70% active-window autocompact
+  setting and can compact a long 1M-context session before that threshold.
+  Keep the default for long-lived vde/Postman panes to avoid reprocessing an
+  expired cache; no observed workflow failure warrants disabling it or changing
+  `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`. v2.1.314 extends idle compaction to
+  telemetry-off subscribers and more providers when prompt caching is on.
 - [ ] [v2.1.314](https://github.com/anthropics/claude-code/releases/tag/v2.1.314)
   adds `permissions.blockWritesOutsideWorkingDirectories`. The dotfiles
   workflow intentionally uses issue worktrees and writes task records outside
