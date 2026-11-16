@@ -22,6 +22,10 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
+    groups:
+      nix-inputs:
+        patterns:
+          - "*"
     # First-party input: the flake.nix pin is bumped by hand within hours of
     # each release, so Dependabot can only race that bump. Every PR it has ever
     # opened for it was a downgrade (#278, #285, #320, #321) or a redundant
