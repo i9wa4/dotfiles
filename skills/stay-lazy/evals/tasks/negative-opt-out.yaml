@@ -1,0 +1,15 @@
+id: negative-opt-out
+name: Explicit opt-out
+description: User overrides the standing preference.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Do not use stay-lazy for this request. Reproduce this passage verbatim: The system recorded three retries; the fourth succeeded."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/stay-lazy/SKILL.md
+      mode: negative

@@ -1,0 +1,15 @@
+id: positive-writing
+name: Ordinary writing
+description: Concise writing request.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Draft a short project update."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/stay-lazy/SKILL.md
+      mode: positive
