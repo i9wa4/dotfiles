@@ -92,7 +92,7 @@ presets:
               delay: 500
             - name: orchestrator
               title: orchestrator
-              command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
+              command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
               delay: 500
             - name: worker
               title: worker
