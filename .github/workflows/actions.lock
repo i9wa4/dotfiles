@@ -9,7 +9,7 @@ workflows:
         - 'nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c'
     '.github/workflows/release.yaml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b'
+        - 'cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086'
         - 'nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569'
 dependencies:
     'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1':
@@ -17,9 +17,9 @@ dependencies:
         commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
-    'cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b':
-        ref: 'v31.11.3'
-        commit: 'sha1-75c75c31ebece974e48ebc36b4ad125bd97bd97b'
+    'cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086':
+        ref: 'v31.11.5'
+        commit: 'sha1-3dc140bfc76c49fbd4dd958429132e3746bcb086'
         owner_id: 36824654
         repo_id: 212301524
     'nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569':
