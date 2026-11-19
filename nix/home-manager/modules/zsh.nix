@@ -56,6 +56,20 @@ in
               && -z "''${SSL_CERT_FILE-}" ]]; then
               export SSL_CERT_FILE=${lib.escapeShellArg config.home.sessionVariables.SSL_CERT_FILE}
             fi
+
+            # Old tmux sessions can also retain a CA bundle path from a prior
+            # generation after Nix GC removes it. Repair only the missing,
+            # dotfiles-managed bundle paired with the isolated CA directory;
+            # leave existing bundles and explicit alternative paths untouched.
+            if [[ "''${SSL_CERT_DIR-}" == /nix/store/*-empty-directory \
+              && "''${SSL_CERT_FILE-}" == /nix/store/*-nss-cacert-*/etc/ssl/certs/ca-no-trust-rules-bundle.crt \
+              && ! -f "''${SSL_CERT_FILE}" ]]; then
+              if [[ "''${NIX_SSL_CERT_FILE-}" == "''${SSL_CERT_FILE}" ]]; then
+                export NIX_SSL_CERT_FILE=${lib.escapeShellArg config.home.sessionVariables.NIX_SSL_CERT_FILE}
+              fi
+              export SSL_CERT_FILE=${lib.escapeShellArg config.home.sessionVariables.SSL_CERT_FILE}
+              export SSL_CERT_DIR=${lib.escapeShellArg config.home.sessionVariables.SSL_CERT_DIR}
+            fi
           ''
         else
           ''
