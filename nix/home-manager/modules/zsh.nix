@@ -53,8 +53,8 @@ in
             # even after activation has switched to nix-darwin's stable bundle.
             # Migrate only the former dotfiles-managed CA pair; preserve custom
             # trust settings and explicit per-command overrides.
-            if [[ "''${SSL_CERT_DIR-}" == /nix/store/*-empty-directory \\
-              && ( -z "''${SSL_CERT_FILE-}" \\
+            if [[ "''${SSL_CERT_DIR-}" == /nix/store/*-empty-directory \
+              && ( -z "''${SSL_CERT_FILE-}" \
                 || "''${SSL_CERT_FILE-}" == /nix/store/*-nss-cacert-*/etc/ssl/certs/ca-no-trust-rules-bundle.crt ) ]]; then
               if [[ "''${NIX_SSL_CERT_FILE-}" == /nix/store/*-nss-cacert-*/etc/ssl/certs/ca-no-trust-rules-bundle.crt ]]; then
                 export NIX_SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
