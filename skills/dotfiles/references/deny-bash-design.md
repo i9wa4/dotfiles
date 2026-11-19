@@ -18,43 +18,36 @@ What it protects against:
 - An agent using long-form flags (`--delete`) when the short form (`-d`)
   is the documented deny.
 
-What it deliberately does not protect against:
-
-- File-write-then-execute patterns like `echo "git push" > /tmp/x; /tmp/x`.
-- Shell command substitution `$(...)` and process substitution `<(...)`.
-- Indirect execution through other languages
-  (`python -c 'os.system("git push")'`).
-- An agent that explicitly intends to evade the hook.
-
-The trade-off is conscious. Closing every evasion path would require either
-shell-aware parsing inside the hook or sandboxing the entire subprocess tree,
-both of which exceed the value the hook is meant to deliver.
+The hook is a syntactic allowlist, not a sandbox for an allowed process or for
+source separately submitted through Postman's typed execution path. It does
+not establish the effects of arbitrary programs after they start or replace
+runtime permissions and human authorization.
 
 ## 2. Single Source of Truth
 
-`nix/home-manager/agents/shared/bash-commands-denied.nix` is the SSOT. It
-defines three top-level lists:
+The shared hook uses two source files:
 
-- `entries` — deny rules. Each entry has an `argv` token list, an
-  `anchored` flag, an optional `hookRegex` override, an optional
-  `claudeSettingsJson` flag, and a human-readable `justification`.
-- `allowPrefixBypass` — fragments starting with these prefixes skip the
-  regex deny check entirely.
-- `stripDataArgs` — for these arg names, the quoted value following the
-  arg is replaced with `""` before the regex deny check.
+- `nix/home-manager/agents/shared/bash-commands-allowed.nix` defines the
+  default-deny allowlist. Its `entries` generate `ALLOW_PATTERNS`; the hook
+  also has a dedicated grep/rg/ripgrep allow check.
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` defines
+  `DENY_PATTERNS` and their explanations for commands outside the allowlist.
+  Its `stripDataArgs` removes quoted message values before both
+  `ALLOW_PATTERNS` and `DENY_PATTERNS` matching.
+  These patterns improve denial messages; they do not grant or remove execution
+  permission after the allowlist decision.
 
-The Nix module exposes two outputs that consume this SSOT:
+The Nix modules expose these related outputs:
 
 | Output                       | Consumer                                                                                                                                      | Mechanism                                                                                            |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `claudeCode.denyPermissions` | `~/.claude/settings.json` `permissions.deny`                                                                                                  | `Bash(<glob>)` glob match (Claude Code built-in) (private-content-scan: allow; managed runtime path) |
 | `claudeCode.patternsFile`    | `~/.claude/scripts/deny-bash-patterns.sh` and `~/.codex/scripts/deny-bash-patterns.sh` (sourced by the shared `pretooluse-deny-bash.sh` hook) | POSIX ERE regex match (private-content-scan: allow; managed runtime path)                            |
 
-`allowPrefixBypass` and `stripDataArgs` are emitted into the shared
-`patternsFile`, so both Claude Code and Codex CLI inherit the same
-data-carrier and message-argument protections. Codex does not duplicate the
-shared command-deny set into embedded `prefix_rule(...)` rules; filesystem
-and network blast-radius controls remain the responsibility of Codex
+The generated `patternsFile` carries both `ALLOW_PATTERNS` and
+`DENY_PATTERNS` for the shared PreToolUse hook. Codex does not duplicate the
+shared command rules into embedded `prefix_rule(...)` rules; filesystem and
+network blast-radius controls remain the responsibility of Codex
 sandbox/approval settings.
 
 ## 3. Permission And Hook Layers
@@ -89,11 +82,12 @@ with different bypass semantics:
   `--dangerously-skip-permissions` unless a scenario on the installed Claude
   Code version proves otherwise.
 - The shared PreToolUse hook (`scripts/pretooluse-deny-bash.sh`) is a separate
-  hook-layer guardrail. It reads `patternsFile` in both runtimes and matches
-  every entry's regex against the issued Bash command. A match emits a deny
-  payload with the entry's `justification`. Installed help names `--bare`, not
-  `--dangerously-skip-permissions`, as hook-skipping mode, but bypass-launched
-  panes still need explicit hook-fire evidence before relying on this layer.
+  hook-layer guardrail. It first checks the default-deny allowlist in both
+  runtimes. A command outside it receives a deny payload; a matching
+  `DENY_PATTERNS` entry supplies a specific justification. Installed help
+  names `--bare`, not `--dangerously-skip-permissions`, as hook-skipping mode,
+  but bypass-launched panes still need explicit hook-fire evidence before
+  relying on this layer.
 
 ### 3.3. Layer 3 — Per-Command User Confirmation Prompt
 
@@ -106,42 +100,29 @@ command-deny entries.
 
 ## 4. Hook Processing Pipeline
 
-`check_bash_command_for_denials` and `check_bash_fragment_for_denials` in the
-hook script implement this order. Each fragment of the issued command (after
-quote-aware splitting on top-level `;`, `&`, `|` operators) is processed as
-follows:
+The shared hook normalizes line continuations and masks literal quoted
+heredoc bodies before checking the command. It then applies these stages:
 
-1. **Trim** leading and trailing whitespace.
-2. **Bypass check** (`is_allow_prefix_bypass`). If the fragment starts with
-   any prefix in `ALLOW_PREFIX_BYPASS`, return success without further
-   checks. Spaces inside a multi-token prefix are matched as
-   `[[:space:]]+`.
-3. **Wrapper unwrap** (`unwrap_shell_wrapper`). If the fragment is
-   `bash -c "..."`, `sh -c "..."`, or `zsh -c "..."` (including the `-lc`
-   and `-cl` short forms), the inner script is extracted, one quote layer
-   is stripped, and the inner script is recursively passed back through
-   `check_bash_command_for_denials`. This makes wrapping a denied command
-   in `bash -c` ineffective at evading the deny.
-4. **Data-arg strip** (`strip_data_arg_values`). For each arg name listed
-   in `STRIP_DATA_ARGS`, the quoted value following the arg is replaced
-   with an empty string. This prevents legitimate `-m "msg with rm in it"`
-   style messages from triggering false positives without weakening the
-   check on flags that follow the message arg.
-5. **Regex match** loop. The (possibly stripped) fragment is tested against
-   each pattern in `DENY_PATTERNS`. The first match emits a deny payload
-   with the corresponding justification. The deny payload reports the
-   **original fragment**, not the stripped one, so the agent sees the
-   command it actually issued.
-
-If none of the patterns match, the fragment is allowed.
+1. The dedicated grep/rg/ripgrep check may allow its narrow read-only shape.
+2. `check_bash_command_for_allow` splits top-level shell fragments and requires
+   every fragment to pass its risk, secret-path and allowlist checks. A matching
+   `ALLOW_PATTERNS` entry or the dedicated safe Git check permits that fragment.
+3. If no allow path accepts the command, `check_bash_command_for_denials`
+   matches known-bad patterns to choose a specific explanation. It may unwrap
+   shell wrappers and strip quoted message arguments before matching, but it
+   cannot turn a rejected command into an allowed one.
+4. A remaining unmatched command receives the generic not-on-the-allowlist
+   denial. Both denial paths point to `tmux-a2a-postman execute-heredoc` for an
+   exact, separately reviewed invocation.
 
 ## 5. Adding New Entries
 
 ### 5.1. New Deny Rule
 
-Add to `entries`. Set `claudeSettingsJson = true` only when the command is
-truly dangerous and Claude should not even attempt it; otherwise rely on the
-hook side alone, which produces a teachable deny message.
+Add to the denied module's `entries`. Set `claudeSettingsJson = true` only when
+the command is truly dangerous and Claude should not even attempt it;
+otherwise the entry supplies a specific hook denial message for a command
+already outside the allowlist.
 
 Use `anchored = true` (the default) only when the deny target must appear as
 the first token of the fragment. Use `anchored = false` when the command can
@@ -156,72 +137,65 @@ Provide a `hookRegex` override only when the auto-derived regex is too broad
 or too narrow for a specific case (see the existing `rm` and `git -C`
 overrides for examples).
 
-### 5.2. New Bypass Prefix
+### 5.2. New Allowlist Entry
 
-Add to `allowPrefixBypass`. The bar for adding a prefix:
+Add to `bash-commands-allowed.nix` only after checking the full command and
+argument shape. An allowlist match admits automatic hook continuation, so
+ordinary entries must be side-effect-free and must not hide another command.
 
-- The tool must be a pure data carrier. It must not execute commands that
-  appear in its arguments.
-- The tool must not be one whose subcommands include destructive
-  operations on local state.
-- A bypass prefix is whole-fragment exempt, so it only makes sense when
-  the entire command line is data passing.
-
-`tmux-a2a-postman` qualifies because every subcommand only manipulates the
-postman state files and Claude UI; it never runs user-supplied commands.
+`tmux-a2a-postman` is the approval channel's explicit allowlist entry. Its
+`execute-heredoc` subcommand can execute caller-supplied source in a fresh shell
+after the typed review decision, or under the documented advisory path when
+no approver is configured or positively present. The CLI entry avoids a
+circular hook denial; it is not a claim that every Postman invocation is inert
+or that command approval replaces human/runtime authority. See installed
+`tmux-a2a-postman help execute-heredoc` for the current workflow.
 
 ### 5.3. New Strip Arg
 
-Add to `stripDataArgs`. The bar for adding an arg:
+Add to `stripDataArgs`, which the hook applies before both allowlist and
+denial-message pattern matching. The bar for adding an arg:
 
 - The arg must conventionally take a quoted message or text value.
-- Stripping the value must not disable a deny rule that depends on the
-  value being present (in practice, deny rules check command tokens, not
-  argument values).
+- Stripping the value must not hide command tokens needed for allowlist
+  classification or a specific denial explanation.
 
 `-m` qualifies because `git commit`, `git tag`, `gh issue create`, and
 similar tools all take it as a textual message argument. The strip
 preserves the rest of the command, so `git commit -m "msg" --amend` still
-trips the `--amend` deny.
+receives the `--amend`-specific denial explanation.
 
 ## 6. Known Limits
 
-Ranked from most-likely-to-be-encountered to least:
+The hook checks command text with bounded shell-shape, secret-path and
+allowlist rules; it does not prove the behavior of an allowed process. Quoted
+heredoc bodies are inert data for this check, while unquoted bodies remain
+visible because the shell expands them. A new CLI subcommand or argument
+behavior can change the effects of an allowlisted entry and needs a fresh
+review against installed help and runtime evidence.
 
-1. **Command substitution.** `git commit -m "$(rm -rf /)"` strips the value
-   `$(rm -rf /)` literally; the shell still executes the substitution.
-   The hook cannot inspect this without parsing shell syntax.
-2. **File-write-then-execute.** `echo "git push" > /tmp/x; bash /tmp/x` is
-   two separate fragments after splitting; the second runs `bash`, which is
-   not a denied command, and the file content is not analysed.
-3. **Indirect execution.** Any command that spawns a shell out of band
-   (`python -c '...'`, `node -e '...'`, `make run`) is opaque to the hook.
-4. **Wrapper edge cases.** `unwrap_shell_wrapper` only catches
-   `^(bash|sh|zsh) -(c|lc|cl) ...`. Variants like `/usr/bin/env bash -c`
-   or `exec bash -c` are not unwrapped; they fall through to the regex
-   loop and may or may not match depending on the wrapper layout.
-5. **Long-form flag drift.** When git, AWS CLI, or another tool adds a new
-   long-form spelling for an existing flag, both spellings need separate
-   deny entries (see the `git branch -d` / `git branch --delete` pair).
-
-These are accepted as part of the guardrail-not-boundary stance described
-in section 1. If a stricter posture becomes necessary, the right move is to
-replace the regex layer with a shell-aware parser, not to keep adding
-special cases on top of regex.
+`DENY_PATTERNS` affect the explanation for an off-allowlist command, not the
+allow decision. Missing wrapper or flag spellings can weaken the specificity
+of that explanation, but an off-allowlist command still receives the generic
+denial. Separately approved Postman execution has its own decision and
+human/runtime gates; it is not confined by this direct-Bash allowlist.
 
 ## 7. References
 
 - `skills/dotfiles/references/agent-config-philosophy.md` — the design
   principles this hook system follows (prompt-first, shared SSOT,
   vendor-specific as compensation).
-- `nix/home-manager/agents/shared/bash-commands-denied.nix` — SSOT.
+- `nix/home-manager/agents/shared/bash-commands-allowed.nix` — default-deny
+  allowlist and automatic hook-admission decisions.
+- `nix/home-manager/agents/shared/bash-commands-denied.nix` — specific denial
+  messages, `stripDataArgs` and Claude native deny entries.
 - `nix/home-manager/agents/scripts/pretooluse-deny-bash.sh` — the
   PreToolUse hook script.
-- `nix/home-manager/agents/claude/default.nix` — wires the SSOT into
+- `nix/home-manager/agents/claude/default.nix` — wires the shared policy into
   <!-- private-content-scan: allow-next-line -->
   `~/.claude/settings.json` and `~/.claude/scripts/`.
 - `nix/home-manager/agents/codex/default.nix` — wires the shared hook and
   <!-- private-content-scan: allow-next-line -->
   generated patterns into `~/.codex/scripts/` and `~/.codex/hooks.json`.
-- `tmux-a2a-postman help config` section 2.16 — multi-agent
-  bash discipline that complements this hook system on the agent side.
+- `tmux-a2a-postman help execute-heredoc` — the typed invocation and approval
+  path for commands denied by the direct Bash allowlist.
