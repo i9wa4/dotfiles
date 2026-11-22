@@ -5,8 +5,6 @@
 [![Top Language](https://img.shields.io/github/languages/top/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles)
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/i9wa4/dotfiles)](https://github.com/i9wa4/dotfiles/commits/main)
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/i9wa4/dotfiles)
-
 Nix-managed machine configuration for macOS (Apple Silicon) and Ubuntu 24.04
 LTS (including WSL2), plus a reproducible local engineering and agent harness.
 The harness manages tmux role identity, `tmux-a2a-postman` control-plane
