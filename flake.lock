@@ -39,11 +39,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795218628,
-        "narHash": "sha256-0Q1ZZfWlpnUNRZybZcXQwt2HNGPR66DN0M1A/mZh5rI=",
+        "lastModified": 1795328177,
+        "narHash": "sha256-brB3SUIoRS6YKaOeO5cUYteKjtwl1e41Wd7Rvb+M9aU=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "947a491774eed33d2a117bbecea50debc6ac1a20",
+        "rev": "c542bfe01ba1d46348b3700b42d946c94804951b",
         "type": "github"
       },
       "original": {
@@ -153,11 +153,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795248287,
-        "narHash": "sha256-6RrMFBSZJT0rzkdXGzB4xktqXzJ44WAjx5qcOvK7khg=",
+        "lastModified": 1795332156,
+        "narHash": "sha256-ZitnKiXtAFvuARVwsaPWgOD3KfV5OoQHHBMbrZwTPRI=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "7360b2e8a190dc773acf30581b7edf3e21b70725",
+        "rev": "ed2c66be443e4c16502a0f7cb93c4edf60e93e94",
         "type": "github"
       },
       "original": {
@@ -369,11 +369,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795268568,
-        "narHash": "sha256-1RJm4DEu7YHJv94sjSY7sjqT+kHx/AUwmtUN4dtFBUo=",
+        "lastModified": 1795340038,
+        "narHash": "sha256-RtgZbV+4BDtJqMImbiPJri3fmVDbCbrz/B0cuPQUJQY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6857c7f7c338ad181729c52071386b0d3afa24bc",
+        "rev": "03885bcd0b477bdecebebc57b213b0f8f0826d51",
         "type": "github"
       },
       "original": {
@@ -392,11 +392,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1795304504,
-        "narHash": "sha256-BHpBHnFKQ6Q0nXUUiVxcgFl9E8boHHSuCHxsUQfviUY=",
+        "lastModified": 1795341226,
+        "narHash": "sha256-5KruClwP+Sseafmf4xFksKJA1eYajegMkAbTHIcv2CY=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "91fde7b18469fbc0938d6ab04566463bc3ba3395",
+        "rev": "3ba11af458c6b66a83447bc6bf6fe180b237d0da",
         "type": "github"
       },
       "original": {
@@ -531,11 +531,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794739050,
-        "narHash": "sha256-PCGNIyAydZcdUXCxEXTjrS1+wWS+k9E+ENqBkUK2Mpg=",
+        "lastModified": 1795345257,
+        "narHash": "sha256-p1dA8lUFQTLJfDI2gaTZQ+CcMKw3nxvyHNbwpVMy2rY=",
         "owner": "Mic92",
         "repo": "nix-index-database",
-        "rev": "9bd074026d6db75b59aae8cd6071b5f2fe27a36c",
+        "rev": "905f3e6f1e78165e79457c0bbe7ec4b885a5fce1",
         "type": "github"
       },
       "original": {
