@@ -1,7 +1,7 @@
 name: stay-lazy-eval
-description: Offline trigger checks for ordinary work and explicit opt-out.
+description: Offline trigger checks across ordinary work and explicit opt-out.
 skill: stay-lazy
-version: "1.0"
+version: "1.1"
 config:
   trials_per_task: 1
   timeout_seconds: 300
