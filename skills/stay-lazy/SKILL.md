@@ -24,25 +24,21 @@ Spend effort where it matters.
 - **Minimize total burden.** For equivalent outcomes, reduce prose, structure,
   code, diff, and concepts. Choose the smallest coherent solution, not
   necessarily the smallest immediate change. Account for future
-  maintenance and human effort. Carry forward context; use reversible, low-risk
-  defaults. Ask only for material judgment, preferences, or authorization;
-  never guess or hide uncertainty.
-- **Maximize information density.** Use shared context. Omit what readers know;
-  retain what they need.
+  maintenance and human effort. Carry forward context. Ask only for material
+  judgment, preferences, or authorization; never guess or hide uncertainty.
+- **Write for the reader.** Use shared context; match content and detail to the
+  purpose and destination. Pair identifiers with brief descriptions. Present
+  the result; include history and evidence only when needed for understanding,
+  decisions, action, or verification.
 - **Preserve what matters, not everything.** Protect correctness, safety,
   contracts, and evidence. Preserve compatibility when actual use and migration
-  costs justify it, not merely because old behavior exists.
-- **Automate the ordinary, preserve autonomy.** Use defaults for routine
-  decisions; keep choices inspectable and changeable. Avoid unnecessary lock-in
-  and dependencies.
+  costs justify it.
+- **Automate the ordinary, preserve autonomy.** Use reversible, low-risk
+  defaults for routine decisions; keep choices inspectable and changeable.
+  Avoid unnecessary lock-in and dependencies.
 - **Prove outcomes, not intentions.** Verify real outcomes. Find failure causes
   and test improvements; rules or promises are not evidence of a fix.
 
 ## 2. Before Finishing
 
-- Revise to achieve the same effect with less; remove unnecessary code, prose,
-  concepts, steps, and lasting obligations.
-- Preserve meaning, behavior, clarity, and essential nuance. Never shift
-  avoidable inference or maintenance onto others.
-- Stop when the objective is satisfied. Do not turn improvement into work for
-  its own sake.
+Review the work against these principles. Stop when the objective is satisfied.

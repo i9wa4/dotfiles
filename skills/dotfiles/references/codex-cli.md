@@ -149,13 +149,12 @@ Ignore any release entries for versions newer than `codex --version`.
     `pretooluse-deny-bash.sh`, invoked by both Claude and Codex)
   - `common-*` for shared scripts that take a runtime arg
   - `codex-*` only for genuinely Codex-only behavior
-- YOU MUST: Reuse `bash-commands-denied.nix` as the SSOT for Bash deny policy
-  instead of hand-maintaining separate Codex-only command lists
+- YOU MUST: Reuse `bash-commands-allowed.nix` for default-deny hook admission
+  and `bash-commands-denied.nix` for specific denial messages and Claude native
+  deny entries instead of hand-maintaining separate Codex-only command lists
 - YOU MUST: Reuse `pretooluse-deny-bash.sh` instead of forking a Codex copy.
-  A previous Codex-only fork drifted (missed `is_allow_prefix_bypass`,
-  `strip_data_arg_values`, and the `\s` -> `[[:space:]]` and sed delimiter
-  fixes that landed on the Claude path); the consolidation closed that
-  drift class on 2026-04-29.
+  A previous Codex-only fork missed command-shape and argument-strip fixes on
+  the Claude path; the consolidation closed that drift class on 2026-04-29.
 - YOU MUST: Keep the shared PreToolUse hook as the repo-owned command-deny
   authority for Codex. Do not mirror the shared deny set into embedded Codex
   `prefix_rule(...)` rules unless a separate validation effort proves that
