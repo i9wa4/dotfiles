@@ -133,10 +133,10 @@ let
     local = {
       path = local-skills-validated;
     };
-    # tmux-a2a-postman skills
+    # Tracked thin Skills from the same Postman input as the binary.
     tmux-a2a-postman = {
       path = inputs.tmux-a2a-postman;
-      subdir = "skills";
+      subdir = "dist/skills";
     };
     # Anthropic official agent skills (claude-api/SKILL.md frontmatter
     # normalized, then validated before installation)
