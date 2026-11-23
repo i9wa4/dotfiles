@@ -369,11 +369,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795340038,
-        "narHash": "sha256-RtgZbV+4BDtJqMImbiPJri3fmVDbCbrz/B0cuPQUJQY=",
+        "lastModified": 1795366757,
+        "narHash": "sha256-Tp4Kh4R7ID1f2mMCDlb2PiFQ/DZZsnXB2u2juWN+TT4=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "03885bcd0b477bdecebebc57b213b0f8f0826d51",
+        "rev": "3b8140d21fa0a70b1b38c2ed29853dfe686234a6",
         "type": "github"
       },
       "original": {
@@ -392,11 +392,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1795341226,
-        "narHash": "sha256-5KruClwP+Sseafmf4xFksKJA1eYajegMkAbTHIcv2CY=",
+        "lastModified": 1795395764,
+        "narHash": "sha256-OR+ahE/QRMHSS3mPB/XjbXfvaIN8IgqGfD+Jsnh4n3Q=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "3ba11af458c6b66a83447bc6bf6fe180b237d0da",
+        "rev": "6a434b94efa2b508f04f5cd3c2327a8a571b553b",
         "type": "github"
       },
       "original": {
@@ -510,11 +510,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795309925,
-        "narHash": "sha256-xpgrKyUvEMz0yCb+zklEpOFd0VnHyH0oBYce4Umj4e8=",
+        "lastModified": 1795373241,
+        "narHash": "sha256-Gd1+Oaj8nS+p1qLpKk4MGv/qGh62+lTkX4262e2UDgc=",
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "f673885103fa92c1c5b1d16b8bf2b858906809e2",
+        "rev": "663d8b962a11cda261b6e9f14e03911fac94baf0",
         "type": "github"
       },
       "original": {
@@ -691,16 +691,16 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1795315652,
-        "narHash": "sha256-xpNKg8wpQYsGH/oo9zJeTBcGxmBb3vJJQo1Nm6NvRTM=",
+        "lastModified": 1795397954,
+        "narHash": "sha256-qrgR/RWXXyWcky30CcEw91gv5YtO2e/erbpzfFIpV9Y=",
         "owner": "i9wa4",
         "repo": "tmux-a2a-postman",
-        "rev": "aee22f8eb7c8be46a7a77f881649e7f345615bd7",
+        "rev": "42fb3fa9aa12f24007fcdc8be20be0738a0817f5",
         "type": "github"
       },
       "original": {
         "owner": "i9wa4",
-        "ref": "v0.12.1",
+        "ref": "v0.12.3",
         "repo": "tmux-a2a-postman",
         "type": "github"
       }
