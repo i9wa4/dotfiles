@@ -16,7 +16,13 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-git diff --cached --no-ext-diff >"$staged_diff"
+staged_tree=$(git write-tree) || exit 1
+git diff --cached --no-ext-diff >"$staged_diff" || exit 1
+current_tree=$(git write-tree) || exit 1
+if [ "$current_tree" != "$staged_tree" ]; then
+  printf '%s\n' 'Staged changes changed while preparing the AI prompt; no commit created.' >&2
+  exit 1
+fi
 
 cat >"$editor" <<'AI_COMMIT_EDITOR'
 #!/usr/bin/env bash
@@ -26,9 +32,20 @@ msg_file=$1
 ai_message=$LAZYGIT_AI_COMMIT_MESSAGE
 ai_status=$LAZYGIT_AI_COMMIT_STATUS
 
+check_staged_tree() {
+  local current_tree
+  current_tree=$(git write-tree) || exit 1
+  if [ "$current_tree" != "$LAZYGIT_AI_COMMIT_TREE" ]; then
+    printf '%s\n' 'Staged changes changed after AI generation; no commit created.' >&2
+    exit 1
+  fi
+}
+
+check_staged_tree
 while [ ! -s "$ai_status" ]; do
   sleep 0.1
 done
+check_staged_tree
 
 if [ -s "$ai_message" ]; then
   buffer=$(mktemp /tmp/lazygit-ai-commit-editor-buffer.XXXXXX)
@@ -43,7 +60,8 @@ elif ! grep -qx 'ok' "$ai_status"; then
   cat "$ai_status" >&2
 fi
 
-exec vim "$msg_file"
+vim "$msg_file" || exit $?
+check_staged_tree
 AI_COMMIT_EDITOR
 
 chmod +x "$editor"
@@ -71,5 +89,6 @@ fi
 
 LAZYGIT_AI_COMMIT_MESSAGE="$ai_message" \
   LAZYGIT_AI_COMMIT_STATUS="$ai_status" \
+  LAZYGIT_AI_COMMIT_TREE="$staged_tree" \
   GIT_EDITOR="$editor" \
   git commit
