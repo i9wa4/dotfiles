@@ -55,9 +55,12 @@ remain responsible for filesystem and network blast radius.
 
 The common and role directives live in Postman's builtin standard team. The
 installed policy lookup is listed in `agent-config-philosophy.md` section 1.1.
-Dotfiles-owned skill bodies stay in top-level `skills/`, and Default clients
-start without a common/role message. Postman includes that policy in recipient
-archives; POP returns the archive path and requires a complete read. Skills use
+The three personal/global dotfiles-owned Skill bodies stay in top-level
+`skills/`. Repository maintenance lives in `.agents/skills/dotfiles/`, with a
+Claude Code pointer at `.claude/skills/dotfiles`; Codex discovers the repo-local
+Skill directly. Default clients start without a common/role message. Postman
+includes that policy in recipient archives; POP returns the archive path and
+requires a complete read. Skills use
 normal runtime discovery. Launch-time injection is available only as an explicit
 user-selected option, not a default hook. An explicit custom `postman.md`
 replaces the builtin default rather than extending it. `shared/AGENTS.md` is the

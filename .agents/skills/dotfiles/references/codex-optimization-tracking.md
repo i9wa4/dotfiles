@@ -244,9 +244,10 @@ incident runbook is archived in the private vault
   now flow through `tmux-a2a-postman help config`. A minimal
   <!-- private-content-scan: allow-next-line -->
   direct-invocation fallback remains at `~/.codex/AGENTS.md`, derived from
-  `nix/home-manager/agents/shared/AGENTS.md`; applicable skills flow through
-  the generated `skill_path` catalog, while catch-all repo background lives in
-  docs.
+  `nix/home-manager/agents/shared/AGENTS.md`; personal/global Skills flow
+  through the generated `skill_path` catalog, the repo-local dotfiles Skill is
+  discovered from `.agents/skills/dotfiles/`, and catch-all repo background
+  lives in docs.
 - [x] Separate minimal/allowlisted Codex skills bundle materialized by
   `nix/home-manager/agents/shared/agent-skills.nix`; Codex does not symlink or
   consume Claude's full active skill set

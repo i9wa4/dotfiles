@@ -11,9 +11,12 @@ The harness manages tmux role identity, `tmux-a2a-postman` control-plane
 integration, Claude/Codex parity, hooks, review and approval boundaries,
 durable task artifacts, and active versus reference-only skills.
 
-All operational knowledge lives in Agent Skills under [`skills/`](skills/) —
-each skill is a `SKILL.md` entry point plus detailed `references/`. The same
-files serve humans reading this repo and agents working in it.
+Operational guidance lives in the
+[repo-local dotfiles Skill](.agents/skills/dotfiles/SKILL.md), the
+personal/global Skills under [`skills/`](skills/), and the selected Postman
+binary. Each local Skill has a `SKILL.md` entry point and detailed
+`references/`. The same files serve humans reading this repo and agents working
+in it.
 
 Start with the [dotfiles skill](.agents/skills/dotfiles/SKILL.md). It links the
 current setup, operations, harness, and skill-management references.

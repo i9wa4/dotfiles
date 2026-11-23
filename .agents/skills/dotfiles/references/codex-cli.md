@@ -189,8 +189,11 @@ same `shared/AGENTS.md` file, not a second hand-written copy) and is
 intentionally minimal -- a skill-catalog pointer for direct, non-postman
 invocations only. Postman common blocks deliver persona, language, scope,
 and role contracts to postman-driven roles instead, not this file.
-Dotfiles-owned skill bodies are exposed through the generated `skill_path`
-catalog, and procedural rules must stay in focused `SKILL.md` files.
+The three personal/global dotfiles-owned Skills in top-level `skills/` are
+exposed through the generated `skill_path` catalog. Repository maintenance
+lives in `.agents/skills/dotfiles/`, which Codex discovers locally; Claude Code
+uses the `.claude/skills/dotfiles` pointer. Procedural rules stay in focused
+`SKILL.md` files.
 
 - YOU MUST: Focus only on persona and core guidelines
 - YOU MUST: Keep instructions compatible with both Claude Code and Codex CLI
