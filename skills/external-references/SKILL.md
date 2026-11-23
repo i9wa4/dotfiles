@@ -4,10 +4,11 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Reference-only provider-pack lookup and promotion decisions for
-  Cloudflare, dbt, Azure, Databricks, AWS, Terraform/HashiCorp, Google
-  Workspace, and Streamlit. DO NOT USE FOR: repo guardrails, harness work,
-  active promotion without explicit request, or Cloudflare security audits.
+  USE FOR: Consulting installed reference Skills for Cloudflare, dbt,
+  Azure, Databricks, AWS, Terraform, Google Workspace or Streamlit,
+  and assessing requested activation.
+  DO NOT USE FOR: General web searches, installation/configuration
+  changes or Cloudflare security audits.
 ---
 
 # External References
@@ -24,9 +25,10 @@ only when the user asks to make a pack active/invokable.
    generated name is unclear.
 3. Use `nix/home-manager/agents/shared/agent-skills.nix` `referenceOnlySources`
    only when the generated tree is missing or source verification is needed.
-4. Prefer local owner skills for guardrails: `data-platform`, `programming`,
-   or `dotfiles`.
-5. Promote only on an explicit active-provider-pack request.
+4. Use the repo-local maintenance Skill for dotfiles installation/configuration
+   changes. Use the active `security-audit` Skill for Cloudflare audits.
+5. Assess promotion only on an explicit active-provider-pack request; make
+   permanent installation/configuration changes in the owning repository.
 
 ## 2. Dormant Packs
 

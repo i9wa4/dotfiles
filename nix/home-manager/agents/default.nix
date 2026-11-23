@@ -5,9 +5,8 @@
 #   codex/        Codex CLI runtime config
 #   shared/       cross-runtime data (deny rules, MCP servers, install
 #                 manifest, agent-skills installer)
-#   skills/       hand-authored skills, including subagent-review references
-#   skills/       hand-authored skills (dotfiles, runtime
-#                 config optimizers, etc.)
+#   ../../../skills/ global dotfiles-authored Skills; repository maintenance
+#                 lives under ../../../.agents/skills/dotfiles/
 #   scripts/      hook + statusline scripts
 #
 # See README.md for the editing map.

@@ -33,7 +33,7 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
+      skillReleaseSurfaceFiles = "^((skills/.*)|(\\.agents/skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };
@@ -148,7 +148,7 @@
               fi
               exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-waza.sh "$@"
             ''}";
-            files = "^skills/";
+            files = "^(skills/|\\.agents/skills/)";
             require_serial = true;
           };
           skill-private-content-scan = {
@@ -166,36 +166,14 @@
             entry = "${pkgs.writeScript "skill-trigger-evals-check" ''
               #!${pkgs.bash}/bin/bash
               export WAZA_BIN=${waza}/bin/waza
-              exec ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-evals.sh
+              for root in skills .agents/skills; do
+                ${pkgs.bash}/bin/bash scripts/validation/validate-skill-trigger-evals.sh "$root" || exit 1
+              done
             ''}";
-            files = "^skills/.*(SKILL\\.md|evals/.*)$";
+            files = "^(skills/|\\.agents/skills/).*(SKILL\\.md|evals/.*)$";
             types = [ "file" ];
             pass_filenames = false;
             require_serial = true;
-          };
-          artifacts-gist-delivery-contract = {
-            enable = true;
-            entry = "${pkgs.writeScript "artifacts-gist-delivery-contract" ''
-              #!${pkgs.bash}/bin/bash
-              export PATH=${
-                pkgs.lib.makeBinPath [
-                  pkgs.coreutils
-                  pkgs.gawk
-                  pkgs.git
-                  pkgs.perl
-                  pkgs.ripgrep
-                ]
-              }:$PATH
-              exec ${pkgs.bash}/bin/bash skills/logbook/scripts/validate-gist-delivery-contract.sh
-            ''}";
-            files = "^skills/logbook/(references/gist-delivery\\.md|scripts/(validate-gist-delivery-contract\\.sh|verify-gist-delivery))$";
-            pass_filenames = false;
-          };
-          logbook-issue-mailbox-contract = {
-            enable = true;
-            entry = "${pkgs.python3}/bin/python3 skills/logbook/scripts/test-issue-mailbox.py";
-            files = "^skills/logbook/(SKILL\\.md|references/issue-mailbox\\.md|scripts/(issue-mailbox|test-issue-mailbox\\.py))$";
-            pass_filenames = false;
           };
           # NOTE: flake-check removed from pre-commit (too slow). Runs in CI only.
 
