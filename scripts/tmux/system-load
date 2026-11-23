@@ -35,16 +35,25 @@ get_total_cpu_usage() {
   case "${os_type}" in
     Linux)
       # Parse /proc/stat for CPU usage
-      read -r _cpu user nice system idle rest </proc/stat
+      local marker user nice system idle rest total1 total2 idle1 idle2 total_diff idle_diff
+      read -r marker user nice system idle rest 2>/dev/null </proc/stat || { echo "-"; return; }
+      if [[ ${marker} != cpu || ! ${user} =~ ^[0-9]+$ || ! ${nice} =~ ^[0-9]+$ || ! ${system} =~ ^[0-9]+$ || ! ${idle} =~ ^[0-9]+$ ]]; then
+        echo "-"
+        return
+      fi
       total1=$((user + nice + system + idle))
       idle1=${idle}
       sleep 0.1
-      read -r _cpu user nice system idle rest </proc/stat
+      read -r marker user nice system idle rest 2>/dev/null </proc/stat || { echo "-"; return; }
+      if [[ ${marker} != cpu || ! ${user} =~ ^[0-9]+$ || ! ${nice} =~ ^[0-9]+$ || ! ${system} =~ ^[0-9]+$ || ! ${idle} =~ ^[0-9]+$ ]]; then
+        echo "-"
+        return
+      fi
       total2=$((user + nice + system + idle))
       idle2=${idle}
       total_diff=$((total2 - total1))
       idle_diff=$((idle2 - idle1))
-      if [ "${total_diff}" -gt 0 ]; then
+      if ((total_diff > 0 && idle_diff >= 0 && idle_diff <= total_diff)); then
         echo $(((total_diff - idle_diff) * 100 / total_diff))
       else
         echo "-"
@@ -61,7 +70,18 @@ get_ram_usage() {
   case "${os_type}" in
     Linux)
       # /proc/meminfo: MemAvailable is the most accurate available memory
-      awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {if (total > 0 && avail >= 0) printf "%.0f", (total-avail)*100/total; else printf "-"}' /proc/meminfo
+      local usage
+      usage=$(awk '
+        $1 == "MemTotal:" {total=$2; have_total=1}
+        $1 == "MemAvailable:" {avail=$2; have_avail=1}
+        END {
+          if (have_total && have_avail && total ~ /^[0-9]+$/ && avail ~ /^[0-9]+$/ && total > 0 && avail <= total)
+            printf "%.0f", (total-avail)*100/total
+          else
+            printf "-"
+        }
+      ' /proc/meminfo 2>/dev/null) || usage=-
+      printf '%s' "${usage:--}"
       ;;
     *)
       echo "0"
@@ -98,10 +118,10 @@ get_disk_usage() {
     Darwin)
       # APFS: /System/Volumes/Data is the actual user data volume
       # (df / only shows the read-only system snapshot, misleadingly low)
-      df -P /System/Volumes/Data | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      df -P /System/Volumes/Data 2>/dev/null | awk 'NR==2 && $5 ~ /^[0-9]+%$/ {sub(/%$/, "", $5); print $5}'
       ;;
     *)
-      df -P / | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      df -P / 2>/dev/null | awk 'NR==2 && $5 ~ /^[0-9]+%$/ {sub(/%$/, "", $5); print $5}'
       ;;
   esac
 }
