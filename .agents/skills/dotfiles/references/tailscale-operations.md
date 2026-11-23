@@ -131,6 +131,7 @@ execution. Stop on any unexpected state or error.
    for the expected locked-out entry and temporary old/new overlap. This
    replacement path applies after Tailnet Lock is enabled; stop on any other
    unexpected entry. Reconcile to exactly three after cutover.
+
 2. Select that exact **Locked out** entry in **Machines > Sign machine**.
    Where the target has a working CLI, run `tailscale lock status` **on the
    target** and compare the emitted signing command's `nodekey:` exactly
@@ -152,10 +153,12 @@ execution. Stop on any unexpected state or error.
    target-side status on a trusted CLI-capable signer. The optional `tlpub:`
    concerns key rotation. Signing a node for connectivity does **not** grant
    it trusted signer authority.
+
 3. Confirm the new machine in `tailscale lock status` if it has a working
    CLI; otherwise use its supported client view and **Machines**. Verify it
    can reach an allowed peer. Keep the old machine until replacement
    verification and any signer migration are complete.
+
 4. If the retiring machine is a trusted signer, choose a replacement or
    another intended retained node that is eligible to sign under current
    client support. The current guide excludes Android as a signing node.
@@ -187,6 +190,7 @@ execution. Stop on any unexpected state or error.
    views and **Machines** for other devices. With human approval, require
    the successor to complete a working signing test on the preidentified
    intended or temporary node.
+
 5. Before removal, count the distinct eligible trusted signer keys that
    will remain after excluding the retiring key. Require at least two, or
    a documented human-approved degraded-redundancy decision and restoration
@@ -204,6 +208,7 @@ execution. Stop on any unexpected state or error.
    the retired node. **Never erase or decommission the last trusted
    CLI-capable signer before this migration completes.** A client signing
    flow might approve nodes without a CLI for key management.
+
 6. Reconcile **Machines** back to the three intended devices. Temporary
    overlap during cutover is not permission to retain an extra device.
    Routine key expiry and reauthentication on the same machine rotate its
