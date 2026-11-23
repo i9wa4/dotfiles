@@ -143,13 +143,17 @@ outside this lifecycle.
 Use `scripts/bin/git-locks` when a Git command reports an existing lock such as
 `.git/index.lock`.
 
-For the common ghq-wide update case, run `ghq-repo-repair` before
-`ghq get --update --parallel`. It scans every ghq-managed repository, removes
-stale PID-backed locks, removes sufficiently old PID-less lock files, and
-prunes stale worktree administrative entries. The `up` zsh snippet expands to
-`ghq-repo-repair && ghq list | ghq get --update --parallel && ghq-repo-status`.
-Use `ghq-repo-repair --dry-run` to inspect the cleanup candidates without
-changing files.
+The `gup` zsh snippet runs ordinary ghq updates and then reports repository
+status: `ghq list | ghq get --update --parallel && ghq-repo-status`. It does not
+run lock cleanup or worktree pruning. If an update fails with a Git lock error,
+inspect that repository with `git-locks` and use `ghq-repo-repair --dry-run` to
+inspect ghq-wide cleanup candidates without changing files. Run cleanup only as
+an explicit follow-up after identifying the affected repository and confirming
+that the lock's owner is no longer active. In particular, an old lock without
+a valid PID sidecar has unknown ownership; age alone is not proof that it is
+safe to delete. `ghq-repo-repair` remains available for deliberate ghq-wide
+repair and can remove old unknown-owner locks and prune stale worktree metadata
+unless `--keep-unknown-locks` or `--no-prune-worktrees` is passed.
 
 `git-locks` inspects the current repository with `GIT_OPTIONAL_LOCKS=0`, so the
 diagnostic read should not create optional index locks. By default it scans the
