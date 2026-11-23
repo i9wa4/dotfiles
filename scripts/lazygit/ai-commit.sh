@@ -1,75 +1,74 @@
 #!/usr/bin/env bash
 
-editor=$(mktemp /tmp/lazygit-ai-commit-editor.XXXXXX)
-staged_diff=$(mktemp /tmp/lazygit-ai-commit-staged-diff.XXXXXX)
-ai_message=$(mktemp /tmp/lazygit-ai-commit-ai-message.XXXXXX)
-ai_status=$(mktemp /tmp/lazygit-ai-commit-ai-status.XXXXXX)
-ai_stderr=$(mktemp /tmp/lazygit-ai-commit-ai-stderr.XXXXXX)
-ai_pid=
+set -u
+
+temp_dir=$(mktemp -d "${TMPDIR:-/tmp}/lazygit-ai-commit.XXXXXX") || exit 1
+editor=$temp_dir/editor
+staged_diff=$temp_dir/staged-diff
+ai_message=$temp_dir/ai-message
+ai_stderr=$temp_dir/ai-stderr
 
 cleanup() {
-  if [ -n "$ai_pid" ] && kill -0 "$ai_pid" >/dev/null 2>&1; then
-    kill "$ai_pid" >/dev/null 2>&1 || true
-    wait "$ai_pid" >/dev/null 2>&1 || true
-  fi
-  rm -f "$editor" "$staged_diff" "$ai_message" "$ai_status" "$ai_stderr"
+  rm -f -- "$editor" "$staged_diff" "$ai_message" "$ai_stderr"
+  rmdir -- "$temp_dir"
 }
-trap cleanup EXIT INT TERM
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
-git diff --cached --no-ext-diff >"$staged_diff"
+staged_tree=$(git write-tree) || exit 1
+git diff --cached --no-ext-diff >"$staged_diff" || exit 1
+if [ "$(git write-tree)" != "$staged_tree" ]; then
+  printf '%s\n' 'Staged changes changed while preparing the AI prompt; no commit created.' >&2
+  exit 1
+fi
+: >"$ai_message"
 
 cat >"$editor" <<'AI_COMMIT_EDITOR'
 #!/usr/bin/env bash
 set -u
 
-msg_file=$1
-ai_message=$LAZYGIT_AI_COMMIT_MESSAGE
-ai_status=$LAZYGIT_AI_COMMIT_STATUS
+check_staged_tree() {
+  current_tree=$(git write-tree) || exit 1
+  if [ "$current_tree" != "$LAZYGIT_AI_COMMIT_TREE" ]; then
+    printf '%s\n' 'Staged changes changed after AI generation; no commit created.' >&2
+    exit 1
+  fi
+}
 
-while [ ! -s "$ai_status" ]; do
-  sleep 0.1
-done
-
-if [ -s "$ai_message" ]; then
-  buffer=$(mktemp /tmp/lazygit-ai-commit-editor-buffer.XXXXXX)
-  {
-    head -n 1 "$ai_message"
-    printf '\n'
-    cat "$msg_file"
-  } >"$buffer"
-  cat "$buffer" >"$msg_file"
-  rm -f "$buffer"
-elif ! grep -qx 'ok' "$ai_status"; then
-  cat "$ai_status" >&2
-fi
-
-exec vim "$msg_file"
+check_staged_tree
+vim "$1" || exit $?
+check_staged_tree
 AI_COMMIT_EDITOR
-
 chmod +x "$editor"
 
 if command -v codex >/dev/null 2>&1; then
-  {
-    prompt='Generate ONLY a one-line Git commit message following Conventional Commits format (type(scope): description). Types: feat, fix, docs, style, refactor, test, chore. Based strictly on the diff from stdin. Output ONLY the message, nothing else.'
-    if codex exec --ephemeral --ignore-rules --sandbox read-only -c approval_policy='"never"' -c model_reasoning_effort='"low"' --color never --output-last-message "$ai_message" "$prompt" <"$staged_diff" >/dev/null 2>"$ai_stderr"; then
-      msg=$(head -n 1 "$ai_message")
-      if [ -n "$msg" ]; then
-        printf '%s\n' "$msg" >"$ai_message"
-        printf '%s\n' 'ok' >"$ai_status"
-      else
-        printf '%s\n' 'AI commit message generation returned an empty message; opening editor without AI message.' >"$ai_status"
-      fi
+  prompt='Generate ONLY a one-line Git commit message following Conventional Commits format (type(scope): description). Types: feat, fix, docs, style, refactor, test, chore. Based strictly on the diff from stdin. Output ONLY the message, nothing else.'
+  if codex exec --ephemeral --ignore-rules --sandbox read-only -c approval_policy='"never"' -c model_reasoning_effort='"low"' --color never --output-last-message "$ai_message" "$prompt" <"$staged_diff" >/dev/null 2>"$ai_stderr"; then
+    message=$(head -n 1 "$ai_message")
+    if printf '%s\n' "$message" | grep -Eq '^(feat|fix|docs|style|refactor|test|chore)(\([[:alnum:]_.-]+\))?: [^[:space:]].*$'; then
+      printf '%s\n' "$message" >"$ai_message"
     else
       : >"$ai_message"
-      printf '%s\n' 'AI commit message generation failed; opening editor without AI message.' "$(cat "$ai_stderr")" >"$ai_status"
+      printf '%s\n' 'AI commit message was empty or malformed; opening editor without a suggestion.' >&2
     fi
-  } &
-  ai_pid=$!
+  else
+    status=$?
+    if [ "$status" -eq 130 ] || [ "$status" -eq 143 ]; then
+      printf '%s\n' 'AI commit message generation was interrupted; no commit created.' >&2
+      exit "$status"
+    fi
+    : >"$ai_message"
+    printf '%s\n' 'AI commit message generation failed; opening editor without a suggestion.' >&2
+    cat "$ai_stderr" >&2
+  fi
 else
-  printf '%s\n' 'codex not found; opening editor without AI message.' >"$ai_status"
+  printf '%s\n' 'codex not found; opening editor without an AI suggestion.' >&2
 fi
 
-LAZYGIT_AI_COMMIT_MESSAGE="$ai_message" \
-  LAZYGIT_AI_COMMIT_STATUS="$ai_status" \
-  GIT_EDITOR="$editor" \
-  git commit
+if [ "$(git write-tree)" != "$staged_tree" ]; then
+  printf '%s\n' 'Staged changes changed during AI generation; no commit created.' >&2
+  exit 1
+fi
+
+LAZYGIT_AI_COMMIT_TREE="$staged_tree" GIT_EDITOR="$editor" git commit --edit --file "$ai_message"
