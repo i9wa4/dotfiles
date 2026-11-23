@@ -4,12 +4,11 @@ license: MIT
 metadata:
   version: "1.0.0"
 description: |
-  USE FOR: Prose QA, Vale/Harper, terminology, English/Japanese edits,
-  English-to-Japanese, stable glossaries, rhythm, AI-slop cleanup,
-  publication QA.
-  DO NOT USE FOR: AI detector/humanizer workflows, fresh generation,
-  meaning-changing rewrites, replacing author judgment, publishing,
-  model/cost/privacy, external sharing, or chunking.
+  USE FOR: Meaning-preserving editing and quality checks for English
+  and Japanese technical prose, including English-to-Japanese
+  translation, terminology and style.
+  DO NOT USE FOR: Drafting from scratch, AI detector/humanizer workflows,
+  meaning-changing rewrites or publication.
 ---
 
 # Technical Writing
@@ -21,8 +20,8 @@ Owns meaning-preserving editing, translation, terminology, rhythm, and QA.
 1. Identify surface: English, Japanese, translation, skill text, or QA.
 2. Preserve meaning. Do not rewrite commands, identifiers, product
    names, paths, code, links, versions, or APIs for style.
-3. Keep glossary/terminology polish here when meanings are stable; use
-   `clarify-concepts` first when they are not.
+3. Keep stable glossary and terminology polish here. Resolve unclear
+   referents with the author before changing meaning.
 4. For generic/AI-like prose, read
    [Prose Review](references/prose-review.md).
 5. For English checks, read

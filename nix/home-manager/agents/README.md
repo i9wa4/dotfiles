@@ -1,173 +1,38 @@
 # Agents Tree Map
 
-This directory is the source tree for the shared Claude Code and Codex CLI
-setup.
-Humans should edit files here, then rebuild.
-Do not hand-edit `~/.claude/` or `~/.codex/`; those are installed runtime
-artifacts.
+This tree defines the shared Claude Code and Codex environment. Edit checked-in
+sources and verify the build; installed home directories are outputs.
 
-## 1. Start Here
+| Concern                                   | Source                                                           | Installed behavior                                                                                             |
+| ----------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Standard team, roles and generic workflow | Pinned Postman binary and its generated thin Skill entries       | Full archive policy plus on-demand Skill bodies/HelpDocs from one revision                                     |
+| Notification bootstrap                    | `shared/AGENTS.md`                                               | Small shared Claude/Codex notification and POP guidance                                                        |
+| Personal/global Skills                    | Top-level `skills/`                                              | Three authored entries in both clients: `create-pr-review-comment`, `external-references`, `technical-writing` |
+| Repository maintenance                    | `.agents/skills/dotfiles/` and `.claude/skills/dotfiles` pointer | Local discovery only in this repository                                                                        |
+| Active/reference provider packs           | `shared/agent-skills.nix`                                        | Curated active client paths and separate flat reference-only inventory                                         |
+| Hook and deny data                        | `shared/bash-commands-denied.nix`, `scripts/`                    | Shared Bash deny intent in both clients                                                                        |
+| Claude/Codex settings                     | `claude/default.nix`, `codex/default.nix`                        | Product-specific runtime files                                                                                 |
+| Skill destinations                        | `shared/install-manifest.nix`                                    | Declarative target paths                                                                                       |
 
-| If you want to change...    | Edit here                                                   | Installed result                                                                                                                                  |
-| --------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Persona / language / scope  | Pinned Postman builtin team (`help config`)                 | Delivered into every postman role on each `tmux-a2a-postman pop`                                                                                  |
-| Local-invocation fallback   | `shared/AGENTS.md` (single authored source)                 | Installed as `~/.codex/AGENTS.md` directly and `~/.claude/CLAUDE.md` derived from the same source; does not duplicate the postman contract        |
-| Dotfiles-owned skill bodies | `skills/<skill>/SKILL.md`                                   | Installed to both engines through normal client discovery                                                                                         |
-| Native review skill         | `skills/subagent-review/SKILL.md`                           | Documents runtime-native reviewer subagent usage without ad hoc dispatcher tiers                                                                  |
-| Reviewer prompt references  | `skills/subagent-review/references/*.md`                    | Compatibility pointers to Postman resource prompts; runtime defaults are inherited                                                                |
-| Shared install targets      | `shared/install-manifest.nix`                               | Resolves shared skill destinations only                                                                                                           |
-| Local reusable skills       | `skills/<skill>/`, `shared/agent-skills.nix`                | Installed to `~/.claude/skills/` and `~/.codex/skills/` through the curated active source set                                                     |
-| External reference router   | `skills/external-references/SKILL.md`                       | Active local skill that routes Databricks/dbt/Azure/Google/AWS/Terraform/Google Workspace/Streamlit provider-pack questions to dormant references |
-| Dormant skill references    | `shared/agent-skills.nix` `referenceOnlySources`            | Pinned in Nix and materialized as a flat reference-only tree under `~/.local/share/skills`; not installed into active runtime loader paths        |
-| Skill description index     | `skills/dotfiles/`                                          | Owned by the dotfiles skill (skills-management reference and bundled script)                                                                      |
-| Hook/runtime scripts        | `scripts/*`                                                 | Installed to `~/.claude/scripts/` and/or `~/.codex/scripts/`                                                                                      |
-| Shared runtime data         | `shared/mcp-servers.nix`, `shared/bash-commands-denied.nix` | Empty MCP server set and shared Bash deny hook data emitted into both engines                                                                     |
-| Claude runtime settings     | `claude/default.nix`                                        | `~/.claude/settings.json`, `~/.claude/.claude.json`, and symlinked runtime dirs                                                                   |
-| Codex runtime settings      | `codex/default.nix`                                         | `~/.codex/config.toml`, `~/.codex/hooks.json`, and symlinked runtime dirs                                                                         |
-| Top-level package boundary  | `default.nix`                                               | Imports the agent modules and installs the shared CLI packages                                                                                    |
+`shared/agent-skills.nix` validates local global Skills and selects the pinned
+Postman source. Claude receives the active source graph. Codex receives its
+explicit minimal source/Skill allowlist, so wrapper-promoted provider packs do
+not enter it automatically. Broad provider packs remain under the flat
+reference-only tree, outside normal client loaders. Source changes require
+repository validation and a later, separate machine activation.
 
-## 2. Design Principle
+The Postman binary and its tracked `dist/skills` must come from the same exact
+input revision. Thin entries are discovery pointers; bodies and required
+resources are read from that binary. A complete custom `postman.md` shadows
+the builtin default, so changing that selection requires an explicit choice.
+The shared AGENTS/CLAUDE bootstrap does not duplicate the role contract.
 
-Author policy once, against Claude Code as the reference engine, and emit the
-same policy into Codex. Shared sources own the behavior; `claude/default.nix`
-and `codex/default.nix` are thin emitters that map those sources onto each
-product surface. A per-engine difference is allowed only with a written reason
-next to it (see `skills/dotfiles/references/agent-config-philosophy.md`).
-
-```mermaid
-graph LR
-    subgraph sources [Sources with declared owners]
-        P[Postman builtin role contract]
-        S[skills/]
-        A[Postman bundled review prompts]
-        H[agents/scripts/ hooks]
-        D[shared/bash-commands-denied.nix]
-        M[shared/mcp-servers.nix]
-        L[shared/AGENTS.md]
-    end
-    subgraph emitters [Generators]
-        IM[shared/install-manifest.nix]
-        AS[shared/agent-skills.nix]
-        C[claude/default.nix]
-        X[codex/default.nix]
-    end
-    subgraph claude [~/.claude]
-        CS[skills/]
-        CJ[settings.json + .claude.json]
-        CH[scripts/]
-        CF[CLAUDE.md]
-    end
-    subgraph codex [~/.codex]
-        XS[skills/]
-        XT[config.toml + hooks.json]
-        XH[scripts/]
-        XF[AGENTS.md]
-    end
-    subgraph references [~/.local/share]
-        RS[skills/]
-    end
-    S --> AS --> CS
-    AS --> XS
-    AS --> RS
-    H --> C --> CH
-    H --> X --> XH
-    D --> C --> CJ
-    D --> X --> XT
-    M --> C
-    M --> X
-    L --> C --> CF
-    L --> X --> XF
-    P -. delivered per postman pop .-> claude
-    P -. delivered per postman pop .-> codex
-```
-
-## 3. How Changes Flow
-
-1. Edit the source markdown, scripts, skills, or Nix modules in this tree.
-2. The pinned Postman binary supplies the standard policy and complete HelpDocs.
-   Its full POP archives deliver common/selected-role instructions without an
-   initial prompt. Dotfiles installs upstream thin entries and personal/domain
-   Skills through the shared source graph; the builtin mail catalog does not
-   depend on a personal Skill root. The shared AGENTS/CLAUDE source contains
-   only the optional notification acknowledgement and POP/help guidance.
-3. `skills/subagent-review/references/*.md` is the plain Markdown source of
-   truth for reviewer prompt guidance. Reviewers inherit the active runtime
-   model and effort defaults; no generated agent files are installed.
-4. `skills/subagent-review/SKILL.md` is installed through the normal local skill
-   pipeline and documents reviewer usage without generating agent files.
-5. `shared/install-manifest.nix` resolves the shared skill destinations that
-   the runtime installers consume.
-6. `shared/agent-skills.nix` validates local and patched Anthropic skill
-   sources, discovers the other active sources, and installs the curated active
-   source set into Claude. Codex is materialized from a hardcoded source
-   allowlist so wrapper-promoted provider packs do not consume Codex startup
-   skill context unless the Codex allowlist is changed too. The active
-   `external-references` local skill names dormant provider packs and routes
-   lookup or promotion decisions to `~/.local/share/skills`; broad external
-   provider packs remain named in `referenceOnlySources` and materialized
-   outside active Claude/Codex loader paths.
-7. `claude/default.nix` and `codex/default.nix` materialize the final runtime
-   files during activation.
-
-## 4. Refresh And Verify
-
-| Goal                        | Command                                                   |
-| --------------------------- | --------------------------------------------------------- |
-| Validate the repo           | `nix flake check`                                         |
-| Rebuild + activate on Linux | `nix run '.#switch'`                                      |
-| Direct Linux activation     | `home-manager switch --flake '.#ubuntu' --impure`         |
-| Rebuild + activate on macOS | `nix run '.#switch'`                                      |
-| Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-p' --impure` |
-| Direct macOS activation     | `sudo darwin-rebuild switch --flake '.#macos-w' --impure` |
-
-## 5. Authoring Notes
-
-- Keep reviewer prompt guidance in `skills/subagent-review/references/` and
-  keep runtime model selection implicit so the active session/account default
-  is used. Do not create or track generated Claude/Codex agent copies.
-- Keep active skill loader paths small and intentional. Add always-on Claude
-  skills to the active source set in `shared/agent-skills.nix`; keep broad
-  provider packs in `referenceOnlySources`, which are generated into the flat
-  reference-only tree at `~/.local/share/skills`, unless they are deliberately
-  promoted through `i9wa4.agentSkills.extraSources`. Codex has an additional
-  source allowlist and skill-selection allowlist in the same file; update both
-  only when the promoted source should also be loaded by Codex.
-- The `~/.local/share/skills` reference tree is Home Manager owned only when
-  its ownership marker is present. Activation refuses to prune an unmarked
-  directory that contains unmanaged entries.
-- After setting up Claude Code on a new machine or after adding new projects,
-  use `/dotfiles` and its Claude workspace trust workflow;
-  otherwise interactive `PreToolUse` hooks can be skipped until workspace trust
-  is recorded.
-
-## 6. Rule Of Thumb
-
-- If you are changing prompt wording, start with the markdown source files.
-- If you are changing hook behavior, runtime settings, or install targets, edit
-  the `.nix` modules.
-- If a file lives under `shared/` and is named `install-manifest.nix`,
-  `agent-skills.nix`, `mcp-servers.nix`, or `bash-commands-denied.nix`, it is
-  composition or shared data code rather than final installed prompt text.
-- Treat `~/.claude/` and `~/.codex/` as outputs of this tree, not as the
-  editing surface.
-
-## 7. Standard-team adoption
-
-The declarative input pins Postman commit
-`9b54139a4a1b73cf5fe97123a98ecc812189e281` (upstream PR #1003). It supplies the
-standard team and canonical HelpDocs, review prompts and optional record helper.
-Only nine generated one-line discovery entries are installed as upstream Skills;
-detailed references and helpers stay with the binary. Dotfiles no longer
-installs a complete custom postman.md
-that would shadow those defaults. User-authored configuration remains an
-explicit complete override; no user file, live session or old work record is
-migrated. The same builtin `postman.md` contains the existing vde-layout
-`preset-p` and `preset-w`, preserving their role layout and exact startup
-commands.
-
-Detailed owners: `help postman-orchestrate`, `help postman-plan`,
-`help postman-records`, `help postman-review` and
-`help postman-review report`. Legacy local Skill/reference names remain
-reachable pointers. Gist/Issue delivery, domain Skills, runtime setup, Nix and
-personal permission hooks stay local. Actual machine activation remains in the
-existing rollout procedure; source changes alone are not fleet adoption.
+For local environment and harness design, start with the
+[repo-local dotfiles Skill](../../../.agents/skills/dotfiles/SKILL.md),
+[operating concepts](../../../.agents/skills/dotfiles/references/operating-concepts.md)
+and
+[repo AI contract](../../../.agents/skills/dotfiles/references/repo-ai-operating-contract.md).
+Use the current binary's `help config` and matching Skill bodies for Postman
+behavior. `nix flake check` validates source-level integration;
+`nix run '.#switch'` activates a selected machine profile only when explicitly
+tasked.

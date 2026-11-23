@@ -1,0 +1,131 @@
+# Agent Harness Engineering
+
+Use this skill when a task changes how the local Claude Code, Codex CLI, tmux,
+skills, hooks, MCP, subagent, or `tmux-a2a-postman` harness is designed,
+installed, validated, or explained.
+
+## 1. Working Rules
+
+- Treat top-level `skills/`, repo-local `.agents/skills/dotfiles/`, and
+  `nix/home-manager/agents/` as editable sources. Do not hand-edit installed
+  <!-- private-content-scan: allow-next-line -->
+  outputs under `~/.claude/` or `~/.codex/`.
+- Prefer prompt or skill guidance when a behavior can be expressed as agent
+  instructions. Use config, hooks, or deny rules for hard guarantees and runtime
+  settings the engine must enforce.
+- Define shared policy once, then emit it to both Claude Code and Codex CLI when
+  possible. Per-runtime forks need a written reason.
+- Keep `SKILL.md` short. Put detailed Claude Code, Codex CLI, workspace trust,
+  changelog, or release-tracking material in `references/`.
+- Treat Claude workspace trust as part of harness diagnosis. Interactive
+  <!-- private-content-scan: allow-next-line -->
+  `PreToolUse` hooks can be skipped when `~/.claude/.claude.json` project
+  entries have `hasTrustDialogAccepted` set to `false`.
+- For multi-step harness work, create or update a durable artifact plan and
+  record verification evidence before reporting completion.
+
+## 2. Source Map
+
+- Harness principles:
+  `.agents/skills/dotfiles/references/agent-config-philosophy.md`
+- Command approval and writable surface:
+  `.agents/skills/dotfiles/references/agent-command-approval-design.md`
+- Software Factory A2A/Postman boundary:
+  `.agents/skills/dotfiles/references/a2a-postman-integration-boundary.md`
+- Operating model: `.agents/skills/dotfiles/references/operating-concepts.md`
+- AI workflow and artifacts:
+  `.agents/skills/dotfiles/references/repo-ai-operating-contract.md`
+- Hook architecture:
+  `.agents/skills/dotfiles/references/agent-hooks-architecture.md`
+- Bash deny model: `.agents/skills/dotfiles/references/deny-bash-design.md`
+- Skill installation: `nix/home-manager/agents/shared/agent-skills.nix`
+- Claude runtime config: `nix/home-manager/agents/claude/default.nix` and
+  `claude-code.md`
+- Claude workspace trust: `claude-workspace-trust.md`
+- Codex runtime config: `nix/home-manager/agents/codex/default.nix` and
+  `codex-cli.md`
+- Herdr terminal workspace manager: `herdr.md`
+- Claude optimization tracking: `claude-optimization-tracking.md`
+- Claude changelog decisions: `claude-changelog-tracking.md`
+- Codex optimization tracking: `codex-optimization-tracking.md`
+- Postman role contract: `tmux-a2a-postman help config`
+
+## 3. Design Workflow
+
+1. Classify the change as prompt-path, shared policy/data, shared transport, or
+   per-runtime transport.
+2. Inspect the current source and docs before changing runtime behavior.
+3. Put common behavior in shared Nix modules, shared scripts, shared skills, or
+   postman common templates.
+4. Use runtime-specific files only when Claude Code and Codex CLI have different
+   product surfaces. Name that limitation in the file or plan.
+5. After edits, search for drift between Claude and Codex wording, hook
+   consumers, and stale skill names.
+
+## 4. Claude Workspace Trust
+
+Use the workspace trust workflow when Claude Code `PreToolUse` hooks are
+silently skipped in interactive mode, when hooks work in `claude -p` but not in
+interactive sessions, when setting up Claude Code on a new machine, or after
+adding new Claude project entries.
+
+The diagnosis, backup/repair/verification and restart procedure have one owner:
+[Claude Workspace Trust](claude-workspace-trust.md). Read it before a repair.
+This mutates local runtime state, not repository source; do not perform it in
+source-only harness work unless the user explicitly requested that live repair.
+
+## 5. Runtime Notes
+
+- Claude Code runtime details, settings categories, and permission notes live
+  in [Claude Code](claude-code.md); current decisions live in
+  [Claude Code Optimization Tracking](claude-optimization-tracking.md).
+- Codex CLI runtime details, hook limitations, and settings categories live in
+  [Codex CLI](codex-cli.md); current release decisions live in
+  [Codex CLI Optimization Tracking](codex-optimization-tracking.md).
+- Herdr terminal workspace manager notes live in [Herdr](herdr.md).
+- Older Claude Code changelog decisions and release notes live in
+  [Claude Changelog Tracking](claude-changelog-tracking.md).
+
+## 6. Changelog and Release Reviews
+
+- Detect the locally installed runtime version first with `claude --version` or
+  `codex --version`.
+- Scope release analysis to the installed version and below. Do not report newer
+  upstream releases as active local behavior.
+- Record adopted, rejected, and deferred runtime decisions in the relevant
+  reference so future config work can see the rationale.
+- Keep runtime-specific references visibly prefixed: `claude-*` for
+  Claude-only material and `codex-*` for Codex-only material.
+
+## 7. Verification
+
+- Validate skill frontmatter after skill edits:
+
+  ```sh
+  bash scripts/validation/validate-skill-frontmatter.sh .agents/skills/dotfiles
+  ```
+
+- For publishable skill changes, rely on the pre-commit gates (frontmatter,
+  private-content, Waza, offline trigger evals). `gh skill publish --dry-run` is
+  reserved for the tag-push release flow.
+- Run `nix flake check` when feasible after changes that affect installed agent
+  sources or Nix validation.
+- Run `nix run '.#switch'` only when activation output needs to be materialized
+  or tested.
+
+## 8. Reference Index
+
+- [Config Philosophy](agent-config-philosophy.md)
+- [Hooks Architecture](agent-hooks-architecture.md)
+- [Deny Bash Design](deny-bash-design.md)
+- [Command Approval Design](agent-command-approval-design.md)
+- [A2A/Postman Integration Boundary](a2a-postman-integration-boundary.md)
+- [AI Operating Contract](repo-ai-operating-contract.md)
+- [AI Review Boundaries](repo-ai-review-boundaries.md)
+- [Claude Code](claude-code.md)
+- [Claude Code Optimization Tracking](claude-optimization-tracking.md)
+- [Claude Workspace Trust](claude-workspace-trust.md)
+- [Codex CLI](codex-cli.md)
+- [Codex CLI Optimization Tracking](codex-optimization-tracking.md)
+- [Herdr](herdr.md)
+- [Claude Changelog Tracking](claude-changelog-tracking.md)

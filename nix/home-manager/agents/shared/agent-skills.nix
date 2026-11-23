@@ -1,8 +1,8 @@
 # Agent skills declarative management via agent-skills-nix.
-# Edit top-level skills/ for hand-authored, publishable skills. Reviewer
-# generic review prompts and procedures come from the pinned Postman resources.
-# Local legacy Skill names are compatibility references. This file
-# consumes install-manifest.nix for the shared skill installation targets.
+# Top-level skills/ holds three global dotfiles-authored Skills; repo-local
+# maintenance lives under .agents/skills/dotfiles. Generic workflows and
+# review procedures come from the pinned Postman Skills and binary resources.
+# This file consumes install-manifest.nix for shared installation targets.
 # Do not edit ~/.claude/skills or ~/.codex/skills directly.
 # cf. https://github.com/Kyure-A/agent-skills-nix
 {
@@ -133,10 +133,10 @@ let
     local = {
       path = local-skills-validated;
     };
-    # tmux-a2a-postman skills
+    # Tracked thin Skills from the same Postman input as the binary.
     tmux-a2a-postman = {
       path = inputs.tmux-a2a-postman;
-      subdir = "skills";
+      subdir = "dist/skills";
     };
     # Anthropic official agent skills (claude-api/SKILL.md frontmatter
     # normalized, then validated before installation)
