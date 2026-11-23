@@ -1,6 +1,7 @@
 """Offline regression tests for the Lazygit AI commit helper."""
 
 import os
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -18,6 +19,7 @@ class AICommitTests(unittest.TestCase):
         self.repo.mkdir()
         self.stubs = self.root / "stubs"
         self.stubs.mkdir()
+        self.real_git = shutil.which("git")
         self.log = self.root / "log"
         self.log.mkdir()
         self.git("init", "-q")
@@ -29,6 +31,24 @@ class AICommitTests(unittest.TestCase):
         (self.repo / "initial.txt").write_text("initial staged content\n")
         self.git("add", "initial.txt")
 
+        self.executable(
+            self.stubs / "git",
+            """#!/usr/bin/env bash
+set -euo pipefail
+if [ "${TRIAL_CAPTURE_ABA:-0}" = 1 ] && [ "${1:-}" = diff ]; then
+  printf 'temporary staged B\\n' > initial.txt
+  "$TRIAL_REAL_GIT" add initial.txt
+  "$TRIAL_REAL_GIT" show :initial.txt > "$TRIAL_LOG/at_capture_index"
+  "$TRIAL_REAL_GIT" "$@" > "$TRIAL_LOG/capture.diff"
+  printf 'initial staged content\\n' > initial.txt
+  "$TRIAL_REAL_GIT" add initial.txt
+  touch "$TRIAL_LOG/aba_triggered"
+  cat "$TRIAL_LOG/capture.diff"
+  exit 0
+fi
+exec "$TRIAL_REAL_GIT" "$@"
+""",
+        )
         self.executable(
             self.stubs / "codex",
             """#!/usr/bin/env bash
@@ -76,6 +96,7 @@ fi
         environment = os.environ.copy()
         environment["PATH"] = f"{self.stubs}{os.pathsep}{environment['PATH']}"
         environment["TRIAL_LOG"] = str(self.log)
+        environment["TRIAL_REAL_GIT"] = self.real_git
         environment.update(flags)
         return subprocess.run(
             ["bash", str(SCRIPT)],
@@ -104,7 +125,9 @@ fi
         self.assertIn("Staged changes changed", result.stderr)
         self.assertEqual(self.git("rev-parse", "HEAD"), before)
         self.assertFalse((self.log / "editor_opened").exists())
-        self.assertIn("A  extra.txt", self.git("status", "--short"))
+        status = self.git("status", "--short")
+        self.assertIn("A  initial.txt", status)
+        self.assertIn("A  extra.txt", status)
 
     def test_editor_stage_change_aborts_commit(self):
         before = self.git("rev-parse", "HEAD")
@@ -113,7 +136,23 @@ fi
         self.assertIn("Staged changes changed", result.stderr)
         self.assertEqual(self.git("rev-parse", "HEAD"), before)
         self.assertTrue((self.log / "editor_opened").exists())
-        self.assertIn("A  extra.txt", self.git("status", "--short"))
+        status = self.git("status", "--short")
+        self.assertIn("A  initial.txt", status)
+        self.assertIn("A  extra.txt", status)
+
+    def test_capture_time_aba_uses_immutable_staged_tree(self):
+        result = self.helper(TRIAL_CAPTURE_ABA="1")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.log / "aba_triggered").exists())
+        self.assertEqual(
+            (self.log / "at_capture_index").read_text(), "temporary staged B\n"
+        )
+        ai_diff = (self.log / "ai.diff").read_text()
+        self.assertIn("+initial staged content", ai_diff)
+        self.assertNotIn("temporary staged B", ai_diff)
+        self.assertEqual(ai_diff.strip(), self.git("diff", "HEAD^", "HEAD"))
+        self.assertEqual(self.git("show", "HEAD:initial.txt"), "initial staged content")
+        self.assertEqual(self.git("status", "--short"), "")
 
 
 if __name__ == "__main__":

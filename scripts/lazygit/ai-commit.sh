@@ -16,8 +16,9 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+base_tree=$(git rev-parse --verify 'HEAD^{tree}' 2>/dev/null) || base_tree=$(git hash-object -t tree --stdin </dev/null) || exit 1
 staged_tree=$(git write-tree) || exit 1
-git diff --cached --no-ext-diff >"$staged_diff" || exit 1
+git diff --no-ext-diff "$base_tree" "$staged_tree" >"$staged_diff" || exit 1
 current_tree=$(git write-tree) || exit 1
 if [ "$current_tree" != "$staged_tree" ]; then
   printf '%s\n' 'Staged changes changed while preparing the AI prompt; no commit created.' >&2
