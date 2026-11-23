@@ -141,7 +141,6 @@ the changelog and official docs) and the rest of the catch-up.
   path) so credential scrubbing stays on AND `--dangerously-skip-permissions`
   remains effective for whitelisted Bash patterns. Until then it stays
   unset (no scrubbing, no permission-mode forcing) — see §1.1.
-- [x] SQL schema validation - moved to databricks skill (Section 8)
 - [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
 - [ ] Agent memory frontmatter - `memory: user|project|local` for stateful
   agents

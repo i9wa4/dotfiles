@@ -27,7 +27,7 @@ artifacts. Ordinary `APPROVED:` review prose is not an execution decision.
 
 ## 2. Requester and approver responsibilities
 
-Use installed `postman-usage` and `help execute-heredoc` for the exact requester
+Use `tmux-a2a-postman help execute-heredoc` for the exact requester
 workflow. Use the actual complete claimed request's generated approval/decline
 commands. If matching help or required guidance is unavailable, report the
 concrete installation mismatch rather than inventing a compatibility recipe.
@@ -87,7 +87,7 @@ migration and fixes residual guidance, without replacing its working protocol.
 | Command approval backlog age                                                                                        | No active 15/60-minute execution extension; selected wait is 300 seconds. Artifact review timing remains separate policy.                                                                                                                                                                                      |
 | Review-stage counters, coordinator read scope and generic orchestration procedure                                   | Separate semantic owners #496/#498/#495; this CLI cleanup does not rewrite their rules or frozen criteria.                                                                                                                                                                                                     |
 | Optional external channel                                                                                           | #501 owns consumer binding/verification; no second engine. Current source availability is separate from installed activation.                                                                                                                                                                                  |
-| Pin/package/Skill selection and live switch                                                                         | Existing owner #485; upstream usage/send/recall/team-manager Skills remain selected. No competing pin or activation procedure.                                                                                                                                                                                 |
+| Pin/package/Skill selection and live switch                                                                         | Existing owner #485; the shipped `postman-send-message` Skill, `postman-records records` reference, and `execute-heredoc` HelpDoc remain selected. No competing pin or activation procedure.                                                                                                                   |
 | F499-001/002/003 active deny-hook design, CLI allow note and source ownership (2026-11-10; installed `git-183cd33`) | Correct retired `allowPrefixBypass`, false no-execution claims and stale config §2.16 pointer. State that `stripDataArgs` precedes both allow and denial-message matching, and name the allow and deny modules' distinct roles. Installed `help execute-heredoc` owns typed execution. No Nix behavior change. |
 
 Native pinned tests cover send/POP/full read/exact reply, approval/decline,

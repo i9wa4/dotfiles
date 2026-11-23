@@ -43,8 +43,7 @@ Do NOT report features or changes from versions newer than the local install.
 ### 2.2. Fetch from GitHub
 
 ```sh
-: "${LOGBOOK_SKILL_ROOT:?set LOGBOOK_SKILL_ROOT}"
-: "${FILE:?select an absolute changelog record with tmux-a2a-postman help records}"
+: "${FILE:?select an absolute changelog record with tmux-a2a-postman skill postman-records records}"
 gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
   --jq '.content' | base64 -d > "$FILE"
 ```
@@ -379,14 +378,11 @@ NOTE: `*` matches single directory, `**` matches recursively.
 
 Based on usage analysis (55K messages, 4.7K sessions):
 
-### 16.1. Applied
-
-- Schema validation for DB operations: See databricks skill Section 8
-
-### 16.2. Not Applied
+### 16.1. Not Applied
 
 - Completion status reporting: No consumer for this output
-- PreToolUse hook for SQL: Handled by skill guidance instead
+- PreToolUse hook for SQL: Not implemented; no current repo-local Databricks
+  Skill owns schema validation
 
 ## 17. References
 

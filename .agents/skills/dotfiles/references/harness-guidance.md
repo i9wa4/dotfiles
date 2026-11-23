@@ -6,9 +6,10 @@ installed, validated, or explained.
 
 ## 1. Working Rules
 
-- Treat top-level `skills/` and `nix/home-manager/agents/` as the editable
+- Treat top-level `skills/`, repo-local `.agents/skills/dotfiles/`, and
+  `nix/home-manager/agents/` as editable sources. Do not hand-edit installed
   <!-- private-content-scan: allow-next-line -->
-  source. Do not hand-edit installed outputs under `~/.claude/` or `~/.codex/`.
+  outputs under `~/.claude/` or `~/.codex/`.
 - Prefer prompt or skill guidance when a behavior can be expressed as agent
   instructions. Use config, hooks, or deny rules for hard guarantees and runtime
   settings the engine must enforce.

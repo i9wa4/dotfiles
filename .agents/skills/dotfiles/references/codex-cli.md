@@ -76,7 +76,7 @@ Do NOT report features or changes from versions newer than the local install.
 ### 3.2. Fetch from GitHub
 
 ```sh
-: "${FILE:?select the absolute output record using tmux-a2a-postman help records}"
+: "${FILE:?select the absolute output record using tmux-a2a-postman skill postman-records records}"
 gh api repos/openai/codex/releases --jq '.[0:10]' > "$FILE"
 ```
 

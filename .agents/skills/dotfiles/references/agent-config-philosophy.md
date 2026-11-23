@@ -22,7 +22,7 @@ What "prompt path" means in this repo:
   standard team contract, delivered in each recipient's POP archive.
 - `skills/<name>/SKILL.md` — skill-triggered
   guidance, loaded only when relevant.
-- `tmux-a2a-postman help subagent-review` and its named references — generic
+- `tmux-a2a-postman skill subagent-review` and its named references — generic
   reviewer procedures and prompts; active runtime/account defaults select model
   and effort.
 

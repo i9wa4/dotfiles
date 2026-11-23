@@ -51,7 +51,8 @@ Redraw is a best-effort trigger, not a scheduler for detached clients. Getters
 read the saved server overview; match the assigned native session/pane/workspace
 and declared scope before acting. Visibility adds no routing or management
 authority. Publication and capture times differ, and unknown is not zero.
-Use the installed usage/recall/team-manager guidance for the full contract.
+Use `tmux-a2a-postman help get-status` for the status contract and
+`tmux-a2a-postman skill postman-records records` for durable record guidance.
 Installed rollout and verification remain with #485.
 
 ## 2. Optional top-level external channel
@@ -64,9 +65,8 @@ in an explicit custom `postman.md` copied from the complete builtin default.
 Pass that absolute config consistently to the producer and consoles; do not add
 a generated-config program or shell substitutions to YAML.
 
-For setup, read the installed config-auditor reference and
-`tmux-a2a-postman help postman-usage external` for the selected revision's
-filesystem contract.
+For setup, read `tmux-a2a-postman help external-filesystem-channel` for the
+selected revision's filesystem contract.
 Add its supported external root/workspace/session scalar fields to the custom
 copy of the builtin default, preserving the catalog, common policy, local edges
 and any explicit parent/child tree. The workspace is the canonical HOME-relative

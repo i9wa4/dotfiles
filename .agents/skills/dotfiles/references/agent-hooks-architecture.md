@@ -68,9 +68,8 @@ notification, POP and help bootstrap; it does not carry the Postman role
 contract.
 
 Generic reviewer procedures and prompts come from the selected Postman binary's
-review HelpDoc and named references. The local `subagent-review` Skill is
-an installed compatibility entry; reviewers inherit the active runtime and
-account defaults.
+`tmux-a2a-postman skill subagent-review` and its named references. Reviewers
+inherit the active runtime and account defaults.
 
 ### 2.3. MCP Servers — `shared/mcp-servers.nix`
 
