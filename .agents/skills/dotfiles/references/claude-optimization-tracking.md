@@ -1,0 +1,500 @@
+# Claude Code Optimization Tracking
+
+Current optimization decisions and pending considerations for Claude Code.
+The runtime overview lives in `claude-code.md`; older per-version history lives
+in `claude-changelog-tracking.md`.
+
+## 1. Optimization Tracking
+
+Last reviewed Claude Code version: v2.1.325 (2026-11-16)
+
+Coverage audit (2026-11-16): the official `CHANGELOG.md` and GitHub Releases
+both have 41 versioned entries from v2.1.278 through the installed v2.1.325.
+This document selects changes that affect this repo's runtime decisions; it is
+not a per-release product changelog. See §1.2.9 for the decisions and sources.
+
+Review confirmation (2026-11-14): local `claude --version` reported
+`2.1.325 (Claude Code)`. Reviewed upstream releases after v2.1.277 through
+the installed version and compared their settings and behavior changes with
+`nix/home-manager/agents/claude/default.nix` and the vde launchers. See
+§1.2.9. No generated config change is required.
+
+Earlier review (2026-09-19): local `claude --version` reported
+`2.1.277 (Claude Code)` after `nix flake update`, and the official
+`anthropics/claude-code` `CHANGELOG.md` contains the matching `2.1.277`
+section. This pass reviewed 2.1.221 through 2.1.277 (47 versioned changelog
+entries; 46 have a matching GitHub Release object, since v2.1.243 is
+changelog-only). See
+§1.2.8 for the headline finding (AGENTS.md support, contradicted between
+the changelog and official docs) and the rest of the catch-up.
+
+### 1.1. Applied Optimizations
+
+- [x] The full runtime-root persona/scope prompt was removed; persona and scope
+  now flow through `tmux-a2a-postman help config`. A minimal
+  <!-- private-content-scan: allow-next-line -->
+  direct-invocation fallback remains at `~/.claude/CLAUDE.md`, derived from
+  `nix/home-manager/agents/shared/AGENTS.md`.
+- [x] Skills installed through `shared/agent-skills.nix`
+- [x] Reviewer guidance is owned by Postman `subagent-review`; runtime model
+      defaults are inherited
+- [x] Commands split into commands/ directory
+- [x] Reference links moved to skills
+- [x] `language` setting - set to "English"
+- [x] `ENABLE_TOOL_SEARCH = "auto"` - threshold-mode MCP tool search. Current
+  tool count is small, so upfront loading is acceptable; Claude Code falls back
+  to tool search once the MCP tool surface exceeds the default threshold.
+- [x] Permission system reviewed - sandbox bypass fix confirmed (v2.1.34)
+- [x] Permission deny rules migrated - deprecated `:*` to modern `*` syntax
+- [x] Fast mode - hard-disabled via `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`.
+      Available for Opus 4.6 since v2.1.36 and defaults to Opus 4.7 since
+      v2.1.142; we opt out entirely so `/fast` is rejected regardless of model.
+      Adaptive thinking is already off (`DISABLE_ADAPTIVE_THINKING = "1"`) and
+      effort is pinned at launch, so the latency/cost win from fast mode is
+      duplicative while its model swap reintroduces variance we explicitly
+      removed. Re-enable only if a future fast-mode flavor is independent of
+      effort pinning.
+- [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
+- [x] Automatic memory - enabled by default (v2.1.32)
+- [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
+- [x] `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` removed - enables Remote
+  Control and feature flag refresh (v2.1.51+)
+- [x] `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"` - autocompact at 70% context
+  usage
+- [x] `includeGitInstructions = false` - disables built-in git instructions;
+  the installed `git-github-operations` Skill is sole authority (v2.1.69)
+- [x] `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` left unset (2026-09-19; was explicit
+  `"0"` before that, DISABLED). At "1" the harness silently forces
+  `permissionMode = "default"` and overrides `--dangerously-skip-permissions`,
+  producing an "ask" prompt for every Bash tool call; with no human present to
+  approve, every call returns `exit 126 — Request interrupted by user`. The
+  "ask" path is also where the deny-bash hook's silent failures (broken `\s`
+  regex, sed delimiter collision) became visible: hooks looked dead because
+  the harness never even reached them.
+
+  For **permission-mode** purposes (the incident above), unset and explicit
+  `"0"` are equivalent: guardian confirmed the permission-forcing mechanism is
+  gated on an explicitly-truthy check (`"1"`/`"true"`/`"yes"`/`"on"`), so
+  leaving it unset cannot trigger it -- an earlier version of this note
+  claimed otherwise and was wrong; that claim is retracted.
+
+  For this variable's **separate credential-scrubbing** effect, unset and
+  explicit `"0"` are only conditionally equivalent: they diverge to scrub-ON
+  when `GITHUB_ACTIONS` is set, or when `CLAUDE_CODE_ENTRYPOINT ===
+  "local-agent"`. Checked both against this fleet's actual launch path:
+  `CLAUDE_CODE_ENTRYPOINT` is never set anywhere in this repo, and every
+  Claude Code launch here goes through the plain `claude` CLI binary
+  (`config/vde/layout.yml`) with no Agent SDK wrapper, so a `"local-agent"`
+  entrypoint does not apply today. Neither `ci.yaml` nor `release.yaml`
+  invokes `claude` at all, so `GITHUB_ACTIONS` never coincides with a Claude
+  Code launch in this repo's own CI either. Re-check this note if either
+  invocation pattern changes (for example, adopting the Claude Agent SDK for
+  programmatic use, or running `claude` from a GitHub Actions job).
+
+  Restore to "1" only after declaring an explicit `allowedTools` set so Bash
+  auto-approves without prompts.
+- [x] `CLAUDE_CODE_ENABLE_TELEMETRY` left unset (2026-09-19; was explicit
+  `"false"` before that). Matches the documented default (telemetry off
+  unless explicitly set to `"1"`).
+- [x] `showThinkingSummaries = true` - explicit opt-in required after v2.1.89
+  default change (thinking summaries no longer generated by default in
+  interactive sessions)
+- [x] `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1"` - adaptive thinking OFF;
+      effort stays pinned at the launch value (currently `--effort xhigh`).
+      Predictable per-turn cost and latency, no auto-downshift. Diverges from
+      the v2.1.94 Team/Enterprise default by design. See
+      `claude-changelog-tracking.md` for the prior rationale around adaptive
+      thinking.
+- [x] v2.1.195 catch-up review - no local config migration needed. Current
+  Claude hooks use only `Bash`, so the v2.1.195 hyphenated hook matcher
+  exact-match fix does not affect this repo.
+  Keep plugin, auto-mode, sandbox, and Remote/agent-team additions as
+  user-invoked/product defaults unless a measured harness need appears.
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1"` (v2.1.132) - keeps the
+  conversation in the terminal's native scrollback instead of the fullscreen
+  alt-screen renderer, so tmux copy-mode / wheel can scroll back over long
+  sessions. Adopted 2026-07-07 for tmux-first operation; trades away
+  alt-screen mouse support and auto-copy. Moved up from §1.2.2 deferred.
+- [x] `AskUserQuestion` denied via `permissions.deny` - v2.1.200 changed these
+  dialogs to no longer auto-continue by default, so a question in a headless
+  or `tmux-a2a-postman` pane stalls the turn indefinitely with no human to
+  answer. Denying the tool makes the agent proceed on its own judgement.
+  Alternative considered and rejected: opt into an idle timeout via `/config`
+  (keeps the tool for interactive sessions) - postman panes are the common
+  case here, so a hard deny is the right default.
+- [x] v2.1.207 permission-mode review - launcher migration applied. Claude Code
+  now exposes `--allow-dangerously-skip-permissions` as an explicit gate:
+  `--dangerously-skip-permissions` still selects bypass mode, but bypassing is
+  disabled by default until the allow flag is also present. Updated
+  `config/vde/layout.yml` so every Claude pane passes both flags.
+- [x] v2.1.210 permission path-rule review - at the time, migrated sensitive
+  write denies from `Write(**/secrets/**)` / `Write(.env*)` to
+  `Edit(**/secrets/**)` / `Edit(.env*)`. Claude Code now warns that
+  `Write(path)` permission rules are not matched by file permission checks;
+  `Edit(path)` covers file-editing tools. Issue #362 later removed those
+  Read/Edit-scoped secret-path denies; they are not active in current settings.
+
+### 1.2. Pending Considerations
+
+- [ ] Re-enable `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB = "1"` together with an
+  explicit `allowedTools` set (per the v2.1.83 release-note remediation
+  path) so credential scrubbing stays on AND `--dangerously-skip-permissions`
+  remains effective for whitelisted Bash patterns. Until then it stays
+  unset (no scrubbing, no permission-mode forcing) — see §1.1.
+- [x] SQL schema validation - moved to databricks skill (Section 8)
+- [ ] TeammateIdle/TaskCompleted hooks - for future agent workflow automation
+- [ ] Agent memory frontmatter - `memory: user|project|local` for stateful
+  agents
+- [ ] Task(agent_type) restrictions - enhanced security for subagent spawning
+- [ ] WorktreeCreate/WorktreeRemove hooks - custom VCS setup/teardown for
+  worktree isolation (v2.1.50)
+- [ ] ConfigChange hook - security auditing of settings changes (v2.1.49)
+- [ ] `isolation: worktree` in agent defs - isolated git worktree per agent
+  (v2.1.49, v2.1.50)
+- [ ] PostCompact hook - archive/analyze compaction summaries; has
+  `compact_summary` field (v2.1.76)
+- [ ] Elicitation/ElicitationResult hooks - intercept MCP server structured
+  input requests (v2.1.76)
+- [ ] Conditional `if` field for hooks - reduce process spawning overhead
+  with permission rule syntax filtering (v2.1.85)
+- [ ] StopFailure hook - log API errors (rate limit, auth failure) (v2.1.78)
+- [ ] `hookSpecificOutput.sessionTitle` in UserPromptSubmit hooks (v2.1.94) -
+  dynamic session/tmux pane title per prompt
+- [ ] `CLAUDE_CODE_NO_FLICKER=1` env (v2.1.89) - flicker-free alt-screen
+  rendering; revisit if rendering glitches observed
+
+#### 1.2.1. v2.1.95 → v2.1.121 candidates (added 2026-04-29)
+
+- [ ] `alwaysLoad: true` on hot MCP servers (v2.1.121) - bypass default
+  tool-search deferral for frequently-called servers; pick based on
+  per-session call frequency, not server count
+- [ ] ~~PostToolUse `hookSpecificOutput.updatedToolOutput`~~ N/A — observe.sh
+  removed 2026-04-29.
+- [ ] ~~PreCompact hook can block compaction~~ N/A — precompact-save.sh
+  removed 2026-04-29.
+- [ ] ~~`duration_ms` in PostToolUse hook input~~ N/A — observe.sh removed
+  2026-04-29.
+- [ ] `DISABLE_UPDATES=1` env (v2.1.118) - stricter than `DISABLE_AUTOUPDATER`;
+  blocks manual `claude update` too. Reasonable for fully Nix-managed installs
+- [ ] `prUrlTemplate` setting (v2.1.119) - footer PR badge target; only useful
+  for non-github code-review hosts
+- [ ] `CLAUDE_CODE_HIDE_CWD=1` env (v2.1.119) - hide cwd in startup logo
+  (cosmetic)
+- [ ] `sandbox.network.deniedDomains` setting (v2.1.113) - opt-in domain
+  deny-list even when broader allow wildcards apply
+- [ ] ~~`refreshInterval` for status line (v2.1.97)~~ N/A - Claude
+  `statusLine` config and `claude-statusline.sh` were removed from this repo.
+- [ ] `cleanupPeriodDays` now also covers Claude task cache,
+  `shell-snapshots/`, `backups/` (v2.1.117) - `cleanupPeriodDays = 50` already
+  set; new dirs swept automatically
+
+#### 1.2.2. v2.1.122 → v2.1.145 candidates (added 2026-05-21)
+
+- [ ] `worktree.baseRef: "head"` setting (v2.1.133) - default reverted to
+  `fresh` (origin/<default>). With our `.worktrees/issue-*` workflow we usually
+  want unpushed commits carried into new worktrees; revisit once we've
+  confirmed which branches `--worktree` / `EnterWorktree` currently spawn
+  against
+- [ ] `worktree.bgIsolation: "none"` (v2.1.143) - skip background-session
+  worktree isolation in repos where worktrees are impractical; we DO want
+  isolation here, so this stays off but is documented for awareness
+- [ ] Hook `args: string[]` exec form (v2.1.139) - spawns command directly
+  without a shell so path placeholders never need quoting. Migration candidate
+  for hook commands in `claude/default.nix` once
+  we audit each script's argv expectations
+- [ ] Hook `continueOnBlock: true` on PostToolUse (v2.1.139) - feed the hook's
+  rejection back to Claude and continue the turn. Useful for a future
+  file-edit hook if we ever want soft "warn-and-redo" semantics instead of
+  hard deny
+- [ ] `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` env (v2.1.143) - bounds runaway Stop
+  hooks at 8 consecutive blocks. We have no Stop hooks yet; track for future
+- [ ] `terminalSequence` field on hook JSON output (v2.1.141) - hooks can emit
+  desktop notifications / window titles / bells without a controlling
+  terminal. Possible future use for tmux pane title updates from a future hook
+  script.
+- [ ] `settings.autoMode.hard_deny` rules (v2.1.136) - auto-mode classifier
+  hard deny that cannot be allow-overridden. We don't use auto mode, but
+  worth tracking if we ever migrate away from `dontAsk`
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1` env (v2.1.132) - ADOPTED
+  2026-07-07 (see §1.1). Keeps the conversation in the terminal's native
+  scrollback instead of the fullscreen alt-screen renderer. Accepted the
+  mouse-support / auto-copy tradeoff for tmux-first operation.
+- [ ] `CLAUDE_CODE_SESSION_ID` in Bash tool subprocess env (v2.1.132) -
+  enables session-aware Bash scripts. No current consumer in
+  `scripts/`; flag for future hook design
+- [ ] `$CLAUDE_EFFORT` env in Bash subprocess + `effort.level` hook input
+  (v2.1.133) - hooks can branch on current effort level. Possible use:
+  conditional deny patterns at low effort
+- [ ] MCP stdio servers now receive `CLAUDE_PROJECT_DIR` (v2.1.139) -
+  matches hook env; review `shared/mcp-servers.nix` once any server needs
+  the cwd
+- [ ] `Skill(name *)` permission rules now match as prefix (v2.1.139 fix) -
+  informational; current deny list does not use Skill() patterns
+- [ ] `/goal` command (v2.1.139) - completion-condition driven, multi-turn.
+  User-invokable, no config; flag for role-policy awareness
+- [ ] `claude agents --json` (v2.1.145) - script-friendly session list for
+  tmux statusline / postman dashboards. Possible integration with our
+  postman session operator
+- [ ] Stop / SubagentStop hook input now includes `background_tasks` and
+  `session_crons` (v2.1.145) - useful if we ever wire up Stop hooks
+- [x] Bare-variable-assignment permission bypass fix (v2.1.145, security) -
+  `FOO=bar somecmd` style invocations are now correctly subject to deny
+  rules. No config change needed; deny-bash patterns gain coverage
+  automatically
+- [x] Managed-settings `sandbox` block fallthrough fix (v2.1.126, security) -
+  `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` now applied even
+  when a higher-priority source lacks a `sandbox` block. We're solo-user
+  so this is informational
+
+#### 1.2.3. v2.1.147 -> v2.1.195 candidates (added 2026-06-29)
+
+- [x] Hyphenated hook matcher exact matching (v2.1.195) - no migration needed.
+  Current hook matchers are `Bash`; there are no hyphenated MCP or agent
+  matchers in `claude/default.nix`.
+- [ ] `sandbox.credentials` setting (v2.1.187) - blocks sandboxed commands
+  from reading credential files and secret environment variables. Not adopted
+  yet because harness sessions currently run with bypass permissions and
+  shared deny rules; revisit with an explicit sandbox design.
+- [ ] `autoMode.classifyAllShell` (v2.1.193) and auto-mode denial transcript
+  details - useful only if we move from deterministic Bash deny rules to
+  classifier-backed auto mode.
+- [ ] `Tool(param:value)` permission-rule syntax (v2.1.178) - possible future
+  way to restrict `Agent(model:...)` or other parameterized tool use without
+  scripts; no current policy needs it.
+- [ ] `fallbackModel` setting (v2.1.166) - up to three fallback models for
+  overload/unavailable primary models. Defer while model choice is pinned at
+  launch and failures should stay visible.
+- [ ] `--safe-mode` / `CLAUDE_CODE_SAFE_MODE` (v2.1.169) - useful manual
+  troubleshooting path for bad hooks, skills, MCP, or plugins; no config
+  change.
+- [ ] `disableBundledSkills` / `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS`
+  (v2.1.169) - could slim the model surface if bundled skills start colliding
+  with repo skills; keep bundled defaults for now.
+- [ ] `respondToBashCommands: false` (v2.1.186 behavior change) - `!` Bash
+  commands now trigger an assistant response automatically. Leave default
+  unless interactive Claude users report unwanted follow-up turns.
+- [ ] `CLAUDE_CODE_DISABLE_MOUSE_CLICKS` (v2.1.195) and
+  `wheelScrollAccelerationEnabled` (v2.1.174) - UI preference only; do not
+  encode without a measured terminal problem.
+- [ ] `OTEL_LOG_ASSISTANT_RESPONSES=0` (v2.1.193) - only needed if telemetry is
+  re-enabled while prompt logging is on. Current settings disable telemetry.
+- [x] `CLAUDE_CODE_OPUS_4_6_FAST_MODE_OVERRIDE` removed/no-op (v2.1.160) -
+  already irrelevant because fast mode is hard-disabled.
+- [x] `/code-review` rename and `/simplify` behavior churn (v2.1.147,
+  v2.1.152, v2.1.154, v2.1.186) - user-invoked commands only; no harness
+  config.
+- [x] Background-agent, worktree, MCP, plugin, skill hot-reload, and
+  subagent-depth fixes through v2.1.195 - mostly product reliability. Current
+  harness should benefit automatically; no source change.
+
+#### 1.2.4. v2.1.196 -> v2.1.202 candidates (added 2026-07-07)
+
+- [x] AskUserQuestion no longer auto-continues by default (v2.1.200) - acted
+  on: denied the tool via `permissions.deny` (see §1.1) because headless
+  postman panes have no human to answer.
+- [x] `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN` (v2.1.132, revisited) - adopted
+  (see §1.1).
+- [x] tmux 3.4+ synchronized-output flicker fix (v2.1.200) - automatic, no
+  config; complements the alt-screen scrollback change for tmux-first use.
+- [ ] "default" permission mode renamed to "Manual" (v2.1.200) -
+  informational. `default` / `"defaultMode": "manual"` both still accepted;
+  this repo runs bypass permissions, so no config change.
+- [ ] Claude Sonnet 5 is now the default model (v2.1.197) - informational;
+  launchers select `sonnet` or `opus[1m]` explicitly, so the runtime default
+  does not apply to those panes.
+- [x] Subagents background-by-default; Explore inherits opus (v2.1.198) -
+  matches current usage, no config. `/dataviz` ships as a bundled skill.
+- [x] `claude mcp list`/`get` no longer spawn self-approved `.mcp.json`
+  servers (v2.1.196, security) - beneficial automatically; no config.
+- [x] Skill re-invocation no longer duplicates instructions in context
+  (v2.1.202) - product fix; benefits sessions automatically.
+- [ ] `/review` reverted to single-pass; `/code-review <level> <pr#>` for the
+  multi-agent pass (v2.1.202) - user-invoked commands only; flag for
+  role-policy awareness. Remaining background-agent / Remote Control /
+  workflow-parse fixes through v2.1.202 are product reliability; no source
+  change.
+
+#### 1.2.5. v2.1.203 -> v2.1.207 candidates (added 2026-07-14)
+
+- [x] Bypass permission mode default check (v2.1.207) - config change applied.
+  `--allow-dangerously-skip-permissions` must accompany
+  `--dangerously-skip-permissions` in launcher commands; otherwise Claude Code
+  reports bypass permissions as disabled by default.
+- [ ] Auto mode availability and `autoMode` scope changes (v2.1.207) -
+  informational for now. Auto mode is now available without
+  `CLAUDE_CODE_ENABLE_AUTO_MODE` opt-in on Bedrock, Vertex AI, and Foundry, and
+  `autoMode` is no longer read from `.claude/settings.local.json`; if this repo
+  <!-- private-content-scan: allow-next-line -->
+  ever adopts auto mode, place policy in `~/.claude/settings.json` or managed
+  settings, not local/project settings.
+- [x] Plugin `${user_config.*}` shell-form rejection (v2.1.207) - no local
+  migration. Repo search found no plugin hook, monitor, MCP `headersHelper`,
+  or `pluginConfigs` usage of `user_config`.
+- [x] Background-agent, Remote Control, worktree, MCP timeout, and terminal
+  rendering fixes through v2.1.207 - product reliability; current harness should
+  benefit automatically with no source change.
+
+#### 1.2.6. v2.1.208 -> v2.1.210 candidates (added 2026-07-15)
+
+- [x] Permission path-rule warnings (v2.1.210) - config change applied.
+  `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` permission rules now
+  warn at startup; use `Edit(path)` for write restrictions and `Read(path)` for
+  read/glob restrictions. At the time, this repo's sensitive write denies used
+  `Edit(**/secrets/**)` and `Edit(.env*)`; issue #362 later removed them.
+- [x] Hook callback timeout no longer reported as user rejection (v2.1.210) -
+  product reliability for unattended panes; no config change.
+- [x] Worktree-isolated subagents no longer run git-mutating commands against
+  the main checkout (v2.1.210) - product reliability, complements this repo's
+  dedicated-worktree workflow.
+- [ ] `axScreenReader` / `CLAUDE_AX_SCREEN_READER` (v2.1.208) - accessibility
+  opt-in only; no default config.
+- [ ] `vimInsertModeRemaps` (v2.1.208) - personal editor preference; no shared
+  harness config.
+- [ ] `CLAUDE_CODE_PROCESS_WRAPPER` (v2.1.208) - corporate launcher support;
+  not needed for this solo Nix-managed install.
+- [x] Background-agent attach, memory, MCP refresh, terminal rendering, and
+  telemetry-redaction fixes through v2.1.210 - product reliability; current
+  harness benefits automatically with no source change.
+
+#### 1.2.7. v2.1.211 -> v2.1.220 candidates (added 2026-07-25)
+
+- [x] Claude Opus 5 default, dynamic-workflow sizing, nested-subagent
+  forwarding, and related background-agent reliability changes (v2.1.211-
+  v2.1.220) - no managed setting change. Launchers retain their explicit
+  model/effort choices and the postman topology remains the authority for
+  orchestration.
+- [x] `DirectoryAdded` hook (v2.1.219) - no new hook. The existing role policy
+  is tied to tmux pane identity and tool use, not directory registration.
+- [ ] `sandbox.network.strictAllowlist` (v2.1.219) - defer. It is a useful
+  sandbox control, but these headless panes deliberately use bypass
+  permissions and have no reviewed end-to-end sandbox policy yet. They
+  therefore have no enforced egress allowlist. Do not add a partial allowlist
+  that could silently break MCP, package, or documentation
+  access.
+- [x] 2.1.220 bug-fix-only release - no source migration.
+
+#### 1.2.8. v2.1.220 -> v2.1.277 candidates (added 2026-09-19)
+
+47 versioned changelog entries landed in this range (2.1.221 through 2.1.277;
+46 have a matching GitHub Release object, since v2.1.243 is changelog-only).
+Reviewed the full official `CHANGELOG.md`
+(`anthropics/claude-code`) for this span and scanned it for
+deprecation/removal/breaking entries and settings this repo's generated
+config touches (`permissions.deny`, hooks, `ENABLE_TOOL_SEARCH`,
+`CLAUDE_CODE_DISABLE_FAST_MODE`, `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`, MCP
+servers). Consolidated rather than itemized per-release given the volume.
+
+- [x] **AGENTS.md support (v2.1.277, exactly the installed version)** -
+  `CHANGELOG.md` states: "Added AGENTS.md support: in a project with no
+  CLAUDE.md, Claude Code reads AGENTS.md instead." However, the live
+  official docs (`code.claude.com/docs/en/memory`, "AGENTS.md" section)
+  explicitly say "Claude Code reads `CLAUDE.md`, not `AGENTS.md`," and
+  document `@AGENTS.md` import or a `CLAUDE.md -> AGENTS.md` symlink as the
+  supported way to combine them without duplication. These two official
+  Anthropic sources contradict each other as of this review. No config
+  change made: consolidating this repo's generated
+  <!-- private-content-scan: allow-next-line -->
+  `~/.claude/CLAUDE.md` (already derived from the single-authored
+  `shared/AGENTS.md` source, see §6 of `claude-code.md`) down to a bare
+  `AGENTS.md` is deferred until this is resolved. The changelog's own
+  wording ("in a project with...") also reads as project-level
+  `./CLAUDE.md` scope, not the global
+  <!-- private-content-scan: allow-next-line -->
+  `~/.claude/CLAUDE.md` this repo manages -- a second open question, not
+  just the source contradiction.
+- [x] Removed the deprecated `TaskOutput` tool and its `taskOutputMaxChars`
+  setting/`TASK_MAX_OUTPUT_LENGTH` env var (mid-range). No local config
+  change: neither is set anywhere in `nix/home-manager/agents/`.
+- [x] Removed the 200-subagent-per-session spawn cap; removed "Default
+  teammate model" from `/config`; removed the ultraplan feature (various,
+  mid-late range). All product/UX changes with no generated-config
+  counterpart in this repo.
+- [ ] `sandbox.excludedCommands` glob-matching fix (a compound Bash command
+  now requires every part to match, not just one) - no local config uses
+  `sandbox.excludedCommands` today, consistent with the deferred sandbox
+  posture noted in §1.2.7; no action needed, left as a note for whenever
+  sandbox config is revisited.
+- [x] No other deprecation/removal/breaking entry in this range touches a
+  setting or env var this repo's `claude/default.nix` currently generates.
+
+#### 1.2.9. v2.1.277 -> v2.1.325 candidates (added 2026-11-14)
+
+Compared the
+[official log](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)
+and [releases](https://github.com/anthropics/claude-code/releases) through the
+installed v2.1.325. The 41 entries are summarized by their effect on the
+generated settings and launchers, not itemized as a general product history.
+
+- [x] [v2.1.280](https://github.com/anthropics/claude-code/releases/tag/v2.1.280)
+  makes Opus 5.5 the default Opus model. The vde launcher uses the
+  `opus[1m]` family alias rather than a dated model ID, so this can advance
+  its effective model. This is an intended alias choice, not a required
+  config migration; use an exact model ID only if a fixed version is needed.
+- [x] [v2.1.281](https://github.com/anthropics/claude-code/releases/tag/v2.1.281)
+  makes dangerous `rm` using command substitution ask even in bypass mode.
+  Its prompt now denies with a rewrite hint after two minutes without an
+  answer; `CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT=1` opts out. Keep the
+  default timeout for unattended vde panes.
+- [x] [v2.1.286](https://github.com/anthropics/claude-code/releases/tag/v2.1.286)
+  fixes a case where MCP connectors listed no tools after an older handshake.
+  This client fix does not establish that the separate Claude.ai account
+  connector failures in issue #555 are resolved.
+- [x] [v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287)
+  preserves the dangerous-`rm` prompt when output redirects to `~` or a wildcard
+  path;
+  [.288](https://github.com/anthropics/claude-code/releases/tag/v2.1.288)
+  also catches dangerous `rm` inside `bash -c` or `sh -c` under bypass mode. Vde
+  panes launch in bypass mode, but the shared Bash hook remains the repo-owned
+  command guard; these upstream fixes do not justify changing its rules or
+  claiming all built-in prompts survive bypass mode.
+- [x] v2.1.287 also makes 1M context the default for Opus 4.7+ and Fable on
+  supported providers. The repo's `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "70"`
+  remains a percentage of the active context window, so the token threshold
+  can rise when the model or provider gains 1M context. Keep the 70% choice;
+  verify the active window in a session before tuning an absolute limit.
+- [ ] [v2.1.295](https://github.com/anthropics/claude-code/releases/tag/v2.1.295)
+  adds hook `onFailure: "block"`. Consider it only with a tested failure
+  contract for the shared Bash deny hook; adding it during a release catch-up
+  could turn a hook infrastructure failure into a blanket tool denial.
+- [x] [v2.1.299](https://github.com/anthropics/claude-code/releases/tag/v2.1.299)
+  adds default-on terminal idle compaction: a conversation above 200K tokens
+  idle for about 54 minutes is summarized before the one-hour prompt cache
+  expires. This is separate from the repo's 70% active-window autocompact
+  setting and can compact a long 1M-context session before that threshold.
+  Keep the default for long-lived vde/Postman panes to avoid reprocessing an
+  expired cache; no observed workflow failure warrants disabling it or changing
+  `CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS`. v2.1.314 extends idle compaction to
+  telemetry-off subscribers and more providers when prompt caching is on.
+- [ ] [v2.1.314](https://github.com/anthropics/claude-code/releases/tag/v2.1.314)
+  adds `permissions.blockWritesOutsideWorkingDirectories`. The dotfiles
+  workflow intentionally uses issue worktrees and writes task records outside
+  a worktree, so enabling this without a path review would block supported
+  work. Leave the current permission posture unchanged.
+- [x] [v2.1.316](https://github.com/anthropics/claude-code/releases/tag/v2.1.316)
+  deprecates fast mode on Opus 4.8. Fast mode is already disabled by
+  `CLAUDE_CODE_DISABLE_FAST_MODE = "1"`, so no migration is needed.
+- [x] [v2.1.319](https://github.com/anthropics/claude-code/releases/tag/v2.1.319)
+  runs MCP tasks in the background by client default. This repo generates no
+  override for that behavior, so no settings migration is needed. Empty local
+  MCP registrations do not exclude Claude.ai account connectors; issue #555
+  tracks their separate failures. Revisit if backgrounded calls affect the
+  harness or connector diagnostics.
+- [ ] v2.1.319 also adds `permissions.denyInsteadOfPrompting` for calls that
+  would wait on a permission prompt. Current vde panes use explicit bypass
+  flags and already deny `AskUserQuestion`, so adopting it would change other
+  interactive permission behavior without a demonstrated headless stall.
+  Defer a global setting until that behavior is tested.
+- [x] [v2.1.323](https://github.com/anthropics/claude-code/releases/tag/v2.1.323)
+  prompts for sign-in again when an MCP tool call encounters an expired token,
+  instead of surfacing `TOKEN_EXPIRED` alone. This is a client recovery change;
+  it does not confirm issue #555's account-side connector state.
+- [x] [v2.1.325](https://github.com/anthropics/claude-code/releases/tag/v2.1.325)
+  changes permission handling for sandboxed Bash by default. These panes use
+  explicit bypass permission flags and do not configure Claude's sandbox, so
+  no launcher migration is needed. Read-only git commands in an unrelated,
+  untrusted repository may now ask first; use project trust or `--add-dir`
+  when that workflow occurs. The zstd decoder security fix arrives with the
+  installed client and needs no local setting.
+
+For decision log ("Not Adopting") and per-version changelog,
+see [Claude Changelog Tracking](claude-changelog-tracking.md).

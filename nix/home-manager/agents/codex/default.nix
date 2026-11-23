@@ -138,11 +138,9 @@ let
 in
 {
   home.file = {
-    # Persona / language / scope is delivered through postman.md
-    # common_template in the complete Postman POP archive. Dotfiles-owned skills are
-    # listed by the generated skill_path catalog; catch-all repository
-    # background intentionally lives in docs rather than a `skills/repo-local`
-    # catch-all skill.
+    # The selected Postman contract is included in each complete POP archive.
+    # Global dotfiles-authored Skills are installed from top-level skills/;
+    # repository maintenance is discovered from .agents/skills/dotfiles.
     # AGENTS.md is the single authored notification bootstrap:
     # installed here for Codex and reused byte-for-byte
     # as ~/.claude/CLAUDE.md in claude/default.nix (no second hand-written

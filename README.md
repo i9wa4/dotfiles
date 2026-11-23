@@ -15,10 +15,10 @@ All operational knowledge lives in Agent Skills under [`skills/`](skills/) —
 each skill is a `SKILL.md` entry point plus detailed `references/`. The same
 files serve humans reading this repo and agents working in it.
 
-Start with the [dotfiles skill](skills/dotfiles/SKILL.md). It links the
+Start with the [dotfiles skill](.agents/skills/dotfiles/SKILL.md). It links the
 current setup, operations, harness, and skill-management references.
 
 For the system model, read the
-[operating concepts](skills/dotfiles/references/operating-concepts.md). For the
-AI runtime and review contract, read the
-[repo AI operating contract](skills/dotfiles/references/repo-ai-operating-contract.md).
+[operating concepts](.agents/skills/dotfiles/references/operating-concepts.md).
+For the AI runtime and review contract, read the
+[repo AI operating contract](.agents/skills/dotfiles/references/repo-ai-operating-contract.md).

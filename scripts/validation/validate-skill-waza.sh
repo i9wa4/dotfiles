@@ -42,10 +42,14 @@ append_skill_for_path() {
 
   path=${path#./}
   case "$path" in
-  skills/*/*)
+  skills/*/* | .agents/skills/*/*)
     rest=${path#skills/}
+    if [ "$rest" = "$path" ]; then
+      rest=${path#.agents/skills/}
+      skill_dir=".agents/skills/${rest%%/*}"
+    fi
     skill_name=${rest%%/*}
-    skill_dir="skills/${skill_name}"
+    skill_dir="${skill_dir:-skills/${skill_name}}"
     if [ -f "${skill_dir}/SKILL.md" ]; then
       printf '%s\n' "$skill_dir" >>"$skill_list"
     fi

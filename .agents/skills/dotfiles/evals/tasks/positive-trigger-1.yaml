@@ -1,0 +1,15 @@
+id: positive-trigger-001
+name: Positive Trigger 1
+description: Curated trigger-accuracy prompt for this skill.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Maintain this dotfiles repository: update Claude and Codex configuration, hooks, MCP and Skill management."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: .agents/skills/dotfiles/SKILL.md
+      mode: positive
