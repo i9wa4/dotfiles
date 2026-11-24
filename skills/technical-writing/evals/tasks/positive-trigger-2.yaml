@@ -1,10 +1,10 @@
 id: positive-trigger-002
 name: Positive Trigger 2
-description: Existing Japanese draft
+description: Curated trigger-accuracy prompt for this skill.
 tags:
   - positive-trigger
 inputs:
-  prompt: "Revise this existing Japanese technical prose for clarity: API v2 は30秒でタイムアウトします。再試行は無効です。"
+  prompt: "Edit English technical prose in the README without changing meaning, then check grammar, terminology and style with Vale and Harper."
 expected:
   should_trigger: true
 graders:
