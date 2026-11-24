@@ -23,11 +23,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795497536,
-        "narHash": "sha256-sLpjAqTN0IvFaX8RlP4lGElSt2XQi2lWXzBwHLBuRhc=",
+        "lastModified": 1795510149,
+        "narHash": "sha256-u4g3ATtV6X35I8HnWzaJGjmKK6nu0H4cVdoGTAcGtSc=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "6441c3c5e5ac6b6d2c9f7c46418db80651f591bc",
+        "rev": "f9ce81111aedb4a51ff84ed643c3145eda4de740",
         "type": "github"
       },
       "original": {
@@ -121,11 +121,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795422764,
-        "narHash": "sha256-+52Df9bcu3ThecGeG9alC0WWOqPmMoVAaMIU+5sx17k=",
+        "lastModified": 1795509826,
+        "narHash": "sha256-LWVjS3VFc41qZXgLuoy2c5UJA6qrc1KGG/oCFc3JFbs=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+        "rev": "ecb659cc6fb4d0b13b6303f682966fc52b001d51",
         "type": "github"
       },
       "original": {
@@ -285,11 +285,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795473357,
-        "narHash": "sha256-TM1yuCwnOXFlUV/iTzP9WDWvviMLjZPr4xlzhAZmfyk=",
+        "lastModified": 1795529623,
+        "narHash": "sha256-Uc0x9ukKifsugfQw7YaICfSdNBMg15Ii8WicIW7UYe0=",
         "owner": "google",
         "repo": "skills",
-        "rev": "8123e483e83712ec98ba27c9fb1a3e38aa9f6a1c",
+        "rev": "54b61f079019e17ea8922f19a2c506ccdafc9e74",
         "type": "github"
       },
       "original": {
