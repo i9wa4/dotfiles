@@ -20,8 +20,10 @@ What "prompt path" means in this repo:
 
 - `tmux-a2a-postman help config default` — the selected binary's complete
   standard team contract, delivered in each recipient's POP archive.
-- `skills/<name>/SKILL.md` — skill-triggered
-  guidance, loaded only when relevant.
+- `skills/<name>/SKILL.md` — dotfiles-authored personal/global Skill
+  guidance, installed for both engines and loaded when relevant.
+- `.agents/skills/dotfiles/SKILL.md` — repo-local maintenance guidance for
+  this checkout; Claude's `.claude/skills/dotfiles` points to this source.
 - `tmux-a2a-postman skill subagent-review` and its named references — generic
   reviewer procedures and prompts; active runtime/account defaults select model
   and effort.
@@ -100,8 +102,8 @@ Why shared beats per-tool:
   to be reauthored.
 
 Skill installation is curated before it reaches runtime loader paths.
-`agent-skills.nix` keeps local skills, postman skills, `claude-api`, and
-`context7-cli` active by default. That local set includes
+`agent-skills.nix` keeps local skills, Postman skills, and the curated
+`security-audit` skill active by default. The local set includes
 `external-references` as the router for dormant provider packs, while the
 provider packs themselves remain pinned in `referenceOnlySources` and generated
 as a flat reference tree at `~/.local/share/skills`. That reference tree is for
@@ -161,8 +163,10 @@ What this looks like in the current repo:
   save/reload hook scripts. See section 4 of
   `.agents/skills/dotfiles/references/operating-concepts.md`.
 - Skills work in both engines (`/skill <name>` for Claude,
-  `@<name>` for Codex). Skill files live in shared sources and are
-  installed into both engine trees.
+  `@<name>` for Codex). Personal/global Skills and selected Postman thin
+  entries are installed into both engine trees. The repo-local dotfiles Skill
+  stays in `.agents/skills/dotfiles/`, with a Claude pointer at
+  `.claude/skills/dotfiles`; it is not installed globally.
 - Review perspective selection, coverage and Guardian aggregation belong to
   the installed `subagent-review` Skill without model/tier dispatch flags.
 

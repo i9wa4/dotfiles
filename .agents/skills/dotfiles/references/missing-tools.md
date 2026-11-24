@@ -40,9 +40,11 @@ for this repo's Nix + direnv + zsh environment.
   with `npm install -g`, `pnpm add -g`, `yarn global add`, `bun add -g`,
   `uv tool install`, `pip install --user`, `brew install`, or any other
   global installer.
+
 - If a tool is needed permanently, add it declaratively to the Home Manager
   configuration under `nix/home-manager/` and run `nix run '.#switch'`
   instead of installing it imperatively.
+
 - This repo's interactive environment is zsh managed by Home Manager; when a
   command works in a login shell but not in the agent shell, retry with:
 

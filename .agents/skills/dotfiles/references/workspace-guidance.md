@@ -41,6 +41,7 @@ After resolving the snippet, boot the session:
 2. Wait 5s minimum for zsh init, zoxide.zsh, and snippet widgets to fully
    initialize in the new pane. (Empirically confirmed: 2s is insufficient; see
    `workspace-boot-failure-modes.md`)
+
 3. Navigate to the target directory:
 
    ```bash
@@ -48,6 +49,7 @@ After resolving the snippet, boot the session:
    ```
 
 4. Wait 3-4s for the chpwd hook and `__z_tmux_rename_for_dir` to fire.
+
 5. Verify pwd:
 
    ```bash
@@ -74,7 +76,9 @@ After resolving the snippet, boot the session:
    POP archives. Do not prepend a second messenger preset.
    Postman configuration is independent of this launcher and is authored in
    `tmux-a2a-postman help config`.
+
 8. Wait 8-12s for vde-layout to materialize all panes.
+
 9. Verify topology:
 
    ```bash

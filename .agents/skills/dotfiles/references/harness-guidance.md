@@ -108,8 +108,10 @@ source-only harness work unless the user explicitly requested that live repair.
 - For publishable skill changes, rely on the pre-commit gates (frontmatter,
   private-content, Waza, offline trigger evals). `gh skill publish --dry-run` is
   reserved for the tag-push release flow.
+
 - Run `nix flake check` when feasible after changes that affect installed agent
   sources or Nix validation.
+
 - Run `nix run '.#switch'` only when activation output needs to be materialized
   or tested.
 

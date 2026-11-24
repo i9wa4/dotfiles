@@ -14,9 +14,9 @@ durable task artifacts, and active versus reference-only skills.
 Operational guidance lives in the
 [repo-local dotfiles Skill](.agents/skills/dotfiles/SKILL.md), the
 personal/global Skills under [`skills/`](skills/), and the selected Postman
-binary. Each local Skill has a `SKILL.md` entry point and detailed
-`references/`. The same files serve humans reading this repo and agents working
-in it.
+binary. Each local Skill has a `SKILL.md` entry point; supporting
+`references/` are included where needed. The same files serve humans reading
+this repo and agents working in it.
 
 Start with the [dotfiles skill](.agents/skills/dotfiles/SKILL.md). It links the
 current setup, operations, harness, and skill-management references.

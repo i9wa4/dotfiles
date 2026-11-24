@@ -18,6 +18,7 @@ sending keys.
 When tmux reports `can't find pane: %N`:
 
 - Record the missing pane as stale target evidence.
+
 - Capture the live inventory:
 
   ```bash
