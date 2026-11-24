@@ -71,10 +71,10 @@ let
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
-  avoid-ai-writing-with-notices = pkgs.runCommand "avoid-ai-writing-with-notices" { } ''
+  avoid-ai-writing-with-license = pkgs.runCommand "avoid-ai-writing-with-license" { } ''
     cp -R ${inputs.avoid-ai-writing}/skills/avoid-ai-writing $out
     chmod u+w $out
-    cp ${inputs.avoid-ai-writing}/LICENSE ${inputs.avoid-ai-writing}/NOTICE.md $out/
+    cp ${inputs.avoid-ai-writing}/LICENSE $out/
   '';
 
   activeBaseSources = {
@@ -88,9 +88,9 @@ let
       path = inputs.tmux-a2a-postman;
       subdir = "dist/skills";
     };
-    # Keep the upstream nested Skill unchanged, with its required MIT notices.
+    # Keep the upstream nested Skill unchanged, with its required MIT license.
     avoid-ai-writing = {
-      path = avoid-ai-writing-with-notices;
+      path = avoid-ai-writing-with-license;
       filter.maxDepth = 0;
     };
     yomiyasu = {
