@@ -71,6 +71,12 @@ let
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
+  avoid-ai-writing-with-notices = pkgs.runCommand "avoid-ai-writing-with-notices" { } ''
+    cp -R ${inputs.avoid-ai-writing}/skills/avoid-ai-writing $out
+    chmod u+w $out
+    cp ${inputs.avoid-ai-writing}/LICENSE ${inputs.avoid-ai-writing}/NOTICE.md $out/
+  '';
+
   activeBaseSources = {
     # Local skills from this dotfiles repository, including the active
     # external-references router for dormant provider-pack inventory.
@@ -82,11 +88,9 @@ let
       path = inputs.tmux-a2a-postman;
       subdir = "dist/skills";
     };
-    # The Avoid AI Writing repository root is the skill package: its SKILL.md,
-    # references, scripts, LICENSE and NOTICE.md retain their original layout.
-    # Discover only this root skill, not the nested distribution copy.
+    # Keep the upstream nested Skill unchanged, with its required MIT notices.
     avoid-ai-writing = {
-      path = inputs.avoid-ai-writing;
+      path = avoid-ai-writing-with-notices;
       filter.maxDepth = 0;
     };
     yomiyasu = {
