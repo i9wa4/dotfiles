@@ -69,24 +69,12 @@
     };
 
     # Non-flake sources
-    anthropic-skills = {
-      url = "github:anthropics/skills";
-      flake = false;
-    };
     azure-skills = {
       url = "github:microsoft/azure-skills";
       flake = false;
     };
-    context7 = {
-      url = "github:upstash/context7";
-      flake = false;
-    };
     cloudflare-security-audit-skill = {
       url = "github:cloudflare/security-audit-skill";
-      flake = false;
-    };
-    mizchi-explainer = {
-      url = "github:mizchi/explainer";
       flake = false;
     };
     cloudflare-skills = {
@@ -95,10 +83,6 @@
     };
     dbt-agent-skills = {
       url = "github:dbt-labs/dbt-agent-skills";
-      flake = false;
-    };
-    streamlit-skills = {
-      url = "github:streamlit/agent-skills";
       flake = false;
     };
     databricks-agent-skills = {
