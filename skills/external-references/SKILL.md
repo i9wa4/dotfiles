@@ -5,7 +5,7 @@ metadata:
   version: "1.0.0"
 description: |
   USE FOR: Consulting installed reference Skills for Cloudflare, dbt,
-  Azure, Databricks, AWS, Terraform, Google Workspace or Streamlit,
+  Azure, Databricks, AWS, Terraform or Google Workspace,
   and assessing requested activation.
   DO NOT USE FOR: General web searches, installation/configuration
   changes or Cloudflare security audits.
@@ -33,7 +33,7 @@ only when the user asks to make a pack active/invokable.
 ## 2. Dormant Packs
 
 `cloudflare-skills`, `databricks-official`, `dbt`, `azure`, `google`, `aws`,
-`hashicorp-terraform`, `googleworkspace-cli`, and `streamlit`. Use active
+`hashicorp-terraform` and `googleworkspace-cli`. Use active
 `security-audit` for Cloudflare security audits.
 
 ## 3. Direct Read Example

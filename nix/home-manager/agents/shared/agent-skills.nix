@@ -87,62 +87,6 @@ let
     ${pkgs.patch}/bin/patch -p1 < ${../../../../nix/patches/yomiyasu-state-symlink.patch}
   '';
 
-  # Normalize upstream anthropic/skills frontmatter for claude-api/SKILL.md.
-  # Preserve upstream metadata keys while rewriting invalid YAML description
-  # syntax, and keep a fallback for the no-frontmatter case.
-  anthropic-skills-patched = pkgs.runCommand "anthropic-skills-patched" { } ''
-    cp -r ${inputs.anthropic-skills} $out
-    chmod -R u+w $out
-    target=$out/skills/claude-api/SKILL.md
-    tmp=$(${pkgs.coreutils}/bin/mktemp)
-    if [ "$(${pkgs.coreutils}/bin/head -n 1 "$target")" != '---' ]; then
-      {
-        printf '%s\n' '---'
-        printf '%s\n' 'name: claude-api'
-        printf '%s\n' 'description: |'
-        printf '%s\n' '  Build Claude API / Anthropic SDK apps. Use when code imports anthropic or'
-        printf '%s\n' '  @anthropic-ai/sdk, when adding Claude API features, or when integrating'
-        printf '%s\n' '  Anthropic-managed agents.'
-        printf '%s\n' '---'
-        echo
-        cat "$target"
-      } > "$tmp"
-    else
-      ${pkgs.gawk}/bin/awk '
-        BEGIN {
-          state = "start"
-        }
-        state == "start" {
-          if ($0 == "---") {
-            state = "frontmatter"
-          }
-          print
-          next
-        }
-        state == "frontmatter" {
-          if ($0 == "---") {
-            state = "body"
-            print
-            next
-          }
-          if ($0 ~ /^description:[[:space:]]/ && $0 !~ /^description:[[:space:]]*[>|]/) {
-            description = $0
-            sub(/^description:[[:space:]]*/, "", description)
-            print "description: |"
-            print "  " description
-            next
-          }
-          print
-          next
-        }
-        {
-          print
-        }
-      ' "$target" > "$tmp"
-    fi
-    mv "$tmp" "$target"
-    ${pkgs.bash}/bin/bash ${../../../../scripts/validation/validate-skill-frontmatter.sh} "$out/skills"
-  '';
   activeBaseSources = {
     # Local skills from this dotfiles repository, including the active
     # external-references router for dormant provider-pack inventory.
@@ -153,13 +97,6 @@ let
     tmux-a2a-postman = {
       path = inputs.tmux-a2a-postman;
       subdir = "dist/skills";
-    };
-    # Anthropic official agent skills (claude-api/SKILL.md frontmatter
-    # normalized, then validated before installation)
-    anthropic = {
-      path = anthropic-skills-patched;
-      subdir = "skills";
-      filter.nameRegex = "claude-api";
     };
     # Install only the upstream skill packages, including their runtime
     # references and scripts. Development evals/tests/CI stay outside the
@@ -174,37 +111,11 @@ let
       subdir = "skills";
       filter.nameRegex = "yomiyasu";
     };
-    # Upstash Context7 CLI skill. MCP servers remain disabled in
-    # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
-    # path.
-    context7 = {
-      path = inputs.context7;
-      subdir = "skills";
-      filter.nameRegex = "context7-cli";
-    };
     # Cloudflare security audit skill. Keep this active rather than
     # reference-only so security-audit is installed into normal loader paths.
     cloudflare-security-audit = {
       path = inputs.cloudflare-security-audit-skill;
       subdir = "skills";
-    };
-    # mizchi/explainer: verified explanations for human readers. Active:
-    # explainer, and first-reader because explainer step 8 hands the draft to
-    # it (Python 3 stdlib only). Excluded: explainer-book, explain-with-anim,
-    # explanatory-animation, d2-diagram and d2-slides, which are separate
-    # book, figure, animation and slide workflows that were not requested.
-    # Installing this source runs nothing. When the explainer skill is used,
-    # it needs Node 24 and per-document npm packages (@mizchi/vlmkit,
-    # @mizchi/vlmkit-anim, marked, playwright) plus D2 for figures; this
-    # repo does not provision them. Its verify-doc.mjs script also runs the
-    # commands a document lists in checks.json through sh -c.
-    # Claude only by repo policy; Codex stays minimal (see
-    # codexMinimalSourceNames).
-    # cf. https://github.com/mizchi/explainer
-    mizchi-explainer = {
-      path = inputs.mizchi-explainer;
-      subdir = "skills";
-      filter.nameRegex = "^(explainer|first-reader)$";
     };
   };
   referenceOnlySources = {
@@ -255,12 +166,6 @@ let
       path = inputs.google-skills;
       subdir = "skills/cloud";
     };
-    # Streamlit skills.
-    # cf. https://github.com/streamlit/agent-skills
-    streamlit = {
-      path = inputs.streamlit-skills;
-      subdir = "developing-with-streamlit";
-    };
     # AWS Agent Toolkit skills. Keep the full skills/ inventory reference-only
     # so nested upstream AWS skill categories are flattened for lookup without
     # making the AWS provider pack active.
@@ -291,8 +196,6 @@ let
   codexMinimalSourceNames = [
     "local"
     "tmux-a2a-postman"
-    "anthropic"
-    "context7"
     "cloudflare-security-audit"
     "avoid-ai-writing"
     "yomiyasu"
@@ -308,10 +211,6 @@ let
       "cloudflare-security-audit"
       "avoid-ai-writing"
       "yomiyasu"
-    ];
-    enable = [
-      "claude-api"
-      "context7-cli"
     ];
   };
   codexMinimalSelection = agentLib.selectSkills {
