@@ -42,6 +42,32 @@ __z_query_paths() {
   '
 }
 
+__z_unique_ghq_path() {
+  local query="$1" ghq_path repo_name exact_path candidate_path
+  local exact_count=0 candidate_count=0
+
+  while IFS= read -r ghq_path; do
+    [[ -d $ghq_path ]] || continue
+    repo_name=${ghq_path:t}
+    if [[ $repo_name == "$query" ]]; then
+      (( ++exact_count ))
+      exact_path=$ghq_path
+    fi
+    if [[ $repo_name == *"$query"* ]]; then
+      (( ++candidate_count ))
+      candidate_path=$ghq_path
+    fi
+  done < <(ghq list -p 2>/dev/null)
+
+  if (( exact_count == 1 )); then
+    print -r -- "$exact_path"
+  elif (( exact_count == 0 && candidate_count == 1 )); then
+    print -r -- "$candidate_path"
+  else
+    return 1
+  fi
+}
+
 __z_cd() {
   cd "$@" || return $?
   __z_tmux_rename_for_dir "$PWD"
@@ -103,17 +129,17 @@ z() {
     fi
 
     local target_path
-    target_path="$(zoxide query --exclude "$PWD" -- "$1" 2>/dev/null)" || {
-      zi "$1"
+    if target_path="$(zoxide query --exclude "$PWD" -- "$1" 2>/dev/null)" && [[ -n $target_path ]]; then
+      __z_cd "$target_path"
       return $?
-    }
+    fi
 
-    [[ -n "$target_path" ]] || {
-      zi "$1"
+    if target_path="$(__z_unique_ghq_path "$1")"; then
+      __z_cd "$target_path"
       return $?
-    }
+    fi
 
-    __z_cd "$target_path" || return $?
+    zi "$1"
     return $?
   fi
 
