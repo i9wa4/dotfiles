@@ -65,9 +65,6 @@ pnpm_package_spec() {
 pnpm_package_ready() {
   pnpm_package_installed "$1" || return 1
   case "$1" in
-  "ctx7")
-    [ -x "${pnpm_bin}/ctx7" ]
-    ;;
   "vde-layout")
     [ -x "${pnpm_bin}/vde-layout" ]
     ;;
@@ -116,7 +113,6 @@ remove_legacy_npm_shim() {
 
 safe_chain_package="@aikidosec/safe-chain"
 pnpm_packages=(
-  "ctx7"
   "vde-layout"
   "vde-monitor"
 )
@@ -127,6 +123,7 @@ retained_pnpm_packages=(
 
 legacy_npm_packages=(
   "$safe_chain_package"
+  "ctx7" # Retired CLI: remove old npm installs during the next switch.
   "${pnpm_packages[@]}"
 )
 legacy_npm_shims=(

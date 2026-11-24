@@ -36,8 +36,8 @@ Existing `[hooks.state]` review entries are preserved from the local
 
 Codex skill installation uses a separate allowlisted bundle in
 `shared/agent-skills.nix`: local dotfiles skills, including
-`external-references`, tmux-a2a-postman transport skills, `claude-api`, and
-`context7-cli`. Claude follows the shared `activeSources` set, including
+`external-references`, tmux-a2a-postman transport skills, and
+`security-audit`. Claude follows the shared `activeSources` set, including
 wrapper-promoted sources. Codex does not automatically consume
 wrapper-promoted provider packs; add a source to the Codex source allowlist and
 add its skills to the Codex skill-selection allowlist only when those skill
