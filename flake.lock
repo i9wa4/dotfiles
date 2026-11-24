@@ -20,6 +20,22 @@
         "type": "github"
       }
     },
+    "avoid-ai-writing": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795463097,
+        "narHash": "sha256-ASjPAJOCjli+Y1baIyqR8ob1ID4s5B7cqiHxXh55zVw=",
+        "owner": "conorbronsdon",
+        "repo": "avoid-ai-writing",
+        "rev": "cd5573a185f3ab468b094fc2cf2fa193fcaeaf53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "conorbronsdon",
+        "repo": "avoid-ai-writing",
+        "type": "github"
+      }
+    },
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
@@ -577,6 +593,7 @@
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
+        "avoid-ai-writing": "avoid-ai-writing",
         "aws-agent-toolkit": "aws-agent-toolkit",
         "azure-skills": "azure-skills",
         "cloudflare-security-audit-skill": "cloudflare-security-audit-skill",
@@ -596,7 +613,8 @@
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_2",
         "tmux-a2a-postman": "tmux-a2a-postman",
-        "treefmt-nix": "treefmt-nix_3"
+        "treefmt-nix": "treefmt-nix_3",
+        "yomiyasu": "yomiyasu"
       }
     },
     "systems": {
@@ -696,6 +714,22 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "yomiyasu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795387091,
+        "narHash": "sha256-dKl5PQEXqzaxXtB/h/dGyRwjalnQ+ZLjcaKPT8VX1jU=",
+        "owner": "nanaism",
+        "repo": "yomiyasu",
+        "rev": "ddf365b5d5b36a7aa4ffab798dce1b694dbb1afd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nanaism",
+        "repo": "yomiyasu",
         "type": "github"
       }
     }

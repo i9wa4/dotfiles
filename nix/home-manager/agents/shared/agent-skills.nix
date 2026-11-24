@@ -71,6 +71,12 @@ let
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
+  avoid-ai-writing-with-license = pkgs.runCommand "avoid-ai-writing-with-license" { } ''
+    cp -R ${inputs.avoid-ai-writing}/skills/avoid-ai-writing $out
+    chmod u+w $out
+    cp ${inputs.avoid-ai-writing}/LICENSE $out/
+  '';
+
   activeBaseSources = {
     # Local skills from this dotfiles repository, including the active
     # external-references router for dormant provider-pack inventory.
@@ -81,6 +87,16 @@ let
     tmux-a2a-postman = {
       path = inputs.tmux-a2a-postman;
       subdir = "dist/skills";
+    };
+    # Keep the upstream nested Skill unchanged, with its required MIT license.
+    avoid-ai-writing = {
+      path = avoid-ai-writing-with-license;
+      filter.maxDepth = 0;
+    };
+    yomiyasu = {
+      path = inputs.yomiyasu;
+      subdir = "skills";
+      filter.nameRegex = "yomiyasu";
     };
     # Cloudflare security audit skill. Keep this active rather than
     # reference-only so security-audit is installed into normal loader paths.
@@ -168,6 +184,8 @@ let
     "local"
     "tmux-a2a-postman"
     "cloudflare-security-audit"
+    "avoid-ai-writing"
+    "yomiyasu"
   ];
   codexMinimalSources = lib.getAttrs codexMinimalSourceNames activeSources;
   codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
@@ -178,6 +196,8 @@ let
       "local"
       "tmux-a2a-postman"
       "cloudflare-security-audit"
+      "avoid-ai-writing"
+      "yomiyasu"
     ];
   };
   codexMinimalSelection = agentLib.selectSkills {
