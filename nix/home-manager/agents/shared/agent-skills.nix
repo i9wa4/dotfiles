@@ -71,6 +71,22 @@ let
     '';
   local-skills-validated = validateSkillSource "local-skills-validated" ../../../../skills;
 
+  # Keep upstream legal notices in the installed skill package.
+  avoid-ai-writing-packaged = pkgs.runCommand "avoid-ai-writing-packaged" { } ''
+    mkdir -p $out/skills
+    cp -r ${inputs.avoid-ai-writing}/skills/avoid-ai-writing $out/skills/
+    chmod -R u+w $out
+    cp ${inputs.avoid-ai-writing}/LICENSE ${inputs.avoid-ai-writing}/NOTICE.md $out/skills/avoid-ai-writing/
+  '';
+  # Apply a local safety guard without changing the pinned upstream input.
+  yomiyasu-packaged = pkgs.runCommand "yomiyasu-packaged" { } ''
+    mkdir -p $out/skills
+    cp -r ${inputs.yomiyasu}/skills/yomiyasu $out/skills/
+    chmod -R u+w $out
+    cd $out/skills/yomiyasu
+    ${pkgs.patch}/bin/patch -p1 < ${../../../../nix/patches/yomiyasu-state-symlink.patch}
+  '';
+
   # Normalize upstream anthropic/skills frontmatter for claude-api/SKILL.md.
   # Preserve upstream metadata keys while rewriting invalid YAML description
   # syntax, and keep a fallback for the no-frontmatter case.
@@ -149,12 +165,12 @@ let
     # references and scripts. Development evals/tests/CI stay outside the
     # selected directories; each flake input advances independently.
     avoid-ai-writing = {
-      path = inputs.avoid-ai-writing;
+      path = avoid-ai-writing-packaged;
       subdir = "skills";
       filter.nameRegex = "avoid-ai-writing";
     };
     yomiyasu = {
-      path = inputs.yomiyasu;
+      path = yomiyasu-packaged;
       subdir = "skills";
       filter.nameRegex = "yomiyasu";
     };

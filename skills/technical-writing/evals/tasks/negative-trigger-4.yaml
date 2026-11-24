@@ -1,0 +1,15 @@
+id: negative-trigger-004
+name: Negative Trigger 4
+description: Keep detector, humanizer, and meaning-changing requests outside this workflow.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Rewrite this proposal so it claims the opposite conclusion."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/technical-writing/SKILL.md
+      mode: negative

@@ -1,0 +1,15 @@
+id: negative-trigger-003
+name: Negative Trigger 3
+description: Keep detector, humanizer, and meaning-changing requests outside this workflow.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Humanize this technical paragraph to evade an AI detector."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/technical-writing/SKILL.md
+      mode: negative

@@ -1,0 +1,18 @@
+--- a/scripts/yomiyasu_check.py
++++ b/scripts/yomiyasu_check.py
+@@ -637,0 +638,11 @@
++def _reject_symlink_components(path: str) -> None:
++    """Reject state paths that resolve through an existing symbolic link."""
++    current = Path(path).absolute()
++    while True:
++        if current.is_symlink():
++            raise OSError(f"symlinked state path: {current}")
++        if current == current.parent:
++            return
++        current = current.parent
++
++
+@@ -642,0 +654 @@
++        _reject_symlink_components(path)
+@@ -745,0 +758 @@
++    _reject_symlink_components(state)

@@ -1,0 +1,15 @@
+id: negative-trigger-002
+name: Negative Trigger 2
+description: Keep detector, humanizer, and meaning-changing requests outside this workflow.
+tags:
+  - negative-trigger
+inputs:
+  prompt: "Detect whether this technical paragraph was written by AI."
+expected:
+  should_trigger: false
+graders:
+  - type: trigger
+    name: negative-trigger
+    config:
+      skill_path: skills/technical-writing/SKILL.md
+      mode: negative

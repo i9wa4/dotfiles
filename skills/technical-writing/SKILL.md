@@ -9,18 +9,19 @@ description: |
   or English technical prose, drafting English-only text, or translating
   English-to-Japanese or Japanese-to-English. Route to avoid-ai-writing for
   English and yomiyasu for Japanese while preserving the original source.
-  DO NOT USE FOR: Code changes, publication, or translation outside the
-  user's requested scope.
+  DO NOT USE FOR: AI detector or humanizer requests, meaning-changing rewrites,
+  code changes, publication, or translation outside the user's requested scope.
 ---
 
 # Technical Writing
 
+Before sharing or translating source material, check the right to use it and the
+approved provider and network. Keep confidential, credential, customer, and
+personal data within their approved handling; ask if the boundary is unknown.
+
 1. Identify the source language and whether this is new writing or revision.
-   Load `avoid-ai-writing` for English editorial work and `yomiyasu` for
-   Japanese. Resolve their SKILL.md paths from the session Skill catalog, or
-   replace this Skill path’s final `technical-writing/SKILL.md` segment with
-   the sibling name; bundle entries may be symlinks. Metadata helps discovery
-   but cannot guarantee load order.
+   Load English `avoid-ai-writing` and Japanese `yomiyasu` from the Skill
+   catalog; if needed, use their paths beside this Skill.
 2. Route the work:
    - New Japanese text from notes: draft complete English, revise it with
      `avoid-ai-writing`, translate faithfully, then refine with `yomiyasu`.
@@ -39,6 +40,5 @@ description: |
    negation, uncertainty, constraints, citations, and authorial intent. Change
    structure only within the requested scope. Flag missing evidence rather than
    adding facts.
-4. Optionally use [Vale and Harper](references/vale-and-harper.md) for
-   proofreading when available. Treat findings as suggestions; continue if
-   those tools are unavailable.
+4. Optionally proofread with [Vale and Harper](references/vale-and-harper.md);
+   treat findings as suggestions.
