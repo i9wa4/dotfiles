@@ -15,13 +15,19 @@
 os_type=$(uname -s)
 
 get_darwin_macmon_metrics() {
-  macmon pipe --samples 1 -i 1000 | jq -r '
+  local sample
+  command -v macmon >/dev/null 2>&1 || { printf '%s\t%s\t%s\n' - - -; return; }
+  sample=$(macmon pipe --samples 1 -i 500 2>/dev/null) || { printf '%s\t%s\t%s\n' - - -; return; }
+  printf '%s\n' "${sample}" | jq -er '
     [
-      (.temp.cpu_temp_avg | round),
-      (((.pcpu_usage[1] + .ecpu_usage[1]) * 100) | if . > 100 then 100 else . end | round),
-      ((.memory.ram_usage / .memory.ram_total * 100) | round)
+      (if (.temp.cpu_temp_avg | type) == "number" then .temp.cpu_temp_avg | round else "-" end),
+      (if (.pcpu_usage[1] | type) == "number" and (.ecpu_usage[1] | type) == "number"
+       then ((.pcpu_usage[1] + .ecpu_usage[1]) * 100) | if . > 100 then 100 else . end | round
+       else "-" end),
+      (if (.memory.ram_usage | type) == "number" and (.memory.ram_total | type) == "number" and .memory.ram_total > 0
+       then (.memory.ram_usage / .memory.ram_total * 100) | round else "-" end)
     ] | @tsv
-  '
+  ' 2>/dev/null || printf '%s\t%s\t%s\n' - - -
 }
 
 # Get total CPU usage percentage
@@ -29,19 +35,28 @@ get_total_cpu_usage() {
   case "${os_type}" in
     Linux)
       # Parse /proc/stat for CPU usage
-      read -r _cpu user nice system idle rest </proc/stat
+      local marker user nice system idle rest total1 total2 idle1 idle2 total_diff idle_diff
+      read -r marker user nice system idle rest 2>/dev/null </proc/stat || { echo "-"; return; }
+      if [[ ${marker} != cpu || ! ${user} =~ ^[0-9]+$ || ! ${nice} =~ ^[0-9]+$ || ! ${system} =~ ^[0-9]+$ || ! ${idle} =~ ^[0-9]+$ ]]; then
+        echo "-"
+        return
+      fi
       total1=$((user + nice + system + idle))
       idle1=${idle}
       sleep 0.1
-      read -r _cpu user nice system idle rest </proc/stat
+      read -r marker user nice system idle rest 2>/dev/null </proc/stat || { echo "-"; return; }
+      if [[ ${marker} != cpu || ! ${user} =~ ^[0-9]+$ || ! ${nice} =~ ^[0-9]+$ || ! ${system} =~ ^[0-9]+$ || ! ${idle} =~ ^[0-9]+$ ]]; then
+        echo "-"
+        return
+      fi
       total2=$((user + nice + system + idle))
       idle2=${idle}
       total_diff=$((total2 - total1))
       idle_diff=$((idle2 - idle1))
-      if [ "${total_diff}" -gt 0 ]; then
+      if ((total_diff > 0 && idle_diff >= 0 && idle_diff <= total_diff)); then
         echo $(((total_diff - idle_diff) * 100 / total_diff))
       else
-        echo "0"
+        echo "-"
       fi
       ;;
     *)
@@ -55,7 +70,18 @@ get_ram_usage() {
   case "${os_type}" in
     Linux)
       # /proc/meminfo: MemAvailable is the most accurate available memory
-      awk '/MemTotal/ {total=$2} /MemAvailable/ {avail=$2} END {printf "%.0f", (total-avail)*100/total}' /proc/meminfo
+      local usage
+      usage=$(awk '
+        $1 == "MemTotal:" {total=$2; have_total=1}
+        $1 == "MemAvailable:" {avail=$2; have_avail=1}
+        END {
+          if (have_total && have_avail && total ~ /^[0-9]+$/ && avail ~ /^[0-9]+$/ && total > 0 && avail <= total)
+            printf "%.0f", (total-avail)*100/total
+          else
+            printf "-"
+        }
+      ' /proc/meminfo 2>/dev/null) || usage=-
+      printf '%s' "${usage:--}"
       ;;
     *)
       echo "0"
@@ -67,10 +93,14 @@ get_ram_usage() {
 get_cpu_temp() {
   case "${os_type}" in
     Linux)
+      local temperature
       for zone_type_file in /sys/class/thermal/thermal_zone*/type; do
+        [[ -r ${zone_type_file} ]] || continue
         if [ "$(cat "${zone_type_file}")" = "x86_pkg_temp" ]; then
           temp_file="${zone_type_file%/type}/temp"
-          echo $(( $(cat "${temp_file}") / 1000 ))
+          temperature=$(cat "${temp_file}" 2>/dev/null) || continue
+          [[ ${temperature} =~ ^[0-9]+$ ]] || continue
+          echo $((temperature / 1000))
           return
         fi
       done
@@ -88,18 +118,18 @@ get_disk_usage() {
     Darwin)
       # APFS: /System/Volumes/Data is the actual user data volume
       # (df / only shows the read-only system snapshot, misleadingly low)
-      df -P /System/Volumes/Data | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      df -P /System/Volumes/Data 2>/dev/null | awk 'NR==2 && $5 ~ /^[0-9]+%$/ {sub(/%$/, "", $5); print $5}'
       ;;
     *)
-      df -P / | awk 'NR==2 {gsub(/%/, "", $5); print $5}'
+      df -P / 2>/dev/null | awk 'NR==2 && $5 ~ /^[0-9]+%$/ {sub(/%$/, "", $5); print $5}'
       ;;
   esac
 }
 
 get_darwin_battery() {
   local battery_output
-  command -v pmset >/dev/null 2>&1 || return 0
-  battery_output=$(pmset -g batt 2>/dev/null) || return 0
+  command -v pmset >/dev/null 2>&1 || { printf ' BAT:-'; return; }
+  battery_output=$(pmset -g batt 2>/dev/null) || { printf ' BAT:-'; return; }
   awk '
     /-InternalBattery/ {
       for (i = 1; i <= NF; i++) {
@@ -126,6 +156,7 @@ case "${os_type}" in
     ;;
 esac
 disk=$(get_disk_usage)
+[[ ${disk} =~ ^[0-9]+$ ]] || disk=-
 
 battery=""
 if [[ ${os_type} == Darwin ]]; then
