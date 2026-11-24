@@ -20,22 +20,6 @@
         "type": "github"
       }
     },
-    "anthropic-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794838967,
-        "narHash": "sha256-Gr9LatjawHHK9uKpoclWoiDHZ0NTpP3/4Pmeatl8p/Q=",
-        "owner": "anthropics",
-        "repo": "skills",
-        "rev": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "anthropics",
-        "repo": "skills",
-        "type": "github"
-      }
-    },
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
@@ -131,22 +115,6 @@
       "original": {
         "owner": "cloudflare",
         "repo": "skills",
-        "type": "github"
-      }
-    },
-    "context7": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1795441255,
-        "narHash": "sha256-8wwtqzvXwTdAIF7XWLI+s/BvkGwIOymwtxiIjMC4Ti0=",
-        "owner": "upstash",
-        "repo": "context7",
-        "rev": "11cb18d81c93bffe6c9c662ec7cb605f34ea6946",
-        "type": "github"
-      },
-      "original": {
-        "owner": "upstash",
-        "repo": "context7",
         "type": "github"
       }
     },
@@ -487,22 +455,6 @@
         "type": "github"
       }
     },
-    "mizchi-explainer": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794757924,
-        "narHash": "sha256-XY4wnEtw3regcnDZ4BDZEM/a3jQ6jraSfkf+CPAH1v4=",
-        "owner": "mizchi",
-        "repo": "explainer",
-        "rev": "752da7c687e767c3efd8ea79f63c5f4f3d76e7b5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mizchi",
-        "repo": "explainer",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -625,12 +577,10 @@
     "root": {
       "inputs": {
         "agent-skills": "agent-skills",
-        "anthropic-skills": "anthropic-skills",
         "aws-agent-toolkit": "aws-agent-toolkit",
         "azure-skills": "azure-skills",
         "cloudflare-security-audit-skill": "cloudflare-security-audit-skill",
         "cloudflare-skills": "cloudflare-skills",
-        "context7": "context7",
         "databricks-agent-skills": "databricks-agent-skills",
         "dbt-agent-skills": "dbt-agent-skills",
         "flake-parts": "flake-parts",
@@ -642,29 +592,11 @@
         "llm-agents": "llm-agents",
         "markdown-formatter": "markdown-formatter",
         "mcp-servers-nix": "mcp-servers-nix",
-        "mizchi-explainer": "mizchi-explainer",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_2",
-        "streamlit-skills": "streamlit-skills",
         "tmux-a2a-postman": "tmux-a2a-postman",
         "treefmt-nix": "treefmt-nix_3"
-      }
-    },
-    "streamlit-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784840846,
-        "narHash": "sha256-Gzc2cDCf4IZlfdzLdNK2bQamHWk8vSdEZM+z+osXGj0=",
-        "owner": "streamlit",
-        "repo": "agent-skills",
-        "rev": "c69a265613f17cdd69d42e6f67b704214178fae5",
-        "type": "github"
-      },
-      "original": {
-        "owner": "streamlit",
-        "repo": "agent-skills",
-        "type": "github"
       }
     },
     "systems": {

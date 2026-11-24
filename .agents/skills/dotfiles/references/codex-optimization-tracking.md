@@ -334,8 +334,9 @@ incident runbook is archived in the private vault
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
 - [ ] Create generate-config.sh for automated config.toml generation
-- [x] Context7 MCP disabled; Context7 docs are handled through `ctx7` CLI plus
-  the `find-docs` skill instead
+- [x] ~~Context7 MCP disabled; Context7 docs are handled through `ctx7` CLI plus
+  the `find-docs` skill instead~~ — superseded by #580, which removes Context7
+  Skill and CLI management. Local MCP registrations remain empty.
 - [x] Plan mode (`/plan`) - now stable and enabled by default (v0.94.0)
 - [x] `command_attribution = "disable"` - co-author attribution disabled
   (v0.103.0)

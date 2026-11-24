@@ -100,8 +100,8 @@ Why shared beats per-tool:
   to be reauthored.
 
 Skill installation is curated before it reaches runtime loader paths.
-`agent-skills.nix` keeps local skills, postman skills, `claude-api`, and
-`context7-cli` active by default. That local set includes
+`agent-skills.nix` keeps local skills, Postman skills, and the curated
+`security-audit` skill active by default. The local set includes
 `external-references` as the router for dormant provider packs, while the
 provider packs themselves remain pinned in `referenceOnlySources` and generated
 as a flat reference tree at `~/.local/share/skills`. That reference tree is for
