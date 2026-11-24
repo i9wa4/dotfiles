@@ -44,7 +44,7 @@ privacy policy.
 1. Complete the privacy, source-rights, and provider-policy preflight.
 2. Save or reference the exact source revision.
 3. Identify the target publication surface and expected audience.
-4. Run [Prose Review](prose-review.md) on the English source or draft. If the
+4. Use `avoid-ai-writing` on the English source or draft. If the
    source is vague, formulaic, or unsupported, fix or flag that before
    translation.
 5. Decide the Japanese register before translation:
