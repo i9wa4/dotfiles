@@ -2,52 +2,43 @@
 name: technical-writing
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "2.0.0"
 description: |
-  USE FOR: Meaning-preserving editing and quality checks for English
-  and Japanese technical prose, including English-to-Japanese
-  translation, terminology and style.
-  DO NOT USE FOR: Drafting from scratch, AI detector/humanizer workflows,
-  meaning-changing rewrites or publication.
+  USE FOR: Start this technical writing workflow before the editorial skills
+  when drafting Japanese prose from bullet notes, revising existing Japanese
+  or English technical prose, drafting English-only text, or translating
+  English-to-Japanese or Japanese-to-English. Route to avoid-ai-writing for
+  English and yomiyasu for Japanese while preserving the original source.
+  DO NOT USE FOR: Code changes, publication, or translation outside the
+  user's requested scope.
 ---
 
 # Technical Writing
 
-Owns meaning-preserving editing, translation, terminology, rhythm, and QA.
+1. Identify the source language and whether this is new writing or revision.
+   Load `avoid-ai-writing` for English editorial work and `yomiyasu` for
+   Japanese. Resolve their SKILL.md paths from the session Skill catalog, or
+   replace this Skill path’s final `technical-writing/SKILL.md` segment with
+   the sibling name; bundle entries may be symlinks. Metadata helps discovery
+   but cannot guarantee load order.
+2. Route the work:
+   - New Japanese text from notes: draft complete English, revise it with
+     `avoid-ai-writing`, translate faithfully, then refine with `yomiyasu`.
+   - Existing Japanese draft: edit the original Japanese with `yomiyasu`; keep
+     its wording and voice as the baseline. For substantial structural revision,
+     optionally consult `avoid-ai-writing` on argument and structure, then edit
+     the Japanese original and finish with `yomiyasu`.
+   - Existing English text: revise with `avoid-ai-writing`. For new
+     English-only writing, draft then refine English without translating.
+   - English to Japanese: translate faithfully, refining English first when
+     useful, then use `yomiyasu`. Japanese to English: translate faithfully,
+     then refine English with `avoid-ai-writing`.
 
-## 1. Workflow
-
-1. Identify surface: English, Japanese, translation, skill text, or QA.
-2. Preserve meaning. Do not rewrite commands, identifiers, product
-   names, paths, code, links, versions, or APIs for style.
-3. Keep stable glossary and terminology polish here. Resolve unclear
-   referents with the author before changing meaning.
-4. For generic/AI-like prose, read
-   [Prose Review](references/prose-review.md).
-5. For English checks, read
-   [Vale And Harper](references/vale-and-harper.md).
-6. For English-to-Japanese, clean English first, then read
-   [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
-   and [Japanese Writing Style](references/japanese-writing-style.md).
-7. For Japanese editorial review, read
-   [Japanese Writing Style](references/japanese-writing-style.md).
-8. For flat explanatory prose, read
-   [Cognitive Rhythm](references/cognitive-rhythm.md). Build rhythm from
-   source material.
-9. Apply only clarity changes; preserve facts and intent.
-
-## 2. Boundaries
-
-Issue 225/226 boundaries: no automation, model/cost/privacy,
-external-sharing approval, derivative publication approval, or chunking.
-
-Do not add direct polished-Japanese drafting from scratch. Repair English
-first, then translate or QA Japanese.
-
-## 3. References
-
-- [Vale And Harper](references/vale-and-harper.md)
-- [English-to-Japanese Workflow](references/english-to-japanese-workflow.md)
-- [Japanese Writing Style](references/japanese-writing-style.md)
-- [Prose Review](references/prose-review.md)
-- [Cognitive Rhythm](references/cognitive-rhythm.md)
+3. Compare the final text with the **original materials**, not only an
+   intermediate draft. Preserve claims, technical terms, identifiers, units,
+   negation, uncertainty, constraints, citations, and authorial intent. Change
+   structure only within the requested scope. Flag missing evidence rather than
+   adding facts.
+4. Optionally use [Vale and Harper](references/vale-and-harper.md) for
+   proofreading when available. Treat findings as suggestions; continue if
+   those tools are unavailable.

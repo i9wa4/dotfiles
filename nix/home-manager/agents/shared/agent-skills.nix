@@ -145,6 +145,19 @@ let
       subdir = "skills";
       filter.nameRegex = "claude-api";
     };
+    # Install only the upstream skill packages, including their runtime
+    # references and scripts. Development evals/tests/CI stay outside the
+    # selected directories; each flake input advances independently.
+    avoid-ai-writing = {
+      path = inputs.avoid-ai-writing;
+      subdir = "skills";
+      filter.nameRegex = "avoid-ai-writing";
+    };
+    yomiyasu = {
+      path = inputs.yomiyasu;
+      subdir = "skills";
+      filter.nameRegex = "yomiyasu";
+    };
     # Upstash Context7 CLI skill. MCP servers remain disabled in
     # mcp-servers.nix; this skill uses the existing ctx7 CLI/global package
     # path.
@@ -265,6 +278,8 @@ let
     "anthropic"
     "context7"
     "cloudflare-security-audit"
+    "avoid-ai-writing"
+    "yomiyasu"
   ];
   codexMinimalSources = lib.getAttrs codexMinimalSourceNames activeSources;
   codexMinimalCatalog = agentLib.discoverCatalog codexMinimalSources;
@@ -275,6 +290,8 @@ let
       "local"
       "tmux-a2a-postman"
       "cloudflare-security-audit"
+      "avoid-ai-writing"
+      "yomiyasu"
     ];
     enable = [
       "claude-api"

@@ -73,6 +73,14 @@
       url = "github:anthropics/skills";
       flake = false;
     };
+    avoid-ai-writing = {
+      url = "github:conorbronsdon/avoid-ai-writing";
+      flake = false;
+    };
+    yomiyasu = {
+      url = "github:nanaism/yomiyasu";
+      flake = false;
+    };
     azure-skills = {
       url = "github:microsoft/azure-skills";
       flake = false;

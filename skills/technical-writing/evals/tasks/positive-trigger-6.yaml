@@ -1,0 +1,15 @@
+id: positive-trigger-006
+name: Positive Trigger 6
+description: English-only new writing
+tags:
+  - positive-trigger
+inputs:
+  prompt: "Use technical-writing to draft English-only technical prose."
+expected:
+  should_trigger: true
+graders:
+  - type: trigger
+    name: positive-trigger
+    config:
+      skill_path: skills/technical-writing/SKILL.md
+      mode: positive

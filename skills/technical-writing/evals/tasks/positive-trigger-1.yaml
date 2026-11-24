@@ -1,10 +1,10 @@
 id: positive-trigger-001
 name: Positive Trigger 1
-description: Curated trigger-accuracy prompt for this skill.
+description: Japanese notes to finished Japanese
 tags:
   - positive-trigger
 inputs:
-  prompt: "Review technical documentation prose for terminology, clarity, grammar, cognitive rhythm, AI-slop, and publication quality."
+  prompt: "Draft Japanese technical prose from these bullet notes, then revise the Japanese wording for readability: API v2; timeout 30 s; retries disabled."
 expected:
   should_trigger: true
 graders:
