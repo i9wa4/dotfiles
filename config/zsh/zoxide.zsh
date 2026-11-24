@@ -27,8 +27,45 @@ __z_tmux_rename_for_dir() {
 }
 
 __z_query_paths() {
-  __z_seed_ghq_paths_if_stale
-  zoxide query --list --score 2>/dev/null || true
+  local ghq_path
+  {
+    zoxide query --list --score 2>/dev/null || true
+    ghq list -p 2>/dev/null | while IFS= read -r ghq_path; do
+      [[ -d $ghq_path ]] && printf '0 %s\n' "$ghq_path"
+    done
+  } | awk '
+    {
+      path = $0
+      sub(/^[[:space:]]*[0-9][0-9.]*[[:space:]]+/, "", path)
+      if (!seen[path]++) print
+    }
+  '
+}
+
+__z_unique_ghq_path() {
+  local query="$1" ghq_path repo_name exact_path candidate_path
+  local exact_count=0 candidate_count=0
+
+  while IFS= read -r ghq_path; do
+    [[ -d $ghq_path ]] || continue
+    repo_name=${ghq_path:t}
+    if [[ $repo_name == "$query" ]]; then
+      (( ++exact_count ))
+      exact_path=$ghq_path
+    fi
+    if [[ $repo_name == *"$query"* ]]; then
+      (( ++candidate_count ))
+      candidate_path=$ghq_path
+    fi
+  done < <(ghq list -p 2>/dev/null)
+
+  if (( exact_count == 1 )); then
+    print -r -- "$exact_path"
+  elif (( exact_count == 0 && candidate_count == 1 )); then
+    print -r -- "$candidate_path"
+  else
+    return 1
+  fi
 }
 
 __z_cd() {
@@ -92,52 +129,19 @@ z() {
     fi
 
     local target_path
-    target_path="$(zoxide query --exclude "$PWD" -- "$1" 2>/dev/null)" || {
-      zi "$1"
+    if target_path="$(zoxide query --exclude "$PWD" -- "$1" 2>/dev/null)" && [[ -n $target_path ]]; then
+      __z_cd "$target_path"
       return $?
-    }
+    fi
 
-    [[ -n "$target_path" ]] || {
-      zi "$1"
+    if target_path="$(__z_unique_ghq_path "$1")"; then
+      __z_cd "$target_path"
       return $?
-    }
+    fi
 
-    __z_cd "$target_path" || return $?
+    zi "$1"
     return $?
   fi
 
   zi "$@"
 }
-
-__z_seed_ghq_paths() {
-  command -v zoxide &>/dev/null && command -v ghq &>/dev/null || return 0
-  local ghq_path zoxide_db
-  zoxide_db="$(zoxide query --list 2>/dev/null)"
-  while IFS= read -r ghq_path; do
-    grep -qxF "$ghq_path" <<< "$zoxide_db" || zoxide add --score 5 -- "$ghq_path"
-  done < <(ghq list -p 2>/dev/null)
-}
-
-__z_seed_ghq_paths_if_stale() {
-  local stamp="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh/zoxide-ghq-seed.stamp"
-  local lock="${stamp}.lock"
-  local stamp_mtime
-
-  mkdir -p "${stamp:h}"
-  zmodload zsh/datetime 2>/dev/null || return 0
-  zmodload zsh/stat 2>/dev/null || return 0
-
-  if [[ -e "$stamp" ]]; then
-    stamp_mtime="$(zstat +mtime "$stamp" 2>/dev/null)" || stamp_mtime=0
-    (( EPOCHSECONDS - stamp_mtime < 5 )) && return 0
-  fi
-
-  if ! (set -o noclobber; print -r -- "$$" > "$lock") 2>/dev/null; then
-    return 0
-  fi
-
-  : >| "$stamp"
-  __z_seed_ghq_paths || rm -f "$stamp"
-  rm -f "$lock"
-}
-{ __z_seed_ghq_paths_if_stale } >/dev/null 2>&1 &!
