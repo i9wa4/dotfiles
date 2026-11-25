@@ -23,11 +23,11 @@
     "avoid-ai-writing": {
       "flake": false,
       "locked": {
-        "lastModified": 1795463097,
-        "narHash": "sha256-ASjPAJOCjli+Y1baIyqR8ob1ID4s5B7cqiHxXh55zVw=",
+        "lastModified": 1795548711,
+        "narHash": "sha256-1yLfU+11CtR6jfL+OtCMskZrnHyvzoV+HbG8Uj376aI=",
         "owner": "conorbronsdon",
         "repo": "avoid-ai-writing",
-        "rev": "cd5573a185f3ab468b094fc2cf2fa193fcaeaf53",
+        "rev": "bf82eca0ba72fcfa2f797f37cff00fee86256bbb",
         "type": "github"
       },
       "original": {
@@ -39,11 +39,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795510149,
-        "narHash": "sha256-u4g3ATtV6X35I8HnWzaJGjmKK6nu0H4cVdoGTAcGtSc=",
+        "lastModified": 1795543611,
+        "narHash": "sha256-GxazZ6HDy7JyK4zVQxhmUKo3137Gmkq2N49WES0l284=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "f9ce81111aedb4a51ff84ed643c3145eda4de740",
+        "rev": "24b0e244c91ab0c64fb3202b568236e1ec6430ad",
         "type": "github"
       },
       "original": {
@@ -121,11 +121,11 @@
     "cloudflare-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795479846,
-        "narHash": "sha256-tVDQdxlpXWN5iNNwGJPBSaRRfJPLL9VUe8RwaVkCNhE=",
+        "lastModified": 1795540212,
+        "narHash": "sha256-50afPPoq1/Xd+es0P6HOoL7U0b9oT9dxUpPgq4n3UUQ=",
         "owner": "cloudflare",
         "repo": "skills",
-        "rev": "14472d57ac968d1a0322a568077277209b259183",
+        "rev": "ff191de7d903788eceaf516a514ae7d3b56b924a",
         "type": "github"
       },
       "original": {
@@ -301,11 +301,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795529623,
-        "narHash": "sha256-Uc0x9ukKifsugfQw7YaICfSdNBMg15Ii8WicIW7UYe0=",
+        "lastModified": 1795562246,
+        "narHash": "sha256-IF2m+8aDhADwXsZoveURi5O7SEAiGgMLt+hjdc1dr94=",
         "owner": "google",
         "repo": "skills",
-        "rev": "54b61f079019e17ea8922f19a2c506ccdafc9e74",
+        "rev": "a6782daef41b064c659f0b16cb46609cf4b8211d",
         "type": "github"
       },
       "original": {
@@ -317,11 +317,11 @@
     "googleworkspace-cli": {
       "flake": false,
       "locked": {
-        "lastModified": 1793375279,
-        "narHash": "sha256-wDnvPdRZ40cb3NcPcNoj2Zz5OOWanfNyA0ijSEUw14g=",
+        "lastModified": 1795555790,
+        "narHash": "sha256-3VR8pYAfvYNaBxTkNw0gvWh/dTP9sKZL8AjlWsE9QHg=",
         "owner": "googleworkspace",
         "repo": "cli",
-        "rev": "cd3697e07eb520056dcf142d0c7439bbb9ba32e9",
+        "rev": "8e945eed02a8230af122ec6247cc218d28c1f1ce",
         "type": "github"
       },
       "original": {
@@ -353,11 +353,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795366757,
-        "narHash": "sha256-Tp4Kh4R7ID1f2mMCDlb2PiFQ/DZZsnXB2u2juWN+TT4=",
+        "lastModified": 1795534022,
+        "narHash": "sha256-xkRZ+PcPWaAyf9YrEBszYD5w2S6/Ac2tIfsufzd4dEQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "3b8140d21fa0a70b1b38c2ed29853dfe686234a6",
+        "rev": "b56bcd042b5e69ad188eca20d9bec1bfbf3dd453",
         "type": "github"
       },
       "original": {
@@ -376,11 +376,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1795495638,
-        "narHash": "sha256-hhROWq9062PdIznKMqiQuy3L9F7l4LHwofEVrcncfZM=",
+        "lastModified": 1795534330,
+        "narHash": "sha256-HUVg1F7c3btLD++JDjdTsSAwp50NvrciqTMFdCKEfAg=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "45e6e554481f962d4134021d3a63c96d8755f395",
+        "rev": "d70dfebdbd4616aa852fdb47c16588ec1ba8fc6f",
         "type": "github"
       },
       "original": {
@@ -720,11 +720,11 @@
     "yomiyasu": {
       "flake": false,
       "locked": {
-        "lastModified": 1795387091,
-        "narHash": "sha256-dKl5PQEXqzaxXtB/h/dGyRwjalnQ+ZLjcaKPT8VX1jU=",
+        "lastModified": 1795520160,
+        "narHash": "sha256-df6sdmB1n+UkpMviEhN5Y4HAFtiJPdm3Mwdx1nNtnVw=",
         "owner": "nanaism",
         "repo": "yomiyasu",
-        "rev": "ddf365b5d5b36a7aa4ffab798dce1b694dbb1afd",
+        "rev": "fbd4e420fb71a6ba90f475898cf611ccb6a08cb2",
         "type": "github"
       },
       "original": {
