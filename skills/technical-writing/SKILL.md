@@ -38,8 +38,5 @@ Respect source rights and approved provider/data boundaries; ask if unclear.
 3. Compare final text to **original materials**. Preserve claims, terms,
    identifiers, units, negation, uncertainty, constraints, citations and intent;
    flag unsupported additions.
-4. Optionally use the
-   [translation workflow](references/english-to-japanese-workflow.md) for
-   glossary/Markdown QA, [Cognitive Rhythm](references/cognitive-rhythm.md) for
-   long explanations, and [Vale and Harper](references/vale-and-harper.md) for
+4. Optionally use [Vale and Harper](references/vale-and-harper.md) for
    proofreading; treat findings as suggestions.
