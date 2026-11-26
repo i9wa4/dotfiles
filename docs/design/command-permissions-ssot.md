@@ -20,8 +20,11 @@ The user-facing distinction should be explicit:
 1. **Direct Bash auto-admitted:** the shared hook accepts the complete command
    shape under its current allow paths. This is not permission for arbitrary
    effects of the invoked program.
-2. **Direct Bash rejected:** every shape missing those paths is denied. A named
-   denial may explain why, but does not itself decide admission.
+2. **Direct Bash rejected:** when the shared hook and generated policy are
+   installed and active, every shape missing those paths is denied. A named
+   denial may explain why, but does not itself decide admission. An inactive
+   hook or missing generated policy is a deployment exception: this rejection
+   is not enforced in that state.
 3. **Postman exact execution request:** a separately submitted
    source/reason/cwd/shell is reviewed for one invocation by the configured
    approver, or takes the documented advisory path if unconfigured/positively
