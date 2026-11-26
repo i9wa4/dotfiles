@@ -164,6 +164,27 @@ in
     [[ -f "${dotfilesDir}/.envrc" ]] || echo 'use flake' | tee "${dotfilesDir}/.envrc" >/dev/null
   '';
 
+  # TPM's XDG default would put plugins inside ~/.config/tmux, which is a
+  # symlink to this repository. Bootstrap only TPM here; install the declared
+  # tmux-resurrect plugin with TPM's prefix + I after starting tmux.
+  home.activation.setupTmuxPluginManager = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    plugin_dir="${homeDir}/.local/share/tmux/plugins"
+    tpm_dir="$plugin_dir/tpm"
+    if [ ! -x "$tpm_dir/tpm" ]; then
+      if [ -e "$tpm_dir" ]; then
+        echo "TPM checkout exists but is incomplete: $tpm_dir" >&2
+        exit 1
+      fi
+      ${pkgs.coreutils}/bin/mkdir -p "$plugin_dir"
+      temp_dir=$(${pkgs.coreutils}/bin/mktemp -d "$plugin_dir/.tpm.XXXXXXXX")
+      if ! ${pkgs.git}/bin/git clone --quiet --depth 1 https://github.com/tmux-plugins/tpm.git "$temp_dir"; then
+        ${pkgs.coreutils}/bin/rm -rf "$temp_dir"
+        exit 1
+      fi
+      ${pkgs.coreutils}/bin/mv "$temp_dir" "$tpm_dir"
+    fi
+  '';
+
   xdg.configFile = {
     # symlink
     "kitty".source = symlink "${dotfilesDir}/config/kitty";
