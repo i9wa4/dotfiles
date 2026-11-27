@@ -21,9 +21,10 @@ wrapping a command does not itself require another confirmation or exempt it
 from a gate. Forwarding agent text never creates human authority.
 
 The live graph and roles in `panepals.md` select who executes, who decides
-command review, and who reviews artifacts. Workers execute; the designated
-`command_approver_node` decides typed execution requests; Guardian/Critic review
-artifacts. Ordinary `APPROVED:` review prose is not an execution decision.
+command review, and who reviews artifacts. Builders execute; the designated
+`command_approver_node` decides typed execution requests; `review-lead` and
+`review-peer` review artifacts. Ordinary `APPROVED:` review prose is not an
+execution decision.
 
 ## 2. Requester and approver responsibilities
 
