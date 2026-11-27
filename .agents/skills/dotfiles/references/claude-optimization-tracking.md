@@ -64,9 +64,9 @@ the changelog and official docs) and the rest of the catch-up.
       removed. Re-enable only if a future fast-mode flavor is independent of
       effort pinning.
 
-- [x] Agent teams - enabled via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
-
-- [x] Automatic memory - enabled by default (v2.1.32)
+- [x] Automatic memory disabled via `CLAUDE_CODE_DISABLE_AUTO_MEMORY = "1"`
+      in `nix/home-manager/agents/claude/default.nix`. Its upstream default
+      since v2.1.32 does not describe the managed runtime here.
 
 - [x] `CLAUDE_CODE_ENABLE_TASKS` env - removed (tasks enabled by default)
 
@@ -407,7 +407,7 @@ config touches (`permissions.deny`, hooks, `ENABLE_TOOL_SEARCH`,
 `CLAUDE_CODE_DISABLE_FAST_MODE`, `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`, MCP
 servers). Consolidated rather than itemized per-release given the volume.
 
-- [x] **AGENTS.md support (v2.1.277, exactly the installed version)** -
+- [x] **AGENTS.md support (v2.1.277, installed at the 2026-09-19 review)** -
   `CHANGELOG.md` states: "Added AGENTS.md support: in a project with no
   CLAUDE.md, Claude Code reads AGENTS.md instead." However, the live
   official docs (`code.claude.com/docs/en/memory`, "AGENTS.md" section)
