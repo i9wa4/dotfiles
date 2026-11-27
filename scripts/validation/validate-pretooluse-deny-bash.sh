@@ -12,7 +12,7 @@ chmod +x "$hook"
 
 cat >"$tmp_dir/deny-bash-patterns.sh" <<'PATTERNS'
 declare -a ALLOW_PATTERNS=(
-  '^tmux-a2a-postman([[:space:]]|$)'
+  '^panepals([[:space:]]|$)'
   '^(cat|head|tail|wc|sort|uniq|cut)([[:space:]]|$)'
   # Deliberately broad: Git safety must come from the hook's parsed
   # effective-argv classifier, not raw regex substrings.
@@ -93,20 +93,20 @@ assert_real_git_success() {
 
 # shellcheck disable=SC2016 # literal command substitution text for the hook to inspect
 printf -v unquoted_heredoc_with_odd_quote_before_substitution '%s\n%s\n%s\n%s' \
-  'tmux-a2a-postman send-heredoc --to orchestrator <<EOF' \
+  'panepals send-heredoc --to coordinator <<EOF' \
   "one apostrophe '" \
   '$(whoami)' \
   'EOF'
 
 # shellcheck disable=SC2016 # literal command substitution/backtick text for the hook to inspect
 printf -v quoted_heredoc_with_literal_metacharacters '%s\n%s\n%s' \
-  "tmux-a2a-postman send-heredoc --to orchestrator <<'EOF'" \
+  "panepals send-heredoc --to coordinator <<'EOF'" \
   'hello <node> $(literal) `literal`' \
   'EOF'
 
 # shellcheck disable=SC2016 # literal command substitution text for the hook to inspect
 printf -v two_unquoted_heredocs_with_odd_quote_before_substitution '%s\n%s\n%s\n%s\n%s' \
-  'tmux-a2a-postman send-heredoc --to orchestrator <<FIRST <<SECOND' \
+  'panepals send-heredoc --to coordinator <<FIRST <<SECOND' \
   "one apostrophe '" \
   'FIRST' \
   '$(whoami)' \

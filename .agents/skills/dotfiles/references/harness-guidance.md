@@ -1,7 +1,7 @@
 # Agent Harness Engineering
 
 Use this skill when a task changes how the local Claude Code, Codex CLI, tmux,
-skills, hooks, MCP, subagent, or `tmux-a2a-postman` harness is designed,
+skills, hooks, MCP, subagent, or `panepals` harness is designed,
 installed, validated, or explained.
 
 ## 1. Working Rules
@@ -30,8 +30,8 @@ installed, validated, or explained.
   `.agents/skills/dotfiles/references/agent-config-philosophy.md`
 - Command approval and writable surface:
   `.agents/skills/dotfiles/references/agent-command-approval-design.md`
-- Software Factory A2A/Postman boundary:
-  `.agents/skills/dotfiles/references/a2a-postman-integration-boundary.md`
+- Software Factory A2A/PanePals boundary:
+  `.agents/skills/dotfiles/references/panepals-integration-boundary.md`
 - Operating model: `.agents/skills/dotfiles/references/operating-concepts.md`
 - AI workflow and artifacts:
   `.agents/skills/dotfiles/references/repo-ai-operating-contract.md`
@@ -48,7 +48,7 @@ installed, validated, or explained.
 - Claude optimization tracking: `claude-optimization-tracking.md`
 - Claude changelog decisions: `claude-changelog-tracking.md`
 - Codex optimization tracking: `codex-optimization-tracking.md`
-- Postman role contract: `tmux-a2a-postman help config`
+- PanePals role contract: `panepals help config`
 
 ## 3. Design Workflow
 
@@ -121,7 +121,7 @@ source-only harness work unless the user explicitly requested that live repair.
 - [Hooks Architecture](agent-hooks-architecture.md)
 - [Deny Bash Design](deny-bash-design.md)
 - [Command Approval Design](agent-command-approval-design.md)
-- [A2A/Postman Integration Boundary](a2a-postman-integration-boundary.md)
+- [PanePals Integration Boundary](panepals-integration-boundary.md)
 - [AI Operating Contract](repo-ai-operating-contract.md)
 - [AI Review Boundaries](repo-ai-review-boundaries.md)
 - [Claude Code](claude-code.md)

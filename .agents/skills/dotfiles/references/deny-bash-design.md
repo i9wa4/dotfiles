@@ -19,7 +19,7 @@ What it protects against:
   is the documented deny.
 
 The hook is a syntactic allowlist, not a sandbox for an allowed process or for
-source separately submitted through Postman's typed execution path. It does
+source separately submitted through PanePals's typed execution path. It does
 not establish the effects of arbitrary programs after they start or replace
 runtime permissions and human authorization.
 
@@ -112,7 +112,7 @@ heredoc bodies before checking the command. It then applies these stages:
    shell wrappers and strip quoted message arguments before matching, but it
    cannot turn a rejected command into an allowed one.
 4. A remaining unmatched command receives the generic not-on-the-allowlist
-   denial. Both denial paths point to `tmux-a2a-postman execute-heredoc` for an
+   denial. Both denial paths point to `panepals execute-heredoc` for an
    exact, separately reviewed invocation.
 
 ## 5. Adding New Entries
@@ -143,13 +143,13 @@ Add to `bash-commands-allowed.nix` only after checking the full command and
 argument shape. An allowlist match admits automatic hook continuation, so
 ordinary entries must be side-effect-free and must not hide another command.
 
-`tmux-a2a-postman` is the approval channel's explicit allowlist entry. Its
+`panepals` is the approval channel's explicit allowlist entry. Its
 `execute-heredoc` subcommand can execute caller-supplied source in a fresh shell
 after the typed review decision, or under the documented advisory path when
 no approver is configured or positively present. The CLI entry avoids a
-circular hook denial; it is not a claim that every Postman invocation is inert
+circular hook denial; it is not a claim that every PanePals invocation is inert
 or that command approval replaces human/runtime authority. See installed
-`tmux-a2a-postman help execute-heredoc` for the current workflow.
+`panepals help execute-heredoc` for the current workflow.
 
 ### 5.3. New Strip Arg
 
@@ -177,7 +177,7 @@ review against installed help and runtime evidence.
 `DENY_PATTERNS` affect the explanation for an off-allowlist command, not the
 allow decision. Missing wrapper or flag spellings can weaken the specificity
 of that explanation, but an off-allowlist command still receives the generic
-denial. Separately approved Postman execution has its own decision and
+denial. Separately approved PanePals execution has its own decision and
 human/runtime gates; it is not confined by this direct-Bash allowlist.
 
 ## 7. References
@@ -197,5 +197,5 @@ human/runtime gates; it is not confined by this direct-Bash allowlist.
 - `nix/home-manager/agents/codex/default.nix` — wires the shared hook and
   <!-- private-content-scan: allow-next-line -->
   generated patterns into `~/.codex/scripts/` and `~/.codex/hooks.json`.
-- `tmux-a2a-postman help execute-heredoc` — the typed invocation and approval
+- `panepals help execute-heredoc` — the typed invocation and approval
   path for commands denied by the direct Bash allowlist.

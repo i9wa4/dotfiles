@@ -32,8 +32,8 @@ presets:
           command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
           delay: 500
 
-  preset-p:
-    name: preset-p
+  env-a:
+    name: env-a
     description: codex-featured private team
     windowMode: new-window
     layout:
@@ -47,16 +47,16 @@ presets:
               title: messenger
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
-            - name: orchestrator
-              title: orchestrator
+            - name: coordinator
+              title: coordinator
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
-            - name: worker
-              title: worker
+            - name: builder
+              title: builder
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
-            - name: worker-alt
-              title: worker-alt
+            - name: builder-alt
+              title: builder-alt
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
         - type: vertical
@@ -66,18 +66,18 @@ presets:
               title: approver
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
-            - name: guardian
-              title: guardian
+            - name: review-lead
+              title: review-lead
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500
-            - name: critic
-              title: critic
+            - name: review-peer
+              title: review-peer
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-5.6-sol --config model_reasoning_effort=high
               delay: 500
 
-  preset-w:
-    name: preset-w
-    description: Claude-team review mapping with a Codex critic
+  env-b:
+    name: env-b
+    description: Claude-team review mapping with a Codex review-peer
     windowMode: new-window
     layout:
       type: horizontal
@@ -90,16 +90,16 @@ presets:
               title: messenger
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-luna --config model_reasoning_effort=high
               delay: 500
-            - name: orchestrator
-              title: orchestrator
+            - name: coordinator
+              title: coordinator
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
               delay: 500
-            - name: worker
-              title: worker
+            - name: builder
+              title: builder
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=medium
               delay: 500
-            - name: worker-alt
-              title: worker-alt
+            - name: builder-alt
+              title: builder-alt
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
         - type: vertical
@@ -109,11 +109,11 @@ presets:
               title: approver
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model sonnet --effort medium
               delay: 500
-            - name: guardian
-              title: guardian
+            - name: review-lead
+              title: review-lead
               command: claude --allow-dangerously-skip-permissions --dangerously-skip-permissions --model "opus[1m]" --effort high
               delay: 500
-            - name: critic
-              title: critic
+            - name: review-peer
+              title: review-peer
               command: codex --yolo --no-alt-screen --no-daemon --model gpt-6-sol --config model_reasoning_effort=high
               delay: 500

@@ -63,7 +63,7 @@ trap cleanup EXIT HUP INT TERM
 
 is_scan_target() {
   case "$1" in
-  skills/* | .agents/skills/* | config/tmux-a2a-postman/postman.md | .github/workflows/*.yaml | .github/workflows/*.yml)
+  skills/* | .agents/skills/* | config/panepals/panepals.md | .github/workflows/*.yaml | .github/workflows/*.yml)
     return 0
     ;;
   scripts/validation/validate-skill-private-content.sh)
@@ -181,8 +181,8 @@ while IFS="$tab" read -r display_path scan_path; do
       allow_current = allow_next || ($0 ~ /private-content-scan:[[:space:]]*allow/)
       allow_next = 0
 
-      if (file == "config/tmux-a2a-postman/postman.md" &&
-          $0 ~ /^  - path: ~\/ghq\/github.com\/i9wa4\/(dotfiles|tmux-a2a-postman)\/skills\/?$/) {
+      if (file == "config/panepals/panepals.md" &&
+          $0 ~ /^  - path: ~\/ghq\/github.com\/i9wa4\/(dotfiles|tmux-a2a-postman|tmux-panepals)\/skills\/?$/) {
         next
       }
 

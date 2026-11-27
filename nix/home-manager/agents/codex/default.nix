@@ -138,7 +138,7 @@ let
 in
 {
   home.file = {
-    # The selected Postman contract is included in each complete POP archive.
+    # The selected PanePals contract is included in each complete POP archive.
     # Global dotfiles-authored Skills are installed from top-level skills/;
     # repository maintenance is discovered from .agents/skills/dotfiles.
     # AGENTS.md is the single authored notification bootstrap:

@@ -51,27 +51,27 @@ denies as embedded `prefix_rule(...)` rules; the shared PreToolUse hook is
 the repo-owned command-deny authority, while Codex sandbox/approval settings
 remain responsible for filesystem and network blast radius.
 
-### 2.2. Foundational Contract — Postman's builtin configuration
+### 2.2. Foundational Contract — PanePals's builtin configuration
 
-The common and role directives live in Postman's builtin standard team. The
+The common and role directives live in PanePals's builtin standard team. The
 installed policy lookup is listed in `agent-config-philosophy.md` section 1.1.
 The three personal/global dotfiles-owned Skill bodies stay in top-level
 `skills/`. Repository maintenance lives in `.agents/skills/dotfiles/`, with a
 Claude Code pointer at `.claude/skills/dotfiles`; Codex discovers the repo-local
-Skill directly. Default clients start without a common/role message. Postman
+Skill directly. Default clients start without a common/role message. PanePals
 includes that policy in recipient archives; POP returns the archive path and
 requires a complete read. Skills use
 normal runtime discovery. Launch-time injection is available only as an explicit
-user-selected option, not a default hook. An explicit custom `postman.md`
+user-selected option, not a default hook. An explicit custom `panepals.md`
 replaces the builtin default rather than extending it. `shared/AGENTS.md` is the
 single authored source for the runtime-root fallback: installed as generated
 Codex `AGENTS.md` directly, and Claude's `CLAUDE.md` is derived from the same
 source rather than a second hand-written file. It contains only the
-notification, POP and help bootstrap; it does not carry the Postman role
+notification, POP and help bootstrap; it does not carry the PanePals role
 contract.
 
-Generic reviewer procedures and prompts come from the selected Postman binary's
-`tmux-a2a-postman skill subagent-review` and its named references. Reviewers
+Generic reviewer procedures and prompts come from the selected PanePals binary's
+`panepals skill subagent-review` and its named references. Reviewers
 inherit the active runtime and account defaults.
 
 ### 2.3. MCP Servers — `shared/mcp-servers.nix`
@@ -119,8 +119,8 @@ set subagent model, reasoning effort, and concurrency, and generated agent
 files provide per-role prompts. That is useful for assigning work, but it is
 not an authorization signal.
 
-Keep the shared policy in Postman's builtin default or an explicit complete
-custom `postman.md`, the local fallback prompt, and the common
+Keep the shared policy in PanePals's builtin default or an explicit complete
+custom `panepals.md`, the local fallback prompt, and the common
 Bash deny hook. If runtime-level role/write enforcement returns later, document
 the runtime-specific transport reason at that time.
 

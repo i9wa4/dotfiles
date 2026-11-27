@@ -18,7 +18,8 @@
       "node_modules/"
       # dotfiles
       ".i9wa4/"
-      ".tmux-a2a-postman/"
+      ".tmux-a2a-postman/" # Keep the pre-cutover generated directory ignored for rollback.
+      ".panepals/"
       ".worktrees/"
       "local.vim"
       # Nix

@@ -7,13 +7,13 @@
 
 Nix-managed machine configuration for macOS (Apple Silicon) and Ubuntu 24.04
 LTS (including WSL2), plus a reproducible local engineering and agent harness.
-The harness manages tmux role identity, `tmux-a2a-postman` control-plane
+The harness manages tmux role identity, `panepals` control-plane
 integration, Claude/Codex parity, hooks, review and approval boundaries,
 durable task artifacts, and active versus reference-only skills.
 
 Operational guidance lives in the
 [repo-local dotfiles Skill](.agents/skills/dotfiles/SKILL.md), the
-personal/global Skills under [`skills/`](skills/), and the selected Postman
+personal/global Skills under [`skills/`](skills/), and the selected PanePals
 binary. Each local Skill has a `SKILL.md` entry point; supporting
 `references/` are included where needed. The same files serve humans reading
 this repo and agents working in it.

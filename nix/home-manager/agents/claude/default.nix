@@ -101,7 +101,7 @@ let
       # #363's direction of keeping this surface Bash-deny-only rather than
       # adding a Codex-side enforcing write hook with no Claude equivalent.
       # v2.1.200 made AskUserQuestion dialogs no longer auto-continue by
-      # default, so in headless / tmux-a2a-postman panes a question stalls
+      # default, so in headless / panepals panes a question stalls
       # the turn indefinitely with no human to answer. Denying the tool made
       # the agent proceed on its own judgement instead.
       # (see claude-optimization-tracking.md §1.1)
@@ -115,7 +115,7 @@ in
 {
   home = {
     file = {
-      # The selected Postman contract is included in each complete POP archive.
+      # The selected PanePals contract is included in each complete POP archive.
       # Global Skill bodies load from ~/.claude/skills/ at session start;
       # this repository discovers .claude/skills/dotfiles locally. CLAUDE.md is
       # only the minimal notification bootstrap, derived from

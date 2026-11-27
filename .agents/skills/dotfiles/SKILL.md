@@ -8,7 +8,7 @@ description: |
   environment: machine setup and recovery, Nix/Home Manager,
   terminal/editor settings, and Claude/Codex configuration, hooks,
   MCP and Skill management.
-  DO NOT USE FOR: Work in unrelated repositories or routine Postman
+  DO NOT USE FOR: Work in unrelated repositories or routine PanePals
   team coordination.
 ---
 
@@ -28,8 +28,10 @@ separate operation.
   recovery.
 - [Operating Concepts](references/operating-concepts.md) — source and runtime
   ownership.
+- [PanePals Cutover](references/panepals-cutover.md) — source staging, live
+  migration boundary and rollback.
 - [Harness](references/harness-guidance.md) — Claude/Codex config, hooks, MCP
-  and selected Postman integration.
+  and selected PanePals integration.
 - [Workspace](references/workspace-guidance.md) — tmux, pane identity and
   environment navigation.
 - [Skill Management](references/skills-management.md) — authoring, validation
@@ -40,6 +42,6 @@ separate operation.
   [Tailscale](references/tailscale-operations.md), and
   [Missing Tools](references/missing-tools.md) — focused environment operations.
 
-Postman's pinned Skills and CLI help own generic Git/GitHub operations,
-communication, records and review procedures. The installed `postman.md` owns
+PanePals's pinned Skills and CLI help own generic Git/GitHub operations,
+communication, records and review procedures. The installed `panepals.md` owns
 roles, topology and authority; this repository owns its selection and wiring.

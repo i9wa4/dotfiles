@@ -169,7 +169,7 @@ in
     "kitty".source = symlink "${dotfilesDir}/config/kitty";
     "nvim".source = symlink "${dotfilesDir}/config/nvim/nvim";
     "tmux".source = symlink "${dotfilesDir}/config/tmux";
-    # Postman supplies the standard team; custom postman.md is an explicit user override.
+    # PanePals supplies the standard team; custom panepals.md is an explicit user override.
     "vde".source = symlink "${dotfilesDir}/config/vde";
     "vim".source = symlink "${dotfilesDir}/config/vim";
     # Nix store
