@@ -39,11 +39,11 @@
     "aws-agent-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795637098,
-        "narHash": "sha256-I983E1XMmMTOFfp2KOyMCNmnm/LALIf3Us6tt8GFb4Y=",
+        "lastModified": 1795673668,
+        "narHash": "sha256-dqlQvZ/zKJX+Qb0q6wbHMDZZ96aBCNBJDXhQh/72cUM=",
         "owner": "aws",
         "repo": "agent-toolkit-for-aws",
-        "rev": "04afec8286a31958b9e5c5308f8fbf0e98818933",
+        "rev": "e62ada690e3adf340a4cccb3b20204721e4b54d2",
         "type": "github"
       },
       "original": {
@@ -137,11 +137,11 @@
     "databricks-agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795596480,
-        "narHash": "sha256-AD7p8p6CMaf9xbRRhlFtRLi3OSDAJy8gpVF2WheZ5zE=",
+        "lastModified": 1795681440,
+        "narHash": "sha256-VVT1U324s5RohekJO0dbjN0Gp3tx5ATgm+3LIUyoVBE=",
         "owner": "databricks",
         "repo": "databricks-agent-skills",
-        "rev": "6863a489d3fc5f2c5e49e0b0ba871a372a3278b1",
+        "rev": "6650c7ef6200c114de55c827242627440efa008a",
         "type": "github"
       },
       "original": {
@@ -263,11 +263,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795608474,
-        "narHash": "sha256-CwC7f1DripMBQjB7BozobprSYiA8Cn9rz8vsBthWJwk=",
+        "lastModified": 1795742716,
+        "narHash": "sha256-ddfB/7u6gJk6VjxNOZit/MZssPhnFzC8BI5lfp6TuIk=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "5c6bf7c418b4abf003e6d00d231e87f5e6ad5230",
+        "rev": "26f3f17f0d64137a569aa30ad953a59ab6662be2",
         "type": "github"
       },
       "original": {
@@ -301,11 +301,11 @@
     "google-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795633650,
-        "narHash": "sha256-Y+HXTeSuodOcNe18FU9UyENC+SzMuiZAMrqmF5z4zlk=",
+        "lastModified": 1795715507,
+        "narHash": "sha256-3Im2p2Bp28aZeqYl72p5Uhy2FejzBOGX4EH4Lg4EWtw=",
         "owner": "google",
         "repo": "skills",
-        "rev": "b315c2eea312b624f3fbe60018a6f741dd558ebb",
+        "rev": "6dc0d53303b9f96f166ac72d7f8f1920cb260f24",
         "type": "github"
       },
       "original": {
@@ -353,11 +353,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795618997,
-        "narHash": "sha256-d9Osol//t6hqeo1xlspsYMbhTJK507h6t0EmPyF5Db0=",
+        "lastModified": 1795748630,
+        "narHash": "sha256-J1iQ1QMnkFwZFXnlPt2t3Qx7TsGjw08/0L3QMqNt+Wg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6a13737c0ed27c7c285f59e3be423ed972aa605f",
+        "rev": "54f903fdaaf5d5720ed36706fe75332af69eb793",
         "type": "github"
       },
       "original": {
@@ -376,11 +376,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1795646831,
-        "narHash": "sha256-mflJ5QNbjclR5FP3VhdH7FJApb6Y4e6r7vp6z4jQ34w=",
+        "lastModified": 1795746918,
+        "narHash": "sha256-v3ruPbCzTcJEGxOsvA/k0UXsnM1WQZrltW/uv0m9U50=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "9e9dbfefcc517757fe34bc82904e347a5ddbc6c8",
+        "rev": "f8f2bdc8ced337b2c7d44b7b45c9442059cedfcb",
         "type": "github"
       },
       "original": {
@@ -405,11 +405,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795074265,
-        "narHash": "sha256-zd+WjmMCIe/+VurcMfYa6dTeEfbkZPpO5j1YtV0BmYo=",
+        "lastModified": 1795710005,
+        "narHash": "sha256-4gkJaaSyeU9Qmhve4zI8ErzcGwxLvD5AmVqRFRy0lqQ=",
         "owner": "i9wa4",
         "repo": "markdown-formatter",
-        "rev": "79197e0dd4debb2b7529c55dc334373b204b8981",
+        "rev": "bda71777564e16e8dfb6efcd9fc0e16ce80916ab",
         "type": "github"
       },
       "original": {
@@ -478,11 +478,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795373241,
-        "narHash": "sha256-Gd1+Oaj8nS+p1qLpKk4MGv/qGh62+lTkX4262e2UDgc=",
+        "lastModified": 1795747999,
+        "narHash": "sha256-VTPsIOYem/zQCO1QF3cpa4pLg2EoexjX5R1u3fs3L4k=",
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "663d8b962a11cda261b6e9f14e03911fac94baf0",
+        "rev": "594c680c429be020d7130cc2b17d43c4760d17c7",
         "type": "github"
       },
       "original": {
