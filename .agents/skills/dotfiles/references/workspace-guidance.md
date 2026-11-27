@@ -4,9 +4,26 @@ Use this skill to boot, navigate, and manage agent workspaces in tmux: session
 creation, vde-layout preset boot, pane operations and repo-local Git lock
 diagnosis.
 
-## 1. Boot Procedure
+## 1. Manual save and restore
 
-### 1.1. Agent-Driven Boot (9 steps)
+The next Home Manager switch bootstraps TPM under
+`~/.local/share/tmux/plugins/tpm`. Start tmux, then press `prefix + I` once to
+install the configured `tmux-resurrect` plugin through TPM. The plugin checkout
+stays under `~/.local/share/tmux/plugins`; snapshots stay under
+`~/.local/state/tmux/resurrect`. Neither directory is inside the tracked
+`~/.config/tmux` symlink.
+
+Before reboot, press `prefix + Ctrl-s` to save. After reboot, start tmux and
+press `prefix + Ctrl-r` to restore the most recent save. The save restores
+sessions, windows, panes, titles, directories, and configured Claude/Codex
+programs with their startup flags. It starts fresh agent conversations; it
+does not resume old conversation IDs. Changes made after the last save are
+lost. The existing VDE layouts and Postman presets remain the source for new
+workspaces and their role/model choices.
+
+## 2. Boot Procedure
+
+### 2.1. Agent-Driven Boot (9 steps)
 
 For a vde-layout workspace, the expected end-user flow is:
 
@@ -86,7 +103,7 @@ After resolving the snippet, boot the session:
    tmux list-panes -t <session> -a -F "#{window_index} #{pane_title} #{pane_current_command}"
    ```
 
-### 1.2. Human-Driven Boot
+### 2.2. Human-Driven Boot
 
 The human types the snippet keyword (for example `vp`) + Space in interactive
 zsh. `snippet-magic-space` expands it to the full vde-layout command, then
@@ -95,7 +112,7 @@ Enter executes it. Both paths arrive at identical end state.
 Source: `config/zsh/snippet.zsh`, `config/vde/layout.yml`
 See also: `workspace-boot-failure-modes.md`
 
-## 2. Current Boot Snippets
+## 3. Current Boot Snippets
 
 | Snippet | Expansion             | Team                |
 | ------- | --------------------- | ------------------- |
@@ -107,7 +124,7 @@ Per-pane models and reasoning efforts are defined in
 boot time instead of trusting any snapshot here. Zsh snippets:
 `config/zsh/snippet.zsh`. See also: `workspace-vde-layout-internals.md`
 
-## 3. Session Naming
+## 4. Session Naming
 
 `__z_tmux_rename_for_dir` is defined in `config/zsh/zoxide.zsh`.
 
@@ -128,7 +145,7 @@ Rename rules:
 Note for agent callers: use the dash form (not dot form) when referencing a
 session by name in tmux commands.
 
-## 4. Worktree Lifecycle
+## 5. Worktree Lifecycle
 
 Use the pinned Postman `git-github-operations` Skill for Issue/PR worktree
 creation, reuse, verified base/upstream and publication. Keep the checkout in
@@ -137,7 +154,7 @@ This repo-local reference owns tmux navigation and its own Git lock diagnosis;
 it does not duplicate the generic Git procedure. Machine activation remains a
 separate operation.
 
-## 5. Git Lock Diagnostics
+## 6. Git Lock Diagnostics
 
 Use `scripts/bin/git-locks` when a Git command reports an existing lock such as
 `.git/index.lock`.
@@ -194,7 +211,7 @@ Do not use `git-locks` as a substitute for worktree isolation. If multiple
 agents or panes need to make Git index changes concurrently, split the work into
 separate issue or PR worktrees first.
 
-## 6. Navigation Primitives
+## 7. Navigation Primitives
 
 - `z <keyword>` — zoxide wrapper (`config/zsh/zoxide.zsh`); triggers session
   rename on cd
@@ -211,7 +228,7 @@ argument jumps directly, otherwise keyword lookup falls back to `zi` when
 needed. Ctrl-G runs the same picker and directory/session-name path. Raw zoxide
 is not the outer navigation command.
 
-## 7. Common tmux Pane Operations
+## 8. Common tmux Pane Operations
 
 For pane send-keys, capture-pane, hook-bypass via load-buffer + paste-buffer,
 and monitoring patterns, see `workspace-tmux-pane-operations.md`.
@@ -223,13 +240,13 @@ Key rules:
 - For hook-blocked content: write to file, then
   `tmux load-buffer <file> && tmux paste-buffer -t %N && tmux send-keys -t %N Enter`
 
-## 8. Runtime Notes
+## 9. Runtime Notes
 
 - Codex logs WAL bloat was fixed upstream in 0.142.0; see
   `.agents/skills/dotfiles/references/codex-optimization-tracking.md` §1.3 for
   the resolution note and the archived runbook pointer
 
-## 9. Reference Index
+## 10. Reference Index
 
 - [Pane Operations](workspace-tmux-pane-operations.md)
 - [Boot Failure Modes](workspace-boot-failure-modes.md)
