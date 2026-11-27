@@ -38,8 +38,6 @@ product/runtime capabilities rather than required dotfiles config changes:
   establish a role-to-tmux-pane identity mapping or a reliable role-based
   file-write denial output contract. This repo also removed that observer
   surface in the 2026-09-05 hook reduction.
-- v0.144.4 is a patch release with no user-facing changes.
-- v0.144.3 is a version-only release with no merged PR changes after v0.144.2.
 - v0.144.2 restores the previous Guardian auto-review policy, request format,
   and tool behavior after a prompting regression. No local config change.
 - v0.144.0 adds usage-limit reset-credit selection, `writes` app approval mode,
@@ -62,9 +60,6 @@ product/runtime capabilities rather than required dotfiles config changes:
 - v0.142.5 is a maintenance patch that redacts full Responses WebSocket request
   payloads from trace logs (openai/codex #30771). No user-facing behavior
   change; no config change.
-- v0.142.4 has no user-facing changes.
-- v0.142.3 is a maintenance-only patch with no user-facing changes after
-  v0.142.2.
 - v0.142.2 turns MCP tool search on by default when supported, adds opt-in
   macOS system-proxy auth support, adds plugin dark-mode logos, improves
   Bedrock credential errors, rejects uninspectable PowerShell AST regions, and
@@ -222,17 +217,20 @@ from that incomplete note. Relevant decisions follow in release order:
   [v0.167.1 hotfix](https://github.com/openai/codex/releases/tag/rust-v0.167.1)
   lists no further configuration migration.
 
-No generated config or launcher change is required for the installed version.
+No generated config or launcher change was required for reviewed v0.167.1.
 The vde layout pins model, effort, `--no-daemon`, and `--yolo` explicitly;
 new product defaults in this range do not replace those choices.
 
 ### 1.3. WAL Bloat (resolved upstream)
 
-Codex logs SQLite WAL growth (observed at 32-35 GB locally in 2026-05) was
-fixed upstream: openai/codex #29432 and #29457 landed in v0.142.0 and #29599
-landed in v0.143.0, removing ~85% of persistent log writes. The local
-checkpoint and pressure-relief timers were removed on 2026-07-05. The full
-incident runbook is archived in the private vault
+Codex logs SQLite WAL growth (observed at 32-37 GB locally in 2026-05)
+filled the Linux disk and temporarily prevented tmux-a2a-postman from writing
+state. A busy checkpoint could leave all frames checkpointed but still prevent
+truncation; emergency manual truncation has strict runbook preconditions.
+Upstream fixes openai/codex #29432 and #29457 landed in v0.142.0 and #29599
+in v0.143.0, removing ~85% of persistent log writes. The local checkpoint
+and pressure-relief timers were removed on 2026-07-05. The full incident
+runbook is archived in the private vault
 (2026-07-05-storage-hygiene-playbook-retirement). Sessions under
 <!-- private-content-scan: allow-next-line -->
 `~/.codex/sessions/` still have no upstream auto-retention
@@ -240,6 +238,9 @@ incident runbook is archived in the private vault
 
 ### 1.4. Applied Optimizations
 
+- [x] `config.toml` is generated at Home Manager activation from the Nix base
+  plus discovered trusted projects; the generator preserves approved
+  `[hooks.state]` entries. See `codex/default.nix` and `codex-cli.md` §2.
 - [x] The full runtime-root persona/scope prompt was removed; persona and scope
   now flow through `tmux-a2a-postman help config`. A minimal
   <!-- private-content-scan: allow-next-line -->
@@ -293,26 +294,6 @@ incident runbook is archived in the private vault
   Codex v0.135.0 confirmed `features.hooks` and `features.multi_agent` default
   to enabled. Removed stale `features.skills`; skills are configured through
   the top-level `skills` table, not a feature flag.
-- [x] WAL checkpoint timer added 2026-05-07 after Codex logs WAL
-  reached 32 GB on the Linux host (root/home at 98% used). One-shot manual
-  `PRAGMA wal_checkpoint(TRUNCATE)` reclaimed the full 32 GB; the recurring
-  timer keeps the WAL from growing back. On 2026-05-09, a separate full-disk
-  incident showed `busy=1 log_pages=603 checkpointed=603`, where frames were
-  checkpointed but active readers prevented truncation; the runbook now
-  documents the emergency-only manual truncate exception with strict
-  preconditions. On 2026-05-10, the Linux timer cadence moved to 30 minutes.
-  Cross-platform: `systemd.user` timer on Linux,
-  `launchd.agents` on Darwin, gated by `lib.mkIf` on `pkgs.stdenv.isLinux` /
-  `isDarwin`. Symptom containment, not an upstream fix; inspection
-  commands are archived with the runbook in the private vault.
-- [x] (removed 2026-07-05) Linux `codex-storage-pressure-relief.timer` added
-      2026-05-09 after a full-disk incident where `logs_2.sqlite-wal` reached
-      about 37 GB and `tmux-a2a-postman` could not write state. The timer prunes
-      disposable Codex temp data, prunes closed session JSONL older than 50 days
-      while skipping open files, checkpoints `logs_2.sqlite`, and truncates a
-      large fully-checkpointed WAL to zero after logging holder PIDs. The
-      managed policy is storage relief only: process lifecycle stays outside the
-      timer.
 - [x] Removed `features.apps = true` and the four `apps.*.enabled = true`
   entries (slack, gmail, google_calendar, google_drive) on 2026-09-19 --
   both already default to `true` without the explicit setting, so it was
@@ -333,7 +314,6 @@ incident runbook is archived in the private vault
 ### 1.5. Pending Considerations
 
 - [ ] Create prompts/ symlink to `../claude/commands/` if needed
-- [ ] Create generate-config.sh for automated config.toml generation
 - [x] ~~Context7 MCP disabled; Context7 docs are handled through `ctx7` CLI plus
   the `find-docs` skill instead~~ — superseded by #580, which removes Context7
   Skill and CLI management. Local MCP registrations remain empty.

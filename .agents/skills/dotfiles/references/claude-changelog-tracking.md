@@ -20,13 +20,11 @@ This reference preserves older review notes that support current
 - `background: true` in agent defs - UI-level background for Claude Code's own
   Agent tool; no benefit for tmux-a2a-postman (OS-level parallelism)
 - Managed settings (plist/Registry) - enterprise MDM feature; solo Ubuntu user
-- `InstructionsLoaded` hook - observability only, cannot inject context;
-  existing `SessionStart` hook with `compact` matcher already handles reload
-- `/loop` command - available since v2.1.71; no config needed
+- `InstructionsLoaded` hook - observability only, cannot inject context.
+  The current managed hooks have only `PreToolUse` for Bash; the old
+  `SessionStart`/`compact` reload rationale no longer describes this setup.
 - `CLAUDE_CODE_DISABLE_CRON` env - cron scheduling useful for `/loop`; keep
   enabled
-- Effort level simplification (v2.1.72) - low/medium/high with `/effort auto`;
-  no config needed
 - `autoMemoryDirectory` (v2.1.74) - auto-memory disabled via env; not applicable
 - `modelOverrides` (v2.1.73) - not using Bedrock/Vertex/Foundry custom IDs
 - `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS` (v2.1.74) - no SessionEnd hooks
