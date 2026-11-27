@@ -10,11 +10,11 @@ installations managed by this repository. Its command table should be a
 generated read-only projection of the existing policy sources, never a second
 manually edited allowlist. Keep Postman's exact execution approval procedure as
 a pointer to the installed Postman help, not as a static list of “approved
-commands.” If [issue #536](https://github.com/i9wa4/dotfiles/issues/536) keeps policy
-ownership in dotfiles, retain the existing two Nix modules and procedural hook
-as the authoritative inputs for the first implementation. Consolidating them
-into one physical Nix file is an optional later refactor, not a prerequisite for a useful
-Skill.
+commands.” If [issue #536](https://github.com/i9wa4/dotfiles/issues/536) keeps
+policy ownership in dotfiles, retain the existing two Nix modules and procedural
+hook as the authoritative inputs for the first implementation. Consolidating
+them into one physical Nix file is an optional later refactor, not a
+prerequisite for a useful Skill.
 
 The user-facing distinction should be explicit:
 
@@ -155,8 +155,9 @@ not assertions that current Nix entries alone provide them.
    a matching source ID and that generated output is reproducible.
 2. Hook fixtures should test representative allowed commands, off-list generic
    denials, named denials, wrapper/chained forms, every ordinary/secret reader
-   pair in section 2, exempt ordinary names, quoted versus unquoted heredocs, safe Git and safe grep/rg. This verifies
-   enforcement; prose review alone cannot.
+   pair in section 2, exempt ordinary names, quoted versus unquoted heredocs,
+   safe Git and safe grep/rg. This verifies enforcement; prose review alone
+   cannot.
 3. Skill gates should validate frontmatter, links, Waza/readiness and offline
    trigger evals for both intended and out-of-scope prompts
    (.agents/skills/dotfiles/references/skills-management.md:18-37,50-71). A
@@ -175,10 +176,10 @@ not assertions that current Nix entries alone provide them.
 ## 5. Tradeoffs and limits
 
 A manually maintained Skill table is simplest to write but immediately creates
-policy drift. A generated reference costs a Nix packaging and validation
-change if #536 retains dotfiles ownership; otherwise Postman must own the
-canonical policy output and dotfiles should consume or point to it. Full
-one-file Nix consolidation would reduce physical source count while expanding the change
+policy drift. A generated reference costs a Nix packaging and validation change
+if #536 retains dotfiles ownership; otherwise Postman must own the canonical
+policy output and dotfiles should consume or point to it. Full one-file Nix
+consolidation would reduce physical source count while expanding the change
 surface and still cannot absorb procedural hook logic or per-invocation Postman
 decisions.
 
