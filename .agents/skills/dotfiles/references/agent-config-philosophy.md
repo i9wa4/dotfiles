@@ -18,13 +18,13 @@ mechanism.
 
 What "prompt path" means in this repo:
 
-- `tmux-a2a-postman help config default` — the selected binary's complete
+- `panepals help config default` — the selected binary's complete
   standard team contract, delivered in each recipient's POP archive.
 - `skills/<name>/SKILL.md` — dotfiles-authored personal/global Skill
   guidance, installed for both engines and loaded when relevant.
 - `.agents/skills/dotfiles/SKILL.md` — repo-local maintenance guidance for
   this checkout; Claude's `.claude/skills/dotfiles` points to this source.
-- `tmux-a2a-postman skill subagent-review` and its named references — generic
+- `panepals skill subagent-review` and its named references — generic
   reviewer procedures and prompts; active runtime/account defaults select model
   and effort.
 
@@ -37,7 +37,7 @@ Why prompt over config:
   both Codex and Claude (and any future tool that reads markdown
   contracts).
 - Inspectable delivery. The selected role contract is preserved in each POP
-  archive. A custom `postman.md` is reread on invocation; updating the builtin
+  archive. A custom `panepals.md` is reread on invocation; updating the builtin
   contract follows the selected binary and its normal installation path.
 - Debuggable. Behavior changes can be compared against the selected builtin
   or explicit custom policy source and archived policy bytes.
@@ -73,21 +73,21 @@ Concrete examples already in the repo:
   set; emits Claude's built-in `permissions.deny` glob and the generated
   deny-patterns file consumed by the shared `pretooluse-deny-bash.sh` hook
   in both runtimes.
-- Postman's builtin standard team — the common and role policy shown by the
+- PanePals's builtin standard team — the common and role policy shown by the
   lookup above; each POP archive carries the selected
-  recipient policy. A custom `postman.md` replaces that default in full.
+  recipient policy. A custom `panepals.md` replaces that default in full.
   `nix/home-manager/agents/shared/AGENTS.md` is the
   single authored source for the local-invocation fallback:
   <!-- private-content-scan: allow-next-line -->
   installed as `~/.codex/AGENTS.md` directly, and `~/.claude/CLAUDE.md` is
   derived from the same source rather than a second hand-written file. It is
   only a minimal notification, POP and help bootstrap; it does not duplicate
-  the Postman contract.
+  the PanePals contract.
 - `nix/home-manager/agents/shared/agent-skills.nix` — owns the curated active
   skill policy, keeps broad provider packs in `referenceOnlySources`, generates
   their flat reference tree at `~/.local/share/skills`, and installs the active
   `external-references` router for dormant packs.
-- Postman's installed `subagent-review` Skill and its references — own generic
+- PanePals's installed `subagent-review` Skill and its references — own generic
   review procedures and prompts. Reviewers inherit active runtime/account model
   defaults.
 
@@ -102,7 +102,7 @@ Why shared beats per-tool:
   to be reauthored.
 
 Skill installation is curated before it reaches runtime loader paths.
-`agent-skills.nix` keeps local skills, Postman skills, and the curated
+`agent-skills.nix` keeps local skills, PanePals skills, and the curated
 `security-audit` skill active by default. The local set includes
 `external-references` as the router for dormant provider packs, while the
 provider packs themselves remain pinned in `referenceOnlySources` and generated
@@ -163,7 +163,7 @@ What this looks like in the current repo:
   save/reload hook scripts. See section 4 of
   `.agents/skills/dotfiles/references/operating-concepts.md`.
 - Skills work in both engines (`/skill <name>` for Claude,
-  `@<name>` for Codex). Personal/global Skills and selected Postman thin
+  `@<name>` for Codex). Personal/global Skills and selected PanePals thin
   entries are installed into both engine trees. The repo-local dotfiles Skill
   stays in `.agents/skills/dotfiles/`, with a Claude pointer at
   `.claude/skills/dotfiles`; it is not installed globally.
@@ -186,7 +186,7 @@ What to avoid:
 - Building core operating policy on top of a vendor-only feature when
   a cross-engine alternative exists.
 - Hardcoding engine-specific names or paths in shared instruction
-  files (`postman.md`, skill `SKILL.md`).
+  files (`panepals.md`, skill `SKILL.md`).
 - Adding a setting only because one engine ships a knob, without
   checking whether the same effect can be achieved through a prompt
   or through the shared SSOT.
@@ -237,7 +237,7 @@ Before adding agent configuration, walk this checklist:
   realisation of these principles in the Bash deny system.
 - `.agents/skills/dotfiles/references/repo-ai-operating-contract.md` — AI
   operation rules.
-- Postman's builtin standard team contract — selected for recipients when no
-  custom `postman.md` replaces it; see the lookup in section 1.1.
+- PanePals's builtin standard team contract — selected for recipients when no
+  custom `panepals.md` replaces it; see the lookup in section 1.1.
 - `nix/home-manager/agents/shared/bash-commands-denied.nix` — example of a
   shared SSOT emitting to multiple engines.

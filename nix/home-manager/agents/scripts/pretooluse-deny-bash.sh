@@ -32,7 +32,7 @@ set -o posix
 #      per-fragment split below.
 #   2. ALLOW_PATTERNS (allowed-bash-commands.nix): per-fragment regex
 #      allowlist for simple, side-effect-free commands (ls, pwd, git
-#      status, the tmux-a2a-postman entry that supersedes the old
+#      status, the panepals entry that supersedes the old
 #      ALLOW_PREFIX_BYPASS mechanism, etc.).
 #
 # denied-bash-commands.nix's DENY_PATTERNS are NOT a second enforcement
@@ -45,7 +45,7 @@ set -o posix
 # not-on-the-allowlist message. Same outcome (denied) either way.
 #
 # Every deny message also appends a hint to request the command through
-# `tmux-a2a-postman execute-heredoc` instead of retrying it directly.
+# `panepals execute-heredoc` instead of retrying it directly.
 #
 # Before any allow path runs, `mask_heredoc_bodies` strips heredoc BODY
 # lines out of the command text (issue #355). Heredoc bodies are literal
@@ -53,7 +53,7 @@ set -o posix
 # earlier #352/#354 fix already exempted the `<<`/`<<-`/`<<<` operator
 # marker itself from `fragment_has_risky_construct`, but left body lines
 # unprotected, so a Markdown-formatted body (backticks, `$(`, bare `<`/`>`)
-# still tripped a false deny before the `tmux-a2a-postman` allow entry was
+# still tripped a false deny before the `panepals` allow entry was
 # ever consulted.
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -66,7 +66,7 @@ source "$PATTERNS_FILE"
 COMMAND=$(jq -r '.tool_input.command // empty' 2>/dev/null) || true
 [[ -z $COMMAND ]] && exit 0
 
-EXECUTE_HEREDOC_HINT="If this command should run, request it via 'tmux-a2a-postman execute-heredoc --reason <why> with exact source on quoted heredoc stdin' instead of retrying it directly."
+EXECUTE_HEREDOC_HINT="If this command should run, request it via 'panepals execute-heredoc --reason <why> with exact source on quoted heredoc stdin' instead of retrying it directly."
 
 trim_bash_fragment() {
   local fragment="$1"
@@ -1329,12 +1329,12 @@ check_bash_fragment_for_allow() {
   fi
 
   if command_is_secret_argument_sensitive "$fragment" && fragment_has_secret_keyword "$fragment"; then
-    emit_deny_payload "$fragment" "secret-shaped path argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a file-reading command (cat/head/tail/wc/sort/uniq/cut). If this path is not actually secret, request it via tmux-a2a-postman execute-heredoc instead of retrying directly."
+    emit_deny_payload "$fragment" "secret-shaped path argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a file-reading command (cat/head/tail/wc/sort/uniq/cut). If this path is not actually secret, request it via panepals execute-heredoc instead of retrying directly."
     exit 0
   fi
 
   if git_fragment_reads_secret_path_argument "$fragment"; then
-    emit_deny_payload "$fragment" "secret-shaped path/ref argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a git command that can print file contents from history or diffs (git show <rev>:<path>, git log -p/--patch, git diff). If this path is not actually secret, request it via tmux-a2a-postman execute-heredoc instead of retrying directly."
+    emit_deny_payload "$fragment" "secret-shaped path/ref argument (key/token/secret(s)/credential(s)/password/.env/.ssh) to a git command that can print file contents from history or diffs (git show <rev>:<path>, git log -p/--patch, git diff). If this path is not actually secret, request it via panepals execute-heredoc instead of retrying directly."
     exit 0
   fi
 

@@ -33,7 +33,7 @@
 
         exec ${pkgs.pinact}/bin/pinact run "$@"
       '';
-      skillReleaseSurfaceFiles = "^((skills/.*)|(\\.agents/skills/.*)|(config/tmux-a2a-postman/postman\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
+      skillReleaseSurfaceFiles = "^((skills/.*)|(\\.agents/skills/.*)|(config/panepals/panepals\\.md)|(\\.github/workflows/.*\\.(yml|yaml))|(scripts/validation/validate-skill-private-content\\.sh))$";
       waza = pkgs.callPackage ../../packages/waza.nix {
         inherit system;
       };

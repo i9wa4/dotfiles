@@ -65,8 +65,8 @@ _:
 let
   entries = [
     {
-      argv = [ "tmux-a2a-postman" ];
-      note = "The postman CLI is the approval channel itself; denying the CLI here would be circular. Its execute-heredoc subcommand can run caller source after typed approval or the documented advisory path; this allowlist entry does not approve that source or bypass human/runtime gates. A send-heredoc call's --to/--body-carrying heredoc is shell redirection syntax resolved by bash before the CLI ever receives stdin, not CLI-internal data handling -- the shared hook's mask_heredoc_bodies (issue #355) is what keeps a QUOTED heredoc body (<<'DELIM') inert for this allow entry; an unquoted delimiter (<<DELIM) is deliberately left unmasked and fully scanned, because bash itself expands substitutions inside that body as live syntax.";
+      argv = [ "panepals" ];
+      note = "The PanePals CLI is the approval channel itself; denying the CLI here would be circular. Its execute-heredoc subcommand can run caller source after typed approval or the documented advisory path; this allowlist entry does not approve that source or bypass human/runtime gates. A send-heredoc call's --to/--body-carrying heredoc is shell redirection syntax resolved by bash before the CLI ever receives stdin, not CLI-internal data handling -- the shared hook's mask_heredoc_bodies (issue #355) is what keeps a QUOTED heredoc body (<<'DELIM') inert for this allow entry; an unquoted delimiter (<<DELIM) is deliberately left unmasked and fully scanned, because bash itself expands substitutions inside that body as live syntax.";
     }
     {
       argv = [ "ls" ];

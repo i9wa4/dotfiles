@@ -1,43 +1,44 @@
-# Postman Integration Boundary
+# PanePals Integration Boundary
 
-Postman supplies the standard role policy in its builtin configuration. Inspect
+PanePals supplies the standard role policy in its builtin configuration. Inspect
 the selected binary's complete default with
-`tmux-a2a-postman help config default`. Dotfiles selects the Postman package
+`panepals help config default`. Dotfiles selects the PanePals package
 through its flake input and installs the matching Skills through the shared
 agent-Skill configuration.
 
-Postman owns its CLI, configuration format, mailbox/native identity,
+PanePals owns its CLI, configuration format, mailbox/native identity,
 notifications, execution coordination, diagnostics and transport tests. Use
 its installed help, shipped Skills and upstream documentation for those
-contracts. Dotfiles does not provide another Postman command, launcher,
+contracts. Dotfiles does not provide another PanePals command, launcher,
 configuration compiler, transport test framework or update program.
 
 For custom topology or declared parent/child relationships, copy the complete
-builtin default to a chosen `postman.md`, edit that copy using Postman's
+builtin default to a chosen `panepals.md`, edit that copy using PanePals's
 configuration reference, and select it explicitly. A custom file replaces the
 default; it is not an overlay. Starting an agent is independent of that
 configuration. Clients start directly; the complete Markdown returned by POP
 carries the selected common and recipient-role policy.
 
-Develop and validate Postman in its own repository. Its installed help and
+Develop and validate PanePals in its own repository. Its installed help and
 development runbook own native terminal and recursive transport verification.
 Dotfiles checks its declarative package and Skill selection and local
 integration, without duplicating the role policy, transport implementation or
 test driver.
 
-`nix run '.#update'` selects the latest published stable Postman release tag in
-`flake.nix` before updating all flake inputs. The lock entry keeps its resolved
-revision and hash between updates. Source checks do not activate the installed
-configuration or prove a live-fleet switch.
+The pre-rename draft pins an exact published candidate commit from the existing
+`i9wa4/tmux-a2a-postman` repository. The release updater must stay gated until
+its repository and tag contract is confirmed. Source checks do not activate the
+installed configuration or prove a live-fleet switch. See
+[PanePals cutover](panepals-cutover.md) for the migration boundary.
 
 ## 1. Optional tmux status integration
 
-The Postman package and upstream Skills come from the same flake input. The
+The PanePals package and upstream Skills come from the same flake input. The
 second tmux status row directly composes two commands:
 
 ```sh
-tmux-a2a-postman refresh-status >/dev/null
-tmux-a2a-postman get-status-oneline
+panepals refresh-status >/dev/null
+panepals get-status-oneline
 ```
 
 One shell passes the actual socket/server PID to both commands and removes
@@ -51,27 +52,27 @@ Redraw is a best-effort trigger, not a scheduler for detached clients. Getters
 read the saved server overview; match the assigned native session/pane/workspace
 and declared scope before acting. Visibility adds no routing or management
 authority. Publication and capture times differ, and unknown is not zero.
-Use `tmux-a2a-postman help get-status` for the status contract and
-`tmux-a2a-postman skill postman-records records` for durable record guidance.
+Use `panepals help get-status` for the status contract and
+`panepals skill panepals-records records` for durable record guidance.
 Installed rollout and verification remain with #485.
 
 ## 2. Optional top-level external channel
 
-The selected Postman source implements `channel-sync` and
+The selected PanePals source implements `channel-sync` and
 `channel-report-heredoc`. A provisioned binding activates them only for the
 exact top-level native interface/session/workspace. The builtin standard team
 does not guess a live session or a machine's mailbox path. Keep machine bindings
-in an explicit custom `postman.md` copied from the complete builtin default.
+in an explicit custom `panepals.md` copied from the complete builtin default.
 Pass that absolute config consistently to the producer and consoles; do not add
 a generated-config program or shell substitutions to YAML.
 
-For setup, read `tmux-a2a-postman help external-filesystem-channel` for the
+For setup, read `panepals help external-filesystem-channel` for the
 selected revision's filesystem contract.
 Add its supported external root/workspace/session scalar fields to the custom
 copy of the builtin default, preserving the catalog, common policy, local edges
 and any explicit parent/child tree. The workspace is the canonical HOME-relative
 agent-pane directory. The mailbox root must be canonical, persistent, private
-and separate from internal Postman state; do not repurpose the main state root.
+and separate from internal PanePals state; do not repurpose the main state root.
 Provision its parent and retain the binding and histories across restarts.
 
 The external producer publishes one immutable UTF-8 body by atomic rename, then
@@ -83,7 +84,7 @@ Use the upstream scan result to handle known remaining items; do not add empty
 POP polling, a timer, or a second discovery/notification engine here.
 
 Messenger fully reads its claimed external mail and delegates through the local
-orchestrator. Return a substantive correlated `done` or concrete `blocked`
+coordinator. Return a substantive correlated `done` or concrete `blocked`
 report only after that scope's evidence is reconciled. Pending decisions use
 the exact generated scope and filenames; ordinary comments such as “proceed”
 are conversation, not permission. Late/conflicting/changed-scope decisions never
@@ -93,7 +94,7 @@ cannot claim the top-level external binding.
 Keep output until explicit user cleanup. Scan/reconnect catches up retained
 reports; local outbox publication is not proof of human/application receipt.
 The separate Issue Mailbox producer, if used, owns its GitHub delivery and
-activation, not Postman's role/approval authority. Concurrent direct human
+activation, not PanePals's role/approval authority. Concurrent direct human
 typing has no draft-protection guarantee.
 
 Perform source/fixture verification in owned isolated resources using upstream

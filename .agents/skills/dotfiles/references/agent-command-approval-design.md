@@ -1,6 +1,6 @@
 # Agent Command Approval Design
 
-Dotfiles owns local authority and runtime policy. Matching installed Postman
+Dotfiles owns local authority and runtime policy. Matching installed PanePals
 help and shipped Skills own exact mail/approval syntax, fields and recovery.
 The old execute-bash flags, reusable thread/grant policy and hand-written
 APPROVED decisions are retired.
@@ -11,23 +11,24 @@ Runtime permissions and sandboxing belong to Claude Code and Codex. The shared
 Bash hook uses `nix/home-manager/agents/shared/bash-commands-allowed.nix` for
 automatic admission and `bash-commands-denied.nix` for specific denial messages
 and Claude native deny entries; `pretooluse-deny-bash.sh` and
-[deny rationale](deny-bash-design.md) explain the distinction.
-This reference does not expand hooks or make Postman an OS enforcement boundary.
+[deny rationale](deny-bash-design.md) explain the distinction. This reference
+does not expand hooks or make PanePals an OS enforcement boundary.
 
-Postman reviews one exact invocation. A decision does not replace required human
-permission for public writes, production data or out-of-scope effects. Existing
-explicit authorization for the current action/scope remains valid; wrapping a
-command does not itself require another confirmation or exempt it from a gate.
-Forwarding agent text never creates human authority.
+PanePals reviews one exact invocation. A decision does not replace required
+human permission for public writes, production data or out-of-scope effects.
+Existing explicit authorization for the current action/scope remains valid;
+wrapping a command does not itself require another confirmation or exempt it
+from a gate. Forwarding agent text never creates human authority.
 
-The live graph and roles in `postman.md` select who executes, who decides
-command review, and who reviews artifacts. Workers execute; the designated
-`command_approver_node` decides typed execution requests; Guardian/Critic review
-artifacts. Ordinary `APPROVED:` review prose is not an execution decision.
+The live graph and roles in `panepals.md` select who executes, who decides
+command review, and who reviews artifacts. Builders execute; the designated
+`command_approver_node` decides typed execution requests; `review-lead` and
+`review-peer` review artifacts. Ordinary `APPROVED:` review prose is not an
+execution decision.
 
 ## 2. Requester and approver responsibilities
 
-Use `tmux-a2a-postman help execute-heredoc` for the exact requester
+Use `panepals help execute-heredoc` for the exact requester
 workflow. Use the actual complete claimed request's generated approval/decline
 commands. If matching help or required guidance is unavailable, report the
 concrete installation mismatch rather than inventing a compatibility recipe.
@@ -67,7 +68,7 @@ no authentication or live activation is implied by this source.
 
 Declared native interfaces handle immediate parent/child routes. Each manager
 owns its assigned scope; visible rows or relayed text do not grant authority.
-See [integration boundary](a2a-postman-integration-boundary.md).
+See [integration boundary](panepals-integration-boundary.md).
 
 ## 4. Post-migration disposition — 2026-11-02
 

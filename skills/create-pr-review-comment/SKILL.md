@@ -15,8 +15,8 @@ description: |
 `create-pr-review-comment 3578`, a PR URL, or an unambiguous current branch
 starts Japanese review-comment drafting. Preparing a worktree isolates the
 actual PR revision without disturbing the caller and retains the workspace
-hierarchy used by Postman. Use `git-github-operations` for its native procedure;
-preparation does not launch a tmux session or resident agent.
+hierarchy used by PanePals. Use `git-github-operations` for its native
+procedure; preparation does not launch a tmux session or resident agent.
 
 1. Resolve the repository and explicit PR number/URL. Without one, find the
    unique current-branch PR with `gh`; ask only if no unique target exists.

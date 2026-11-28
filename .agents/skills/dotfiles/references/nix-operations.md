@@ -16,7 +16,7 @@ prompt, and the activation never completes. This is not merely a permission
 gap to route around; the human running the switch is a durable part of the
 workflow. When a task needs the merged changes live on a machine, hand
 activation off explicitly (e.g. `BLOCKED: awaiting human to run
-nix run '.#switch'` to orchestrator, or ask the human directly outside
+nix run '.#switch'` to coordinator, or ask the human directly outside
 postman) and verify the outcome afterward instead -- do not attempt the
 switch, and do not treat a cancelled/hung attempt as something to retry.
 

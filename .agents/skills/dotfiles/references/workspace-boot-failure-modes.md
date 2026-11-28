@@ -41,14 +41,14 @@ interactive prompt. `tmux send-keys` injects keystrokes into a pane's input
 buffer, so snippet expansion is not a reliable automation boundary.
 
 **Symptom:** Sending `vp` then Space via `tmux send-keys` does not expand to
-`vde-layout preset-p`; the literal characters
+`vde-layout env-a`; the literal characters
 `vp` are sent.
 
 **Mitigation:** Use direct vde-layout invocation for all agent-driven
 automation:
 
 ```bash
-tmux send-keys -t "$PANE_ID" 'vde-layout preset-p' Enter
+tmux send-keys -t "$PANE_ID" 'vde-layout env-a' Enter
 ```
 
 This produces identical end state to the interactive snippet path.

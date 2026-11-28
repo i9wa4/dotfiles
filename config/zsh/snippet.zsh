@@ -27,8 +27,8 @@ __snippet_add "(ghq) update" "gup" "ghq list | ghq get --update --parallel && gh
 __snippet_add "(macOS) caffeinate" "caffeinate" "sudo pmset disablesleep" ""
 __snippet_add "(vde-layout) dev" "vd" "vde-layout dev" ""
 __snippet_add "(vde-layout) main" "vm" "vde-layout main" ""
-__snippet_add "(vde-layout) preset-p" "vp" "vde-layout preset-p" ""
-__snippet_add "(vde-layout) preset-w" "vw" "vde-layout preset-w" ""
+__snippet_add "(vde-layout) env-a" "vp" "vde-layout env-a" ""
+__snippet_add "(vde-layout) env-b" "vw" "vde-layout env-b" ""
 
 __snippet_find_index() {
   local keyword="$1"

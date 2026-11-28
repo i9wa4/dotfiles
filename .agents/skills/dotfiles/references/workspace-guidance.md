@@ -68,14 +68,14 @@ After resolving the snippet, boot the session:
 
    ```bash
    tmux send-keys -t "$PANE_ID" \
-     'vde-layout preset-p' Enter
+     'vde-layout env-a' Enter
    ```
 
    Each team preset already includes its messenger and starts clients directly
    without an initial role message. Read common/role instructions in complete
    POP archives. Do not prepend a second messenger preset.
-   Postman configuration is independent of this launcher and is authored in
-   `tmux-a2a-postman help config`.
+   PanePals configuration is independent of this launcher and is authored in
+   `panepals help config`.
 
 8. Wait 8-12s for vde-layout to materialize all panes.
 
@@ -97,10 +97,10 @@ See also: `workspace-boot-failure-modes.md`
 
 ## 2. Current Boot Snippets
 
-| Snippet | Expansion             | Team                |
-| ------- | --------------------- | ------------------- |
-| `vp`    | `vde-layout preset-p` | codex-featured team |
-| `vw`    | `vde-layout preset-w` | claude team         |
+| Snippet | Expansion          | Team                |
+| ------- | ------------------ | ------------------- |
+| `vp`    | `vde-layout env-a` | codex-featured team |
+| `vw`    | `vde-layout env-b` | claude team         |
 
 Per-pane models and reasoning efforts are defined in
 `config/vde/layout.yml` and change often; resolve them from the config at
@@ -130,9 +130,9 @@ session by name in tmux commands.
 
 ## 4. Worktree Lifecycle
 
-Use the pinned Postman `git-github-operations` Skill for Issue/PR worktree
+Use the pinned PanePals `git-github-operations` Skill for Issue/PR worktree
 creation, reuse, verified base/upstream and publication. Keep the checkout in
-the intended parent workspace so Postman directory hierarchy remains correct.
+the intended parent workspace so PanePals directory hierarchy remains correct.
 This repo-local reference owns tmux navigation and its own Git lock diagnosis;
 it does not duplicate the generic Git procedure. Machine activation remains a
 separate operation.

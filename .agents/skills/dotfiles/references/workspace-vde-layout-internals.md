@@ -13,12 +13,12 @@ Short reference for vde-layout config resolution and preset structure.
 
 ## 2. Preset Definitions (layout.yml)
 
-| Preset   | windowMode     | Panes                                                                   |
-| -------- | -------------- | ----------------------------------------------------------------------- |
-| main     | current-window | informational Postman pane and vde-monitor; no Postman service          |
-| dev      | current-window | editor pane and independent agent                                       |
-| preset-p | new-window     | messenger, orchestrator, worker, worker-alt, approver, guardian, critic |
-| preset-w | new-window     | the same roles, with the configured Claude/Codex mapping                |
+| Preset | windowMode     | Panes                                                                            |
+| ------ | -------------- | -------------------------------------------------------------------------------- |
+| main   | current-window | informational PanePals pane and vde-monitor; no PanePals service                 |
+| dev    | current-window | editor pane and independent agent                                                |
+| env-a  | new-window     | messenger, coordinator, builder, builder-alt, approver, review-lead, review-peer |
+| env-b  | new-window     | the same roles, with the configured Claude/Codex mapping                         |
 
 Team presets start Codex/Claude directly without injecting an initial message.
 vde-layout sets native pane role titles; preserve the client's explicit model,
